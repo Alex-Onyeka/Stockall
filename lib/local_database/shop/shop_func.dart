@@ -85,6 +85,30 @@ class ShopFunc {
     }
   }
 
+  Future<int> setHeadQuarters(TempShopClass shop) async {
+    try {
+      // shop.isHeadQuarters = true;
+      // shop.updatedAt = DateTime.now();
+      updateShop(shop);
+      for (var sho in getShops().where(
+        (sh) => sh.shopId != shop.shopId,
+      )) {
+        sho.isHeadQuarters = false;
+        sho.updatedAt = DateTime.now();
+        updateShop(sho);
+      }
+      print(
+        "Setting HeadQuarters Failed Offline And Updating Other Shops Success",
+      );
+      return 1;
+    } catch (e) {
+      print(
+        "Setting HeadQuarters Failed Offline: ${e.toString()}",
+      );
+      return 0;
+    }
+  }
+
   Future<int> clearShop() async {
     try {
       await shopBox.clear();

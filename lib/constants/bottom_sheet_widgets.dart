@@ -18,6 +18,7 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/play_sounds.dart';
 import 'package:stockall/constants/scan_barcode.dart';
+import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/compnents/product_tile_cart_search.dart';
 import 'package:stockall/pages/shop_setup/create_category/create_category.dart';
@@ -2083,46 +2084,62 @@ class _CustomBottomPanelState
                                     listen: false,
                                   ).productList.where(
                                     (product) =>
-                                        product.barcode ==
-                                        value,
+                                        product.barcode
+                                            ?.toLowerCase() ==
+                                        value.toLowerCase(),
                                   );
                                   if (items.isNotEmpty) {
-                                    await playBeep();
+                                    SalesAuthAction()
+                                        .useBarcodeAction(
+                                          context: context,
+                                          action: () async {
+                                            await playBeep();
+                                          },
+                                          failAction: () {
+                                            widget
+                                                .searchController
+                                                .clear();
+                                          },
+                                        );
                                   }
                                 }
                               },
                               onPressedScan: () async {
-                                productResults.clear();
-                                searchResult = null;
-                                String? result =
-                                    await scanCode(
+                                SalesAuthAction().useBarcodeAction(
+                                  context: context,
+                                  action: () async {
+                                    productResults.clear();
+                                    searchResult = null;
+                                    String? result =
+                                        await scanCode(
+                                          context,
+                                          'Failed',
+                                        );
+                                    setState(() {});
+                                    if (result != null) {
+                                      widget
+                                          .searchController
+                                          .text = result;
+                                    }
+                                    var items = returnData(
                                       context,
-                                      'Failed',
+                                      listen: false,
+                                    ).productList.where(
+                                      (product) =>
+                                          product.barcode ==
+                                          result,
                                     );
-                                setState(() {});
-                                if (result != null) {
-                                  widget
-                                      .searchController
-                                      .text = result;
-                                }
-                                var items = returnData(
-                                  context,
-                                  listen: false,
-                                ).productList.where(
-                                  (product) =>
-                                      product.barcode ==
-                                      result,
+                                    if (items.isNotEmpty) {
+                                      setState(() {
+                                        scanResult = result;
+                                        productResults
+                                            .addAll(items);
+                                      });
+                                      await playBeep();
+                                    }
+                                    setState(() {});
+                                  },
                                 );
-                                if (items.isNotEmpty) {
-                                  setState(() {
-                                    scanResult = result;
-                                    productResults.addAll(
-                                      items,
-                                    );
-                                  });
-                                  await playBeep();
-                                }
-                                setState(() {});
                               },
                             ),
                           ),

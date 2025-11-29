@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/components/text_fields/text_field_barcode.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/subscription/items_auth.dart';
+import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/products/compnents/products_summary_tab.dart';
@@ -287,50 +289,66 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                                         )
                                     ? true
                                     : false,
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      10,
-                                    ),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return AddProduct();
-                                      },
-                                    ),
-                                  );
-                                },
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.all(
+                            child: SubWrapper(
+                              isVisible:
+                                  !ItemsAuthAction()
+                                      .numberOfItemsAction(
+                                        context: context,
+                                      ),
+                              mainWidget: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  borderRadius:
+                                      BorderRadius.circular(
                                         10,
                                       ),
-                                  child: Row(
-                                    spacing: 5,
-                                    children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b3
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
+                                  onTap: () {
+                                    ItemsAuthAction()
+                                        .numberOfItemsAction(
+                                          context: context,
+                                          action: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  return AddProduct();
+                                                },
+                                              ),
+                                            );
+                                          },
+                                        );
+                                  },
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.all(
+                                          10,
                                         ),
-                                        'Add Item',
-                                      ),
-                                      Icon(
-                                        size: 18,
-                                        Icons.add,
-                                        color: Colors.amber,
-                                      ),
-                                    ],
+                                    child: Row(
+                                      spacing: 5,
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b3
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          'Add Item',
+                                        ),
+                                        Icon(
+                                          size: 18,
+                                          Icons.add,
+                                          color:
+                                              Colors.amber,
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),

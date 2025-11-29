@@ -6,6 +6,7 @@ import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/subscription/employee_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -452,8 +453,10 @@ class _AddEmployeeMobileState
                                           return;
                                         }
 
-                                        final res = await userProvider
-                                            .updateEmployeeRole(
+                                        EmployeesAuthAction().numberOfEmployeesAction(
+                                          context: context,
+                                          action: () async {
+                                            final res = await userProvider.updateEmployeeRole(
                                               userId:
                                                   widget
                                                       .idC
@@ -466,19 +469,69 @@ class _AddEmployeeMobileState
                                                       .currentUser!,
                                             );
 
-                                        if (res != null &&
-                                            context
-                                                .mounted) {
-                                          setState(
-                                            () =>
-                                                isLoading =
-                                                    false,
-                                          );
+                                            if (res !=
+                                                    null &&
+                                                context
+                                                    .mounted) {
+                                              setState(
+                                                () =>
+                                                    isLoading =
+                                                        false,
+                                              );
 
-                                          if (res ==
-                                                  '121' ||
-                                              res ==
-                                                  '131') {
+                                              if (res ==
+                                                      '121' ||
+                                                  res ==
+                                                      '131') {
+                                                showDialog(
+                                                  context:
+                                                      context,
+                                                  builder:
+                                                      (
+                                                        _,
+                                                      ) => InfoAlert(
+                                                        theme:
+                                                            theme,
+                                                        message:
+                                                            res ==
+                                                                    '121'
+                                                                ? 'Employee Id is invalid.'
+                                                                : 'User is not found in the database.',
+                                                        title:
+                                                            res ==
+                                                                    '121'
+                                                                ? 'Invalid Employee Id.'
+                                                                : 'User not Found.',
+                                                        action: () {
+                                                          Navigator.of(
+                                                            context,
+                                                          ).pop();
+                                                        },
+                                                      ),
+                                                );
+                                                return;
+                                              }
+                                            }
+
+                                            await shopProvider.addEmployeeToShop(
+                                              newEmployeeId:
+                                                  widget
+                                                      .idC
+                                                      .text
+                                                      .trim(),
+                                            );
+
+                                            setState(() {
+                                              isLoading =
+                                                  false;
+                                              showSuccess =
+                                                  true;
+                                            });
+
+                                            Navigator.of(
+                                              context,
+                                            ).pop(); // close confirmation dialog immediately
+
                                             showDialog(
                                               context:
                                                   context,
@@ -489,15 +542,9 @@ class _AddEmployeeMobileState
                                                     theme:
                                                         theme,
                                                     message:
-                                                        res ==
-                                                                '121'
-                                                            ? 'Employee Id is invalid.'
-                                                            : 'User is not found in the database.',
+                                                        'Staff added successfully.',
                                                     title:
-                                                        res ==
-                                                                '121'
-                                                            ? 'Invalid Employee Id.'
-                                                            : 'User not Found.',
+                                                        'Success',
                                                     action: () {
                                                       Navigator.of(
                                                         context,
@@ -505,51 +552,7 @@ class _AddEmployeeMobileState
                                                     },
                                                   ),
                                             );
-                                            return;
-                                          }
-                                        }
-
-                                        await shopProvider
-                                            .addEmployeeToShop(
-                                              shopId:
-                                                  shopProvider
-                                                      .userShop()!
-                                                      .shopId!,
-                                              newEmployeeId:
-                                                  widget
-                                                      .idC
-                                                      .text
-                                                      .trim(),
-                                            );
-
-                                        setState(() {
-                                          isLoading = false;
-                                          showSuccess =
-                                              true;
-                                        });
-
-                                        Navigator.of(
-                                          context,
-                                        ).pop(); // close confirmation dialog immediately
-
-                                        showDialog(
-                                          context: context,
-                                          builder:
-                                              (
-                                                _,
-                                              ) => InfoAlert(
-                                                theme:
-                                                    theme,
-                                                message:
-                                                    'Staff added successfully.',
-                                                title:
-                                                    'Success',
-                                                action: () {
-                                                  Navigator.of(
-                                                    context,
-                                                  ).pop();
-                                                },
-                                              ),
+                                          },
                                         );
                                       },
                                     );

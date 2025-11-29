@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/constants/subscription/sales_auth.dart';
+import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 
 class CartQueueMobile extends StatelessWidget {
@@ -83,7 +85,7 @@ class CartQueueMobile extends StatelessWidget {
                                             1
                                     ? 8
                                     : 12,
-                            vertical: 5,
+                            vertical: 1,
                           ),
 
                           child: Row(
@@ -125,7 +127,7 @@ class CartQueueMobile extends StatelessWidget {
                                             .cartQueue
                                             .length >
                                         1,
-                                child: SizedBox(width: 10),
+                                child: SizedBox(width: 6),
                               ),
                               Visibility(
                                 visible:
@@ -139,8 +141,12 @@ class CartQueueMobile extends StatelessWidget {
                                   color: Colors.transparent,
                                   child: Ink(
                                     decoration: BoxDecoration(
-                                      shape:
-                                          BoxShape.circle,
+                                      // shape:
+                                      //     BoxShape.circle,
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                            3,
+                                          ),
                                       color:
                                           theme
                                               .lightModeColor
@@ -193,15 +199,20 @@ class CartQueueMobile extends StatelessWidget {
                                       },
                                       child: Container(
                                         padding:
-                                            EdgeInsets.all(
-                                              2,
+                                            EdgeInsets.symmetric(
+                                              horizontal:
+                                                  5.5,
+                                              vertical: 4,
                                             ),
-                                        decoration:
-                                            BoxDecoration(
-                                              shape:
-                                                  BoxShape
-                                                      .circle,
-                                            ),
+                                        decoration: BoxDecoration(
+                                          // shape:
+                                          //     BoxShape
+                                          //         .circle,
+                                          borderRadius:
+                                              BorderRadius.circular(
+                                                3,
+                                              ),
+                                        ),
                                         child: Icon(
                                           color:
                                               Colors.white,
@@ -225,36 +236,42 @@ class CartQueueMobile extends StatelessWidget {
           ),
           SizedBox(width: 10),
           Visibility(
-            visible:
-                returnSalesProvider(
-                  context,
-                ).cartQueue.length <=
-                4,
-            child: Material(
-              color: Colors.transparent,
-              child: Ink(
-                decoration: BoxDecoration(
-                  color: theme.lightModeColor.prColor300,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: InkWell(
-                  onTap: () {
-                    returnSalesProvider(
-                      context,
-                      listen: false,
-                    ).addNewCart();
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        5,
+            // visible:
+            //     returnSalesProvider(
+            //       context,
+            //     ).cartQueue.length <=
+            //     4,
+            child: SubWrapper(
+              isVisible:
+                  !SalesAuthAction().numberOfCartsAction(
+                    context: context,
+                  ),
+              mainWidget: Material(
+                color: Colors.transparent,
+                child: Ink(
+                  decoration: BoxDecoration(
+                    color: theme.lightModeColor.prColor300,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      returnSalesProvider(
+                        context,
+                        listen: false,
+                      ).addNewCart(context);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(
+                          5,
+                        ),
                       ),
-                    ),
-                    child: Icon(
-                      color: Colors.white,
-                      size: 15,
-                      Icons.add,
+                      child: Icon(
+                        color: Colors.white,
+                        size: 15,
+                        Icons.add,
+                      ),
                     ),
                   ),
                 ),

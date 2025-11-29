@@ -10,6 +10,8 @@ class DialogTemplate extends StatelessWidget {
   final Function() action;
   final Widget widget;
   final String? actionButtonText;
+  final bool? showBottomActionButtons;
+  final bool? showTopSection;
   const DialogTemplate({
     super.key,
     required this.theme,
@@ -18,6 +20,8 @@ class DialogTemplate extends StatelessWidget {
     required this.action,
     required this.widget,
     this.actionButtonText,
+    this.showBottomActionButtons,
+    this.showTopSection,
   });
 
   @override
@@ -25,7 +29,7 @@ class DialogTemplate extends StatelessWidget {
     return AlertDialog(
       insetPadding: EdgeInsets.symmetric(
         horizontal: 10,
-        vertical: 0,
+        vertical: 15,
       ),
       contentPadding: EdgeInsets.all(15), //
       backgroundColor: Colors.white,
@@ -49,115 +53,130 @@ class DialogTemplate extends StatelessWidget {
                             ? 10
                             : 20.0,
                   ),
-                  child: Column(
-                    children: [
-                      Text(
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.h3.fontSize,
-                          fontWeight:
-                              theme
-                                  .mobileTexts
-                                  .h3
-                                  .fontWeightBold,
+                  child: Visibility(
+                    visible: showTopSection == null,
+                    child: Column(
+                      children: [
+                        Text(
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .h3
+                                    .fontSize,
+                            fontWeight:
+                                theme
+                                    .mobileTexts
+                                    .h3
+                                    .fontWeightBold,
+                          ),
+                          title,
                         ),
-                        title,
-                      ),
-                      Text(
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b1.fontSize,
+                        Text(
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b1
+                                    .fontSize,
+                          ),
+                          message,
                         ),
-                        message,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
+            // SizedBox(height: 5),
+            ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 500),
+              child: widget,
+            ),
             SizedBox(height: 5),
-            widget,
-            SizedBox(height: 5),
-            Row(
-              spacing: 15,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Ink(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        5,
-                      ),
-                      color: Colors.grey.shade200,
-                    ),
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 10,
+            Visibility(
+              visible: showBottomActionButtons == null,
+              child: Row(
+                spacing: 15,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Ink(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(
+                          5,
                         ),
+                        color: Colors.grey.shade200,
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 10,
+                          ),
 
-                        child: Center(
-                          child: Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey.shade800,
+                          child: Center(
+                            child: Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b3
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey.shade800,
+                              ),
+                              'Cancel',
                             ),
-                            'Cancel',
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                Expanded(
-                  child: Ink(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        5,
-                      ),
-                      color:
-                          theme
-                              .lightModeColor
-                              .errorColor200,
-                    ),
-                    child: InkWell(
-                      onTap: action,
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 10,
+                  Expanded(
+                    child: Ink(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(
+                          5,
                         ),
+                        color:
+                            theme
+                                .lightModeColor
+                                .errorColor200,
+                      ),
+                      child: InkWell(
+                        onTap: action,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 10,
+                          ),
 
-                        child: Center(
-                          child: Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                          child: Center(
+                            child: Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b3
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                              actionButtonText ?? 'Proceed',
                             ),
-                            actionButtonText ?? 'Proceed',
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             SizedBox(height: 10),
           ],

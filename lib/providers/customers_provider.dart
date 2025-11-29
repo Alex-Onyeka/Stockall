@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_customers/unsynced/created_customers/creat
 import 'package:stockall/classes/temp_customers/unsynced/deleted_customers/deleted_customers.dart';
 import 'package:stockall/classes/temp_customers/unsynced/updated/updated_customers.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/local_database/customers/customer_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/created/created_customers_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/deleted/deleted_customers_func.dart';
@@ -83,9 +84,14 @@ class CustomersProvider extends ChangeNotifier {
       final newCustomer = TempCustomersClass.fromJson(res);
       await CustomerFunc().createCustomer(newCustomer);
     } else {
-      await CustomerFunc().createCustomer(customer);
-      await CreatedCustomersFunc().createCustomers(
-        CreatedCustomers(customer: customer),
+      GeneralSettingsAuthAction().allowOfflineUseAction(
+        context: context,
+        action: () async {
+          await CustomerFunc().createCustomer(customer);
+          await CreatedCustomersFunc().createCustomers(
+            CreatedCustomers(customer: customer),
+          );
+        },
       );
     }
     // _customers.insert(0, newCustomer);

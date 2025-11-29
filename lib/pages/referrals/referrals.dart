@@ -3,7 +3,6 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/referrals/platforms/referrals_mobile.dart';
 import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart';
-import 'package:stockall/services/auth_service.dart';
 
 class Referrals extends StatefulWidget {
   const Referrals({super.key});
@@ -17,10 +16,11 @@ class _ReferralsState extends State<Referrals> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final userShop = await returnShopProvider(
-        context,
-        listen: false,
-      ).getUserShops(AuthService().currentUser!);
+      final userShop =
+          await returnShopProvider(
+            context,
+            listen: false,
+          ).getUserShops();
       if (context.mounted && userShop.isEmpty) {
         Navigator.pushAndRemoveUntil(
           context,

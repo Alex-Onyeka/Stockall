@@ -13,6 +13,7 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
+import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
@@ -365,24 +366,30 @@ class _TotalSalesDesktopState
                             ).returnInvoice,
                         child: FloatingActionButtonMain(
                           action: () {
-                            returnNavProvider(
-                              context,
-                              listen: false,
-                            ).navigate(2);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return MakeSalesPage(
-                                    isInvoice: true,
-                                  );
-                                },
-                              ),
-                            ).then((_) {
-                              setState(() {
-                                // getProductList(context);
-                              });
-                            });
+                            SalesAuthAction()
+                                .invoiceManagementAction(
+                                  context: context,
+                                  action: () {
+                                    returnNavProvider(
+                                      context,
+                                      listen: false,
+                                    ).navigate(2);
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return MakeSalesPage(
+                                            isInvoice: true,
+                                          );
+                                        },
+                                      ),
+                                    ).then((_) {
+                                      setState(() {
+                                        // getProductList(context);
+                                      });
+                                    });
+                                  },
+                                );
                           },
                           color:
                               theme

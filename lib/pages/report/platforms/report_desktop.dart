@@ -172,7 +172,7 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                           );
                                         },
                                         subText:
-                                            'Veiw A Summary of your business Report',
+                                            'View a Summary of your business Report',
                                         title:
                                             'General Overview',
                                       ),
@@ -192,7 +192,7 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                           );
                                         },
                                         subText:
-                                            'Veiw a breakdown of your Sales, revenue and Profit',
+                                            'View a breakdown of your Sales, revenue and Profit',
                                         title:
                                             'Sales and Revenue',
                                       ),
@@ -212,7 +212,7 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                           );
                                         },
                                         subText:
-                                            'Veiw A Summary of your Stock and Inventory',
+                                            'View a Summary of your Stock and Inventory',
                                         title:
                                             'Items Report',
                                       ),
@@ -241,7 +241,7 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                         theme: theme,
                                         action: () {},
                                         subText:
-                                            'Veiw A break down of employee activities',
+                                            'View a break down of employee activities',
                                         title:
                                             'Employee Report (Coming Soon)',
                                       ),

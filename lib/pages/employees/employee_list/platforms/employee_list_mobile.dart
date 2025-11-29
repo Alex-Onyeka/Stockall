@@ -5,6 +5,7 @@ import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
+import 'package:stockall/constants/subscription/employee_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/employees/add_employee_page/add_employee_page.dart';
 import 'package:stockall/pages/employees/components/employee_tile_main.dart';
@@ -56,18 +57,23 @@ class _EmployeeListMobileState
         child: FloatingActionButtonMain(
           theme: theme,
           action: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return AddEmployeePage();
-                },
-              ),
-            ).then((_) {
-              if (mounted) {
-                getEmployees();
-              }
-            });
+            EmployeesAuthAction().numberOfEmployeesAction(
+              context: context,
+              action: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return AddEmployeePage();
+                    },
+                  ),
+                ).then((_) {
+                  if (mounted) {
+                    getEmployees();
+                  }
+                });
+              },
+            );
           },
           color:
               returnTheme(
@@ -132,16 +138,22 @@ class _EmployeeListMobileState
                     theme: theme,
                     height: 30,
                     action: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return AddEmployeePage();
-                          },
-                        ),
-                      ).then((_) {
-                        getEmployees();
-                      });
+                      EmployeesAuthAction()
+                          .numberOfEmployeesAction(
+                            context: context,
+                            action: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return AddEmployeePage();
+                                  },
+                                ),
+                              ).then((_) {
+                                getEmployees();
+                              });
+                            },
+                          );
                     },
                     altAction: () {
                       getEmployees();

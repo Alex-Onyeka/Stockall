@@ -11,6 +11,7 @@ import 'package:stockall/pages/authentication/launch_screen/launch_screen.dart';
 import 'package:stockall/pages/authentication/login/login_page.dart';
 import 'package:stockall/pages/authentication/splash_screens/splash_screen.dart';
 import 'package:stockall/pages/authentication/translations/translation_provider.dart';
+import 'package:stockall/pages/profile/delete_account/delete_account.dart';
 import 'package:stockall/pages/subscription/subscription.dart';
 import 'package:stockall/providers/comp_provider.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
@@ -358,6 +359,7 @@ class MyApp extends StatelessWidget {
           '/reset-password':
               (context) => EnterNewPassword(),
           '/subscription': (context) => Subscription(),
+          '/delete-account': (context) => DeleteAccount(),
         },
         debugShowCheckedModeBanner: false,
         theme: ThemeData(

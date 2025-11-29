@@ -2041,6 +2041,7 @@ class _AddCustomerMobileState
                           ? 'Update Details'
                           : 'Add Customer',
                 ),
+                SizedBox(height: 20),
               ],
             ),
           ),

@@ -69,7 +69,7 @@ class ReportMobile extends StatelessWidget {
                             );
                           },
                           subText:
-                              'Veiw A Summary of your business Report',
+                              'View a Summary of your business Report',
                           title: 'General Overview',
                         ),
                         ReportListTile(
@@ -86,7 +86,7 @@ class ReportMobile extends StatelessWidget {
                             );
                           },
                           subText:
-                              'Veiw a breakdown of your Sales, revenue and Profit',
+                              'View a breakdown of your Sales, revenue and Profit',
                           title: 'Sales and Revenue',
                         ),
                         ReportListTile(
@@ -103,7 +103,7 @@ class ReportMobile extends StatelessWidget {
                             );
                           },
                           subText:
-                              'Veiw A Summary of your Stock and Inventory',
+                              'View a Summary of your Stock and Inventory',
                           title: 'Items Report',
                         ),
                         ReportListTile(
@@ -128,7 +128,7 @@ class ReportMobile extends StatelessWidget {
                           theme: theme,
                           action: () {},
                           subText:
-                              'Veiw A break down of employee activities',
+                              'View a break down of employee activities',
                           title:
                               'Employee Report (Coming Soon)',
                         ),

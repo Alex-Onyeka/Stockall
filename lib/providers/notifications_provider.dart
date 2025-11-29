@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_notification/temp_notification.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/local_database/notification/notification_func.dart';
+import 'package:stockall/local_database/shop/shop_func.dart';
+import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -92,55 +95,99 @@ class NotificationProvider with ChangeNotifier {
     return _notifications;
   }
 
+  void refreshState() {
+    notifyListeners();
+  }
+
   Future<void> updateNotification(String notifUuid) async {
     bool isOnline = await connectivity.isOnline();
 
     if (isOnline) {
-      try {
-        print(
-          'Updating notification with uuid: $notifUuid',
-        );
-        final response =
-            await supabase
-                .from('notifications')
-                .update({'is_viewed': true})
-                .eq('uuid', notifUuid)
-                .select()
-                .maybeSingle();
+      var no = notifications.firstWhere(
+        (noti) => noti.uuid == notifUuid,
+      );
+      if (!no.isViewed) {
+        try {
+          print(
+            'Updating notification with uuid: $notifUuid',
+          );
+          final response =
+              await supabase
+                  .from('notifications')
+                  .update({'is_viewed': true})
+                  .eq('uuid', notifUuid)
+                  .select()
+                  .maybeSingle();
 
-        if (response == null) {
-          debugPrint(
-            '⚠️ No notification found with uuid $notifUuid',
-          );
-        } else {
-          debugPrint(
-            '✅ Notification $notifUuid updated: $response',
-          );
-        }
+          if (response == null) {
+            debugPrint(
+              '⚠️ No notification found with uuid $notifUuid',
+            );
+          } else {
+            debugPrint(
+              '✅ Notification $notifUuid updated: $response',
+            );
+          }
 
-        // Update locally
-        int index = _notifications.indexWhere(
-          (n) => n.uuid == notifUuid,
-        );
-        if (index != -1) {
-          _notifications[index] = TempNotification(
-            uuid: _notifications[index].uuid,
-            notifId: _notifications[index].notifId,
-            shopId: _notifications[index].shopId,
-            productId: _notifications[index].productId,
-            productUuid: _notifications[index].productUuid,
-            title: _notifications[index].title,
-            text: _notifications[index].text,
-            date: _notifications[index].date,
-            category: _notifications[index].category,
-            itemName: _notifications[index].itemName,
-            isViewed: true,
+          // Update locally
+          int index = _notifications.indexWhere(
+            (n) => n.uuid == notifUuid,
           );
-          notifyListeners();
+          if (index != -1) {
+            _notifications[index] = TempNotification(
+              uuid: _notifications[index].uuid,
+              notifId: _notifications[index].notifId,
+              shopId: _notifications[index].shopId,
+              productId: _notifications[index].productId,
+              productUuid:
+                  _notifications[index].productUuid,
+              title: _notifications[index].title,
+              text: _notifications[index].text,
+              date: _notifications[index].date,
+              category: _notifications[index].category,
+              itemName: _notifications[index].itemName,
+              isViewed: true,
+            );
+            await fetchRecentNotifications(
+              ShopFunc().getShops().first.shopId ?? 0,
+            );
+            notifyListeners();
+          }
+        } catch (e) {
+          debugPrint('Error updating notification: $e');
         }
-      } catch (e) {
-        debugPrint('Error updating notification: $e');
       }
+    }
+  }
+
+  Future<void> markAllNotificationsAsRead({
+    required BuildContext context,
+  }) async {
+    var shopId =
+        returnShopProvider(
+          context,
+          listen: false,
+        ).userShop()!.shopId!;
+    var isOnline = await connectivity.isOnline();
+    if (isOnline) {
+      await supabase.rpc(
+        'mark_all_notifications_viewed',
+        params: {'p_shop_id': shopId},
+      );
+      await fetchRecentNotifications(shopId);
+    } else {
+      showDialog(
+        // ignore: use_build_context_synchronously
+        context: context,
+        builder: (context) {
+          return InfoAlert(
+            theme: returnTheme(context, listen: false),
+            message:
+                'This action you are trying to perform cannot be performed offline.',
+            title: 'No Internet Connection.',
+          );
+        },
+      );
     }
   }
 }

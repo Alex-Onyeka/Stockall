@@ -11,6 +11,8 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/generate_barcode.dart';
+import 'package:stockall/constants/subscription/items_auth.dart';
+import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/products/product_details/platforms/product_details_desktop.dart';
@@ -969,7 +971,7 @@ class _ProductDetailsMobileState
                                                                                     fontWeight:
                                                                                         FontWeight.bold,
                                                                                   ),
-                                                                                  'Replace Qauntity',
+                                                                                  'Replace Quantity',
                                                                                 ),
                                                                               ],
                                                                             ),
@@ -1339,115 +1341,133 @@ class _ProductDetailsMobileState
                                       ),
                                       InkWell(
                                         onTap: () {
-                                          var safeContext =
-                                              context;
-                                          var dataProvider =
-                                              returnData(
-                                                safeContext,
-                                                listen:
-                                                    false,
-                                              );
-                                          showDialog(
+                                          ItemsAuthAction().allowStockallToManageItemAction(
                                             context:
                                                 context,
-                                            builder: (
-                                              context,
-                                            ) {
-                                              return ConfirmationAlert(
-                                                theme:
-                                                    widget
-                                                        .theme,
-                                                message:
-                                                    product.isManaged
-                                                        ? 'This item quantity will no longer be automatically managed by Stockall, are you sure you want to proceed?'
-                                                        : 'This item quantity will now be automatically managed by Stockall, are you sure you want to proceed?',
-                                                title:
-                                                    'Proceed with Action?',
-                                                action: () async {
-                                                  Navigator.of(
-                                                    context,
-                                                  ).pop();
-                                                  setState(() {
-                                                    isLoading =
-                                                        true;
-                                                  });
-                                                  await dataProvider.updateProduct(
-                                                    context:
-                                                        safeContext,
-                                                    product: TempProductClass(
-                                                      updatedAt:
-                                                          DateTime.now(),
-                                                      setCustomPrice:
-                                                          product.setCustomPrice,
-                                                      isManaged:
-                                                          product.isManaged
-                                                              ? false
-                                                              : true,
-                                                      // id:
-                                                      //     product.id,
-                                                      name:
-                                                          product.name,
-                                                      unit:
-                                                          product.unit,
-                                                      isRefundable:
-                                                          product.isRefundable,
-                                                      costPrice:
-                                                          product.costPrice,
-                                                      sellingPrice:
-                                                          product.sellingPrice,
-                                                      quantity:
-                                                          !product.isManaged &&
-                                                                  product.quantity ==
-                                                                      null
-                                                              ? 0
-                                                              : product.quantity,
-                                                      shopId:
-                                                          product.shopId,
-                                                      barcode:
-                                                          product.barcode,
-                                                      category:
-                                                          product.category,
-                                                      createdAt:
-                                                          product.createdAt,
-                                                      discount:
-                                                          product.discount,
-                                                      endDate:
-                                                          product.endDate,
-                                                      expiryDate:
-                                                          product.expiryDate,
-                                                      lowQtty:
-                                                          product.lowQtty,
-                                                      sizeType:
-                                                          product.sizeType,
-                                                      startDate:
-                                                          product.startDate,
-                                                      uuid:
-                                                          product.uuid,
-                                                    ),
+                                            action: () {
+                                              var safeContext =
+                                                  context;
+                                              var dataProvider =
+                                                  returnData(
+                                                    safeContext,
+                                                    listen:
+                                                        false,
                                                   );
-                                                  setState(() {
-                                                    isLoading =
-                                                        false;
-                                                  });
+                                              showDialog(
+                                                context:
+                                                    context,
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  return ConfirmationAlert(
+                                                    theme:
+                                                        widget.theme,
+                                                    message:
+                                                        product.isManaged
+                                                            ? 'This item quantity will no longer be automatically managed by Stockall, are you sure you want to proceed?'
+                                                            : 'This item quantity will now be automatically managed by Stockall, are you sure you want to proceed?',
+                                                    title:
+                                                        'Proceed with Action?',
+                                                    action: () async {
+                                                      Navigator.of(
+                                                        context,
+                                                      ).pop();
+                                                      setState(() {
+                                                        isLoading =
+                                                            true;
+                                                      });
+                                                      await dataProvider.updateProduct(
+                                                        context:
+                                                            safeContext,
+                                                        product: TempProductClass(
+                                                          updatedAt:
+                                                              DateTime.now(),
+                                                          setCustomPrice:
+                                                              product.setCustomPrice,
+                                                          isManaged:
+                                                              product.isManaged
+                                                                  ? false
+                                                                  : true,
+                                                          // id:
+                                                          //     product.id,
+                                                          name:
+                                                              product.name,
+                                                          unit:
+                                                              product.unit,
+                                                          isRefundable:
+                                                              product.isRefundable,
+                                                          costPrice:
+                                                              product.costPrice,
+                                                          sellingPrice:
+                                                              product.sellingPrice,
+                                                          quantity:
+                                                              !product.isManaged &&
+                                                                      product.quantity ==
+                                                                          null
+                                                                  ? 0
+                                                                  : product.quantity,
+                                                          shopId:
+                                                              product.shopId,
+                                                          barcode:
+                                                              product.barcode,
+                                                          category:
+                                                              product.category,
+                                                          createdAt:
+                                                              product.createdAt,
+                                                          discount:
+                                                              product.discount,
+                                                          endDate:
+                                                              product.endDate,
+                                                          expiryDate:
+                                                              product.expiryDate,
+                                                          lowQtty:
+                                                              product.lowQtty,
+                                                          sizeType:
+                                                              product.sizeType,
+                                                          startDate:
+                                                              product.startDate,
+                                                          uuid:
+                                                              product.uuid,
+                                                        ),
+                                                      );
+                                                      setState(() {
+                                                        isLoading =
+                                                            false;
+                                                      });
+                                                    },
+                                                  );
                                                 },
                                               );
                                             },
                                           );
                                         },
-                                        child: Container(
-                                          width: 50,
-                                          padding:
-                                              EdgeInsets.symmetric(
-                                                horizontal:
-                                                    10,
-                                                vertical: 5,
-                                              ),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(
-                                                  20,
+                                        child: SubWrapper(
+                                          isVisible:
+                                              !ItemsAuthAction()
+                                                  .allowStockallToManageItemAction(
+                                                    context:
+                                                        context,
+                                                  ),
+                                          mainWidget: Container(
+                                            width: 50,
+                                            padding:
+                                                EdgeInsets.symmetric(
+                                                  horizontal:
+                                                      10,
+                                                  vertical:
+                                                      5,
                                                 ),
-                                            border: Border.all(
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    20,
+                                                  ),
+                                              border: Border.all(
+                                                color:
+                                                    product.isManaged
+                                                        ? widget.theme.lightModeColor.prColor250
+                                                        : Colors.grey,
+                                              ),
                                               color:
                                                   product.isManaged
                                                       ? widget
@@ -1455,42 +1475,33 @@ class _ProductDetailsMobileState
                                                           .lightModeColor
                                                           .prColor250
                                                       : Colors
-                                                          .grey,
+                                                          .grey
+                                                          .shade200,
                                             ),
-                                            color:
-                                                product.isManaged
-                                                    ? widget
-                                                        .theme
-                                                        .lightModeColor
-                                                        .prColor250
-                                                    : Colors
-                                                        .grey
-                                                        .shade200,
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                product.isManaged
-                                                    ? MainAxisAlignment
-                                                        .end
-                                                    : MainAxisAlignment
-                                                        .start,
-                                            children: [
-                                              Container(
-                                                padding:
-                                                    EdgeInsets.all(
-                                                      5,
-                                                    ),
-                                                decoration: BoxDecoration(
-                                                  shape:
-                                                      BoxShape
-                                                          .circle,
-                                                  color:
-                                                      product.isManaged
-                                                          ? Colors.white
-                                                          : Colors.grey.shade600,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  product.isManaged
+                                                      ? MainAxisAlignment
+                                                          .end
+                                                      : MainAxisAlignment
+                                                          .start,
+                                              children: [
+                                                Container(
+                                                  padding:
+                                                      EdgeInsets.all(
+                                                        5,
+                                                      ),
+                                                  decoration: BoxDecoration(
+                                                    shape:
+                                                        BoxShape.circle,
+                                                    color:
+                                                        product.isManaged
+                                                            ? Colors.white
+                                                            : Colors.grey.shade600,
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -1527,40 +1538,47 @@ class _ProductDetailsMobileState
                                       'Not Set',
                                   text: 'Barcode',
                                   onClick: () {
-                                    showDialog(
+                                    ItemsAuthAction().generateBarcodeAction(
                                       context: context,
-                                      builder: (
-                                        firstContext,
-                                      ) {
-                                        return ConfirmationAlert(
-                                          theme:
-                                              widget.theme,
-                                          message:
-                                              'You are about to regenrate and print the barcode of this item, are you sure you want to proceed?',
-                                          actionButtonText:
-                                              'Generate',
-                                          title:
-                                              'Regenerate and Print Barcode?',
-                                          action: () async {
-                                            Navigator.of(
-                                              firstContext,
-                                            ).pop();
-                                            setState(() {
-                                              isLoading =
-                                                  true;
-                                            });
-                                            generateBarcodeAndPrint(
-                                              context,
-                                              product,
-                                            ).then((_) {
-                                              setState(() {
-                                                isLoading =
-                                                    false;
-                                              });
-                                            });
+                                      action: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (
+                                            firstContext,
+                                          ) {
+                                            return ConfirmationAlert(
+                                              theme:
+                                                  widget
+                                                      .theme,
+                                              message:
+                                                  'You are about to regenrate and print the barcode of this item, are you sure you want to proceed?',
+                                              actionButtonText:
+                                                  'Generate',
+                                              title:
+                                                  'Regenerate and Print Barcode?',
+                                              action: () async {
+                                                Navigator.of(
+                                                  firstContext,
+                                                ).pop();
+                                                setState(() {
+                                                  isLoading =
+                                                      true;
+                                                });
+                                                generateBarcodeAndPrint(
+                                                  context,
+                                                  [product],
+                                                  false,
+                                                ).then((_) {
+                                                  setState(() {
+                                                    isLoading =
+                                                        false;
+                                                  });
+                                                });
 
-                                            print(
-                                              'Generate Clicked',
+                                                print(
+                                                  'Generate Clicked',
+                                                );
+                                              },
                                             );
                                           },
                                         );
@@ -1571,9 +1589,16 @@ class _ProductDetailsMobileState
                                       product.barcode ==
                                               null
                                           ? () {
-                                            generateBarcodeAndPrint(
-                                              context,
-                                              product,
+                                            ItemsAuthAction().generateBarcodeAction(
+                                              context:
+                                                  context,
+                                              action: () {
+                                                generateBarcodeAndPrint(
+                                                  context,
+                                                  [product],
+                                                  false,
+                                                );
+                                              },
                                             );
                                           }
                                           : null,

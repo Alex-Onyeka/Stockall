@@ -13,52 +13,56 @@ class DesktopCenterContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(backGroundImage),
-            fit: BoxFit.cover,
+      body: Center(
+        child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(backGroundImage),
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-        child: Stack(
-          children: [
-            Container(
-              color: const Color.fromARGB(
-                201,
-                255,
-                255,
-                255,
-              ),
-            ),
-            Center(
-              child: Container(
-                margin: EdgeInsets.symmetric(vertical: 40),
-                width: width ?? 550,
-                padding: EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 20,
+          child: Stack(
+            children: [
+              Container(
+                color: const Color.fromARGB(
+                  201,
+                  255,
+                  255,
+                  255,
                 ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color.fromARGB(
-                        46,
-                        0,
-                        0,
-                        0,
+              ),
+              Center(
+                child: Container(
+                  margin: EdgeInsets.symmetric(
+                    vertical: 40,
+                  ),
+                  width: width ?? 550,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 20,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color.fromARGB(
+                          46,
+                          0,
+                          0,
+                          0,
+                        ),
+                        blurRadius: 10,
+                        spreadRadius: 5,
+                        offset: Offset(0, 0),
                       ),
-                      blurRadius: 10,
-                      spreadRadius: 5,
-                      offset: Offset(0, 0),
-                    ),
-                  ],
+                    ],
+                  ),
+                  child: mainWidget,
                 ),
-                child: mainWidget,
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

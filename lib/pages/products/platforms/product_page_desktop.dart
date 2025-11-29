@@ -16,6 +16,7 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/constants/scan_barcode.dart';
+import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/products/compnents/product_tile_main.dart';
@@ -252,9 +253,36 @@ class _ProductPageDesktopState
                                         searchController,
                                     searchAction: (value) {
                                       setState(() {
-                                        searchResult =
-                                            searchController
-                                                .text;
+                                        if (products
+                                            .where(
+                                              (pr) =>
+                                                  pr.barcode
+                                                      ?.toLowerCase() ==
+                                                  searchController
+                                                      .text
+                                                      .toLowerCase(),
+                                            )
+                                            .isNotEmpty) {
+                                          ItemsAuthAction().useOfBArcodeAction(
+                                            context:
+                                                context,
+                                            action: () {
+                                              searchResult =
+                                                  searchController
+                                                      .text;
+                                            },
+                                            failAction: () {
+                                              setState(() {
+                                                searchController
+                                                    .clear();
+                                              });
+                                            },
+                                          );
+                                        } else {
+                                          searchResult =
+                                              searchController
+                                                  .text;
+                                        }
                                       });
                                     },
                                     hintText:
@@ -262,39 +290,43 @@ class _ProductPageDesktopState
                                     mainTitle:
                                         'Items Summary',
                                     firsRow: true,
-                                    scanAction: () async {
-                                      String? result =
-                                          await scanCode(
-                                            context,
-                                            'Scan Failed',
-                                          );
-                                      setState(() {
-                                        if (result !=
-                                            null) {
-                                          searchController
-                                                  .text =
-                                              result;
-                                        } else {
-                                          return;
-                                        }
-                                      });
-                                      if (!context
-                                          .mounted) {
-                                        return;
-                                      }
-                                      setState(() {
-                                        productsResult =
-                                            products
-                                                .where(
-                                                  (
-                                                    product,
-                                                  ) =>
-                                                      product
-                                                          .barcode ==
-                                                      result,
-                                                )
-                                                .toList();
-                                      });
+                                    scanAction: () {
+                                      ItemsAuthAction().useOfBArcodeAction(
+                                        context: context,
+                                        action: () async {
+                                          String? result =
+                                              await scanCode(
+                                                context,
+                                                'Scan Failed',
+                                              );
+                                          setState(() {
+                                            if (result !=
+                                                null) {
+                                              searchController
+                                                      .text =
+                                                  result;
+                                            } else {
+                                              return;
+                                            }
+                                          });
+                                          if (!context
+                                              .mounted) {
+                                            return;
+                                          }
+                                          setState(() {
+                                            productsResult =
+                                                products
+                                                    .where(
+                                                      (
+                                                        product,
+                                                      ) =>
+                                                          product.barcode ==
+                                                          result,
+                                                    )
+                                                    .toList();
+                                          });
+                                        },
+                                      );
                                     },
                                     color1: Colors.green,
                                     title1: 'In Stock',

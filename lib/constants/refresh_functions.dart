@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/subscription/subscription_class.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/classes/temp_notification/temp_notification.dart';
@@ -14,7 +15,6 @@ import 'package:stockall/providers/notifications_provider.dart';
 import 'package:stockall/providers/receipts_provider.dart';
 import 'package:stockall/providers/shop_provider.dart';
 import 'package:stockall/providers/user_provider.dart';
-import 'package:stockall/services/auth_service.dart';
 
 class RefreshFunctions {
   late final ShopProvider shopProvider;
@@ -134,9 +134,7 @@ class RefreshFunctions {
   //
 
   Future<List<TempShopClass>> getUserShop() async {
-    return await shopProvider.getUserShops(
-      AuthService().currentUser!,
-    );
+    return await shopProvider.getUserShops();
   }
 
   Future<void> refreshUserShop(context) async {
@@ -374,9 +372,7 @@ class RefreshFunctions {
   //
 
   Future<List<TempUserClass>> getEmployees() async {
-    await shopProvider.getUserShops(
-      AuthService().currentUser!,
-    );
+    await shopProvider.getUserShops();
     var users = await userProvider.fetchUsersByShop(
       context,
     );
@@ -477,23 +473,18 @@ class RefreshFunctions {
   //
   //
 
-  // Future<void> loadSuggestions() async {
-  //   await returnSuggestionProvider(
-  //     context,
-  //     listen: false,
-  //   ).loadSuggestions(
-  //     returnShopProvider(
-  //       context,
-  //       listen: false,
-  //     ). userShop()!.shopId!,
-  //   );
-  // }
+  Future<SubscriptionClass?> loadSubscription() async {
+    return await returnSubcsription(
+      context,
+      listen: false,
+    ).getSubscription(context);
+  }
 
   //
   //
   //
 
-  Future<void> refreshSuggestions(context) async {
+  Future<void> refreshSubscription(context) async {
     var safeContext = context;
     bool isOnline = await checkOnline();
     if (isOnline && isSynced() == 0) {
@@ -511,13 +502,13 @@ class RefreshFunctions {
                 context,
                 listen: false,
               ).syncData(safeContext);
-              // await loadSuggestions();
+              await loadSubscription();
             },
           );
         },
       );
     } else {
-      // await loadSuggestions();
+      await loadSubscription();
     }
   }
 
@@ -528,6 +519,7 @@ class RefreshFunctions {
   Future<void> refreshAll(BuildContext context) async {
     var safeContext = context;
     var navPro = returnNavProvider(context, listen: false);
+    dataProvider.toggleRefreshing(true);
 
     List<TempShopClass> shop = await getUserShop();
     if (shop.isEmpty) {
@@ -557,19 +549,32 @@ class RefreshFunctions {
                   context,
                   listen: false,
                 ).syncData(safeContext);
+                await returnUserProvider(
+                  // ignore: use_build_context_synchronously
+                  context,
+                  listen: false,
+                  // ignore: use_build_context_synchronously
+                ).fetchCurrentUser(safeContext);
 
                 // await getProductSalesRecord();
+                var subs = await loadSubscription();
+                print(
+                  "Subscription PLan RefreshAll: ${subs?.plan}",
+                );
+                dataProvider.setAllowedRange(
+                  plan: subs?.plan,
+                  // ignore: use_build_context_synchronously
+                  context: safeContext,
+                );
+                print(
+                  "Allowed Items RefreshAll: ${dataProvider.allowedRangeItems}",
+                );
                 await getMainReceipts(safeContext);
                 await getExpenses();
                 await getEmployees();
-                await returnUserProvider(
-                  context,
-                  listen: false,
-                ).fetchCurrentUser(safeContext);
                 // await getProducts();
                 await fetchNotifications();
                 await getCustomers();
-                // await loadSuggestions();
               },
             );
           },
@@ -577,6 +582,20 @@ class RefreshFunctions {
       } else {
         await getUserShop();
         // await getProductSalesRecord();
+        // ignore: use_build_context_synchronously
+        var subs = await loadSubscription();
+        print(
+          "Subscription PLan RefreshAll: ${subs?.plan}",
+        );
+        dataProvider.setAllowedRange(
+          plan: subs?.plan,
+          // ignore: use_build_context_synchronously
+          context: safeContext,
+        );
+        print(
+          "Allowed Items RefreshAll: ${dataProvider.allowedRangeItems}",
+        );
+        // ignore: use_build_context_synchronously
         await getMainReceipts(safeContext);
         // await getProductSalesRecord();
         await getExpenses();
@@ -588,8 +607,9 @@ class RefreshFunctions {
         // await getProducts();
         await fetchNotifications();
         await getCustomers();
-        // await loadSuggestions();
       }
     }
+
+    dataProvider.toggleRefreshing(false);
   }
 }

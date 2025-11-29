@@ -12,6 +12,7 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
+import 'package:stockall/constants/subscription/expenses_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/expenses/add_expenses/add_expenses.dart';
 import 'package:stockall/pages/expenses/components/expenses_tile.dart';
@@ -205,61 +206,27 @@ class TotalExpensesDesktopState
                           ),
                         ),
                       ),
-                      // AppBar(
-                      //   toolbarHeight: 60,
-                      //   leading: IconButton(
-                      //     onPressed: () {
-                      //       Navigator.of(context).pop();
-                      //     },
-                      //     icon: Padding(
-                      //       padding: const EdgeInsets.only(
-                      //         left: 10.0,
-                      //         right: 5,
-                      //       ),
-                      //       child: Icon(
-                      //         Icons
-                      //             .arrow_back_ios_new_rounded,
-                      //       ),
-                      //     ),
-                      //   ),
-                      //   centerTitle: true,
-                      //   title: Column(
-                      //     crossAxisAlignment:
-                      //         CrossAxisAlignment.center,
-                      //     mainAxisSize: MainAxisSize.min,
-                      //     children: [
-                      //       Text(
-                      //         style: TextStyle(
-                      //           fontSize:
-                      //               theme
-                      //                   .mobileTexts
-                      //                   .b1
-                      //                   .fontSize,
-                      //           fontWeight: FontWeight.bold,
-                      //         ),
-                      //         returnExpensesProvider(
-                      //               context,
-                      //             ).dateSet ??
-                      //             'Todays Expenses',
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
                       floatingActionButton:
                           FloatingActionButtonMain(
                             action: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return AddExpenses();
-                                  },
-                                ),
-                              ).then((_) {
-                                setState(() {
-                                  // expensesFuture = getExpenses();
-                                });
-                              });
+                              ExpensesAuthAction()
+                                  .numberOfDailyExpensesAction(
+                                    context: context,
+                                    action: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return AddExpenses();
+                                          },
+                                        ),
+                                      ).then((_) {
+                                        setState(() {});
+                                      });
+                                    },
+                                  );
                             },
                             color:
                                 theme
@@ -456,19 +423,39 @@ class TotalExpensesDesktopState
                                                     'Create Expenses',
                                                 theme:
                                                     theme,
+                                                altAction: () async {
+                                                  await getExpenses();
+                                                  setState(
+                                                    () {},
+                                                  );
+                                                },
+                                                altActionText:
+                                                    'Refresh Expenses',
                                                 svg:
                                                     expensesIconSvg,
                                                 height: 35,
                                                 action: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (
+                                                  ExpensesAuthAction().numberOfDailyExpensesAction(
+                                                    context:
                                                         context,
+                                                    action: () {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (
+                                                            context,
+                                                          ) {
+                                                            return AddExpenses();
+                                                          },
+                                                        ),
+                                                      ).then((
+                                                        _,
                                                       ) {
-                                                        return AddExpenses();
-                                                      },
-                                                    ),
+                                                        setState(
+                                                          () {},
+                                                        );
+                                                      });
+                                                    },
                                                   );
                                                 },
                                               );

@@ -260,7 +260,7 @@ class _EditMobileState extends State<EditMobile> {
                               );
                           showDialog(
                             context: safeContex,
-                            builder: (context) {
+                            builder: (confirmContext) {
                               return ConfirmationAlert(
                                 theme: theme,
                                 message:
@@ -271,7 +271,7 @@ class _EditMobileState extends State<EditMobile> {
                                     isLoading = true;
                                   });
                                   Navigator.of(
-                                    safeContex,
+                                    confirmContext,
                                   ).pop();
 
                                   // TempUserClass
@@ -373,7 +373,7 @@ class _EditMobileState extends State<EditMobile> {
                           );
                           showDialog(
                             context: safeContex,
-                            builder: (context) {
+                            builder: (confirmAlert) {
                               return ConfirmationAlert(
                                 theme: theme,
                                 message:
@@ -384,7 +384,7 @@ class _EditMobileState extends State<EditMobile> {
                                     isLoading = true;
                                   });
                                   Navigator.of(
-                                    safeContex,
+                                    confirmAlert,
                                   ).pop();
 
                                   await userProvider

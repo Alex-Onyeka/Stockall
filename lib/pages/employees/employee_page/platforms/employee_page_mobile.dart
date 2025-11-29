@@ -151,20 +151,14 @@ class _EmployeePageMobileState
                                           isLoading = true;
                                         });
 
-                                        await shopProvider.removeEmployeeFromShop(
-                                          context: context,
-                                          employeeIdToRemove:
-                                              widget
-                                                  .employeeId,
-                                          shopId:
-                                              returnShopProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  )
-                                                  .userShop()!
-                                                  .shopId!,
-                                        );
+                                        await shopProvider
+                                            .removeEmployeeFromShop(
+                                              context:
+                                                  context,
+                                              employeeIdToRemove:
+                                                  widget
+                                                      .employeeId,
+                                            );
                                         setState(() {
                                           isLoading = false;
                                           showSuccess =

@@ -7,6 +7,7 @@ import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_rec
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/local_database/products/products_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
@@ -36,12 +37,17 @@ class SalesProvider extends ChangeNotifier {
     return cartQueue[cartIndex];
   }
 
-  void addNewCart() {
-    cartQueue.add(
-      TempCart(cartItems: [], isInvoice: false),
+  void addNewCart(BuildContext context) {
+    SalesAuthAction().numberOfCartsAction(
+      context: context,
+      action: () {
+        cartQueue.add(
+          TempCart(cartItems: [], isInvoice: false),
+        );
+        cartIndex == cartQueue.length + 1;
+        notifyListeners();
+      },
     );
-    cartIndex == cartQueue.length + 1;
-    notifyListeners();
   }
 
   void deleteCart(int index) {
@@ -57,27 +63,49 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void switchInvoiceSale() {
-    currentCart().isInvoice = !currentCart().isInvoice;
-    // currentCart().
-    notifyListeners();
+  void switchInvoiceSale({
+    required bool value,
+    required BuildContext context,
+  }) {
+    if (value) {
+      SalesAuthAction().invoiceManagementAction(
+        context: context,
+        action: () {
+          currentCart().isInvoice = value;
+          notifyListeners();
+        },
+      );
+    } else {
+      currentCart().isInvoice = value;
+      notifyListeners();
+    }
   }
 
-  bool addToStock = true;
-  void toggleAddToStock(bool value) {
-    addToStock = value;
-    notifyListeners();
+  bool addToStock = false;
+  void toggleAddToStock(bool value, BuildContext context) {
+    if (value) {
+      SalesAuthAction().addItemToStockAfterSaleAction(
+        context: context,
+        action: () {
+          addToStock = value;
+          notifyListeners();
+        },
+      );
+    } else {
+      addToStock = value;
+      notifyListeners();
+    }
   }
 
-  void offInvoice() {
-    currentCart().isInvoice = false;
-    notifyListeners();
-  }
+  // void offInvoice() {
+  //   currentCart().isInvoice = false;
+  //   notifyListeners();
+  // }
 
-  void onInvoice() {
-    currentCart().isInvoice = true;
-    notifyListeners();
-  }
+  // void onInvoice() {
+  //   currentCart().isInvoice = true;
+  //   notifyListeners();
+  // }
 
   List<int> fixedDiscounts = [
     1000,
@@ -153,10 +181,15 @@ class SalesProvider extends ChangeNotifier {
         .toList();
   }
 
-  void toggleSetDiscount(bool value) {
-    currentCart().isSettingDiscountOpen = value;
-    print(currentCart().isSettingDiscountOpen);
-    notifyListeners();
+  void toggleSetDiscount(bool value, BuildContext context) {
+    SalesAuthAction().applyDiscountAction(
+      context: context,
+      action: () {
+        currentCart().isSettingDiscountOpen = value;
+        print(currentCart().isSettingDiscountOpen);
+        notifyListeners();
+      },
+    );
   }
 
   final SupabaseClient supabase = Supabase.instance.client;
@@ -684,9 +717,17 @@ class SalesProvider extends ChangeNotifier {
     },
   ];
 
-  void changeMethod(int index) {
-    currentCart().paymentMethod = index;
-    notifyListeners();
+  void changeMethod({
+    required int index,
+    required BuildContext context,
+  }) {
+    SalesAuthAction().paymentMethodSelectionAction(
+      context: context,
+      action: () {
+        currentCart().paymentMethod = index;
+        notifyListeners();
+      },
+    );
   }
 
   String returnPaymentMethod() {
@@ -827,68 +868,74 @@ class SalesProvider extends ChangeNotifier {
     required TempMainReceipt receipt,
     required BuildContext context,
   }) async {
-    // Get all sale records for this receipt
-    final saleRecords =
-        returnReceiptProvider(context, listen: false)
-            .produtRecordSalesMain
-            .where((r) => r.receiptUuid == receipt.uuid)
-            .toList();
-
-    // Convert them back to cart items
-    final cartItems = convertReceiptToCartItems(
-      receipt: receipt,
-      saleRecords: saleRecords,
+    SalesAuthAction().editReceiptAction(
       context: context,
-    );
+      action: () {
+        // Get all sale records for this receipt
+        final saleRecords =
+            returnReceiptProvider(context, listen: false)
+                .produtRecordSalesMain
+                .where((r) => r.receiptUuid == receipt.uuid)
+                .toList();
 
-    // Set these as the current cart items in your provider/controller
-    if (cartQueue
-        .where(
-          (cart) =>
-              cart.receiptUuidEdit != null &&
-              cart.receiptUuidEdit == receipt.uuid,
-        )
-        .isEmpty) {
-      cartQueue.add(
-        TempCart(
-          fixedDiscount: receipt.fixedDiscount,
-          createdDate: receipt.createdAt,
-          cartItems: cartItems,
-          isInvoice: receipt.isInvoice,
-          discount: receipt.generalDiscount,
-          receiptUuidEdit: receipt.uuid,
-          paymentMethod:
-              receipt.paymentMethod == 'Cash'
-                  ? 0
-                  : receipt.paymentMethod == 'Bank'
-                  ? 1
-                  : 2,
-          selectedCustomer: receipt.customerUuid,
-          selectedCustomerName: receipt.customerName,
-          isReceiptEdit: true,
-        ),
-      );
-      selectCart(cartQueue.indexOf(cartQueue.last));
-      notifyListeners();
-    } else {
-      selectCart(
-        cartQueue.indexOf(
-          cartQueue
-              .where(
-                (cart) =>
-                    cart.receiptUuidEdit == receipt.uuid,
-              )
-              .first,
-        ),
-      );
-    }
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) {
-          return MakeSalesPage(isMain: true);
-        },
-      ),
+        // Convert them back to cart items
+        final cartItems = convertReceiptToCartItems(
+          receipt: receipt,
+          saleRecords: saleRecords,
+          context: context,
+        );
+
+        // Set these as the current cart items in your provider/controller
+        if (cartQueue
+            .where(
+              (cart) =>
+                  cart.receiptUuidEdit != null &&
+                  cart.receiptUuidEdit == receipt.uuid,
+            )
+            .isEmpty) {
+          cartQueue.add(
+            TempCart(
+              fixedDiscount: receipt.fixedDiscount,
+              createdDate: receipt.createdAt,
+              cartItems: cartItems,
+              isInvoice: receipt.isInvoice,
+              discount: receipt.generalDiscount,
+              receiptUuidEdit: receipt.uuid,
+              paymentMethod:
+                  receipt.paymentMethod == 'Cash'
+                      ? 0
+                      : receipt.paymentMethod == 'Bank'
+                      ? 1
+                      : 2,
+              selectedCustomer: receipt.customerUuid,
+              selectedCustomerName: receipt.customerName,
+              isReceiptEdit: true,
+            ),
+          );
+          selectCart(cartQueue.indexOf(cartQueue.last));
+          notifyListeners();
+        } else {
+          selectCart(
+            cartQueue.indexOf(
+              cartQueue
+                  .where(
+                    (cart) =>
+                        cart.receiptUuidEdit ==
+                        receipt.uuid,
+                  )
+                  .first,
+            ),
+          );
+        }
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return MakeSalesPage(isMain: true);
+            },
+          ),
+        );
+      },
     );
   }
 
@@ -909,7 +956,7 @@ class SalesProvider extends ChangeNotifier {
               //       listen: false,
               //     ).currentCart().receiptUuidEdit;
               if (cartQueue.length == 1) {
-                addNewCart();
+                addNewCart(context);
               }
 
               deleteCart(cartIndex);

@@ -582,16 +582,16 @@ class _MyDrawerWidgetDesktopMainState
                                                 children: [
                                                   InkWell(
                                                     onTap: () {
-                                                      Navigator.of(
-                                                        context,
-                                                      ).pop();
                                                       Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
                                                           builder: (
                                                             context,
                                                           ) {
-                                                            return NotificationsPage();
+                                                            return NotificationsPage(
+                                                              turnOn:
+                                                                  false,
+                                                            );
                                                           },
                                                         ),
                                                       );
@@ -916,7 +916,7 @@ class NavListTileDesktopAlt extends StatelessWidget {
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return Padding(
-      padding: const EdgeInsets.only(top: 5.0, bottom: 5),
+      padding: const EdgeInsets.only(top: 2, bottom: 2),
       child: InkWell(
         onTap: () {
           action!();
@@ -927,10 +927,11 @@ class NavListTileDesktopAlt extends StatelessWidget {
                       itemIndex
                   ? const Color.fromARGB(36, 255, 153, 0)
                   : Colors.transparent,
-          height: 38,
+          height: 44,
           child: Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 10.0,
+              // vertical: 13,
             ),
             child: Row(
               mainAxisAlignment:

@@ -13,6 +13,8 @@ import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/subscription/sales_auth.dart';
+import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/customers_list/customer_list.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
@@ -150,82 +152,97 @@ class _MakeSalesDesktopTwoState
                                                     .currentCart()
                                                     .selectedCustomer ==
                                                 null) {
-                                              return Material(
-                                                color:
-                                                    Colors
-                                                        .transparent,
-                                                child: Ink(
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          5,
-                                                        ),
-                                                    border: Border.all(
-                                                      color:
-                                                          Colors.grey.shade400,
-                                                      width:
-                                                          1,
+                                              return SubWrapper(
+                                                isVisible:
+                                                    !SalesAuthAction().addCustomItemToCartAction(
+                                                      context:
+                                                          context,
                                                     ),
-                                                  ),
-                                                  child: InkWell(
-                                                    onTap: () {
-                                                      Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                          builder: (
-                                                            context,
-                                                          ) {
-                                                            return CustomerList(
-                                                              isSales:
-                                                                  true,
+                                                mainWidget: Material(
+                                                  color:
+                                                      Colors
+                                                          .transparent,
+                                                  child: Ink(
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            5,
+                                                          ),
+                                                      border: Border.all(
+                                                        color:
+                                                            Colors.grey.shade400,
+                                                        width:
+                                                            1,
+                                                      ),
+                                                    ),
+                                                    child: InkWell(
+                                                      onTap: () {
+                                                        SalesAuthAction().addCustomItemToCartAction(
+                                                          context:
+                                                              context,
+                                                          action: () {
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder: (
+                                                                  context,
+                                                                ) {
+                                                                  return CustomerList(
+                                                                    isSales:
+                                                                        true,
+                                                                  );
+                                                                },
+                                                              ),
+                                                            ).then(
+                                                              (
+                                                                _,
+                                                              ) {
+                                                                setState(
+                                                                  () {},
+                                                                );
+                                                              },
                                                             );
                                                           },
-                                                        ),
-                                                      ).then((
-                                                        _,
-                                                      ) {
-                                                        setState(
-                                                          () {},
                                                         );
-                                                      });
-                                                    },
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          5,
+                                                      },
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            5,
+                                                          ),
+                                                      child: Container(
+                                                        padding: EdgeInsets.only(
+                                                          left:
+                                                              20,
+                                                          right:
+                                                              15,
+                                                          bottom:
+                                                              12,
+                                                          top:
+                                                              12,
                                                         ),
-                                                    child: Container(
-                                                      padding: EdgeInsets.only(
-                                                        left:
-                                                            20,
-                                                        right:
-                                                            15,
-                                                        bottom:
-                                                            12,
-                                                        top:
-                                                            12,
-                                                      ),
 
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment.spaceBetween,
-                                                        children: [
-                                                          Text(
-                                                            style: TextStyle(
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment.spaceBetween,
+                                                          children: [
+                                                            Text(
+                                                              style: TextStyle(
+                                                                color:
+                                                                    Colors.grey,
+                                                                fontWeight:
+                                                                    FontWeight.bold,
+                                                              ),
+                                                              'Select Customer (Optional)',
+                                                            ),
+                                                            Icon(
                                                               color:
                                                                   Colors.grey,
-                                                              fontWeight:
-                                                                  FontWeight.bold,
+                                                              size:
+                                                                  20,
+                                                              Icons.arrow_forward_ios_rounded,
                                                             ),
-                                                            'Select Customer (Optional)',
-                                                          ),
-                                                          Icon(
-                                                            color:
-                                                                Colors.grey,
-                                                            size:
-                                                                20,
-                                                            Icons.arrow_forward_ios_rounded,
-                                                          ),
-                                                        ],
+                                                          ],
+                                                        ),
                                                       ),
                                                     ),
                                                   ),
@@ -373,17 +390,41 @@ class _MakeSalesDesktopTwoState
                                             ),
                                             InkWell(
                                               onTap: () {
-                                                returnSalesProvider(
+                                                if (returnSalesProvider(
                                                   context,
                                                   listen:
                                                       false,
-                                                ).switchInvoiceSale();
+                                                ).currentCart().isInvoice) {
+                                                  returnSalesProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).switchInvoiceSale(
+                                                    context:
+                                                        context,
+                                                    value:
+                                                        false,
+                                                  );
+                                                } else {
+                                                  returnSalesProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).switchInvoiceSale(
+                                                    context:
+                                                        context,
+                                                    value:
+                                                        true,
+                                                  );
+                                                }
                                                 returnSalesProvider(
                                                   context,
                                                   listen:
                                                       false,
                                                 ).changeMethod(
-                                                  0,
+                                                  context:
+                                                      context,
+                                                  index: 0,
                                                 );
                                               },
                                               child: Container(
@@ -706,53 +747,63 @@ class _MakeSalesDesktopTwoState
                                     ),
                                     SizedBox(width: 10),
                                     Visibility(
-                                      visible:
-                                          returnSalesProvider(
-                                                context,
-                                              )
-                                              .cartQueue
-                                              .length <=
-                                          4,
-                                      child: Material(
-                                        color:
-                                            Colors
-                                                .transparent,
-                                        child: Ink(
-                                          decoration: BoxDecoration(
-                                            color:
-                                                theme
-                                                    .lightModeColor
-                                                    .prColor300,
-                                            borderRadius:
-                                                BorderRadius.circular(
-                                                  5,
+                                      // visible:
+                                      //     returnSalesProvider(
+                                      //           context,
+                                      //         )
+                                      //         .cartQueue
+                                      //         .length <=
+                                      //     4,
+                                      child: SubWrapper(
+                                        isVisible:
+                                            !SalesAuthAction()
+                                                .numberOfCartsAction(
+                                                  context:
+                                                      context,
                                                 ),
-                                          ),
-                                          child: InkWell(
-                                            onTap: () {
-                                              returnSalesProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).addNewCart();
-                                            },
-                                            child: Container(
-                                              padding:
-                                                  EdgeInsets.all(
-                                                    4,
+                                        mainWidget: Material(
+                                          color:
+                                              Colors
+                                                  .transparent,
+                                          child: Ink(
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  theme
+                                                      .lightModeColor
+                                                      .prColor300,
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    5,
                                                   ),
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                      5,
+                                            ),
+                                            child: InkWell(
+                                              onTap: () {
+                                                returnSalesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).addNewCart(
+                                                  context,
+                                                );
+                                              },
+                                              child: Container(
+                                                padding:
+                                                    EdgeInsets.all(
+                                                      4,
                                                     ),
-                                              ),
-                                              child: Icon(
-                                                color:
-                                                    Colors
-                                                        .white,
-                                                size: 15,
-                                                Icons.add,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                        5,
+                                                      ),
+                                                ),
+                                                child: Icon(
+                                                  color:
+                                                      Colors
+                                                          .white,
+                                                  size: 15,
+                                                  Icons.add,
+                                                ),
                                               ),
                                             ),
                                           ),

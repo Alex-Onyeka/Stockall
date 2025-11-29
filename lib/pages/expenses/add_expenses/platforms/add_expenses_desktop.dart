@@ -10,6 +10,7 @@ import 'package:stockall/components/text_fields/number_textfield.dart';
 import 'package:stockall/constants/bottom_sheet_widgets.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/subscription/expenses_auth.dart';
 import 'package:stockall/main.dart';
 
 class AddExpensesDesktop extends StatefulWidget {
@@ -103,43 +104,54 @@ class _AddExpensesDesktopState
               });
 
               if (widget.expenses == null) {
-                await expensesProvider.addExpense(
-                  TempExpensesClass(
-                    creator:
-                        returnUserProvider(
-                          context,
-                          listen: false,
-                        ).currentUserMain!.name,
-                    // localProvider.currentEmployee!.name,
-                    userId:
-                        returnUserProvider(
-                          context,
-                          listen: false,
-                        ).currentUserMain!.userId!,
-                    // localProvider
-                    //     .currentEmployee!
-                    //     .userId!,
-                    name: widget.nameController.text.trim(),
-                    unit:
-                        returnData(
-                          context,
-                          listen: false,
-                        ).selectedUnit,
+                ExpensesAuthAction()
+                    .numberOfDailyExpensesAction(
+                      context: context,
+                      action: () async {
+                        await expensesProvider.addExpense(
+                          TempExpensesClass(
+                            creator:
+                                returnUserProvider(
+                                  context,
+                                  listen: false,
+                                ).currentUserMain!.name,
+                            // localProvider.currentEmployee!.name,
+                            userId:
+                                returnUserProvider(
+                                  context,
+                                  listen: false,
+                                ).currentUserMain!.userId!,
+                            // localProvider
+                            //     .currentEmployee!
+                            //     .userId!,
+                            name:
+                                widget.nameController.text
+                                    .trim(),
+                            unit:
+                                returnData(
+                                  context,
+                                  listen: false,
+                                ).selectedUnit,
 
-                    quantity: double.tryParse(
-                      widget.quantityController.text,
-                    ),
-                    amount: double.parse(
-                      widget.amountController.text
-                          .replaceAll(',', ''),
-                    ),
-                    shopId: shopId,
-                    description: widget.descController.text,
-                    uuid: uuidGen(),
-                    createdDate: DateTime.now(),
-                  ),
-                  safeContext,
-                );
+                            quantity: double.tryParse(
+                              widget
+                                  .quantityController
+                                  .text,
+                            ),
+                            amount: double.parse(
+                              widget.amountController.text
+                                  .replaceAll(',', ''),
+                            ),
+                            shopId: shopId,
+                            description:
+                                widget.descController.text,
+                            uuid: uuidGen(),
+                            createdDate: DateTime.now(),
+                          ),
+                          safeContext,
+                        );
+                      },
+                    );
               } else {
                 await expensesProvider.updateExpense(
                   TempExpensesClass(

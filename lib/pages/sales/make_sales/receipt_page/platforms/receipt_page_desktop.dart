@@ -9,6 +9,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/top_banner_two.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -1454,10 +1455,17 @@ class _ReceiptDetailsContainerState
                         ) ||
                         widget.mainReceipt.isInvoice,
                     child: BottomActionButton(
+                      textColor:
+                          widget.mainReceipt.isInvoice
+                              ? widget
+                                  .theme
+                                  .lightModeColor
+                                  .secColor100
+                              : Colors.red,
                       text:
                           widget.mainReceipt.isInvoice
                               ? 'Pay'
-                              : null,
+                              : 'Delete',
                       color:
                           widget.mainReceipt.isInvoice
                               ? widget
@@ -1613,6 +1621,7 @@ class _ReceiptDetailsContainerState
                       iconSize: 20,
                       theme: widget.theme,
                       icon: Icons.edit,
+                      text: 'Edit',
                       action: () {
                         returnSalesProvider(
                           context,
@@ -1626,67 +1635,78 @@ class _ReceiptDetailsContainerState
                   ),
                   BottomActionButton(
                     action: () {
-                      var safeContext = context;
-
-                      showDialog(
+                      SalesAuthAction().downloadReceiptAction(
                         context: context,
-                        builder: (context) {
-                          return ConfirmationAlert(
-                            theme: widget.theme,
-                            message:
-                                'You are about to download This Receipt. Are you sure you want to Proceed?',
-                            title: 'Download Receipt',
-                            action: () async {
-                              returnReceiptProvider(
-                                context,
-                                listen: false,
-                              ).toggleIsLoading(true);
-                              Navigator.of(context).pop();
-                              if (kIsWeb) {
-                                downloadPdfWeb(
-                                  staffName:
-                                      staff?.name ??
-                                      widget
-                                          .mainReceipt
-                                          .staffName,
-                                  filename:
-                                      'Stockall_${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'}_${DateTime.now().millisecondsSinceEpoch}.pdf',
-                                  context: safeContext,
-                                  receipt:
-                                      widget.mainReceipt,
-                                  records: records,
-                                  shop:
-                                      returnShopProvider(
-                                        safeContext,
-                                        listen: false,
-                                      ).userShop()!,
-                                );
-                              }
-                              if (!kIsWeb) {
-                                await generateAndPreviewPdf(
-                                  staffName:
-                                      staff?.name ??
-                                      widget
-                                          .mainReceipt
-                                          .staffName,
-                                  context: safeContext,
-                                  receipt:
-                                      widget.mainReceipt,
-                                  records: records,
+                        action: () async {
+                          var safeContext = context;
 
-                                  shop:
-                                      returnShopProvider(
-                                        safeContext,
-                                        listen: false,
-                                      ).userShop()!,
-                                );
-                              }
-                              if (safeContext.mounted) {
-                                returnReceiptProvider(
-                                  safeContext,
-                                  listen: false,
-                                ).toggleIsLoading(false);
-                              }
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return ConfirmationAlert(
+                                theme: widget.theme,
+                                message:
+                                    'You are about to download This Receipt. Are you sure you want to Proceed?',
+                                title: 'Download Receipt',
+                                action: () async {
+                                  returnReceiptProvider(
+                                    context,
+                                    listen: false,
+                                  ).toggleIsLoading(true);
+                                  Navigator.of(
+                                    context,
+                                  ).pop();
+                                  if (kIsWeb) {
+                                    downloadPdfWeb(
+                                      staffName:
+                                          staff?.name ??
+                                          widget
+                                              .mainReceipt
+                                              .staffName,
+                                      filename:
+                                          'Stockall_${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'}_${DateTime.now().millisecondsSinceEpoch}.pdf',
+                                      context: safeContext,
+                                      receipt:
+                                          widget
+                                              .mainReceipt,
+                                      records: records,
+                                      shop:
+                                          returnShopProvider(
+                                            safeContext,
+                                            listen: false,
+                                          ).userShop()!,
+                                    );
+                                  }
+                                  if (!kIsWeb) {
+                                    await generateAndPreviewPdf(
+                                      staffName:
+                                          staff?.name ??
+                                          widget
+                                              .mainReceipt
+                                              .staffName,
+                                      context: safeContext,
+                                      receipt:
+                                          widget
+                                              .mainReceipt,
+                                      records: records,
+
+                                      shop:
+                                          returnShopProvider(
+                                            safeContext,
+                                            listen: false,
+                                          ).userShop()!,
+                                    );
+                                  }
+                                  if (safeContext.mounted) {
+                                    returnReceiptProvider(
+                                      safeContext,
+                                      listen: false,
+                                    ).toggleIsLoading(
+                                      false,
+                                    );
+                                  }
+                                },
+                              );
                             },
                           );
                         },
@@ -1696,363 +1716,395 @@ class _ReceiptDetailsContainerState
                     icon: Icons.download_outlined,
                     iconSize: 20,
                     theme: widget.theme,
+                    text: 'Download',
                   ),
                   BottomActionButton(
                     action: () {
-                      var safeContext = context;
-                      if (returnShopProvider(
-                            context,
-                            listen: false,
-                          ).userShop()!.printType ==
-                          null) {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              backgroundColor: Colors.white,
-                              title: Text(
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                ),
-                                'SELECT PRINTER TYPE',
-                              ),
-                              content: Column(
-                                mainAxisSize:
-                                    MainAxisSize.min,
-                                children: [
-                                  Divider(
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade200,
-                                    height: 0,
-                                  ),
-                                  ListTile(
-                                    onTap: () async {
-                                      Navigator.of(
-                                        context,
-                                      ).pop();
-                                      returnReceiptProvider(
-                                        safeContext,
-                                        listen: false,
-                                      ).toggleIsLoading(
-                                        true,
-                                      );
-                                      await returnShopProvider(
-                                        safeContext,
-                                        listen: false,
-                                      ).updatePrintType(
-                                        shopId: shopId(
-                                          safeContext,
-                                        ),
-                                        type: 1,
-                                      );
-
-                                      if (safeContext
-                                          .mounted) {
-                                        returnReceiptProvider(
-                                          safeContext,
-                                          listen: false,
-                                        ).toggleIsLoading(
-                                          false,
-                                        );
-                                      }
-                                    },
-                                    title: Text(
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight:
-                                            FontWeight.bold,
-                                      ),
-                                      kIsWeb
-                                          ? 'Select Paper Size -- 58mm'
-                                          : 'Select Type - USB',
+                      SalesAuthAction().printReceiptAction(
+                        context: context,
+                        action: () async {
+                          var safeContext = context;
+                          if (returnShopProvider(
+                                context,
+                                listen: false,
+                              ).userShop()!.printType ==
+                              null) {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  backgroundColor:
+                                      Colors.white,
+                                  title: Text(
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight:
+                                          FontWeight.bold,
                                     ),
-                                    trailing: Container(
-                                      padding:
-                                          EdgeInsets.all(2),
-                                      decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(
-                                              2,
-                                            ),
-                                        border: Border.all(
-                                          color:
-                                              returnShopProvider(
-                                                        safeContext,
-                                                      ).userShop()!.printType ==
-                                                      1
-                                                  ? Colors
-                                                      .grey
-                                                  : Colors
-                                                      .transparent,
-                                        ),
+                                    'SELECT PRINTER TYPE',
+                                  ),
+                                  content: Column(
+                                    mainAxisSize:
+                                        MainAxisSize.min,
+                                    children: [
+                                      Divider(
                                         color:
-                                            returnShopProvider(
-                                                      safeContext,
-                                                    ).userShop()!.printType ==
-                                                    1
-                                                ? widget
-                                                    .theme
-                                                    .lightModeColor
-                                                    .prColor250
-                                                : Colors
-                                                    .transparent,
+                                            Colors
+                                                .grey
+                                                .shade200,
+                                        height: 0,
                                       ),
-                                      child: Opacity(
-                                        opacity:
-                                            returnShopProvider(
-                                                      safeContext,
-                                                    ).userShop()!.printType ==
-                                                    1
-                                                ? 1
-                                                : 0,
-                                        child: Icon(
-                                          size: 14,
-                                          color:
-                                              Colors.white,
-                                          Icons.check,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Divider(
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade200,
-                                    height: 5,
-                                  ),
-                                  ListTile(
-                                    enabled:
-                                        kIsWeb ||
-                                        platforms(
-                                              context,
-                                            ) ==
-                                            TargetPlatform
-                                                .android ||
-                                        platforms(
-                                              context,
-                                            ) ==
-                                            TargetPlatform
-                                                .iOS,
-                                    onTap: () async {
-                                      Navigator.of(
-                                        context,
-                                      ).pop();
-                                      returnReceiptProvider(
-                                        safeContext,
-                                        listen: false,
-                                      ).toggleIsLoading(
-                                        true,
-                                      );
-                                      await returnShopProvider(
-                                        safeContext,
-                                        listen: false,
-                                      ).updatePrintType(
-                                        shopId: shopId(
-                                          safeContext,
-                                        ),
-                                        type: 2,
-                                      );
-
-                                      if (safeContext
-                                          .mounted) {
-                                        returnReceiptProvider(
-                                          safeContext,
-                                          listen: false,
-                                        ).toggleIsLoading(
-                                          false,
-                                        );
-                                      }
-                                    },
-                                    title: Text(
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight:
-                                            FontWeight.bold,
-                                      ),
-                                      kIsWeb
-                                          ? 'Select Paper Size -- 80mm'
-                                          : 'Select Type - Bluetooth',
-                                    ),
-                                    trailing: Container(
-                                      padding:
-                                          EdgeInsets.all(2),
-                                      decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(
-                                              2,
+                                      ListTile(
+                                        onTap: () async {
+                                          Navigator.of(
+                                            context,
+                                          ).pop();
+                                          returnReceiptProvider(
+                                            safeContext,
+                                            listen: false,
+                                          ).toggleIsLoading(
+                                            true,
+                                          );
+                                          await returnShopProvider(
+                                            safeContext,
+                                            listen: false,
+                                          ).updatePrintType(
+                                            shopId: shopId(
+                                              safeContext,
                                             ),
-                                        border: Border.all(
-                                          color:
-                                              returnShopProvider(
-                                                        safeContext,
-                                                      ).userShop()!.printType ==
-                                                      2
-                                                  ? Colors
-                                                      .grey
-                                                  : Colors
-                                                      .transparent,
-                                        ),
-                                        color:
-                                            returnShopProvider(
-                                                      safeContext,
-                                                    ).userShop()!.printType ==
-                                                    2
-                                                ? widget
-                                                    .theme
-                                                    .lightModeColor
-                                                    .prColor250
-                                                : Colors
-                                                    .transparent,
-                                      ),
-                                      child: Opacity(
-                                        opacity:
-                                            returnShopProvider(
-                                                      safeContext,
-                                                    ).userShop()!.printType ==
-                                                    2
-                                                ? 1
-                                                : 0,
-                                        child: Icon(
-                                          size: 14,
-                                          color:
-                                              Colors.white,
-                                          Icons.check,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        );
-                      } else {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return ConfirmationAlert(
-                              theme: widget.theme,
-                              message:
-                                  'You are about to Print This Receipt. Are you sure you want to Proceed?',
-                              title: 'Print Receipt',
-                              action: () async {
-                                returnReceiptProvider(
-                                  context,
-                                  listen: false,
-                                ).toggleIsLoading(true);
-                                Navigator.of(context).pop();
-                                if (kIsWeb) {
-                                  downloadPdfWebRoll(
-                                    staffName:
-                                        staff?.name ??
-                                        widget
-                                            .mainReceipt
-                                            .staffName,
-                                    filename:
-                                        'Stockall_${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'}_${DateTime.now().millisecondsSinceEpoch}.pdf',
-                                    context: safeContext,
-                                    receipt:
-                                        widget.mainReceipt,
-                                    records: records,
-                                    shop:
-                                        returnShopProvider(
-                                          safeContext,
-                                          listen: false,
-                                        ).userShop()!,
-                                    printType:
-                                        shop(
-                                          context,
-                                        )!.printType!,
-                                  );
-                                }
-                                if (!kIsWeb &&
-                                    (platforms(context) ==
-                                            TargetPlatform
-                                                .android ||
-                                        platforms(
-                                              context,
-                                            ) ==
-                                            TargetPlatform
-                                                .iOS)) {
-                                  if (returnShopProvider(
-                                            context,
-                                            listen: false,
-                                          )
-                                          .userShop()!
-                                          .printType! ==
-                                      1) {
-                                    await connectToUsbDevice(
-                                      receipt:
-                                          widget
-                                              .mainReceipt,
-                                      context: safeContext,
-                                      records: records,
-                                      shop:
-                                          returnShopProvider(
-                                            context,
-                                            listen: false,
-                                          ).userShop()!,
-                                    );
-                                  } else {
-                                    scanBluetoothPrinters(
-                                      receipt:
-                                          widget
-                                              .mainReceipt,
-                                      context: safeContext,
-                                      records: records,
-                                      shop:
-                                          returnShopProvider(
-                                            context,
-                                            listen: false,
-                                          ).userShop()!,
-                                    );
-                                  }
-                                } else {
-                                  await generateAndPreviewPdfRoll(
-                                    printerType:
-                                        widget
-                                            .shop
-                                            .printType ??
-                                        1,
-                                    staffName:
-                                        staff?.name ??
-                                        widget
-                                            .mainReceipt
-                                            .staffName,
-                                    context: safeContext,
-                                    receipt:
-                                        widget.mainReceipt,
-                                    records: records,
+                                            type: 1,
+                                          );
 
-                                    shop:
-                                        returnShopProvider(
-                                          safeContext,
-                                          listen: false,
-                                        ).userShop()!,
-                                  );
-                                }
-                                if (safeContext.mounted &&
-                                    kIsWeb) {
-                                  returnReceiptProvider(
-                                    safeContext,
-                                    listen: false,
-                                  ).toggleIsLoading(false);
-                                }
+                                          if (safeContext
+                                              .mounted) {
+                                            returnReceiptProvider(
+                                              safeContext,
+                                              listen: false,
+                                            ).toggleIsLoading(
+                                              false,
+                                            );
+                                          }
+                                        },
+                                        title: Text(
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          kIsWeb
+                                              ? 'Select Paper Size -- 58mm'
+                                              : 'Select Type - USB',
+                                        ),
+                                        trailing: Container(
+                                          padding:
+                                              EdgeInsets.all(
+                                                2,
+                                              ),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(
+                                                  2,
+                                                ),
+                                            border: Border.all(
+                                              color:
+                                                  returnShopProvider(
+                                                            safeContext,
+                                                          ).userShop()!.printType ==
+                                                          1
+                                                      ? Colors
+                                                          .grey
+                                                      : Colors
+                                                          .transparent,
+                                            ),
+                                            color:
+                                                returnShopProvider(
+                                                          safeContext,
+                                                        ).userShop()!.printType ==
+                                                        1
+                                                    ? widget
+                                                        .theme
+                                                        .lightModeColor
+                                                        .prColor250
+                                                    : Colors
+                                                        .transparent,
+                                          ),
+                                          child: Opacity(
+                                            opacity:
+                                                returnShopProvider(
+                                                          safeContext,
+                                                        ).userShop()!.printType ==
+                                                        1
+                                                    ? 1
+                                                    : 0,
+                                            child: Icon(
+                                              size: 14,
+                                              color:
+                                                  Colors
+                                                      .white,
+                                              Icons.check,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Divider(
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade200,
+                                        height: 5,
+                                      ),
+                                      ListTile(
+                                        enabled:
+                                            kIsWeb ||
+                                            platforms(
+                                                  context,
+                                                ) ==
+                                                TargetPlatform
+                                                    .android ||
+                                            platforms(
+                                                  context,
+                                                ) ==
+                                                TargetPlatform
+                                                    .iOS,
+                                        onTap: () async {
+                                          Navigator.of(
+                                            context,
+                                          ).pop();
+                                          returnReceiptProvider(
+                                            safeContext,
+                                            listen: false,
+                                          ).toggleIsLoading(
+                                            true,
+                                          );
+                                          await returnShopProvider(
+                                            safeContext,
+                                            listen: false,
+                                          ).updatePrintType(
+                                            shopId: shopId(
+                                              safeContext,
+                                            ),
+                                            type: 2,
+                                          );
+
+                                          if (safeContext
+                                              .mounted) {
+                                            returnReceiptProvider(
+                                              safeContext,
+                                              listen: false,
+                                            ).toggleIsLoading(
+                                              false,
+                                            );
+                                          }
+                                        },
+                                        title: Text(
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          kIsWeb
+                                              ? 'Select Paper Size -- 80mm'
+                                              : 'Select Type - Bluetooth',
+                                        ),
+                                        trailing: Container(
+                                          padding:
+                                              EdgeInsets.all(
+                                                2,
+                                              ),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(
+                                                  2,
+                                                ),
+                                            border: Border.all(
+                                              color:
+                                                  returnShopProvider(
+                                                            safeContext,
+                                                          ).userShop()!.printType ==
+                                                          2
+                                                      ? Colors
+                                                          .grey
+                                                      : Colors
+                                                          .transparent,
+                                            ),
+                                            color:
+                                                returnShopProvider(
+                                                          safeContext,
+                                                        ).userShop()!.printType ==
+                                                        2
+                                                    ? widget
+                                                        .theme
+                                                        .lightModeColor
+                                                        .prColor250
+                                                    : Colors
+                                                        .transparent,
+                                          ),
+                                          child: Opacity(
+                                            opacity:
+                                                returnShopProvider(
+                                                          safeContext,
+                                                        ).userShop()!.printType ==
+                                                        2
+                                                    ? 1
+                                                    : 0,
+                                            child: Icon(
+                                              size: 14,
+                                              color:
+                                                  Colors
+                                                      .white,
+                                              Icons.check,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
                               },
                             );
-                          },
-                        );
-                      }
+                          } else {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return ConfirmationAlert(
+                                  theme: widget.theme,
+                                  message:
+                                      'You are about to Print This Receipt. Are you sure you want to Proceed?',
+                                  title: 'Print Receipt',
+                                  action: () async {
+                                    returnReceiptProvider(
+                                      context,
+                                      listen: false,
+                                    ).toggleIsLoading(true);
+                                    Navigator.of(
+                                      context,
+                                    ).pop();
+                                    if (kIsWeb) {
+                                      downloadPdfWebRoll(
+                                        staffName:
+                                            staff?.name ??
+                                            widget
+                                                .mainReceipt
+                                                .staffName,
+                                        filename:
+                                            'Stockall_${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'}_${DateTime.now().millisecondsSinceEpoch}.pdf',
+                                        context:
+                                            safeContext,
+                                        receipt:
+                                            widget
+                                                .mainReceipt,
+                                        records: records,
+                                        shop:
+                                            returnShopProvider(
+                                              safeContext,
+                                              listen: false,
+                                            ).userShop()!,
+                                        printType:
+                                            shop(
+                                              context,
+                                            )!.printType!,
+                                      );
+                                    }
+                                    if (!kIsWeb &&
+                                        (platforms(
+                                                  context,
+                                                ) ==
+                                                TargetPlatform
+                                                    .android ||
+                                            platforms(
+                                                  context,
+                                                ) ==
+                                                TargetPlatform
+                                                    .iOS)) {
+                                      if (returnShopProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              )
+                                              .userShop()!
+                                              .printType! ==
+                                          1) {
+                                        await connectToUsbDevice(
+                                          receipt:
+                                              widget
+                                                  .mainReceipt,
+                                          context:
+                                              safeContext,
+                                          records: records,
+                                          shop:
+                                              returnShopProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).userShop()!,
+                                        );
+                                      } else {
+                                        scanBluetoothPrinters(
+                                          receipt:
+                                              widget
+                                                  .mainReceipt,
+                                          context:
+                                              safeContext,
+                                          records: records,
+                                          shop:
+                                              returnShopProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).userShop()!,
+                                        );
+                                      }
+                                    } else {
+                                      await generateAndPreviewPdfRoll(
+                                        printerType:
+                                            widget
+                                                .shop
+                                                .printType ??
+                                            1,
+                                        staffName:
+                                            staff?.name ??
+                                            widget
+                                                .mainReceipt
+                                                .staffName,
+                                        context:
+                                            safeContext,
+                                        receipt:
+                                            widget
+                                                .mainReceipt,
+                                        records: records,
+
+                                        shop:
+                                            returnShopProvider(
+                                              safeContext,
+                                              listen: false,
+                                            ).userShop()!,
+                                      );
+                                    }
+                                    if (safeContext
+                                            .mounted &&
+                                        kIsWeb) {
+                                      returnReceiptProvider(
+                                        safeContext,
+                                        listen: false,
+                                      ).toggleIsLoading(
+                                        false,
+                                      );
+                                    }
+                                  },
+                                );
+                              },
+                            );
+                          }
+                        },
+                      );
                     },
                     color: Colors.grey,
                     icon: Icons.print,
                     iconSize: 20,
                     theme: widget.theme,
+                    text: 'Print',
                   ),
                 ],
               ),
@@ -2108,6 +2160,7 @@ class BottomActionButton extends StatelessWidget {
   final double iconSize;
   final ThemeProvider theme;
   final String? svg;
+  final Color? textColor;
 
   const BottomActionButton({
     super.key,
@@ -2118,6 +2171,7 @@ class BottomActionButton extends StatelessWidget {
     required this.iconSize,
     required this.theme,
     this.svg,
+    this.textColor,
   });
 
   @override
@@ -2150,10 +2204,7 @@ class BottomActionButton extends StatelessWidget {
                     child: Text(
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color:
-                            theme
-                                .lightModeColor
-                                .secColor100,
+                        color: textColor ?? Colors.grey,
                         fontSize:
                             theme.mobileTexts.b3.fontSize,
                       ),

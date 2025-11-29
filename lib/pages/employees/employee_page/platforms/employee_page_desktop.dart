@@ -158,20 +158,14 @@ class _EmployeePageDesktopState
                                           isLoading = true;
                                         });
 
-                                        await shopProvider.removeEmployeeFromShop(
-                                          context: context,
-                                          employeeIdToRemove:
-                                              widget
-                                                  .employeeId,
-                                          shopId:
-                                              returnShopProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  )
-                                                  .userShop()!
-                                                  .shopId!,
-                                        );
+                                        await shopProvider
+                                            .removeEmployeeFromShop(
+                                              context:
+                                                  context,
+                                              employeeIdToRemove:
+                                                  widget
+                                                      .employeeId,
+                                            );
                                         // await userProvider
                                         //     .updateEmployeeRole(
                                         //       authUserId:

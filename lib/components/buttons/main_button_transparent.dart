@@ -7,6 +7,7 @@ class MainButtonTransparent extends StatelessWidget {
   final Function()? action;
   final BoxConstraints constraints;
   final String text;
+  final Color? color;
 
   const MainButtonTransparent({
     super.key,
@@ -14,6 +15,7 @@ class MainButtonTransparent extends StatelessWidget {
     this.action,
     required this.constraints,
     required this.text,
+    this.color,
   });
 
   @override
@@ -25,7 +27,9 @@ class MainButtonTransparent extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(5),
           border: Border.all(
-            color: themeProvider.lightModeColor.prColor200,
+            color:
+                color ??
+                themeProvider.lightModeColor.prColor200,
             width: 1,
           ),
         ),
@@ -45,6 +49,7 @@ class MainButtonTransparent extends StatelessWidget {
               child: Text(
                 style: TextStyle(
                   color:
+                      color ??
                       themeProvider
                           .lightModeColor
                           .prColor300,

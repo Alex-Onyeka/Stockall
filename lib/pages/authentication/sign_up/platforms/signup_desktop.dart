@@ -10,7 +10,7 @@ import 'package:stockall/components/text_fields/phone_number_text_field.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/pages/authentication/components/check_agree.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
-import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart';
+import 'package:stockall/pages/authentication/sign_up/code_sent/code_sent_page.dart';
 import 'package:stockall/providers/comp_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -134,18 +134,6 @@ class _SignupDesktopState extends State<SignupDesktop> {
                   .toLowerCase()
                   .trim(),
           password: widget.passwordController.text,
-          user: TempUserClass(
-            createdAt: DateTime.now(),
-            name: widget.nameController.text.trim(),
-            email:
-                widget.emailController.text
-                    .toLowerCase()
-                    .trim(),
-            phone: widget.phoneNumberController.text.trim(),
-            role: 'Cashier',
-            password: widget.passwordController.text,
-            lastName: widget.lastNameController.text,
-          ),
         );
 
         if (res.user != null) {
@@ -160,7 +148,30 @@ class _SignupDesktopState extends State<SignupDesktop> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => ShopBannerScreen(),
+                builder:
+                    (context) => CodeSentPage(
+                      user: TempUserClass(
+                        userId: res.user!.id,
+                        createdAt: DateTime.now(),
+                        name:
+                            widget.nameController.text
+                                .trim(),
+                        email:
+                            widget.emailController.text
+                                .toLowerCase()
+                                .trim(),
+                        phone:
+                            widget
+                                .phoneNumberController
+                                .text
+                                .trim(),
+                        role: 'Cashier',
+                        password:
+                            widget.passwordController.text,
+                        lastName:
+                            widget.lastNameController.text,
+                      ),
+                    ),
               ),
             );
             setState(() {
@@ -219,8 +230,9 @@ class _SignupDesktopState extends State<SignupDesktop> {
           builder: (context) {
             return InfoAlert(
               theme: widget.theme,
-              message: e.toString(),
-              title: 'Unexpected Error',
+              message:
+                  "User Account Already Exists. Please Login to continue. Thank you.",
+              title: 'Account Already Exists',
             );
           },
         );

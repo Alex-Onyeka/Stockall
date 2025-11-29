@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/subscription/sales_auth.dart';
+import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -24,220 +27,176 @@ class _DiscountSetterWidgetState
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () {
-                  var salesPFalse = returnSalesProvider(
-                    context,
-                    listen: false,
-                  );
-                  if (salesPFalse.currentCart().discount ==
-                          null &&
-                      salesPFalse
-                              .currentCart()
-                              .fixedDiscount ==
-                          null) {
-                    if (salesPFalse
-                            .currentCart()
-                            .isSettingDiscountOpen ==
-                        true) {
-                      salesPFalse.toggleSetDiscount(false);
-                    } else {
-                      if (screenWidth(context) <
-                          mobileScreen) {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              insetPadding:
-                                  EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 0,
-                                  ),
-                              contentPadding:
-                                  EdgeInsets.all(15),
-                              backgroundColor: Colors.white,
-                              content: SizedBox(
-                                width:
-                                    BoxConstraints()
-                                                .maxWidth <
-                                            400
-                                        ? 350
-                                        : 500,
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.only(
-                                        bottom: 20.0,
+    return SubWrapper(
+      isVisible:
+          !SalesAuthAction().applyDiscountAction(
+            context: context,
+          ),
+      mainWidget: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    setDiscountAction(
+                      context,
+                      widget.discountPercentController,
+                    );
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 10,
+                    ),
+                    child: Row(
+                      spacing: 5,
+                      children: [
+                        Text(
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          returnSalesProvider(context)
+                                          .currentCart()
+                                          .discount !=
+                                      null ||
+                                  returnSalesProvider(
+                                            context,
+                                          )
+                                          .currentCart()
+                                          .fixedDiscount !=
+                                      null
+                              ? 'Cancel'
+                              : 'Add Discount:',
+                        ),
+                        Visibility(
+                          visible:
+                              returnSalesProvider(context)
+                                      .currentCart()
+                                      .discount !=
+                                  null ||
+                              returnSalesProvider(context)
+                                      .currentCart()
+                                      .fixedDiscount !=
+                                  null,
+                          child: Container(
+                            padding: EdgeInsets.fromLTRB(
+                              7,
+                              3,
+                              4,
+                              3,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.circular(2),
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color:
+                                      const Color.fromARGB(
+                                        17,
+                                        0,
+                                        0,
+                                        0,
                                       ),
-                                  child: DiscountSetterBody(
-                                    discountPercentController:
-                                        widget
-                                            .discountPercentController,
-                                  ),
+                                  blurRadius: 5,
+                                  spreadRadius: 2,
                                 ),
-                              ),
-                            );
-                          },
-                        ).then((_) {
-                          setState(() {
-                            widget.discountPercentController
-                                .clear();
-                          });
-                        });
-                      } else {
-                        salesPFalse.toggleSetDiscount(true);
-                      }
-                    }
-                  } else {
-                    salesPFalse.addGeneralDiscount(null);
-                    // salesPFalse.addGeneralFixedDiscount(
-                    //   null,
-                    // );
-                  }
-                },
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    vertical: 8,
-                    horizontal: 10,
-                  ),
-                  child: Row(
-                    spacing: 5,
-                    children: [
-                      Text(
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b3.fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        returnSalesProvider(context)
-                                        .currentCart()
-                                        .discount !=
-                                    null ||
-                                returnSalesProvider(context)
-                                        .currentCart()
-                                        .fixedDiscount !=
-                                    null
-                            ? 'Cancel'
-                            : 'Add Discount:',
-                      ),
-                      Visibility(
-                        visible:
-                            returnSalesProvider(
-                                  context,
-                                ).currentCart().discount !=
-                                null ||
-                            returnSalesProvider(context)
-                                    .currentCart()
-                                    .fixedDiscount !=
-                                null,
-                        child: Container(
-                          padding: EdgeInsets.fromLTRB(
-                            7,
-                            3,
-                            4,
-                            3,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.circular(2),
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color.fromARGB(
-                                  17,
-                                  0,
-                                  0,
-                                  0,
-                                ),
-                                blurRadius: 5,
-                                spreadRadius: 2,
-                              ),
-                            ],
-                          ),
-                          child: Text(
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
-                              color:
-                                  theme
-                                      .lightModeColor
-                                      .secColor200,
+                              ],
                             ),
-                            '${returnSalesProvider(context).currentCart().discount?.toStringAsFixed(0) ?? formatCompactMoney(context: context, amount: returnSalesProvider(context).currentCart().fixedDiscount)}${returnSalesProvider(context).currentCart().discount != null ? '%' : ''}',
+                            child: Text(
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b3
+                                        .fontSize,
+                                color:
+                                    theme
+                                        .lightModeColor
+                                        .secColor200,
+                              ),
+                              '${returnSalesProvider(context).currentCart().discount?.toStringAsFixed(0) ?? formatCompactMoney(context: context, amount: returnSalesProvider(context).currentCart().fixedDiscount)}${returnSalesProvider(context).currentCart().discount != null ? '%' : ''}',
+                            ),
                           ),
                         ),
-                      ),
-                      Stack(
-                        children: [
-                          Visibility(
-                            visible:
-                                returnSalesProvider(
-                                  context,
-                                ).currentCart().discount ==
-                                null,
-                            child: Icon(
-                              size: 18,
-                              color:
-                                  theme
-                                      .lightModeColor
-                                      .secColor200,
-                              Icons.discount_outlined,
+                        Stack(
+                          children: [
+                            Visibility(
+                              visible:
+                                  returnSalesProvider(
+                                        context,
+                                      )
+                                      .currentCart()
+                                      .discount ==
+                                  null,
+                              child: Icon(
+                                size: 18,
+                                color:
+                                    theme
+                                        .lightModeColor
+                                        .secColor200,
+                                Icons.discount_outlined,
+                              ),
                             ),
-                          ),
-                          Visibility(
-                            visible:
-                                returnSalesProvider(
-                                  context,
-                                ).currentCart().discount !=
-                                null,
-                            child: Icon(
-                              size: 20,
-                              color:
-                                  theme
-                                      .lightModeColor
-                                      .secColor200,
-                              Icons.clear,
+                            Visibility(
+                              visible:
+                                  returnSalesProvider(
+                                        context,
+                                      )
+                                      .currentCart()
+                                      .discount !=
+                                  null,
+                              child: Icon(
+                                size: 20,
+                                color:
+                                    theme
+                                        .lightModeColor
+                                        .secColor200,
+                                Icons.clear,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-        Visibility(
-          visible:
-              returnSalesProvider(
-                context,
-              ).currentCart().isSettingDiscountOpen,
-          child: DiscountSetterBody(
-            discountPercentController:
-                widget.discountPercentController,
+            ],
           ),
-        ),
-      ],
+          Visibility(
+            visible:
+                returnSalesProvider(
+                  context,
+                ).currentCart().isSettingDiscountOpen,
+            child: DiscountSetterBody(
+              isGeneral: false,
+              discountPercentController:
+                  widget.discountPercentController,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
 class DiscountSetterBody extends StatefulWidget {
   final TextEditingController discountPercentController;
+  final bool isGeneral;
   const DiscountSetterBody({
     super.key,
     required this.discountPercentController,
+    required this.isGeneral,
   });
 
   @override
@@ -247,7 +206,18 @@ class DiscountSetterBody extends StatefulWidget {
 
 class _DiscountSetterBodyState
     extends State<DiscountSetterBody> {
-  int genNum = 0;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      returnShopProvider(
+        context,
+        listen: false,
+      ).switchDiscountIndex(0);
+    });
+  }
+
+  // int genNum = 0;
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
@@ -270,20 +240,217 @@ class _DiscountSetterBodyState
           child: Column(
             spacing: 5,
             children: [
+              Visibility(
+                visible:
+                    !widget.isGeneral &&
+                    returnShopProvider(
+                          context,
+                        ).currentDiscount() !=
+                        null,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        10,
+                        5,
+                        10,
+                        5,
+                      ),
+                      child: Row(
+                        mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                        spacing: 10,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                            ),
+                            'Apply General Discount',
+                          ),
+                          Material(
+                            type: MaterialType.transparency,
+                            child: Ink(
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      2,
+                                    ),
+                                color:
+                                    theme
+                                        .lightModeColor
+                                        .prColor300,
+                              ),
+                              child: InkWell(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      2,
+                                    ),
+                                onTap: () {
+                                  if (returnShopProvider(
+                                            context,
+                                            listen: false,
+                                          )
+                                          .userShop()
+                                          ?.fixedDiscount !=
+                                      null) {
+                                    if (returnShopProvider(
+                                          context,
+                                          listen: false,
+                                        ).currentDiscount()! >
+                                        returnSalesProvider(
+                                          context,
+                                          listen: false,
+                                        ).calcTotalMain()) {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return InfoAlert(
+                                            theme:
+                                                returnTheme(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ),
+                                            message:
+                                                'You Cannot Add a discount amount that is more than the total cost of your cart.',
+                                            title:
+                                                'Action not Allowed',
+                                          );
+                                        },
+                                      );
+                                    } else {
+                                      if (screenWidth(
+                                            context,
+                                          ) >
+                                          mobileScreen) {
+                                        returnSalesProvider(
+                                          context,
+                                          listen: false,
+                                        ).addGeneralFixedDiscount(
+                                          returnShopProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).currentDiscount() ??
+                                              0,
+                                        );
+                                        returnSalesProvider(
+                                          context,
+                                          listen: false,
+                                        ).toggleSetDiscount(
+                                          false,
+                                          context,
+                                        );
+                                      } else {
+                                        returnSalesProvider(
+                                          context,
+                                          listen: false,
+                                        ).addGeneralFixedDiscount(
+                                          returnShopProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).currentDiscount() ??
+                                              0,
+                                        );
+                                        Navigator.of(
+                                          context,
+                                        ).pop();
+                                      }
+                                    }
+                                  } else {
+                                    if (screenWidth(
+                                          context,
+                                        ) >
+                                        mobileScreen) {
+                                      returnSalesProvider(
+                                        context,
+                                        listen: false,
+                                      ).addGeneralDiscount(
+                                        returnShopProvider(
+                                              context,
+                                              listen: false,
+                                            ).currentDiscount() ??
+                                            0,
+                                      );
+                                      returnSalesProvider(
+                                        context,
+                                        listen: false,
+                                      ).toggleSetDiscount(
+                                        false,
+                                        context,
+                                      );
+                                    } else {
+                                      returnSalesProvider(
+                                        context,
+                                        listen: false,
+                                      ).addGeneralDiscount(
+                                        returnShopProvider(
+                                              context,
+                                              listen: false,
+                                            ).currentDiscount() ??
+                                            0,
+                                      );
+                                      Navigator.of(
+                                        context,
+                                      ).pop();
+                                    }
+                                  }
+                                },
+                                child: Container(
+                                  padding:
+                                      EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+
+                                  child: Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                    "${(formatCompactMoney(context: context, amount: returnShopProvider(context).userShop()?.fixedDiscount) ?? returnShopProvider(context).userShop()?.percentDiscount ?? 0).toString()}${returnShopProvider(context).userShop()?.fixedDiscount == null ? '%' : ''}",
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Divider(height: 15),
+                  ],
+                ),
+              ),
               Row(
                 mainAxisAlignment:
                     MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
                     child: DiscountSelectionTab(
-                      genNum: genNum,
+                      genNum:
+                          returnShopProvider(
+                            context,
+                          ).discountIndex,
                       title: 'Percentage',
                       action: () {
-                        setState(() {
-                          genNum = 0;
-                          widget.discountPercentController
-                              .clear();
-                        });
+                        returnShopProvider(
+                          context,
+                          listen: false,
+                        ).switchDiscountIndex(0);
+                        widget.discountPercentController
+                            .clear();
                       },
                       myNum: 0,
                       theme: theme,
@@ -291,13 +458,17 @@ class _DiscountSetterBodyState
                   ),
                   Expanded(
                     child: DiscountSelectionTab(
-                      genNum: genNum,
+                      genNum:
+                          returnShopProvider(
+                            context,
+                          ).discountIndex,
                       action: () {
-                        setState(() {
-                          genNum = 1;
-                          widget.discountPercentController
-                              .clear();
-                        });
+                        returnShopProvider(
+                          context,
+                          listen: false,
+                        ).switchDiscountIndex(1);
+                        widget.discountPercentController
+                            .clear();
                       },
                       title: 'Fixed Amount',
                       myNum: 1,
@@ -305,25 +476,34 @@ class _DiscountSetterBodyState
                     ),
                   ),
                   SizedBox(width: 10),
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {
-                        if (screenWidth(context) >
-                            mobileScreen) {
-                          returnSalesProvider(
-                            context,
-                            listen: false,
-                          ).toggleSetDiscount(false);
-                          widget.discountPercentController
-                              .clear();
-                        } else {
-                          Navigator.of(context).pop();
-                        }
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(5),
-                        child: Icon(size: 18, Icons.clear),
+                  Visibility(
+                    visible: !widget.isGeneral,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          if (screenWidth(context) >
+                              mobileScreen) {
+                            returnSalesProvider(
+                              context,
+                              listen: false,
+                            ).toggleSetDiscount(
+                              false,
+                              context,
+                            );
+                            widget.discountPercentController
+                                .clear();
+                          } else {
+                            Navigator.of(context).pop();
+                          }
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(5),
+                          child: Icon(
+                            size: 18,
+                            Icons.clear,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -332,7 +512,10 @@ class _DiscountSetterBodyState
               SizedBox(height: 5),
               Builder(
                 builder: (context) {
-                  if (genNum == 0) {
+                  if (returnShopProvider(
+                        context,
+                      ).discountIndex ==
+                      0) {
                     return Column(
                       spacing: 10,
                       children: [
@@ -352,39 +535,53 @@ class _DiscountSetterBodyState
                                                 .transparent,
                                         child: InkWell(
                                           onTap: () {
-                                            if (screenWidth(
+                                            if (!widget
+                                                .isGeneral) {
+                                              if (screenWidth(
+                                                    context,
+                                                  ) >
+                                                  mobileScreen) {
+                                                returnSalesProvider(
                                                   context,
-                                                ) >
-                                                mobileScreen) {
-                                              returnSalesProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).addGeneralDiscount(
-                                                double.parse(
-                                                  dis,
-                                                ),
-                                              );
-                                              returnSalesProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).toggleSetDiscount(
-                                                false,
-                                              );
+                                                  listen:
+                                                      false,
+                                                ).addGeneralDiscount(
+                                                  double.parse(
+                                                    dis,
+                                                  ),
+                                                );
+                                                returnSalesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).toggleSetDiscount(
+                                                  false,
+                                                  context,
+                                                );
+                                              } else {
+                                                returnSalesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).addGeneralDiscount(
+                                                  double.parse(
+                                                    dis,
+                                                  ),
+                                                );
+                                                Navigator.of(
+                                                  context,
+                                                ).pop();
+                                              }
                                             } else {
-                                              returnSalesProvider(
+                                              returnShopProvider(
                                                 context,
                                                 listen:
                                                     false,
-                                              ).addGeneralDiscount(
-                                                double.parse(
+                                              ).setGeneralPercentageDiscountCache(
+                                                double.tryParse(
                                                   dis,
                                                 ),
                                               );
-                                              Navigator.of(
-                                                context,
-                                              ).pop();
                                             }
                                             widget
                                                 .discountPercentController
@@ -398,9 +595,10 @@ class _DiscountSetterBodyState
                                                   ),
                                               border: Border.all(
                                                 color:
-                                                    Colors
-                                                        .grey
-                                                        .shade100,
+                                                    returnShopProvider(context).generalPercentDiscount ==
+                                                            double.tryParse(dis)
+                                                        ? theme.lightModeColor.secColor200
+                                                        : Colors.grey.shade100,
                                               ),
                                             ),
                                             padding:
@@ -418,6 +616,11 @@ class _DiscountSetterBodyState
                                                   fontWeight:
                                                       FontWeight
                                                           .bold,
+                                                  color:
+                                                      returnShopProvider(context).generalPercentDiscount ==
+                                                              double.tryParse(dis)
+                                                          ? theme.lightModeColor.secColor200
+                                                          : null,
                                                 ),
                                                 '$dis%',
                                               ),
@@ -445,39 +648,53 @@ class _DiscountSetterBodyState
                                                 .transparent,
                                         child: InkWell(
                                           onTap: () {
-                                            if (screenWidth(
+                                            if (!widget
+                                                .isGeneral) {
+                                              if (screenWidth(
+                                                    context,
+                                                  ) >
+                                                  mobileScreen) {
+                                                returnSalesProvider(
                                                   context,
-                                                ) >
-                                                mobileScreen) {
-                                              returnSalesProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).addGeneralDiscount(
-                                                double.parse(
-                                                  dis,
-                                                ),
-                                              );
-                                              returnSalesProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).toggleSetDiscount(
-                                                false,
-                                              );
+                                                  listen:
+                                                      false,
+                                                ).addGeneralDiscount(
+                                                  double.parse(
+                                                    dis,
+                                                  ),
+                                                );
+                                                returnSalesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).toggleSetDiscount(
+                                                  false,
+                                                  context,
+                                                );
+                                              } else {
+                                                returnSalesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).addGeneralDiscount(
+                                                  double.parse(
+                                                    dis,
+                                                  ),
+                                                );
+                                                Navigator.of(
+                                                  context,
+                                                ).pop();
+                                              }
                                             } else {
-                                              returnSalesProvider(
+                                              returnShopProvider(
                                                 context,
                                                 listen:
                                                     false,
-                                              ).addGeneralDiscount(
-                                                double.parse(
+                                              ).setGeneralPercentageDiscountCache(
+                                                double.tryParse(
                                                   dis,
                                                 ),
                                               );
-                                              Navigator.of(
-                                                context,
-                                              ).pop();
                                             }
                                             widget
                                                 .discountPercentController
@@ -491,9 +708,10 @@ class _DiscountSetterBodyState
                                                   ),
                                               border: Border.all(
                                                 color:
-                                                    Colors
-                                                        .grey
-                                                        .shade100,
+                                                    returnShopProvider(context).generalPercentDiscount ==
+                                                            double.tryParse(dis)
+                                                        ? theme.lightModeColor.secColor200
+                                                        : Colors.grey.shade100,
                                               ),
                                             ),
                                             padding:
@@ -511,6 +729,11 @@ class _DiscountSetterBodyState
                                                   fontWeight:
                                                       FontWeight
                                                           .bold,
+                                                  color:
+                                                      returnShopProvider(context).generalPercentDiscount ==
+                                                              double.tryParse(dis)
+                                                          ? theme.lightModeColor.secColor200
+                                                          : null,
                                                 ),
                                                 '$dis%',
                                               ),
@@ -531,19 +754,31 @@ class _DiscountSetterBodyState
                             children: [
                               Expanded(
                                 child: Padding(
-                                  padding:
-                                      const EdgeInsets.only(
-                                        left: 20.0,
-                                      ),
+                                  padding: EdgeInsets.only(
+                                    left:
+                                        widget.isGeneral
+                                            ? 0
+                                            : 20.0,
+                                  ),
                                   child: TextFormField(
                                     onChanged: (value) {
-                                      var newVal =
-                                          int.parse(value);
-                                      if (newVal > 100) {
-                                        widget
-                                            .discountPercentController
-                                            .text = '100';
-                                        setState(() {});
+                                      if (value
+                                          .isNotEmpty) {
+                                        returnShopProvider(
+                                          context,
+                                          listen: false,
+                                        ).setGeneralFixedDiscountCache(
+                                          null,
+                                        );
+                                        if (int.parse(
+                                              value,
+                                            ) >
+                                            100) {
+                                          widget
+                                              .discountPercentController
+                                              .text = '100';
+                                          // setState(() {});
+                                        }
                                       }
                                     },
                                     inputFormatters: [
@@ -653,79 +888,85 @@ class _DiscountSetterBodyState
                                   ),
                                 ),
                               ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.all(
-                                      8.0,
-                                    ),
-                                child: Material(
-                                  color: Colors.transparent,
-                                  child: Ink(
-                                    decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            5,
-                                          ),
-                                      color:
-                                          theme
-                                              .lightModeColor
-                                              .secColor200,
-                                    ),
-                                    child: InkWell(
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            5,
-                                          ),
-                                      onTap: () {
-                                        if (widget
-                                            .discountPercentController
-                                            .text
-                                            .isNotEmpty) {
-                                          returnSalesProvider(
-                                            context,
-                                            listen: false,
-                                          ).addGeneralDiscount(
-                                            double.parse(
-                                              widget
-                                                  .discountPercentController
-                                                  .text,
+                              Visibility(
+                                visible: !widget.isGeneral,
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.all(
+                                        8.0,
+                                      ),
+                                  child: Material(
+                                    color:
+                                        Colors.transparent,
+                                    child: Ink(
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(
+                                              5,
                                             ),
-                                          );
-                                          if (screenWidth(
-                                                context,
-                                              ) >
-                                              mobileScreen) {
+                                        color:
+                                            theme
+                                                .lightModeColor
+                                                .secColor200,
+                                      ),
+                                      child: InkWell(
+                                        borderRadius:
+                                            BorderRadius.circular(
+                                              5,
+                                            ),
+                                        onTap: () {
+                                          if (widget
+                                              .discountPercentController
+                                              .text
+                                              .isNotEmpty) {
                                             returnSalesProvider(
                                               context,
                                               listen: false,
-                                            ).toggleSetDiscount(
-                                              false,
+                                            ).addGeneralDiscount(
+                                              double.parse(
+                                                widget
+                                                    .discountPercentController
+                                                    .text,
+                                              ),
                                             );
+                                            if (screenWidth(
+                                                  context,
+                                                ) >
+                                                mobileScreen) {
+                                              returnSalesProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).toggleSetDiscount(
+                                                false,
+                                                context,
+                                              );
+                                              widget
+                                                  .discountPercentController
+                                                  .clear();
+                                            } else {
+                                              Navigator.of(
+                                                context,
+                                              ).pop();
+                                            }
                                             widget
                                                 .discountPercentController
                                                 .clear();
-                                          } else {
-                                            Navigator.of(
-                                              context,
-                                            ).pop();
                                           }
-                                          widget
-                                              .discountPercentController
-                                              .clear();
-                                        }
-                                      },
-                                      child: Container(
-                                        padding:
-                                            const EdgeInsets.all(
-                                              8.0,
+                                        },
+                                        child: Container(
+                                          padding:
+                                              const EdgeInsets.all(
+                                                8.0,
+                                              ),
+                                          child: Center(
+                                            child: Icon(
+                                              size: 13,
+                                              color:
+                                                  Colors
+                                                      .white,
+                                              Icons.send,
                                             ),
-                                        child: Center(
-                                          child: Icon(
-                                            size: 13,
-                                            color:
-                                                Colors
-                                                    .white,
-                                            Icons.send,
                                           ),
                                         ),
                                       ),
@@ -761,35 +1002,47 @@ class _DiscountSetterBodyState
                                                 .transparent,
                                         child: InkWell(
                                           onTap: () {
-                                            if (screenWidth(
+                                            if (!widget
+                                                .isGeneral) {
+                                              if (screenWidth(
+                                                    context,
+                                                  ) >
+                                                  mobileScreen) {
+                                                returnSalesProvider(
                                                   context,
-                                                ) >
-                                                mobileScreen) {
-                                              returnSalesProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).addGeneralFixedDiscount(
-                                                dis.toDouble(),
-                                              );
-                                              returnSalesProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).toggleSetDiscount(
-                                                false,
-                                              );
+                                                  listen:
+                                                      false,
+                                                ).addGeneralFixedDiscount(
+                                                  dis.toDouble(),
+                                                );
+                                                returnSalesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).toggleSetDiscount(
+                                                  false,
+                                                  context,
+                                                );
+                                              } else {
+                                                returnSalesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).addGeneralFixedDiscount(
+                                                  dis.toDouble(),
+                                                );
+                                                Navigator.of(
+                                                  context,
+                                                ).pop();
+                                              }
                                             } else {
-                                              returnSalesProvider(
+                                              returnShopProvider(
                                                 context,
                                                 listen:
                                                     false,
-                                              ).addGeneralFixedDiscount(
+                                              ).setGeneralFixedDiscountCache(
                                                 dis.toDouble(),
                                               );
-                                              Navigator.of(
-                                                context,
-                                              ).pop();
                                             }
                                             widget
                                                 .discountPercentController
@@ -803,9 +1056,10 @@ class _DiscountSetterBodyState
                                                   ),
                                               border: Border.all(
                                                 color:
-                                                    Colors
-                                                        .grey
-                                                        .shade100,
+                                                    returnShopProvider(context).generalFixedDiscount ==
+                                                            dis.toDouble()
+                                                        ? theme.lightModeColor.secColor200
+                                                        : Colors.grey.shade100,
                                               ),
                                             ),
                                             padding:
@@ -823,6 +1077,11 @@ class _DiscountSetterBodyState
                                                   fontWeight:
                                                       FontWeight
                                                           .bold,
+                                                  color:
+                                                      returnShopProvider(context).generalFixedDiscount ==
+                                                              dis.toDouble()
+                                                          ? theme.lightModeColor.secColor200
+                                                          : null,
                                                 ),
                                                 "${formatCompactMoney(context: context, amount: dis.toDouble())}",
                                               ),
@@ -853,39 +1112,81 @@ class _DiscountSetterBodyState
                                                 .transparent,
                                         child: InkWell(
                                           onTap: () {
-                                            if (screenWidth(
-                                                  context,
-                                                ) >
-                                                mobileScreen) {
-                                              returnSalesProvider(
-                                                context,
-                                                listen:
+                                            if (!widget
+                                                .isGeneral) {
+                                              if (dis.toDouble() >
+                                                  returnSalesProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).calcTotalMain()) {
+                                                showDialog(
+                                                  context:
+                                                      context,
+                                                  builder: (
+                                                    context,
+                                                  ) {
+                                                    return InfoAlert(
+                                                      theme: returnTheme(
+                                                        context,
+                                                        listen:
+                                                            false,
+                                                      ),
+                                                      message:
+                                                          'You Cannot Add a discount amount that is more than the total cost of your cart.',
+                                                      title:
+                                                          'Action not Allowed',
+                                                    );
+                                                  },
+                                                );
+                                              } else {
+                                                if (screenWidth(
+                                                      context,
+                                                    ) >
+                                                    mobileScreen) {
+                                                  returnSalesProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).addGeneralFixedDiscount(
+                                                    dis.toDouble(),
+                                                  );
+                                                  returnSalesProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).toggleSetDiscount(
                                                     false,
-                                              ).addGeneralFixedDiscount(
-                                                dis.toDouble(),
-                                              );
-                                              returnSalesProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).toggleSetDiscount(
-                                                false,
-                                              );
+                                                    context,
+                                                  );
+                                                } else {
+                                                  returnSalesProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).addGeneralFixedDiscount(
+                                                    dis.toDouble(),
+                                                  );
+                                                  Navigator.of(
+                                                    context,
+                                                  ).pop();
+                                                }
+                                                widget
+                                                    .discountPercentController
+                                                    .clear();
+                                              }
                                             } else {
-                                              returnSalesProvider(
+                                              returnShopProvider(
                                                 context,
                                                 listen:
                                                     false,
-                                              ).addGeneralFixedDiscount(
+                                              ).setGeneralFixedDiscountCache(
                                                 dis.toDouble(),
                                               );
-                                              Navigator.of(
-                                                context,
-                                              ).pop();
+                                              widget
+                                                  .discountPercentController
+                                                  .clear();
                                             }
-                                            widget
-                                                .discountPercentController
-                                                .clear();
                                           },
                                           child: Container(
                                             decoration: BoxDecoration(
@@ -895,9 +1196,10 @@ class _DiscountSetterBodyState
                                                   ),
                                               border: Border.all(
                                                 color:
-                                                    Colors
-                                                        .grey
-                                                        .shade100,
+                                                    returnShopProvider(context).generalFixedDiscount ==
+                                                            dis.toDouble()
+                                                        ? theme.lightModeColor.secColor200
+                                                        : Colors.grey.shade100,
                                               ),
                                             ),
                                             padding:
@@ -915,6 +1217,11 @@ class _DiscountSetterBodyState
                                                   fontWeight:
                                                       FontWeight
                                                           .bold,
+                                                  color:
+                                                      returnShopProvider(context).generalFixedDiscount ==
+                                                              dis.toDouble()
+                                                          ? theme.lightModeColor.secColor200
+                                                          : null,
                                                 ),
                                                 "${formatCompactMoney(context: context, amount: dis.toDouble())}",
                                               ),
@@ -936,20 +1243,46 @@ class _DiscountSetterBodyState
                             children: [
                               Expanded(
                                 child: Padding(
-                                  padding:
-                                      const EdgeInsets.only(
-                                        left: 20.0,
-                                      ),
+                                  padding: EdgeInsets.only(
+                                    left:
+                                        widget.isGeneral
+                                            ? 0
+                                            : 20.0,
+                                  ),
                                   child: TextFormField(
                                     onChanged: (value) {
-                                      if (value
+                                      if (widget
+                                          .discountPercentController
+                                          .text
                                           .isNotEmpty) {
-                                        formatLargeNumber(
-                                          widget
-                                              .discountPercentController
-                                              .text,
+                                        returnShopProvider(
+                                          context,
+                                          listen: false,
+                                        ).setGeneralFixedDiscountCache(
+                                          null,
                                         );
-                                        // setState(() {});
+                                        if (!widget
+                                            .isGeneral) {
+                                          var cost =
+                                              returnSalesProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).calcTotalMain();
+                                          if (cost <
+                                              double.parse(
+                                                widget
+                                                    .discountPercentController
+                                                    .text,
+                                              )) {
+                                            widget
+                                                .discountPercentController
+                                                .text = cost
+                                                .toStringAsFixed(
+                                                  0,
+                                                );
+                                          }
+                                        }
                                       }
                                     },
                                     inputFormatters: [
@@ -1062,79 +1395,117 @@ class _DiscountSetterBodyState
                                   ),
                                 ),
                               ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.all(
-                                      8.0,
-                                    ),
-                                child: Material(
-                                  color: Colors.transparent,
-                                  child: Ink(
-                                    decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            5,
-                                          ),
-                                      color:
-                                          theme
-                                              .lightModeColor
-                                              .secColor200,
-                                    ),
-                                    child: InkWell(
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            5,
-                                          ),
-                                      onTap: () {
-                                        if (widget
-                                            .discountPercentController
-                                            .text
-                                            .isNotEmpty) {
-                                          returnSalesProvider(
-                                            context,
-                                            listen: false,
-                                          ).addGeneralFixedDiscount(
-                                            double.parse(
+                              Visibility(
+                                visible: !widget.isGeneral,
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.all(
+                                        8.0,
+                                      ),
+                                  child: Material(
+                                    color:
+                                        Colors.transparent,
+                                    child: Ink(
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(
+                                              5,
+                                            ),
+                                        color:
+                                            theme
+                                                .lightModeColor
+                                                .secColor200,
+                                      ),
+                                      child: InkWell(
+                                        borderRadius:
+                                            BorderRadius.circular(
+                                              5,
+                                            ),
+                                        onTap: () {
+                                          if (widget
+                                              .discountPercentController
+                                              .text
+                                              .isNotEmpty) {
+                                            if (double.parse(
+                                                  widget
+                                                      .discountPercentController
+                                                      .text,
+                                                ) >
+                                                returnSalesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).calcTotalMain()) {
+                                              showDialog(
+                                                context:
+                                                    context,
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  return InfoAlert(
+                                                    theme: returnTheme(
+                                                      context,
+                                                      listen:
+                                                          false,
+                                                    ),
+                                                    message:
+                                                        'You Cannot Add a discount amount that is more than the total cost of your cart.',
+                                                    title:
+                                                        'Action not Allowed',
+                                                  );
+                                                },
+                                              );
+                                            } else {
+                                              returnSalesProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).addGeneralFixedDiscount(
+                                                double.parse(
+                                                  widget
+                                                      .discountPercentController
+                                                      .text,
+                                                ),
+                                              );
+                                              if (screenWidth(
+                                                    context,
+                                                  ) >
+                                                  mobileScreen) {
+                                                returnSalesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).toggleSetDiscount(
+                                                  false,
+                                                  context,
+                                                );
+                                                widget
+                                                    .discountPercentController
+                                                    .clear();
+                                              } else {
+                                                Navigator.of(
+                                                  context,
+                                                ).pop();
+                                              }
                                               widget
                                                   .discountPercentController
-                                                  .text,
-                                            ),
-                                          );
-                                          if (screenWidth(
-                                                context,
-                                              ) >
-                                              mobileScreen) {
-                                            returnSalesProvider(
-                                              context,
-                                              listen: false,
-                                            ).toggleSetDiscount(
-                                              false,
-                                            );
-                                            widget
-                                                .discountPercentController
-                                                .clear();
-                                          } else {
-                                            Navigator.of(
-                                              context,
-                                            ).pop();
+                                                  .clear();
+                                            }
                                           }
-                                          widget
-                                              .discountPercentController
-                                              .clear();
-                                        }
-                                      },
-                                      child: Container(
-                                        padding:
-                                            const EdgeInsets.all(
-                                              8.0,
+                                        },
+                                        child: Container(
+                                          padding:
+                                              const EdgeInsets.all(
+                                                8.0,
+                                              ),
+                                          child: Center(
+                                            child: Icon(
+                                              size: 13,
+                                              color:
+                                                  Colors
+                                                      .white,
+                                              Icons.send,
                                             ),
-                                        child: Center(
-                                          child: Icon(
-                                            size: 13,
-                                            color:
-                                                Colors
-                                                    .white,
-                                            Icons.send,
                                           ),
                                         ),
                                       ),
@@ -1211,5 +1582,68 @@ class DiscountSelectionTab extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+void setDiscountAction(
+  BuildContext context,
+  TextEditingController discountPercentController,
+) {
+  var salesPFalse = returnSalesProvider(
+    context,
+    listen: false,
+  );
+  if (salesPFalse.currentCart().discount == null &&
+      salesPFalse.currentCart().fixedDiscount == null) {
+    if (salesPFalse.currentCart().isSettingDiscountOpen ==
+        true) {
+      salesPFalse.toggleSetDiscount(false, context);
+    } else {
+      if (screenWidth(context) < mobileScreen) {
+        SalesAuthAction().applyDiscountAction(
+          context: context,
+          action: () {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  insetPadding: EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 0,
+                  ),
+                  contentPadding: EdgeInsets.all(15),
+                  backgroundColor: Colors.white,
+                  content: SizedBox(
+                    width:
+                        BoxConstraints().maxWidth < 400
+                            ? 350
+                            : 500,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        bottom: 20.0,
+                      ),
+                      child: DiscountSetterBody(
+                        isGeneral: false,
+                        discountPercentController:
+                            discountPercentController,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ).then((_) {
+              discountPercentController.clear();
+            });
+          },
+        );
+      } else {
+        salesPFalse.toggleSetDiscount(true, context);
+      }
+    }
+  } else {
+    salesPFalse.addGeneralDiscount(null);
+    // salesPFalse.addGeneralFixedDiscount(
+    //   null,
+    // );
   }
 }

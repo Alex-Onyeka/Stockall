@@ -1,7 +1,7 @@
 // import 'package:flutter/material.dart';
 // import 'package:stockall/classes/temp_referral_class.dart';
 // import 'package:stockall/main.dart';
-// import 'package:stockall/services/auth_service.dart';
+//
 // import 'package:supabase_flutter/supabase_flutter.dart';
 
 // class UserProvider with ChangeNotifier {

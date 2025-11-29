@@ -168,14 +168,14 @@ class _ShopSetupTwoMobileState
       if (widget.shop == null) {
         showDialog(
           context: safeContext,
-          builder: (context) {
+          builder: (dialogContext) {
             return ConfirmationAlert(
               theme: theme,
               message:
                   'Are you sure you want to proceed with creating your shop?',
               title: 'Create Shop?',
               action: () async {
-                Navigator.of(safeContext).pop();
+                Navigator.of(dialogContext).pop();
                 setState(() {
                   isLoading = true;
                 });
@@ -199,7 +199,9 @@ class _ShopSetupTwoMobileState
                     phoneNumber: shopProvider.phone,
                     refCode: referralController.text.trim(),
                     language: 'en',
+                    isHeadQuarters: true,
                   ),
+                  safeContext,
                 );
                 await Future.delayed(Duration(seconds: 1));
                 setState(() {

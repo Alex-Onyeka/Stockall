@@ -55,13 +55,16 @@ class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
       logoUrl: fields[37] as String?,
       imageHeight: fields[38] as int?,
       imageWidth: fields[39] as int?,
+      isHeadQuarters: fields[40] as bool?,
+      percentDiscount: fields[41] as double?,
+      fixedDiscount: fields[42] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempShopClass obj) {
     writer
-      ..writeByte(38)
+      ..writeByte(41)
       ..writeByte(0)
       ..write(obj.shopId)
       ..writeByte(1)
@@ -137,7 +140,13 @@ class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
       ..writeByte(38)
       ..write(obj.imageHeight)
       ..writeByte(39)
-      ..write(obj.imageWidth);
+      ..write(obj.imageWidth)
+      ..writeByte(40)
+      ..write(obj.isHeadQuarters)
+      ..writeByte(41)
+      ..write(obj.percentDiscount)
+      ..writeByte(42)
+      ..write(obj.fixedDiscount);
   }
 
   @override

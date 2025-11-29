@@ -5,6 +5,8 @@ import 'package:stockall/classes/temp_product_class/unsynced/deleted_products/de
 import 'package:stockall/classes/temp_product_class/unsynced/updated/updated_products.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/constants/subscription/items_auth.dart';
+import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/created/created_customers_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/deleted/deleted_customers_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/updated/updated_customers_func.dart';
@@ -24,7 +26,7 @@ import 'package:stockall/local_database/shop/updated_shop/updated_shop_func.dart
 import 'package:stockall/local_database/shop_logos/created_shop_logo/created_shop_logos_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
-import 'package:stockall/services/auth_service.dart';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DataProvider extends ChangeNotifier {
@@ -39,6 +41,27 @@ class DataProvider extends ChangeNotifier {
   }
 
   final supabase = Supabase.instance.client;
+
+  List<TempProductClass> barcodeGenerationList = [];
+
+  void addToBarcodeGenerationList(
+    TempProductClass product,
+  ) {
+    barcodeGenerationList.add(product);
+    notifyListeners();
+  }
+
+  void removeFromBarcodeGenerationList(
+    TempProductClass product,
+  ) {
+    barcodeGenerationList.remove(product);
+    notifyListeners();
+  }
+
+  void clearBarcodeGenerationList() {
+    barcodeGenerationList.clear();
+    notifyListeners();
+  }
 
   Future<void> createProduct(
     TempProductClass product,
@@ -353,10 +376,11 @@ class DataProvider extends ChangeNotifier {
   Future<void> syncData(BuildContext context) async {
     int isSynced =
         returnData(context, listen: false).isSynced();
-    List<TempShopClass> shop = await returnShopProvider(
-      context,
-      listen: false,
-    ).getUserShops(AuthService().currentUser!);
+    List<TempShopClass> shop =
+        await returnShopProvider(
+          context,
+          listen: false,
+        ).getUserShops();
     bool isOnline = await connectivity.isOnline();
     if (isOnline) {
       if (shop.isNotEmpty) {
@@ -605,6 +629,12 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool isRefreshing = false;
+  void toggleRefreshing(bool value) {
+    isRefreshing = value;
+    notifyListeners();
+  }
+
   void toggleSyncing(bool value) {
     isSyncing = value;
     notifyListeners();
@@ -727,6 +757,22 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  int? allowedRangeItems;
+
+  void setAllowedRange({
+    int? plan,
+    required BuildContext context,
+  }) {
+    allowedRangeItems =
+        plan == 3
+            ? null
+            : subPlans
+                .firstWhere((sub) => sub.plan == plan)
+                .itemsAuth
+                .numberOfItems;
+    notifyListeners();
+  }
+
   Future<List<TempProductClass>> getProducts(
     int shopId,
   ) async {
@@ -739,7 +785,12 @@ class DataProvider extends ChangeNotifier {
           .select()
           .eq('shop_id', shopId)
           .order('name', ascending: true)
-          .range(0, 1000);
+          .range(
+            0,
+            allowedRangeItems != null
+                ? (allowedRangeItems ?? 0) - 1
+                : 1000,
+          );
 
       print('Items gotten: ${data.length}');
 
@@ -756,7 +807,12 @@ class DataProvider extends ChangeNotifier {
             .select()
             .eq('shop_id', shopId)
             .order('name', ascending: true)
-            .range(1001, 2000);
+            .range(
+              1001,
+              allowedRangeItems != null
+                  ? (allowedRangeItems ?? 0) - 1
+                  : 1500,
+            );
         print('Items 2 gotten: ${data2.length}');
         productList.addAll(
           (data2 as List)
@@ -766,12 +822,39 @@ class DataProvider extends ChangeNotifier {
               .toList(),
         );
         print('Product List 2 Set: ${productList.length}');
+
+        if (data2.length > 1499) {
+          final data3 = await supabase
+              .from('products')
+              .select()
+              .eq('shop_id', shopId)
+              .order('name', ascending: true)
+              .range(1501, allowedRangeItems ?? 2000);
+          print('Items 2 gotten: ${data2.length}');
+          productList.addAll(
+            (data3 as List)
+                .map(
+                  (stuff) =>
+                      TempProductClass.fromJson(stuff),
+                )
+                .toList(),
+          );
+          print('Product List 3 Set: ${data3.length}');
+        }
         notifyListeners();
       }
 
       await ProductsFunc().insertAllProducts(productList);
     } else {
-      var offlineData = ProductsFunc().getProducts();
+      var offlineData =
+          ProductsFunc()
+              .getProducts()
+              .getRange(
+                0,
+                allowedRangeItems ??
+                    ProductsFunc().getProducts().length,
+              )
+              .toList();
       print("Offline Data Gotten: ${offlineData.length}");
       productList = offlineData;
       // productList.clear();
@@ -1034,7 +1117,7 @@ class DataProvider extends ChangeNotifier {
   String color = '';
   String barcode = '';
 
-  void clearFields() {
+  void clearFields({bool? setIsManaged}) {
     isProductRefundable = false;
     setCustomPrice = false;
     isRefundable = false;
@@ -1043,7 +1126,9 @@ class DataProvider extends ChangeNotifier {
     selectedSize = null;
     inStock = false;
     catValueSet = false;
-    isManaged = true;
+    if (setIsManaged == null) {
+      isManaged = true;
+    }
     isOpen = false;
     unitValueSet = false;
     colorValueSet = false;
@@ -1066,8 +1151,30 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void toggleIsManaged() {
-    isManaged = !isManaged;
+  void toggleIsManaged({
+    required BuildContext context,
+    // required bool value,
+  }) {
+    if (isManaged == false) {
+      ItemsAuthAction().allowStockallToManageItemAction(
+        context: context,
+        action: () {
+          isManaged = true;
+          notifyListeners();
+        },
+        failAction: () {
+          isManaged = false;
+          notifyListeners();
+        },
+      );
+    } else {
+      isManaged = false;
+      notifyListeners();
+    }
+  }
+
+  void toggleIsManagedTemp(bool value) {
+    isManaged = value;
     notifyListeners();
   }
 
@@ -1127,10 +1234,15 @@ class DataProvider extends ChangeNotifier {
 
   bool isOpen = false;
 
-  void toggleCatOpen() {
-    isOpen = !isOpen;
-    notifyListeners();
-  }
+  // void toggleCatOpen(BuildContext context) {
+  //   ItemsAuthAction().applyVariationsAction(
+  //     context: context,
+  //     action: () {
+  //       isOpen = !isOpen;
+  //       notifyListeners();
+  //     },
+  //   );
+  // }
 
   void selectCategory(String category) {
     if (selectedCategory == null) {

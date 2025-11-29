@@ -10,6 +10,7 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/constants/scan_barcode.dart';
+import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/products/compnents/product_filter_button.dart';
@@ -119,18 +120,23 @@ class _TotalProductsMobileState
         ),
         child: FloatingActionButtonMain(
           action: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return AddProduct();
-                },
-              ),
-            ).then((_) {
-              setState(() {
-                // getProductList(context);
-              });
-            });
+            ItemsAuthAction().numberOfItemsAction(
+              context: context,
+              action: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return AddProduct();
+                    },
+                  ),
+                ).then((_) {
+                  setState(() {
+                    // getProductList(context);
+                  });
+                });
+              },
+            );
           },
           color: theme.lightModeColor.secColor100,
           text: 'Add Products',
@@ -156,33 +162,64 @@ class _TotalProductsMobileState
 
                   onChanged: (value) {
                     setState(() {
-                      searchResult = value;
+                      if (products
+                          .where(
+                            (pr) =>
+                                pr.barcode?.toLowerCase() ==
+                                searchController.text
+                                    .toLowerCase(),
+                          )
+                          .isNotEmpty) {
+                        ItemsAuthAction()
+                            .useOfBArcodeAction(
+                              context: context,
+                              action: () {
+                                setState(() {
+                                  searchResult = value;
+                                });
+                              },
+                              failAction: () {
+                                setState(() {
+                                  searchController.clear();
+                                });
+                              },
+                            );
+                      } else {
+                        setState(() {
+                          searchResult = value;
+                        });
+                      }
                     });
                   },
 
                   onPressedScan: () async {
-                    String? result = await scanCode(
-                      context,
-                      'Scan Failed',
+                    ItemsAuthAction().useOfBArcodeAction(
+                      context: context,
+                      action: () async {
+                        String? result = await scanCode(
+                          context,
+                          'Scan Failed',
+                        );
+                        setState(() {
+                          if (result != null) {
+                            searchController.text = result;
+                          } else {
+                            return;
+                          }
+                        });
+                        if (!context.mounted) return;
+                        setState(() {
+                          productsResult =
+                              products
+                                  .where(
+                                    (product) =>
+                                        product.barcode ==
+                                        result,
+                                  )
+                                  .toList();
+                        });
+                      },
                     );
-                    setState(() {
-                      if (result != null) {
-                        searchController.text = result;
-                      } else {
-                        return;
-                      }
-                    });
-                    if (!context.mounted) return;
-                    setState(() {
-                      productsResult =
-                          products
-                              .where(
-                                (product) =>
-                                    product.barcode ==
-                                    result,
-                              )
-                              .toList();
-                    });
                   },
                 ),
               ),

@@ -3,6 +3,22 @@ import 'package:intl/intl.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:uuid/uuid.dart';
 
+DateTime endOfDay(DateTime date) {
+  return DateTime(
+    date.year,
+    date.month,
+    date.day,
+    23,
+    59,
+    59,
+    999,
+  );
+}
+
+DateTime startOfDay(DateTime date) {
+  return DateTime(date.year, date.month, date.day);
+}
+
 String formatLargeNumber(String numberString) {
   final number = int.tryParse(
     numberString.replaceAll(',', ''),

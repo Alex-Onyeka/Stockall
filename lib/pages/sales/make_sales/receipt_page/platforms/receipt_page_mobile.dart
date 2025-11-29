@@ -9,6 +9,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/top_banner_two.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -1379,10 +1380,17 @@ class _ReceiptDetailsContainerState
                         ) ||
                         widget.mainReceipt.isInvoice,
                     child: BottomActionButton(
+                      textColor:
+                          widget.mainReceipt.isInvoice
+                              ? widget
+                                  .theme
+                                  .lightModeColor
+                                  .secColor100
+                              : Colors.red,
                       text:
                           widget.mainReceipt.isInvoice
                               ? 'Pay'
-                              : null,
+                              : 'Delete',
                       color:
                           widget.mainReceipt.isInvoice
                               ? widget
@@ -1534,10 +1542,7 @@ class _ReceiptDetailsContainerState
                       context: context,
                     ),
                     child: BottomActionButton(
-                      // text:
-                      //     widget.mainReceipt.isInvoice
-                      //         ? 'Pay Credit'
-                      //         : 'Delete',
+                      text: 'Edit',
                       color: Colors.grey,
                       iconSize: 20,
                       theme: widget.theme,
@@ -1555,82 +1560,80 @@ class _ReceiptDetailsContainerState
                   ),
                   BottomActionButton(
                     action: () async {
-                      var safeContext = context;
-                      if (!kIsWeb) {
-                        await generateAndPreviewPdf(
-                          staffName:
-                              staff?.name ??
-                              widget.mainReceipt.staffName,
-                          context: safeContext,
-                          receipt: widget.mainReceipt,
-                          records: records,
+                      SalesAuthAction().downloadReceiptAction(
+                        context: context,
+                        action: () async {
+                          var safeContext = context;
+                          if (!kIsWeb) {
+                            await generateAndPreviewPdf(
+                              staffName:
+                                  staff?.name ??
+                                  widget
+                                      .mainReceipt
+                                      .staffName,
+                              context: safeContext,
+                              receipt: widget.mainReceipt,
+                              records: records,
 
-                          shop:
-                              returnShopProvider(
-                                safeContext,
-                                listen: false,
-                              ).userShop()!,
-                        );
-                      } else {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return ConfirmationAlert(
-                              theme: widget.theme,
-                              message:
-                                  'You are about to download This Receipt. Are you sure you want to Proceed?',
-                              title: 'Download Receipt',
-                              action: () async {
-                                returnReceiptProvider(
-                                  context,
-                                  listen: false,
-                                ).toggleIsLoading(true);
-                                Navigator.of(context).pop();
-                                if (kIsWeb) {
-                                  downloadPdfWeb(
-                                    staffName:
-                                        staff?.name ??
-                                        widget
-                                            .mainReceipt
-                                            .staffName,
-                                    filename:
-                                        'Stockall_${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'}_${widget.mainReceipt.uuid}.pdf',
-                                    context: safeContext,
-                                    receipt:
-                                        widget.mainReceipt,
-                                    records: records,
-                                    shop:
-                                        returnShopProvider(
-                                          safeContext,
-                                          listen: false,
-                                        ).userShop()!,
-                                  );
-                                }
+                              shop:
+                                  returnShopProvider(
+                                    safeContext,
+                                    listen: false,
+                                  ).userShop()!,
+                            );
+                          } else {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return ConfirmationAlert(
+                                  theme: widget.theme,
+                                  message:
+                                      'You are about to download This Receipt. Are you sure you want to Proceed?',
+                                  title: 'Download Receipt',
+                                  action: () async {
+                                    returnReceiptProvider(
+                                      context,
+                                      listen: false,
+                                    ).toggleIsLoading(true);
+                                    Navigator.of(
+                                      context,
+                                    ).pop();
+                                    if (kIsWeb) {
+                                      downloadPdfWeb(
+                                        staffName:
+                                            staff?.name ??
+                                            widget
+                                                .mainReceipt
+                                                .staffName,
+                                        filename:
+                                            'Stockall_${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'}_${widget.mainReceipt.uuid}.pdf',
+                                        context:
+                                            safeContext,
+                                        receipt:
+                                            widget
+                                                .mainReceipt,
+                                        records: records,
+                                        shop:
+                                            returnShopProvider(
+                                              safeContext,
+                                              listen: false,
+                                            ).userShop()!,
+                                      );
+                                    }
+                                  },
+                                );
                               },
                             );
-                          },
-                        );
-                      }
-                      if (safeContext.mounted) {
-                        returnReceiptProvider(
-                          safeContext,
-                          listen: false,
-                        ).toggleIsLoading(false);
-                      }
+                          }
+                          if (safeContext.mounted) {
+                            returnReceiptProvider(
+                              safeContext,
+                              listen: false,
+                            ).toggleIsLoading(false);
+                          }
+                        },
+                      );
                     },
-                    // text:
-                    //     (kIsWeb ||
-                    //             (platforms(context) ==
-                    //                     TargetPlatform
-                    //                         .windows ||
-                    //                 platforms(context) ==
-                    //                     TargetPlatform
-                    //                         .macOS ||
-                    //                 platforms(context) ==
-                    //                     TargetPlatform
-                    //                         .linux))
-                    //         ? 'Download'
-                    //         : 'Share',
                     color: Colors.grey,
                     icon:
                         (kIsWeb ||
@@ -1647,93 +1650,108 @@ class _ReceiptDetailsContainerState
                             : Icons.share,
                     iconSize: 20,
                     theme: widget.theme,
+                    text: kIsWeb ? 'Download' : 'Share',
                   ),
                   Visibility(
                     visible: !kIsWeb,
                     child: BottomActionButton(
                       action: () {
-                        var safeContext = context;
-                        if (returnShopProvider(
-                              context,
-                              listen: false,
-                            ).userShop()!.printType ==
-                            null) {
-                          SelectPrinterDialog(
-                            context,
-                            safeContext,
-                          );
-                        } else {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return ConfirmationAlert(
-                                theme: widget.theme,
-                                message:
-                                    'You are about to Print This Receipt. Are you sure you want to Proceed?',
-                                title: 'Print Receipt',
-                                action: () async {
-                                  returnReceiptProvider(
-                                    context,
-                                    listen: false,
-                                  ).toggleIsLoading(true);
-                                  Navigator.of(
-                                    context,
-                                  ).pop();
-                                  if (!kIsWeb) {
-                                    if (returnShopProvider(
-                                              context,
-                                              listen: false,
-                                            )
-                                            .userShop()!
-                                            .printType! ==
-                                        1) {
-                                      await connectToUsbDevice(
-                                        receipt:
-                                            widget
-                                                .mainReceipt,
-                                        context:
-                                            safeContext,
-                                        records: records,
-                                        shop:
-                                            returnShopProvider(
-                                              context,
-                                              listen: false,
-                                            ).userShop()!,
+                        SalesAuthAction().printReceiptAction(
+                          context: context,
+                          action: () async {
+                            var safeContext = context;
+                            if (returnShopProvider(
+                                  context,
+                                  listen: false,
+                                ).userShop()!.printType ==
+                                null) {
+                              selectPrinterDialog(
+                                context,
+                                safeContext,
+                              );
+                            } else {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return ConfirmationAlert(
+                                    theme: widget.theme,
+                                    message:
+                                        'You are about to Print This Receipt. Are you sure you want to Proceed?',
+                                    title: 'Print Receipt',
+                                    action: () async {
+                                      returnReceiptProvider(
+                                        context,
+                                        listen: false,
+                                      ).toggleIsLoading(
+                                        true,
                                       );
-                                    } else {
-                                      print(
-                                        'Bluetooth Scanning Started',
-                                      );
-                                      scanBluetoothPrinters(
-                                        receipt:
-                                            widget
-                                                .mainReceipt,
-                                        context:
-                                            safeContext,
-                                        records: records,
-                                        shop:
-                                            returnShopProvider(
-                                              context,
-                                              listen: false,
-                                            ).userShop()!,
-                                      );
-                                    }
-                                  }
-                                  if (safeContext.mounted &&
-                                      kIsWeb) {
-                                    returnReceiptProvider(
-                                      safeContext,
-                                      listen: false,
-                                    ).toggleIsLoading(
-                                      false,
-                                    );
-                                  }
+                                      Navigator.of(
+                                        context,
+                                      ).pop();
+                                      if (!kIsWeb) {
+                                        if (returnShopProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                )
+                                                .userShop()!
+                                                .printType! ==
+                                            1) {
+                                          await connectToUsbDevice(
+                                            receipt:
+                                                widget
+                                                    .mainReceipt,
+                                            context:
+                                                safeContext,
+                                            records:
+                                                records,
+                                            shop:
+                                                returnShopProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).userShop()!,
+                                          );
+                                        } else {
+                                          print(
+                                            'Bluetooth Scanning Started',
+                                          );
+                                          scanBluetoothPrinters(
+                                            receipt:
+                                                widget
+                                                    .mainReceipt,
+                                            context:
+                                                safeContext,
+                                            records:
+                                                records,
+                                            shop:
+                                                returnShopProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).userShop()!,
+                                          );
+                                        }
+                                      }
+                                      if (safeContext
+                                              .mounted &&
+                                          kIsWeb) {
+                                        returnReceiptProvider(
+                                          safeContext,
+                                          listen: false,
+                                        ).toggleIsLoading(
+                                          false,
+                                        );
+                                      }
+                                    },
+                                  );
                                 },
                               );
-                            },
-                          );
-                        }
+                            }
+                          },
+                        );
                       },
+                      text: 'Print',
                       color: Colors.grey,
                       icon: Icons.print,
                       iconSize: 20,
@@ -1785,7 +1803,7 @@ class _ReceiptDetailsContainerState
     );
   }
 
-  Future<dynamic> SelectPrinterDialog(
+  Future<dynamic> selectPrinterDialog(
     BuildContext context,
     BuildContext safeContext,
   ) {
@@ -1970,6 +1988,7 @@ class BottomActionButton extends StatelessWidget {
   final double iconSize;
   final ThemeProvider theme;
   final String? svg;
+  final Color? textColor;
 
   const BottomActionButton({
     super.key,
@@ -1980,6 +1999,7 @@ class BottomActionButton extends StatelessWidget {
     required this.iconSize,
     required this.theme,
     this.svg,
+    this.textColor,
   });
 
   @override
@@ -2012,10 +2032,7 @@ class BottomActionButton extends StatelessWidget {
                     child: Text(
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color:
-                            theme
-                                .lightModeColor
-                                .secColor100,
+                        color: textColor ?? Colors.grey,
                         fontSize:
                             theme.mobileTexts.b3.fontSize,
                       ),

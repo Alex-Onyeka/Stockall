@@ -11,11 +11,13 @@ import 'package:stockall/components/text_fields/main_dropdown_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/subscription/general_settings_auth.dart';
+import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/shop_setup/edit_receipt_page/edit_receipt.dart';
 import 'package:stockall/pages/shop_setup/shop_setup_one/shop_setup_page.dart';
 import 'package:stockall/pages/shop_setup/shop_setup_two/shop_setup_two.dart';
-import 'package:stockall/services/auth_service.dart';
+import 'package:stockall/providers/theme_provider.dart';
 
 class ShopPageDesktop extends StatefulWidget {
   const ShopPageDesktop({super.key});
@@ -31,7 +33,7 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
     await returnShopProvider(
       context,
       listen: false,
-    ).getUserShops(AuthService().currentUser!);
+    ).getUserShops();
 
     return returnShopProvider(
       // ignore: use_build_context_synchronously
@@ -940,118 +942,27 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                               spacing: 10,
                               children: [
                                 Expanded(
-                                  child: MainButtonTransparent(
-                                    themeProvider: theme,
-                                    action: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return DialogTemplate(
-                                            theme: theme,
-                                            message: '',
-                                            title:
-                                                'Enter Social Details',
-                                            widget: Column(
-                                              mainAxisSize:
-                                                  MainAxisSize
-                                                      .min,
-                                              spacing: 10,
-                                              children: [
-                                                GeneralTextField(
-                                                  initialValue:
-                                                      shop.faceBookHandle,
-                                                  isEmail:
-                                                      false,
-                                                  title:
-                                                      'Facebook Handle (Optional)',
-                                                  isEnabled:
-                                                      true,
-                                                  hint:
-                                                      'Enter Facebook Handle',
-                                                  controller:
-                                                      faceBookController,
-                                                  lines: 1,
-                                                  theme:
-                                                      theme,
-                                                ),
-                                                GeneralTextField(
-                                                  initialValue:
-                                                      shop.instaHandle,
-                                                  isEmail:
-                                                      false,
-                                                  title:
-                                                      'Instagram Handle (Optional)',
-                                                  isEnabled:
-                                                      true,
-                                                  hint:
-                                                      'Enter Instagram Handle',
-                                                  controller:
-                                                      instaController,
-                                                  lines: 1,
-                                                  theme:
-                                                      theme,
-                                                ),
-                                              ],
-                                            ),
-                                            action: () async {
-                                              setState(() {
-                                                isLoading =
-                                                    true;
-                                              });
-                                              var res = await returnShopProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).updateShopSocials(
-                                                face:
-                                                    faceBookController.text.isEmpty
-                                                        ? null
-                                                        : faceBookController.text,
-                                                insta:
-                                                    instaController.text.isEmpty
-                                                        ? null
-                                                        : instaController.text,
-                                              );
-                                              if (res ==
-                                                  1) {
-                                                setState(() {
-                                                  isLoading =
-                                                      false;
-                                                });
-                                                Navigator.of(
+                                  child: SubWrapper(
+                                    isVisible:
+                                        !GeneralSettingsAuthAction()
+                                            .addSocialsAction(
+                                              context:
                                                   context,
-                                                ).pop();
-                                                setState(() {
-                                                  shopFuture =
-                                                      getShop();
-                                                });
-                                              } else {
-                                                showDialog(
-                                                  context:
-                                                      context,
-                                                  builder: (
-                                                    context,
-                                                  ) {
-                                                    return InfoAlert(
-                                                      theme:
-                                                          theme,
-                                                      message:
-                                                          'The Update was not successful. Please try again.',
-                                                      title:
-                                                          'Update Failed',
-                                                    );
-                                                  },
-                                                );
-                                              }
-                                            },
-                                          );
-                                        },
-                                      );
-                                    },
-                                    text:
-                                        'Edit Social Details',
-                                    constraints:
-                                        BoxConstraints(),
+                                            ),
+                                    mainWidget: MainButtonTransparent(
+                                      themeProvider: theme,
+                                      action: () {
+                                        setSocialDetails(
+                                          context,
+                                          theme,
+                                          shop,
+                                        );
+                                      },
+                                      text:
+                                          'Edit Social Details',
+                                      constraints:
+                                          BoxConstraints(),
+                                    ),
                                   ),
                                 ),
                                 Visibility(
@@ -1062,29 +973,44 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                                     context: context,
                                   ),
                                   child: Expanded(
-                                    child: MainButtonTransparent(
-                                      themeProvider: theme,
-                                      action: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (
-                                              context,
-                                            ) {
-                                              return EditReceipt();
+                                    child: SubWrapper(
+                                      isVisible:
+                                          !GeneralSettingsAuthAction()
+                                              .customizeReceiptTemplateAction(
+                                                context:
+                                                    context,
+                                              ),
+                                      mainWidget: MainButtonTransparent(
+                                        themeProvider:
+                                            theme,
+                                        action: () {
+                                          GeneralSettingsAuthAction().customizeReceiptTemplateAction(
+                                            context:
+                                                context,
+                                            action: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (
+                                                    context,
+                                                  ) {
+                                                    return EditReceipt();
+                                                  },
+                                                ),
+                                              ).then((_) {
+                                                setState(() {
+                                                  shopFuture =
+                                                      getShop();
+                                                });
+                                              });
                                             },
-                                          ),
-                                        ).then((_) {
-                                          setState(() {
-                                            shopFuture =
-                                                getShop();
-                                          });
-                                        });
-                                      },
-                                      text:
-                                          'Receipt Settings',
-                                      constraints:
-                                          BoxConstraints(),
+                                          );
+                                        },
+                                        text:
+                                            'Receipt Settings',
+                                        constraints:
+                                            BoxConstraints(),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -1471,6 +1397,93 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
           },
         ),
       ),
+    );
+  }
+
+  void setSocialDetails(
+    BuildContext context,
+    ThemeProvider theme,
+    TempShopClass shop,
+  ) {
+    GeneralSettingsAuthAction().addSocialsAction(
+      context: context,
+      action: () {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return DialogTemplate(
+              theme: theme,
+              message: '',
+              title: 'Enter Social Details',
+              widget: Column(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 10,
+                children: [
+                  GeneralTextField(
+                    initialValue: shop.faceBookHandle,
+                    isEmail: false,
+                    title: 'Facebook Handle (Optional)',
+                    isEnabled: true,
+                    hint: 'Enter Facebook Handle',
+                    controller: faceBookController,
+                    lines: 1,
+                    theme: theme,
+                  ),
+                  GeneralTextField(
+                    initialValue: shop.instaHandle,
+                    isEmail: false,
+                    title: 'Instagram Handle (Optional)',
+                    isEnabled: true,
+                    hint: 'Enter Instagram Handle',
+                    controller: instaController,
+                    lines: 1,
+                    theme: theme,
+                  ),
+                ],
+              ),
+              action: () async {
+                setState(() {
+                  isLoading = true;
+                });
+                var res = await returnShopProvider(
+                  context,
+                  listen: false,
+                ).updateShopSocials(
+                  face:
+                      faceBookController.text.isEmpty
+                          ? null
+                          : faceBookController.text,
+                  insta:
+                      instaController.text.isEmpty
+                          ? null
+                          : instaController.text,
+                );
+                if (res == 1) {
+                  setState(() {
+                    isLoading = false;
+                  });
+                  Navigator.of(context).pop();
+                  setState(() {
+                    shopFuture = getShop();
+                  });
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return InfoAlert(
+                        theme: theme,
+                        message:
+                            'The Update was not successful. Please try again.',
+                        title: 'Update Failed',
+                      );
+                    },
+                  );
+                }
+              },
+            );
+          },
+        );
+      },
     );
   }
 }

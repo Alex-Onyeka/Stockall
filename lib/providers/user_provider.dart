@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:stockall/classes/temp_logged_in_user/logged_in_user.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/local_database/logged_in_user/logged_in_user_func.dart';
 import 'package:stockall/local_database/users/user_func.dart';
@@ -69,7 +70,7 @@ class UserProvider extends ChangeNotifier {
       await returnShopProvider(
         context,
         listen: false,
-      ).getUserShops(AuthService().currentUser!);
+      ).getUserShops();
       var employees =
           returnShopProvider(
             context,
@@ -153,13 +154,18 @@ class UserProvider extends ChangeNotifier {
         _currentUser = TempUserClass.fromJson(data);
         print('User Found: ${_currentUser?.name}');
         await UserFunc().insertUser(_currentUser!);
+        await LoggedInUserFunc().insertLoggedInUser(
+          LoggedInUser(loggedInUser: _currentUser),
+        );
       }
     } else {
       _currentUser =
           LoggedInUserFunc()
               .getLoggedInUser()
               ?.loggedInUser;
-      print('Current User ${_currentUser?.name}');
+      print(
+        'Current Logged In User: ${_currentUser?.name}',
+      );
     }
 
     notifyListeners();
@@ -361,13 +367,17 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  // Future<void> deleteUser(String userId) async {
-  //   await _supabase.client
-  //       .from('users')
-  //       .delete()
-  //       .eq('user_id', userId);
-  //   await fetchUsersByShop(context);
-  // }
+  Future<void> deleteUser(String userId) async {
+    try {
+      await _supabase.client
+          .from('users')
+          .delete()
+          .eq('user_id', userId);
+      print('User Row Deleted Successfully');
+    } catch (e) {
+      print("User Row Deletiong Failed: ${e.toString()}");
+    }
+  }
 
   //
   //

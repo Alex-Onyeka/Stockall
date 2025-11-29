@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/subscription/calculator_auth.dart';
+import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -285,215 +287,230 @@ class _MyCalculatorDesktopState
             ),
             Expanded(
               flex: 8,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(10),
+              child: SubWrapper(
+                x: 0.9,
+                y: -0.9,
+                isVisible:
+                    !CalculatorAuthAction()
+                        .useCalculatorAction(
+                          context: context,
+                        ),
+                mainWidget: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(10),
+                    ),
                   ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 10,
-                  ),
-                  child: Column(
-                    spacing: 10,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        spacing: 10,
-                        mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                        children: [
-                          CalcButton(
-                            flex: 2,
-                            theme: theme,
-                            action: () {
-                              clear();
-                            },
-                            text: 'AC',
-                          ),
-                          CalcButton(
-                            theme: theme,
-                            action: () {
-                              deleteAction();
-                            },
-                            icon: Icons.backspace_outlined,
-                            itemColor:
-                                theme
-                                    .lightModeColor
-                                    .errorColor200,
-                          ),
-                          CalcButton(
-                            theme: theme,
-                            action: () {
-                              setSign('+');
-                            },
-                            icon: Icons.add,
-                            height: 22,
-                            itemColor:
-                                theme
-                                    .lightModeColor
-                                    .secColor200,
-                          ),
-                        ],
-                      ),
-                      Row(
-                        spacing: 10,
-                        mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                        children: [
-                          CalcButton(
-                            theme: theme,
-                            action: () {
-                              action('7');
-                            },
-                            text: '7',
-                          ),
-                          CalcButton(
-                            theme: theme,
-                            action: () {
-                              action('8');
-                            },
-                            text: '8',
-                          ),
-                          CalcButton(
-                            theme: theme,
-                            action: () {
-                              action('9');
-                            },
-                            text: '9',
-                          ),
-                          CalcButton(
-                            theme: theme,
-                            action: () {
-                              setSign('/');
-                            },
-                            svg: divideIconSvg,
-                            height: 13,
-                            itemColor:
-                                theme
-                                    .lightModeColor
-                                    .secColor200,
-                          ),
-                        ],
-                      ),
-                      Row(
-                        spacing: 10,
-                        mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                        children: [
-                          CalcButton(
-                            theme: theme,
-                            action: () {
-                              action('4');
-                            },
-                            text: '4',
-                          ),
-                          CalcButton(
-                            theme: theme,
-                            action: () {
-                              action('5');
-                            },
-                            text: '5',
-                          ),
-                          CalcButton(
-                            theme: theme,
-                            action: () {
-                              action('6');
-                            },
-                            text: '6',
-                          ),
-                          CalcButton(
-                            theme: theme,
-                            action: () {
-                              setSign('X');
-                            },
-                            height: 20,
-                            text: 'X',
-                            itemColor:
-                                theme
-                                    .lightModeColor
-                                    .secColor200,
-                          ),
-                        ],
-                      ),
-                      Row(
-                        spacing: 10,
-                        mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                        children: [
-                          CalcButton(
-                            theme: theme,
-                            action: () {
-                              action('1');
-                            },
-                            text: '1',
-                          ),
-                          CalcButton(
-                            theme: theme,
-                            action: () {
-                              action('2');
-                            },
-                            text: '2',
-                          ),
-                          CalcButton(
-                            theme: theme,
-                            action: () {
-                              action('3');
-                            },
-                            text: '3',
-                          ),
-                          CalcButton(
-                            theme: theme,
-                            action: () {
-                              setSign('-');
-                            },
-                            icon: Icons.remove,
-                            height: 20,
-                            itemColor:
-                                theme
-                                    .lightModeColor
-                                    .secColor200,
-                          ),
-                        ],
-                      ),
-                      Row(
-                        spacing: 15,
-                        mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                        children: [
-                          CalcButton(
-                            theme: theme,
-                            action: () {
-                              action('0');
-                            },
-                            text: '0',
-                          ),
-                          CalcButton(
-                            theme: theme,
-                            action: () {
-                              action('.');
-                            },
-                            text: '.',
-                          ),
-                          CalcButton(
-                            flex: 2,
-                            theme: theme,
-                            action: () {
-                              getResult();
-                            },
-                            text: '=',
-                            color:
-                                theme
-                                    .lightModeColor
-                                    .prColor300,
-                            itemColor: Colors.white,
-                          ),
-                        ],
-                      ),
-                    ],
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 10,
+                    ),
+                    child: Column(
+                      spacing: 10,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          spacing: 10,
+                          mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceBetween,
+                          children: [
+                            CalcButton(
+                              flex: 2,
+                              theme: theme,
+                              action: () {
+                                clear();
+                              },
+                              text: 'AC',
+                            ),
+                            CalcButton(
+                              theme: theme,
+                              action: () {
+                                deleteAction();
+                              },
+                              icon:
+                                  Icons.backspace_outlined,
+                              itemColor:
+                                  theme
+                                      .lightModeColor
+                                      .errorColor200,
+                            ),
+                            CalcButton(
+                              theme: theme,
+                              action: () {
+                                setSign('+');
+                              },
+                              icon: Icons.add,
+                              height: 22,
+                              itemColor:
+                                  theme
+                                      .lightModeColor
+                                      .secColor200,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          spacing: 10,
+                          mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceBetween,
+                          children: [
+                            CalcButton(
+                              theme: theme,
+                              action: () {
+                                action('7');
+                              },
+                              text: '7',
+                            ),
+                            CalcButton(
+                              theme: theme,
+                              action: () {
+                                action('8');
+                              },
+                              text: '8',
+                            ),
+                            CalcButton(
+                              theme: theme,
+                              action: () {
+                                action('9');
+                              },
+                              text: '9',
+                            ),
+                            CalcButton(
+                              theme: theme,
+                              action: () {
+                                setSign('/');
+                              },
+                              svg: divideIconSvg,
+                              height: 13,
+                              itemColor:
+                                  theme
+                                      .lightModeColor
+                                      .secColor200,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          spacing: 10,
+                          mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceBetween,
+                          children: [
+                            CalcButton(
+                              theme: theme,
+                              action: () {
+                                action('4');
+                              },
+                              text: '4',
+                            ),
+                            CalcButton(
+                              theme: theme,
+                              action: () {
+                                action('5');
+                              },
+                              text: '5',
+                            ),
+                            CalcButton(
+                              theme: theme,
+                              action: () {
+                                action('6');
+                              },
+                              text: '6',
+                            ),
+                            CalcButton(
+                              theme: theme,
+                              action: () {
+                                setSign('X');
+                              },
+                              height: 20,
+                              text: 'X',
+                              itemColor:
+                                  theme
+                                      .lightModeColor
+                                      .secColor200,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          spacing: 10,
+                          mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceBetween,
+                          children: [
+                            CalcButton(
+                              theme: theme,
+                              action: () {
+                                action('1');
+                              },
+                              text: '1',
+                            ),
+                            CalcButton(
+                              theme: theme,
+                              action: () {
+                                action('2');
+                              },
+                              text: '2',
+                            ),
+                            CalcButton(
+                              theme: theme,
+                              action: () {
+                                action('3');
+                              },
+                              text: '3',
+                            ),
+                            CalcButton(
+                              theme: theme,
+                              action: () {
+                                setSign('-');
+                              },
+                              icon: Icons.remove,
+                              height: 20,
+                              itemColor:
+                                  theme
+                                      .lightModeColor
+                                      .secColor200,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          spacing: 15,
+                          mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceBetween,
+                          children: [
+                            CalcButton(
+                              theme: theme,
+                              action: () {
+                                action('0');
+                              },
+                              text: '0',
+                            ),
+                            CalcButton(
+                              theme: theme,
+                              action: () {
+                                action('.');
+                              },
+                              text: '.',
+                            ),
+                            CalcButton(
+                              flex: 2,
+                              theme: theme,
+                              action: () {
+                                getResult();
+                              },
+                              text: '=',
+                              color:
+                                  theme
+                                      .lightModeColor
+                                      .prColor300,
+                              itemColor: Colors.white,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -541,7 +558,14 @@ class CalcButton extends StatelessWidget {
             color: color ?? Colors.white,
           ),
           child: InkWell(
-            onTap: action,
+            onTap: () {
+              CalculatorAuthAction().useCalculatorAction(
+                context: context,
+                action: () {
+                  action();
+                },
+              );
+            },
             borderRadius: BorderRadius.circular(10),
             child: Container(
               padding: EdgeInsets.all(10),

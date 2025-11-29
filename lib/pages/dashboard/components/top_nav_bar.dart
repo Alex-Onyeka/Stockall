@@ -8,6 +8,8 @@ import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/subscription/multiple_stores_auth.dart';
+import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/shop_setup/shop_page/shop_page.dart';
@@ -154,32 +156,42 @@ class _TopNavBarState extends State<TopNavBar> {
                               ) => PopoverMenu(
                                 parentContext: context,
                                 action: () async {
-                                  if (isOnline) {
-                                    Navigator.push(
-                                      // ignore: use_build_context_synchronously
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return ShopSetupPage();
-                                        },
-                                      ),
-                                    );
-                                  } else {
-                                    showDialog(
-                                      // ignore: use_build_context_synchronously
-                                      context: context,
-                                      builder: (context) {
-                                        return InfoAlert(
-                                          theme:
-                                              widget.theme,
-                                          message:
-                                              'You need to be connected to the internet before you can create a new Shop.',
-                                          title:
-                                              'No Internet Connection',
+                                  MultipleStoresAuthAction().numberOfStoresAction(
+                                    context: context,
+                                    action: () {
+                                      if (isOnline) {
+                                        Navigator.push(
+                                          // ignore: use_build_context_synchronously
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (
+                                              context,
+                                            ) {
+                                              return ShopSetupPage();
+                                            },
+                                          ),
                                         );
-                                      },
-                                    );
-                                  }
+                                      } else {
+                                        showDialog(
+                                          // ignore: use_build_context_synchronously
+                                          context: context,
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return InfoAlert(
+                                              theme:
+                                                  widget
+                                                      .theme,
+                                              message:
+                                                  'You need to be connected to the internet before you can create a new Shop.',
+                                              title:
+                                                  'No Internet Connection',
+                                            );
+                                          },
+                                        );
+                                      }
+                                    },
+                                  );
                                 },
                               ),
                           onPop: () {
@@ -199,26 +211,27 @@ class _TopNavBarState extends State<TopNavBar> {
                                   : 270,
                           height:
                               returnShopProvider(
+                                        // ignore: use_build_context_synchronously
                                         context,
                                         listen: false,
                                       ).userShops.length <
                                       2
                                   ? 190
                                   : returnShopProvider(
+                                        // ignore: use_build_context_synchronously
                                         context,
                                         listen: false,
                                       ).userShops.length >
                                       4
                                   ? 400
                                   : (returnShopProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              )
-                                              .userShops
-                                              .length *
+                                            // ignore: use_build_context_synchronously
+                                            context,
+                                            listen: false,
+                                          ).userShops.length *
                                           (68 -
                                               returnShopProvider(
+                                                    // ignore: use_build_context_synchronously
                                                     context,
                                                     listen:
                                                         false,
@@ -318,7 +331,7 @@ class _TopNavBarState extends State<TopNavBar> {
                                       widget
                                           .theme
                                           .mobileTexts
-                                          .b4
+                                          .b3
                                           .fontSize,
                                   color:
                                       widget
@@ -648,9 +661,44 @@ class _TopNavBarState extends State<TopNavBar> {
                               ],
                             ),
                           ),
-                          Icon(
-                            size: 18,
-                            Icons.refresh_rounded,
+                          Stack(
+                            children: [
+                              Visibility(
+                                visible:
+                                    !returnData(
+                                      context,
+                                    ).isRefreshing,
+                                child: Icon(
+                                  size: 18,
+                                  Icons.refresh_rounded,
+                                ),
+                              ),
+                              Visibility(
+                                visible:
+                                    returnData(
+                                      context,
+                                    ).isRefreshing,
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.only(
+                                        top: 2.0,
+                                        left: 2,
+                                      ),
+                                  child: SizedBox(
+                                    height: 14,
+                                    width: 14,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color:
+                                          widget
+                                              .theme
+                                              .lightModeColor
+                                              .secColor200,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -869,17 +917,52 @@ class PopoverMenu extends StatelessWidget {
                               spacing: 10,
                               children: [
                                 Expanded(
-                                  child: Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                    ),
-                                    shop.name,
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b3
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              shop.name,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Visibility(
+                                        visible:
+                                            shop.isHeadQuarters!,
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                color:
+                                                    theme
+                                                        .lightModeColor
+                                                        .secColor200,
+                                                fontSize: 8,
+                                                // fontStyle:
+                                                //     FontStyle
+                                                //         .italic,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              "(Head Quarters)",
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                                 Visibility(
@@ -932,6 +1015,7 @@ class PopoverMenu extends StatelessWidget {
                                   );
                                   return;
                                 }
+                                // ignore: use_build_context_synchronously
                                 Navigator.of(context).pop();
                                 await returnShopProvider(
                                   safeContext,
@@ -981,13 +1065,20 @@ class PopoverMenu extends StatelessWidget {
               ),
               child: Material(
                 color: Colors.white,
-                child: MainButtonP(
-                  themeProvider: theme,
-                  action: () {
-                    Navigator.of(context).pop();
-                    action!();
-                  },
-                  text: 'Create New Shop',
+                child: SubWrapper(
+                  isVisible:
+                      !MultipleStoresAuthAction()
+                          .numberOfStoresAction(
+                            context: context,
+                          ),
+                  mainWidget: MainButtonP(
+                    themeProvider: theme,
+                    action: () {
+                      Navigator.of(context).pop();
+                      action!();
+                    },
+                    text: 'Create New Shop',
+                  ),
                 ),
               ),
             ),

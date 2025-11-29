@@ -16,74 +16,152 @@ import 'package:universal_html/html.dart' as html;
 
 class GenerateBarcodeScreen extends StatelessWidget {
   final String data;
-  final TempProductClass product;
+  final List<TempProductClass> products;
 
   const GenerateBarcodeScreen({
     super.key,
     required this.data,
-    required this.product,
+    required this.products,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      spacing: 5,
-      children: [
-        Flexible(
-          child: Text(
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-            product.name.isEmpty
-                ? 'Name Not Set'
-                : product.name,
-          ),
-        ),
-        SizedBox(height: 5),
-        BarcodeWidget(
-          barcode: Barcode.code128(),
-          data: data,
-          width: 300,
-          height: 100,
-          color: Colors.black,
-          backgroundColor: Colors.white,
-          drawText: true,
-          errorBuilder:
-              (context, error) => Text(
-                'Error: $error',
-                style: const TextStyle(color: Colors.red),
+    return Builder(
+      builder: (context) {
+        if (products.length == 1) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            spacing: 5,
+            children: [
+              Flexible(
+                child: Text(
+                  products[0].name.isEmpty
+                      ? 'Name Not Set'
+                      : products[0].name,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-        ),
-        SizedBox(height: 5),
-        Text(
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-          'Price: ${product.sellingPrice == null || product.sellingPrice == 0 ? 'Not Set' : formatMoneyMid(amount: product.sellingPrice ?? 0, context: context)}',
-        ),
-      ],
+              const SizedBox(height: 5),
+              BarcodeWidget(
+                barcode: Barcode.code128(),
+                data: data,
+                width: 300,
+                height: 100,
+                color: Colors.black,
+                backgroundColor: Colors.white,
+                drawText: true,
+                errorBuilder:
+                    (context, error) => Text(
+                      'Error: $error',
+                      style: const TextStyle(
+                        color: Colors.red,
+                      ),
+                    ),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                'Price: ${products[0].sellingPrice == null || products[0].sellingPrice == 0 ? 'Not Set' : formatMoneyMid(amount: products[0].sellingPrice ?? 0, context: context)}',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          );
+        } else {
+          return SizedBox(
+            height: screenHeight(context) - 320,
+            width: 400,
+            child: ListView(
+              shrinkWrap: true,
+              children:
+                  products.map((pr) {
+                    var data2 =
+                        '${pr.name.isEmpty ? 'P' : pr.name.substring(0, 1).toUpperCase()}-${pr.uuid!.split('-').first.substring(0, 5).toUpperCase()}${pr.uuid!.split('-')[1].toUpperCase()}';
+
+                    return Padding(
+                      padding: const EdgeInsets.only(
+                        top: 10.0,
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment:
+                            MainAxisAlignment.center,
+                        spacing: 5,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              pr.name.isEmpty
+                                  ? 'Name Not Set'
+                                  : pr.name,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          BarcodeWidget(
+                            barcode: Barcode.code128(),
+                            data: data2,
+                            width: 300,
+                            height: 100,
+                            color: Colors.black,
+                            backgroundColor: Colors.white,
+                            drawText: true,
+                            errorBuilder:
+                                (context, error) => Text(
+                                  'Error: $error',
+                                  style: const TextStyle(
+                                    color: Colors.red,
+                                  ),
+                                ),
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            'Price: ${pr.sellingPrice == null || pr.sellingPrice == 0 ? 'Not Set' : formatMoneyMid(amount: pr.sellingPrice ?? 0, context: context)}',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Divider(
+                            color: Colors.grey.shade600,
+                            thickness: 0.4,
+                            height: 5,
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+            ),
+          );
+        }
+      },
     );
   }
 }
 
 Future<bool> printBarcode(
-  String data,
+  // String data,
   BuildContext context,
-  TempProductClass product,
+  List<TempProductClass> products,
 ) async {
   final barcode = Barcode.code128();
-  final svg = barcode.toSvg(
-    data,
-    width: 200,
-    height: 70,
-    fontHeight: 14,
-    drawText: true,
-  );
+  // final svg = barcode.toSvg(
+  //   data,
+  //   width: 200,
+  //   height: 70,
+  //   fontHeight: 14,
+  //   drawText: true,
+  // );
 
   final pdf = pw.Document();
 
@@ -100,64 +178,86 @@ Future<bool> printBarcode(
         right: 30,
         bottom: 20,
       ),
+      //     barcode.toSvg(
+      //   data,
+      //   width: 200,
+      //   height: 70,
+      //   fontHeight: 14,
+      //   drawText: true,
+      // );
       build: (pw.Context pcontext) {
         return pw.Center(
           child: pw.Column(
             mainAxisSize: pw.MainAxisSize.min,
             children: [
-              // pw.SizedBox(height: 80),
-              pw.Text(
-                style: pw.TextStyle(fontSize: 5),
-                '-',
-              ),
-              pw.SizedBox(height: 10),
-              pw.Text(
-                textAlign: pw.TextAlign.center,
-                style: pw.TextStyle(
-                  fontSize: 11,
-                  fontWeight: pw.FontWeight.bold,
+              ...products.map(
+                (product) => pw.Column(
+                  children: [
+                    pw.Text(
+                      style: pw.TextStyle(fontSize: 5),
+                      '-',
+                    ),
+                    pw.SizedBox(height: 10),
+                    pw.Text(
+                      textAlign: pw.TextAlign.center,
+                      style: pw.TextStyle(
+                        fontSize: 11,
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                      product.name.isEmpty
+                          ? 'Name Not Set'
+                          : product.name,
+                    ),
+                    pw.SizedBox(height: 5),
+                    pw.SvgImage(
+                      svg: barcode.toSvg(
+                        '${product.name.isEmpty ? 'P' : product.name.substring(0, 1).toUpperCase()}-${product.uuid!.split('-').first.substring(0, 5).toUpperCase()}${product.uuid!.split('-')[1].toUpperCase()}',
+                        width: 200,
+                        height: 70,
+                        fontHeight: 14,
+                        drawText: true,
+                      ),
+                    ),
+                    pw.SizedBox(height: 10),
+                    pw.Row(
+                      mainAxisAlignment:
+                          pw.MainAxisAlignment.center,
+                      mainAxisSize: pw.MainAxisSize.min,
+                      children: [
+                        pw.Text(
+                          style: pw.TextStyle(
+                            fontSize: 8,
+                            // fontWeight: pw.FontWeight.bold,
+                          ),
+                          'Price: ',
+                        ),
+                        pw.Text(
+                          style: pw.TextStyle(
+                            fontSize: 10,
+                            fontWeight: pw.FontWeight.bold,
+                          ),
+                          product.sellingPrice == null ||
+                                  product.sellingPrice == 0
+                              ? 'Not Set'
+                              : 'N ${formatLargeNumberDouble(product.sellingPrice ?? 0)}',
+                        ),
+                      ],
+                    ),
+                    pw.SizedBox(height: 5),
+                    pw.Text(
+                      style: pw.TextStyle(fontSize: 5),
+                      '-',
+                    ),
+                    pw.SizedBox(height: 5),
+                    pw.Text(
+                      style: pw.TextStyle(fontSize: 5),
+                      '-',
+                    ),
+                  ],
                 ),
-                product.name.isEmpty
-                    ? 'Name Not Set'
-                    : product.name,
               ),
-              pw.SizedBox(height: 5),
-              pw.SvgImage(svg: svg),
-              pw.SizedBox(height: 10),
-              pw.Row(
-                mainAxisAlignment:
-                    pw.MainAxisAlignment.center,
-                mainAxisSize: pw.MainAxisSize.min,
-                children: [
-                  pw.Text(
-                    style: pw.TextStyle(
-                      fontSize: 8,
-                      // fontWeight: pw.FontWeight.bold,
-                    ),
-                    'Price: ',
-                  ),
-                  pw.Text(
-                    style: pw.TextStyle(
-                      fontSize: 10,
-                      fontWeight: pw.FontWeight.bold,
-                    ),
-                    product.sellingPrice == null ||
-                            product.sellingPrice == 0
-                        ? 'Not Set'
-                        : 'N ${formatLargeNumberDouble(product.sellingPrice ?? 0)}',
-                  ),
-                ],
-              ),
-              pw.SizedBox(height: 5),
-              pw.Text(
-                style: pw.TextStyle(fontSize: 5),
-                '-',
-              ),
-              pw.SizedBox(height: 5),
-              pw.Text(
-                style: pw.TextStyle(fontSize: 5),
-                '-',
-              ),
+
+              // pw.SizedBox(height: 80),
             ],
           ),
         );
@@ -180,7 +280,8 @@ Future<bool> printBarcode(
 
       final anchor =
           html.AnchorElement(href: url)
-            ..download = data
+            ..download =
+                '${products[0].name.isEmpty ? 'P' : products[0].name.substring(0, 1).toUpperCase()}-${products[0].uuid!.split('-').first.substring(0, 5).toUpperCase()}${products[0].uuid!.split('-')[1].toUpperCase()}'
             ..style.display = 'none';
 
       html.document.body?.append(anchor);
@@ -202,7 +303,7 @@ Future<bool> printBarcode(
       var res = await Printing.sharePdf(
         bytes: pdfBytes,
         filename:
-            'barcode_${data.replaceAll(' ', '_')}.pdf',
+            'barcode_${'${products[0].name.isEmpty ? 'P' : products[0].name.substring(0, 1).toUpperCase()}-${products[0].uuid!.split('-').first.substring(0, 5).toUpperCase()}${products[0].uuid!.split('-')[1].toUpperCase()}'.replaceAll(' ', '_')}.pdf',
       );
       return res;
     }
@@ -211,13 +312,14 @@ Future<bool> printBarcode(
 
 Future<bool> generateBarcodeAndPrint(
   BuildContext context,
-  TempProductClass product,
+  List<TempProductClass> products,
+  bool isEdit,
 ) async {
   print('Starting Generation');
   final safeContext = context;
 
   final productUuid =
-      '${product.name.isEmpty ? 'P' : product.name.substring(0, 1).toUpperCase()}-${product.uuid!.split('-').first.substring(0, 5).toUpperCase()}${product.uuid!.split('-')[1].toUpperCase()}';
+      '${products[0].name.isEmpty ? 'P' : products[0].name.substring(0, 1).toUpperCase()}-${products[0].uuid!.split('-').first.substring(0, 5).toUpperCase()}${products[0].uuid!.split('-')[1].toUpperCase()}';
 
   final result = await showDialog<bool>(
     context: safeContext,
@@ -225,7 +327,7 @@ Future<bool> generateBarcodeAndPrint(
       return DialogTemplate(
         theme: returnTheme(safeContext, listen: false),
         message:
-            'Generated for this Product. This action automatically sets the product barcode to the new generated barcode once you print it.',
+            'Generated for Barcode this Product(s). This action automatically sets the products\' barcode to the new generated barcode once you print or download it.',
         title: 'Generated Barcode',
         action: () async {
           print('Starting Printing');
@@ -233,9 +335,9 @@ Future<bool> generateBarcodeAndPrint(
           // Navigator.pop(confirmAlert);
 
           bool printingSuccess = await printBarcode(
-            productUuid,
+            // productUuid,
             safeContext,
-            product,
+            products,
           );
 
           if (!printingSuccess) {
@@ -248,24 +350,29 @@ Future<bool> generateBarcodeAndPrint(
             return;
           }
 
-          var newP = product;
-          newP.barcode = productUuid;
-
           if (safeContext.mounted) {
-            await returnData(
-              safeContext,
-              listen: false,
-            ).updateProduct(
-              product: newP,
-              context: safeContext,
-            );
+            if (!isEdit) {
+              for (var pr in products) {
+                final newShit =
+                    '${pr.name.isEmpty ? 'P' : pr.name.substring(0, 1).toUpperCase()}-${pr.uuid!.split('-').first.substring(0, 5).toUpperCase()}${pr.uuid!.split('-')[1].toUpperCase()}';
 
-            print(
-              'Finished Printing and Updating Product Barcode',
-            );
+                pr.barcode = newShit;
+
+                await returnData(
+                  safeContext,
+                  listen: false,
+                ).updateProduct(
+                  product: pr,
+                  context: safeContext,
+                );
+              }
+              print(
+                'Finished Printing and Updating Product Barcode',
+              );
+            }
 
             // ignore: use_build_context_synchronously
-            Navigator.pop(safeContext, true); // return true
+            Navigator.pop(safeContext, true);
           } else {
             print('Context not mounted');
             // ignore: use_build_context_synchronously
@@ -275,7 +382,7 @@ Future<bool> generateBarcodeAndPrint(
         actionButtonText: buttonDislayText(safeContext),
         widget: GenerateBarcodeScreen(
           data: productUuid,
-          product: product,
+          products: products,
         ),
       );
     },
@@ -359,15 +466,21 @@ Future<dynamic> settingsGenerateProductBarcode(
                                     MainAxisAlignment
                                         .spaceBetween,
                                 children: [
-                                  IconButton(
-                                    onPressed: () {
-                                      Navigator.of(
-                                        context,
-                                      ).pop();
-                                    },
-                                    icon: Icon(
-                                      size: 20,
-                                      Icons.clear,
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.only(
+                                          right: 8.0,
+                                        ),
+                                    child: IconButton(
+                                      onPressed: () {
+                                        Navigator.of(
+                                          context,
+                                        ).pop();
+                                      },
+                                      icon: Icon(
+                                        size: 20,
+                                        Icons.clear,
+                                      ),
                                     ),
                                   ),
                                   Text(
@@ -382,13 +495,108 @@ Future<dynamic> settingsGenerateProductBarcode(
                                     ),
                                     'Set Barcode',
                                   ),
-                                  Opacity(
-                                    opacity: 0,
-                                    child: IconButton(
-                                      onPressed: () {},
-                                      icon: Icon(
-                                        size: 20,
-                                        Icons.clear,
+                                  Material(
+                                    color:
+                                        Colors.transparent,
+                                    child: Ink(
+                                      decoration: BoxDecoration(
+                                        color:
+                                            returnData(
+                                                      context,
+                                                    )
+                                                    .barcodeGenerationList
+                                                    .isNotEmpty
+                                                ? theme
+                                                    .lightModeColor
+                                                    .prColor300
+                                                : Colors
+                                                    .grey,
+                                        borderRadius:
+                                            BorderRadius.circular(
+                                              2,
+                                            ),
+                                      ),
+                                      child: InkWell(
+                                        onTap: () {
+                                          if (returnData(
+                                                context,
+                                                listen:
+                                                    false,
+                                              )
+                                              .barcodeGenerationList
+                                              .isNotEmpty) {
+                                            showDialog(
+                                              context:
+                                                  context,
+                                              builder: (
+                                                firstContext,
+                                              ) {
+                                                return ConfirmationAlert(
+                                                  theme:
+                                                      theme,
+                                                  message:
+                                                      'You are about to regenrate and print the barcode of this item, are you sure you want to proceed?',
+                                                  actionButtonText:
+                                                      'Generate',
+                                                  title:
+                                                      'Regenerate and Print Barcode?',
+                                                  action: () async {
+                                                    Navigator.of(
+                                                      firstContext,
+                                                    ).pop();
+
+                                                    var res = await generateBarcodeAndPrint(
+                                                      context,
+                                                      returnData(
+                                                        context,
+                                                        listen:
+                                                            false,
+                                                      ).barcodeGenerationList,
+                                                      false,
+                                                    );
+
+                                                    if (res &&
+                                                        context.mounted) {
+                                                      returnData(
+                                                        context,
+                                                        listen:
+                                                            false,
+                                                      ).clearBarcodeGenerationList();
+                                                    }
+
+                                                    print(
+                                                      'Generate Clicked',
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                            );
+                                          }
+                                        },
+                                        child: Container(
+                                          padding:
+                                              EdgeInsets.symmetric(
+                                                horizontal:
+                                                    8,
+                                                vertical: 3,
+                                              ),
+
+                                          child: Center(
+                                            child: Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b3
+                                                        .fontSize,
+                                                color:
+                                                    Colors
+                                                        .white,
+                                              ),
+                                              'Generate',
+                                            ),
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -456,44 +664,31 @@ Future<dynamic> settingsGenerateProductBarcode(
                                                           .transparent,
                                                   child: InkWell(
                                                     onTap: () {
-                                                      if (product.barcode ==
-                                                          null) {
-                                                        generateBarcodeAndPrint(
-                                                          context,
+                                                      // if (product.barcode ==
+                                                      //     null) {
+                                                      //   generateBarcodeAndPrint(
+                                                      //     context,
+                                                      //     [
+                                                      //       product,
+                                                      //     ],
+                                                      //   );
+                                                      // } else {
+                                                      //
+                                                      // }
+                                                      var dataP = returnData(
+                                                        context,
+                                                        listen:
+                                                            false,
+                                                      );
+                                                      if (dataP.barcodeGenerationList.contains(
+                                                        product,
+                                                      )) {
+                                                        dataP.removeFromBarcodeGenerationList(
                                                           product,
                                                         );
                                                       } else {
-                                                        showDialog(
-                                                          context:
-                                                              context,
-                                                          builder: (
-                                                            firstContext,
-                                                          ) {
-                                                            return ConfirmationAlert(
-                                                              theme:
-                                                                  theme,
-                                                              message:
-                                                                  'You are about to regenrate and print the barcode of this item, are you sure you want to proceed?',
-                                                              actionButtonText:
-                                                                  'Generate',
-                                                              title:
-                                                                  'Regenerate and Print Barcode?',
-                                                              action: () async {
-                                                                Navigator.of(
-                                                                  firstContext,
-                                                                ).pop();
-
-                                                                generateBarcodeAndPrint(
-                                                                  context,
-                                                                  product,
-                                                                );
-
-                                                                print(
-                                                                  'Generate Clicked',
-                                                                );
-                                                              },
-                                                            );
-                                                          },
+                                                        dataP.addToBarcodeGenerationList(
+                                                          product,
                                                         );
                                                       }
                                                     },
@@ -563,6 +758,20 @@ Future<dynamic> settingsGenerateProductBarcode(
                                                             product.barcode ??
                                                                 'Barcode Not Set',
                                                           ),
+                                                          Visibility(
+                                                            visible: returnData(
+                                                              context,
+                                                            ).barcodeGenerationList.contains(
+                                                              product,
+                                                            ),
+                                                            child: Icon(
+                                                              size:
+                                                                  18,
+                                                              color:
+                                                                  theme.lightModeColor.secColor200,
+                                                              Icons.check,
+                                                            ),
+                                                          ),
                                                         ],
                                                       ),
                                                     ),
@@ -588,6 +797,10 @@ Future<dynamic> settingsGenerateProductBarcode(
     },
   ).then((_) {
     if (context.mounted) {
+      returnData(
+        context,
+        listen: false,
+      ).clearBarcodeGenerationList();
       productSearch.clear();
     }
   });

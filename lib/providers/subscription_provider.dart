@@ -37,7 +37,7 @@ class SubscriptionProvider extends ChangeNotifier {
   ) async {
     var shopP = returnShopProvider(context, listen: false);
     if (shopP.userShop() == null) {
-      await shopP.getUserShops(AuthService().currentUser!);
+      await shopP.getUserShops();
       return shopP.userShop()!;
     } else {
       return shopP.userShop()!;
@@ -47,9 +47,6 @@ class SubscriptionProvider extends ChangeNotifier {
   Future<SubscriptionClass?> createSubscription(
     BuildContext context,
   ) async {
-    // bool isOnline = await connectivity.isOnline();
-    // if (isOnline) {
-    var shop = await userShop(context);
     try {
       var newSub = SubscriptionClass(
         createdAt: DateTime.now().toUtc(),
@@ -57,7 +54,9 @@ class SubscriptionProvider extends ChangeNotifier {
         nextPayment: DateTime.now().add(Duration(days: 30)),
         lastPayment: DateTime.now().toUtc(),
         subscriptionId: uuidGen(),
-        userId: shop.userId,
+        userId: AuthService().currentUser!,
+        userName:
+            "${returnUserProvider(context, listen: false).currentUserMain!.name} ${returnUserProvider(context, listen: false).currentUserMain!.lastName ?? ''}",
       );
       var subTemp =
           await supabase
@@ -70,9 +69,10 @@ class SubscriptionProvider extends ChangeNotifier {
         SubscriptionFunc().createSubscription(
           SubscriptionClass.fromJson(subTemp),
         );
+        notifyListeners();
+        return SubscriptionClass.fromJson(subTemp);
       }
-      notifyListeners();
-      return SubscriptionClass.fromJson(subTemp!);
+      return null;
     } catch (e) {
       print('Error Creating Online: ${e.toString()}');
       return null;
@@ -86,6 +86,7 @@ class SubscriptionProvider extends ChangeNotifier {
     BuildContext context,
   ) async {
     var isOnline = await connectivity.isOnline();
+    // ignore: use_build_context_synchronously
     var shop = await userShop(context);
     if (isOnline) {
       try {
@@ -97,6 +98,7 @@ class SubscriptionProvider extends ChangeNotifier {
                 .maybeSingle();
         if (response == null) {
           print('No Subscription Found');
+          // ignore: use_build_context_synchronously
           var subs = await createSubscription(context);
           return subs;
         }
@@ -125,6 +127,20 @@ class SubscriptionProvider extends ChangeNotifier {
     }
   }
 
+  List<TempSub> subs = [
+    TempSub(planName: 'Free', plan: 0),
+    TempSub(planName: 'Basic', plan: 1),
+    TempSub(planName: 'Standard', plan: 2),
+    TempSub(planName: 'Premium', plan: 3),
+  ];
+
+  int? selected;
+
+  void select(int sub) {
+    selected = sub;
+    notifyListeners();
+  }
+
   Future<int> subscribe({
     required int plan,
     required BuildContext context,
@@ -140,7 +156,7 @@ class SubscriptionProvider extends ChangeNotifier {
               .from('subscription')
               .update({
                 'next_payment':
-                    nextPayment?..toUtc().toIso8601String(),
+                    nextPayment?.toUtc().toIso8601String(),
                 'last_payment':
                     DateTime.now()
                         .toUtc()
@@ -165,4 +181,11 @@ class SubscriptionProvider extends ChangeNotifier {
       return 0;
     }
   }
+}
+
+class TempSub {
+  final String planName;
+  final int plan;
+
+  TempSub({required this.planName, required this.plan});
 }

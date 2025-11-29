@@ -13,6 +13,7 @@ import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
+import 'package:stockall/constants/subscription/expenses_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/expenses/add_expenses/add_expenses.dart';
 import 'package:stockall/pages/expenses/components/expenses_tile.dart';
@@ -171,16 +172,24 @@ class _ExpensesDesktopState extends State<ExpensesDesktop> {
                           visible: expenses.isNotEmpty,
                           child: FloatingActionButtonMain(
                             action: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return AddExpenses();
-                                  },
-                                ),
-                              ).then((_) {
-                                setState(() {});
-                              });
+                              ExpensesAuthAction()
+                                  .numberOfDailyExpensesAction(
+                                    context: context,
+                                    action: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return AddExpenses();
+                                          },
+                                        ),
+                                      ).then((_) {
+                                        setState(() {});
+                                      });
+                                    },
+                                  );
                             },
                             color:
                                 theme
@@ -462,23 +471,26 @@ class _ExpensesDesktopState extends State<ExpensesDesktop> {
                                                           height:
                                                               35,
                                                           action: () {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                builder: (
+                                                            ExpensesAuthAction().numberOfDailyExpensesAction(
+                                                              context:
                                                                   context,
-                                                                ) {
-                                                                  return AddExpenses();
-                                                                },
-                                                              ),
-                                                            ).then(
-                                                              (
-                                                                _,
-                                                              ) {
-                                                                setState(
-                                                                  () {
-                                                                    // expensesFuture =
-                                                                    //     getExpenses();
+                                                              action: () {
+                                                                Navigator.push(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                    builder: (
+                                                                      context,
+                                                                    ) {
+                                                                      return AddExpenses();
+                                                                    },
+                                                                  ),
+                                                                ).then(
+                                                                  (
+                                                                    _,
+                                                                  ) {
+                                                                    setState(
+                                                                      () {},
+                                                                    );
                                                                   },
                                                                 );
                                                               },
@@ -486,6 +498,14 @@ class _ExpensesDesktopState extends State<ExpensesDesktop> {
                                                           },
                                                           theme:
                                                               theme,
+                                                          altAction: () async {
+                                                            await getExpenses();
+                                                            setState(
+                                                              () {},
+                                                            );
+                                                          },
+                                                          altActionText:
+                                                              'Refresh Expenses',
                                                         ),
                                                       ),
                                                     );

@@ -9,6 +9,8 @@ class PinCodeWidget extends StatefulWidget {
   final TextEditingController controller;
   final String? text;
   final bool hideText;
+  final int? length;
+
   final Function(String value)? onChanged;
   final bool? focus;
 
@@ -20,6 +22,7 @@ class PinCodeWidget extends StatefulWidget {
     required this.hideText,
     this.onChanged,
     this.focus,
+    this.length,
   });
 
   @override
@@ -32,10 +35,12 @@ class _PinCodeWidgetState extends State<PinCodeWidget> {
   Widget build(BuildContext context) {
     var theme = returnTheme(context, listen: false);
     return PinCodeTextField(
+      beforeTextPaste: (text) => true,
+      autoDisposeControllers: false,
       autoFocus:
           widget.focus != null && widget.focus == true,
       appContext: context,
-      length: 4,
+      length: widget.length ?? 4,
       onChanged: (value) {
         widget.onChanged != null
             ? widget.onChanged!(value)
@@ -71,8 +76,8 @@ class _PinCodeWidgetState extends State<PinCodeWidget> {
       pinTheme: PinTheme(
         shape: PinCodeFieldShape.box,
         borderRadius: BorderRadius.circular(5),
-        fieldHeight: 50,
-        fieldWidth: 40,
+        fieldHeight: 45,
+        fieldWidth: 35,
         activeFillColor: Colors.white,
         selectedFillColor: Colors.grey.shade100,
         inactiveFillColor: Colors.grey.shade100,

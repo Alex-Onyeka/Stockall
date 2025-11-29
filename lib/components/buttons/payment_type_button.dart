@@ -26,7 +26,10 @@ class PaymentTypeButton extends StatelessWidget {
               returnSalesProvider(
                 context,
                 listen: false,
-              ).changeMethod(index);
+              ).changeMethod(
+                index: index,
+                context: context,
+              );
             }
           },
           child: SizedBox(
@@ -111,7 +114,10 @@ class PaymentTypeButton extends StatelessWidget {
                         returnSalesProvider(
                           context,
                           listen: false,
-                        ).changeMethod(index);
+                        ).changeMethod(
+                          context: context,
+                          index: index,
+                        );
                       }
                     },
                   ),

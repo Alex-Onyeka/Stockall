@@ -13,6 +13,7 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/constants/scan_barcode.dart';
+import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
@@ -100,22 +101,27 @@ class _ProductPageMobileState
     return Scaffold(
       bottomNavigationBar: MainBottomNav(
         action: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return AddProduct();
-              },
-            ),
-          ).then((_) {
-            if (context.mounted) {
-              setState(() {
-                // getProductList(context);
+          ItemsAuthAction().numberOfItemsAction(
+            context: context,
+            action: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return AddProduct();
+                  },
+                ),
+              ).then((_) {
+                if (context.mounted) {
+                  setState(() {
+                    // getProductList(context);
+                  });
+                } else {
+                  print('Context not mounted');
+                }
               });
-            } else {
-              print('Context not mounted');
-            }
-          });
+            },
+          );
         },
         globalKey: _scaffoldKey,
       ),
@@ -213,39 +219,72 @@ class _ProductPageMobileState
                         searchController: searchController,
                         searchAction: (value) {
                           setState(() {
-                            searchResult =
-                                searchController.text;
+                            if (products
+                                .where(
+                                  (pr) =>
+                                      pr.barcode
+                                          ?.toLowerCase() ==
+                                      searchController.text
+                                          .toLowerCase(),
+                                )
+                                .isNotEmpty) {
+                              ItemsAuthAction()
+                                  .useOfBArcodeAction(
+                                    context: context,
+                                    action: () {
+                                      searchResult =
+                                          searchController
+                                              .text;
+                                    },
+                                    failAction: () {
+                                      setState(() {
+                                        searchController
+                                            .clear();
+                                      });
+                                    },
+                                  );
+                            } else {
+                              searchResult =
+                                  searchController.text;
+                            }
                           });
                         },
                         hintText: 'Search Item Name',
                         mainTitle: 'Items Summary',
                         firsRow: true,
-                        scanAction: () async {
-                          String? result = await scanCode(
-                            context,
-                            'Scan Failed',
+                        scanAction: () {
+                          ItemsAuthAction().useOfBArcodeAction(
+                            context: context,
+                            action: () async {
+                              String? result =
+                                  await scanCode(
+                                    context,
+                                    'Scan Failed',
+                                  );
+                              setState(() {
+                                if (result != null) {
+                                  searchController.text =
+                                      result;
+                                } else {
+                                  return;
+                                }
+                              });
+                              if (!context.mounted) {
+                                return;
+                              }
+                              setState(() {
+                                productsResult =
+                                    products
+                                        .where(
+                                          (product) =>
+                                              product
+                                                  .barcode ==
+                                              result,
+                                        )
+                                        .toList();
+                              });
+                            },
                           );
-                          setState(() {
-                            if (result != null) {
-                              searchController.text =
-                                  result;
-                            } else {
-                              return;
-                            }
-                          });
-                          if (!context.mounted) {
-                            return;
-                          }
-                          setState(() {
-                            productsResult =
-                                products
-                                    .where(
-                                      (product) =>
-                                          product.barcode ==
-                                          result,
-                                    )
-                                    .toList();
-                          });
                         },
                         color1: Colors.green,
                         title1: 'In Stock',

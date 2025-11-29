@@ -11,7 +11,6 @@ import 'package:stockall/pages/profile/edit/edit.dart';
 import 'package:stockall/pages/sales/sales_page/sales_page.dart';
 import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart';
 import 'package:stockall/providers/nav_provider.dart';
-import 'package:stockall/services/auth_service.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -35,6 +34,13 @@ class _HomeState extends State<Home> {
     return user;
   }
 
+  // Future<SubscriptionClass?> getSubscription() async {
+  //   return await returnSubcsription(
+  //     context,
+  //     listen: false,
+  //   ).getSubscription(context);
+  // }
+
   void _handleNoShop() {
     if (!mounted) return;
     returnNavProvider(context, listen: false).verify();
@@ -44,20 +50,12 @@ class _HomeState extends State<Home> {
   Future<TempShopClass?> getUserShop() async {
     try {
       print('About to get Stores');
-      var shop = await returnShopProvider(
-        context,
-        listen: false,
-      ).getUserShops(AuthService().currentUser!);
-      print('Stores Gotten: ${shop.length}');
-      shop.isNotEmpty
-          ? returnShopProvider(
-            // ignore: use_build_context_synchronously
+      var shop =
+          await returnShopProvider(
             context,
             listen: false,
-            // ignore: use_build_context_synchronously
-          ).getLogoImage(context)
-          : {};
-      print('About to return Store');
+          ).getUserShops();
+      print('Stores Gotten: ${shop.length}');
 
       if (context.mounted) {
         var mainShop =
@@ -77,11 +75,21 @@ class _HomeState extends State<Home> {
     }
   }
 
+  Future<void> setLogo() async {
+    returnShopProvider(
+      // ignore: use_build_context_synchronously
+      context,
+      listen: false,
+      // ignore: use_build_context_synchronously
+    ).getLogoImage(context);
+  }
+
   @override
   void initState() {
     super.initState();
-    shopFuture = getUserShop();
+    // getSubscription();
     userFuture = getUser();
+    shopFuture = getUserShop();
   }
 
   @override

@@ -25,6 +25,8 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/play_sounds.dart';
+import 'package:stockall/constants/subscription/sales_auth.dart';
+import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/products/compnents/cart_item_main.dart';
@@ -610,242 +612,329 @@ class _MakeSalesDesktopState
     required TempCartItem cartItem,
     required Function() closeAction,
   }) {
-    var theme = returnTheme(context, listen: false);
-    if (returnData(context, listen: false).productList
-            .where(
-              (product) =>
-                  product.uuid == cartItem.item.uuid,
-            )
-            .isEmpty &&
-        returnSalesProvider(context, listen: false)
-            .currentCart()
-            .cartItems
-            .where(
-              (item) =>
-                  item.item.uuid == cartItem.item.uuid,
-            )
-            .isNotEmpty) {
-      isNormalEdit = false;
-      nameC.text = cartItem.item.name;
-      qqty = cartItem.quantity;
-      pQuantity.text = cartItem.quantity.toStringAsFixed(0);
-      sellingPriceC.text = (cartItem.customPrice ?? 0)
-          .toStringAsFixed(0);
-      returnSalesProvider(
-        context,
-        listen: false,
-      ).toggleAddToStock(cartItem.addToStock);
-      returnSalesProvider(
-        context,
-        listen: false,
-      ).toggleSetTotalPrice(cartItem.setTotalPrice);
-    }
-    showDialog(
+    SalesAuthAction().addCustomItemToCartAction(
       context: context,
-      builder: (context) {
-        return GestureDetector(
-          onTap:
-              () =>
-                  FocusManager.instance.primaryFocus
-                      ?.unfocus(),
-          child: StatefulBuilder(
-            builder: (context, setState) {
-              return AlertDialog(
-                insetPadding: EdgeInsets.symmetric(
-                  horizontal: 15,
-                ),
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 15,
-                  vertical: 20,
-                ),
-                backgroundColor: Colors.white,
-                title: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Enter Item Sales',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.h4.fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
+      action: () {
+        var theme = returnTheme(context, listen: false);
+        if (returnData(context, listen: false).productList
+                .where(
+                  (product) =>
+                      product.uuid == cartItem.item.uuid,
+                )
+                .isEmpty &&
+            returnSalesProvider(context, listen: false)
+                .currentCart()
+                .cartItems
+                .where(
+                  (item) =>
+                      item.item.uuid == cartItem.item.uuid,
+                )
+                .isNotEmpty) {
+          isNormalEdit = false;
+          nameC.text = cartItem.item.name;
+          qqty = cartItem.quantity;
+          pQuantity.text = cartItem.quantity
+              .toStringAsFixed(0);
+          sellingPriceC.text = (cartItem.customPrice ?? 0)
+              .toStringAsFixed(0);
+          returnSalesProvider(
+            context,
+            listen: false,
+          ).toggleAddToStock(cartItem.addToStock, context);
+          returnSalesProvider(
+            context,
+            listen: false,
+          ).toggleSetTotalPrice(cartItem.setTotalPrice);
+        }
+        showDialog(
+          context: context,
+          builder: (context) {
+            return GestureDetector(
+              onTap:
+                  () =>
+                      FocusManager.instance.primaryFocus
+                          ?.unfocus(),
+              child: StatefulBuilder(
+                builder: (context, setState) {
+                  return AlertDialog(
+                    insetPadding: EdgeInsets.symmetric(
+                      horizontal: 15,
                     ),
-                    SizedBox(height: 10),
-                    Divider(color: Colors.grey.shade300),
-                  ],
-                ),
-                content: SingleChildScrollView(
-                  child: Stack(
-                    children: [
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 15,
+                      vertical: 20,
+                    ),
+                    backgroundColor: Colors.white,
+                    title: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Enter Item Sales',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .h4
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Divider(
+                          color: Colors.grey.shade300,
+                        ),
+                      ],
+                    ),
+                    content: SingleChildScrollView(
+                      child: Stack(
                         children: [
                           Column(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              GeneralTextField(
-                                title: 'Item Name',
-                                hint: 'Enter Item name',
-                                controller: nameC,
-                                lines: 1,
-                                theme: theme,
-                                onChanged: (value) {
-                                  // final suggestions =
-                                  //     returnSuggestionProvider(
-                                  //       context,
-                                  //       listen: false,
-                                  //     ).suggestions;
-
-                                  // if (nameC
-                                  //     .text
-                                  //     .isNotEmpty) {
-                                  //   final hasMatch =
-                                  //       suggestions.any(
-                                  //         (item) => item
-                                  //             .name!
-                                  //             .toLowerCase()
-                                  //             .contains(
-                                  //               value
-                                  //                   .toLowerCase(),
-                                  //             ),
-                                  //       );
-
-                                  //   setState(() {
-                                  //     resultOn = hasMatch;
-                                  //   });
-                                  // } else {
-                                  //   setState(() {
-                                  //     resultOn = false;
-                                  //   });
-                                  // }
-                                },
-                              ),
-
-                              SizedBox(height: 10),
-                              Row(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.end,
-                                spacing: 10,
+                              Column(
                                 children: [
-                                  Expanded(
-                                    child:
-                                        ToggleTotalPriceWidget(
-                                          theme: theme,
-                                        ),
+                                  GeneralTextField(
+                                    title: 'Item Name',
+                                    hint: 'Enter Item name',
+                                    controller: nameC,
+                                    lines: 1,
+                                    theme: theme,
+                                    onChanged: (value) {
+                                      // final suggestions =
+                                      //     returnSuggestionProvider(
+                                      //       context,
+                                      //       listen: false,
+                                      //     ).suggestions;
+
+                                      // if (nameC
+                                      //     .text
+                                      //     .isNotEmpty) {
+                                      //   final hasMatch =
+                                      //       suggestions.any(
+                                      //         (item) => item
+                                      //             .name!
+                                      //             .toLowerCase()
+                                      //             .contains(
+                                      //               value
+                                      //                   .toLowerCase(),
+                                      //             ),
+                                      //       );
+
+                                      //   setState(() {
+                                      //     resultOn = hasMatch;
+                                      //   });
+                                      // } else {
+                                      //   setState(() {
+                                      //     resultOn = false;
+                                      //   });
+                                      // }
+                                    },
                                   ),
-                                  Expanded(
-                                    child: MoneyTextfield(
-                                      title:
-                                          returnSalesProvider(
-                                                context,
-                                              ).setTotalPrice
-                                              ? 'Total Price'
-                                              : 'Individual Price',
-                                      hint: 'Enter Price',
-                                      controller:
-                                          sellingPriceC,
-                                      theme: theme,
-                                      onChanged: (p0) {
-                                        setState(() {});
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 20),
-                              Container(
-                                padding:
-                                    EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 5,
-                                    ),
-                                decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                        5,
-                                      ),
-                                  color:
-                                      Colors.grey.shade200,
-                                ),
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(
-                                        horizontal: 50.0,
-                                      ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .spaceBetween,
+
+                                  SizedBox(height: 10),
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment
+                                            .end,
+                                    spacing: 10,
                                     children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b3
-                                                  .fontSize,
-                                        ),
-                                        'Total Cost',
+                                      Expanded(
+                                        child:
+                                            ToggleTotalPriceWidget(
+                                              theme: theme,
+                                            ),
                                       ),
-                                      Text(
-                                        style: TextStyle(
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b2
-                                                  .fontSize,
-                                        ),
-                                        formatMoneyMid(
-                                          amount:
-                                              double.tryParse(
-                                                formatSellingPrice(),
-                                              ) ??
-                                              0,
-                                          context: context,
+                                      Expanded(
+                                        child: MoneyTextfield(
+                                          title:
+                                              returnSalesProvider(
+                                                    context,
+                                                  ).setTotalPrice
+                                                  ? 'Total Price'
+                                                  : 'Individual Price',
+                                          hint:
+                                              'Enter Price',
+                                          controller:
+                                              sellingPriceC,
+                                          theme: theme,
+                                          onChanged: (p0) {
+                                            setState(() {});
+                                          },
                                         ),
                                       ),
                                     ],
                                   ),
+                                  SizedBox(height: 20),
+                                  Container(
+                                    padding:
+                                        EdgeInsets.symmetric(
+                                          horizontal: 10,
+                                          vertical: 5,
+                                        ),
+                                    decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                            5,
+                                          ),
+                                      color:
+                                          Colors
+                                              .grey
+                                              .shade200,
+                                    ),
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal:
+                                                50.0,
+                                          ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .spaceBetween,
+                                        children: [
+                                          Text(
+                                            style: TextStyle(
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b3
+                                                      .fontSize,
+                                            ),
+                                            'Total Cost',
+                                          ),
+                                          Text(
+                                            style: TextStyle(
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b2
+                                                      .fontSize,
+                                            ),
+                                            formatMoneyMid(
+                                              amount:
+                                                  double.tryParse(
+                                                    formatSellingPrice(),
+                                                  ) ??
+                                                  0,
+                                              context:
+                                                  context,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: 20),
+                                ],
+                              ),
+                              SizedBox(
+                                width: 450,
+                                child: EditCartTextField(
+                                  onChanged: (value) {
+                                    double entered =
+                                        double.tryParse(
+                                          value,
+                                        ) ??
+                                        0;
+
+                                    if (value.isEmpty) {
+                                      setState(() {
+                                        pQuantity.text =
+                                            '0';
+                                      });
+                                    }
+
+                                    setState(() {
+                                      qqty = entered;
+                                    });
+                                  },
+
+                                  title:
+                                      'Enter Item Quantity',
+                                  hint: 'Quantity',
+                                  controller: pQuantity,
+                                  theme: theme,
                                 ),
                               ),
-                              SizedBox(height: 20),
-                            ],
-                          ),
-                          SizedBox(
-                            width: 450,
-                            child: EditCartTextField(
-                              onChanged: (value) {
-                                double entered =
-                                    double.tryParse(
-                                      value,
-                                    ) ??
-                                    0;
-
-                                if (value.isEmpty) {
-                                  setState(() {
-                                    pQuantity.text = '0';
-                                  });
-                                }
-
-                                setState(() {
-                                  qqty = entered;
-                                });
-                              },
-
-                              title: 'Enter Item Quantity',
-                              hint: 'Quantity',
-                              controller: pQuantity,
-                              theme: theme,
-                            ),
-                          ),
-                          Column(
-                            children: [
+                              Column(
+                                children: [
+                                  SizedBox(height: 20),
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(
+                                          horizontal: 20.0,
+                                        ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment
+                                              .spaceBetween,
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          'Add Item to your Stock?',
+                                        ),
+                                        MyToggleButton(
+                                          boolValue:
+                                              returnSalesProvider(
+                                                context,
+                                              ).addToStock,
+                                          toggle: () {
+                                            var salesProvider =
+                                                returnSalesProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                );
+                                            showDialog(
+                                              context:
+                                                  context,
+                                              builder: (
+                                                context,
+                                              ) {
+                                                return ConfirmationAlert(
+                                                  theme:
+                                                      theme,
+                                                  message:
+                                                      salesProvider.addToStock
+                                                          ? 'This item will not be added to your stock after this sale, are you sure you want to proceed?'
+                                                          : 'This item will be automatically added to your stock after this sale, are you sure you want to proceed?',
+                                                  title:
+                                                      !salesProvider.addToStock
+                                                          ? 'Add to Stock?'
+                                                          : 'Are you Sure?',
+                                                  action: () async {
+                                                    Navigator.of(
+                                                      context,
+                                                    ).pop();
+                                                    salesProvider.toggleAddToStock(
+                                                      salesProvider.addToStock
+                                                          ? false
+                                                          : true,
+                                                      context,
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                            );
+                                          },
+                                          theme: theme,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                               SizedBox(height: 20),
                               Padding(
                                 padding:
@@ -855,423 +944,380 @@ class _MakeSalesDesktopState
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment
-                                          .spaceBetween,
+                                          .center,
+                                  spacing: 15,
                                   children: [
+                                    Ink(
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(
+                                              5,
+                                            ),
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade100,
+                                      ),
+                                      child: InkWell(
+                                        borderRadius:
+                                            BorderRadius.circular(
+                                              5,
+                                            ),
+                                        onTap: () {
+                                          setState(() {
+                                            if (qqty > 0) {
+                                              qqty--;
+                                            }
+                                            pQuantity.text =
+                                                qqty.toString();
+                                          });
+                                        },
+                                        child: SizedBox(
+                                          height: 30,
+                                          width: 50,
+                                          child: Icon(
+                                            Icons.remove,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                     Text(
+                                      qqty.toString(),
                                       style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .h4
+                                                .fontSize,
                                         fontWeight:
                                             FontWeight.bold,
                                       ),
-                                      'Add Item to your Stock?',
                                     ),
-                                    MyToggleButton(
-                                      boolValue:
+                                    Ink(
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(
+                                              5,
+                                            ),
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade100,
+                                      ),
+                                      child: InkWell(
+                                        borderRadius:
+                                            BorderRadius.circular(
+                                              5,
+                                            ),
+                                        onTap: () {
+                                          setState(() {
+                                            qqty++;
+                                            pQuantity.text =
+                                                qqty.toString();
+                                          });
+                                        },
+
+                                        child: SizedBox(
+                                          height: 30,
+                                          width: 50,
+                                          child: Center(
+                                            child: Icon(
+                                              Icons.add,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(height: 20),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .center,
+                                spacing: 5,
+                                children: [
+                                  MaterialButton(
+                                    onPressed: () {
+                                      Navigator.of(
+                                        context,
+                                      ).pop();
+                                      costPriceC.clear();
+                                      nameC.clear();
+                                      pQuantity.clear();
+                                      qqty = 0;
+                                    },
+                                    child: Text('Cancel'),
+                                  ),
+                                  SmallButtonMain(
+                                    theme: theme,
+                                    action: () {
+                                      // var sugP =
+                                      //     returnSuggestionProvider(
+                                      //       context,
+                                      //       listen: false,
+                                      //     );
+                                      var productIndex = returnData(
+                                        context,
+                                        listen: false,
+                                      ).productList.indexWhere((
+                                        item,
+                                      ) {
+                                        return item.name
+                                                .toLowerCase() ==
+                                            nameC.text
+                                                .toLowerCase();
+                                      });
+                                      var cartItems =
                                           returnSalesProvider(
-                                            context,
-                                          ).addToStock,
-                                      toggle: () {
-                                        var salesProvider =
-                                            returnSalesProvider(
-                                              context,
-                                              listen: false,
-                                            );
+                                                context,
+                                                listen:
+                                                    false,
+                                              )
+                                              .currentCart()
+                                              .cartItems;
+                                      final index = cartItems
+                                          .indexWhere((
+                                            item,
+                                          ) {
+                                            return item
+                                                    .item
+                                                    .name
+                                                    .toLowerCase() ==
+                                                nameC.text
+                                                    .toLowerCase();
+                                          });
+                                      if (nameC
+                                          .text
+                                          .isEmpty) {
                                         showDialog(
                                           context: context,
                                           builder: (
                                             context,
                                           ) {
-                                            return ConfirmationAlert(
+                                            return InfoAlert(
                                               theme: theme,
                                               message:
-                                                  salesProvider
-                                                          .addToStock
-                                                      ? 'This item will not be added to your stock after this sale, are you sure you want to proceed?'
-                                                      : 'This item will be automatically added to your stock after this sale, are you sure you want to proceed?',
+                                                  'Item Name must be set before item can be added to cart.',
                                               title:
-                                                  !salesProvider
-                                                          .addToStock
-                                                      ? 'Add to Stock?'
-                                                      : 'Are you Sure?',
-                                              action: () async {
-                                                Navigator.of(
-                                                  context,
-                                                ).pop();
-                                                salesProvider.toggleAddToStock(
-                                                  salesProvider
-                                                          .addToStock
-                                                      ? false
-                                                      : true,
-                                                );
-                                              },
+                                                  'Item not set.',
                                             );
                                           },
                                         );
-                                      },
-                                      theme: theme,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 20),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(
-                                  horizontal: 20.0,
-                                ),
-                            child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.center,
-                              spacing: 15,
-                              children: [
-                                Ink(
-                                  decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.circular(
-                                          5,
-                                        ),
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade100,
-                                  ),
-                                  child: InkWell(
-                                    borderRadius:
-                                        BorderRadius.circular(
-                                          5,
-                                        ),
-                                    onTap: () {
-                                      setState(() {
-                                        if (qqty > 0) {
-                                          qqty--;
-                                        }
-                                        pQuantity.text =
-                                            qqty.toString();
-                                      });
-                                    },
-                                    child: SizedBox(
-                                      height: 30,
-                                      width: 50,
-                                      child: Icon(
-                                        Icons.remove,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Text(
-                                  qqty.toString(),
-                                  style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .h4
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
-                                  ),
-                                ),
-                                Ink(
-                                  decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.circular(
-                                          5,
-                                        ),
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade100,
-                                  ),
-                                  child: InkWell(
-                                    borderRadius:
-                                        BorderRadius.circular(
-                                          5,
-                                        ),
-                                    onTap: () {
-                                      setState(() {
-                                        qqty++;
-                                        pQuantity.text =
-                                            qqty.toString();
-                                      });
-                                    },
-
-                                    child: SizedBox(
-                                      height: 30,
-                                      width: 50,
-                                      child: Center(
-                                        child: Icon(
-                                          Icons.add,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: 20),
-                          Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment.center,
-                            spacing: 5,
-                            children: [
-                              MaterialButton(
-                                onPressed: () {
-                                  Navigator.of(
-                                    context,
-                                  ).pop();
-                                  costPriceC.clear();
-                                  nameC.clear();
-                                  pQuantity.clear();
-                                  qqty = 0;
-                                },
-                                child: Text('Cancel'),
-                              ),
-                              SmallButtonMain(
-                                theme: theme,
-                                action: () {
-                                  // var sugP =
-                                  //     returnSuggestionProvider(
-                                  //       context,
-                                  //       listen: false,
-                                  //     );
-                                  var productIndex = returnData(
-                                    context,
-                                    listen: false,
-                                  ).productList.indexWhere((
-                                    item,
-                                  ) {
-                                    return item.name
-                                            .toLowerCase() ==
-                                        nameC.text
-                                            .toLowerCase();
-                                  });
-                                  var cartItems =
-                                      returnSalesProvider(
+                                      } else if (index !=
+                                              -1 &&
+                                          isNormalEdit ==
+                                              true) {
+                                        showDialog(
+                                          context: context,
+                                          builder: (
                                             context,
-                                            listen: false,
-                                          )
-                                          .currentCart()
-                                          .cartItems;
-                                  final index = cartItems
-                                      .indexWhere((item) {
-                                        return item
-                                                .item
-                                                .name
-                                                .toLowerCase() ==
-                                            nameC.text
-                                                .toLowerCase();
-                                      });
-                                  if (nameC.text.isEmpty) {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return InfoAlert(
-                                          theme: theme,
-                                          message:
-                                              'Item Name must be set before item can be added to cart.',
-                                          title:
-                                              'Item not set.',
+                                          ) {
+                                            return InfoAlert(
+                                              theme: theme,
+                                              message:
+                                                  'Item Already Available in cart. Please Edit the Item to increase quantity or change prince.',
+                                              title:
+                                                  'Duplicate Item.',
+                                            );
+                                          },
                                         );
-                                      },
-                                    );
-                                  } else if (index != -1 &&
-                                      isNormalEdit ==
-                                          true) {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return InfoAlert(
-                                          theme: theme,
-                                          message:
-                                              'Item Already Available in cart. Please Edit the Item to increase quantity or change prince.',
-                                          title:
-                                              'Duplicate Item.',
-                                        );
-                                      },
-                                    );
-                                  } else if (pQuantity
-                                          .text
-                                          .isEmpty ||
-                                      qqty == 0) {
-                                    // Navigator.of(context).pop();
+                                      } else if (pQuantity
+                                              .text
+                                              .isEmpty ||
+                                          qqty == 0) {
+                                        // Navigator.of(context).pop();
 
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return InfoAlert(
-                                          theme: theme,
-                                          message:
-                                              'Item quantity cannot be set to (0)',
-                                          title:
-                                              'Invalid Quantity',
-                                        );
-                                      },
-                                    );
-                                  } else if (productIndex !=
-                                          -1 &&
-                                      isNormalEdit ==
-                                          true) {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return InfoAlert(
-                                          theme: theme,
-                                          message:
-                                              'This Item is already available in your Store. Please select the Item from your stock and proceed to make sale.',
-                                          title:
-                                              'Duplicate Item.',
-                                        );
-                                      },
-                                    );
-                                  } else {
-                                    if (sellingPriceC
-                                        .text
-                                        .isEmpty) {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return InfoAlert(
-                                            theme: theme,
-                                            message:
-                                                'Selling Price Must be set before sales can be recorded.',
-                                            title:
-                                                'Selling Price not set.',
-                                          );
-                                        },
-                                      );
-                                    } else {
-                                      cartItem.customPrice =
-                                          double.tryParse(
-                                            sellingPriceC
-                                                .text
-                                                .replaceAll(
-                                                  ',',
-                                                  '',
-                                                ),
-                                          );
-                                      cartItem.quantity =
-                                          qqty.toDouble();
-                                      cartItem.setCustomPrice =
-                                          true;
-                                      cartItem.setTotalPrice =
-                                          returnSalesProvider(
+                                        showDialog(
+                                          context: context,
+                                          builder: (
                                             context,
-                                            listen: false,
-                                          ).setTotalPrice;
-                                      cartItem.item.name =
-                                          nameC.text;
-                                      cartItem
-                                              .item
-                                              .costPrice =
-                                          (double.tryParse(
-                                                costPriceC
+                                          ) {
+                                            return InfoAlert(
+                                              theme: theme,
+                                              message:
+                                                  'Item quantity cannot be set to (0)',
+                                              title:
+                                                  'Invalid Quantity',
+                                            );
+                                          },
+                                        );
+                                      } else if (productIndex !=
+                                              -1 &&
+                                          isNormalEdit ==
+                                              true) {
+                                        showDialog(
+                                          context: context,
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return InfoAlert(
+                                              theme: theme,
+                                              message:
+                                                  'This Item is already available in your Store. Please select the Item from your stock and proceed to make sale.',
+                                              title:
+                                                  'Duplicate Item.',
+                                            );
+                                          },
+                                        );
+                                      } else {
+                                        if (sellingPriceC
+                                            .text
+                                            .isEmpty) {
+                                          showDialog(
+                                            context:
+                                                context,
+                                            builder: (
+                                              context,
+                                            ) {
+                                              return InfoAlert(
+                                                theme:
+                                                    theme,
+                                                message:
+                                                    'Selling Price Must be set before sales can be recorded.',
+                                                title:
+                                                    'Selling Price not set.',
+                                              );
+                                            },
+                                          );
+                                        } else {
+                                          cartItem.customPrice =
+                                              double.tryParse(
+                                                sellingPriceC
                                                     .text
                                                     .replaceAll(
                                                       ',',
                                                       '',
                                                     ),
-                                              ) ??
-                                              0);
-                                      // cartItem.item.uuid =
-                                      //     uuidGen();
-                                      cartItem.addToStock =
+                                              );
+                                          cartItem.quantity =
+                                              qqty.toDouble();
+                                          cartItem.setCustomPrice =
+                                              true;
+                                          cartItem.setTotalPrice =
+                                              returnSalesProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).setTotalPrice;
+                                          cartItem
+                                                  .item
+                                                  .name =
+                                              nameC.text;
+                                          cartItem
+                                                  .item
+                                                  .costPrice =
+                                              (double.tryParse(
+                                                    costPriceC
+                                                        .text
+                                                        .replaceAll(
+                                                          ',',
+                                                          '',
+                                                        ),
+                                                  ) ??
+                                                  0);
+                                          // cartItem.item.uuid =
+                                          //     uuidGen();
+                                          cartItem.addToStock =
+                                              returnSalesProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).addToStock;
+
                                           returnSalesProvider(
                                             context,
                                             listen: false,
-                                          ).addToStock;
-
-                                      returnSalesProvider(
-                                        context,
-                                        listen: false,
-                                      ).addItemToCart(
-                                        context: context,
-                                        newItem: cartItem,
-                                        isCustomEdit:
-                                            returnData(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                )
-                                                .productList
-                                                .where(
-                                                  (
-                                                    product,
-                                                  ) =>
-                                                      product
-                                                          .uuid ==
-                                                      cartItem
-                                                          .item
-                                                          .uuid,
-                                                )
-                                                .isEmpty,
-                                      );
-                                      // sugP.addTempSugg(
-                                      //   ProductSuggestion(
-                                      //     createdAt:
-                                      //         DateTime.now(),
-                                      //     shopId: shopId(
-                                      //       context,
-                                      //     ),
-                                      //     costPrice:
-                                      //         double.tryParse(
-                                      //           costPriceC
-                                      //               .text
-                                      //               .replaceAll(
-                                      //                 ',',
-                                      //                 '',
-                                      //               ),
-                                      //         ),
-                                      //     name: nameC.text,
-                                      //     uuid:
-                                      //         cartItem
-                                      //             .item
-                                      //             .uuid,
-                                      //   ),
-                                      // );
-                                      closeAction();
-                                    }
-                                  }
-                                },
-                                buttonText:
-                                    isNormalEdit == true
-                                        ? 'Add To Cart'
-                                        : 'Update Item',
+                                          ).addItemToCart(
+                                            context:
+                                                context,
+                                            newItem:
+                                                cartItem,
+                                            isCustomEdit:
+                                                returnData(
+                                                      context,
+                                                      listen:
+                                                          false,
+                                                    )
+                                                    .productList
+                                                    .where(
+                                                      (
+                                                        product,
+                                                      ) =>
+                                                          product.uuid ==
+                                                          cartItem.item.uuid,
+                                                    )
+                                                    .isEmpty,
+                                          );
+                                          // sugP.addTempSugg(
+                                          //   ProductSuggestion(
+                                          //     createdAt:
+                                          //         DateTime.now(),
+                                          //     shopId: shopId(
+                                          //       context,
+                                          //     ),
+                                          //     costPrice:
+                                          //         double.tryParse(
+                                          //           costPriceC
+                                          //               .text
+                                          //               .replaceAll(
+                                          //                 ',',
+                                          //                 '',
+                                          //               ),
+                                          //         ),
+                                          //     name: nameC.text,
+                                          //     uuid:
+                                          //         cartItem
+                                          //             .item
+                                          //             .uuid,
+                                          //   ),
+                                          // );
+                                          closeAction();
+                                        }
+                                      }
+                                    },
+                                    buttonText:
+                                        isNormalEdit == true
+                                            ? 'Add To Cart'
+                                            : 'Update Item',
+                                  ),
+                                ],
                               ),
                             ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        );
-      },
-    ).then((value) {
-      qqty = 0;
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+        ).then((value) {
+          qqty = 0;
 
-      nameC.clear();
-      pQuantity.clear();
-      costPriceC.clear();
-      sellingPriceC.clear();
-      if (context.mounted) {
-        setState(() {
-          resultOn = false;
-          isNormalEdit = true;
+          nameC.clear();
+          pQuantity.clear();
+          costPriceC.clear();
+          sellingPriceC.clear();
+          if (context.mounted) {
+            setState(() {
+              resultOn = false;
+              isNormalEdit = true;
+            });
+            returnSalesProvider(
+              context,
+              listen: false,
+            ).closeCustomPrice();
+            returnSalesProvider(
+              context,
+              listen: false,
+            ).toggleSetTotalPrice(false);
+          }
         });
-        returnSalesProvider(
-          context,
-          listen: false,
-        ).closeCustomPrice();
-        returnSalesProvider(
-          context,
-          listen: false,
-        ).toggleSetTotalPrice(false);
-      }
-    });
+      },
+    );
   }
 
   bool showBottomPanel = false;
@@ -1293,7 +1339,7 @@ class _MakeSalesDesktopState
         returnSalesProvider(
           context,
           listen: false,
-        ).onInvoice();
+        ).switchInvoiceSale(value: true, context: context);
       } else if (widget.isInvoice == null &&
           returnSalesProvider(
             context,
@@ -1302,7 +1348,7 @@ class _MakeSalesDesktopState
         returnSalesProvider(
           context,
           listen: false,
-        ).offInvoice();
+        ).switchInvoiceSale(value: false, context: context);
       }
     });
   }
@@ -1519,10 +1565,31 @@ class _MakeSalesDesktopState
                                               .isEmpty,
                                       child: InkWell(
                                         onTap: () {
-                                          returnSalesProvider(
-                                            context,
-                                            listen: false,
-                                          ).switchInvoiceSale();
+                                          if (returnSalesProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              )
+                                              .currentCart()
+                                              .isInvoice) {
+                                            returnSalesProvider(
+                                              context,
+                                              listen: false,
+                                            ).switchInvoiceSale(
+                                              context:
+                                                  context,
+                                              value: false,
+                                            );
+                                          } else {
+                                            returnSalesProvider(
+                                              context,
+                                              listen: false,
+                                            ).switchInvoiceSale(
+                                              context:
+                                                  context,
+                                              value: true,
+                                            );
+                                          }
                                         },
                                         child: SizedBox(
                                           height: 35,
@@ -1620,7 +1687,8 @@ class _MakeSalesDesktopState
                                             context,
                                             listen: false,
                                           ).toggleAddToStock(
-                                            true,
+                                            false,
+                                            context,
                                           );
                                           makeCustomSale(
                                             closeAction: () {
@@ -1727,7 +1795,8 @@ class _MakeSalesDesktopState
                                                   listen:
                                                       false,
                                                 ).toggleAddToStock(
-                                                  true,
+                                                  false,
+                                                  context,
                                                 );
                                                 makeCustomSale(
                                                   closeAction: () {
@@ -1879,7 +1948,8 @@ class _MakeSalesDesktopState
                                                                         listen:
                                                                             false,
                                                                       ).toggleAddToStock(
-                                                                        true,
+                                                                        false,
+                                                                        context,
                                                                       );
                                                                       makeCustomSale(
                                                                         closeAction: () {
@@ -2050,7 +2120,8 @@ class _MakeSalesDesktopState
                                                                           listen:
                                                                               false,
                                                                         ).toggleAddToStock(
-                                                                          true,
+                                                                          false,
+                                                                          context,
                                                                         );
                                                                         makeCustomSale(
                                                                           closeAction: () {
@@ -2263,54 +2334,59 @@ class _MakeSalesDesktopState
                                           ),
 
                                           Visibility(
-                                            visible:
-                                                returnSalesProvider(
-                                                      context,
-                                                    )
-                                                    .cartQueue
-                                                    .length <=
-                                                4,
-                                            child: Material(
-                                              color:
-                                                  Colors
-                                                      .transparent,
-                                              child: Ink(
-                                                decoration: BoxDecoration(
-                                                  color:
-                                                      theme
-                                                          .lightModeColor
-                                                          .prColor300,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                        5,
-                                                      ),
-                                                ),
-                                                child: InkWell(
-                                                  onTap: () {
-                                                    returnSalesProvider(
-                                                      context,
-                                                      listen:
-                                                          false,
-                                                    ).addNewCart();
-                                                  },
-                                                  child: Container(
-                                                    padding:
-                                                        EdgeInsets.all(
-                                                          4,
+                                            // visible:
+                                            //     returnSalesProvider(
+                                            //           context,
+                                            //         )
+                                            //         .cartQueue
+                                            //         .length <=
+                                            //     4,
+                                            child: SubWrapper(
+                                              isVisible:
+                                                  !SalesAuthAction().numberOfCartsAction(
+                                                    context:
+                                                        context,
+                                                  ),
+                                              mainWidget: Material(
+                                                color:
+                                                    Colors
+                                                        .transparent,
+                                                child: Ink(
+                                                  decoration: BoxDecoration(
+                                                    color:
+                                                        theme.lightModeColor.prColor300,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          5,
                                                         ),
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            5,
+                                                  ),
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      returnSalesProvider(
+                                                        context,
+                                                        listen:
+                                                            false,
+                                                      ).addNewCart(
+                                                        context,
+                                                      );
+                                                    },
+                                                    child: Container(
+                                                      padding:
+                                                          EdgeInsets.all(
+                                                            4,
                                                           ),
-                                                    ),
-                                                    child: Icon(
-                                                      color:
-                                                          Colors.white,
-                                                      size:
-                                                          15,
-                                                      Icons
-                                                          .add,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(
+                                                          5,
+                                                        ),
+                                                      ),
+                                                      child: Icon(
+                                                        color:
+                                                            Colors.white,
+                                                        size:
+                                                            15,
+                                                        Icons.add,
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
@@ -2321,68 +2397,89 @@ class _MakeSalesDesktopState
                                       ),
                                     ),
                                     SizedBox(height: 10),
-                                    TextFieldBarcode(
-                                      hintText:
-                                          'Scan Barcode',
-                                      clearTextField: () {
-                                        setState(() {});
-                                      },
-                                      searchController:
-                                          widget
-                                              .searchController,
-                                      onChanged: (
-                                        value,
-                                      ) async {
-                                        if (value
-                                            .isNotEmpty) {
-                                          var items = returnData(
-                                            context,
-                                            listen: false,
-                                          ).productList.where(
-                                            (product) =>
-                                                product.barcode ==
-                                                    value ||
-                                                product.name
-                                                        .toLowerCase() ==
-                                                    value
-                                                        .toLowerCase(),
-                                          );
-                                          if (items
-                                              .isNotEmpty) {
-                                            returnSalesProvider(
-                                              context,
-                                              listen: false,
-                                            ).addItemToCart(
-                                              context:
-                                                  context,
-                                              newItem: TempCartItem(
-                                                setCustomPrice:
-                                                    false,
-                                                item:
-                                                    items
-                                                        .first,
-                                                quantity: 1,
-                                                discount:
-                                                    null,
-                                                addToStock:
-                                                    false,
-                                                setTotalPrice:
-                                                    false,
+                                    SubWrapper(
+                                      isVisible:
+                                          !SalesAuthAction()
+                                              .useBarcodeAction(
+                                                context:
+                                                    context,
                                               ),
-                                              isCustomEdit:
-                                                  false,
-                                            );
-
+                                      mainWidget: TextFieldBarcode(
+                                        hintText:
+                                            'Scan Barcode',
+                                        clearTextField: () {
+                                          setState(() {});
+                                        },
+                                        searchController:
                                             widget
-                                                .searchController
-                                                .clear();
-                                            await playBeep();
-                                            setState(() {});
-                                          }
-                                        }
-                                      },
-                                      onPressedScan:
-                                          () async {},
+                                                .searchController,
+                                        onChanged: (value) {
+                                          SalesAuthAction().useBarcodeAction(
+                                            context:
+                                                context,
+                                            action: () async {
+                                              if (value
+                                                  .isNotEmpty) {
+                                                var items = returnData(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).productList.where(
+                                                  (
+                                                    product,
+                                                  ) =>
+                                                      product.barcode ==
+                                                          value ||
+                                                      product.name.toLowerCase() ==
+                                                          value.toLowerCase(),
+                                                );
+                                                if (items
+                                                    .isNotEmpty) {
+                                                  returnSalesProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).addItemToCart(
+                                                    context:
+                                                        context,
+                                                    newItem: TempCartItem(
+                                                      setCustomPrice:
+                                                          false,
+                                                      item:
+                                                          items.first,
+                                                      quantity:
+                                                          1,
+                                                      discount:
+                                                          null,
+                                                      addToStock:
+                                                          false,
+                                                      setTotalPrice:
+                                                          false,
+                                                    ),
+                                                    isCustomEdit:
+                                                        false,
+                                                  );
+
+                                                  widget
+                                                      .searchController
+                                                      .clear();
+                                                  await playBeep();
+                                                  setState(
+                                                    () {},
+                                                  );
+                                                }
+                                              }
+                                            },
+                                            failAction: () {
+                                              widget
+                                                  .searchController
+                                                  .clear();
+                                            },
+                                          );
+                                        },
+                                        onPressedScan:
+                                            () async {},
+                                      ),
                                     ),
                                     SizedBox(height: 10),
                                     Material(
@@ -2450,95 +2547,103 @@ class _MakeSalesDesktopState
                                               ),
                                             ),
                                           ),
-                                          Ink(
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    5,
-                                                  ),
-                                              border: Border.all(
-                                                color:
-                                                    theme
-                                                        .lightModeColor
-                                                        .prColor300,
-                                              ),
-                                            ),
-                                            child: InkWell(
-                                              onTap: () {
-                                                returnSalesProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).toggleAddToStock(
-                                                  true,
-                                                );
-                                                makeCustomSale(
-                                                  closeAction: () {
-                                                    Navigator.of(
-                                                      context,
-                                                    ).pop();
-                                                  },
-                                                  cartItem: TempCartItem(
-                                                    setTotalPrice:
-                                                        returnSalesProvider(
+                                          SubWrapper(
+                                            isVisible:
+                                                !SalesAuthAction()
+                                                    .addCustomItemToCartAction(
+                                                      context:
                                                           context,
-                                                          listen:
-                                                              false,
-                                                        ).setTotalPrice,
-                                                    item: TempProductClass(
-                                                      isManaged:
-                                                          false,
-                                                      uuid:
-                                                          uuidGen(),
-                                                      name:
-                                                          nameC.text,
-                                                      unit:
-                                                          'Others',
-                                                      isRefundable:
-                                                          false,
-                                                      costPrice:
-                                                          double.tryParse(
-                                                            costPriceC.text,
-                                                          ) ??
-                                                          0,
-                                                      sellingPrice: double.tryParse(
-                                                        sellingPriceC.text,
-                                                      ),
-                                                      quantity:
-                                                          0,
-                                                      shopId:
-                                                          returnShopProvider(
+                                                    ),
+                                            mainWidget: Ink(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                      5,
+                                                    ),
+                                                border: Border.all(
+                                                  color:
+                                                      theme
+                                                          .lightModeColor
+                                                          .prColor300,
+                                                ),
+                                              ),
+                                              child: InkWell(
+                                                onTap: () {
+                                                  returnSalesProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).toggleAddToStock(
+                                                    false,
+                                                    context,
+                                                  );
+                                                  makeCustomSale(
+                                                    closeAction: () {
+                                                      Navigator.of(
+                                                        context,
+                                                      ).pop();
+                                                    },
+                                                    cartItem: TempCartItem(
+                                                      setTotalPrice:
+                                                          returnSalesProvider(
                                                             context,
                                                             listen:
                                                                 false,
-                                                          ).userShop()!.shopId!,
+                                                          ).setTotalPrice,
+                                                      item: TempProductClass(
+                                                        isManaged:
+                                                            false,
+                                                        uuid:
+                                                            uuidGen(),
+                                                        name:
+                                                            nameC.text,
+                                                        unit:
+                                                            'Others',
+                                                        isRefundable:
+                                                            false,
+                                                        costPrice:
+                                                            double.tryParse(
+                                                              costPriceC.text,
+                                                            ) ??
+                                                            0,
+                                                        sellingPrice: double.tryParse(
+                                                          sellingPriceC.text,
+                                                        ),
+                                                        quantity:
+                                                            0,
+                                                        shopId:
+                                                            returnShopProvider(
+                                                              context,
+                                                              listen:
+                                                                  false,
+                                                            ).userShop()!.shopId!,
+                                                        setCustomPrice:
+                                                            true,
+                                                      ),
+                                                      addToStock:
+                                                          true,
+                                                      quantity:
+                                                          0,
+                                                      discount:
+                                                          null,
                                                       setCustomPrice:
                                                           true,
                                                     ),
-                                                    addToStock:
-                                                        true,
-                                                    quantity:
-                                                        0,
-                                                    discount:
-                                                        null,
-                                                    setCustomPrice:
-                                                        true,
+                                                  );
+                                                },
+                                                child: Container(
+                                                  padding: EdgeInsets.symmetric(
+                                                    vertical:
+                                                        9,
                                                   ),
-                                                );
-                                              },
-                                              child: Container(
-                                                padding:
-                                                    EdgeInsets.symmetric(
-                                                      vertical:
-                                                          9,
+                                                  child: Center(
+                                                    child: Text(
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            theme.mobileTexts.b3.fontSize,
+                                                      ),
+                                                      'Add Custom Item',
                                                     ),
-                                                child: Center(
-                                                  child: Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          theme.mobileTexts.b3.fontSize,
-                                                    ),
-                                                    'Add Custom Item',
                                                   ),
                                                 ),
                                               ),

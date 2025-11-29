@@ -124,6 +124,17 @@ class TempShopClass {
   @HiveField(39)
   int? imageWidth;
 
+  @HiveField(40)
+  bool? isHeadQuarters;
+
+  @HiveField(41)
+  double? percentDiscount;
+
+  @HiveField(42)
+  double? fixedDiscount;
+
+  bool? isAllowedBySubscription;
+
   TempShopClass({
     this.shopId,
     required this.createdAt,
@@ -165,6 +176,10 @@ class TempShopClass {
     this.logoUrl,
     this.imageHeight,
     this.imageWidth,
+    this.isHeadQuarters,
+    this.percentDiscount,
+    this.fixedDiscount,
+    this.isAllowedBySubscription,
   });
 
   factory TempShopClass.fromJson(
@@ -223,6 +238,13 @@ class TempShopClass {
       logoUrl: json['logo_url'] as String?,
       imageHeight: json['image_height'] as int?,
       imageWidth: json['image_width'] as int?,
+      isHeadQuarters: json['is_head_quarters'] as bool?,
+      percentDiscount:
+          (json['percent_discount'] as num?)?.toDouble(),
+      fixedDiscount:
+          (json['fixed_discount'] as num?)?.toDouble(),
+      isAllowedBySubscription:
+          json['is_allowed_by_subscription'] as bool?,
     );
   }
 
@@ -267,6 +289,9 @@ class TempShopClass {
       'logo_url': logoUrl,
       'image_width': imageWidth,
       'image_height': imageHeight,
+      'is_head_quarters': isHeadQuarters,
+      'percent_discount': percentDiscount?.toDouble(),
+      'fixed_discount': fixedDiscount?.toDouble(),
     };
   }
 }

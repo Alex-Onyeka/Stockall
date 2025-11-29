@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/pages/authentication/translations/auth_texts_en.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -18,59 +19,59 @@ class CheckAgree extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Row(
-        children: [
-          Checkbox(
-            activeColor: theme.lightModeColor.secColor200,
-            side: BorderSide(
-              color: Colors.grey.shade800,
-              width: 1.5,
-            ),
-            value: checked,
-            onChanged: onChanged,
+    return Row(
+      children: [
+        Checkbox(
+          activeColor: theme.lightModeColor.secColor200,
+          side: BorderSide(
+            color: Colors.grey.shade800,
+            width: 1.5,
           ),
-          Flexible(
-            child: RichText(
-              text: TextSpan(
-                style: TextStyle(
-                  color: Colors.grey.shade500,
-                  fontSize: 14,
-                ),
-                children: [
-                  TextSpan(
-                    text: CheckAgreeTexts().iHaveRead,
-                  ),
-                  TextSpan(
-                    text:
-                        CheckAgreeTexts()
-                            .termsAndConditions,
-                    recognizer:
-                        TapGestureRecognizer()
-                          ..onTap = () {},
-                    style: TextStyle(
-                      color:
-                          theme.lightModeColor.secColor200,
-                    ),
-                  ),
-                  TextSpan(text: CheckAgreeTexts().andThe),
-                  TextSpan(
-                    text: CheckAgreeTexts().privacyPolicy,
-                    recognizer:
-                        TapGestureRecognizer()
-                          ..onTap = () {},
-                    style: TextStyle(
-                      color:
-                          theme.lightModeColor.secColor200,
-                    ),
-                  ),
-                ],
+          value: checked,
+          onChanged: onChanged,
+        ),
+        Flexible(
+          child: RichText(
+            text: TextSpan(
+              style: TextStyle(
+                color: Colors.grey.shade500,
+                fontSize: 14,
               ),
+              children: [
+                TextSpan(text: CheckAgreeTexts().iHaveRead),
+                TextSpan(
+                  text:
+                      CheckAgreeTexts().termsAndConditions,
+                  recognizer:
+                      TapGestureRecognizer()
+                        ..onTap = () async {
+                          await launchUrlMain(
+                            'https://stockallsolution.com/terms-and-conditions',
+                          );
+                        },
+                  style: TextStyle(
+                    color: theme.lightModeColor.secColor200,
+                  ),
+                ),
+                TextSpan(text: CheckAgreeTexts().andThe),
+                TextSpan(
+                  text: CheckAgreeTexts().privacyPolicy,
+                  recognizer:
+                      TapGestureRecognizer()
+                        ..onTap = () async {
+                          await launchUrlMain(
+                            'https://stockallsolution.com/privacy-policy',
+                          );
+                        },
+                  style: TextStyle(
+                    color: theme.lightModeColor.secColor200,
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

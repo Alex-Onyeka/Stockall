@@ -100,7 +100,11 @@ class CartQueueDesktop extends StatelessWidget {
                             color: Colors.transparent,
                             child: Ink(
                               decoration: BoxDecoration(
-                                shape: BoxShape.circle,
+                                // shape: BoxShape.circle,
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      2,
+                                    ),
                                 color:
                                     theme
                                         .lightModeColor
@@ -147,11 +151,17 @@ class CartQueueDesktop extends StatelessWidget {
                                   }
                                 },
                                 child: Container(
-                                  padding: EdgeInsets.all(
-                                    4,
-                                  ),
+                                  padding:
+                                      EdgeInsets.symmetric(
+                                        horizontal: 6,
+                                        vertical: 4.5,
+                                      ),
                                   decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
+                                    // shape: BoxShape.circle,
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                          2,
+                                        ),
                                   ),
                                   child: Icon(
                                     color: Colors.white,

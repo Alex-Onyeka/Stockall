@@ -75,9 +75,7 @@ class NavProvider extends ChangeNotifier {
       listen: false,
     );
 
-    final userShop = await shopProvider.getUserShops(
-      AuthService().currentUser!,
-    );
+    final userShop = await shopProvider.getUserShops();
 
     final subsription = await subPro.getSubscription(
       // ignore: use_build_context_synchronously
@@ -132,31 +130,11 @@ class NavProvider extends ChangeNotifier {
         (route) => false,
       );
       return;
-    }
-    // else if (shopProvider.userShop()!.nextPayment ==
-    //     null) {
-    //   await shopProvider.makePayment(
-    //     DateTime.now().add(Duration(days: 30)),
-    //     3,
-    //   );
-    // } else if (shopProvider.userShop()!.plan != 0 &&
-    //     (shopProvider.userShop()!.nextPayment != null &&
-    //         (DateTime.now().isAfter(
-    //               shopProvider.userShop()!.nextPayment!,
-    //             ) ||
-    //             DateTime.now().isAtSameMomentAs(
-    //               shopProvider.userShop()!.nextPayment!,
-    //             )))) {
-    //   Navigator.pushAndRemoveUntil(
-    //     context,
-    //     MaterialPageRoute(
-    //       builder: (context) => RestrictedPage(),
-    //     ),
-    //     (route) => false,
-    //   );
-    //   return;
-    // }
-    else {
+    } else {
+      dataProvider.setAllowedRange(
+        plan: subsription?.plan,
+        context: context,
+      );
       await userProvider.fetchCurrentUser(context);
       if (dataProvider.isSynced() == 0 && isOnline) {
         if (!dataProvider.isSyncing) {

@@ -19,6 +19,8 @@ import 'package:stockall/components/major/right_side_bar.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
+import 'package:stockall/constants/subscription/sales_auth.dart';
+import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/helpers/clean_up_url/clean_up_url.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/dashboard/components/button_tab.dart';
@@ -666,38 +668,51 @@ class _DashboardDesktopState
                                                     ),
                                                   ),
                                                   Expanded(
-                                                    child: MainInfoTab(
-                                                      theme:
-                                                          theme,
-                                                      icon:
-                                                          productIconSvg,
-                                                      number:
-                                                          '${returnReceiptProvider(context).receipts.where((rec) => rec.isInvoice).length}',
-                                                      title:
-                                                          'Invoices',
-                                                      action: () {
-                                                        returnNavProvider(
-                                                          context,
-                                                          listen:
-                                                              false,
-                                                        ).navigate(
-                                                          5,
-                                                        );
+                                                    child: SubWrapper(
+                                                      isVisible:
+                                                          !SalesAuthAction().invoiceManagementAction(
+                                                            context:
+                                                                context,
+                                                          ),
+                                                      mainWidget: MainInfoTab(
+                                                        theme:
+                                                            theme,
+                                                        icon:
+                                                            productIconSvg,
+                                                        number:
+                                                            '${returnReceiptProvider(context).receipts.where((rec) => rec.isInvoice).length}',
+                                                        title:
+                                                            'Invoices',
+                                                        action: () {
+                                                          SalesAuthAction().invoiceManagementAction(
+                                                            context:
+                                                                context,
+                                                            action: () {
+                                                              returnNavProvider(
+                                                                context,
+                                                                listen:
+                                                                    false,
+                                                              ).navigate(
+                                                                5,
+                                                              );
 
-                                                        Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                            builder: (
-                                                              context,
-                                                            ) {
-                                                              return TotalSalesPage(
-                                                                isInvoice:
-                                                                    true,
+                                                              Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                  builder: (
+                                                                    context,
+                                                                  ) {
+                                                                    return TotalSalesPage(
+                                                                      isInvoice:
+                                                                          true,
+                                                                    );
+                                                                  },
+                                                                ),
                                                               );
                                                             },
-                                                          ),
-                                                        );
-                                                      },
+                                                          );
+                                                        },
+                                                      ),
                                                     ),
                                                   ),
                                                 ],
@@ -709,14 +724,42 @@ class _DashboardDesktopState
                                                 children: [
                                                   Row(
                                                     children: [
-                                                      Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              theme.mobileTexts.b1.fontSize,
-                                                          fontWeight:
-                                                              theme.mobileTexts.b1.fontWeightBold,
+                                                      InkWell(
+                                                        onTap: () {
+                                                          if (Theme.of(
+                                                                    context,
+                                                                  ).platform ==
+                                                                  TargetPlatform.windows ||
+                                                              Theme.of(
+                                                                    context,
+                                                                  ).platform ==
+                                                                  TargetPlatform.macOS ||
+                                                              Theme.of(
+                                                                    context,
+                                                                  ).platform ==
+                                                                  TargetPlatform.linux) {
+                                                            Navigator.of(
+                                                              context,
+                                                            ).pushNamedAndRemoveUntil(
+                                                              '/',
+                                                              (
+                                                                route,
+                                                              ) =>
+                                                                  false,
+                                                            );
+                                                          } else {
+                                                            performRestart();
+                                                          }
+                                                        },
+                                                        child: Text(
+                                                          style: TextStyle(
+                                                            fontSize:
+                                                                theme.mobileTexts.b1.fontSize,
+                                                            fontWeight:
+                                                                theme.mobileTexts.b1.fontWeightBold,
+                                                          ),
+                                                          'Quick Actions',
                                                         ),
-                                                        'Quick Actions',
                                                       ),
                                                     ],
                                                   ),
@@ -878,27 +921,33 @@ class _DashboardDesktopState
                                                               title:
                                                                   'Invoices',
                                                               action: () {
-                                                                returnNavProvider(
-                                                                  context,
-                                                                  listen:
-                                                                      false,
-                                                                ).navigate(
-                                                                  5,
-                                                                );
-                                                                Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                    builder: (
+                                                                SalesAuthAction().invoiceManagementAction(
+                                                                  context:
                                                                       context,
-                                                                    ) {
-                                                                      return TotalSalesPage(
-                                                                        turnOff:
-                                                                            true,
-                                                                        isInvoice:
-                                                                            true,
-                                                                      );
-                                                                    },
-                                                                  ),
+                                                                  action: () {
+                                                                    returnNavProvider(
+                                                                      context,
+                                                                      listen:
+                                                                          false,
+                                                                    ).navigate(
+                                                                      5,
+                                                                    );
+                                                                    Navigator.push(
+                                                                      context,
+                                                                      MaterialPageRoute(
+                                                                        builder: (
+                                                                          context,
+                                                                        ) {
+                                                                          return TotalSalesPage(
+                                                                            turnOff:
+                                                                                true,
+                                                                            isInvoice:
+                                                                                true,
+                                                                          );
+                                                                        },
+                                                                      ),
+                                                                    );
+                                                                  },
                                                                 );
                                                               },
                                                             ),

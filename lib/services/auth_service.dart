@@ -31,7 +31,6 @@ class AuthService extends ChangeNotifier {
     required BuildContext context,
     required String email,
     required String password,
-    required TempUserClass user,
   }) async {
     final signUpRes = await _client.auth.signUp(
       email: email,
@@ -44,46 +43,135 @@ class AuthService extends ChangeNotifier {
       throw Exception('Failed to sign up user.');
     }
 
-    // Build user row
-    final userRow = TempUserClass(
-      userId: userId,
-      createdAt: DateTime.now(),
-      name: user.name,
-      lastName: user.lastName,
-      email: email,
-      phone: user.phone,
-      role: user.role,
-      authUserId: userId,
-      password: password,
-    );
+    returnNavProvider(context, listen: false).offLoading();
 
+    return signUpRes;
+  }
+
+  Future<void> resendVerificationLink(
+    String email,
+    String password,
+  ) async {
     try {
-      // Check if user exists remotely (optional)
-      await _client
-          .from('users')
-          .select()
-          .eq('user_id', userId)
-          .maybeSingle();
+      // try {
+      //   await _client.functions.invoke(
+      //     'delete-user',
+      //     body: {'userId': currentUser ?? ress},
+      //   );
+      // } catch (e) {
+      //   print("Delete Failed: ${e.toString()}");
+      // }
+      // try {
+      //   await _client.auth.signOut();
+      // } catch (e) {
+      //   print('Failed Signout: ${e.toString()}');
+      // }
 
+      // try {
+      //   await _client.auth.signUp(
+      //     email: email,
+      //     password: password,
+      //   );
+      // } catch (e) {
+      //   print('Failed Signup: ${e.toString()}');
+      // }
+
+      await _client.auth.resend(
+        type: OtpType.signup,
+        email: email,
+      );
+      print('Success');
+    } catch (e) {
+      print('Error: ${e.toString()}');
+    }
+  }
+
+  Future<int> verifyOtp({
+    required String otp,
+    required TempUserClass user,
+    required BuildContext context,
+    required String userId,
+    String? newEmail,
+  }) async {
+    try {
+      await _client.auth.verifyOTP(
+        type:
+            newEmail == null
+                ? OtpType.signup
+                : OtpType.emailChange,
+        email: newEmail ?? user.email,
+        token: otp,
+      );
+
+      // Build user row
+      final userRow = TempUserClass(
+        userId: userId,
+        createdAt: user.createdAt,
+        name: user.name,
+        lastName: user.lastName,
+        email: newEmail ?? user.email,
+        pin: user.pin,
+        phone: user.phone,
+        role: user.role,
+        authUserId: userId,
+        password: user.password,
+      );
+
+      // if (newEmail != null) {
       // Insert into Supabase
-      await _client.from('users').insert(userRow.toJson());
+      await _client.from('users').upsert(userRow.toJson());
+      // } else {
+      //   await _client
+      //       .from('users')
+      //       .update({'email': newEmail})
+      //       .eq('user_id', userId);
+      // }
 
-      // ✅ Insert into local SQLite
       if (context.mounted) {
         returnNavProvider(context, listen: false).verify();
-        returnNavProvider(
-          context,
-          listen: false,
-        ).offLoading();
-        // await returnLocalDatabase(
-        //   context,
-        //   listen: false,
-        // ).insertUser(userRow);
       }
-
-      return signUpRes;
+      print(
+        '${newEmail != null ? 'Email Changed Successfully' : 'Email Verified Successfully'}',
+      );
+      return 1;
     } catch (e) {
-      throw Exception('❌❌ User creation error: $e');
+      print('Error: ${e.toString()}');
+      return 0;
+    }
+  }
+
+  bool checkEmailVerified() {
+    // await Supabase.instance.client.auth.refreshSession();
+
+    final user = Supabase.instance.client.auth.currentUser;
+
+    return user?.emailConfirmedAt != null;
+  }
+
+  Future<void> sendEmailResetOtp(String emaill) async {
+    try {
+      await Supabase.instance.client.auth.updateUser(
+        UserAttributes(email: emaill),
+      );
+      print('Email reset OTP sent.');
+    } catch (e) {
+      print('Error sending OTP to email: $e');
+    }
+  }
+
+  Future<void> resendEmailChangeVerificationOTP(
+    String email,
+  ) async {
+    try {
+      await _client.auth.resend(
+        type: OtpType.emailChange,
+        email: email,
+        // emailRedirectTo:
+        //     "https://www.stockallapp.com/#/check-verification",
+      );
+      print('Email Change OTP Resent Success');
+    } catch (e) {
+      print('Error: ${e.toString()}');
     }
   }
 
@@ -169,66 +257,6 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  Future<String> changePasswordAndUpdateLocal({
-    required String newPassword,
-    required BuildContext context,
-  }) async {
-    try {
-      // 🔐 Step 1: Change in Supabase Auth
-      final response = await _client.auth.updateUser(
-        UserAttributes(password: newPassword),
-      );
-
-      final user = response.user;
-      if (user == null) {
-        throw Exception(
-          "Password update failed: No user returned.",
-        );
-      }
-
-      print(
-        "🔐 Password successfully updated in Supabase Auth for ${user.email}",
-      );
-
-      print("Updating user with ID: ${user.id}");
-
-      // ✅ Step 2: Update password in your 'users' table
-      final updateResponse =
-          await _client
-              .from('users')
-              .update({'password': newPassword})
-              .eq('user_id', user.id)
-              .select()
-              .maybeSingle();
-
-      // 4. Store the user in local DB
-      print("context.mounted = ${context.mounted}");
-      if (context.mounted) {
-        print("✅ Inserting Users into the Local");
-        await returnUserProvider(
-          context,
-          listen: false,
-        ).fetchCurrentUser(context);
-        return 'Success';
-      } else {
-        print(
-          "⚠️ Context no longer mounted, skipping local insert",
-        );
-      }
-
-      print(
-        "✅ Password updated in 'users' table: $updateResponse",
-      );
-      return 'Success';
-    } on AuthException catch (e) {
-      print('Error Changing Password: $e');
-      return e.statusCode!;
-    } catch (e) {
-      print(e);
-      return e.toString();
-    }
-  }
-
   Future<void> signOut(BuildContext context) async {
     returnCustomers(
       context,
@@ -304,6 +332,65 @@ class AuthService extends ChangeNotifier {
     }
   }
 
+  Future<String> changePasswordAndUpdateLocal({
+    required String newPassword,
+    required BuildContext context,
+  }) async {
+    try {
+      final response = await _client.auth.updateUser(
+        UserAttributes(password: newPassword),
+      );
+
+      final user = response.user;
+      if (user == null) {
+        throw Exception(
+          "Password update failed: No user returned.",
+        );
+      }
+
+      print(
+        "🔐 Password successfully updated in Supabase Auth for ${user.email}",
+      );
+
+      print("Updating user with ID: ${user.id}");
+
+      // ✅ Step 2: Update password in your 'users' table
+      final updateResponse =
+          await _client
+              .from('users')
+              .update({'password': newPassword})
+              .eq('user_id', user.id)
+              .select()
+              .maybeSingle();
+
+      // 4. Store the user in local DB
+      print("context.mounted = ${context.mounted}");
+      if (context.mounted) {
+        print("✅ Inserting Users into the Local");
+        await returnUserProvider(
+          context,
+          listen: false,
+        ).fetchCurrentUser(context);
+        return 'Success';
+      } else {
+        print(
+          "⚠️ Context no longer mounted, skipping local insert",
+        );
+      }
+
+      print(
+        "✅ Password updated in 'users' table: $updateResponse",
+      );
+      return 'Success';
+    } on AuthException catch (e) {
+      print('Error Changing Password: $e');
+      return e.statusCode!;
+    } catch (e) {
+      print(e);
+      return e.toString();
+    }
+  }
+
   User? get currentUserAuth => _client.auth.currentUser;
 
   TempUserClass? get currentUserOffline =>
@@ -334,6 +421,56 @@ class AuthService extends ChangeNotifier {
           .getLoggedInUser()
           ?.loggedInUser
           ?.userId;
+    }
+  }
+
+  Future<int> deleteUserAccount(
+    BuildContext context,
+  ) async {
+    try {
+      // 1. Get the current user
+      final user = _client.auth.currentUser;
+
+      if (user == null) {
+        print("No user is currently signed in.");
+        return 0;
+      }
+
+      final response = await _client.functions.invoke(
+        'delete-user',
+        body: {'userId': user.id},
+      );
+
+      if (response.status == 200) {
+        print(
+          "User deleted successfully: ${response.data}",
+        );
+        await returnShopProvider(
+          context,
+          listen: false,
+        ).removeEmployeeFromShop(
+          employeeIdToRemove:
+              returnUserProvider(
+                context,
+                listen: false,
+              ).currentUserMain!.userId!,
+          context: context,
+        );
+        await returnUserProvider(
+          context,
+          listen: false,
+        ).deleteUser(user.id);
+        await signOut(context);
+        return 1;
+      } else {
+        print(
+          "Error Deleting User Account: ${response.data}",
+        );
+        return 0;
+      }
+    } catch (e) {
+      print("Error Deleting User Account: ${e.toString()}");
+      return 0;
     }
   }
 }

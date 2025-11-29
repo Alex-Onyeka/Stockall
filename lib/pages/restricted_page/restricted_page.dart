@@ -5,7 +5,6 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
-import 'package:stockall/constants/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
@@ -364,7 +363,9 @@ class _RestrictedPageState extends State<RestrictedPage> {
                                 MainButtonP(
                                   themeProvider: theme,
                                   action: () async {
-                                    await launchSubscriptionUrl();
+                                    await launchUrlMain(
+                                      'https://www.stockallapp.com/#/subscription',
+                                    );
                                   },
                                   text: 'Subscribe',
                                 ),

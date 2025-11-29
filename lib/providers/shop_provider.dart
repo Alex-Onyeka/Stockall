@@ -8,6 +8,7 @@ import 'package:stockall/classes/temp_shop/unsynced/updated_shop.dart';
 import 'package:stockall/classes/temp_shop_logos/temp_shop_logos.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/constants/subscription/multiple_stores_auth.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';
 import 'package:stockall/local_database/shop/updated_shop/updated_shop_func.dart';
 import 'package:stockall/local_database/shop_current/current_shop_func.dart';
@@ -28,35 +29,103 @@ class ShopProvider extends ChangeNotifier {
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
 
-  Future<void> createShop(TempShopClass shop) async {
-    shop.updatedAt = DateTime.now();
-    // Insert the shop
-    var createdShop =
+  Future<void> createShop(
+    TempShopClass shop,
+    BuildContext context,
+  ) async {
+    var response =
         await supabase
-            .from('shops')
-            .insert(shop.toJson())
+            .from('subscription')
             .select()
+            .eq('user_id', AuthService().currentUser!)
             .maybeSingle();
+    if (response == null) {
+      var sub = await returnSubcsription(
+        // ignore: use_build_context_synchronously
+        context,
+        listen: false,
+        // ignore: use_build_context_synchronously
+      ).createSubscription(context);
+      if (sub != null) {
+        MultipleStoresAuthAction().numberOfStoresAction(
+          // ignore: use_build_context_synchronously
+          context: context,
+          action: () async {
+            shop.updatedAt = DateTime.now();
+            // Insert the shop
+            var createdShop =
+                await supabase
+                    .from('shops')
+                    .insert(shop.toJson())
+                    .select()
+                    .maybeSingle();
 
-    if (createdShop != null) {
-      print(createdShop['name']);
-      var user =
-          await supabase
-              .from('users')
-              .update({'role': 'Owner'})
-              .eq('user_id', AuthService().currentUser!)
-              .select()
-              .maybeSingle();
-      if (user != null) {
-        print(user['name']);
+            if (createdShop != null) {
+              print(createdShop['name']);
+              var user =
+                  await supabase
+                      .from('users')
+                      .update({'role': 'Owner'})
+                      .eq(
+                        'user_id',
+                        AuthService().currentUser!,
+                      )
+                      .select()
+                      .maybeSingle();
+              if (user != null) {
+                print(user['name']);
+              }
+            }
+
+            // Fetch All Shops
+            final response = await getUserShops();
+
+            if (response.isNotEmpty) {
+              setShops(response);
+            }
+          },
+        );
       }
-    }
+    } else {
+      MultipleStoresAuthAction().numberOfStoresAction(
+        // ignore: use_build_context_synchronously
+        context: context,
+        action: () async {
+          shop.updatedAt = DateTime.now();
+          shop.isHeadQuarters = false;
+          // Insert the shop
+          var createdShop =
+              await supabase
+                  .from('shops')
+                  .insert(shop.toJson())
+                  .select()
+                  .maybeSingle();
 
-    // Fetch All Shops
-    final response = await getUserShops(shop.userId);
+          if (createdShop != null) {
+            print(createdShop['name']);
+            var user =
+                await supabase
+                    .from('users')
+                    .update({'role': 'Owner'})
+                    .eq(
+                      'user_id',
+                      AuthService().currentUser!,
+                    )
+                    .select()
+                    .maybeSingle();
+            if (user != null) {
+              print(user['name']);
+            }
+          }
 
-    if (response.isNotEmpty) {
-      setShops(response);
+          // Fetch All Shops
+          final response = await getUserShops();
+
+          if (response.isNotEmpty) {
+            setShops(response);
+          }
+        },
+      );
     }
   }
 
@@ -72,6 +141,21 @@ class ShopProvider extends ChangeNotifier {
             theme: returnTheme(context, listen: false),
             message:
                 'You have only one store. You cannot delete the only store you have.',
+            title: 'Action Not Allowed',
+          );
+        },
+      );
+      return 0;
+    }
+    if (userShop()?.isHeadQuarters == true) {
+      showDialog(
+        // ignore: use_build_context_synchronously
+        context: context,
+        builder: (context) {
+          return InfoAlert(
+            theme: returnTheme(context, listen: false),
+            message:
+                'You cannot delete you head quarters. Try selecting another store as your head quarters before deleting this one.',
             title: 'Action Not Allowed',
           );
         },
@@ -134,80 +218,81 @@ class ShopProvider extends ChangeNotifier {
     }
   }
 
-  Future<List<TempShopClass>> getUserShops(
-    String userId,
-  ) async {
+  Future<List<TempShopClass>> getUserShops() async {
     bool isOnline = await connectivity.isOnline();
-    if (isOnline) {
-      var user =
-          await supabase
-              .from('users')
-              .select()
-              .eq('user_id', AuthService().currentUser!)
-              .maybeSingle();
 
-      if (user != null) {
-        var tempUser = TempUserClass.fromJson(user);
-        print(
-          "✅❌✅👍 User Name: ${AuthService().currentUser!}",
-        );
-        if (tempUser.role == "Owner") {
-          final response = await supabase
-              .from('shops')
-              .select()
-              .eq('user_id', tempUser.userId!);
+    try {
+      if (isOnline) {
+        var user =
+            await supabase
+                .from('users')
+                .select()
+                .eq(
+                  'user_id',
+                  AuthService().currentUser ?? '',
+                )
+                .maybeSingle();
+
+        if (user != null) {
+          var tempUser = TempUserClass.fromJson(user);
+
+          List<dynamic> response = [];
+
+          if (tempUser.role == "Owner") {
+            response = await supabase
+                .from('shops')
+                .select()
+                .eq('user_id', tempUser.userId ?? '')
+                .eq('is_allowed_by_subscription', true);
+          } else {
+            response = await supabase
+                .from('shops')
+                .select()
+                .contains('employees', [
+                  AuthService().currentUser ?? '',
+                ])
+                .eq('is_allowed_by_subscription', true);
+          }
 
           if (response.isEmpty) {
-            // await ShopFunc().clearShop();
-            print(response.length);
-            print('User Shops not found');
             return [];
           }
-          await ShopFunc().insertShops(
-            response
-                .map((res) => TempShopClass.fromJson(res))
-                .toList(),
-          );
-          notifyListeners();
-          setShops(
-            response
-                .map((res) => TempShopClass.fromJson(res))
-                .toList(),
-          );
-          print('User Shops found ${response.length}');
-        } else {
-          final response = await supabase
-              .from('shops')
-              .select()
-              .contains('employees', [userId]);
 
-          if (response.isEmpty) {
-            // await ShopFunc().clearShop();
-            print('User Shops not found');
-            return [];
-          }
-          await ShopFunc().insertShops(
-            response
-                .map((res) => TempShopClass.fromJson(res))
-                .toList(),
-          );
+          final shops =
+              response
+                  .map((res) => TempShopClass.fromJson(res))
+                  .toList();
+
+          shops.sort((a, b) {
+            final aHQ = a.isHeadQuarters ?? false;
+            final bHQ = b.isHeadQuarters ?? false;
+            return (bHQ ? 1 : 0).compareTo(aHQ ? 1 : 0);
+          });
+
+          await ShopFunc().insertShops(shops);
+
+          setShops(shops);
           notifyListeners();
-          setShops(
-            response
-                .map((res) => TempShopClass.fromJson(res))
-                .toList(),
-          );
-          print('User Shops found ${response.length}');
         }
+      } else {
+        /// Offline mode
+        final shops = ShopFunc().getShops();
+
+        shops.sort((a, b) {
+          final aHQ = a.isHeadQuarters ?? false;
+          final bHQ = b.isHeadQuarters ?? false;
+          return (bHQ ? 1 : 0).compareTo(aHQ ? 1 : 0);
+        });
+
+        setShops(shops);
       }
 
       notifyListeners();
-    } else {
-      setShops(ShopFunc().getShops());
+      return userShops;
+    } catch (e) {
+      print('Error Getting Stores: ${e.toString()}');
+      return [];
     }
-    notifyListeners();
-
-    return userShops;
   }
 
   // Future<void> makePayment(DateTime date, int plan) async {
@@ -237,27 +322,49 @@ class ShopProvider extends ChangeNotifier {
   //   }
   // }
 
-  // Future<void> setShopPaymentPlan(int plan) async {
-  //   bool isOnline = await connectivity.isOnline();
-  //   if (isOnline) {
-  //     await supabase
-  //         .from('shops')
-  //         .update({'plan': plan})
-  //         .eq('shop_id',  userShop()!.shopId!)
-  //         .maybeSingle();
-  //     print('Shop Payment Plan Set: $plan');
+  Future<void> setHeadQuarters(TempShopClass shop) async {
+    bool isOnline = await connectivity.isOnline();
+    if (isOnline) {
+      try {
+        await supabase
+            .from('shops')
+            .update({'is_head_quarters': true})
+            .eq('shop_id', shop.shopId!)
+            .maybeSingle();
+        // print('Shop Payment Plan Set: $plan');
 
-  //     final response = await getUserShop(
-  //       AuthService().currentUser!,
-  //     );
-  //     if (response != null) {
-  //       setShop(response);
-  //       notifyListeners();
-  //     }
-  //   } else {
-  //     print('Next Payment cant be set offline');
-  //   }
-  // }
+        final response = await getUserShops(
+          // AuthService().currentUser!,
+        );
+        if (response.isNotEmpty) {
+          setShops(response);
+          notifyListeners();
+        }
+      } catch (e) {
+        print(
+          '❌ Error Setting Company as head quarters Online: ${e.toString()}',
+        );
+      }
+    } else {
+      // List<TempShopClass> shop = ShopFunc().getShops();
+      try {
+        shop.isHeadQuarters = true;
+        shop.updatedAt = DateTime.now();
+
+        ShopFunc().setHeadQuarters(shop);
+        UpdatedShopFunc().createUpdatedShop(
+          UpdatedShop(shop: shop),
+        );
+        await getUserShops();
+        // setShops(shop);
+        notifyListeners();
+      } catch (e) {
+        print(
+          '❌ Error Setting Company as head quarters Offline: ${e.toString()}',
+        );
+      }
+    }
+  }
 
   Future<void> updatePrintType({
     required int shopId,
@@ -272,9 +379,7 @@ class ShopProvider extends ChangeNotifier {
             .eq('shop_id', shopId)
             .maybeSingle();
 
-        final response = await getUserShops(
-          AuthService().currentUser!,
-        );
+        final response = await getUserShops();
         if (response.isNotEmpty) {
           setShops(response);
           notifyListeners();
@@ -317,9 +422,7 @@ class ShopProvider extends ChangeNotifier {
             .eq('shop_id', shopId)
             .maybeSingle();
 
-        final response = await getUserShops(
-          AuthService().currentUser!,
-        );
+        final response = await getUserShops();
 
         if (response.isNotEmpty) {
           setShops(response);
@@ -360,9 +463,7 @@ class ShopProvider extends ChangeNotifier {
             .eq('shop_id', shopId)
             .maybeSingle();
 
-        final response = await getUserShops(
-          AuthService().currentUser!,
-        );
+        final response = await getUserShops();
 
         if (response.isNotEmpty) {
           setShops(response);
@@ -414,9 +515,7 @@ class ShopProvider extends ChangeNotifier {
                 .select()
                 .maybeSingle();
         print("✅ Updated response: $response");
-        final shop = await getUserShops(
-          AuthService().currentUser!,
-        );
+        final shop = await getUserShops();
 
         if (response != null && response.isNotEmpty) {
           setShops(shop);
@@ -510,7 +609,7 @@ class ShopProvider extends ChangeNotifier {
             .eq('shop_id', shopId)
             .select();
 
-        await getUserShops(AuthService().currentUser!);
+        await getUserShops();
         notifyListeners();
 
         // print('Updated categories: $updateResult');
@@ -538,7 +637,6 @@ class ShopProvider extends ChangeNotifier {
   }
 
   Future<void> addEmployeeToShop({
-    required int shopId,
     required String newEmployeeId,
   }) async {
     try {
@@ -547,7 +645,7 @@ class ShopProvider extends ChangeNotifier {
           await supabase
               .from('shops')
               .select('employees')
-              .eq('shop_id', shopId)
+              .eq('shop_id', userShop()!.shopId!)
               .maybeSingle();
 
       if (response == null) {
@@ -587,7 +685,6 @@ class ShopProvider extends ChangeNotifier {
   }
 
   Future<void> removeEmployeeFromShop({
-    required int shopId,
     required String employeeIdToRemove,
     required BuildContext context,
   }) async {
@@ -597,7 +694,7 @@ class ShopProvider extends ChangeNotifier {
           await supabase
               .from('shops')
               .select('employees')
-              .eq('shop_id', shopId)
+              .eq('shop_id', userShop()!.shopId!)
               .maybeSingle();
 
       if (response == null) {
@@ -625,7 +722,7 @@ class ShopProvider extends ChangeNotifier {
       final updateResponse = await supabase
           .from('shops')
           .update({'employees': currentEmployees})
-          .eq('shop_id', shopId);
+          .eq('shop_id', userShop()!.shopId!);
 
       if (updateResponse != null) {
         print('Failed to update shop: $updateResponse');
@@ -660,10 +757,16 @@ class ShopProvider extends ChangeNotifier {
   // int currentIndex = 0;
   List<TempShopClass> userShops = [];
 
-  Future<int> selectShop(
+  Future<void> selectShop(
     BuildContext context,
     TempShopClass shopC,
   ) async {
+    // MultipleStoresAuthAction().numberOfStoresAction(
+    //   context: context,
+    //   action: () async {
+
+    //   },
+    // );
     var isOnline = await connectivity.isOnline();
     // ignore: use_build_context_synchronously
     if (returnData(context, listen: false).isSynced() ==
@@ -683,7 +786,6 @@ class ShopProvider extends ChangeNotifier {
       );
       // ignore: use_build_context_synchronously
       returnData(context, listen: false).syncData(context);
-      return 0;
     } else {
       try {
         var safeContext = context;
@@ -713,15 +815,12 @@ class ShopProvider extends ChangeNotifier {
           );
           print('Navigated');
           notifyListeners();
-          return 1;
         } else {
           print('Shop Selection Failed');
           notifyListeners();
-          return 0;
         }
       } catch (e) {
         print('❌❌ Select Shop Error: ${e.toString()}');
-        return 0;
       }
     }
   }
@@ -754,25 +853,43 @@ class ShopProvider extends ChangeNotifier {
   }
 
   TempShopClass? userShop() {
-    var shopId = CurrentShopFunc().getCurrentShop();
-    if (shopId != null) {
-      var shops = userShops.where(
-        (shop) => shop.shopId == shopId.currentShopId,
-      );
-      return shops.isEmpty ? null : shops.first;
-    } else {
-      if (userShops.isNotEmpty) {
-        CurrentShopFunc().createCurrentShop(
-          TempCurrentShop(
-            currentShopId: userShops.first.shopId!,
-          ),
-        );
-        // return userShops.first;
-        notifyListeners();
+    var offlineShop = CurrentShopFunc().getCurrentShop();
+    if (offlineShop != null) {
+      try {
         var shops = userShops.where(
-          (shop) => shop.shopId == shopId!.currentShopId,
+          (shop) =>
+              shop.shopId == offlineShop.currentShopId,
         );
         return shops.isEmpty ? null : shops.first;
+      } catch (e) {
+        print('Error With Shop First: ${e.toString()}');
+        return null;
+      }
+    } else {
+      if (userShops.isNotEmpty) {
+        try {
+          CurrentShopFunc().createCurrentShop(
+            TempCurrentShop(
+              currentShopId:
+                  userShops
+                      .where(
+                        (shop) =>
+                            shop.isHeadQuarters == true,
+                      )
+                      .first
+                      .shopId!,
+            ),
+          );
+          // return userShops.first;
+          // notifyListeners();
+          var shops = userShops.where(
+            (shop) => shop.isHeadQuarters == true,
+          );
+          return shops.isEmpty ? null : shops.first;
+        } catch (e) {
+          print('Error With Shop Second: ${e.toString()}');
+          return null;
+        }
       } else {
         return null;
       }
@@ -807,6 +924,137 @@ class ShopProvider extends ChangeNotifier {
   String state = '';
   String city = '';
   String address = '';
+
+  double? generalPercentDiscount;
+  double? generalFixedDiscount;
+
+  int discountIndex = 0;
+
+  double? currentDiscount() {
+    return userShop()!.fixedDiscount ??
+        userShop()!.percentDiscount;
+  }
+
+  void switchDiscountIndex(int index) {
+    discountIndex = index;
+    notifyListeners();
+  }
+
+  void clearDiscountsCache() {
+    generalPercentDiscount = null;
+    generalFixedDiscount = null;
+    notifyListeners();
+  }
+
+  void setGeneralPercentageDiscountCache(double? discount) {
+    generalPercentDiscount = discount;
+    generalFixedDiscount = null;
+    notifyListeners();
+  }
+
+  void setGeneralFixedDiscountCache(double? discount) {
+    generalPercentDiscount = null;
+    generalFixedDiscount = discount;
+    notifyListeners();
+  }
+
+  Future<void> setFixedDiscount({double? discount}) async {
+    var isOnline = await connectivity.isOnline();
+    if (isOnline) {
+      try {
+        var res =
+            await supabase
+                .from('shops')
+                .update({
+                  'fixed_discount': discount?.toDouble(),
+                  'percent_discount': null,
+                  'updated_at':
+                      DateTime.now().toIso8601String(),
+                })
+                .eq('shop_id', userShop()!.shopId!)
+                .select()
+                .maybeSingle();
+        if (res != null) {
+          var shops = await getUserShops();
+          setShops(shops);
+        }
+      } catch (e) {
+        print(
+          '❌❌ Error Updating Fixed Discount Online: ${e.toString()}',
+        );
+      }
+    } else {
+      try {
+        // TempShopClass? shop = ShopFunc().getShop();
+        userShop()!.updatedAt = DateTime.now();
+        userShop()!.fixedDiscount = discount?.toDouble();
+        userShop()!.percentDiscount = null;
+        await ShopFunc().updateShop(userShop()!);
+        if (userShop() != null) {
+          await UpdatedShopFunc().createUpdatedShop(
+            UpdatedShop(shop: userShop()!),
+          );
+          // setShops(shop);
+          notifyListeners();
+        }
+      } catch (e) {
+        print(
+          "❌ Failed to Set Fixed Discount Offline: ${e.toString()}",
+        );
+      }
+    }
+  }
+
+  Future<void> setPercentDiscount({
+    double? discount,
+  }) async {
+    var isOnline = await connectivity.isOnline();
+    if (isOnline) {
+      try {
+        var res =
+            await supabase
+                .from('shops')
+                .update({
+                  'fixed_discount': null,
+                  'percent_discount': discount?.toDouble(),
+                  'updated_at':
+                      DateTime.now().toIso8601String(),
+                })
+                .eq('shop_id', userShop()!.shopId!)
+                .select()
+                .maybeSingle();
+        if (res != null) {
+          var shops = await getUserShops();
+          setShops(shops);
+        }
+        clearDiscountsCache();
+      } catch (e) {
+        print(
+          '❌❌ Error Updating Percentage Discount Online: ${e.toString()}',
+        );
+      }
+    } else {
+      try {
+        // TempShopClass? shop = ShopFunc().getShop();
+        userShop()!.updatedAt = DateTime.now();
+        userShop()!.fixedDiscount = null;
+        userShop()!.percentDiscount = discount?.toDouble();
+        await ShopFunc().updateShop(userShop()!);
+        if (userShop() != null) {
+          await UpdatedShopFunc().createUpdatedShop(
+            UpdatedShop(shop: userShop()!),
+          );
+          // setShops(shop);
+          notifyListeners();
+        }
+        clearDiscountsCache();
+      } catch (e) {
+        print(
+          "❌ Failed to Set Percentage Discount Offline: ${e.toString()}",
+        );
+      }
+    }
+  }
 
   //
   //
@@ -907,7 +1155,7 @@ class ShopProvider extends ChangeNotifier {
         print('Unsynced updated Shop cleared');
         if (context.mounted) {
           print('Mounted, refreshing Shop ✅');
-          await getUserShops(AuthService().currentUser!);
+          await getUserShops();
         }
       }
     } catch (e) {
@@ -984,7 +1232,7 @@ class ShopProvider extends ChangeNotifier {
         print('Unsynced updated Shop Logo cleared');
         if (context.mounted) {
           print('Mounted, refreshing Shop ✅');
-          await getUserShops(AuthService().currentUser!);
+          await getUserShops();
         }
       }
     } catch (e) {
@@ -1103,9 +1351,7 @@ class ShopProvider extends ChangeNotifier {
                 .maybeSingle();
         if (resp == null) {}
 
-        final response = await getUserShops(
-          AuthService().currentUser!,
-        );
+        final response = await getUserShops();
 
         if (response.isNotEmpty) {
           setShops(response);
@@ -1160,9 +1406,7 @@ class ShopProvider extends ChangeNotifier {
                 })
                 .eq('shop_id', userShop()!.shopId!)
                 .maybeSingle();
-        final shop = await getUserShops(
-          AuthService().currentUser!,
-        );
+        final shop = await getUserShops();
 
         if (response != null) {
           setShops(shop);
@@ -1291,7 +1535,7 @@ class ShopProvider extends ChangeNotifier {
 
     if (isOnline) {
       try {
-        await getUserShops(AuthService().currentUser!);
+        await getUserShops();
         notifyListeners();
         final logoUrl = userShop()!.logoUrl;
         if (logoUrl == null ||
@@ -1328,7 +1572,7 @@ class ShopProvider extends ChangeNotifier {
       }
     } else {
       try {
-        await getUserShops(AuthService().currentUser!);
+        await getUserShops();
         var logo = ShopLogosFunc().getLogo();
         if (logo == null) {
           // clearImage();

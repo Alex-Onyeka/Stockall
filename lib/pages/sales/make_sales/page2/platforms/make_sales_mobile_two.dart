@@ -9,6 +9,8 @@ import 'package:stockall/components/discount_setter.dart/discount_setter_widget.
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/subscription/sales_auth.dart';
+import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/customers_list/customer_list.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
@@ -82,76 +84,92 @@ class _MakeSalesMobileTwoState
                                     .currentCart()
                                     .selectedCustomer ==
                                 null) {
-                              return Material(
-                                color: Colors.transparent,
-                                child: Ink(
-                                  decoration: BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.circular(
-                                          5,
+                              return SubWrapper(
+                                isVisible:
+                                    !SalesAuthAction()
+                                        .addCustomItemToCartAction(
+                                          context: context,
                                         ),
-                                    border: Border.all(
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade400,
-                                      width: 1,
-                                    ),
-                                  ),
-                                  child: InkWell(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (
-                                            context,
-                                          ) {
-                                            return CustomerList(
-                                              isSales: true,
-                                            );
-                                          },
-                                        ),
-                                      ).then((_) {
-                                        setState(() {});
-                                      });
-                                    },
-                                    borderRadius:
-                                        BorderRadius.circular(
-                                          5,
-                                        ),
-                                    child: Container(
-                                      padding:
-                                          EdgeInsets.only(
-                                            left: 20,
-                                            right: 15,
-                                            bottom: 12,
-                                            top: 12,
+                                mainWidget: Material(
+                                  color: Colors.transparent,
+                                  child: Ink(
+                                    decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                            5,
                                           ),
+                                      border: Border.all(
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade400,
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: InkWell(
+                                      onTap: () {
+                                        SalesAuthAction().addCustomItemToCartAction(
+                                          context: context,
+                                          action: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  return CustomerList(
+                                                    isSales:
+                                                        true,
+                                                  );
+                                                },
+                                              ),
+                                            ).then((_) {
+                                              setState(
+                                                () {},
+                                              );
+                                            });
+                                          },
+                                        );
+                                      },
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                            5,
+                                          ),
+                                      child: Container(
+                                        padding:
+                                            EdgeInsets.only(
+                                              left: 20,
+                                              right: 15,
+                                              bottom: 12,
+                                              top: 12,
+                                            ),
 
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment
-                                                .spaceBetween,
-                                        children: [
-                                          Text(
-                                            style: TextStyle(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment
+                                                  .spaceBetween,
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                color:
+                                                    Colors
+                                                        .grey,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              'Select Customer (Optional)',
+                                            ),
+                                            Icon(
                                               color:
                                                   Colors
                                                       .grey,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
+                                              size: 20,
+                                              Icons
+                                                  .arrow_forward_ios_rounded,
                                             ),
-                                            'Select Customer (Optional)',
-                                          ),
-                                          Icon(
-                                            color:
-                                                Colors.grey,
-                                            size: 20,
-                                            Icons
-                                                .arrow_forward_ios_rounded,
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -287,14 +305,33 @@ class _MakeSalesMobileTwoState
                             ),
                             InkWell(
                               onTap: () {
+                                if (returnSalesProvider(
+                                  context,
+                                  listen: false,
+                                ).currentCart().isInvoice) {
+                                  returnSalesProvider(
+                                    context,
+                                    listen: false,
+                                  ).switchInvoiceSale(
+                                    context: context,
+                                    value: false,
+                                  );
+                                } else {
+                                  returnSalesProvider(
+                                    context,
+                                    listen: false,
+                                  ).switchInvoiceSale(
+                                    context: context,
+                                    value: true,
+                                  );
+                                }
                                 returnSalesProvider(
                                   context,
                                   listen: false,
-                                ).switchInvoiceSale();
-                                returnSalesProvider(
-                                  context,
-                                  listen: false,
-                                ).changeMethod(0);
+                                ).changeMethod(
+                                  context: context,
+                                  index: 0,
+                                );
                               },
                               child: Container(
                                 width: 50,
@@ -882,21 +919,14 @@ class _MakeSalesMobileTwoState
                                               .selectedCustomerName,
                                     );
 
-                                    // await suggP
-                                    //     .createSuggestions();
-                                    // suggP
-                                    //     .clearSuggestions();
-                                    setState(() {
-                                      isLoading = false;
-                                      showSuccess = true;
-                                    });
-
-                                    await Future.delayed(
-                                      Duration(seconds: 3),
-                                      () {},
-                                    );
                                     if (context.mounted) {
                                       if (receipt == null) {
+                                        setState(() {
+                                          isLoading = false;
+                                          showSuccess =
+                                              false;
+                                        });
+
                                         showDialog(
                                           context: context,
                                           builder: (
@@ -907,12 +937,25 @@ class _MakeSalesMobileTwoState
                                               message:
                                                   'An Error occoured while processing this sale. Please try again later.',
                                               title:
-                                                  'Failed Sale!',
+                                                  'Sale Unsuccessful',
                                             );
                                           },
                                         );
                                       } else {
+                                        setState(() {
+                                          isLoading = false;
+                                          showSuccess =
+                                              true;
+                                        });
+
+                                        await Future.delayed(
+                                          Duration(
+                                            seconds: 3,
+                                          ),
+                                          () {},
+                                        );
                                         Navigator.pushAndRemoveUntil(
+                                          // ignore: use_build_context_synchronously
                                           context,
                                           MaterialPageRoute(
                                             builder: (

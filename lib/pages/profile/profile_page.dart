@@ -12,6 +12,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  final passwordController = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -31,9 +32,13 @@ class _ProfilePageState extends State<ProfilePage> {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth < mobileScreen) {
-          return ProfilePageMobile();
+          return ProfilePageMobile(
+            passwordController: passwordController,
+          );
         } else {
-          return ProfilePageDesktop();
+          return ProfilePageDesktop(
+            passwordController: passwordController,
+          );
         }
       },
     );

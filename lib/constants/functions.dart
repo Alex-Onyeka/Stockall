@@ -9,6 +9,7 @@ import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_rec
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:url_launcher/url_launcher.dart';
@@ -26,6 +27,13 @@ void openWhatsApp() async {
   );
   final url = 'https://wa.me/$phone?text=$message';
 
+  await launchUrlMain(url);
+}
+
+Future<void> launchUrlMain(url) async {
+  // final Uri url = Uri.parse(
+  //   'https://www.stockallapp.com/#/subscription',
+  // );
   if (await canLaunchUrl(Uri.parse(url))) {
     await launchUrl(
       Uri.parse(url),
@@ -34,6 +42,12 @@ void openWhatsApp() async {
   } else {
     print('Could not launch $url');
   }
+  // if (!await launchUrl(
+  //   url,
+  //   mode: LaunchMode.externalApplication,
+  // )) {
+  //   throw Exception('Could not launch $url');
+  // }
 }
 
 void phoneCall() async {
@@ -117,6 +131,8 @@ List<Map<String, dynamic>> employees = [
       'Switch Stores',
       'Delete Shop',
       'Create Shop',
+      'General Discount',
+      'Generate Barcode',
     ],
   },
   {
@@ -143,6 +159,8 @@ List<Map<String, dynamic>> employees = [
       'Notifications Page',
       'Contact Stockall',
       'View Date',
+      'General Discount',
+      'Generate Barcode',
     ],
   },
   {
@@ -159,6 +177,7 @@ List<Map<String, dynamic>> employees = [
       'Update Expenses',
       'Notifications Page',
       'Delete Expenses',
+      'Generate Barcode',
     ],
   },
   {
@@ -217,6 +236,8 @@ class Authorizations {
   String switchStores = 'Switch Stores';
   String createShop = 'Create Shop';
   String deleteShop = 'Delete Shop';
+  String generalDiscount = 'General Discount';
+  String generateBarcode = 'Generate Barcode';
 }
 
 bool authorization({
@@ -359,39 +380,46 @@ Future<void> generateAndPreviewPdf({
   required TempShopClass shop,
   required BuildContext context,
 }) async {
-  // 1. Build the PDF once (fastest way)
-  returnReceiptProvider(
-    context,
-    listen: false,
-  ).toggleIsLoading(true);
-  final Uint8List bytes = await _buildPdf(
-    receipt,
-    staffName,
-    records,
-    shop,
-    context,
+  SalesAuthAction().downloadReceiptAction(
+    context: context,
+    action: () async {
+      returnReceiptProvider(
+        context,
+        listen: false,
+      ).toggleIsLoading(true);
+      final Uint8List bytes = await _buildPdf(
+        receipt,
+        staffName,
+        records,
+        shop,
+        context,
+      );
+      var receiptId = receipt.uuid!.toString().substring(
+        0,
+        5,
+      );
+      var name =
+          receipt.isInvoice
+              ? "Stockall_Invoice_$receiptId.${DateTime.now().millisecondsSinceEpoch}"
+              : "Stockall_Receipt_$receiptId.${DateTime.now().millisecondsSinceEpoch}";
+
+      if (Platform.isAndroid || Platform.isIOS) {
+        await savePdfMobile(bytes, name);
+      } else {
+        print('Printing For Desktop');
+        await savePdfDesktop(bytes, name);
+      }
+
+      // 2. Open native print/share/save dialog (cross-platform)
+      // await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
+      if (context.mounted) {
+        returnReceiptProvider(
+          context,
+          listen: false,
+        ).toggleIsLoading(false);
+      }
+    },
   );
-  var receiptId = receipt.uuid!.toString().substring(0, 5);
-  var name =
-      receipt.isInvoice
-          ? "Stockall_Invoice_$receiptId.${DateTime.now().millisecondsSinceEpoch}"
-          : "Stockall_Receipt_$receiptId.${DateTime.now().millisecondsSinceEpoch}";
-
-  if (Platform.isAndroid || Platform.isIOS) {
-    await savePdfMobile(bytes, name);
-  } else {
-    print('Printing For Desktop');
-    await savePdfDesktop(bytes, name);
-  }
-
-  // 2. Open native print/share/save dialog (cross-platform)
-  // await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
-  if (context.mounted) {
-    returnReceiptProvider(
-      context,
-      listen: false,
-    ).toggleIsLoading(false);
-  }
 }
 
 Future<void> savePdfDesktop(
@@ -424,28 +452,33 @@ Future<void> generateAndPreviewPdfRoll({
   required BuildContext context,
   required int printerType,
 }) async {
-  // 1. Build the PDF once (fastest way)
-  returnReceiptProvider(
-    context,
-    listen: false,
-  ).toggleIsLoading(true);
-  final Uint8List pdfBytes = await _buildPdfRoll(
-    receipt,
-    records,
-    staffName,
-    shop,
-    context,
-    printerType,
-  );
+  SalesAuthAction().printReceiptAction(
+    context: context,
+    action: () async {
+      returnReceiptProvider(
+        context,
+        listen: false,
+      ).toggleIsLoading(true);
+      final Uint8List pdfBytes = await _buildPdfRoll(
+        receipt,
+        records,
+        staffName,
+        shop,
+        context,
+        printerType,
+      );
 
-  // 2. Open native print/share/save dialog (cross-platform)
-  await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
-  if (context.mounted) {
-    returnReceiptProvider(
-      context,
-      listen: false,
-    ).toggleIsLoading(false);
-  }
+      await Printing.layoutPdf(
+        onLayout: (_) async => pdfBytes,
+      );
+      if (context.mounted) {
+        returnReceiptProvider(
+          context,
+          listen: false,
+        ).toggleIsLoading(false);
+      }
+    },
+  );
 }
 
 Future<Uint8List> _buildPdf(
@@ -2233,40 +2266,47 @@ void downloadPdfWeb({
   required BuildContext context,
   required String filename,
 }) async {
-  try {
-    final pdfBytes = await _buildPdf(
-      receipt,
-      staffName,
-      records,
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop()!,
-      context,
-    );
-    final blob = html.Blob([pdfBytes], 'application/pdf');
-    final url = html.Url.createObjectUrlFromBlob(blob);
+  SalesAuthAction().downloadReceiptAction(
+    context: context,
+    action: () async {
+      try {
+        final pdfBytes = await _buildPdf(
+          receipt,
+          staffName,
+          records,
+          returnShopProvider(
+            context,
+            listen: false,
+          ).userShop()!,
+          context,
+        );
+        final blob = html.Blob([
+          pdfBytes,
+        ], 'application/pdf');
+        final url = html.Url.createObjectUrlFromBlob(blob);
 
-    final anchor =
-        html.AnchorElement(href: url)
-          ..download = filename
-          ..style.display = 'none';
+        final anchor =
+            html.AnchorElement(href: url)
+              ..download = filename
+              ..style.display = 'none';
 
-    html.document.body?.append(anchor);
-    anchor.click();
-    anchor.remove();
+        html.document.body?.append(anchor);
+        anchor.click();
+        anchor.remove();
 
-    html.Url.revokeObjectUrl(url);
+        html.Url.revokeObjectUrl(url);
 
-    if (context.mounted) {
-      returnReceiptProvider(
-        context,
-        listen: false,
-      ).toggleIsLoading(false);
-    }
-  } catch (e, stackTrace) {
-    print('❌ Error downloading PDF: $e\n$stackTrace');
-  }
+        if (context.mounted) {
+          returnReceiptProvider(
+            context,
+            listen: false,
+          ).toggleIsLoading(false);
+        }
+      } catch (e, stackTrace) {
+        print('❌ Error downloading PDF: $e\n$stackTrace');
+      }
+    },
+  );
 }
 
 void downloadPdfWebRoll({
@@ -2278,54 +2318,61 @@ void downloadPdfWebRoll({
   required String filename,
   required int printType,
 }) async {
-  try {
-    print('Begin Download');
-    final pdfBytes = await _buildPdfRoll(
-      receipt,
-      records,
-      staffName,
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop()!,
-      context,
-      printType,
-    );
+  SalesAuthAction().printReceiptAction(
+    context: context,
+    action: () async {
+      try {
+        print('Begin Download');
+        final pdfBytes = await _buildPdfRoll(
+          receipt,
+          records,
+          staffName,
+          returnShopProvider(
+            context,
+            listen: false,
+          ).userShop()!,
+          context,
+          printType,
+        );
 
-    // ✅ Ensure Uint8List
-    final pdfUint8 = Uint8List.fromList(pdfBytes);
+        // ✅ Ensure Uint8List
+        final pdfUint8 = Uint8List.fromList(pdfBytes);
 
-    // Step 1: Download
-    final blob = html.Blob([pdfUint8], 'application/pdf');
-    final url = html.Url.createObjectUrlFromBlob(blob);
+        // Step 1: Download
+        final blob = html.Blob([
+          pdfUint8,
+        ], 'application/pdf');
+        final url = html.Url.createObjectUrlFromBlob(blob);
 
-    final anchor =
-        html.AnchorElement(href: url)
-          ..download = filename
-          ..style.display = 'none';
+        final anchor =
+            html.AnchorElement(href: url)
+              ..download = filename
+              ..style.display = 'none';
 
-    html.document.body?.append(anchor);
-    anchor.click();
-    anchor.remove();
-    html.Url.revokeObjectUrl(url);
+        html.document.body?.append(anchor);
+        anchor.click();
+        anchor.remove();
+        html.Url.revokeObjectUrl(url);
 
-    // Step 2: Print (make sure this runs in same click event if possible)
-    await Printing.layoutPdf(
-      onLayout: (format) async => pdfUint8,
-    );
+        // Step 2: Print (make sure this runs in same click event if possible)
+        await Printing.layoutPdf(
+          onLayout: (format) async => pdfUint8,
+        );
 
-    if (context.mounted) {
-      returnReceiptProvider(
-        context,
-        listen: false,
-      ).toggleIsLoading(false);
-    }
-    // return pdfUint8;
-  } catch (e, stackTrace) {
-    print(
-      '❌ Error downloading/printing PDF: $e\n$stackTrace',
-    );
-  }
+        if (context.mounted) {
+          returnReceiptProvider(
+            context,
+            listen: false,
+          ).toggleIsLoading(false);
+        }
+        // return pdfUint8;
+      } catch (e, stackTrace) {
+        print(
+          '❌ Error downloading/printing PDF: $e\n$stackTrace',
+        );
+      }
+    },
+  );
 }
 
 // Future<void> printPdfWebRoll(Uint8List pdfUint8) async {

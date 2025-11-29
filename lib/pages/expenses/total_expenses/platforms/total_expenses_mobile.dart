@@ -6,6 +6,7 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
+import 'package:stockall/constants/subscription/expenses_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/expenses/add_expenses/add_expenses.dart';
 import 'package:stockall/pages/expenses/components/expenses_tile.dart';
@@ -94,16 +95,22 @@ class _TotalExpensesMobileState
         ),
         floatingActionButton: FloatingActionButtonMain(
           action: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return AddExpenses();
-                },
-              ),
-            ).then((_) {
-              setState(() {});
-            });
+            ExpensesAuthAction()
+                .numberOfDailyExpensesAction(
+                  context: context,
+                  action: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return AddExpenses();
+                        },
+                      ),
+                    ).then((_) {
+                      setState(() {});
+                    });
+                  },
+                );
           },
           color: theme.lightModeColor.secColor100,
           text: 'Add Expenses',
@@ -272,15 +279,33 @@ class _TotalExpensesMobileState
                                   theme: theme,
                                   svg: expensesIconSvg,
                                   height: 35,
+                                  altAction: () async {
+                                    await getExpenses();
+                                    setState(() {});
+                                  },
+                                  altActionText:
+                                      'Refresh Expenses',
                                   action: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return AddExpenses();
-                                        },
-                                      ),
-                                    );
+                                    ExpensesAuthAction()
+                                        .numberOfDailyExpensesAction(
+                                          context: context,
+                                          action: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  return AddExpenses();
+                                                },
+                                              ),
+                                            ).then((_) {
+                                              setState(
+                                                () {},
+                                              );
+                                            });
+                                          },
+                                        );
                                   },
                                 );
                               } else {
