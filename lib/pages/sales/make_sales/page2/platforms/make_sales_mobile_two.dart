@@ -780,7 +780,7 @@ class _MakeSalesMobileTwoState
                                               )
                                               .currentCart()
                                               .isReceiptEdit
-                                          ? "You are about to update a sales Receipt, are you sure you want to Proceed?"
+                                          ? "You are about to update this sales Receipt, are you sure you want to Proceed?"
                                           : returnSalesProvider(
                                                 context,
                                                 listen:

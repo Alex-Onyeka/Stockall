@@ -64,7 +64,7 @@ class CompProvider extends ChangeNotifier {
                           mainLoader.isEmpty
                               ? 'assets/animations/main_loader.json'
                               : mainLoader,
-                          height: 80,
+                          height: 70,
                         ),
                       ),
                     ),
@@ -84,7 +84,7 @@ class CompProvider extends ChangeNotifier {
                             fontSize:
                                 themeProvider
                                     .mobileTexts
-                                    .h4
+                                    .b1
                                     .fontSize,
                             fontWeight:
                                 themeProvider

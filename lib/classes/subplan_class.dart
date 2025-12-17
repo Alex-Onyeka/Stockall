@@ -10,6 +10,7 @@ import 'package:stockall/constants/subscription/subscription_func.dart';
 
 class SubplanClass {
   final int plan;
+  final double price;
   final String planName;
   final ItemsAuth itemsAuth;
   final SalesAuth salesAuth;
@@ -23,6 +24,7 @@ class SubplanClass {
 
   SubplanClass({
     required this.plan,
+    required this.price,
     required this.planName,
     required this.itemsAuth,
     required this.salesAuth,

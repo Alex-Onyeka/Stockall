@@ -97,7 +97,7 @@ class _SignupMobileState extends State<SignupMobile> {
         builder: (context) {
           return InfoAlert(
             theme: widget.theme,
-            message: 'The Password Fields Does not match',
+            message: 'The Password Fields Do not match',
             title: 'Password Mismatch',
           );
         },
@@ -128,7 +128,7 @@ class _SignupMobileState extends State<SignupMobile> {
           password: widget.passwordController.text,
         );
 
-        if (res.user != null) {
+        if (res?.user != null) {
           if (!mounted) return;
           setState(() {
             isLoading = false;
@@ -143,7 +143,7 @@ class _SignupMobileState extends State<SignupMobile> {
                 builder:
                     (context) => CodeSentPage(
                       user: TempUserClass(
-                        userId: res.user!.id,
+                        userId: res?.user!.id,
                         createdAt: DateTime.now(),
                         name:
                             widget.nameController.text

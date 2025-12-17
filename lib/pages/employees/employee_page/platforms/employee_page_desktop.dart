@@ -64,7 +64,7 @@ class _EmployeePageDesktopState
                       Align(
                         alignment: Alignment(0, -1),
                         child: TopBanner(
-                          turnOn: true,
+                          turnOnBackNavButton: true,
                           isMain: false,
                           subTitle:
                               'Full Details about employee',
@@ -144,7 +144,7 @@ class _EmployeePageDesktopState
                                     return ConfirmationAlert(
                                       theme: theme,
                                       message:
-                                          'You are about to delete your staff, are you sure to proceed?',
+                                          'You are about to delete your staff, are you sure you want to proceed?',
                                       title:
                                           'Are you sure?',
                                       action: () async {

@@ -182,14 +182,20 @@ class SalesProvider extends ChangeNotifier {
   }
 
   void toggleSetDiscount(bool value, BuildContext context) {
-    SalesAuthAction().applyDiscountAction(
-      context: context,
-      action: () {
-        currentCart().isSettingDiscountOpen = value;
-        print(currentCart().isSettingDiscountOpen);
-        notifyListeners();
-      },
-    );
+    if (value) {
+      SalesAuthAction().applyDiscountAction(
+        context: context,
+        action: () {
+          currentCart().isSettingDiscountOpen = value;
+          print(currentCart().isSettingDiscountOpen);
+          notifyListeners();
+        },
+      );
+    } else {
+      currentCart().isSettingDiscountOpen = value;
+      print(currentCart().isSettingDiscountOpen);
+      notifyListeners();
+    }
   }
 
   final SupabaseClient supabase = Supabase.instance.client;

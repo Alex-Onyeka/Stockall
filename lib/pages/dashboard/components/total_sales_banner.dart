@@ -325,7 +325,7 @@ class _DashboardTotalSalesBannerState
                     ),
                   ),
                   child: Row(
-                    spacing: 5,
+                    spacing: 10,
                     children: [
                       Icon(
                         size: 13,

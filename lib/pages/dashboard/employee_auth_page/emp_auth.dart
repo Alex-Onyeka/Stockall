@@ -76,7 +76,6 @@ class _EmpAuthState extends State<EmpAuth> {
             children: [
               SizedBox(height: 20),
               TopNavBar(
-                notifications: [],
                 title: 'Users Shop',
                 subText: 'shop@gmail.com',
                 theme: theme,

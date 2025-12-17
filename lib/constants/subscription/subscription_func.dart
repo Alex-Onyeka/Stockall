@@ -3,7 +3,6 @@ import 'package:lottie/lottie.dart';
 import 'package:stockall/classes/subplan_class.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/constants_main.dart';
-import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/calculator_auth.dart';
 import 'package:stockall/constants/subscription/employee_auth.dart';
 import 'package:stockall/constants/subscription/expenses_auth.dart';
@@ -13,10 +12,12 @@ import 'package:stockall/constants/subscription/multiple_stores_auth.dart';
 import 'package:stockall/constants/subscription/report_auth.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/subscription_page/subscription_page.dart';
 
 List<SubplanClass> subPlans = [
   SubplanClass(
     plan: 2,
+    price: 3500,
     planName: 'Standard',
     itemsAuth: ItemsAuth(
       numberOfItems: 1500,
@@ -36,7 +37,7 @@ List<SubplanClass> subPlans = [
       downloadReceipt: true,
       editReceipt: true,
       printReceipt: true,
-      salesRecordTimeLimit: 12,
+      // salesRecordTimeLimit: 12,
       addItemToStockAfterCustomSale: true,
       addCustomItemToCart: true,
       addStockallNameOnReceipt: false,
@@ -49,7 +50,7 @@ List<SubplanClass> subPlans = [
     ),
     expensesAuth: ExpensesAuth(
       numberOfDailyExpenses: 10,
-      expensesRecordLimit: 12,
+      // expensesRecordLimit: 12,
       deleteAndEditExpenses: true,
     ),
     generalSettingsAuth: GeneralSettingsAuth(
@@ -78,6 +79,7 @@ List<SubplanClass> subPlans = [
   ),
   SubplanClass(
     plan: 1,
+    price: 2500,
     planName: 'Basic',
     itemsAuth: ItemsAuth(
       numberOfItems: 600,
@@ -97,7 +99,7 @@ List<SubplanClass> subPlans = [
       downloadReceipt: true,
       editReceipt: false,
       printReceipt: true,
-      salesRecordTimeLimit: 6,
+      // salesRecordTimeLimit: 6,
       addItemToStockAfterCustomSale: false,
       addCustomItemToCart: true,
       addStockallNameOnReceipt: true,
@@ -110,7 +112,7 @@ List<SubplanClass> subPlans = [
     ),
     expensesAuth: ExpensesAuth(
       numberOfDailyExpenses: 5,
-      expensesRecordLimit: 6,
+      // expensesRecordLimit: 6,
       deleteAndEditExpenses: true,
     ),
     generalSettingsAuth: GeneralSettingsAuth(
@@ -139,6 +141,7 @@ List<SubplanClass> subPlans = [
   ),
   SubplanClass(
     plan: 0,
+    price: 0,
     planName: 'Free',
     itemsAuth: ItemsAuth(
       numberOfItems: 250,
@@ -158,7 +161,7 @@ List<SubplanClass> subPlans = [
       downloadReceipt: false,
       editReceipt: false,
       printReceipt: false,
-      salesRecordTimeLimit: 1,
+      // salesRecordTimeLimit: 1,
       addItemToStockAfterCustomSale: false,
       addCustomItemToCart: false,
       addStockallNameOnReceipt: true,
@@ -171,7 +174,7 @@ List<SubplanClass> subPlans = [
     ),
     expensesAuth: ExpensesAuth(
       numberOfDailyExpenses: 2,
-      expensesRecordLimit: 1,
+      // expensesRecordLimit: 1,
       deleteAndEditExpenses: true,
     ),
     generalSettingsAuth: GeneralSettingsAuth(
@@ -302,8 +305,16 @@ class SubscribeAlertDialog extends StatelessWidget {
                       child: MainButtonP(
                         themeProvider: theme,
                         action: () async {
-                          await launchUrlMain(
-                            'https://www.stockallapp.com/#/subscription',
+                          // await launchUrlMain(
+                          //   'https://www.stockallapp.com/#/subscription',
+                          // );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return SubscriptionPage();
+                              },
+                            ),
                           );
                         },
                         text: 'Upgrade Subscription Plan',

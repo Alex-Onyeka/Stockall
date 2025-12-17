@@ -31,13 +31,14 @@ class TempExpensesClassAdapter extends TypeAdapter<TempExpensesClass> {
       departmentId: fields[11] as int?,
       uuid: fields[12] as String?,
       updatedAt: fields[13] as DateTime?,
+      userName: fields[14] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempExpensesClass obj) {
     writer
-      ..writeByte(14)
+      ..writeByte(15)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -65,7 +66,9 @@ class TempExpensesClassAdapter extends TypeAdapter<TempExpensesClass> {
       ..writeByte(12)
       ..write(obj.uuid)
       ..writeByte(13)
-      ..write(obj.updatedAt);
+      ..write(obj.updatedAt)
+      ..writeByte(14)
+      ..write(obj.userName);
   }
 
   @override

@@ -27,25 +27,34 @@ class AuthService extends ChangeNotifier {
 
   SupabaseClient get client => _client;
 
-  Future<AuthResponse> signUpAndCreateUser({
+  Future<AuthResponse?> signUpAndCreateUser({
     required BuildContext context,
     required String email,
     required String password,
   }) async {
-    final signUpRes = await _client.auth.signUp(
-      email: email,
-      password: password,
-    );
+    try {
+      final signUpRes = await _client.auth.signUp(
+        email: email,
+        password: password,
+      );
 
-    final userId = signUpRes.user?.id;
+      final userId = signUpRes.user?.id;
 
-    if (userId == null) {
-      throw Exception('Failed to sign up user.');
+      if (userId == null) {
+        print('Failed to sign up user.');
+        return null;
+      }
+
+      returnNavProvider(
+        context,
+        listen: false,
+      ).offLoading();
+
+      return signUpRes;
+    } catch (e) {
+      print('Error Creating User Account: ${e.toString()}');
+      return null;
     }
-
-    returnNavProvider(context, listen: false).offLoading();
-
-    return signUpRes;
   }
 
   Future<void> resendVerificationLink(
@@ -53,29 +62,6 @@ class AuthService extends ChangeNotifier {
     String password,
   ) async {
     try {
-      // try {
-      //   await _client.functions.invoke(
-      //     'delete-user',
-      //     body: {'userId': currentUser ?? ress},
-      //   );
-      // } catch (e) {
-      //   print("Delete Failed: ${e.toString()}");
-      // }
-      // try {
-      //   await _client.auth.signOut();
-      // } catch (e) {
-      //   print('Failed Signout: ${e.toString()}');
-      // }
-
-      // try {
-      //   await _client.auth.signUp(
-      //     email: email,
-      //     password: password,
-      //   );
-      // } catch (e) {
-      //   print('Failed Signup: ${e.toString()}');
-      // }
-
       await _client.auth.resend(
         type: OtpType.signup,
         email: email,

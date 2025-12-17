@@ -136,7 +136,7 @@ class _SignupDesktopState extends State<SignupDesktop> {
           password: widget.passwordController.text,
         );
 
-        if (res.user != null) {
+        if (res?.user != null) {
           if (!mounted) return;
           setState(() {
             isLoading = false;
@@ -151,7 +151,7 @@ class _SignupDesktopState extends State<SignupDesktop> {
                 builder:
                     (context) => CodeSentPage(
                       user: TempUserClass(
-                        userId: res.user!.id,
+                        userId: res?.user!.id,
                         createdAt: DateTime.now(),
                         name:
                             widget.nameController.text

@@ -137,7 +137,7 @@ class _EmployeePageMobileState
                                     return ConfirmationAlert(
                                       theme: theme,
                                       message:
-                                          'You are about to delete your staff, are you sure to proceed?',
+                                          'You are about to delete your staff, are you sure you want to proceed?',
                                       title:
                                           'Are you sure?',
                                       action: () async {

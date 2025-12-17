@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/local_database/main_database.dart';
 import 'package:stockall/local_database/visibility_box/visibility_box.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
@@ -12,7 +13,7 @@ import 'package:stockall/pages/authentication/login/login_page.dart';
 import 'package:stockall/pages/authentication/splash_screens/splash_screen.dart';
 import 'package:stockall/pages/authentication/translations/translation_provider.dart';
 import 'package:stockall/pages/profile/delete_account/delete_account.dart';
-import 'package:stockall/pages/subscription/subscription.dart';
+import 'package:stockall/pages/subscription_page/subscription_page.dart';
 import 'package:stockall/providers/comp_provider.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/providers/customers_provider.dart';
@@ -25,11 +26,13 @@ import 'package:stockall/providers/receipts_provider.dart';
 import 'package:stockall/providers/report_provider.dart';
 import 'package:stockall/providers/sales_provider.dart';
 import 'package:stockall/providers/shop_provider.dart';
+import 'package:stockall/providers/sub_payment_provider.dart';
 import 'package:stockall/providers/subscription_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/providers/user_provider.dart';
 import 'package:stockall/providers/validate_input_provider.dart';
 import 'package:stockall/services/auth_service.dart';
+import 'package:stockall/services/payment_result_page.dart/payment_result_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Stopwatch stopwatch = Stopwatch();
@@ -37,6 +40,8 @@ Stopwatch stopwatch = Stopwatch();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   stopwatch.start();
+  // await NotificationService.initialize();
+
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle(
       statusBarColor: Colors.white, // or any color
@@ -53,9 +58,8 @@ void main() async {
   ]);
 
   await Supabase.initialize(
-    url: 'https://jlwizkdhjazpbllpvtgo.supabase.co',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impsd2l6a2RoamF6cGJsbHB2dGdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ5ODU2NzEsImV4cCI6MjA2MDU2MTY3MX0.M3ajvwom-Jj6SfTgATbjwYKtQ1_L4XXo0wcsFcok108',
+    url: supabaseUrl,
+    anonKey: supabaseAnonKey,
   );
   await MainDatabase().initHive();
   runApp(MyApp());
@@ -247,6 +251,16 @@ ConnectivityProvider returnConnectivityProvider(
   );
 }
 
+SubPaymentProvider returnSubPaymentProvider(
+  BuildContext context, {
+  bool listen = true,
+}) {
+  return Provider.of<SubPaymentProvider>(
+    context,
+    listen: listen,
+  );
+}
+
 Widget colorWidget(
   Widget widget,
   bool isPrimary,
@@ -346,6 +360,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => SubscriptionProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => SubPaymentProvider(),
+        ),
       ],
       child: MaterialApp(
         initialRoute: "/",
@@ -358,8 +375,10 @@ class MyApp extends StatelessWidget {
           '/splash': (context) => SplashScreen(),
           '/reset-password':
               (context) => EnterNewPassword(),
-          '/subscription': (context) => Subscription(),
+          '/subscription': (context) => SubscriptionPage(),
           '/delete-account': (context) => DeleteAccount(),
+          '/payment-result':
+              (context) => PaymentResultPage(),
         },
         debugShowCheckedModeBanner: false,
         theme: ThemeData(

@@ -199,7 +199,13 @@ class _ShopSetupTwoMobileState
                     phoneNumber: shopProvider.phone,
                     refCode: referralController.text.trim(),
                     language: 'en',
-                    isHeadQuarters: true,
+                    isHeadQuarters:
+                        returnShopProvider(
+                              context,
+                              listen: false,
+                            ).userShops.isEmpty
+                            ? true
+                            : false,
                   ),
                   safeContext,
                 );

@@ -282,7 +282,7 @@ class _CustomerListDesktopState
                             return EmptyWidgetDisplay(
                               title: 'Empty Customer List',
                               subText:
-                                  'Your Have not Created Any Customer.',
+                                  'You Have not Created Any Customer.',
                               buttonText: 'Create Customer',
                               svg: custBookIconSvg,
                               theme: theme,

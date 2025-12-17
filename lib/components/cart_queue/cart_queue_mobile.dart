@@ -170,7 +170,7 @@ class CartQueueMobile extends StatelessWidget {
                                                 theme:
                                                     theme,
                                                 message:
-                                                    'You are about to Delete Entier Cart from the Queue, This action can not be reversed are you sure you want to proceed?',
+                                                    'You are about to Delete Entire Cart from the Queue, This action can not be reversed are you sure you want to proceed?',
                                                 title:
                                                     'Are you sure?',
                                                 action: () {

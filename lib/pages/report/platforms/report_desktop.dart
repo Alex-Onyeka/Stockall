@@ -115,7 +115,7 @@ class _ReportDesktopState extends State<ReportDesktop> {
                     body: Column(
                       children: [
                         TopBanner(
-                          turnOn: false,
+                          turnOnBackNavButton: false,
                           subTitle:
                               'Manage your business from report',
                           title: 'Reports',

@@ -121,7 +121,8 @@ class _NotificationsDesktopState
                     body: Column(
                       children: [
                         TopBanner(
-                          turnOn: widget.turnOn,
+                          turnOnBackNavButton:
+                              widget.turnOn,
                           subTitle:
                               'Manage your account Notifications',
                           title: 'Notifications',

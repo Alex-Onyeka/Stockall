@@ -400,14 +400,6 @@ class _DashboardDesktopState
                                           openSideBar:
                                               () {},
                                           theme: theme,
-                                          notifications:
-                                              snapshot.connectionState ==
-                                                          ConnectionState.waiting ||
-                                                      snapshot
-                                                          .hasError
-                                                  ? []
-                                                  : snapshot
-                                                      .data!,
                                         );
                                       },
                                     ),
@@ -724,42 +716,14 @@ class _DashboardDesktopState
                                                 children: [
                                                   Row(
                                                     children: [
-                                                      InkWell(
-                                                        onTap: () {
-                                                          if (Theme.of(
-                                                                    context,
-                                                                  ).platform ==
-                                                                  TargetPlatform.windows ||
-                                                              Theme.of(
-                                                                    context,
-                                                                  ).platform ==
-                                                                  TargetPlatform.macOS ||
-                                                              Theme.of(
-                                                                    context,
-                                                                  ).platform ==
-                                                                  TargetPlatform.linux) {
-                                                            Navigator.of(
-                                                              context,
-                                                            ).pushNamedAndRemoveUntil(
-                                                              '/',
-                                                              (
-                                                                route,
-                                                              ) =>
-                                                                  false,
-                                                            );
-                                                          } else {
-                                                            performRestart();
-                                                          }
-                                                        },
-                                                        child: Text(
-                                                          style: TextStyle(
-                                                            fontSize:
-                                                                theme.mobileTexts.b1.fontSize,
-                                                            fontWeight:
-                                                                theme.mobileTexts.b1.fontWeightBold,
-                                                          ),
-                                                          'Quick Actions',
+                                                      Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              theme.mobileTexts.b1.fontSize,
+                                                          fontWeight:
+                                                              theme.mobileTexts.b1.fontWeightBold,
                                                         ),
+                                                        'Quick Actions',
                                                       ),
                                                     ],
                                                   ),

@@ -13,7 +13,7 @@ class SalesAuth {
   final bool downloadReceipt;
   final bool editReceipt;
   final bool printReceipt;
-  final int salesRecordTimeLimit;
+  // final int salesRecordTimeLimit;
   final bool addItemToStockAfterCustomSale;
   final bool addCustomItemToCart;
   final bool addStockallNameOnReceipt;
@@ -29,7 +29,7 @@ class SalesAuth {
     required this.downloadReceipt,
     required this.editReceipt,
     required this.printReceipt,
-    required this.salesRecordTimeLimit,
+    // required this.salesRecordTimeLimit,
     required this.addItemToStockAfterCustomSale,
     required this.addCustomItemToCart,
     required this.addStockallNameOnReceipt,

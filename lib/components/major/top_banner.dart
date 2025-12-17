@@ -14,7 +14,7 @@ class TopBanner extends StatelessWidget {
   final String? iconSvg;
   final IconData? iconData;
   final Color? svgColor;
-  final bool? turnOn;
+  final bool? turnOnBackNavButton;
   final String? altText;
   final Function()? altAction;
   const TopBanner({
@@ -28,7 +28,7 @@ class TopBanner extends StatelessWidget {
     this.iconData,
     this.isMain,
     this.svgColor,
-    this.turnOn,
+    this.turnOnBackNavButton,
     this.altText,
     this.altAction,
   });
@@ -66,99 +66,112 @@ class TopBanner extends StatelessWidget {
                     mainAxisAlignment:
                         MainAxisAlignment.spaceBetween,
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          if (turnOn == null ||
-                              (turnOn != null &&
-                                  turnOn == true)) {
-                            if (isMain != null) {
-                              returnExpensesProvider(
-                                context,
-                                listen: false,
-                              ).clearExpenseDate();
-                              Navigator.of(context).pop();
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            if (turnOnBackNavButton ==
+                                    null ||
+                                (turnOnBackNavButton !=
+                                        null &&
+                                    turnOnBackNavButton ==
+                                        true)) {
+                              if (isMain != null) {
+                                returnExpensesProvider(
+                                  context,
+                                  listen: false,
+                                ).clearExpenseDate();
+                                Navigator.of(context).pop();
+                              }
                             }
-                          }
-                        },
-                        child: Row(
-                          children: [
-                            Visibility(
-                              visible: turnOn != null,
-                              child: SizedBox(width: 35),
-                            ),
-                            Visibility(
-                              visible:
-                                  isMain != null &&
-                                  (turnOn == null ||
-                                      (turnOn != null &&
-                                          turnOn == true)),
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                        10,
-                                      ),
-                                  onTap: () {
-                                    returnExpensesProvider(
-                                      context,
-                                      listen: false,
-                                    ).clearExpenseDate();
-                                    Navigator.of(
-                                      context,
-                                    ).pop();
-                                  },
-                                  child: Container(
-                                    padding:
-                                        EdgeInsets.symmetric(
-                                          vertical: 10,
-                                          horizontal: 10,
+                          },
+                          child: Row(
+                            children: [
+                              Visibility(
+                                visible:
+                                    turnOnBackNavButton !=
+                                    null,
+                                child: SizedBox(width: 35),
+                              ),
+                              Visibility(
+                                visible:
+                                    isMain != null &&
+                                    (turnOnBackNavButton ==
+                                            null ||
+                                        (turnOnBackNavButton !=
+                                                null &&
+                                            turnOnBackNavButton ==
+                                                true)),
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                          10,
                                         ),
-                                    child: Icon(
-                                      Icons
-                                          .arrow_back_ios_new_rounded,
-                                      size: 20,
-                                      color: Colors.white,
+                                    onTap: () {
+                                      returnExpensesProvider(
+                                        context,
+                                        listen: false,
+                                      ).clearExpenseDate();
+                                      Navigator.of(
+                                        context,
+                                      ).pop();
+                                    },
+                                    child: Container(
+                                      padding:
+                                          EdgeInsets.symmetric(
+                                            vertical: 10,
+                                            horizontal: 10,
+                                          ),
+                                      child: Icon(
+                                        Icons
+                                            .arrow_back_ios_new_rounded,
+                                        size: 20,
+                                        color: Colors.white,
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                            Column(
-                              spacing: 5,
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .h4
-                                            .fontSize,
-                                    fontWeight:
-                                        theme
-                                            .mobileTexts
-                                            .h4
-                                            .fontWeightBold,
-                                  ),
-                                  title,
+                              Expanded(
+                                child: Column(
+                                  spacing: 5,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment
+                                          .start,
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .h4
+                                                .fontSize,
+                                        fontWeight:
+                                            theme
+                                                .mobileTexts
+                                                .h4
+                                                .fontWeightBold,
+                                      ),
+                                      title,
+                                    ),
+                                    Text(
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                      ),
+                                      subTitle,
+                                    ),
+                                  ],
                                 ),
-                                Text(
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
-                                  ),
-                                  subTitle,
-                                ),
-                              ],
-                            ),
-                          ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                       Container(

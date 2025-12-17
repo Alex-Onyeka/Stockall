@@ -736,7 +736,7 @@ class _AddProductDesktopState
                                                       fontSize:
                                                           10,
                                                     ),
-                                                    'This controls wether Item quantity is automatically deducted after sales, and notifications are sent when item quantity is low or out of stock.',
+                                                    'This controls whether Item quantity is automatically deducted after sales, and notifications are sent when item quantity is low or out of stock.',
                                                   ),
                                                   // Text(
                                                   //   'NOTE: if "YES", then cashier can set a custom price during sale, instead of the selling price.',

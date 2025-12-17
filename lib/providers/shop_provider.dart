@@ -155,7 +155,7 @@ class ShopProvider extends ChangeNotifier {
           return InfoAlert(
             theme: returnTheme(context, listen: false),
             message:
-                'You cannot delete you head quarters. Try selecting another store as your head quarters before deleting this one.',
+                'You cannot delete you head quarter. Try selecting another store as your head quarter before deleting this one.',
             title: 'Action Not Allowed',
           );
         },
@@ -342,7 +342,7 @@ class ShopProvider extends ChangeNotifier {
         }
       } catch (e) {
         print(
-          '❌ Error Setting Company as head quarters Online: ${e.toString()}',
+          '❌ Error Setting Company as head quarter Online: ${e.toString()}',
         );
       }
     } else {
@@ -360,7 +360,7 @@ class ShopProvider extends ChangeNotifier {
         notifyListeners();
       } catch (e) {
         print(
-          '❌ Error Setting Company as head quarters Offline: ${e.toString()}',
+          '❌ Error Setting Company as head quarter Offline: ${e.toString()}',
         );
       }
     }
@@ -672,7 +672,7 @@ class ShopProvider extends ChangeNotifier {
       final updateResponse = await supabase
           .from('shops')
           .update({'employees': currentEmployees})
-          .eq('shop_id', shopId);
+          .eq('shop_id', userShop()!.shopId!);
 
       if (updateResponse != null) {
         print('Failed to update shop: $updateResponse');

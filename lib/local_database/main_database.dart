@@ -1,5 +1,9 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:stockall/local_database/customers/customer_func.dart';
 import 'package:stockall/local_database/expenses/expenses_func.dart';
 import 'package:stockall/local_database/logged_in_user/logged_in_user_func.dart';
@@ -21,7 +25,17 @@ class MainDatabase extends ChangeNotifier {
   MainDatabase._internal();
 
   Future<void> initHive() async {
-    await Hive.initFlutter();
+    // await Hive.initFlutter();
+    if (kIsWeb) {
+      await Hive.initFlutter(); // web uses IndexedDB
+    } else {
+      final dir = await getApplicationSupportDirectory();
+      final stockallDir = Directory('${dir.path}/Stockall');
+      if (!await stockallDir.exists()) {
+        await stockallDir.create(recursive: true);
+      }
+      Hive.init(stockallDir.path);
+    }
     await UserFunc().init();
     await ShopFunc().init();
     await VisibilityBox().init();

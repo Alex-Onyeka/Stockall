@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -12,6 +13,7 @@ import 'package:stockall/pages/dashboard/components/button_tab.dart';
 import 'package:stockall/pages/dashboard/components/main_bottom_nav.dart';
 import 'package:stockall/pages/dashboard/components/top_nav_bar.dart';
 import 'package:stockall/pages/dashboard/components/total_sales_banner.dart';
+import 'package:stockall/pages/subscription_page/subscription_page.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class RestrictedPage extends StatefulWidget {
@@ -38,7 +40,6 @@ class _RestrictedPageState extends State<RestrictedPage> {
             children: [
               SizedBox(height: 20),
               TopNavBar(
-                notifications: [],
                 title: 'Users Shop',
                 subText: 'shop@gmail.com',
                 theme: theme,
@@ -327,8 +328,14 @@ class _RestrictedPageState extends State<RestrictedPage> {
                               children: [
                                 Column(
                                   children: [
-                                    SizedBox(height: 20),
                                     SizedBox(height: 30),
+                                    LottieBuilder.asset(
+                                      fit: BoxFit.contain,
+                                      height: 130,
+                                      premium,
+                                      repeat: true,
+                                    ),
+                                    SizedBox(height: 20),
                                     Text(
                                       style: TextStyle(
                                         fontSize:
@@ -339,7 +346,7 @@ class _RestrictedPageState extends State<RestrictedPage> {
                                         fontWeight:
                                             FontWeight.bold,
                                       ),
-                                      'Expired Subscription',
+                                      'Subscription Expired',
                                     ),
                                     SizedBox(height: 10),
                                     Text(
@@ -363,8 +370,16 @@ class _RestrictedPageState extends State<RestrictedPage> {
                                 MainButtonP(
                                   themeProvider: theme,
                                   action: () async {
-                                    await launchUrlMain(
-                                      'https://www.stockallapp.com/#/subscription',
+                                    // await launchUrlMain(
+                                    //   'https://www.stockallapp.com/#/subscription',
+                                    // );
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return SubscriptionPage();
+                                        },
+                                      ),
                                     );
                                   },
                                   text: 'Subscribe',

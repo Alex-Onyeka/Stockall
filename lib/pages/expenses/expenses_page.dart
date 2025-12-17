@@ -5,12 +5,12 @@ import 'package:stockall/pages/expenses/platforms/expenses_desktop.dart';
 import 'package:stockall/pages/expenses/platforms/expenses_moblie.dart';
 
 class ExpensesPage extends StatefulWidget {
-  final bool? turnOn;
+  final bool? turnOnBackNavButton;
   final bool? isMain;
   const ExpensesPage({
     super.key,
     required this.isMain,
-    this.turnOn,
+    this.turnOnBackNavButton,
   });
 
   @override
@@ -42,7 +42,7 @@ class _ExpensesPageState extends State<ExpensesPage> {
         } else {
           return ExpensesDesktop(
             isMain: widget.isMain,
-            turnOn: widget.turnOn,
+            turnOnBackNavButton: widget.turnOnBackNavButton,
           );
         }
       },

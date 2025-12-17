@@ -22,12 +22,12 @@ import 'package:stockall/pages/expenses/total_expenses/total_expenses.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class ExpensesDesktop extends StatefulWidget {
-  final bool? turnOn;
+  final bool? turnOnBackNavButton;
   final bool? isMain;
   const ExpensesDesktop({
     super.key,
     this.isMain,
-    this.turnOn,
+    this.turnOnBackNavButton,
   });
 
   @override
@@ -231,8 +231,9 @@ class _ExpensesDesktopState extends State<ExpensesDesktop> {
                                   child: Stack(
                                     children: [
                                       TopBanner(
-                                        turnOn:
-                                            widget.turnOn,
+                                        turnOnBackNavButton:
+                                            widget
+                                                .turnOnBackNavButton,
                                         subTitle:
                                             'Data of All Expenses Records',
                                         title: 'Expenses',

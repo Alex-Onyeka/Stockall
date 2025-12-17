@@ -8,6 +8,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   connectivity_plus
   file_saver
   file_selector_windows
+  flutter_inappwebview_windows
   flutter_usb_thermal_plugin
   permission_handler_windows
   printing

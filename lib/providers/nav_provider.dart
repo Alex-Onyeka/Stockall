@@ -122,6 +122,7 @@ class NavProvider extends ChangeNotifier {
                 DateTime.now().isAtSameMomentAs(
                   subsription.nextPayment!,
                 )))) {
+      // returnShopProvider(context).clearDiscountsCache();
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(

@@ -17,51 +17,45 @@ class MainButtonP extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Builder(
-      builder: (context) {
-        return Material(
-          type: MaterialType.transparency,
-          child: Ink(
-            decoration: BoxDecoration(
-              gradient:
-                  themeProvider.lightModeColor.prGradient,
-              borderRadius: BorderRadius.circular(5),
+    return Material(
+      type: MaterialType.transparency,
+      child: Ink(
+        decoration: BoxDecoration(
+          gradient: themeProvider.lightModeColor.prGradient,
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: InkWell(
+          onTap: () {
+            action!();
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Container(
+            padding: EdgeInsets.symmetric(
+              vertical:
+                  screenWidth(context) < 600 ? 13 : 13,
             ),
-            child: InkWell(
-              onTap: () {
-                action!();
-                FocusManager.instance.primaryFocus
-                    ?.unfocus();
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  vertical:
-                      screenWidth(context) < 600 ? 13 : 13,
+            child: Center(
+              child: Text(
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize:
+                      screenWidth(context) < 600
+                          ? themeProvider
+                              .mobileTexts
+                              .b2
+                              .fontSize
+                          : themeProvider
+                              .mobileTexts
+                              .b3
+                              .fontSize,
+                  fontWeight: FontWeight.normal,
                 ),
-                child: Center(
-                  child: Text(
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize:
-                          screenWidth(context) < 600
-                              ? themeProvider
-                                  .mobileTexts
-                                  .b2
-                                  .fontSize
-                              : themeProvider
-                                  .mobileTexts
-                                  .b3
-                                  .fontSize,
-                      fontWeight: FontWeight.normal,
-                    ),
-                    text,
-                  ),
-                ),
+                text,
               ),
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/subscription/subscription_class.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
+import 'package:stockall/classes/temp_sub_payment/temp_sub_payment_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/subscription/subscription_func.dart';
@@ -141,6 +142,18 @@ class SubscriptionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  double? subscriptionAmount(int plan) {
+    if (plan == 0) {
+      return null;
+    } else if (plan == 1) {
+      return 2500;
+    } else if (plan == 2) {
+      return 3500;
+    } else {
+      return 5000;
+    }
+  }
+
   Future<int> subscribe({
     required int plan,
     required BuildContext context,
@@ -162,17 +175,107 @@ class SubscriptionProvider extends ChangeNotifier {
                         .toUtc()
                         .toIso8601String(),
                 'plan': plan,
+                'amount': subscriptionAmount(plan),
               })
               .eq('user_id', shop.userId)
               .select()
               .maybeSingle();
 
-      if (res != null) {
-        subscription = SubscriptionClass.fromJson(res);
-        SubscriptionFunc().createSubscription(
-          SubscriptionClass.fromJson(res),
+      if (res == null) {
+        print('Subcription Action Failed');
+        return 0;
+      }
+      try {
+        List<Map<String, dynamic>> res = await supabase.rpc(
+          'get_this_month_subscription_payments',
+        );
+        if (res.isNotEmpty) {
+          var tempSubPayments =
+              res
+                  .map(
+                    (re) =>
+                        TempSubPaymentClass.fromJson(re),
+                  )
+                  .toList();
+          if (tempSubPayments
+              .where(
+                (subPayment) =>
+                    subPayment.userId == shop.userId,
+              )
+              .isNotEmpty) {
+            print("Store Subcription Exists");
+            var tempP =
+                tempSubPayments
+                    .where(
+                      (subPayment) =>
+                          subPayment.userId == shop.userId,
+                    )
+                    .first;
+            var nextPayment =
+                plan == 0
+                    ? null
+                    : DateTime.now().add(
+                      Duration(days: 30),
+                    );
+            // tempP.plan == plan;
+            // tempP.amount == subscriptionAmount(plan);
+            await supabase
+                .from('subscription_payments')
+                .update({
+                  'plan': plan,
+                  'amount':
+                      subscriptionAmount(plan)?.toInt(),
+                  'next_payment':
+                      nextPayment
+                          ?.toUtc()
+                          .toIso8601String(),
+                })
+                .eq('payments_id', tempP.paymentsId!);
+          } else {
+            print("Store Subcription Does not Exists");
+            var nextPayment =
+                plan == 0
+                    ? null
+                    : DateTime.now().add(
+                      Duration(days: 30),
+                    );
+            var tempP = TempSubPaymentClass(
+              userId: shop.userId,
+              duration: 200,
+              amount: subscriptionAmount(plan)?.toInt(),
+              plan: plan,
+              nextPayment: nextPayment?.toUtc(),
+            );
+            await supabase
+                .from('subscription_payments')
+                .insert(tempP.toJson());
+          }
+        } else {
+          var nextPayment =
+              plan == 0
+                  ? null
+                  : DateTime.now().add(Duration(days: 30));
+          var tempP = TempSubPaymentClass(
+            userId: shop.userId,
+            duration: 200,
+            amount: subscriptionAmount(plan)?.toInt(),
+            plan: plan,
+            nextPayment: nextPayment?.toUtc(),
+          );
+          await supabase
+              .from('subscription_payments')
+              .insert(tempP.toJson());
+        }
+        await getSubscription(context);
+      } catch (e) {
+        print(
+          'Subsciption Payments Creation Failed: ${e.toString()}',
         );
       }
+      subscription = SubscriptionClass.fromJson(res);
+      SubscriptionFunc().createSubscription(
+        SubscriptionClass.fromJson(res),
+      );
       notifyListeners();
       print('Subscription Success');
       return 1;

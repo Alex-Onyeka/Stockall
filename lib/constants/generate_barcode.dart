@@ -327,7 +327,7 @@ Future<bool> generateBarcodeAndPrint(
       return DialogTemplate(
         theme: returnTheme(safeContext, listen: false),
         message:
-            'Generated for Barcode this Product(s). This action automatically sets the products\' barcode to the new generated barcode once you print or download it.',
+            'Generated Barcode for this Product(s). This action automatically sets the products\' barcode to the new generated barcode once you print or download it.',
         title: 'Generated Barcode',
         action: () async {
           print('Starting Printing');

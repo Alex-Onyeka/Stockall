@@ -334,7 +334,8 @@ class _MyDrawerWidgetTabletState
                                       builder: (context) {
                                         return ExpensesPage(
                                           isMain: true,
-                                          turnOn: false,
+                                          turnOnBackNavButton:
+                                              false,
                                         );
                                       },
                                     ),

@@ -39,8 +39,8 @@ Future<dynamic> setStoreAsHeadquarters(
             // showBottomActionButtons: false,
             theme: theme,
             message:
-                'Select One Your Stores to Set as your head quarters',
-            title: 'Select Head Quarters',
+                'Select One Of Your Stores to Set as your head quarter',
+            title: 'Select Head Quarter',
             action: () {
               Navigator.of(context).pop();
             },
@@ -109,7 +109,7 @@ Future<dynamic> setStoreAsHeadquarters(
                                                       FontWeight
                                                           .bold,
                                                 ),
-                                                "(Head Quarters)",
+                                                "(Head Quarter)",
                                               ),
                                             ],
                                           ),
@@ -160,7 +160,7 @@ Future<dynamic> setStoreAsHeadquarters(
                                       return ConfirmationAlert(
                                         theme: theme,
                                         message:
-                                            'Are you surey you want to set this as your head quarters?',
+                                            'Are you sure you want to set this as your head quarter?',
                                         title:
                                             'Are you sure?',
                                         action: () async {

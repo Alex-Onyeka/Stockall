@@ -5,12 +5,12 @@ import 'package:stockall/main.dart';
 
 class ExpensesAuth {
   final int numberOfDailyExpenses;
-  final int expensesRecordLimit;
+  // final int expensesRecordLimit;
   final bool deleteAndEditExpenses;
 
   ExpensesAuth({
     required this.numberOfDailyExpenses,
-    required this.expensesRecordLimit,
+    // required this.expensesRecordLimit,
     required this.deleteAndEditExpenses,
   });
 }

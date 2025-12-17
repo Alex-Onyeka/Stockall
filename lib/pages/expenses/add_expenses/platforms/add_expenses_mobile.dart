@@ -154,7 +154,12 @@ class _AddExpensesMobileState
               } else {
                 await expensesProvider.updateExpense(
                   TempExpensesClass(
-                    creator: widget.expenses!.name,
+                    creator:
+                        widget.expenses?.userName ??
+                        returnUserProvider(
+                          context,
+                          listen: false,
+                        ).currentUserMain!.name,
                     // localProvider.currentEmployee!.name,
                     userId: widget.expenses!.userId,
                     // localProvider

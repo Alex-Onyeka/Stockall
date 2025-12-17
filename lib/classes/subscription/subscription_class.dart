@@ -25,6 +25,8 @@ class SubscriptionClass extends HiveObject {
   @HiveField(6)
   String? userName;
 
+  double? amount;
+
   SubscriptionClass({
     this.subscriptionId,
     this.createdAt,
@@ -33,6 +35,7 @@ class SubscriptionClass extends HiveObject {
     this.plan,
     this.lastPayment,
     this.userName,
+    this.amount,
   });
 
   factory SubscriptionClass.fromJson(
@@ -55,6 +58,7 @@ class SubscriptionClass extends HiveObject {
               ? DateTime.parse(json['last_payment'])
               : null,
       userName: json['user_name'] as String?,
+      amount: (json['amount'] as num?)?.toDouble(),
     );
   }
 
@@ -67,6 +71,7 @@ class SubscriptionClass extends HiveObject {
       'plan': plan,
       'last_payment': lastPayment?.toIso8601String(),
       'user_name': userName,
+      'amount': amount,
     };
   }
 }

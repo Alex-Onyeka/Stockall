@@ -1331,6 +1331,10 @@ class _MakeSalesDesktopState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      returnSalesProvider(
+        context,
+        listen: false,
+      ).toggleSetDiscount(false, context);
       if (widget.isInvoice != null &&
           returnSalesProvider(
             context,

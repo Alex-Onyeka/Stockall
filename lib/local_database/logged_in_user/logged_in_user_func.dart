@@ -11,11 +11,35 @@ class LoggedInUserFunc {
       'loggedInUserBoxStockall';
 
   Future<void> init() async {
-    Hive.registerAdapter(LoggedInUserAdapter());
-    loggedInUserBox = await Hive.openBox(
-      loggedInUserBoxName,
-    );
-    print('Logged In User Box Initialized');
+    // await Hive.deleteBoxFromDisk(loggedInUserBoxName);
+    try {
+      Hive.registerAdapter(LoggedInUserAdapter());
+      loggedInUserBox = await Hive.openBox(
+        loggedInUserBoxName,
+      );
+      print('Logged In User Box Initialized');
+    } catch (e) {
+      print('❌ Error New Logged In User: ${e.toString()}');
+      // try {
+      //   if (Hive.isBoxOpen(loggedInUserBoxName)) {
+      //     await Hive.box(loggedInUserBoxName).close();
+      //   }
+
+      //   await Hive.deleteBoxFromDisk(loggedInUserBoxName);
+      //   print(
+      //     '🧹 Deleted Corrupted Current Logged In User Box',
+      //   );
+
+      //   loggedInUserBox = await Hive.openBox(
+      //     loggedInUserBoxName,
+      //   );
+      //   print('✅ Reinitialized Logged In User Box');
+      // } catch (innerError) {
+      //   print(
+      //     '⚠️ Failed to recover Hive box Logged In User: $innerError',
+      //   );
+      // }
+    }
   }
 
   LoggedInUser? getLoggedInUser() {

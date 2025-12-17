@@ -398,7 +398,8 @@ class _MyDrawerWidgetDesktopMainState
                                       builder: (context) {
                                         return ExpensesPage(
                                           isMain: true,
-                                          turnOn: false,
+                                          turnOnBackNavButton:
+                                              false,
                                         );
                                       },
                                     ),
@@ -725,7 +726,11 @@ class _MyDrawerWidgetDesktopMainState
                                 visible: false,
                                 child: NavListTileDesktopAlt(
                                   height: 18,
-                                  action: () {},
+                                  action: () async {
+                                    await launchUrlMain(
+                                      "https://stockallsolution.com/privacy-policy",
+                                    );
+                                  },
                                   title:
                                       'Privacy P. & Terms/C.',
                                   icon:

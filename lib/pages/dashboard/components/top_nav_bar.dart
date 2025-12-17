@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:popover/popover.dart';
-import 'package:stockall/classes/temp_notification/temp_notification.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
@@ -19,7 +18,7 @@ import 'package:stockall/services/auth_service.dart';
 
 class TopNavBar extends StatefulWidget {
   final Function()? refreshAction;
-  final List<TempNotification> notifications;
+  // final List<TempNotification> notifications;
   final String? title;
   final String? subText;
   final Function()? action;
@@ -29,7 +28,7 @@ class TopNavBar extends StatefulWidget {
 
   const TopNavBar({
     super.key,
-    required this.notifications,
+    // required this.notifications,
     this.title,
     this.subText,
     required this.theme,
@@ -317,11 +316,32 @@ class _TopNavBarState extends State<TopNavBar> {
                                     ),
                                   ),
                                   SizedBox(width: 5),
-                                  SvgPicture.asset(
-                                    checkIconSvg,
-                                    height: 16,
-                                    width: 16,
-                                    fit: BoxFit.contain,
+                                  Visibility(
+                                    visible:
+                                        returnSubcsription(
+                                              context,
+                                            )
+                                            .subscription
+                                            ?.plan !=
+                                        0,
+                                    child: SvgPicture.asset(
+                                      color:
+                                          returnSubcsription(
+                                                    context,
+                                                  ).subscription?.plan ==
+                                                  1
+                                              ? Colors.grey
+                                              : returnSubcsription(
+                                                    context,
+                                                  ).subscription?.plan ==
+                                                  2
+                                              ? Colors.blue
+                                              : null,
+                                      checkIconSvg,
+                                      height: 16,
+                                      width: 16,
+                                      fit: BoxFit.contain,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -743,7 +763,9 @@ class _TopNavBarState extends State<TopNavBar> {
                         ),
                         Visibility(
                           visible:
-                              widget.notifications
+                              returnNotificationProvider(
+                                    context,
+                                  ).notifications
                                   .where(
                                     (notif) =>
                                         !notif.isViewed,
@@ -765,7 +787,10 @@ class _TopNavBarState extends State<TopNavBar> {
                                   fontWeight:
                                       FontWeight.bold,
                                   fontSize:
-                                      widget.notifications
+                                      returnNotificationProvider(
+                                                    context,
+                                                  )
+                                                  .notifications
                                                   .where(
                                                     (
                                                       notif,
@@ -778,7 +803,7 @@ class _TopNavBarState extends State<TopNavBar> {
                                           : 11,
                                   color: Colors.white,
                                 ),
-                                '${widget.notifications.where((notif) => !notif.isViewed).length}',
+                                '${returnNotificationProvider(context).notifications.where((notif) => !notif.isViewed).length}',
                               ),
                             ),
                           ),
@@ -957,7 +982,7 @@ class PopoverMenu extends StatelessWidget {
                                                     FontWeight
                                                         .bold,
                                               ),
-                                              "(Head Quarters)",
+                                              "(Head Quarter)",
                                             ),
                                           ],
                                         ),

@@ -246,7 +246,11 @@ class _DiscountSetterBodyState
                     returnShopProvider(
                           context,
                         ).currentDiscount() !=
-                        null,
+                        null &&
+                    returnSubcsription(
+                          context,
+                        ).subscription?.plan !=
+                        0,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [

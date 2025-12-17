@@ -332,13 +332,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                               ).setSettings();
                             },
                             theme: theme,
-                            notifications:
-                                snapshot.connectionState ==
-                                            ConnectionState
-                                                .waiting ||
-                                        snapshot.hasError
-                                    ? []
-                                    : snapshot.data!,
                           );
                         },
                       ),

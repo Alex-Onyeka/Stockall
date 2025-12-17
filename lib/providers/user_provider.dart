@@ -139,10 +139,14 @@ class UserProvider extends ChangeNotifier {
         // notifyListeners();
         print('User Found: ${_currentUser?.name}');
         await UserFunc().insertUser(_currentUser!);
+        await LoggedInUserFunc().insertLoggedInUser(
+          LoggedInUser(loggedInUser: _currentUser),
+        );
       } else {
         final authUser = _supabase.currentUser;
         if (authUser == null) {
           _currentUser = null;
+          print('No User Found');
           return null;
         }
         final data =

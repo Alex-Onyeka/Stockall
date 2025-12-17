@@ -21,6 +21,7 @@ import 'package:stockall/pages/profile/profile_page.dart';
 import 'package:stockall/pages/settings/settings_page.dart';
 import 'package:stockall/pages/shop_setup/edit_receipt_page/edit_receipt.dart';
 import 'package:stockall/pages/shop_setup/shop_page/shop_page.dart';
+import 'package:stockall/pages/subscription_page/subscription_page.dart';
 
 class SettingsPageDesktop extends StatefulWidget {
   const SettingsPageDesktop({super.key});
@@ -185,7 +186,7 @@ class _SettingsPageDesktopState
                                   );
                                 },
                                 title:
-                                    'Set Business Head Quarters',
+                                    'Set Business Head Quarter',
                                 icon:
                                     Icons
                                         .settings_suggest_outlined,
@@ -715,213 +716,250 @@ class _SettingsPageDesktopState
                                 ),
                               ),
                             ),
-                            NavListTileDesktopAlt(
-                              height: 18,
-                              action: () {
-                                returnSubcsription(
-                                  context,
-                                  listen: false,
-                                ).select(
-                                  returnSubcsription(
-                                            context,
-                                            listen: false,
-                                          )
-                                          .subscription
-                                          ?.plan ??
-                                      0,
-                                );
-                                showDialog(
-                                  context: context,
-                                  builder: (confirmDialog) {
-                                    return StatefulBuilder(
-                                      builder:
-                                          (
-                                            context,
-                                            setState,
-                                          ) => DialogTemplate(
-                                            theme: theme,
-                                            message:
-                                                'Select Another Subcription Plan',
-                                            title:
-                                                'Select Plan',
-                                            action: () async {
-                                              if (!isChangePlanLoading) {
-                                                setState(() {
-                                                  isChangePlanLoading =
-                                                      true;
-                                                });
-                                                await returnSubcsription(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).subscribe(
-                                                  plan:
-                                                      returnSubcsription(
-                                                        context,
-                                                        listen:
-                                                            false,
-                                                      ).selected!,
-                                                  context:
-                                                      context,
-                                                );
-                                                returnData(
-                                                  // ignore: use_build_context_synchronously
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).setAllowedRange(
-                                                  // ignore: use_build_context_synchronously
-                                                  context:
-                                                      context,
-                                                  plan:
-                                                      returnSubcsription(
-                                                        // ignore: use_build_context_synchronously
-                                                        context,
-                                                        listen:
-                                                            false,
-                                                      ).subscription?.plan,
-                                                );
-                                                if (confirmDialog
-                                                    .mounted) {
-                                                  Navigator.of(
-                                                    confirmDialog,
-                                                  ).pop();
-                                                }
-                                              }
-                                            },
-                                            widget: Column(
-                                              spacing: 5,
-                                              mainAxisSize:
-                                                  MainAxisSize
-                                                      .min,
-                                              children:
-                                                  returnSubcsription(
-                                                    context,
-                                                  ).subs.map((
-                                                    sub,
-                                                  ) {
-                                                    return Material(
-                                                      type:
-                                                          MaterialType.transparency,
-                                                      child: InkWell(
-                                                        onTap: () {
-                                                          returnSubcsription(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).select(
-                                                            sub.plan,
-                                                          );
-                                                        },
-                                                        child: Container(
-                                                          decoration: BoxDecoration(
-                                                            border: Border(
-                                                              bottom: BorderSide(
-                                                                color:
-                                                                    Colors.grey.shade100,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          child: Padding(
-                                                            padding: const EdgeInsets.symmetric(
-                                                              horizontal:
-                                                                  20.0,
-                                                              vertical:
-                                                                  10,
-                                                            ),
-                                                            child: Column(
-                                                              mainAxisSize:
-                                                                  MainAxisSize.min,
-                                                              children: [
-                                                                Row(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment.spaceBetween,
-                                                                  children: [
-                                                                    Text(
-                                                                      style: TextStyle(
-                                                                        fontSize:
-                                                                            theme.mobileTexts.b2.fontSize,
-                                                                      ),
-                                                                      sub.planName,
-                                                                    ),
-                                                                    Stack(
-                                                                      children: [
-                                                                        Visibility(
-                                                                          visible:
-                                                                              !isChangePlanLoading,
-                                                                          child: Container(
-                                                                            padding: EdgeInsets.all(
-                                                                              2,
-                                                                            ),
-                                                                            decoration: BoxDecoration(
-                                                                              shape:
-                                                                                  BoxShape.circle,
-                                                                              border: Border.all(
-                                                                                color:
-                                                                                    Colors.grey.shade300,
-                                                                              ),
-                                                                            ),
-                                                                            child: Container(
-                                                                              padding: EdgeInsets.all(
-                                                                                6,
-                                                                              ),
-                                                                              decoration: BoxDecoration(
-                                                                                shape:
-                                                                                    BoxShape.circle,
-                                                                                color:
-                                                                                    returnSubcsription(
-                                                                                              context,
-                                                                                            ).selected ==
-                                                                                            sub.plan
-                                                                                        ? theme.lightModeColor.prColor250
-                                                                                        : Colors.transparent,
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                        Visibility(
-                                                                          visible:
-                                                                              isChangePlanLoading,
-                                                                          child: SizedBox(
-                                                                            height:
-                                                                                17,
-                                                                            width:
-                                                                                17,
-                                                                            child: CircularProgressIndicator(
-                                                                              strokeWidth:
-                                                                                  2,
-                                                                              color:
-                                                                                  theme.lightModeColor.secColor200,
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    );
-                                                  }).toList(),
-                                            ),
-                                          ),
-                                    );
-                                  },
-                                ).then((_) {
-                                  setState(() {
-                                    isChangePlanLoading =
-                                        false;
+                            // NavListTileDesktopAlt(
+                            //   height: 18,
+                            //   action: () {
+                            //     returnSubcsription(
+                            //       context,
+                            //       listen: false,
+                            //     ).select(
+                            //       returnSubcsription(
+                            //                 context,
+                            //                 listen: false,
+                            //               )
+                            //               .subscription
+                            //               ?.plan ??
+                            //           0,
+                            //     );
+                            //     showDialog(
+                            //       context: context,
+                            //       builder: (confirmDialog) {
+                            //         return StatefulBuilder(
+                            //           builder:
+                            //               (
+                            //                 context,
+                            //                 setState,
+                            //               ) => DialogTemplate(
+                            //                 theme: theme,
+                            //                 message:
+                            //                     'Select Another Subcription Plan',
+                            //                 title:
+                            //                     'Select Plan',
+                            //                 action: () async {
+                            //                   if (!isChangePlanLoading) {
+                            //                     setState(() {
+                            //                       isChangePlanLoading =
+                            //                           true;
+                            //                     });
+                            //                     await returnSubcsription(
+                            //                       context,
+                            //                       listen:
+                            //                           false,
+                            //                     ).subscribe(
+                            //                       plan:
+                            //                           returnSubcsription(
+                            //                             context,
+                            //                             listen:
+                            //                                 false,
+                            //                           ).selected!,
+                            //                       context:
+                            //                           context,
+                            //                     );
+                            //                     returnData(
+                            //                       // ignore: use_build_context_synchronously
+                            //                       context,
+                            //                       listen:
+                            //                           false,
+                            //                     ).setAllowedRange(
+                            //                       // ignore: use_build_context_synchronously
+                            //                       context:
+                            //                           context,
+                            //                       plan:
+                            //                           returnSubcsription(
+                            //                             // ignore: use_build_context_synchronously
+                            //                             context,
+                            //                             listen:
+                            //                                 false,
+                            //                           ).subscription?.plan,
+                            //                     );
+                            //                     if (confirmDialog
+                            //                         .mounted) {
+                            //                       Navigator.of(
+                            //                         confirmDialog,
+                            //                       ).pop();
+                            //                     }
+                            //                   }
+                            //                 },
+                            //                 widget: Column(
+                            //                   spacing: 5,
+                            //                   mainAxisSize:
+                            //                       MainAxisSize
+                            //                           .min,
+                            //                   children:
+                            //                       returnSubcsription(
+                            //                         context,
+                            //                       ).subs.map((
+                            //                         sub,
+                            //                       ) {
+                            //                         return Material(
+                            //                           type:
+                            //                               MaterialType.transparency,
+                            //                           child: InkWell(
+                            //                             onTap: () {
+                            //                               returnSubcsription(
+                            //                                 context,
+                            //                                 listen:
+                            //                                     false,
+                            //                               ).select(
+                            //                                 sub.plan,
+                            //                               );
+                            //                             },
+                            //                             child: Container(
+                            //                               decoration: BoxDecoration(
+                            //                                 border: Border(
+                            //                                   bottom: BorderSide(
+                            //                                     color:
+                            //                                         Colors.grey.shade100,
+                            //                                   ),
+                            //                                 ),
+                            //                               ),
+                            //                               child: Padding(
+                            //                                 padding: const EdgeInsets.symmetric(
+                            //                                   horizontal:
+                            //                                       20.0,
+                            //                                   vertical:
+                            //                                       10,
+                            //                                 ),
+                            //                                 child: Column(
+                            //                                   mainAxisSize:
+                            //                                       MainAxisSize.min,
+                            //                                   children: [
+                            //                                     Row(
+                            //                                       mainAxisAlignment:
+                            //                                           MainAxisAlignment.spaceBetween,
+                            //                                       children: [
+                            //                                         Text(
+                            //                                           style: TextStyle(
+                            //                                             fontSize:
+                            //                                                 theme.mobileTexts.b2.fontSize,
+                            //                                           ),
+                            //                                           sub.planName,
+                            //                                         ),
+                            //                                         Stack(
+                            //                                           children: [
+                            //                                             Visibility(
+                            //                                               visible:
+                            //                                                   !isChangePlanLoading,
+                            //                                               child: Container(
+                            //                                                 padding: EdgeInsets.all(
+                            //                                                   2,
+                            //                                                 ),
+                            //                                                 decoration: BoxDecoration(
+                            //                                                   shape:
+                            //                                                       BoxShape.circle,
+                            //                                                   border: Border.all(
+                            //                                                     color:
+                            //                                                         Colors.grey.shade300,
+                            //                                                   ),
+                            //                                                 ),
+                            //                                                 child: Container(
+                            //                                                   padding: EdgeInsets.all(
+                            //                                                     6,
+                            //                                                   ),
+                            //                                                   decoration: BoxDecoration(
+                            //                                                     shape:
+                            //                                                         BoxShape.circle,
+                            //                                                     color:
+                            //                                                         returnSubcsription(
+                            //                                                                   context,
+                            //                                                                 ).selected ==
+                            //                                                                 sub.plan
+                            //                                                             ? theme.lightModeColor.prColor250
+                            //                                                             : Colors.transparent,
+                            //                                                   ),
+                            //                                                 ),
+                            //                                               ),
+                            //                                             ),
+                            //                                             Visibility(
+                            //                                               visible:
+                            //                                                   isChangePlanLoading,
+                            //                                               child: SizedBox(
+                            //                                                 height:
+                            //                                                     17,
+                            //                                                 width:
+                            //                                                     17,
+                            //                                                 child: CircularProgressIndicator(
+                            //                                                   strokeWidth:
+                            //                                                       2,
+                            //                                                   color:
+                            //                                                       theme.lightModeColor.secColor200,
+                            //                                                 ),
+                            //                                               ),
+                            //                                             ),
+                            //                                           ],
+                            //                                         ),
+                            //                                       ],
+                            //                                     ),
+                            //                                   ],
+                            //                                 ),
+                            //                               ),
+                            //                             ),
+                            //                           ),
+                            //                         );
+                            //                       }).toList(),
+                            //                 ),
+                            //               ),
+                            //         );
+                            //       },
+                            //     ).then((_) {
+                            //       setState(() {
+                            //         isChangePlanLoading =
+                            //             false;
+                            //       });
+                            //     });
+                            //   },
+                            //   title:
+                            //       'Change Subscription Plan',
+                            //   icon:
+                            //       Icons
+                            //           .earbuds_battery_outlined,
+                            // ),
+                            Visibility(
+                              visible: authorization(
+                                authorized:
+                                    Authorizations()
+                                        .manageShop,
+                                context: context,
+                              ),
+                              child: NavListTileDesktopAlt(
+                                height: 18,
+                                action: () async {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return SubscriptionPage();
+                                      },
+                                    ),
+                                  ).then((_) {
+                                    if (context.mounted) {
+                                      print(
+                                        'Context is mounted',
+                                      );
+                                      setState(() {});
+                                    } else {
+                                      print(
+                                        'Context is not mounted',
+                                      );
+                                    }
                                   });
-                                });
-                              },
-                              title:
-                                  'Change Subscription Plan',
-                              icon:
-                                  Icons
-                                      .earbuds_battery_outlined,
+                                },
+                                title:
+                                    'Manage Subscription',
+                                icon:
+                                    Icons
+                                        .workspace_premium_outlined,
+                              ),
                             ),
                             Visibility(
                               visible: authorization(
@@ -978,7 +1016,8 @@ class _SettingsPageDesktopState
                                 action: () async {
                                   phoneCall();
                                 },
-                                title: 'Contact Us',
+                                title:
+                                    'Contact Us (+234 704 850 7587)',
                                 icon: Icons.phone,
                               ),
                             ),
@@ -999,15 +1038,34 @@ class _SettingsPageDesktopState
                               ),
                             ),
                             NavListTileDesktopAlt(
+                              height: 20,
+                              action: () async {
+                                await launchUrlMain(
+                                  "https://stockallsolution.com/help-center",
+                                );
+                              },
+                              title: 'Visit Help Center',
+                              icon:
+                                  Icons.people_alt_outlined,
+                            ),
+                            NavListTileDesktopAlt(
                               height: 18,
-                              action: () {},
+                              action: () async {
+                                await launchUrlMain(
+                                  "https://stockallsolution.com/privacy-policy",
+                                );
+                              },
                               title:
                                   'Privacy P. & Terms/C.',
                               icon: Icons.menu_book_rounded,
                             ),
                             NavListTileDesktopAlt(
                               height: 18,
-                              action: () {},
+                              action: () async {
+                                await launchUrlMain(
+                                  "https://stockallsolution.com",
+                                );
+                              },
                               title: 'Go to Wesbite.',
                               icon: Icons.language_rounded,
                             ),

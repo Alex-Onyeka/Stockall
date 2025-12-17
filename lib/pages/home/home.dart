@@ -42,7 +42,7 @@ class _HomeState extends State<Home> {
   // }
 
   void _handleNoShop() {
-    if (!mounted) return;
+    if (!context.mounted) return;
     returnNavProvider(context, listen: false).verify();
   }
 
@@ -75,14 +75,12 @@ class _HomeState extends State<Home> {
     }
   }
 
-  Future<void> setLogo() async {
-    returnShopProvider(
-      // ignore: use_build_context_synchronously
-      context,
-      listen: false,
-      // ignore: use_build_context_synchronously
-    ).getLogoImage(context);
-  }
+  // Future<void> setLogo() async {
+  //   returnShopProvider(
+  //     context,
+  //     listen: false,
+  //   ).getLogoImage(context);
+  // }
 
   @override
   void initState() {
@@ -213,7 +211,7 @@ class _HomeState extends State<Home> {
                           _handledNoShop = true;
                           WidgetsBinding.instance
                               .addPostFrameCallback((_) {
-                                if (mounted) {
+                                if (context.mounted) {
                                   _handleNoShop();
                                 }
                               });

@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.2
+version: 1.0.3+6
 
 environment:
   sdk: ^3.7.2
@@ -77,6 +77,8 @@ dependencies:
   barcode_widget: ^2.0.4
   barcode: ^2.2.9
   image: ^4.5.4
+  flutter_inappwebview: ^6.1.5
+  # flutter_local_notifications: ^19.5.0
   # blue_thermal_printer: ^1.2.3
 
 
@@ -85,6 +87,7 @@ dev_dependencies:
     sdk: flutter
   build_runner: ^2.4.13
   hive_generator: ^2.0.1
+  msix: ^3.6.2
   # flutter_launcher_icons: ^0.14.3
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -100,6 +103,19 @@ dev_dependencies:
 #       url: https://github.com/DavBfr/dart_pdf
 #       ref: main
 #       path: printing
+msix_config:
+  display_name: Stockall
+  publisher_display_name: Stockall Solutions
+  identity_name: StockallSolutions.Stockall
+  msix_version: 1.0.6.0
+  logo_path: assets/images/logos/fav_icon.png
+  start_menu_icon_path: assets/images/logos/fav_icon.png
+  tile_icon_path: assets/images/logos/fav_icon.png
+  capabilities: internetClient
+  publisher: CN=C30F1185-CC3C-46C0-BCF0-18DA02C31DC5
+  certificate_path: windows/certificates/stockallsolutions.pfx
+  certificate_password: myuzician
+
 
 # The following section is specific to Flutter packages.
 flutter:
