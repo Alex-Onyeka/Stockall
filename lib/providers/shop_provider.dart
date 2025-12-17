@@ -747,13 +747,6 @@ class ShopProvider extends ChangeNotifier {
   //   }
   // }
 
-  bool isUpdated = false;
-
-  void toggleUpdated(bool value) {
-    isUpdated = value;
-    notifyListeners();
-  }
-
   // int currentIndex = 0;
   List<TempShopClass> userShops = [];
 

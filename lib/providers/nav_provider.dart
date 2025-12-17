@@ -75,12 +75,19 @@ class NavProvider extends ChangeNotifier {
       listen: false,
     );
 
+    final appVersionP = returnAppVersionProvider(
+      // ignore: use_build_context_synchronously
+      context,
+      listen: false,
+    );
+
     final userShop = await shopProvider.getUserShops();
 
     final subsription = await subPro.getSubscription(
       // ignore: use_build_context_synchronously
       context,
     );
+    await appVersionP.getAppVersion();
 
     if (isOnline) {
       var userOffline = AuthService().currentUserOffline;

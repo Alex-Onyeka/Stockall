@@ -1191,7 +1191,7 @@ class _SettingsPageMobileState
                               color: Colors.grey.shade500,
                               fontWeight: FontWeight.bold,
                             ),
-                            currentUpdate.toString(),
+                            appVersionMobile.toString(),
                           ),
                         ],
                       ),

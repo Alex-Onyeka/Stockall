@@ -1279,7 +1279,7 @@ class _SettingsPageDesktopState
                           color: Colors.grey.shade500,
                           fontWeight: FontWeight.bold,
                         ),
-                        currentUpdate.toString(),
+                        appVersionDesktop.toString(),
                         // returnData(
                         //   context,
                         // ).allowedRangeItems.toString(),

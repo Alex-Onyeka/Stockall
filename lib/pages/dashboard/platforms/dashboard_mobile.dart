@@ -1126,9 +1126,14 @@ class _DashboardMobileState extends State<DashboardMobile> {
                   ),
                   Visibility(
                     visible:
-                        !returnShopProvider(
-                          context,
-                        ).isUpdated,
+                        appVersionDesktop !=
+                            returnAppVersionProvider(
+                              context,
+                            ).appVersion?.desktopVersion &&
+                        returnAppVersionProvider(
+                              context,
+                            ).isUpdated ==
+                            false,
                     child: Align(
                       alignment: Alignment(0, -0.8),
                       child: Material(
@@ -1188,7 +1193,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                   ),
                                   IconButton(
                                     onPressed: () {
-                                      returnShopProvider(
+                                      returnAppVersionProvider(
                                         context,
                                         listen: false,
                                       ).toggleUpdated(true);

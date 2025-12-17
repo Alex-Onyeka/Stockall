@@ -1168,9 +1168,16 @@ class _DashboardDesktopState
                                 ),
                                 Visibility(
                                   visible:
-                                      !returnShopProvider(
-                                        context,
-                                      ).isUpdated,
+                                      appVersionDesktop !=
+                                          returnAppVersionProvider(
+                                                context,
+                                              )
+                                              .appVersion
+                                              ?.desktopVersion &&
+                                      returnAppVersionProvider(
+                                            context,
+                                          ).isUpdated ==
+                                          false,
                                   child: Align(
                                     alignment: Alignment(
                                       0,
@@ -1182,13 +1189,7 @@ class _DashboardDesktopState
                                           Colors
                                               .transparent,
                                       child: Container(
-                                        width:
-                                            screenWidth(
-                                                      context,
-                                                    ) >
-                                                    mobileScreen
-                                                ? 450
-                                                : 320,
+                                        width: 450,
                                         padding:
                                             EdgeInsets.fromLTRB(
                                               15,
@@ -1250,11 +1251,11 @@ class _DashboardDesktopState
                                                     fontWeight:
                                                         FontWeight.bold,
                                                   ),
-                                                  'APP UPDATE AVAILABLE',
+                                                  'NEW UPDATE AVAILABLE',
                                                 ),
                                                 IconButton(
                                                   onPressed: () {
-                                                    returnShopProvider(
+                                                    returnAppVersionProvider(
                                                       context,
                                                       listen:
                                                           false,

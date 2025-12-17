@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:stockall/local_database/app_version/app_version_func.dart';
 import 'package:stockall/local_database/customers/customer_func.dart';
 import 'package:stockall/local_database/expenses/expenses_func.dart';
 import 'package:stockall/local_database/logged_in_user/logged_in_user_func.dart';
@@ -37,6 +38,7 @@ class MainDatabase extends ChangeNotifier {
       Hive.init(stockallDir.path);
     }
     await UserFunc().init();
+    await AppVersionFunc().init();
     await ShopFunc().init();
     await VisibilityBox().init();
     await CustomerFunc().init();
@@ -54,4 +56,4 @@ class MainDatabase extends ChangeNotifier {
   }
 }
 
-int highestHiveClassIndex = 31;
+int highestHiveClassIndex = 32;

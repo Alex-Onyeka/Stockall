@@ -35,22 +35,22 @@ class _DashboardState extends State<Dashboard> {
           listen: false,
         ).userShop()?.name,
       );
-      print('$currentUpdate');
-      if (returnShopProvider(
-            context,
-            listen: false,
-          ).userShop()?.updateNumber !=
-          currentUpdate) {
-        returnShopProvider(
-          context,
-          listen: false,
-        ).toggleUpdated(false);
-      } else {
-        returnShopProvider(
-          context,
-          listen: false,
-        ).toggleUpdated(true);
-      }
+      // print('$currentUpdate');
+      // if (returnShopProvider(
+      //       context,
+      //       listen: false,
+      //     ).userShop()?.updateNumber !=
+      //     currentUpdate) {
+      //   returnShopProvider(
+      //     context,
+      //     listen: false,
+      //   ).toggleUpdated(false);
+      // } else {
+      //   returnShopProvider(
+      //     context,
+      //     listen: false,
+      //   ).toggleUpdated(true);
+      // }
 
       _handlePostFrameLogic();
     });

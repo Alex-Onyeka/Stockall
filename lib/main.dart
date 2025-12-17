@@ -14,6 +14,7 @@ import 'package:stockall/pages/authentication/splash_screens/splash_screen.dart'
 import 'package:stockall/pages/authentication/translations/translation_provider.dart';
 import 'package:stockall/pages/profile/delete_account/delete_account.dart';
 import 'package:stockall/pages/subscription_page/subscription_page.dart';
+import 'package:stockall/providers/app_version_provider.dart';
 import 'package:stockall/providers/comp_provider.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/providers/customers_provider.dart';
@@ -261,6 +262,16 @@ SubPaymentProvider returnSubPaymentProvider(
   );
 }
 
+AppVersionProvider returnAppVersionProvider(
+  BuildContext context, {
+  bool listen = true,
+}) {
+  return Provider.of<AppVersionProvider>(
+    context,
+    listen: listen,
+  );
+}
+
 Widget colorWidget(
   Widget widget,
   bool isPrimary,
@@ -362,6 +373,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => SubPaymentProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => AppVersionProvider(),
         ),
       ],
       child: MaterialApp(
