@@ -340,10 +340,9 @@ Future<bool> generateBarcodeAndPrint(
             products,
           );
 
-          if (!printingSuccess) {
+          if (!printingSuccess && safeContext.mounted) {
             print('Printing Cancelled');
             Navigator.pop(
-              // ignore: use_build_context_synchronously
               safeContext,
               false,
             ); // return false
@@ -370,12 +369,15 @@ Future<bool> generateBarcodeAndPrint(
                 'Finished Printing and Updating Product Barcode',
               );
             }
-
-            // ignore: use_build_context_synchronously
+            if (!safeContext.mounted) {
+              return;
+            }
             Navigator.pop(safeContext, true);
           } else {
             print('Context not mounted');
-            // ignore: use_build_context_synchronously
+            if (!safeContext.mounted) {
+              return;
+            }
             Navigator.pop(safeContext, false);
           }
         },

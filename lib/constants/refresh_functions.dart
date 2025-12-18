@@ -9,6 +9,7 @@ import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/providers/app_version_provider.dart';
 import 'package:stockall/providers/data_provider.dart';
 import 'package:stockall/providers/expenses_provider.dart';
 import 'package:stockall/providers/notifications_provider.dart';
@@ -24,6 +25,7 @@ class RefreshFunctions {
   late final ExpensesProvider expensesProvider;
   late final UserProvider userProvider;
   late final DataProvider dataProvider;
+  late final AppVersionProvider appVersionP;
 
   // Keep a reference to context
   final BuildContext context;
@@ -47,6 +49,10 @@ class RefreshFunctions {
       listen: false,
     );
     userProvider = returnUserProvider(
+      context,
+      listen: false,
+    );
+    appVersionP = returnAppVersionProvider(
       context,
       listen: false,
     );
@@ -76,22 +82,6 @@ class RefreshFunctions {
   bool isUpdateLodaingWeb = false;
   bool isUpdateLodaingMobile = false;
 
-  // Future<List<TempMainReceipt>> getMainReceipts(
-  //   BuildContext context,
-  // ) async {
-  //   var tempReceipts = await receiptsProvider.loadReceipts(
-  //     shopProvider. userShop()!.shopId!,
-  //     context,
-  //   );
-  //   return tempReceipts;
-  // }
-
-  //
-  //
-  //
-  //
-  //
-
   Future<void> getMainReceipts(BuildContext context) async {
     print('Starting to get receipts');
     await receiptsProvider.loadReceipts(
@@ -103,6 +93,7 @@ class RefreshFunctions {
   Future<void> refreshReceipts(context) async {
     var safeContext = context;
     bool isOnline = await checkOnline();
+    await appVersionP.getAppVersion(context);
     if (isOnline && isSynced() == 0) {
       showDialog(
         context: context,
@@ -373,11 +364,14 @@ class RefreshFunctions {
 
   Future<List<TempUserClass>> getEmployees() async {
     await shopProvider.getUserShops();
-    var users = await userProvider.fetchUsersByShop(
-      context,
-    );
-
-    return users;
+    if (context.mounted) {
+      var users = await userProvider.fetchUsersByShop(
+        context,
+      );
+      return users;
+    } else {
+      return [];
+    }
   }
 
   Future<void> refreshEmployees(context) async {
@@ -537,39 +531,44 @@ class RefreshFunctions {
       if (isSynced() == 0 && context.mounted && isOnline) {
         showDialog(
           context: context,
-          builder: (context) {
+          builder: (confirmDialog) {
             return ConfirmationAlert(
               theme: returnTheme(context, listen: false),
               message:
                   'You have unsynced Records, are you sure you want to proceed?',
               title: 'Unsynced Records Detected',
               action: () async {
-                Navigator.of(context).pop();
-                await returnData(
-                  context,
-                  listen: false,
-                ).syncData(safeContext);
-                await returnUserProvider(
-                  // ignore: use_build_context_synchronously
-                  context,
-                  listen: false,
-                  // ignore: use_build_context_synchronously
-                ).fetchCurrentUser(safeContext);
+                Navigator.of(confirmDialog).pop();
+                if (safeContext.mounted) {
+                  await returnData(
+                    context,
+                    listen: false,
+                  ).syncData(safeContext);
+                }
+                if (context.mounted) {
+                  await returnUserProvider(
+                    context,
+                    listen: false,
+                  ).fetchCurrentUser(safeContext);
+                }
 
                 // await getProductSalesRecord();
                 var subs = await loadSubscription();
                 print(
                   "Subscription PLan RefreshAll: ${subs?.plan}",
                 );
-                dataProvider.setAllowedRange(
-                  plan: subs?.plan,
-                  // ignore: use_build_context_synchronously
-                  context: safeContext,
-                );
+                if (safeContext.mounted) {
+                  dataProvider.setAllowedRange(
+                    plan: subs?.plan,
+                    context: safeContext,
+                  );
+                }
                 print(
                   "Allowed Items RefreshAll: ${dataProvider.allowedRangeItems}",
                 );
-                await getMainReceipts(safeContext);
+                if (safeContext.mounted) {
+                  await getMainReceipts(safeContext);
+                }
                 await getExpenses();
                 await getEmployees();
                 // await getProducts();
@@ -582,28 +581,31 @@ class RefreshFunctions {
       } else {
         await getUserShop();
         // await getProductSalesRecord();
-        // ignore: use_build_context_synchronously
         var subs = await loadSubscription();
         print(
           "Subscription PLan RefreshAll: ${subs?.plan}",
         );
-        dataProvider.setAllowedRange(
-          plan: subs?.plan,
-          // ignore: use_build_context_synchronously
-          context: safeContext,
-        );
+        if (safeContext.mounted) {
+          dataProvider.setAllowedRange(
+            plan: subs?.plan,
+            context: safeContext,
+          );
+        }
         print(
           "Allowed Items RefreshAll: ${dataProvider.allowedRangeItems}",
         );
-        // ignore: use_build_context_synchronously
-        await getMainReceipts(safeContext);
+        if (safeContext.mounted) {
+          await getMainReceipts(safeContext);
+        }
         // await getProductSalesRecord();
         await getExpenses();
         await getEmployees();
-        await returnUserProvider(
-          context,
-          listen: false,
-        ).fetchCurrentUser(safeContext);
+        if (context.mounted) {
+          await returnUserProvider(
+            context,
+            listen: false,
+          ).fetchCurrentUser(safeContext);
+        }
         // await getProducts();
         await fetchNotifications();
         await getCustomers();

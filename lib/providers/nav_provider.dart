@@ -63,31 +63,35 @@ class NavProvider extends ChangeNotifier {
           context,
           listen: false,
         ).isOnline();
+    if (!context.mounted) {
+      return;
+    }
     final shopProvider = returnShopProvider(
-      // ignore: use_build_context_synchronously
       context,
       listen: false,
     );
 
     final subPro = returnSubcsription(
-      // ignore: use_build_context_synchronously
       context,
       listen: false,
     );
 
     final appVersionP = returnAppVersionProvider(
-      // ignore: use_build_context_synchronously
       context,
       listen: false,
     );
 
     final userShop = await shopProvider.getUserShops();
-
+    if (!context.mounted) {
+      return;
+    }
     final subsription = await subPro.getSubscription(
-      // ignore: use_build_context_synchronously
       context,
     );
-    await appVersionP.getAppVersion();
+    if (!context.mounted) {
+      return;
+    }
+    await appVersionP.getAppVersion(context);
 
     if (isOnline) {
       var userOffline = AuthService().currentUserOffline;
@@ -112,7 +116,6 @@ class NavProvider extends ChangeNotifier {
     }
 
     if (userShop.isEmpty) {
-      // ignore: use_build_context_synchronously
       NavProvider().nullShop(
         logoutAction: () {
           navPush(context);
@@ -146,6 +149,9 @@ class NavProvider extends ChangeNotifier {
       await userProvider.fetchCurrentUser(context);
       if (dataProvider.isSynced() == 0 && isOnline) {
         if (!dataProvider.isSyncing) {
+          if (!context.mounted) {
+            return;
+          }
           showDialog(
             context: context,
             builder: (context) {

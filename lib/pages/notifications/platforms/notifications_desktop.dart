@@ -230,6 +230,32 @@ class _NotificationsDesktopState
                                         });
                                       },
                                     ),
+                                    NotifSwitchTab(
+                                      list:
+                                          returnNotificationProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              )
+                                              .notifications
+                                              .where(
+                                                (notif) =>
+                                                    notif.category ==
+                                                        'general' &&
+                                                    notif.isViewed ==
+                                                        false,
+                                              )
+                                              .toList(),
+                                      myIndex: 2,
+                                      currentIndex: index,
+                                      theme: theme,
+                                      title: 'General',
+                                      action: () {
+                                        setState(() {
+                                          index = 2;
+                                        });
+                                      },
+                                    ),
                                   ],
                                 );
                               },
@@ -389,7 +415,7 @@ class _NotificationsDesktopState
                                       ),
                                     );
                                   }
-                                } else {
+                                } else if (index == 1) {
                                   if (returnNotificationProvider(
                                         context,
                                         listen: false,
@@ -455,6 +481,151 @@ class _NotificationsDesktopState
                                                     ) =>
                                                         notif.category ==
                                                         'expense',
+                                                  )
+                                                  .toList()[index];
+                                          return Padding(
+                                            padding:
+                                                const EdgeInsets.symmetric(
+                                                  vertical:
+                                                      5.0,
+                                                ),
+                                            child: NotificatonTileMain(
+                                              notif: notif,
+                                              theme: theme,
+                                              action: () {
+                                                if (authorization(
+                                                  authorized:
+                                                      Authorizations()
+                                                          .deleteNotification,
+                                                  context:
+                                                      context,
+                                                )) {
+                                                  showDialog(
+                                                    context:
+                                                        context,
+                                                    builder: (
+                                                      context,
+                                                    ) {
+                                                      return ConfirmationAlert(
+                                                        theme:
+                                                            theme,
+                                                        message:
+                                                            'Are you sure you want to proceed with delete?',
+                                                        title:
+                                                            'Delete Notification?',
+                                                        action: () async {
+                                                          await Provider.of<
+                                                            NotificationProvider
+                                                          >(
+                                                            context,
+                                                            listen:
+                                                                false,
+                                                          ).deleteNotificationFromSupabase(
+                                                            notif,
+                                                          );
+                                                          if (context.mounted) {
+                                                            Navigator.of(
+                                                              context,
+                                                            ).pop();
+                                                          }
+                                                        },
+                                                      );
+                                                    },
+                                                  );
+                                                }
+                                              },
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  } else {
+                                    return Center(
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(
+                                              bottom: 30.0,
+                                            ),
+                                        child: EmptyWidgetDisplayOnly(
+                                          title:
+                                              'No New Notifications',
+                                          subText:
+                                              'Your currently don\'t have any new notification under this Category. Check back later when you do.',
+                                          theme: theme,
+                                          height: 30,
+                                          icon:
+                                              Icons
+                                                  .notifications_active_outlined,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                } else {
+                                  if (returnNotificationProvider(
+                                        context,
+                                        listen: false,
+                                      ).notifications
+                                      .where(
+                                        (notif) =>
+                                            notif
+                                                .category ==
+                                            'general',
+                                      )
+                                      .isNotEmpty) {
+                                    return RefreshIndicator(
+                                      onRefresh: () {
+                                        return returnNotificationProvider(
+                                          context,
+                                          listen: false,
+                                        ).fetchRecentNotifications(
+                                          shopId(context),
+                                        );
+                                      },
+                                      backgroundColor:
+                                          Colors.white,
+                                      color:
+                                          theme
+                                              .lightModeColor
+                                              .prColor300,
+                                      displacement: 10,
+                                      child: ListView.builder(
+                                        padding:
+                                            EdgeInsets.only(
+                                              top: 5,
+                                            ),
+                                        itemCount:
+                                            returnNotificationProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                )
+                                                .notifications
+                                                .where(
+                                                  (notif) =>
+                                                      notif
+                                                          .category ==
+                                                      'general',
+                                                )
+                                                .toList()
+                                                .length,
+                                        itemBuilder: (
+                                          context,
+                                          index,
+                                        ) {
+                                          TempNotification
+                                          notif =
+                                              returnNotificationProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  )
+                                                  .notifications
+                                                  .where(
+                                                    (
+                                                      notif,
+                                                    ) =>
+                                                        notif.category ==
+                                                        'general',
                                                   )
                                                   .toList()[index];
                                           return Padding(
@@ -718,7 +889,8 @@ class _NotificatonTileMainState
                 listen: false,
               ).refreshState();
             });
-          } else {
+          } else if (context.mounted &&
+              widget.notif.expensesUuid != null) {
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -736,18 +908,43 @@ class _NotificatonTileMainState
                 listen: false,
               ).refreshState();
             });
+          } else if (widget.notif.expensesUuid == null &&
+              widget.notif.productUuid == null) {
+            if (!widget.notif.isViewed) {
+              showDialog(
+                context: context,
+                builder: (confirmDialog) {
+                  return ConfirmationAlert(
+                    theme: widget.theme,
+                    message:
+                        'Are you sure you want to mark this notification as read?',
+                    title: 'Mark As Read?',
+                    action: () async {
+                      Navigator.of(confirmDialog).pop();
+                      await returnNotificationProvider(
+                        context,
+                        listen: false,
+                      ).updateNotification(
+                        widget.notif.uuid!,
+                      );
+                    },
+                  );
+                },
+              );
+            }
           }
         },
         borderRadius: BorderRadius.circular(5),
         child: Container(
-          padding: EdgeInsets.all(15),
+          padding: EdgeInsets.fromLTRB(8, 15, 15, 15),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 10,
             children: [
               Stack(
                 children: [
                   Container(
-                    padding: EdgeInsets.all(10),
+                    padding: EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: Colors.grey.shade200,
@@ -757,6 +954,7 @@ class _NotificatonTileMainState
                         bottom: 2.0,
                       ),
                       child: Icon(
+                        size: 17,
                         color:
                             widget.notif.notifId ==
                                     'low_stock'
@@ -812,17 +1010,18 @@ class _NotificatonTileMainState
                             : widget.notif.notifId ==
                                 'expense_created'
                             ? Icons.currency_exchange_sharp
-                            : Icons.add_chart_rounded,
+                            : Icons.message,
                       ),
                     ),
                   ),
                   Visibility(
                     visible: !widget.notif.isViewed,
                     child: Positioned(
-                      left: 30,
+                      left: 20,
+                      top: -2,
                       child: Container(
-                        height: 13,
-                        width: 13,
+                        height: 12,
+                        width: 12,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           gradient:
@@ -861,7 +1060,7 @@ class _NotificatonTileMainState
                                       widget
                                           .theme
                                           .mobileTexts
-                                          .b1
+                                          .b2
                                           .fontSize,
                                 ),
                                 widget.notif.title,
@@ -885,7 +1084,7 @@ class _NotificatonTileMainState
                           ),
                         ),
                         Icon(
-                          size: 20,
+                          size: 16,
                           color: Colors.grey.shade400,
                           Icons.arrow_forward_ios_rounded,
                         ),
@@ -926,7 +1125,10 @@ class _NotificatonTileMainState
                                               .grey
                                               .shade600,
                                     ),
-                                    'Item:',
+                                    widget.notif.category ==
+                                            'general'
+                                        ? 'Remaining:'
+                                        : 'Item:',
                                   ),
                                   Flexible(
                                     child: Text(
@@ -945,12 +1147,15 @@ class _NotificatonTileMainState
                                         fontWeight:
                                             FontWeight.bold,
                                       ),
-                                      cutLongText(
-                                        widget
-                                                .notif
-                                                .itemName ??
-                                            'Item',
-                                      ),
+                                      widget.notif.category ==
+                                              'general'
+                                          ? '${widget.notif.itemName} days'
+                                          : cutLongText(
+                                            widget
+                                                    .notif
+                                                    .itemName ??
+                                                'Item',
+                                          ),
                                     ),
                                   ),
                                 ],

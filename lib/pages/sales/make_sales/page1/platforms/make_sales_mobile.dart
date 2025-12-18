@@ -1597,13 +1597,14 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
               resultOn = false;
               isNormalEdit = true;
             });
+            if (!context.mounted) {
+              return;
+            }
             returnSalesProvider(
-              // ignore: use_build_context_synchronously
               context,
               listen: false,
             ).closeCustomPrice();
             returnSalesProvider(
-              // ignore: use_build_context_synchronously
               context,
               listen: false,
             ).toggleSetTotalPrice(false);

@@ -85,11 +85,9 @@ class _LoginDesktopState extends State<LoginDesktop> {
           });
 
           Future.delayed(Duration(seconds: 3), () {
-            Navigator.pushReplacementNamed(
-              // ignore: use_build_context_synchronously
-              context,
-              '/',
-            );
+            if (context.mounted) {
+              Navigator.pushReplacementNamed(context, '/');
+            }
             setState(() {
               showwSuccess = false;
             });
@@ -98,62 +96,66 @@ class _LoginDesktopState extends State<LoginDesktop> {
           setState(() {
             issLoading = false;
           });
-          showDialog(
-            // ignore: use_build_context_synchronously
-            context: context,
-            builder: (context) {
-              return InfoAlert(
-                theme: widget.theme,
-                message:
-                    'Login Failed. Please check your email and password. Also check to see if your internet is properly connected',
-                title: General().authenticationError,
-              );
-            },
-          );
+          if (context.mounted) {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return InfoAlert(
+                  theme: widget.theme,
+                  message:
+                      'Login Failed. Please check your email and password. Also check to see if your internet is properly connected',
+                  title: General().authenticationError,
+                );
+              },
+            );
+          }
         }
       } on SocketException catch (_) {
         setState(() {
           issLoading = false;
         });
         // No internet
-        showDialog(
-          // ignore: use_build_context_synchronously
-          context: context,
-          builder: (context) {
-            return InfoAlert(
-              theme: widget.theme,
-              message: General().noInternetConnection,
-              title: General().authenticationError,
-            );
-          },
-        );
+        if (context.mounted) {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return InfoAlert(
+                theme: widget.theme,
+                message: General().noInternetConnection,
+                title: General().authenticationError,
+              );
+            },
+          );
+        }
       } on AuthException catch (e) {
         setState(() {
           issLoading = false;
         });
         if (!context.mounted) return;
-        showDialog(
-          // ignore: use_build_context_synchronously
-          context: context,
-          builder: (context) {
-            return InfoAlert(
-              theme: widget.theme,
-              message:
-                  e.statusCode == '400'
-                      ? General().invalidEmailOrPassword
-                      : e.statusCode == '401'
-                      ? General().invalidEmailOrPassword
-                      : e.statusCode == '404'
-                      ? '${General().userNotFound}. Please check your email and try again.'
-                      : e.statusCode == '500'
-                      ? General().anErrorOccuredOnTheServer
-                      : e.statusCode == null
-                      ? General().noInternetConnection
-                      : General().anErrorOccured,
-              title: General().authenticationError,
-            );
-          },
-        );
+        if (context.mounted) {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return InfoAlert(
+                theme: widget.theme,
+                message:
+                    e.statusCode == '400'
+                        ? General().invalidEmailOrPassword
+                        : e.statusCode == '401'
+                        ? General().invalidEmailOrPassword
+                        : e.statusCode == '404'
+                        ? '${General().userNotFound}. Please check your email and try again.'
+                        : e.statusCode == '500'
+                        ? General()
+                            .anErrorOccuredOnTheServer
+                        : e.statusCode == null
+                        ? General().noInternetConnection
+                        : General().anErrorOccured,
+                title: General().authenticationError,
+              );
+            },
+          );
+        }
       } catch (e) {
         setState(() {
           issLoading = false;
@@ -161,7 +163,6 @@ class _LoginDesktopState extends State<LoginDesktop> {
 
         if (!context.mounted) return;
         showDialog(
-          // ignore: use_build_context_synchronously
           context: context,
           builder: (context) {
             return InfoAlert(

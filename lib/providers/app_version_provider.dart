@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:stockall/classes/app_version/app_version.dart';
+import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/app_version/app_version_func.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -18,7 +20,9 @@ class AppVersionProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<AppVersion?> getAppVersion() async {
+  Future<AppVersion?> getAppVersion(
+    BuildContext context,
+  ) async {
     bool isOnline = await ConnectivityProvider().isOnline();
     if (isOnline) {
       try {
@@ -35,6 +39,21 @@ class AppVersionProvider extends ChangeNotifier {
         );
         notifyListeners();
         print('App Version gotten Successfully');
+        if (screenWidth(context) <= mobileScreen) {
+          if (appVersion?.mobileVersion !=
+              appVersionMobile) {
+            toggleUpdated(false);
+          } else {
+            toggleUpdated(true);
+          }
+        } else {
+          if (appVersion?.desktopVersion !=
+              appVersionDesktop) {
+            toggleUpdated(false);
+          } else {
+            toggleUpdated(true);
+          }
+        }
         return appVersion;
       } catch (e) {
         print(
@@ -44,6 +63,20 @@ class AppVersionProvider extends ChangeNotifier {
       }
     } else {
       appVersion = AppVersionFunc().getAppVersion();
+      if (screenWidth(context) <= mobileScreen) {
+        if (appVersion?.mobileVersion != appVersionMobile) {
+          toggleUpdated(false);
+        } else {
+          toggleUpdated(true);
+        }
+      } else {
+        if (appVersion?.desktopVersion !=
+            appVersionDesktop) {
+          toggleUpdated(false);
+        } else {
+          toggleUpdated(true);
+        }
+      }
       print('App version gotten Offline');
       return appVersion;
     }

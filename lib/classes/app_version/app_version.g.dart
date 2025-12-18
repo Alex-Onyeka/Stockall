@@ -14,11 +14,12 @@ class AppVersionAdapter extends TypeAdapter<AppVersion> {
   AppVersion read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++)
+        reader.readByte(): reader.read(),
     };
     return AppVersion(
       id: fields[0] as int,
-      androidVersion: fields[1] as String,
+      mobileVersion: fields[1] as String,
       desktopVersion: fields[2] as String,
     );
   }
@@ -30,7 +31,7 @@ class AppVersionAdapter extends TypeAdapter<AppVersion> {
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.androidVersion)
+      ..write(obj.mobileVersion)
       ..writeByte(2)
       ..write(obj.desktopVersion);
   }

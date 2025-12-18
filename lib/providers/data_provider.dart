@@ -846,14 +846,19 @@ class DataProvider extends ChangeNotifier {
 
       await ProductsFunc().insertAllProducts(productList);
     } else {
+      int getRange() {
+        if ((allowedRangeItems ?? 0) >
+            ProductsFunc().getProducts().length) {
+          return ProductsFunc().getProducts().length;
+        } else {
+          return (allowedRangeItems ?? 0);
+        }
+      }
+
       var offlineData =
           ProductsFunc()
               .getProducts()
-              .getRange(
-                0,
-                allowedRangeItems ??
-                    ProductsFunc().getProducts().length,
-              )
+              .getRange(0, getRange())
               .toList();
       print("Offline Data Gotten: ${offlineData.length}");
       productList = offlineData;

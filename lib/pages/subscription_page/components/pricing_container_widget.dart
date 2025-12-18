@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/plan_pricing_class.dart';
 import 'package:stockall/main.dart';
@@ -123,7 +124,7 @@ class _PricingContainerWidgetState
           screenWidth(context) > 570
               ? 260
               : double.infinity,
-      height: 490,
+      height: 520,
       padding: EdgeInsets.fromLTRB(15, 15, 15, 5),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
@@ -342,6 +343,7 @@ class _PricingContainerWidgetState
           SizedBox(height: 10),
           Expanded(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               spacing: 10,
               children: [
                 PricingFeatureRow(
@@ -467,116 +469,120 @@ class PricingFeatureRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Tooltip(
-          message: toolTipMessage ?? '',
-          verticalOffset: 10,
-          padding: EdgeInsets.symmetric(
-            vertical: 10,
-            horizontal: 12,
+    return Tooltip(
+      message: toolTipMessage ?? '',
+      verticalOffset: 10,
+      padding: EdgeInsets.symmetric(
+        vertical: 12,
+        horizontal: 12,
+      ),
+      constraints: BoxConstraints(maxWidth: 280),
+      margin: EdgeInsets.only(top: 0),
+      triggerMode: TooltipTriggerMode.tap,
+      showDuration:
+          screenWidth(context) < tabletScreenSmall
+              ? Duration(seconds: 10)
+              : Duration(seconds: 4),
+      ignorePointer: false,
+      enableTapToDismiss: true,
+      enableFeedback: toolTipMessage != null,
+      textStyle: TextStyle(
+        color: Colors.black,
+        fontSize: 12,
+        fontWeight: FontWeight.normal,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(10),
+          bottomRight: Radius.circular(0),
+          topLeft: Radius.circular(10),
+          topRight: Radius.circular(10),
+        ),
+        border: Border.all(color: Colors.grey.shade300),
+        boxShadow: [
+          BoxShadow(
+            color: const Color.fromARGB(60, 0, 0, 0),
+            blurRadius: 20,
           ),
-          constraints: BoxConstraints(maxWidth: 200),
-          margin: EdgeInsets.only(top: 0),
-          triggerMode: TooltipTriggerMode.tap,
-          ignorePointer: false,
-          enableTapToDismiss: true,
-          enableFeedback: toolTipMessage != null,
-          textStyle: TextStyle(
-            color: Colors.black,
-            fontSize: 12,
-            fontWeight: FontWeight.normal,
-          ),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(10),
-              bottomRight: Radius.circular(0),
-              topLeft: Radius.circular(10),
-              topRight: Radius.circular(10),
-            ),
-            border: Border.all(color: Colors.grey.shade300),
-            boxShadow: [
-              BoxShadow(
-                color: const Color.fromARGB(60, 0, 0, 0),
-                blurRadius: 20,
-              ),
-            ],
-          ),
-          child: Row(
-            spacing: 5,
-            children: [
-              Builder(
-                builder: (context) {
-                  if (numberOfItems != null) {
-                    if (numberOfItems == 0) {
-                      return Icon(
-                        size: 14,
-                        color: Colors.red,
-                        Icons.clear,
-                      );
-                    } else {
-                      return Icon(
-                        size: 14,
-                        color: Colors.green,
-                        Icons.check,
-                      );
-                    }
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2.0),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          spacing: 5,
+          children: [
+            Builder(
+              builder: (context) {
+                if (numberOfItems != null) {
+                  if (numberOfItems == 0) {
+                    return Icon(
+                      size: 14,
+                      color: Colors.red,
+                      Icons.clear,
+                    );
                   } else {
-                    if (boolean!) {
-                      return Icon(
-                        size: 14,
-                        color: Colors.green,
-                        Icons.check,
-                      );
-                    } else {
-                      return Icon(
-                        size: 14,
-                        color: Colors.red,
-                        Icons.clear,
-                      );
-                    }
+                    return Icon(
+                      size: 14,
+                      color: Colors.green,
+                      Icons.check,
+                    );
                   }
-                },
+                } else {
+                  if (boolean!) {
+                    return Icon(
+                      size: 14,
+                      color: Colors.green,
+                      Icons.check,
+                    );
+                  } else {
+                    return Icon(
+                      size: 14,
+                      color: Colors.red,
+                      Icons.clear,
+                    );
+                  }
+                }
+              },
+            ),
+            Text(
+              style: TextStyle(
+                color: Colors.grey.shade900,
+                fontSize: 10,
+                fontWeight: FontWeight.normal,
               ),
-              Text(
-                style: TextStyle(
-                  color: Colors.grey.shade900,
-                  fontSize: 10,
-                  fontWeight: FontWeight.normal,
-                ),
-                title,
-              ),
-            ],
-          ),
-        ),
-        Visibility(
-          visible: toolTipMessage != null,
-          child: Row(
-            children: [
-              SizedBox(width: 3),
-              Container(
-                padding: EdgeInsets.all(1),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white,
-                  border: Border.all(
-                    color: Colors.grey,
-                    width: 0.6,
+              title,
+            ),
+            Visibility(
+              visible: toolTipMessage != null,
+              child: Row(
+                children: [
+                  SizedBox(width: 3),
+                  Container(
+                    padding: EdgeInsets.all(1),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                      border: Border.all(
+                        color: Colors.grey,
+                        width: 0.6,
+                      ),
+                    ),
+                    child: Center(
+                      child: Icon(
+                        size: 9,
+                        color: Colors.black,
+                        Icons.question_mark_rounded,
+                      ),
+                    ),
                   ),
-                ),
-                child: Center(
-                  child: Icon(
-                    size: 9,
-                    color: Colors.black,
-                    Icons.question_mark_rounded,
-                  ),
-                ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

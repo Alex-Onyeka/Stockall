@@ -29,16 +29,10 @@ class ShopPageMobile extends StatefulWidget {
 class _ShopPageMobileState extends State<ShopPageMobile> {
   late Future<TempShopClass> shopFuture;
   Future<TempShopClass> getShop() async {
-    await returnShopProvider(
-      context,
-      listen: false,
-    ).getUserShops();
+    var shopP = returnShopProvider(context, listen: false);
+    await shopP.getUserShops();
 
-    return returnShopProvider(
-      // ignore: use_build_context_synchronously
-      context,
-      listen: false,
-    ).userShop()!;
+    return shopP.userShop()!;
   }
 
   TextEditingController currencyController =
@@ -1440,16 +1434,18 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                   setState(() {
                     isLoading = false;
                   });
-                  Navigator.of(
-                    // ignore: use_build_context_synchronously
-                    context,
-                  ).pop();
+                  if (!context.mounted) {
+                    return;
+                  }
+                  Navigator.of(context).pop();
                   setState(() {
                     shopFuture = getShop();
                   });
                 } else {
+                  if (!context.mounted) {
+                    return;
+                  }
                   showDialog(
-                    // ignore: use_build_context_synchronously
                     context: context,
                     builder: (context) {
                       return InfoAlert(

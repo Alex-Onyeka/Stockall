@@ -7,21 +7,21 @@ class AppVersion extends HiveObject {
   final int id;
 
   @HiveField(1)
-  final String androidVersion;
+  final String mobileVersion;
 
   @HiveField(2)
   final String desktopVersion;
 
   AppVersion({
     required this.id,
-    required this.androidVersion,
+    required this.mobileVersion,
     required this.desktopVersion,
   });
 
   factory AppVersion.fromJson(Map<String, dynamic> json) {
     return AppVersion(
       id: json['id'] as int,
-      androidVersion: json['mobile_version'] as String,
+      mobileVersion: json['mobile_version'] as String,
       desktopVersion: json['desktop_version'] as String,
     );
   }

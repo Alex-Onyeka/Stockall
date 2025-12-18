@@ -1041,7 +1041,6 @@ class _SettingsPageMobileState
                                                   .text
                                                   .isEmpty) {
                                                 showDialog(
-                                                  // ignore: use_build_context_synchronously
                                                   context:
                                                       context,
                                                   builder: (
@@ -1066,7 +1065,6 @@ class _SettingsPageMobileState
                                                   passwordController
                                                       .text) {
                                                 showDialog(
-                                                  // ignore: use_build_context_synchronously
                                                   context:
                                                       context,
                                                   builder: (

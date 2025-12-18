@@ -1,61 +1,35 @@
 // import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+// import 'package:timezone/browser.dart';
+// import 'package:timezone/data/latest.dart';
 
-// class NotificationService {
-//   static final FlutterLocalNotificationsPlugin _plugin =
+// class NotificatonService {
+//   static final NotificatonService instance =
+//       NotificatonService._internal();
+//   factory NotificatonService() => instance;
+//   NotificatonService._internal();
+
+//   FlutterLocalNotificationsPlugin notificationsPlugin =
 //       FlutterLocalNotificationsPlugin();
+//   Future<void> init() async {
+//     initializeTimeZones();
 
-//   static Future<void> initialize() async {
-//     // ANDROID
-//     const AndroidInitializationSettings androidSettings =
-//         AndroidInitializationSettings(
-//           '@mipmap/ic_launcher',
-//         );
+//     setLocalLocation(getLocation('Africa/Lagos'));
 
-//     // iOS
+//     const androidSettings = AndroidInitializationSettings(
+//       '@mipmap/ic_launcher',
+//     );
+
 //     const DarwinInitializationSettings iosSettings =
-//         DarwinInitializationSettings(
-//           requestAlertPermission: true,
-//           requestBadgePermission: true,
-//           requestSoundPermission: true,
-//         );
+//         DarwinInitializationSettings();
 
-//     // WINDOWS
-//     const WindowsInitializationSettings windowsSettings =
-//         WindowsInitializationSettings(
-//           appName: 'Stockall',
-//           appUserModelId: 'com.stockallsolutions.stockall',
-//           guid: '{14f3270b-4200-47fa-8cb9-4e176ebebec8}',
-//           iconPath: 'assets/images/logos/fav_icon.png',
-//         );
-
-//     // COMBINED
-//     const InitializationSettings settings =
+//     const InitializationSettings initializationSettings =
 //         InitializationSettings(
 //           android: androidSettings,
 //           iOS: iosSettings,
-//           windows: windowsSettings,
 //         );
 
-//     await _plugin.initialize(
-//       settings,
-//       onDidReceiveNotificationResponse: (
-//         NotificationResponse response,
-//       ) {
-//         print("ACTION PRESSED: ${response.actionId}");
-//       },
-//     );
-
-//     final windows = WindowsNotificationDetails();
-
-//     final notificationDetails = NotificationDetails(
-//       windows: windows,
-//     );
-
-//     await _plugin.show(
-//       10,
-//       "Windows Notification",
-//       "This works fine",
-//       notificationDetails,
+//     await notificationsPlugin.initialize(
+//       initializationSettings,
 //     );
 //   }
 // }

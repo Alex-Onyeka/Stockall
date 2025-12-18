@@ -176,8 +176,10 @@ class NotificationProvider with ChangeNotifier {
       );
       await fetchRecentNotifications(shopId);
     } else {
+      if (!context.mounted) {
+        return;
+      }
       showDialog(
-        // ignore: use_build_context_synchronously
         context: context,
         builder: (context) {
           return InfoAlert(

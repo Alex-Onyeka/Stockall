@@ -1126,8 +1126,11 @@ class _SettingsPageDesktopState
                                                   if (passwordController
                                                       .text
                                                       .isEmpty) {
+                                                    if (!context
+                                                        .mounted) {
+                                                      return;
+                                                    }
                                                     showDialog(
-                                                      // ignore: use_build_context_synchronously
                                                       context:
                                                           context,
                                                       builder: (
@@ -1152,7 +1155,6 @@ class _SettingsPageDesktopState
                                                       passwordController
                                                           .text) {
                                                     showDialog(
-                                                      // ignore: use_build_context_synchronously
                                                       context:
                                                           context,
                                                       builder: (

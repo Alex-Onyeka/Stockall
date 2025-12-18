@@ -185,8 +185,11 @@ Future<dynamic> setStoreAsHeadquarters(
                                             // isLoadingg =
                                             //     false;
                                           });
+                                          if (!context
+                                              .mounted) {
+                                            return;
+                                          }
                                           Navigator.of(
-                                            // ignore: use_build_context_synchronously
                                             context,
                                           ).pop();
                                         },

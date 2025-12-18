@@ -20,7 +20,7 @@ List<SubplanClass> subPlans = [
     price: 3500,
     planName: 'Standard',
     itemsAuth: ItemsAuth(
-      numberOfItems: 1500,
+      numberOfItems: 2500,
       useOfBarcode: true,
       applyVariationToItems: true,
       setexpiryDate: true,
@@ -46,7 +46,7 @@ List<SubplanClass> subPlans = [
     customerAuth: CustomerAuth(createCustomer: true),
     employeesAuth: EmployeesAuth(
       addAndManageEmployees: true,
-      numberOfEmployees: 4,
+      numberOfEmployees: 6,
     ),
     expensesAuth: ExpensesAuth(
       numberOfDailyExpenses: 10,

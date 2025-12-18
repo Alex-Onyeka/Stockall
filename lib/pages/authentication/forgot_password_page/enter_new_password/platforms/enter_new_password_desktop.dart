@@ -51,12 +51,10 @@ class _EnterNewPasswordDesktopState
         });
         await Future.delayed(Duration(seconds: 2));
         if (context.mounted) {
-          // ignore: use_build_context_synchronously
           await AuthService().signOut(context);
         }
         if (context.mounted) {
           Navigator.pushReplacement(
-            // ignore: use_build_context_synchronously
             context,
             MaterialPageRoute(
               builder: (context) {

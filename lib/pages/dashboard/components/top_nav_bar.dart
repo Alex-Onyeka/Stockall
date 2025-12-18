@@ -135,6 +135,7 @@ class _TopNavBarState extends State<TopNavBar> {
                         setState(() {
                           isOpen = true;
                         });
+                        if (!context.mounted) return;
                         showPopover(
                           barrierColor:
                               const Color.fromARGB(
@@ -143,7 +144,6 @@ class _TopNavBarState extends State<TopNavBar> {
                                 0,
                                 0,
                               ),
-                          // ignore: use_build_context_synchronously
                           context: context,
                           transitionDuration:
                               const Duration(
@@ -160,7 +160,6 @@ class _TopNavBarState extends State<TopNavBar> {
                                     action: () {
                                       if (isOnline) {
                                         Navigator.push(
-                                          // ignore: use_build_context_synchronously
                                           context,
                                           MaterialPageRoute(
                                             builder: (
@@ -172,7 +171,6 @@ class _TopNavBarState extends State<TopNavBar> {
                                         );
                                       } else {
                                         showDialog(
-                                          // ignore: use_build_context_synchronously
                                           context: context,
                                           builder: (
                                             context,
@@ -203,34 +201,32 @@ class _TopNavBarState extends State<TopNavBar> {
                               PopoverDirection.bottom,
                           contentDyOffset: -20,
                           width:
-                              // ignore: use_build_context_synchronously
                               screenWidth(context) >
                                       tabletScreenSmall
                                   ? 300
                                   : 270,
                           height:
                               returnShopProvider(
-                                        // ignore: use_build_context_synchronously
                                         context,
                                         listen: false,
                                       ).userShops.length <
                                       2
                                   ? 190
                                   : returnShopProvider(
-                                        // ignore: use_build_context_synchronously
                                         context,
                                         listen: false,
                                       ).userShops.length >
                                       4
                                   ? 400
                                   : (returnShopProvider(
-                                            // ignore: use_build_context_synchronously
-                                            context,
-                                            listen: false,
-                                          ).userShops.length *
+                                                context,
+                                                listen:
+                                                    false,
+                                              )
+                                              .userShops
+                                              .length *
                                           (68 -
                                               returnShopProvider(
-                                                    // ignore: use_build_context_synchronously
                                                     context,
                                                     listen:
                                                         false,
@@ -325,6 +321,7 @@ class _TopNavBarState extends State<TopNavBar> {
                                             ?.plan !=
                                         0,
                                     child: SvgPicture.asset(
+                                      // ignore: deprecated_member_use
                                       color:
                                           returnSubcsription(
                                                     context,
@@ -1018,7 +1015,8 @@ class PopoverMenu extends StatelessWidget {
                                     context,
                                     listen: false,
                                   ).isOnline();
-
+                              if (!safeContext.mounted)
+                                return;
                               if (returnShopProvider(
                                     safeContext,
                                     listen: false,
@@ -1026,7 +1024,6 @@ class PopoverMenu extends StatelessWidget {
                                   shop.shopId!) {
                                 if (!isOnline) {
                                   showDialog(
-                                    // ignore: use_build_context_synchronously
                                     context: context,
                                     builder: (context) {
                                       return InfoAlert(
@@ -1040,7 +1037,6 @@ class PopoverMenu extends StatelessWidget {
                                   );
                                   return;
                                 }
-                                // ignore: use_build_context_synchronously
                                 Navigator.of(context).pop();
                                 await returnShopProvider(
                                   safeContext,
@@ -1050,24 +1046,20 @@ class PopoverMenu extends StatelessWidget {
                                   shop,
                                 );
 
-                                print(
-                                  returnShopProvider(
-                                    // ignore: use_build_context_synchronously
-                                    safeContext,
-                                    listen: false,
-                                  ).userShops.length,
-                                );
+                                // print(
+                                //   returnShopProvider(
+                                //     safeContext,
+                                //     listen: false,
+                                //   ).userShops.length,
+                                // );
                               } else if (authorization(
                                 authorized:
                                     Authorizations()
                                         .manageShop,
-                                // ignore: use_build_context_synchronously
                                 context: context,
                               )) {
-                                // ignore: use_build_context_synchronously
                                 Navigator.of(context).pop();
                                 Navigator.push(
-                                  // ignore: use_build_context_synchronously
                                   safeContext,
                                   MaterialPageRoute(
                                     builder: (context) {

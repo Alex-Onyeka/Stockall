@@ -189,7 +189,7 @@ class _DashboardDesktopState
       TextEditingController();
   @override
   void initState() {
-    super.initState(); // Always call this first
+    super.initState();
 
     if (!returnReceiptProvider(
       context,

@@ -30,16 +30,10 @@ class ShopPageDesktop extends StatefulWidget {
 class ShopPageDesktopState extends State<ShopPageDesktop> {
   late Future<TempShopClass> shopFuture;
   Future<TempShopClass> getShop() async {
-    await returnShopProvider(
-      context,
-      listen: false,
-    ).getUserShops();
+    var shopP = returnShopProvider(context, listen: false);
+    await shopP.getUserShops();
 
-    return returnShopProvider(
-      // ignore: use_build_context_synchronously
-      context,
-      listen: false,
-    ).userShop()!;
+    return shopP.userShop()!;
   }
 
   TextEditingController currencyController =
