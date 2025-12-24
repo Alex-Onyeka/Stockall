@@ -245,13 +245,26 @@ class _PricingContainerWidgetState
               child: InkWell(
                 onTap: () async {
                   if (AuthService().currentUser == null) {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return AuthLanding();
-                        },
-                      ),
+                    showDialog(
+                      context: context,
+                      builder: (confirmDialog) {
+                        return ConfirmationAlert(
+                          theme: theme,
+                          message:
+                              'You are Currently Not Authenticated. Please Proceed to Login or Create a new account and then come back to Select a Subscription Plan.',
+                          title: 'User Not Logged In',
+                          action: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return AuthLanding();
+                                },
+                              ),
+                            );
+                          },
+                        );
+                      },
                     );
                   } else {
                     bool isOnline =
