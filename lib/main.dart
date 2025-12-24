@@ -379,6 +379,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
+        title: 'Stockall Business Dashboard',
         initialRoute: "/",
         routes: {
           '/': (context) => BasePage(),

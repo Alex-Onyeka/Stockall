@@ -12270,12 +12270,13 @@ ayY:function ayY(a){this.a=a},
 cQA(){return new A.S2(new A.aQR(),A.N(t.K,t.Qu))},
 baw:function baw(a,b){this.a=a
 this.b=b},
-Th:function Th(a,b,c,d,e){var _=this
+Th:function Th(a,b,c,d,e,f){var _=this
 _.f=a
 _.r=b
-_.db=c
-_.R8=d
-_.a=e},
+_.cx=c
+_.db=d
+_.R8=e
+_.a=f},
 aQR:function aQR(){},
 aTi:function aTi(){},
 a0t:function a0t(){this.d=$
@@ -80613,15 +80614,16 @@ j.a.toString
 s=A.aG6(k,l,i,i,m)
 k=A.cvo(new A.Wo(s,i),B.aT,o,B.N)
 return k},
-ayt(a){var s,r,q=this,p=null,o=q.a,n=o.db
-n=n.dx
-s=n
+ayt(a){var s,r,q,p=this,o=null,n=p.a,m=n.db
+m=m.dx
+s=m
 if(s==null)s=B.fr
-n=o.f
-o=o.r
-r=q.gaIP()
-q.a.toString
-return new A.Zm(p,p,p,new A.bJK(),p,p,p,p,p,p,n,p,p,o,B.b_g,q.gaJ_(),"",p,B.bA6,s,p,r,p,p,B.Jr,!1,!1,p,p,p,new A.CH(q,t.bT))},
+m=n.f
+r=n.r
+n=n.cx
+q=p.gaIP()
+p.a.toString
+return new A.Zm(o,o,o,new A.bJK(),o,o,o,o,o,o,m,o,o,r,B.b_g,p.gaJ_(),n,o,B.bA6,s,o,q,o,o,B.Jr,!1,!1,o,o,o,new A.CH(p,t.bT))},
 u(a){var s,r=null,q=A.yq(!1,!1,this.ayt(a),r,r,r,r,!0,r,r,r,new A.bJL(),r,r)
 this.a.toString
 s=this.d
@@ -161235,7 +161237,7 @@ if(r.b==null)r.b=$.Kh.$0()
 A.B("Milliseconds Load time: "+$.ayy().gGQ())
 A.B("Seconds Load time: "+B.k.b8(A.bg(0,0,$.ayy().gahH(),0,0).a,1e6))
 r=A.a([A.jN(new A.aV0(),t.A),A.jN(new A.aV1(),t.u),A.jN(new A.aV2(),t.r),A.jN(new A.aVd(),t.Q),A.jN(new A.aVm(),t.x),A.jN(new A.aVn(),t.h),A.jN(new A.aVo(),t.wA),A.jN(new A.aVp(),t.n),A.jN(new A.aVq(),t.R),A.jN(new A.aVr(),t._),A.jN(new A.aVs(),t.Ew),A.jN(new A.aV3(),t.b0),A.jN(new A.aV4(),t.f),A.jN(new A.aV5(),t.C),A.jN(new A.aV6(),t.g),A.jN(new A.aV7(),t.BU),A.jN(new A.aV8(),t.J),A.jN(new A.aV9(),t.c),A.jN(new A.aVa(),t.tJ),A.jN(new A.aVb(),t.Cx)],t.Ds)
-return A.cR4(new A.Th(A.ad(["/",new A.aVc(),"/launch",new A.aVe(),"/login",new A.aVf(),"/splash",new A.aVg(),"/reset-password",new A.aVh(),"/subscription",new A.aVi(),"/delete-account",new A.aVj(),"/payment-result",new A.aVk(),"/subscription-page",new A.aVl()],t.N,t.y_),"/",A.LE(A.cvq(B.x,!0,s,s,0,new A.pv(s,s,s,s,s,s,s,!0),80),s,s,"Plus Jakarta Sans",B.a3T,B.x,s),!1,s),r)}}
+return A.cR4(new A.Th(A.ad(["/",new A.aVc(),"/launch",new A.aVe(),"/login",new A.aVf(),"/splash",new A.aVg(),"/reset-password",new A.aVh(),"/subscription",new A.aVi(),"/delete-account",new A.aVj(),"/payment-result",new A.aVk(),"/subscription-page",new A.aVl()],t.N,t.y_),"/","Stockall Business Dashboard",A.LE(A.cvq(B.x,!0,s,s,0,new A.pv(s,s,s,s,s,s,s,!0),80),s,s,"Plus Jakarta Sans",B.a3T,B.x,s),!1,s),r)}}
 A.aV0.prototype={
 $1(a){return A.crG()},
 $S:867}
@@ -188310,37 +188312,37 @@ l=t.p
 m=A.q(A.a([o,n,A.e(b.aXP(0),a,a,a,a,m,a,a)],l),B.f,B.j,B.e,0)
 n=t.tJ
 o=A.b(a6,!0,n).c
-k=A.f(a,a,a,a,B.lL,a,a,a,a,a,a,a4,a,a,B.J,a,a,!0,a,a,a,a,a,a,a,a)
-if(A.b(a6,!0,n).c!=null){j=b.a.d
-i=j.e
-if(i===0)i=1
-i=A.a4_(j.d*i,a6)
-j=i}else j=""
-k=A.e(j,a,a,a,a,k,a,a)
-a4=A.f(a,a,a,a,a,a,a,a,a,a,a,a4,a,a,B.u,a,a,!0,a,a,a,a,a,a,a,a)
+a4=A.f(a,a,a,a,B.lL,a,a,a,a,a,a,a4,a,a,B.J,a,a,!0,a,a,a,a,a,a,a,a)
+if(A.b(a6,!0,n).c!=null){k=b.a.d
+j=k.e
+if(j===0)j=1
+j=A.a4_(k.d*j,a6)
+k=j}else k=""
+a4=A.e(k,a,a,a,a,a4,a,a)
+k=A.f(a,a,a,a,a,a,a,a,a,a,a,10.5,a,a,B.u,a,a,!0,a,a,a,a,a,a,a,a)
 if(A.b(a6,!0,n).c!=null){n=A.b(a6,!0,n).c
-n=B.o.j((n==null?0:n)*100)}else n=""
-o=A.I(A.q(A.a([k,A.e(n,a,a,a,a,a4,a,a)],l),B.f,B.j,B.e,5),o!=null)
-a4=A.i(a,20,a)
-n=b.a.d
-k=n.c
-j=k!==1
-i=!j||k===2?a:A.bA(a0.a.c,1)
-k=!j||k===2?a0.a.w:a
+n="("+A.o((n==null?0:n)*100)+"%)"}else n=""
+o=A.I(A.q(A.a([a4,A.e(n,a,a,a,a,k,a,a)],l),B.f,B.j,B.e,5),o!=null)
+k=A.i(a,20,a)
+a4=b.a.d
+n=a4.c
+j=n!==1
+i=!j||n===2?a:A.bA(a0.a.c,1)
+n=!j||n===2?a0.a.w:a
 j=A.U(2)
-k=A.az(!1,B.N,!0,a,A.bq(A.aj(!1,a,!0,new A.J(B.kt,A.a0(new A.ba(new A.bQ2(b,a0),a),a,a),a),a,!0,a,a,a,a,a,a,a,a,a,new A.bQ3(b,a6,a0),a,a,a,a,a),a,new A.E(a,a,i,j,a,k,B.y),a),B.m,a,0,a,a,a,a,a,B.ee)
+n=A.az(!1,B.N,!0,a,A.bq(A.aj(!1,a,!0,new A.J(B.kt,A.a0(new A.ba(new A.bQ2(b,a0),a),a,a),a),a,!0,a,a,a,a,a,a,a,a,a,new A.bQ3(b,a6,a0),a,a,a,a,a),a,new A.E(a,a,i,j,a,n,B.y),a),B.m,a,0,a,a,a,a,a,B.ee)
 j=A.i(a,20,a)
 i=A.cB(B.aE,1,a)
 h=A.i(a,10,a)
-n=n.ax
-n=A.o(n>1?"Unlimited":n)
+a4=a4.ax
+a4=A.o(a4>1?"Unlimited":a4)
 g=b.a.d
 f=g.at
 e=g.Q
 d=g.r
 d=A.o(d>1e6?"Infinity":d)
 c=b.a.d
-return A.x(a,A.u(A.a([a5,s,r,q,p,m,o,a4,k,j,i,h,A.H(A.u(A.a([new A.pe("Online Storage Limit: "+n,"The duration of Month(s) your business data is securely stored online before it is automatically deleted from the cloud. For free plan, data is deleted from the cloud after a duration of 1 month.",g.ax,a,a),new A.pe("Numbers of Store Branches: "+f,"The number of store locations you can create and manage independently within your account.",f,a,a),new A.pe("Numbers of Staffs Per Branch: "+e,"The number of employees per store branch you can add to help manage your store operations.",e,a,a),new A.pe("Numbers of Items Per Branch: "+d,"The number of products or inventory items you can add and manage per store branch, each tracked separately by store account.",c.r,a,a),new A.pe("Run Bussiness Offline","Allows you to run your business without an internet connection, with data syncing automatically when you're back online.",a,c.as,a),new A.pe("Create and Manage Invoices","Ability to to create, send, and manage professional invoices for your customers directly from the app.",a,c.x,a),new A.pe("Generate, Print and Edit Receipt","The ability to generate, edit, and print receipts for sales, making it easy to share transaction details with customers.",a,c.y,a),new A.pe("Generate, Print, and Scan Barcode","The ability to generate and print barcodes for products, and scan barcodes to quickly add items during sales.",a,c.w,a),new A.pe("Use In-App Professional Calculator","The ability to access and use a built-in calculator within the app for quick calculations while managing your store.",a,c.z,a)],l),B.V,B.j,B.e,10),1),A.aj(!1,a,!0,A.x(a,A.a0(A.q(A.a([A.e("See Full Comparison",a,a,a,a,A.f(a,a,a,a,a,a,a,a,a,a,a,10,a,a,B.J,a,a,!0,a,a,a,a,a,a,a,a),a,a),A.a6(B.hI,a0.a.c,a,18)],l),B.f,B.G,B.e,0),a,a),B.m,a,a,a,a,a,a,a,new A.y(0,8,0,8),a,a,a),a,!0,a,a,a,a,a,a,a,a,a,new A.bQ4(b),a,a,a,a,a)],l),B.V,B.j,B.e,0),B.m,a,a,new A.E(a,a,a3,a2,a,a,B.y),a,520,a,a,new A.y(15,15,15,5),a,a,a1)}}
+return A.x(a,A.u(A.a([a5,s,r,q,p,m,o,k,n,j,i,h,A.H(A.u(A.a([new A.pe("Online Storage Limit: "+a4,"The duration of Month(s) your business data is securely stored online before it is automatically deleted from the cloud. For free plan, data is deleted from the cloud after a duration of 1 month.",g.ax,a,a),new A.pe("Numbers of Store Branches: "+f,"The number of store locations you can create and manage independently within your account.",f,a,a),new A.pe("Numbers of Staffs Per Branch: "+e,"The number of employees per store branch you can add to help manage your store operations.",e,a,a),new A.pe("Numbers of Items Per Branch: "+d,"The number of products or inventory items you can add and manage per store branch, each tracked separately by store account.",c.r,a,a),new A.pe("Run Bussiness Offline","Allows you to run your business without an internet connection, with data syncing automatically when you're back online.",a,c.as,a),new A.pe("Create and Manage Invoices","Ability to to create, send, and manage professional invoices for your customers directly from the app.",a,c.x,a),new A.pe("Generate, Print and Edit Receipt","The ability to generate, edit, and print receipts for sales, making it easy to share transaction details with customers.",a,c.y,a),new A.pe("Generate, Print, and Scan Barcode","The ability to generate and print barcodes for products, and scan barcodes to quickly add items during sales.",a,c.w,a),new A.pe("Use In-App Professional Calculator","The ability to access and use a built-in calculator within the app for quick calculations while managing your store.",a,c.z,a)],l),B.V,B.j,B.e,10),1),A.aj(!1,a,!0,A.x(a,A.a0(A.q(A.a([A.e("See Full Comparison",a,a,a,a,A.f(a,a,a,a,a,a,a,a,a,a,a,10,a,a,B.J,a,a,!0,a,a,a,a,a,a,a,a),a,a),A.a6(B.hI,a0.a.c,a,18)],l),B.f,B.G,B.e,0),a,a),B.m,a,a,a,a,a,a,a,new A.y(0,8,0,8),a,a,a),a,!0,a,a,a,a,a,a,a,a,a,new A.bQ4(b),a,a,a,a,a)],l),B.V,B.j,B.e,0),B.m,a,a,new A.E(a,a,a3,a2,a,a,B.y),a,520,a,a,new A.y(15,15,15,5),a,a,a1)}}
 A.bQ5.prototype={
 $0(){this.a.d=this.b},
 $S:0}

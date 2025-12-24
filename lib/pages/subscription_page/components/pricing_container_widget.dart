@@ -206,7 +206,7 @@ class _PricingContainerWidgetState
                 ),
                 Text(
                   style: TextStyle(
-                    fontSize: theme.mobileTexts.b3.fontSize,
+                    fontSize: 10.5,
                     fontWeight: FontWeight.bold,
                     // decoration: TextDecoration.lineThrough,
                   ),
@@ -214,12 +214,7 @@ class _PricingContainerWidgetState
                             context,
                           ).discount !=
                           null
-                      ? ((returnSubPaymentProvider(
-                                    context,
-                                  ).discount ??
-                                  0) *
-                              100)
-                          .toString()
+                      ? '(${(returnSubPaymentProvider(context).discount ?? 0) * 100}%)'
                       : '',
                 ),
               ],
