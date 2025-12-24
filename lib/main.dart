@@ -393,6 +393,8 @@ class MyApp extends StatelessWidget {
           '/delete-account': (context) => DeleteAccount(),
           '/payment-result':
               (context) => PaymentResultPage(),
+          '/subscription-page':
+              (context) => SubscriptionPage(),
         },
         debugShowCheckedModeBanner: false,
         theme: ThemeData(

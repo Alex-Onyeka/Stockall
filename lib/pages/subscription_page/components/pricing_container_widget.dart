@@ -7,6 +7,7 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/plan_pricing_class.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/authentication/auth_landing/auth_landing.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:stockall/services/sub_payment_serice.dart/paystack_checkout_page.dart';
 import 'package:stockall/services/sub_payment_serice.dart/sub_payment_service.dart';
@@ -185,6 +186,7 @@ class _PricingContainerWidgetState
                 ).discount !=
                 null,
             child: Row(
+              spacing: 5,
               children: [
                 Text(
                   style: TextStyle(
@@ -200,6 +202,24 @@ class _PricingContainerWidgetState
                         widget.pricingClass.originalPrice(),
                         context,
                       )
+                      : '',
+                ),
+                Text(
+                  style: TextStyle(
+                    fontSize: theme.mobileTexts.b3.fontSize,
+                    fontWeight: FontWeight.bold,
+                    // decoration: TextDecoration.lineThrough,
+                  ),
+                  returnSubPaymentProvider(
+                            context,
+                          ).discount !=
+                          null
+                      ? ((returnSubPaymentProvider(
+                                    context,
+                                  ).discount ??
+                                  0) *
+                              100)
+                          .toString()
                       : '',
                 ),
               ],
@@ -229,60 +249,73 @@ class _PricingContainerWidgetState
               ),
               child: InkWell(
                 onTap: () async {
-                  bool isOnline =
-                      await returnConnectivityProvider(
-                        context,
-                        listen: false,
-                      ).isOnline();
-                  if (isOnline) {
-                    showDialog(
-                      // ignore: use_build_context_synchronously
-                      context: context,
-                      builder: (confirmDialog) {
-                        return ConfirmationAlert(
-                          theme: theme,
-                          message:
-                              'You are about to Update your subscription Plan. Please note that Subscription Cancellations and Refunds are not available at the Moment, are you sure you want to Proceed?',
-                          title:
-                              'Update Subscription Plan?',
-                          action: () async {
-                            Navigator.of(
-                              confirmDialog,
-                            ).pop();
-                            toggleLoading(true);
-                            await startPayment(
-                              context,
-                              returnShopProvider(
-                                context,
-                                listen: false,
-                              ).userShop()!.userId,
-                              AuthService()
-                                  .currentUserEmail!,
-                              widget.pricingClass.plan,
-                              widget.pricingClass
-                                  .totalPrice(),
-                              widget.pricingClass.duration,
-                            );
-                            if (context.mounted) {
-                              toggleLoading(false);
-                            }
-                          },
-                        );
-                      },
+                  if (AuthService().currentUser == null) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return AuthLanding();
+                        },
+                      ),
                     );
                   } else {
-                    showDialog(
-                      // ignore: use_build_context_synchronously
-                      context: context,
-                      builder: (context) {
-                        return InfoAlert(
-                          theme: theme,
-                          message:
-                              'You cannot proceed with this action when you are not connected to the internet. Please turn on your data connection and try again.',
-                          title: 'No Internet Connection',
-                        );
-                      },
-                    );
+                    bool isOnline =
+                        await returnConnectivityProvider(
+                          context,
+                          listen: false,
+                        ).isOnline();
+                    if (isOnline) {
+                      showDialog(
+                        // ignore: use_build_context_synchronously
+                        context: context,
+                        builder: (confirmDialog) {
+                          return ConfirmationAlert(
+                            theme: theme,
+                            message:
+                                'You are about to Update your subscription Plan. Please note that Subscription Cancellations and Refunds are not available at the Moment, are you sure you want to Proceed?',
+                            title:
+                                'Update Subscription Plan?',
+                            action: () async {
+                              Navigator.of(
+                                confirmDialog,
+                              ).pop();
+                              toggleLoading(true);
+                              await startPayment(
+                                context,
+                                returnShopProvider(
+                                  context,
+                                  listen: false,
+                                ).userShop()!.userId,
+                                AuthService()
+                                    .currentUserEmail!,
+                                widget.pricingClass.plan,
+                                widget.pricingClass
+                                    .totalPrice(),
+                                widget
+                                    .pricingClass
+                                    .duration,
+                              );
+                              if (context.mounted) {
+                                toggleLoading(false);
+                              }
+                            },
+                          );
+                        },
+                      );
+                    } else {
+                      showDialog(
+                        // ignore: use_build_context_synchronously
+                        context: context,
+                        builder: (context) {
+                          return InfoAlert(
+                            theme: theme,
+                            message:
+                                'You cannot proceed with this action when you are not connected to the internet. Please turn on your data connection and try again.',
+                            title: 'No Internet Connection',
+                          );
+                        },
+                      );
+                    }
                   }
                 },
                 child: Padding(
