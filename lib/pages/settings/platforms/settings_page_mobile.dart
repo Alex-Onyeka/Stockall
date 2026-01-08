@@ -938,7 +938,7 @@ class _SettingsPageMobileState
                               phoneCall();
                             },
                             title:
-                                'Contact Us (+234 704 850 7587)',
+                                'Call Us (+234 704 850 7587)',
                             icon: Icons.phone,
                           ),
                         ),

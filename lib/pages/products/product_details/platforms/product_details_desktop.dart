@@ -21,6 +21,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
+import 'package:stockall/providers/data_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -1641,6 +1642,18 @@ class _ProductDetailsDesktopState
                                                 context:
                                                     context,
                                                 action: () {
+                                                  returnData(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).addToBarcodeGenerationList(
+                                                    ProductBarcode(
+                                                      product:
+                                                          product,
+                                                      number:
+                                                          1,
+                                                    ),
+                                                  );
                                                   showDialog(
                                                     context:
                                                         context,
@@ -1668,14 +1681,21 @@ class _ProductDetailsDesktopState
                                                           );
                                                           generateBarcodeAndPrint(
                                                             context,
-                                                            [
-                                                              product,
-                                                            ],
+                                                            returnData(
+                                                              context,
+                                                              listen:
+                                                                  false,
+                                                            ).barcodeGenerationList,
                                                             false,
                                                           ).then(
                                                             (
                                                               _,
                                                             ) {
+                                                              returnData(
+                                                                context,
+                                                                listen:
+                                                                    false,
+                                                              ).clearBarcodeGenerationList();
                                                               setState(
                                                                 () {
                                                                   isLoading =
@@ -1703,11 +1723,25 @@ class _ProductDetailsDesktopState
                                                         context:
                                                             context,
                                                         action: () {
+                                                          returnData(
+                                                            context,
+                                                            listen:
+                                                                false,
+                                                          ).addToBarcodeGenerationList(
+                                                            ProductBarcode(
+                                                              product:
+                                                                  product,
+                                                              number:
+                                                                  1,
+                                                            ),
+                                                          );
                                                           generateBarcodeAndPrint(
                                                             context,
-                                                            [
-                                                              product,
-                                                            ],
+                                                            returnData(
+                                                              context,
+                                                              listen:
+                                                                  false,
+                                                            ).barcodeGenerationList,
                                                             false,
                                                           );
                                                         },

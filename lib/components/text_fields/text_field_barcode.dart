@@ -9,6 +9,7 @@ class TextFieldBarcode extends StatefulWidget {
   final Function() clearTextField;
   final Function(String)? onChanged;
   final Function()? onPressedScan;
+  final FocusNode? node;
   final String? hintText;
 
   const TextFieldBarcode({
@@ -18,6 +19,7 @@ class TextFieldBarcode extends StatefulWidget {
     required this.onPressedScan,
     required this.clearTextField,
     this.hintText,
+    this.node,
   });
 
   @override
@@ -52,7 +54,7 @@ class _TextFieldBarcodeState
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return TextFormField(
-      focusNode: _node,
+      focusNode: widget.node ?? _node,
       controller: widget.searchController,
       onChanged: widget.onChanged,
       onTap: () {

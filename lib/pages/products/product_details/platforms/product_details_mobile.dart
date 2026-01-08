@@ -17,6 +17,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/products/product_details/platforms/product_details_desktop.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
+import 'package:stockall/providers/data_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class ProductDetailsMobile extends StatefulWidget {
@@ -1541,6 +1542,16 @@ class _ProductDetailsMobileState
                                     ItemsAuthAction().generateBarcodeAction(
                                       context: context,
                                       action: () {
+                                        returnData(
+                                          context,
+                                          listen: false,
+                                        ).addToBarcodeGenerationList(
+                                          ProductBarcode(
+                                            product:
+                                                product,
+                                            number: 1,
+                                          ),
+                                        );
                                         showDialog(
                                           context: context,
                                           builder: (
@@ -1566,9 +1577,18 @@ class _ProductDetailsMobileState
                                                 });
                                                 generateBarcodeAndPrint(
                                                   context,
-                                                  [product],
+                                                  returnData(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).barcodeGenerationList,
                                                   false,
                                                 ).then((_) {
+                                                  returnData(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).clearBarcodeGenerationList();
                                                   setState(() {
                                                     isLoading =
                                                         false;
@@ -1593,9 +1613,25 @@ class _ProductDetailsMobileState
                                               context:
                                                   context,
                                               action: () {
+                                                returnData(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).addToBarcodeGenerationList(
+                                                  ProductBarcode(
+                                                    product:
+                                                        product,
+                                                    number:
+                                                        1,
+                                                  ),
+                                                );
                                                 generateBarcodeAndPrint(
                                                   context,
-                                                  [product],
+                                                  returnData(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).barcodeGenerationList,
                                                   false,
                                                 );
                                               },

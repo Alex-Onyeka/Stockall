@@ -1326,11 +1326,13 @@ class _MakeSalesDesktopState
   String? searchResult;
   bool isFocus = false;
   bool listEmpty = true;
+  final FocusNode _node = FocusNode();
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _node.requestFocus();
       returnSalesProvider(
         context,
         listen: false,
@@ -1354,6 +1356,7 @@ class _MakeSalesDesktopState
           listen: false,
         ).switchInvoiceSale(value: false, context: context);
       }
+      setState(() {});
     });
   }
 
@@ -1362,10 +1365,7 @@ class _MakeSalesDesktopState
     var theme = returnTheme(context);
     var products = returnData(context).productList;
     return GestureDetector(
-      onTap:
-          () =>
-              FocusManager.instance.primaryFocus?.unfocus(),
-
+      onTap: () => _node.requestFocus(),
       child: PopScope(
         canPop: false,
         child: Container(
@@ -2409,6 +2409,7 @@ class _MakeSalesDesktopState
                                                     context,
                                               ),
                                       mainWidget: TextFieldBarcode(
+                                        node: _node,
                                         hintText:
                                             'Scan Barcode',
                                         clearTextField: () {
@@ -2432,11 +2433,18 @@ class _MakeSalesDesktopState
                                                   (
                                                     product,
                                                   ) =>
-                                                      product.barcode ==
+                                                      product.barcode?.toLowerCase() ==
                                                           value ||
                                                       product.name.toLowerCase() ==
                                                           value.toLowerCase(),
                                                 );
+                                                if (value
+                                                        .length <
+                                                    5) {
+                                                  widget
+                                                      .searchController
+                                                      .clear();
+                                                }
                                                 if (items
                                                     .isNotEmpty) {
                                                   returnSalesProvider(
@@ -2819,7 +2827,15 @@ class _MakeSalesDesktopState
                                                 );
                                               },
                                             ),
-                                          );
+                                          ).then((_) {
+                                            if (context
+                                                .mounted) {
+                                              setState(() {
+                                                _node
+                                                    .requestFocus();
+                                              });
+                                            }
+                                          });
                                         }
                                       },
                                       text: 'Proceed',

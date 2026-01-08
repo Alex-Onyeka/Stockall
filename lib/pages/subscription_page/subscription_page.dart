@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stockall/components/major/top_banner.dart';
+import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
@@ -65,6 +66,7 @@ class _SubscriptionPageState
                   child: Column(
                     children: [
                       Text(
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize:
                               theme.mobileTexts.h1.fontSize,
@@ -73,78 +75,142 @@ class _SubscriptionPageState
                         'Pick a Suitable Plan',
                       ),
                       Row(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment:
                             MainAxisAlignment.center,
-                        spacing: 5,
+                        spacing: 6,
                         children: [
-                          Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
-                              fontWeight: FontWeight.normal,
-                            ),
-                            'Current Plan:',
+                          Row(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment:
+                                MainAxisAlignment.center,
+                            spacing: 3,
+                            children: [
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b4
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.normal,
+                                ),
+                                'Plan:',
+                              ),
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b4
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+                                returnSubcsription(context)
+                                            .subscription
+                                            ?.plan ==
+                                        1
+                                    ? 'Basic'
+                                    : returnSubcsription(
+                                              context,
+                                            )
+                                            .subscription
+                                            ?.plan ==
+                                        2
+                                    ? 'Standard'
+                                    : returnSubcsription(
+                                              context,
+                                            )
+                                            .subscription
+                                            ?.plan ==
+                                        3
+                                    ? 'Premium'
+                                    : 'Free',
+                              ),
+                              Visibility(
+                                visible:
+                                    returnSubcsription(
+                                      context,
+                                    ).subscription?.plan !=
+                                    0,
+                                child: SvgPicture.asset(
+                                  color:
+                                      returnSubcsription(
+                                                    context,
+                                                  )
+                                                  .subscription
+                                                  ?.plan ==
+                                              1
+                                          ? Colors.grey
+                                          : returnSubcsription(
+                                                    context,
+                                                  )
+                                                  .subscription
+                                                  ?.plan ==
+                                              2
+                                          ? Colors.blue
+                                          : null,
+                                  checkIconSvg,
+                                  height: 14,
+                                  width: 14,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ],
                           ),
-                          Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            returnSubcsription(
-                                      context,
-                                    ).subscription?.plan ==
-                                    1
-                                ? 'Basic Plan'
-                                : returnSubcsription(
-                                      context,
-                                    ).subscription?.plan ==
-                                    2
-                                ? 'Standard Plan'
-                                : returnSubcsription(
-                                      context,
-                                    ).subscription?.plan ==
-                                    3
-                                ? 'Premium Plan'
-                                : 'Free Plan',
+                          Container(
+                            width: 1,
+                            height: 15,
+                            color: Colors.grey.shade300,
                           ),
-                          Visibility(
-                            visible:
-                                returnSubcsription(
-                                  context,
-                                ).subscription?.plan !=
-                                0,
-                            child: SvgPicture.asset(
-                              color:
-                                  returnSubcsription(
+                          Row(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment:
+                                MainAxisAlignment.center,
+                            spacing: 3,
+                            children: [
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b4
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.normal,
+                                ),
+                                'Exp Date:',
+                              ),
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b4
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+                                returnSubcsription(context)
+                                            .subscription
+                                            ?.nextPayment !=
+                                        null
+                                    ? formatDateTime(
+                                      returnSubcsription(
                                                 context,
                                               )
                                               .subscription
-                                              ?.plan ==
-                                          1
-                                      ? Colors.grey
-                                      : returnSubcsription(
-                                                context,
-                                              )
-                                              .subscription
-                                              ?.plan ==
-                                          2
-                                      ? Colors.blue
-                                      : null,
-                              checkIconSvg,
-                              height: 16,
-                              width: 16,
-                              fit: BoxFit.contain,
-                            ),
+                                              ?.nextPayment ??
+                                          DateTime.now(),
+                                    )
+                                    : 'Not Set',
+                              ),
+                            ],
                           ),
                         ],
                       ),

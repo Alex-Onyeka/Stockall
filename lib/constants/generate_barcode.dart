@@ -12,23 +12,52 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:flutter/foundation.dart';
+import 'package:stockall/providers/data_provider.dart';
 import 'package:universal_html/html.dart' as html;
 
-class GenerateBarcodeScreen extends StatelessWidget {
+String returnOnlyDigits(String text) {
+  List<String> temp = [];
+  for (var te in text.split('')) {
+    if (te == '0' ||
+        te == '1' ||
+        te == '2' ||
+        te == '3' ||
+        te == '4' ||
+        te == '5' ||
+        te == '6' ||
+        te == '7' ||
+        te == '8' ||
+        te == '9') {
+      if (temp.length < 12) {
+        temp.add(te);
+      }
+    }
+  }
+  return temp.join();
+}
+
+class GenerateBarcodeScreen extends StatefulWidget {
   final String data;
-  final List<TempProductClass> products;
+  final List<ProductBarcode> productBarcodes;
 
   const GenerateBarcodeScreen({
     super.key,
     required this.data,
-    required this.products,
+    required this.productBarcodes,
   });
 
+  @override
+  State<GenerateBarcodeScreen> createState() =>
+      _GenerateBarcodeScreenState();
+}
+
+class _GenerateBarcodeScreenState
+    extends State<GenerateBarcodeScreen> {
   @override
   Widget build(BuildContext context) {
     return Builder(
       builder: (context) {
-        if (products.length == 1) {
+        if (widget.productBarcodes.length == 1) {
           return Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -36,36 +65,54 @@ class GenerateBarcodeScreen extends StatelessWidget {
             children: [
               Flexible(
                 child: Text(
-                  products[0].name.isEmpty
+                  widget
+                          .productBarcodes[0]
+                          .product
+                          .name
+                          .isEmpty
                       ? 'Name Not Set'
-                      : products[0].name,
+                      : widget
+                          .productBarcodes[0]
+                          .product
+                          .name,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
               const SizedBox(height: 5),
-              BarcodeWidget(
-                barcode: Barcode.code128(),
-                data: data,
-                width: 300,
-                height: 100,
-                color: Colors.black,
-                backgroundColor: Colors.white,
-                drawText: true,
-                errorBuilder:
-                    (context, error) => Text(
-                      'Error: $error',
-                      style: const TextStyle(
-                        color: Colors.red,
-                      ),
-                    ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                spacing: 10,
+                children: [
+                  BarcodeWidget(
+                    barcode: Barcode.ean13(),
+                    data: widget.data,
+                    width: 220,
+                    height: 80,
+                    color: Colors.black,
+                    backgroundColor: Colors.white,
+                    drawText: true,
+                    errorBuilder: (context, error) {
+                      print(error.toString());
+                      return Text(
+                        'Error: $error',
+                        style: const TextStyle(
+                          color: Colors.red,
+                        ),
+                      );
+                    },
+                  ),
+                  ProductBarcodeCounter(
+                    pBarcode: widget.productBarcodes[0],
+                  ),
+                ],
               ),
               const SizedBox(height: 5),
               Text(
-                'Price: ${products[0].sellingPrice == null || products[0].sellingPrice == 0 ? 'Not Set' : formatMoneyMid(amount: products[0].sellingPrice ?? 0, context: context)}',
+                'Price: ${widget.productBarcodes[0].product.sellingPrice == null || widget.productBarcodes[0].product.sellingPrice == 0 ? 'Not Set' : formatMoneyMid(amount: widget.productBarcodes[0].product.sellingPrice ?? 0, context: context)}',
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -80,62 +127,83 @@ class GenerateBarcodeScreen extends StatelessWidget {
             child: ListView(
               shrinkWrap: true,
               children:
-                  products.map((pr) {
-                    var data2 =
-                        '${pr.name.isEmpty ? 'P' : pr.name.substring(0, 1).toUpperCase()}-${pr.uuid!.split('-').first.substring(0, 5).toUpperCase()}${pr.uuid!.split('-')[1].toUpperCase()}';
+                  widget.productBarcodes.map((pr) {
+                    var data2 = returnOnlyDigits(
+                      pr.product.uuid!,
+                    );
+                    // '${pr.uuid!.split('-').first.substring(0, 5).toUpperCase()}${pr.uuid!.split('-')[1].toUpperCase()}';
 
                     return Padding(
                       padding: const EdgeInsets.only(
                         top: 10.0,
                       ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
+                      child: Row(
                         mainAxisAlignment:
                             MainAxisAlignment.center,
-                        spacing: 5,
+                        spacing: 15,
                         children: [
-                          Flexible(
-                            child: Text(
-                              pr.name.isEmpty
-                                  ? 'Name Not Set'
-                                  : pr.name,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          BarcodeWidget(
-                            barcode: Barcode.code128(),
-                            data: data2,
-                            width: 300,
-                            height: 100,
-                            color: Colors.black,
-                            backgroundColor: Colors.white,
-                            drawText: true,
-                            errorBuilder:
-                                (context, error) => Text(
-                                  'Error: $error',
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment:
+                                MainAxisAlignment.center,
+                            spacing: 5,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  pr.product.name.isEmpty
+                                      ? 'Name Not Set'
+                                      : pr.product.name,
+                                  textAlign:
+                                      TextAlign.center,
                                   style: const TextStyle(
-                                    color: Colors.red,
+                                    fontSize: 20,
+                                    fontWeight:
+                                        FontWeight.bold,
                                   ),
                                 ),
+                              ),
+                              const SizedBox(height: 5),
+                              BarcodeWidget(
+                                barcode: Barcode.ean13(),
+                                data: data2,
+                                width: 220,
+                                height: 80,
+                                color: Colors.black,
+                                backgroundColor:
+                                    Colors.white,
+                                drawText: true,
+                                errorBuilder: (
+                                  context,
+                                  error,
+                                ) {
+                                  print(error.toString());
+                                  return Text(
+                                    'Error: $error',
+                                    style: const TextStyle(
+                                      color: Colors.red,
+                                    ),
+                                  );
+                                },
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                'Price: ${pr.product.sellingPrice == null || pr.product.sellingPrice == 0 ? 'Not Set' : formatMoneyMid(amount: pr.product.sellingPrice ?? 0, context: context)}',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              Divider(
+                                color: Colors.grey.shade600,
+                                thickness: 0.4,
+                                height: 5,
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 5),
-                          Text(
-                            'Price: ${pr.sellingPrice == null || pr.sellingPrice == 0 ? 'Not Set' : formatMoneyMid(amount: pr.sellingPrice ?? 0, context: context)}',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Divider(
-                            color: Colors.grey.shade600,
-                            thickness: 0.4,
-                            height: 5,
+                          ProductBarcodeCounter(
+                            pBarcode: pr,
                           ),
                         ],
                       ),
@@ -152,16 +220,9 @@ class GenerateBarcodeScreen extends StatelessWidget {
 Future<bool> printBarcode(
   // String data,
   BuildContext context,
-  List<TempProductClass> products,
+  List<ProductBarcode> productBarcodes,
 ) async {
-  final barcode = Barcode.code128();
-  // final svg = barcode.toSvg(
-  //   data,
-  //   width: 200,
-  //   height: 70,
-  //   fontHeight: 14,
-  //   drawText: true,
-  // );
+  final barcode = Barcode.ean13();
 
   final pdf = pw.Document();
 
@@ -178,20 +239,13 @@ Future<bool> printBarcode(
         right: 30,
         bottom: 20,
       ),
-      //     barcode.toSvg(
-      //   data,
-      //   width: 200,
-      //   height: 70,
-      //   fontHeight: 14,
-      //   drawText: true,
-      // );
       build: (pw.Context pcontext) {
         return pw.Center(
           child: pw.Column(
             mainAxisSize: pw.MainAxisSize.min,
             children: [
-              ...products.map(
-                (product) => pw.Column(
+              ...productBarcodes.map(
+                (productBarcode) => pw.Column(
                   children: [
                     pw.Text(
                       style: pw.TextStyle(fontSize: 5),
@@ -204,14 +258,16 @@ Future<bool> printBarcode(
                         fontSize: 11,
                         fontWeight: pw.FontWeight.bold,
                       ),
-                      product.name.isEmpty
+                      productBarcode.product.name.isEmpty
                           ? 'Name Not Set'
-                          : product.name,
+                          : productBarcode.product.name,
                     ),
                     pw.SizedBox(height: 5),
                     pw.SvgImage(
                       svg: barcode.toSvg(
-                        '${product.name.isEmpty ? 'P' : product.name.substring(0, 1).toUpperCase()}-${product.uuid!.split('-').first.substring(0, 5).toUpperCase()}${product.uuid!.split('-')[1].toUpperCase()}',
+                        returnOnlyDigits(
+                          productBarcode.product.uuid!,
+                        ),
                         width: 200,
                         height: 70,
                         fontHeight: 14,
@@ -225,10 +281,7 @@ Future<bool> printBarcode(
                       mainAxisSize: pw.MainAxisSize.min,
                       children: [
                         pw.Text(
-                          style: pw.TextStyle(
-                            fontSize: 8,
-                            // fontWeight: pw.FontWeight.bold,
-                          ),
+                          style: pw.TextStyle(fontSize: 8),
                           'Price: ',
                         ),
                         pw.Text(
@@ -236,10 +289,16 @@ Future<bool> printBarcode(
                             fontSize: 10,
                             fontWeight: pw.FontWeight.bold,
                           ),
-                          product.sellingPrice == null ||
-                                  product.sellingPrice == 0
+                          productBarcode
+                                          .product
+                                          .sellingPrice ==
+                                      null ||
+                                  productBarcode
+                                          .product
+                                          .sellingPrice ==
+                                      0
                               ? 'Not Set'
-                              : 'N ${formatLargeNumberDouble(product.sellingPrice ?? 0)}',
+                              : 'N ${formatLargeNumberDouble(productBarcode.product.sellingPrice ?? 0)}',
                         ),
                       ],
                     ),
@@ -280,8 +339,10 @@ Future<bool> printBarcode(
 
       final anchor =
           html.AnchorElement(href: url)
-            ..download =
-                '${products[0].name.isEmpty ? 'P' : products[0].name.substring(0, 1).toUpperCase()}-${products[0].uuid!.split('-').first.substring(0, 5).toUpperCase()}${products[0].uuid!.split('-')[1].toUpperCase()}'
+            ..download = returnOnlyDigits(
+              productBarcodes[0].product.uuid!,
+            )
+            // '${products[0].uuid!.split('-').first.substring(0, 5).toUpperCase()}${products[0].uuid!.split('-')[1].toUpperCase()}'
             ..style.display = 'none';
 
       html.document.body?.append(anchor);
@@ -302,8 +363,10 @@ Future<bool> printBarcode(
       final pdfBytes = await pdf.save();
       var res = await Printing.sharePdf(
         bytes: pdfBytes,
-        filename:
-            'barcode_${'${products[0].name.isEmpty ? 'P' : products[0].name.substring(0, 1).toUpperCase()}-${products[0].uuid!.split('-').first.substring(0, 5).toUpperCase()}${products[0].uuid!.split('-')[1].toUpperCase()}'.replaceAll(' ', '_')}.pdf',
+        filename: returnOnlyDigits(
+          productBarcodes[0].product.uuid!,
+        ),
+        // 'barcode_${'${products[0].uuid!.split('-').first.substring(0, 5).toUpperCase()}${products[0].uuid!.split('-')[1].toUpperCase()}'.replaceAll(' ', '_')}.pdf',
       );
       return res;
     }
@@ -312,14 +375,16 @@ Future<bool> printBarcode(
 
 Future<bool> generateBarcodeAndPrint(
   BuildContext context,
-  List<TempProductClass> products,
+  List<ProductBarcode> productBarcodes,
   bool isEdit,
 ) async {
   print('Starting Generation');
   final safeContext = context;
 
-  final productUuid =
-      '${products[0].name.isEmpty ? 'P' : products[0].name.substring(0, 1).toUpperCase()}-${products[0].uuid!.split('-').first.substring(0, 5).toUpperCase()}${products[0].uuid!.split('-')[1].toUpperCase()}';
+  final productUuid = returnOnlyDigits(
+    productBarcodes[0].product.uuid!,
+  );
+  // '${products[0].uuid!.split('-').first.substring(0, 5).toUpperCase()}${products[0].uuid!.split('-')[1].toUpperCase()}';
 
   final result = await showDialog<bool>(
     context: safeContext,
@@ -334,10 +399,25 @@ Future<bool> generateBarcodeAndPrint(
 
           // Navigator.pop(confirmAlert);
 
+          List<ProductBarcode> productBarcodesTemp() {
+            List<ProductBarcode> temp = [];
+            for (var prB in productBarcodes) {
+              for (var i = 0; i < prB.number; i++) {
+                temp.add(
+                  ProductBarcode(
+                    product: prB.product,
+                    number: 1,
+                  ),
+                );
+              }
+            }
+            return temp;
+          }
+
           bool printingSuccess = await printBarcode(
             // productUuid,
             safeContext,
-            products,
+            productBarcodesTemp(),
           );
 
           if (!printingSuccess && safeContext.mounted) {
@@ -351,17 +431,19 @@ Future<bool> generateBarcodeAndPrint(
 
           if (safeContext.mounted) {
             if (!isEdit) {
-              for (var pr in products) {
-                final newShit =
-                    '${pr.name.isEmpty ? 'P' : pr.name.substring(0, 1).toUpperCase()}-${pr.uuid!.split('-').first.substring(0, 5).toUpperCase()}${pr.uuid!.split('-')[1].toUpperCase()}';
+              for (var pr in productBarcodes) {
+                final newShit = returnOnlyDigits(
+                  productBarcodes[0].product.uuid!,
+                );
+                // '${pr.uuid!.split('-').first.substring(0, 5).toUpperCase()}${pr.uuid!.split('-')[1].toUpperCase()}';
 
-                pr.barcode = newShit;
+                pr.product.barcode = newShit;
 
                 await returnData(
                   safeContext,
                   listen: false,
                 ).updateProduct(
-                  product: pr,
+                  product: pr.product,
                   context: safeContext,
                 );
               }
@@ -372,6 +454,7 @@ Future<bool> generateBarcodeAndPrint(
             if (!safeContext.mounted) {
               return;
             }
+            print('Finished Printing');
             Navigator.pop(safeContext, true);
           } else {
             print('Context not mounted');
@@ -384,11 +467,20 @@ Future<bool> generateBarcodeAndPrint(
         actionButtonText: buttonDislayText(safeContext),
         widget: GenerateBarcodeScreen(
           data: productUuid,
-          products: products,
+          productBarcodes:
+              returnData(
+                context,
+                listen: false,
+              ).barcodeGenerationList,
         ),
       );
     },
-  );
+  ).then((_) {
+    returnData(
+      context,
+      listen: false,
+    ).clearBarcodeGenerationList();
+  });
 
   return result ?? false;
 }
@@ -682,15 +774,32 @@ Future<dynamic> settingsGenerateProductBarcode(
                                                         listen:
                                                             false,
                                                       );
-                                                      if (dataP.barcodeGenerationList.contains(
-                                                        product,
-                                                      )) {
+                                                      if (dataP
+                                                          .barcodeGenerationList
+                                                          .where(
+                                                            (
+                                                              pr,
+                                                            ) =>
+                                                                pr.product.uuid ==
+                                                                product.uuid,
+                                                          )
+                                                          .isNotEmpty) {
                                                         dataP.removeFromBarcodeGenerationList(
-                                                          product,
+                                                          ProductBarcode(
+                                                            product:
+                                                                product,
+                                                            number:
+                                                                1,
+                                                          ),
                                                         );
                                                       } else {
                                                         dataP.addToBarcodeGenerationList(
-                                                          product,
+                                                          ProductBarcode(
+                                                            product:
+                                                                product,
+                                                            number:
+                                                                1,
+                                                          ),
                                                         );
                                                       }
                                                     },
@@ -761,11 +870,18 @@ Future<dynamic> settingsGenerateProductBarcode(
                                                                 'Barcode Not Set',
                                                           ),
                                                           Visibility(
-                                                            visible: returnData(
-                                                              context,
-                                                            ).barcodeGenerationList.contains(
-                                                              product,
-                                                            ),
+                                                            visible:
+                                                                returnData(
+                                                                      context,
+                                                                    ).barcodeGenerationList
+                                                                    .where(
+                                                                      (
+                                                                        pr,
+                                                                      ) =>
+                                                                          pr.product.uuid ==
+                                                                          product.uuid,
+                                                                    )
+                                                                    .isNotEmpty,
                                                             child: Icon(
                                                               size:
                                                                   18,

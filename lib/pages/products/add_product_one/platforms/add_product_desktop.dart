@@ -21,6 +21,7 @@ import 'package:stockall/constants/scan_barcode.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/providers/data_provider.dart';
 
 class AddProductDesktop extends StatefulWidget {
   final TempProductClass? product;
@@ -1161,30 +1162,48 @@ class _AddProductDesktopState
                                                                   ? double.tryParse(
                                                                     sellingPrice(),
                                                                   )
-                                                                  : widget.product!.sellingPrice!,
+                                                                  : widget.product?.sellingPrice,
                                                         );
 
                                                         if (widget.nameController.text.isNotEmpty) {
-                                                          var res = await generateBarcodeAndPrint(
+                                                          returnData(
                                                             context,
-                                                            [
-                                                              tempProduct,
-                                                            ],
+                                                            listen:
+                                                                false,
+                                                          ).addToBarcodeGenerationList(
+                                                            ProductBarcode(
+                                                              product:
+                                                                  tempProduct,
+                                                              number:
+                                                                  1,
+                                                            ),
+                                                          );
+                                                          await generateBarcodeAndPrint(
+                                                            context,
+                                                            returnData(
+                                                              context,
+                                                              listen:
+                                                                  false,
+                                                            ).barcodeGenerationList,
                                                             true,
                                                           );
-                                                          if (res) {
-                                                            setState(
-                                                              () {
-                                                                barcode =
-                                                                    '${tempProduct.name.isEmpty ? 'P' : tempProduct.name.substring(0, 1).toUpperCase()}-${tempProduct.uuid!.split('-').first.substring(0, 5).toUpperCase()}${tempProduct.uuid!.split('-')[1].toUpperCase()}';
-                                                                // barcodeController.text =
-                                                                //     barcode ??
-                                                                //     '';
-                                                                barCodeSet =
-                                                                    true;
-                                                              },
-                                                            );
-                                                          }
+                                                          // if (res) {
+                                                          setState(
+                                                            () {
+                                                              barcode = returnOnlyDigits(
+                                                                widget.product ==
+                                                                        null
+                                                                    ? createdProductUuid!
+                                                                    : widget.product!.uuid!,
+                                                              );
+                                                              // barcodeController.text =
+                                                              //     barcode ??
+                                                              //     '';
+                                                              barCodeSet =
+                                                                  true;
+                                                            },
+                                                          );
+                                                          // }
                                                         } else {
                                                           showDialog(
                                                             context:

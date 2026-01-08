@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/created_products/created_products.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/deleted_products/deleted_products.dart';
@@ -41,27 +42,6 @@ class DataProvider extends ChangeNotifier {
   }
 
   final supabase = Supabase.instance.client;
-
-  List<TempProductClass> barcodeGenerationList = [];
-
-  void addToBarcodeGenerationList(
-    TempProductClass product,
-  ) {
-    barcodeGenerationList.add(product);
-    notifyListeners();
-  }
-
-  void removeFromBarcodeGenerationList(
-    TempProductClass product,
-  ) {
-    barcodeGenerationList.remove(product);
-    notifyListeners();
-  }
-
-  void clearBarcodeGenerationList() {
-    barcodeGenerationList.clear();
-    notifyListeners();
-  }
 
   Future<void> createProduct(
     TempProductClass product,
@@ -1463,4 +1443,270 @@ class DataProvider extends ChangeNotifier {
       }
     });
   }
+
+  // List<ProductBarcode> productBarcode = [];
+
+  List<ProductBarcode> barcodeGenerationList = [];
+
+  void addToBarcodeGenerationList(
+    ProductBarcode productBarcode,
+  ) {
+    barcodeGenerationList.add(productBarcode);
+    notifyListeners();
+  }
+
+  void removeFromBarcodeGenerationList(
+    ProductBarcode productBarcode,
+  ) {
+    barcodeGenerationList.removeWhere(
+      (pr) =>
+          pr.product.uuid == productBarcode.product.uuid,
+    );
+    notifyListeners();
+  }
+
+  void clearBarcodeGenerationList() {
+    barcodeGenerationList.clear();
+    notifyListeners();
+  }
+
+  void initProductBarcode(List<ProductBarcode> data) {
+    barcodeGenerationList.addAll(data);
+    notifyListeners();
+  }
+
+  // void clearProductBarcode() {
+  //   productBarcode.clear();
+  //   notifyListeners();
+  // }
+
+  void setBarcodeNumber(
+    int number,
+    ProductBarcode pBarcode,
+  ) {
+    barcodeGenerationList
+        .firstWhere(
+          (br) => br.product.uuid == pBarcode.product.uuid,
+        )
+        .number = number;
+    notifyListeners();
+  }
+
+  void editNumber(bool isAdd, ProductBarcode pBarcode) {
+    if (isAdd) {
+      barcodeGenerationList
+          .firstWhere(
+            (br) =>
+                br.product.uuid == pBarcode.product.uuid,
+          )
+          .number += 1;
+      // numberC.text = '$barcodeNumber';
+    } else {
+      if (barcodeGenerationList
+              .firstWhere(
+                (br) =>
+                    br.product.uuid ==
+                    pBarcode.product.uuid,
+              )
+              .number >
+          1) {
+        barcodeGenerationList
+            .firstWhere(
+              (br) =>
+                  br.product.uuid == pBarcode.product.uuid,
+            )
+            .number -= 1;
+        // numberC.text = '$pBarcode.number';
+      } else {
+        barcodeGenerationList
+            .firstWhere(
+              (br) =>
+                  br.product.uuid == pBarcode.product.uuid,
+            )
+            .number = 1;
+        // numberC.text = '$barcodeNumber';
+      }
+    }
+    notifyListeners();
+  }
+}
+
+class ProductBarcodeCounter extends StatefulWidget {
+  final ProductBarcode pBarcode;
+  const ProductBarcodeCounter({
+    super.key,
+    required this.pBarcode,
+  });
+
+  @override
+  State<ProductBarcodeCounter> createState() =>
+      _ProductBarcodeCounterState();
+}
+
+class _ProductBarcodeCounterState
+    extends State<ProductBarcodeCounter> {
+  TextEditingController numberC = TextEditingController();
+
+  void editNumberLocal(bool isAdd) {
+    returnData(
+      context,
+      listen: false,
+    ).editNumber(isAdd, widget.pBarcode);
+    numberC.text = '${widget.pBarcode.number}';
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    numberC.text = '${widget.pBarcode.number}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 0.0),
+      child: Container(
+        width: numberC.text.length > 2 ? 35 : 32,
+        padding: EdgeInsets.symmetric(
+          horizontal: 5,
+          vertical: 5,
+        ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+          color: Colors.grey.shade100,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 3,
+          children: [
+            Material(
+              color: Colors.transparent,
+              child: Ink(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(2),
+                  color: Colors.grey.shade300,
+                ),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(2),
+                  onTap: () {
+                    editNumberLocal(true);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(2),
+
+                    child: Center(
+                      child: Icon(
+                        size: 12,
+                        color: Colors.grey.shade700,
+                        Icons.add,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 25,
+              child: TextField(
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                ),
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.grey.shade400,
+                      width: 0.5,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.grey.shade400,
+                      width: 0.5,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.grey.shade800,
+                      width: 0.5,
+                    ),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 0,
+                    horizontal: 0,
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+                controller: numberC,
+                keyboardType:
+                    TextInputType.numberWithOptions(
+                      decimal: false,
+                    ),
+                onChanged: (value) {
+                  if (value.isEmpty || value == '0') {
+                    returnData(
+                      context,
+                      listen: false,
+                    ).setBarcodeNumber(1, widget.pBarcode);
+                    numberC.text = '1';
+                  } else {
+                    returnData(
+                      context,
+                      listen: false,
+                    ).setBarcodeNumber(
+                      int.parse(value),
+                      widget.pBarcode,
+                    );
+                  }
+                  setState(() {});
+                },
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
+                autofocus: false,
+              ),
+            ),
+            Material(
+              color: Colors.transparent,
+              child: Ink(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(2),
+                  color: Colors.grey.shade300,
+                ),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(2),
+                  onTap: () {
+                    editNumberLocal(false);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(2),
+
+                    child: Center(
+                      child: Icon(
+                        size: 12,
+                        color: Colors.grey.shade700,
+                        Icons.remove,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ProductBarcode {
+  final TempProductClass product;
+  int number;
+
+  ProductBarcode({
+    required this.product,
+    required this.number,
+  });
 }
