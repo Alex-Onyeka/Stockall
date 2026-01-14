@@ -138,6 +138,22 @@ class _VerifyEmailMobileState
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
+                            // SizedBox(height: 10),
+                            Text(
+                              textAlign: TextAlign.center,
+                              '(${widget.user.email})',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize:
+                                    widget
+                                        .theme
+                                        .mobileTexts
+                                        .b2
+                                        .fontSize,
+                                fontWeight:
+                                    FontWeight.normal,
+                              ),
+                            ),
                             SizedBox(height: 20),
                             PinCodeWidget(
                               controller:
@@ -315,10 +331,11 @@ class _VerifyEmailMobileState
                                       widget.theme,
                                   constraints:
                                       BoxConstraints(),
-                                  text: 'Log Out',
+                                  text: 'Cancel',
                                   action: () async {
-                                    await AuthService()
-                                        .signOut(context);
+                                    Navigator.of(
+                                      context,
+                                    ).pop();
                                   },
                                 ),
                                 // Text('this'),

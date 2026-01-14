@@ -168,6 +168,22 @@ class _VerifyEmailDesktopChangeState
                                           FontWeight.bold,
                                     ),
                                   ),
+                                  Text(
+                                    textAlign:
+                                        TextAlign.center,
+                                    '(New Email: ${widget.newEmail})',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize:
+                                          widget
+                                              .theme
+                                              .mobileTexts
+                                              .b2
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.normal,
+                                    ),
+                                  ),
                                   SizedBox(height: 20),
                                   PinCodeWidget(
                                     controller:

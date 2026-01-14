@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class VerifyPhoneDesktop extends StatelessWidget {
   final ThemeProvider theme;
+  final String email;
   final List circles;
   const VerifyPhoneDesktop({
     super.key,
     required this.theme,
     required this.circles,
+    required this.email,
   });
 
   @override
@@ -151,7 +154,7 @@ class VerifyPhoneDesktop extends StatelessWidget {
                                 Text(
                                   textAlign:
                                       TextAlign.center,
-                                  'A Password Reset Link has been sent to your Email',
+                                  'A Password Reset Link has been sent to your Email.',
                                   style: TextStyle(
                                     color:
                                         theme
@@ -175,27 +178,21 @@ class VerifyPhoneDesktop extends StatelessWidget {
                                           .mobileTexts
                                           .b1
                                           .textStyleNormal,
-                                  'Check your mail to Reset Your Password',
+                                  'Check your mail ($email) to Reset Your Password.',
                                 ),
                                 SizedBox(height: 20),
-                                // MainButtonP(
-                                //   themeProvider: theme,
-                                //   action: () {
-                                //     Navigator.push(
-                                //       context,
-                                //       MaterialPageRoute(
-                                //         builder: (context) {
-                                //           return EnterCode(
-                                //             number:
-                                //                 'number',
-                                //           );
-                                //         },
-                                //       ),
-                                //     );
-                                //   },
-                                //   text: 'Proceed to Verify',
-                                // ),
-                                // SizedBox(height: 20),
+                                MainButtonTransparent(
+                                  constraints:
+                                      BoxConstraints(),
+                                  themeProvider: theme,
+                                  action: () {
+                                    Navigator.of(
+                                      context,
+                                    ).pop();
+                                  },
+                                  text: 'Cancel',
+                                ),
+                                SizedBox(height: 20),
                               ],
                             ),
                           ),

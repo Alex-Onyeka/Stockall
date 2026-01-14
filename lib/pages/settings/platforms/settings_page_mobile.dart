@@ -1169,12 +1169,12 @@ class _SettingsPageMobileState
                                   fontSize:
                                       theme
                                           .mobileTexts
-                                          .b3
+                                          .b4
                                           .fontSize,
                                   fontStyle:
                                       FontStyle.italic,
                                 ),
-                                'Current App Build: ',
+                                'Current Version:',
                               ),
                             ],
                           ),
@@ -1183,7 +1183,7 @@ class _SettingsPageMobileState
                               fontSize:
                                   theme
                                       .mobileTexts
-                                      .b2
+                                      .b4
                                       .fontSize,
                               fontStyle: FontStyle.italic,
                               color: Colors.grey.shade500,

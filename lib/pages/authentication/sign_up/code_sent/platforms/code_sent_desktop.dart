@@ -8,10 +8,12 @@ import 'package:stockall/providers/theme_provider.dart';
 class CodeSentDesktop extends StatefulWidget {
   final ThemeProvider theme;
   final List circles;
+  final String email;
   const CodeSentDesktop({
     super.key,
     required this.circles,
     required this.theme,
+    required this.email,
   });
 
   @override
@@ -220,7 +222,28 @@ class _CodeSentDesktopState extends State<CodeSentDesktop> {
                                           FontWeight.bold,
                                     ),
                                   ),
-                                  SizedBox(height: 20),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    textAlign:
+                                        TextAlign.center,
+                                    '(${widget.email})',
+                                    style: TextStyle(
+                                      color:
+                                          widget
+                                              .theme
+                                              .lightModeColor
+                                              .prColor300,
+                                      fontSize:
+                                          widget
+                                              .theme
+                                              .mobileTexts
+                                              .b1
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
                                   Text(
                                     textAlign:
                                         TextAlign.center,

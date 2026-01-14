@@ -1265,18 +1265,18 @@ class _SettingsPageDesktopState
                               fontSize:
                                   theme
                                       .mobileTexts
-                                      .b3
+                                      .b4
                                       .fontSize,
                               fontStyle: FontStyle.italic,
                             ),
-                            'Current App Build: ',
+                            'Current Version:',
                           ),
                         ],
                       ),
                       Text(
                         style: TextStyle(
                           fontSize:
-                              theme.mobileTexts.b2.fontSize,
+                              theme.mobileTexts.b4.fontSize,
                           fontStyle: FontStyle.italic,
                           color: Colors.grey.shade500,
                           fontWeight: FontWeight.bold,

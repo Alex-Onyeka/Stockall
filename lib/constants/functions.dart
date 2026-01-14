@@ -4501,10 +4501,12 @@ Future<void> downloadApkFromApp({
   final url =
       screenWidth(context) > tabletScreenSmall
           ? Uri.parse(
-            'https://github.com/Alex-Onyeka/Stockall/releases/download/desktop-v1.0.1/StockallDesktop.exe',
+            'https://apps.microsoft.com/detail/9NKK31W8032C',
+            // 'https://github.com/Alex-Onyeka/Stockall/releases/download/desktop-v1.0.1/StockallDesktop.exe',
           )
           : Uri.parse(
-            'https://github.com/Alex-Onyeka/Stockall/releases/download/mobile-v1.0.1/stockall.apk',
+            'https://play.google.com/store/apps/details?id=com.stockallsolutions.stockall',
+            // 'https://github.com/Alex-Onyeka/Stockall/releases/download/mobile-v1.0.1/stockall.apk',
           );
 
   if (await canLaunchUrl(url)) {

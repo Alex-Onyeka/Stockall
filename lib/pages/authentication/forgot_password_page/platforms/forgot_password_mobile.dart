@@ -115,7 +115,12 @@ class _ForgotPasswordMobileState
                           context,
                           MaterialPageRoute(
                             builder: (context) {
-                              return VerifyPhone();
+                              return VerifyPhone(
+                                email:
+                                    widget
+                                        .emailController
+                                        .text,
+                              );
                             },
                           ),
                         );

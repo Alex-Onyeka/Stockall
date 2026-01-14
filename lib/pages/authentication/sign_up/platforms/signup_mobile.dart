@@ -128,66 +128,88 @@ class _SignupMobileState extends State<SignupMobile> {
           password: widget.passwordController.text,
         );
 
-        if (res?.user != null) {
+        if (res != null) {
           if (!mounted) return;
           setState(() {
             isLoading = false;
-            showSuccess = true;
           });
-
-          Future.delayed(Duration(seconds: 2), () {
-            if (!mounted) return;
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder:
-                    (context) => CodeSentPage(
-                      user: TempUserClass(
-                        userId: res?.user!.id,
-                        createdAt: DateTime.now(),
-                        name:
-                            widget.nameController.text
-                                .trim(),
-                        email:
-                            widget.emailController.text
-                                .toLowerCase()
-                                .trim(),
-                        phone:
-                            widget
-                                .phoneNumberController
-                                .text
-                                .trim(),
-                        role: 'Cashier',
-                        password:
-                            widget.passwordController.text,
-                        lastName:
-                            widget.lastNameController.text,
-                      ),
-                    ),
-              ),
+          if (res == 'exists') {
+            showDialog(
+              // ignore: use_build_context_synchronously
+              context: context,
+              builder: (context) {
+                return InfoAlert(
+                  theme: widget.theme,
+                  message:
+                      'An error occurred while creating your account. This email is already associated to an existing account..',
+                  title: 'Email Already Registered',
+                );
+              },
             );
+          } else {
             setState(() {
               isLoading = false;
-              showSuccess = false;
+              showSuccess = true;
             });
-          });
+
+            Future.delayed(Duration(seconds: 2), () {
+              if (!mounted) return;
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (context) => CodeSentPage(
+                        user: TempUserClass(
+                          userId: res,
+                          createdAt: DateTime.now(),
+                          name:
+                              widget.nameController.text
+                                  .trim(),
+                          email:
+                              widget.emailController.text
+                                  .toLowerCase()
+                                  .trim(),
+                          phone:
+                              widget
+                                  .phoneNumberController
+                                  .text
+                                  .trim(),
+                          role: 'Cashier',
+                          password:
+                              widget
+                                  .passwordController
+                                  .text,
+                          lastName:
+                              widget
+                                  .lastNameController
+                                  .text,
+                        ),
+                      ),
+                ),
+              );
+              setState(() {
+                isLoading = false;
+                showSuccess = false;
+              });
+            });
+          }
         } else {
           setState(() {
             isLoading = false;
           });
-          if (!context.mounted) return;
-          showDialog(
-            // ignore: use_build_context_synchronously
-            context: context,
-            builder: (context) {
-              return InfoAlert(
-                theme: widget.theme,
-                message:
-                    'An error occurred while creating your account. Please check your details and try again.',
-                title: 'An Error Occurred',
-              );
-            },
-          );
+          // if (!context.mounted) return;
+          // showDialog(
+          //   // ignore: use_build_context_synchronously
+          //   context: context,
+          //   builder: (context) {
+          //     return InfoAlert(
+          //       theme: widget.theme,
+          //       message:
+          //           'An error occurred while creating your account. Please check your details and try again.',
+          //       title: 'An Error Occurred',
+          //     );
+          //   },
+          // );
         }
       } on AuthException catch (e) {
         setState(() {

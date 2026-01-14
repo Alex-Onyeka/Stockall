@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_logged_in_user/logged_in_user.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/local_database/logged_in_user/logged_in_user_func.dart';
 import 'package:stockall/local_database/shop_current/current_shop_func.dart';
 import 'package:stockall/local_database/users/user_func.dart';
@@ -27,32 +28,54 @@ class AuthService extends ChangeNotifier {
 
   SupabaseClient get client => _client;
 
-  Future<AuthResponse?> signUpAndCreateUser({
+  Future<String?> signUpAndCreateUser({
     required BuildContext context,
     required String email,
     required String password,
   }) async {
     try {
-      final signUpRes = await _client.auth.signUp(
-        email: email,
-        password: password,
-      );
+      var account =
+          await client
+              .from('users')
+              .select()
+              .eq('email', email)
+              .maybeSingle();
+      if (account == null) {
+        final signUpRes = await _client.auth.signUp(
+          email: email,
+          password: password,
+        );
 
-      final userId = signUpRes.user?.id;
+        final userId = signUpRes.user?.id;
 
-      if (userId == null) {
-        print('Failed to sign up user.');
-        return null;
+        if (userId == null) {
+          print('Failed to sign up user.');
+          return null;
+        }
+
+        returnNavProvider(
+          context,
+          listen: false,
+        ).offLoading();
+
+        return signUpRes.user?.id;
+      } else {
+        return 'exists';
       }
-
-      returnNavProvider(
-        context,
-        listen: false,
-      ).offLoading();
-
-      return signUpRes;
     } catch (e) {
       print('Error Creating User Account: ${e.toString()}');
+      showDialog(
+        // ignore: use_build_context_synchronously
+        context: context,
+        builder: (context) {
+          return InfoAlert(
+            theme: returnTheme(context),
+            message:
+                '${e.toString().split('(')[1].split(':')[1].split('.').first}.',
+            title: 'An Error Occurred',
+          );
+        },
+      );
       return null;
     }
   }

@@ -17,23 +17,51 @@ import 'package:universal_html/html.dart' as html;
 
 String returnOnlyDigits(String text) {
   List<String> temp = [];
+
+  // Step 1: extract only digits, but stop after 12
   for (var te in text.split('')) {
-    if (te == '0' ||
-        te == '1' ||
-        te == '2' ||
-        te == '3' ||
-        te == '4' ||
-        te == '5' ||
-        te == '6' ||
-        te == '7' ||
-        te == '8' ||
-        te == '9') {
+    if (RegExp(r'^[0-9]$').hasMatch(te)) {
       if (temp.length < 12) {
         temp.add(te);
       }
     }
   }
+
+  // If we don't have exactly 12 digits, we cannot generate EAN-13
+  if (temp.length != 12) {
+    throw ArgumentError(
+      "Input must contain at least 12 digits.",
+    );
+  }
+
+  // Step 2: calculate checksum
+  int checksum = calculateEan13Checksum(temp.join());
+
+  // Step 3: append checksum to form full 13-digit code
+  temp.add(checksum.toString());
+
   return temp.join();
+}
+
+// Helper function to compute EAN-13 checksum
+int calculateEan13Checksum(String data) {
+  int sumOdd = 0;
+  int sumEven = 0;
+
+  for (int i = 0; i < 12; i++) {
+    int digit = int.parse(data[i]);
+
+    if (i % 2 == 0) {
+      sumOdd += digit;
+    } else {
+      sumEven += digit;
+    }
+  }
+
+  int total = sumOdd + (sumEven * 3);
+  int checksum = (10 - (total % 10)) % 10;
+
+  return checksum;
 }
 
 class GenerateBarcodeScreen extends StatefulWidget {
@@ -228,17 +256,29 @@ Future<bool> printBarcode(
 
   pdf.addPage(
     pw.Page(
-      pageFormat: PdfPageFormat.roll57,
-      margin: pw.EdgeInsets.only(
-        left:
+      pageFormat: PdfPageFormat(
+        58 * PdfPageFormat.mm,
+        40 * PdfPageFormat.mm,
+        marginLeft:
             kIsWeb ||
                     screenWidth(context) < tabletScreenSmall
-                ? 25
-                : 0,
-        top: 15,
-        right: 30,
-        bottom: 20,
+                ? 10
+                : 5,
+        marginTop: 25,
+        marginRight: 30,
+        marginBottom: 0,
+        // marginAll: 5,
       ),
+      // margin: pw.EdgeInsets.only(
+      //   left:
+      //       kIsWeb ||
+      //               screenWidth(context) < tabletScreenSmall
+      //           ? 10
+      //           : 5,
+      //   top: 5,
+      //   right: 30,
+      //   bottom: 2,
+      // ),
       build: (pw.Context pcontext) {
         return pw.Center(
           child: pw.Column(
@@ -247,71 +287,71 @@ Future<bool> printBarcode(
               ...productBarcodes.map(
                 (productBarcode) => pw.Column(
                   children: [
-                    pw.Text(
-                      style: pw.TextStyle(fontSize: 5),
-                      '-',
-                    ),
-                    pw.SizedBox(height: 10),
-                    pw.Text(
-                      textAlign: pw.TextAlign.center,
-                      style: pw.TextStyle(
-                        fontSize: 11,
-                        fontWeight: pw.FontWeight.bold,
-                      ),
-                      productBarcode.product.name.isEmpty
-                          ? 'Name Not Set'
-                          : productBarcode.product.name,
-                    ),
-                    pw.SizedBox(height: 5),
+                    // pw.Text(
+                    //   style: pw.TextStyle(fontSize: 5),
+                    //   '-',
+                    // ),
+                    // pw.SizedBox(height: 5),
+                    // pw.Text(
+                    //   textAlign: pw.TextAlign.center,
+                    //   style: pw.TextStyle(
+                    //     fontSize: 6,
+                    //     fontWeight: pw.FontWeight.bold,
+                    //   ),
+                    //   productBarcode.product.name.isEmpty
+                    //       ? 'Name Not Set'
+                    //       : productBarcode.product.name,
+                    // ),
+                    // pw.SizedBox(height: 2),
                     pw.SvgImage(
                       svg: barcode.toSvg(
                         returnOnlyDigits(
                           productBarcode.product.uuid!,
                         ),
-                        width: 200,
-                        height: 70,
-                        fontHeight: 14,
+                        width: 100,
+                        height: 45,
+                        fontHeight: 10,
                         drawText: true,
                       ),
                     ),
-                    pw.SizedBox(height: 10),
-                    pw.Row(
-                      mainAxisAlignment:
-                          pw.MainAxisAlignment.center,
-                      mainAxisSize: pw.MainAxisSize.min,
-                      children: [
-                        pw.Text(
-                          style: pw.TextStyle(fontSize: 8),
-                          'Price: ',
-                        ),
-                        pw.Text(
-                          style: pw.TextStyle(
-                            fontSize: 10,
-                            fontWeight: pw.FontWeight.bold,
-                          ),
-                          productBarcode
-                                          .product
-                                          .sellingPrice ==
-                                      null ||
-                                  productBarcode
-                                          .product
-                                          .sellingPrice ==
-                                      0
-                              ? 'Not Set'
-                              : 'N ${formatLargeNumberDouble(productBarcode.product.sellingPrice ?? 0)}',
-                        ),
-                      ],
-                    ),
-                    pw.SizedBox(height: 5),
-                    pw.Text(
-                      style: pw.TextStyle(fontSize: 5),
-                      '-',
-                    ),
-                    pw.SizedBox(height: 5),
-                    pw.Text(
-                      style: pw.TextStyle(fontSize: 5),
-                      '-',
-                    ),
+                    // pw.SizedBox(height: 3),
+                    // pw.Row(
+                    //   mainAxisAlignment:
+                    //       pw.MainAxisAlignment.center,
+                    //   mainAxisSize: pw.MainAxisSize.min,
+                    //   children: [
+                    //     pw.Text(
+                    //       style: pw.TextStyle(fontSize: 5),
+                    //       'Price: ',
+                    //     ),
+                    //     pw.Text(
+                    //       style: pw.TextStyle(
+                    //         fontSize: 7,
+                    //         fontWeight: pw.FontWeight.bold,
+                    //       ),
+                    //       productBarcode
+                    //                       .product
+                    //                       .sellingPrice ==
+                    //                   null ||
+                    //               productBarcode
+                    //                       .product
+                    //                       .sellingPrice ==
+                    //                   0
+                    //           ? 'Not Set'
+                    //           : 'N ${formatLargeNumberDouble(productBarcode.product.sellingPrice ?? 0)}',
+                    //     ),
+                    //   ],
+                    // ),
+                    // pw.SizedBox(height: 5),
+                    // pw.Text(
+                    //   style: pw.TextStyle(fontSize: 5),
+                    //   '-',
+                    // ),
+                    // pw.SizedBox(height: 5),
+                    // pw.Text(
+                    //   style: pw.TextStyle(fontSize: 5),
+                    //   '-',
+                    // ),
                   ],
                 ),
               ),

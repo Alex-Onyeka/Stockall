@@ -124,16 +124,18 @@ class _ForgotPasswordDesktopState
                                 ),
                                 Row(
                                   children: [
-                                    Text(
-                                      style:
-                                          Provider.of<
-                                                ThemeProvider
-                                              >(context)
-                                              .mobileTexts
-                                              .b1
-                                              .textStyleNormal,
-                                      ForgetPasswordPageTexts()
-                                          .enterEmailBelow,
+                                    Expanded(
+                                      child: Text(
+                                        style:
+                                            Provider.of<
+                                                  ThemeProvider
+                                                >(context)
+                                                .mobileTexts
+                                                .b1
+                                                .textStyleNormal,
+                                        ForgetPasswordPageTexts()
+                                            .enterEmailBelow,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -206,7 +208,12 @@ class _ForgotPasswordDesktopState
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) {
-                                          return VerifyPhone();
+                                          return VerifyPhone(
+                                            email:
+                                                widget
+                                                    .emailController
+                                                    .text,
+                                          );
                                         },
                                       ),
                                     );

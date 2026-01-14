@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:stockall/components/buttons/main_button_transparent.dart';
 // import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_landing/auth_landing.dart';
@@ -10,8 +11,10 @@ import 'package:stockall/services/auth_service.dart';
 
 class VerifyPhoneMobile extends StatefulWidget {
   final ThemeProvider theme;
+  final String email;
   final List circles;
   const VerifyPhoneMobile({
+    required this.email,
     super.key,
     required this.circles,
     required this.theme,
@@ -172,57 +175,65 @@ class _VerifyPhoneMobileState
                               .mobileTexts
                               .b1
                               .textStyleNormal,
-                      'Check your mail to Reset Your Password',
+                      'Check your mail (${widget.email}) to Reset Your Password.',
                     ),
                     SizedBox(height: 20),
-                    Column(
-                      spacing: 5,
-                      mainAxisAlignment:
-                          MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color:
-                                widget
-                                    .theme
-                                    .lightModeColor
-                                    .errorColor200,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          'NOTE: ',
-                        ),
-                        Text(
-                          textAlign: TextAlign.center,
-                          style:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b1
-                                  .textStyleNormal,
-                          'The Reset Password Token Time out is already Counting down:',
-                        ),
-                        Text(
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color:
-                                time > 60
-                                    ? Colors.grey.shade800
-                                    : widget
-                                        .theme
-                                        .lightModeColor
-                                        .errorColor200,
-                            fontWeight: FontWeight.bold,
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .h4
-                                    .fontSize,
-                          ),
-                          formatTime(time),
-                        ),
-                      ],
+                    // Column(
+                    //   spacing: 5,
+                    //   mainAxisAlignment:
+                    //       MainAxisAlignment.center,
+                    //   children: [
+                    //     Text(
+                    //       textAlign: TextAlign.center,
+                    //       style: TextStyle(
+                    //         color:
+                    //             widget
+                    //                 .theme
+                    //                 .lightModeColor
+                    //                 .errorColor200,
+                    //         fontWeight: FontWeight.bold,
+                    //       ),
+                    //       'NOTE: ',
+                    //     ),
+                    //     Text(
+                    //       textAlign: TextAlign.center,
+                    //       style:
+                    //           widget
+                    //               .theme
+                    //               .mobileTexts
+                    //               .b1
+                    //               .textStyleNormal,
+                    //       'The Reset Password Token Time out is already Counting down:',
+                    //     ),
+                    //     Text(
+                    //       textAlign: TextAlign.center,
+                    //       style: TextStyle(
+                    //         color:
+                    //             time > 60
+                    //                 ? Colors.grey.shade800
+                    //                 : widget
+                    //                     .theme
+                    //                     .lightModeColor
+                    //                     .errorColor200,
+                    //         fontWeight: FontWeight.bold,
+                    //         fontSize:
+                    //             widget
+                    //                 .theme
+                    //                 .mobileTexts
+                    //                 .h4
+                    //                 .fontSize,
+                    //       ),
+                    //       formatTime(time),
+                    //     ),
+                    //   ],
+                    // ),
+                    MainButtonTransparent(
+                      themeProvider: widget.theme,
+                      constraints: BoxConstraints(),
+                      text: 'Cancel',
+                      action: () {
+                        Navigator.of(context).pop();
+                      },
                     ),
                   ],
                 ),

@@ -78,7 +78,7 @@ class _CodeSentPageState extends State<CodeSentPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Future.delayed(Duration(seconds: 3), () {
-        Navigator.pushReplacement(
+        Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) {
@@ -88,7 +88,13 @@ class _CodeSentPageState extends State<CodeSentPage> {
               );
             },
           ),
-        );
+        ).then((_) {
+          if (context.mounted) {
+            Navigator.of(context).pop();
+          } else {
+            print('Context Not Mounted');
+          }
+        });
       });
     });
   }
@@ -100,12 +106,14 @@ class _CodeSentPageState extends State<CodeSentPage> {
       builder: (context, constraints) {
         if (screenWidth(context) < mobileScreen) {
           return CodeSentMobile(
+            email: widget.user.email,
             circles: circles,
             theme: theme,
           );
         } else {
           return CodeSentDesktop(
             circles: circles,
+            email: widget.user.email,
             theme: theme,
           );
         }

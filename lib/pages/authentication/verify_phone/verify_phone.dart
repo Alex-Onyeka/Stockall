@@ -5,7 +5,8 @@ import 'package:stockall/pages/authentication/verify_phone/platforms/verify_phon
 import 'package:stockall/providers/theme_provider.dart';
 
 class VerifyPhone extends StatefulWidget {
-  const VerifyPhone({super.key});
+  final String email;
+  const VerifyPhone({super.key, required this.email});
 
   @override
   State<VerifyPhone> createState() => _VerifyPhoneState();
@@ -76,10 +77,12 @@ class _VerifyPhoneState extends State<VerifyPhone> {
         if (constraints.maxWidth < 600) {
           return VerifyPhoneMobile(
             circles: circles,
+            email: widget.email,
             theme: theme,
           );
         } else {
           return VerifyPhoneDesktop(
+            email: widget.email,
             circles: circles,
             theme: theme,
           );

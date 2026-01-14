@@ -6,11 +6,13 @@ import 'package:stockall/providers/theme_provider.dart';
 
 class CodeSentMobile extends StatefulWidget {
   final ThemeProvider theme;
+  final String email;
   final List circles;
   const CodeSentMobile({
     super.key,
     required this.circles,
     required this.theme,
+    required this.email,
   });
 
   @override
@@ -180,7 +182,26 @@ class _CodeSentMobileState extends State<CodeSentMobile> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            SizedBox(height: 20),
+                            SizedBox(height: 10),
+                            Text(
+                              textAlign: TextAlign.center,
+                              '(${widget.email})',
+                              style: TextStyle(
+                                color:
+                                    widget
+                                        .theme
+                                        .lightModeColor
+                                        .prColor300,
+                                fontSize:
+                                    widget
+                                        .theme
+                                        .mobileTexts
+                                        .b1
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 10),
                             Text(
                               textAlign: TextAlign.center,
                               style:
