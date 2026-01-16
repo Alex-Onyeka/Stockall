@@ -906,6 +906,7 @@ class NavListTileDesktopAlt extends StatelessWidget {
   final Function()? action;
   final double height;
   final Color? color;
+  final Widget? endWidget;
   const NavListTileDesktopAlt({
     super.key,
     required this.title,
@@ -915,6 +916,7 @@ class NavListTileDesktopAlt extends StatelessWidget {
     required this.height,
     this.color,
     this.itemIndex,
+    this.endWidget,
   });
 
   @override
@@ -1018,42 +1020,57 @@ class NavListTileDesktopAlt extends StatelessWidget {
                 Stack(
                   children: [
                     Visibility(
-                      visible:
-                          returnNavProvider(
-                            context,
-                          ).currentIndex !=
-                          itemIndex,
-                      child: Icon(
-                        color: Colors.grey.shade600,
-                        size: 12,
-                        Icons.arrow_forward_ios_rounded,
+                      visible: endWidget == null,
+                      child: Stack(
+                        children: [
+                          Visibility(
+                            visible:
+                                returnNavProvider(
+                                  context,
+                                ).currentIndex !=
+                                itemIndex,
+                            child: Icon(
+                              color: Colors.grey.shade600,
+                              size: 12,
+                              Icons
+                                  .arrow_forward_ios_rounded,
+                            ),
+                          ),
+                          Visibility(
+                            visible:
+                                returnNavProvider(
+                                  context,
+                                ).currentIndex ==
+                                itemIndex,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.fromLTRB(
+                                    0,
+                                    5,
+                                    3,
+                                    5,
+                                  ),
+                              child: Container(
+                                width: 4,
+                                decoration: BoxDecoration(
+                                  color:
+                                      theme
+                                          .lightModeColor
+                                          .secColor200,
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        20,
+                                      ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     Visibility(
-                      visible:
-                          returnNavProvider(
-                            context,
-                          ).currentIndex ==
-                          itemIndex,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(
-                          0,
-                          5,
-                          3,
-                          5,
-                        ),
-                        child: Container(
-                          width: 4,
-                          decoration: BoxDecoration(
-                            color:
-                                theme
-                                    .lightModeColor
-                                    .secColor200,
-                            borderRadius:
-                                BorderRadius.circular(20),
-                          ),
-                        ),
-                      ),
+                      visible: endWidget != null,
+                      child: endWidget ?? Container(),
                     ),
                   ],
                 ),

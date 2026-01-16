@@ -140,7 +140,9 @@ class AuthService extends ChangeNotifier {
         returnNavProvider(context, listen: false).verify();
       }
       print(
-        '${newEmail != null ? 'Email Changed Successfully' : 'Email Verified Successfully'}',
+        newEmail != null
+            ? 'Email Changed Successfully'
+            : 'Email Verified Successfully',
       );
       return 1;
     } catch (e) {

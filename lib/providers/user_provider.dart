@@ -27,37 +27,6 @@ class UserProvider extends ChangeNotifier {
 
   bool isLoading = false;
 
-  // Future<List<TempUserClass>> fetchUsers() async {
-  //   final authUser = _supabase.currentUser;
-  //   isLoading = true;
-  //   bool isOnline = await ConnectivityProvider().isOnline();
-
-  //   if (isOnline) {
-  //     final data = await _supabase.client
-  //         .from('users')
-  //         .select()
-  //         .eq('auth_user_id', authUser ?? '');
-
-  //     _users =
-  //         data
-  //             .map<TempUserClass>(
-  //               (json) => TempUserClass.fromJson(json),
-  //             )
-  //             .toList();
-  //     await UserFunc().insertAllUsers(_users);
-  //   } else {
-  //     _users = UserFunc().getUsers();
-  //   }
-  //   _users.sort(
-  //     (a, b) => a.name.toLowerCase().compareTo(
-  //       b.name.toLowerCase(),
-  //     ),
-  //   );
-  //   notifyListeners();
-  //   isLoading = false;
-  //   return _users;
-  // }
-
   Future<List<TempUserClass>> fetchUsersByShop(
     BuildContext context,
   ) async {
@@ -260,37 +229,6 @@ class UserProvider extends ChangeNotifier {
       );
     }
   }
-
-  // Future<void> addUser(
-  //   TempUserClass user,
-  //   BuildContext context,
-  // ) async {
-  //   try {
-  //     await _supabase.client
-  //         .from('users')
-  //         .insert(user.toJson(includeUserId: true));
-  //     await fetchUsersByShop(context);
-  //     if (context.mounted) {
-  //       await fetchCurrentUser(context);
-  //     }
-  //   } catch (e, st) {
-  //     debugPrint('Error adding main user: $e\n$st');
-  //   }
-  // }
-
-  // Future<void> addEmployee({
-  //   required TempUserClass employee,
-  //   required BuildContext context,
-  // }) async {
-  //   try {
-  //     await _supabase.client
-  //         .from('users')
-  //         .insert(employee.toJson(includeUserId: false));
-  //     await fetchUsersByShop(context);
-  //   } catch (e, st) {
-  //     debugPrint('Error adding employee: $e\n$st');
-  //   }
-  // }
 
   Future<TempUserClass> updateUser(
     TempUserClass user,

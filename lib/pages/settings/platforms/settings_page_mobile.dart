@@ -2,18 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
-import 'package:stockall/components/buttons/main_button_p.dart';
-import 'package:stockall/components/buttons/main_button_transparent.dart';
-import 'package:stockall/components/discount_setter.dart/discount_setter_widget.dart';
 import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widget_desktop.dart';
+import 'package:stockall/components/toggle_button/my_toggle_button.dart';
 import 'package:stockall/constants/app_bar.dart';
-import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
-import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
@@ -119,454 +115,583 @@ class _SettingsPageMobileState
                                     .settings_suggest_outlined,
                           ),
                         ),
+                        // Visibility(
+                        //   visible: authorization(
+                        //     authorized:
+                        //         Authorizations()
+                        //             .generalDiscount,
+                        //     context: context,
+                        //   ),
+                        //   child: SubWrapper(
+                        //     isVisible:
+                        //         !SalesAuthAction()
+                        //             .applyDiscountAction(
+                        //               context: context,
+                        //             ),
+                        //     mainWidget: NavListTileDesktopAlt(
+                        //       height: 18,
+                        //       action: () {
+                        //         SalesAuthAction().applyDiscountAction(
+                        //           context: context,
+                        //           action: () {
+                        //             showDialog(
+                        //               context: context,
+                        //               builder: (
+                        //                 confirmDialog,
+                        //               ) {
+                        //                 bool
+                        //                 isDiscountLoading =
+                        //                     false;
+                        //                 return StatefulBuilder(
+                        //                   builder: (
+                        //                     context,
+                        //                     setState,
+                        //                   ) {
+                        //                     return DialogTemplate(
+                        //                       showTopSection:
+                        //                           returnShopProvider(context).userShop()!.fixedDiscount ==
+                        //                                       null &&
+                        //                                   returnShopProvider(context).userShop()!.percentDiscount ==
+                        //                                       null
+                        //                               ? null
+                        //                               : false,
+                        //                       showBottomActionButtons:
+                        //                           returnShopProvider(context).userShop()!.fixedDiscount ==
+                        //                                       null &&
+                        //                                   returnShopProvider(context).userShop()!.percentDiscount ==
+                        //                                       null
+                        //                               ? null
+                        //                               : false,
+                        //                       theme: theme,
+                        //                       message:
+                        //                           'Set General Discount',
+                        //                       title:
+                        //                           'Set General Discount',
+                        //                       action: () async {
+                        //                         var fixedDiscount =
+                        //                             returnShopProvider(
+                        //                               context,
+                        //                               listen:
+                        //                                   false,
+                        //                             ).generalFixedDiscount;
+                        //                         var percentDiscount =
+                        //                             returnShopProvider(
+                        //                               context,
+                        //                               listen:
+                        //                                   false,
+                        //                             ).generalPercentDiscount;
+                        //                         if (!isDiscountLoading) {
+                        //                           if (fixedDiscount ==
+                        //                                   null &&
+                        //                               percentDiscount ==
+                        //                                   null &&
+                        //                               discountPercentController
+                        //                                   .text
+                        //                                   .isEmpty) {
+                        //                             showDialog(
+                        //                               context:
+                        //                                   context,
+                        //                               builder: (
+                        //                                 context,
+                        //                               ) {
+                        //                                 return InfoAlert(
+                        //                                   theme:
+                        //                                       theme,
+                        //                                   message:
+                        //                                       'You have to select or enter a number in the text field before setting discount.',
+                        //                                   title:
+                        //                                       'Empty Discount',
+                        //                                 );
+                        //                               },
+                        //                             );
+                        //                           } else {
+                        //                             showDialog(
+                        //                               context:
+                        //                                   context,
+                        //                               builder: (
+                        //                                 mainDialog,
+                        //                               ) {
+                        //                                 return ConfirmationAlert(
+                        //                                   theme:
+                        //                                       theme,
+                        //                                   message:
+                        //                                       'Are you sure you want to proceed to set general discount?',
+                        //                                   title:
+                        //                                       'Proceed with action?',
+                        //                                   action: () async {
+                        //                                     Navigator.of(
+                        //                                       mainDialog,
+                        //                                     ).pop();
+                        //                                     if (returnShopProvider(
+                        //                                           context,
+                        //                                           listen:
+                        //                                               false,
+                        //                                         ).discountIndex ==
+                        //                                         0) {
+                        //                                       setState(
+                        //                                         () {
+                        //                                           isDiscountLoading =
+                        //                                               true;
+                        //                                         },
+                        //                                       );
+                        //                                       await returnShopProvider(
+                        //                                         context,
+                        //                                         listen:
+                        //                                             false,
+                        //                                       ).setPercentDiscount(
+                        //                                         discount:
+                        //                                             returnShopProvider(
+                        //                                               context,
+                        //                                               listen:
+                        //                                                   false,
+                        //                                             ).generalPercentDiscount ??
+                        //                                             double.parse(
+                        //                                               discountPercentController.text,
+                        //                                             ),
+                        //                                       );
+                        //                                       setState(
+                        //                                         () {
+                        //                                           isDiscountLoading =
+                        //                                               false;
+                        //                                         },
+                        //                                       );
+                        //                                     } else {
+                        //                                       setState(
+                        //                                         () {
+                        //                                           isDiscountLoading =
+                        //                                               true;
+                        //                                         },
+                        //                                       );
+                        //                                       await returnShopProvider(
+                        //                                         context,
+                        //                                         listen:
+                        //                                             false,
+                        //                                       ).setFixedDiscount(
+                        //                                         discount:
+                        //                                             returnShopProvider(
+                        //                                               context,
+                        //                                               listen:
+                        //                                                   false,
+                        //                                             ).generalFixedDiscount ??
+                        //                                             double.parse(
+                        //                                               discountPercentController.text,
+                        //                                             ),
+                        //                                       );
+                        //                                       setState(
+                        //                                         () {
+                        //                                           isDiscountLoading =
+                        //                                               false;
+                        //                                         },
+                        //                                       );
+                        //                                     }
+                        //                                   },
+                        //                                 );
+                        //                               },
+                        //                             );
+                        //                           }
+                        //                         }
+                        //                       },
+                        //                       widget: Stack(
+                        //                         alignment:
+                        //                             AlignmentGeometry.xy(
+                        //                               0,
+                        //                               0,
+                        //                             ),
+                        //                         children: [
+                        //                           Visibility(
+                        //                             visible:
+                        //                                 returnShopProvider(
+                        //                                       context,
+                        //                                     ).userShop()?.fixedDiscount ==
+                        //                                     null &&
+                        //                                 returnShopProvider(
+                        //                                       context,
+                        //                                     ).userShop()?.percentDiscount ==
+                        //                                     null,
+                        //                             child: Stack(
+                        //                               children: [
+                        //                                 DiscountSetterBody(
+                        //                                   isGeneral:
+                        //                                       true,
+                        //                                   discountPercentController:
+                        //                                       discountPercentController,
+                        //                                 ),
+                        //                                 Visibility(
+                        //                                   visible:
+                        //                                       isDiscountLoading,
+                        //                                   child: ConstrainedBox(
+                        //                                     constraints: BoxConstraints(
+                        //                                       maxWidth:
+                        //                                           500,
+                        //                                     ),
+                        //                                     child: Container(
+                        //                                       color: const Color.fromARGB(
+                        //                                         47,
+                        //                                         255,
+                        //                                         255,
+                        //                                         255,
+                        //                                       ),
+                        //                                       height:
+                        //                                           180,
+                        //                                       width:
+                        //                                           500,
+                        //                                       child: Center(
+                        //                                         child:
+                        //                                             CircularProgressIndicator(),
+                        //                                       ),
+                        //                                     ),
+                        //                                   ),
+                        //                                 ),
+                        //                               ],
+                        //                             ),
+                        //                           ),
+                        //                           Visibility(
+                        //                             visible:
+                        //                                 returnShopProvider(
+                        //                                       context,
+                        //                                     ).userShop()?.fixedDiscount !=
+                        //                                     null ||
+                        //                                 returnShopProvider(
+                        //                                       context,
+                        //                                     ).userShop()?.percentDiscount !=
+                        //                                     null,
+                        //                             child: ConstrainedBox(
+                        //                               constraints: BoxConstraints(
+                        //                                 maxWidth:
+                        //                                     500,
+                        //                               ),
+                        //                               child: Stack(
+                        //                                 alignment: AlignmentGeometry.xy(
+                        //                                   0,
+                        //                                   0,
+                        //                                 ),
+                        //                                 children: [
+                        //                                   Container(
+                        //                                     color: const Color.fromARGB(
+                        //                                       47,
+                        //                                       255,
+                        //                                       255,
+                        //                                       255,
+                        //                                     ),
+                        //                                     height:
+                        //                                         250,
+                        //                                     width:
+                        //                                         500,
+                        //                                     child: Center(
+                        //                                       child: Column(
+                        //                                         mainAxisAlignment:
+                        //                                             MainAxisAlignment.center,
+                        //                                         mainAxisSize:
+                        //                                             MainAxisSize.min,
+                        //                                         spacing:
+                        //                                             10,
+                        //                                         children: [
+                        //                                           Text(
+                        //                                             style: TextStyle(
+                        //                                               fontSize:
+                        //                                                   theme.mobileTexts.b1.fontSize,
+                        //                                               fontWeight:
+                        //                                                   FontWeight.bold,
+                        //                                             ),
+                        //                                             'Current Discount Applied',
+                        //                                           ),
+                        //                                           Container(
+                        //                                             height:
+                        //                                                 3,
+                        //                                             width:
+                        //                                                 200,
+                        //                                             decoration: BoxDecoration(
+                        //                                               borderRadius: BorderRadius.circular(
+                        //                                                 10,
+                        //                                               ),
+                        //                                               color:
+                        //                                                   theme.lightModeColor.secColor200,
+                        //                                             ),
+                        //                                           ),
+                        //                                           SizedBox(
+                        //                                             height:
+                        //                                                 10,
+                        //                                           ),
+                        //                                           Row(
+                        //                                             spacing:
+                        //                                                 5,
+                        //                                             mainAxisSize:
+                        //                                                 MainAxisSize.min,
+                        //                                             mainAxisAlignment:
+                        //                                                 MainAxisAlignment.center,
+                        //                                             children: [
+                        //                                               Icon(
+                        //                                                 size:
+                        //                                                     20,
+                        //                                                 color:
+                        //                                                     theme.lightModeColor.secColor200,
+                        //                                                 Icons.discount,
+                        //                                               ),
+                        //                                               Flexible(
+                        //                                                 child: Text(
+                        //                                                   style: TextStyle(
+                        //                                                     fontSize:
+                        //                                                         theme.mobileTexts.h1.fontSize,
+                        //                                                     fontWeight:
+                        //                                                         FontWeight.bold,
+                        //                                                   ),
+                        //                                                   "${returnShopProvider(context, listen: false).userShop()!.fixedDiscount == null ? '%' : ''}${returnShopProvider(context, listen: false).userShop()!.percentDiscount ?? formatMoneyMid(amount: returnShopProvider(context, listen: false).userShop()!.fixedDiscount ?? 0, context: context)} ",
+                        //                                                 ),
+                        //                                               ),
+                        //                                             ],
+                        //                                           ),
+                        //                                           SizedBox(
+                        //                                             height:
+                        //                                                 10,
+                        //                                           ),
+                        //                                           SizedBox(
+                        //                                             width:
+                        //                                                 300,
+                        //                                             child: MainButtonP(
+                        //                                               themeProvider:
+                        //                                                   theme,
+                        //                                               action: () async {
+                        //                                                 showDialog(
+                        //                                                   context:
+                        //                                                       context,
+                        //                                                   builder: (
+                        //                                                     clearDiscountDialog,
+                        //                                                   ) {
+                        //                                                     return ConfirmationAlert(
+                        //                                                       theme:
+                        //                                                           theme,
+                        //                                                       message:
+                        //                                                           'Are you sure you want to clear your current applied discount?',
+                        //                                                       title:
+                        //                                                           'Clear Discount?',
+                        //                                                       action: () async {
+                        //                                                         setState(
+                        //                                                           () {
+                        //                                                             isDiscountLoading =
+                        //                                                                 true;
+                        //                                                           },
+                        //                                                         );
+                        //                                                         Navigator.of(
+                        //                                                           clearDiscountDialog,
+                        //                                                         ).pop();
+                        //                                                         await returnShopProvider(
+                        //                                                           context,
+                        //                                                           listen:
+                        //                                                               false,
+                        //                                                         ).setPercentDiscount(
+                        //                                                           discount:
+                        //                                                               null,
+                        //                                                         );
+                        //                                                         setState(
+                        //                                                           () {
+                        //                                                             isDiscountLoading =
+                        //                                                                 false;
+                        //                                                           },
+                        //                                                         );
+                        //                                                       },
+                        //                                                     );
+                        //                                                   },
+                        //                                                 );
+                        //                                               },
+                        //                                               text:
+                        //                                                   'Clear Discount',
+                        //                                             ),
+                        //                                           ),
+                        //                                           SizedBox(
+                        //                                             width:
+                        //                                                 300,
+                        //                                             child: MainButtonTransparent(
+                        //                                               themeProvider:
+                        //                                                   theme,
+                        //                                               constraints:
+                        //                                                   BoxConstraints(),
+                        //                                               text:
+                        //                                                   'Cancel',
+                        //                                               action: () {
+                        //                                                 Navigator.of(
+                        //                                                   confirmDialog,
+                        //                                                 ).pop();
+                        //                                               },
+                        //                                             ),
+                        //                                           ),
+                        //                                         ],
+                        //                                       ),
+                        //                                     ),
+                        //                                   ),
+                        //                                   Visibility(
+                        //                                     visible:
+                        //                                         isDiscountLoading,
+                        //                                     child: Container(
+                        //                                       height:
+                        //                                           200,
+                        //                                       width:
+                        //                                           300,
+                        //                                       decoration: BoxDecoration(
+                        //                                         color: const Color.fromARGB(
+                        //                                           61,
+                        //                                           255,
+                        //                                           255,
+                        //                                           255,
+                        //                                         ),
+                        //                                       ),
+                        //                                       child: Center(
+                        //                                         child:
+                        //                                             CircularProgressIndicator(),
+                        //                                       ),
+                        //                                     ),
+                        //                                   ),
+                        //                                 ],
+                        //                               ),
+                        //                             ),
+                        //                           ),
+                        //                         ],
+                        //                       ),
+                        //                     );
+                        //                   },
+                        //                 );
+                        //               },
+                        //             ).then((_) {
+                        //               returnShopProvider(
+                        //                 context,
+                        //                 listen: false,
+                        //               ).clearDiscountsCache();
+                        //               discountPercentController
+                        //                   .clear();
+                        //             });
+                        //           },
+                        //         );
+                        //       },
+                        //       title: 'Manage Discount',
+                        //       icon: Icons.discount,
+                        //     ),
+                        //   ),
+                        // ),
                         Visibility(
                           visible: authorization(
                             authorized:
-                                Authorizations()
-                                    .generalDiscount,
+                                Authorizations().manageVAT,
                             context: context,
                           ),
                           child: SubWrapper(
                             isVisible:
-                                !SalesAuthAction()
-                                    .applyDiscountAction(
+                                !GeneralSettingsAuthAction()
+                                    .manageVATAction(
                                       context: context,
                                     ),
                             mainWidget: NavListTileDesktopAlt(
                               height: 18,
                               action: () {
-                                SalesAuthAction().applyDiscountAction(
+                                GeneralSettingsAuthAction().manageVATAction(
                                   context: context,
                                   action: () {
+                                    var shopProvider =
+                                        returnShopProvider(
+                                          context,
+                                          listen: false,
+                                        );
                                     showDialog(
                                       context: context,
-                                      builder: (
-                                        confirmDialog,
-                                      ) {
-                                        bool
-                                        isDiscountLoading =
-                                            false;
-                                        return StatefulBuilder(
-                                          builder: (
-                                            context,
-                                            setState,
-                                          ) {
-                                            return DialogTemplate(
-                                              showTopSection:
-                                                  returnShopProvider(context).userShop()!.fixedDiscount ==
-                                                              null &&
-                                                          returnShopProvider(context).userShop()!.percentDiscount ==
-                                                              null
-                                                      ? null
-                                                      : false,
-                                              showBottomActionButtons:
-                                                  returnShopProvider(context).userShop()!.fixedDiscount ==
-                                                              null &&
-                                                          returnShopProvider(context).userShop()!.percentDiscount ==
-                                                              null
-                                                      ? null
-                                                      : false,
-                                              theme: theme,
-                                              message:
-                                                  'Set General Discount',
-                                              title:
-                                                  'Set General Discount',
-                                              action: () async {
-                                                var fixedDiscount =
-                                                    returnShopProvider(
+                                      builder: (context) {
+                                        return ConfirmationAlert(
+                                          theme: theme,
+                                          message:
+                                              shopProvider
+                                                      .userShop()!
+                                                      .applyVAT!
+                                                  ? 'VAT of 7% will not be applied to your subsequent sales, are you sure you want to proceed?'
+                                                  : 'VAT of 7% will be added to your subsequent sales, will, are you sure you want to proceed?',
+                                          title:
+                                              shopProvider
+                                                      .userShop()!
+                                                      .applyVAT!
+                                                  ? 'Remove VAT'
+                                                  : 'Apply VAT',
+                                          action: () async {
+                                            Navigator.of(
+                                              context,
+                                            ).pop();
+                                            shopProvider
+                                                .toggleApplyVAT();
+                                          },
+                                        );
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                              endWidget: Builder(
+                                builder: (context) {
+                                  if (returnShopProvider(
+                                    context,
+                                  ).isVatLoading) {
+                                    return SizedBox(
+                                      height: 16,
+                                      width: 16,
+                                      child: CircularProgressIndicator(
+                                        color:
+                                            theme
+                                                .lightModeColor
+                                                .secColor200,
+                                        strokeWidth: 2,
+                                      ),
+                                    );
+                                  } else {
+                                    return MyToggleButton(
+                                      isSmall: true,
+                                      boolValue:
+                                          returnShopProvider(
+                                                context,
+                                              )
+                                              .userShop()
+                                              ?.applyVAT ??
+                                          true,
+                                      toggle: () {
+                                        GeneralSettingsAuthAction().manageVATAction(
+                                          context: context,
+                                          action: () {
+                                            var shopProvider =
+                                                returnShopProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                );
+                                            showDialog(
+                                              context:
+                                                  context,
+                                              builder: (
+                                                context,
+                                              ) {
+                                                return ConfirmationAlert(
+                                                  theme:
+                                                      theme,
+                                                  message:
+                                                      shopProvider.userShop()!.applyVAT!
+                                                          ? 'VAT of 7% will not be applied to your subsequent sales, are you sure you want to proceed?'
+                                                          : 'VAT of 7% will be added to your subsequent sales, will, are you sure you want to proceed?',
+                                                  title:
+                                                      shopProvider.userShop()!.applyVAT!
+                                                          ? 'Remove VAT'
+                                                          : 'Apply VAT',
+                                                  action: () async {
+                                                    Navigator.of(
                                                       context,
-                                                      listen:
-                                                          false,
-                                                    ).generalFixedDiscount;
-                                                var percentDiscount =
-                                                    returnShopProvider(
-                                                      context,
-                                                      listen:
-                                                          false,
-                                                    ).generalPercentDiscount;
-                                                if (!isDiscountLoading) {
-                                                  if (fixedDiscount ==
-                                                          null &&
-                                                      percentDiscount ==
-                                                          null &&
-                                                      discountPercentController
-                                                          .text
-                                                          .isEmpty) {
-                                                    showDialog(
-                                                      context:
-                                                          context,
-                                                      builder: (
-                                                        context,
-                                                      ) {
-                                                        return InfoAlert(
-                                                          theme:
-                                                              theme,
-                                                          message:
-                                                              'You have to select or enter a number in the text field before setting discount.',
-                                                          title:
-                                                              'Empty Discount',
-                                                        );
-                                                      },
-                                                    );
-                                                  } else {
-                                                    showDialog(
-                                                      context:
-                                                          context,
-                                                      builder: (
-                                                        mainDialog,
-                                                      ) {
-                                                        return ConfirmationAlert(
-                                                          theme:
-                                                              theme,
-                                                          message:
-                                                              'Are you sure you want to proceed to set general discount?',
-                                                          title:
-                                                              'Proceed with action?',
-                                                          action: () async {
-                                                            Navigator.of(
-                                                              mainDialog,
-                                                            ).pop();
-                                                            if (returnShopProvider(
-                                                                  context,
-                                                                  listen:
-                                                                      false,
-                                                                ).discountIndex ==
-                                                                0) {
-                                                              setState(
-                                                                () {
-                                                                  isDiscountLoading =
-                                                                      true;
-                                                                },
-                                                              );
-                                                              await returnShopProvider(
-                                                                context,
-                                                                listen:
-                                                                    false,
-                                                              ).setPercentDiscount(
-                                                                discount:
-                                                                    returnShopProvider(
-                                                                      context,
-                                                                      listen:
-                                                                          false,
-                                                                    ).generalPercentDiscount ??
-                                                                    double.parse(
-                                                                      discountPercentController.text,
-                                                                    ),
-                                                              );
-                                                              setState(
-                                                                () {
-                                                                  isDiscountLoading =
-                                                                      false;
-                                                                },
-                                                              );
-                                                            } else {
-                                                              setState(
-                                                                () {
-                                                                  isDiscountLoading =
-                                                                      true;
-                                                                },
-                                                              );
-                                                              await returnShopProvider(
-                                                                context,
-                                                                listen:
-                                                                    false,
-                                                              ).setFixedDiscount(
-                                                                discount:
-                                                                    returnShopProvider(
-                                                                      context,
-                                                                      listen:
-                                                                          false,
-                                                                    ).generalFixedDiscount ??
-                                                                    double.parse(
-                                                                      discountPercentController.text,
-                                                                    ),
-                                                              );
-                                                              setState(
-                                                                () {
-                                                                  isDiscountLoading =
-                                                                      false;
-                                                                },
-                                                              );
-                                                            }
-                                                          },
-                                                        );
-                                                      },
-                                                    );
-                                                  }
-                                                }
+                                                    ).pop();
+                                                    shopProvider
+                                                        .toggleApplyVAT();
+                                                  },
+                                                );
                                               },
-                                              widget: Stack(
-                                                alignment:
-                                                    AlignmentGeometry.xy(
-                                                      0,
-                                                      0,
-                                                    ),
-                                                children: [
-                                                  Visibility(
-                                                    visible:
-                                                        returnShopProvider(
-                                                              context,
-                                                            ).userShop()?.fixedDiscount ==
-                                                            null &&
-                                                        returnShopProvider(
-                                                              context,
-                                                            ).userShop()?.percentDiscount ==
-                                                            null,
-                                                    child: Stack(
-                                                      children: [
-                                                        DiscountSetterBody(
-                                                          isGeneral:
-                                                              true,
-                                                          discountPercentController:
-                                                              discountPercentController,
-                                                        ),
-                                                        Visibility(
-                                                          visible:
-                                                              isDiscountLoading,
-                                                          child: ConstrainedBox(
-                                                            constraints: BoxConstraints(
-                                                              maxWidth:
-                                                                  500,
-                                                            ),
-                                                            child: Container(
-                                                              color: const Color.fromARGB(
-                                                                47,
-                                                                255,
-                                                                255,
-                                                                255,
-                                                              ),
-                                                              height:
-                                                                  180,
-                                                              width:
-                                                                  500,
-                                                              child: Center(
-                                                                child:
-                                                                    CircularProgressIndicator(),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  Visibility(
-                                                    visible:
-                                                        returnShopProvider(
-                                                              context,
-                                                            ).userShop()?.fixedDiscount !=
-                                                            null ||
-                                                        returnShopProvider(
-                                                              context,
-                                                            ).userShop()?.percentDiscount !=
-                                                            null,
-                                                    child: ConstrainedBox(
-                                                      constraints: BoxConstraints(
-                                                        maxWidth:
-                                                            500,
-                                                      ),
-                                                      child: Stack(
-                                                        alignment: AlignmentGeometry.xy(
-                                                          0,
-                                                          0,
-                                                        ),
-                                                        children: [
-                                                          Container(
-                                                            color: const Color.fromARGB(
-                                                              47,
-                                                              255,
-                                                              255,
-                                                              255,
-                                                            ),
-                                                            height:
-                                                                250,
-                                                            width:
-                                                                500,
-                                                            child: Center(
-                                                              child: Column(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment.center,
-                                                                mainAxisSize:
-                                                                    MainAxisSize.min,
-                                                                spacing:
-                                                                    10,
-                                                                children: [
-                                                                  Text(
-                                                                    style: TextStyle(
-                                                                      fontSize:
-                                                                          theme.mobileTexts.b1.fontSize,
-                                                                      fontWeight:
-                                                                          FontWeight.bold,
-                                                                    ),
-                                                                    'Current Discount Applied',
-                                                                  ),
-                                                                  Container(
-                                                                    height:
-                                                                        3,
-                                                                    width:
-                                                                        200,
-                                                                    decoration: BoxDecoration(
-                                                                      borderRadius: BorderRadius.circular(
-                                                                        10,
-                                                                      ),
-                                                                      color:
-                                                                          theme.lightModeColor.secColor200,
-                                                                    ),
-                                                                  ),
-                                                                  SizedBox(
-                                                                    height:
-                                                                        10,
-                                                                  ),
-                                                                  Row(
-                                                                    spacing:
-                                                                        5,
-                                                                    mainAxisSize:
-                                                                        MainAxisSize.min,
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment.center,
-                                                                    children: [
-                                                                      Icon(
-                                                                        size:
-                                                                            20,
-                                                                        color:
-                                                                            theme.lightModeColor.secColor200,
-                                                                        Icons.discount,
-                                                                      ),
-                                                                      Flexible(
-                                                                        child: Text(
-                                                                          style: TextStyle(
-                                                                            fontSize:
-                                                                                theme.mobileTexts.h1.fontSize,
-                                                                            fontWeight:
-                                                                                FontWeight.bold,
-                                                                          ),
-                                                                          "${returnShopProvider(context, listen: false).userShop()!.fixedDiscount == null ? '%' : ''}${returnShopProvider(context, listen: false).userShop()!.percentDiscount ?? formatMoneyMid(amount: returnShopProvider(context, listen: false).userShop()!.fixedDiscount ?? 0, context: context)} ",
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                  SizedBox(
-                                                                    height:
-                                                                        10,
-                                                                  ),
-                                                                  SizedBox(
-                                                                    width:
-                                                                        300,
-                                                                    child: MainButtonP(
-                                                                      themeProvider:
-                                                                          theme,
-                                                                      action: () async {
-                                                                        showDialog(
-                                                                          context:
-                                                                              context,
-                                                                          builder: (
-                                                                            clearDiscountDialog,
-                                                                          ) {
-                                                                            return ConfirmationAlert(
-                                                                              theme:
-                                                                                  theme,
-                                                                              message:
-                                                                                  'Are you sure you want to clear your current applied discount?',
-                                                                              title:
-                                                                                  'Clear Discount?',
-                                                                              action: () async {
-                                                                                setState(
-                                                                                  () {
-                                                                                    isDiscountLoading =
-                                                                                        true;
-                                                                                  },
-                                                                                );
-                                                                                Navigator.of(
-                                                                                  clearDiscountDialog,
-                                                                                ).pop();
-                                                                                await returnShopProvider(
-                                                                                  context,
-                                                                                  listen:
-                                                                                      false,
-                                                                                ).setPercentDiscount(
-                                                                                  discount:
-                                                                                      null,
-                                                                                );
-                                                                                setState(
-                                                                                  () {
-                                                                                    isDiscountLoading =
-                                                                                        false;
-                                                                                  },
-                                                                                );
-                                                                              },
-                                                                            );
-                                                                          },
-                                                                        );
-                                                                      },
-                                                                      text:
-                                                                          'Clear Discount',
-                                                                    ),
-                                                                  ),
-                                                                  SizedBox(
-                                                                    width:
-                                                                        300,
-                                                                    child: MainButtonTransparent(
-                                                                      themeProvider:
-                                                                          theme,
-                                                                      constraints:
-                                                                          BoxConstraints(),
-                                                                      text:
-                                                                          'Cancel',
-                                                                      action: () {
-                                                                        Navigator.of(
-                                                                          confirmDialog,
-                                                                        ).pop();
-                                                                      },
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          Visibility(
-                                                            visible:
-                                                                isDiscountLoading,
-                                                            child: Container(
-                                                              height:
-                                                                  200,
-                                                              width:
-                                                                  300,
-                                                              decoration: BoxDecoration(
-                                                                color: const Color.fromARGB(
-                                                                  61,
-                                                                  255,
-                                                                  255,
-                                                                  255,
-                                                                ),
-                                                              ),
-                                                              child: Center(
-                                                                child:
-                                                                    CircularProgressIndicator(),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
                                             );
                                           },
                                         );
                                       },
-                                    ).then((_) {
-                                      returnShopProvider(
-                                        context,
-                                        listen: false,
-                                      ).clearDiscountsCache();
-                                      discountPercentController
-                                          .clear();
-                                    });
-                                  },
-                                );
-                              },
-                              title: 'Manage Discount',
-                              icon: Icons.discount,
+                                      theme: theme,
+                                    );
+                                  }
+                                },
+                              ),
+                              title: 'Manage VAT ( $vat )',
+                              icon: Icons.percent,
                             ),
                           ),
                         ),

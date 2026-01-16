@@ -133,7 +133,11 @@ class TempShopClass {
   @HiveField(42)
   double? fixedDiscount;
 
+  @HiveField(43)
   bool? isAllowedBySubscription;
+
+  @HiveField(44)
+  bool? applyVAT;
 
   TempShopClass({
     this.shopId,
@@ -180,6 +184,7 @@ class TempShopClass {
     this.percentDiscount,
     this.fixedDiscount,
     this.isAllowedBySubscription,
+    this.applyVAT,
   });
 
   factory TempShopClass.fromJson(
@@ -245,6 +250,7 @@ class TempShopClass {
           (json['fixed_discount'] as num?)?.toDouble(),
       isAllowedBySubscription:
           json['is_allowed_by_subscription'] as bool?,
+      applyVAT: json['apply_vat'] as bool?,
     );
   }
 
@@ -292,6 +298,7 @@ class TempShopClass {
       'is_head_quarters': isHeadQuarters,
       'percent_discount': percentDiscount?.toDouble(),
       'fixed_discount': fixedDiscount?.toDouble(),
+      'apply_vat': applyVAT,
     };
   }
 }

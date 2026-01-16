@@ -220,26 +220,56 @@ class _AddEmployeeMobileState
                                       physics:
                                           NeverScrollableScrollPhysics(),
                                       itemCount:
-                                          empSetup
-                                              .where(
-                                                (emp) =>
-                                                    emp['position'] !=
-                                                    'Owner',
-                                              )
-                                              .toList()
-                                              .length,
+                                          returnUserProvider(
+                                                    context,
+                                                  )
+                                                  .usersMain
+                                                  .where(
+                                                    (
+                                                      user,
+                                                    ) =>
+                                                        user.role ==
+                                                        'Owner',
+                                                  )
+                                                  .isNotEmpty
+                                              ? empSetup
+                                                  .where((
+                                                    emp,
+                                                  ) {
+                                                    return emp['position'] !=
+                                                        'Owner';
+                                                  })
+                                                  .toList()
+                                                  .length
+                                              : empSetup
+                                                  .length,
                                       itemBuilder: (
                                         context,
                                         index,
                                       ) {
                                         var employee =
-                                            empSetup
-                                                .where(
-                                                  (emp) =>
-                                                      emp['position'] !=
-                                                      'Owner',
-                                                )
-                                                .toList()[index];
+                                            returnUserProvider(
+                                                      context,
+                                                    )
+                                                    .usersMain
+                                                    .where(
+                                                      (
+                                                        user,
+                                                      ) =>
+                                                          user.role ==
+                                                          'Owner',
+                                                    )
+                                                    .isNotEmpty
+                                                ? empSetup
+                                                    .where(
+                                                      (
+                                                        emp,
+                                                      ) =>
+                                                          emp['position'] !=
+                                                          'Owner',
+                                                    )
+                                                    .toList()[index]
+                                                : empSetup[index];
                                         return EmployeeListTile(
                                           currentSelected:
                                               currentSelected ??
@@ -514,11 +544,15 @@ class _AddEmployeeMobileState
                                             }
 
                                             await shopProvider.addEmployeeToShop(
+                                              role:
+                                                  empSetup[currentSelected!]['position'],
                                               newEmployeeId:
                                                   widget
                                                       .idC
                                                       .text
                                                       .trim(),
+                                              context:
+                                                  context,
                                             );
 
                                             setState(() {

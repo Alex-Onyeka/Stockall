@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/dialog_template.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -9,6 +11,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_landing/auth_landing.dart';
 import 'package:stockall/pages/shop_setup/banner_screen/copy_staff_id/copy_staff_id.dart';
 import 'package:stockall/pages/shop_setup/shop_setup_one/shop_setup_page.dart';
+import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class ShopBannerScreenDesktop extends StatefulWidget {
@@ -73,14 +76,7 @@ class _ShopBannerScreenDesktopState
                             Expanded(
                               child: InkWell(
                                 onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return ShopSetupPage();
-                                      },
-                                    ),
-                                  );
+                                  setRole(context, theme);
                                 },
                                 child: Container(
                                   padding:
@@ -130,15 +126,9 @@ class _ShopBannerScreenDesktopState
                                         themeProvider:
                                             theme,
                                         action: () {
-                                          Navigator.push(
+                                          setRole(
                                             context,
-                                            MaterialPageRoute(
-                                              builder: (
-                                                context,
-                                              ) {
-                                                return ShopSetupPage();
-                                              },
-                                            ),
+                                            theme,
                                           );
                                         },
                                         text: 'Create Shop',
@@ -448,4 +438,148 @@ class _ShopBannerScreenDesktopState
       ],
     );
   }
+}
+
+Future<dynamic> setRole(
+  BuildContext context,
+  ThemeProvider theme,
+) {
+  return showDialog(
+    context: context,
+    builder: (confirmDialog) {
+      return StatefulBuilder(
+        builder:
+            (context, setState) => DialogTemplate(
+              theme: theme,
+              message:
+                  'Select a Role for yourself from the List below, and then proceed to create the shop.',
+              title: 'Select Role',
+              widget: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                spacing: 5,
+                children:
+                    returnShopProvider(context).roles
+                        .map(
+                          (role) => Material(
+                            type: MaterialType.transparency,
+                            child: InkWell(
+                              borderRadius:
+                                  BorderRadius.circular(5),
+                              onTap: () {
+                                returnShopProvider(
+                                  context,
+                                  listen: false,
+                                ).setRole(role);
+                              },
+                              child: Container(
+                                padding:
+                                    EdgeInsets.symmetric(
+                                      vertical: 10,
+                                      horizontal: 13,
+                                    ),
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        5,
+                                      ),
+                                  border: Border.all(
+                                    color:
+                                        Colors
+                                            .grey
+                                            .shade100,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .spaceBetween,
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      role,
+                                    ),
+                                    Container(
+                                      padding:
+                                          EdgeInsets.all(2),
+                                      decoration: BoxDecoration(
+                                        shape:
+                                            BoxShape.circle,
+                                        border: Border.all(
+                                          color:
+                                              Colors
+                                                  .grey
+                                                  .shade400,
+                                        ),
+                                      ),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          shape:
+                                              BoxShape
+                                                  .circle,
+                                          color:
+                                              returnShopProvider(
+                                                        context,
+                                                      ).tempRole ==
+                                                      role
+                                                  ? theme
+                                                      .lightModeColor
+                                                      .prColor250
+                                                  : Colors
+                                                      .transparent,
+                                        ),
+                                        height: 8,
+                                        width: 8,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
+              ),
+              action: () {
+                if (returnShopProvider(
+                      context,
+                      listen: false,
+                    ).tempRole ==
+                    '') {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return InfoAlert(
+                        theme: theme,
+                        message:
+                            'You Need to Select A Role before you can Proceed.',
+                        title: 'Select A Role',
+                      );
+                    },
+                  );
+                } else {
+                  Navigator.of(confirmDialog).pop();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return ShopSetupPage();
+                      },
+                    ),
+                  );
+                }
+              },
+            ),
+      );
+    },
+  );
 }

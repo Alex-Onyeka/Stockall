@@ -8,7 +8,7 @@ import 'package:stockall/helpers/clean_up_url/clean_up_url.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_landing/auth_landing.dart';
 import 'package:stockall/pages/shop_setup/banner_screen/copy_staff_id/copy_staff_id.dart';
-import 'package:stockall/pages/shop_setup/shop_setup_one/shop_setup_page.dart';
+import 'package:stockall/pages/shop_setup/banner_screen/platforms/shop_banner_screen_desktop.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class ShopBannerScreenMobile extends StatefulWidget {
@@ -98,14 +98,7 @@ class _ShopBannerScreenMobileState
                         MainButtonP(
                           themeProvider: theme,
                           action: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return ShopSetupPage();
-                                },
-                              ),
-                            );
+                            setRole(context, theme);
                           },
                           text: 'Create Shop',
                         ),

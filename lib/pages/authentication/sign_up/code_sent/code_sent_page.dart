@@ -77,7 +77,7 @@ class _CodeSentPageState extends State<CodeSentPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Future.delayed(Duration(seconds: 3), () {
+      Future.delayed(Duration(seconds: 2), () {
         Navigator.push(
           context,
           MaterialPageRoute(

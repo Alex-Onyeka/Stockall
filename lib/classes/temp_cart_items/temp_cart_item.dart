@@ -1,4 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
+import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/main.dart';
 
 class TempCartItem {
   final TempProductClass item;
@@ -48,8 +51,16 @@ class TempCartItem {
     }
   }
 
-  double revenue() {
-    return totalCost() - discountCost();
+  double revenue(BuildContext context) {
+    if (returnShopProvider(
+      context,
+      listen: false,
+    ).userShop()!.applyVAT!) {
+      return (totalCost() - discountCost()) +
+          (totalCost() * (vat / 100));
+    } else {
+      return totalCost() - discountCost();
+    }
   }
 
   double? costPrice() {

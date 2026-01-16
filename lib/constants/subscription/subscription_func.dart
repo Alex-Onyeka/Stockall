@@ -57,6 +57,7 @@ List<SubplanClass> subPlans = [
       addSocials: true,
       customizeReceiptTemplate: true,
       allowOfflineUse: true,
+      manageVAT: true,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
@@ -116,6 +117,7 @@ List<SubplanClass> subPlans = [
       deleteAndEditExpenses: true,
     ),
     generalSettingsAuth: GeneralSettingsAuth(
+      manageVAT: true,
       addSocials: true,
       customizeReceiptTemplate: false,
       allowOfflineUse: true,
@@ -178,6 +180,7 @@ List<SubplanClass> subPlans = [
       deleteAndEditExpenses: true,
     ),
     generalSettingsAuth: GeneralSettingsAuth(
+      manageVAT: false,
       addSocials: false,
       customizeReceiptTemplate: false,
       allowOfflineUse: false,

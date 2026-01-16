@@ -8,6 +8,7 @@ import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/top_banner_two.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
@@ -1197,7 +1198,7 @@ class _ReceiptDetailsContainerState
                                       widget
                                           .theme
                                           .mobileTexts
-                                          .b2
+                                          .b4
                                           .fontSize,
                                 ),
                                 'Subtotal',
@@ -1212,7 +1213,7 @@ class _ReceiptDetailsContainerState
                                       widget
                                           .theme
                                           .mobileTexts
-                                          .b2
+                                          .b4
                                           .fontSize,
                                   fontWeight:
                                       FontWeight.bold,
@@ -1232,6 +1233,155 @@ class _ReceiptDetailsContainerState
                           ],
                         ),
                         SizedBox(height: 0),
+                        // Row(
+                        //   mainAxisAlignment:
+                        //       MainAxisAlignment
+                        //           .spaceBetween,
+                        //   children: [
+                        //     Expanded(
+                        //       flex: 4,
+                        //       child: Row(
+                        //         children: [
+                        //           Text(
+                        //             style: TextStyle(
+                        //               fontSize:
+                        //                   widget
+                        //                       .theme
+                        //                       .mobileTexts
+                        //                       .b2
+                        //                       .fontSize,
+                        //             ),
+                        //             'Discount',
+                        //           ),
+                        //           Text(
+                        //             style: TextStyle(
+                        //               fontSize:
+                        //                   widget
+                        //                       .theme
+                        //                       .mobileTexts
+                        //                       .b2
+                        //                       .fontSize,
+                        //               fontWeight:
+                        //                   FontWeight.bold,
+                        //             ),
+                        //             widget
+                        //                         .mainReceipt
+                        //                         .generalDiscount !=
+                        //                     null
+                        //                 ? ' (${widget.mainReceipt.generalDiscount}%)'
+                        //                 : '',
+                        //           ),
+                        //         ],
+                        //       ),
+                        //     ),
+
+                        //     Expanded(
+                        //       flex: 3,
+                        //       child: Text(
+                        //         style: TextStyle(
+                        //           fontSize:
+                        //               widget
+                        //                   .theme
+                        //                   .mobileTexts
+                        //                   .b2
+                        //                   .fontSize,
+                        //           fontWeight:
+                        //               FontWeight.bold,
+                        //         ),
+                        //         formatMoneyMid(
+                        //           amount:
+                        //               returnReceiptProvider(
+                        //                 context,
+                        //                 listen: false,
+                        //               ).getTotalMainRevenueReceipt(
+                        //                 records,
+                        //                 context,
+                        //               ) -
+                        //               returnReceiptProvider(
+                        //                 context,
+                        //                 listen: false,
+                        //               ).getSubTotalRevenueForReceipt(
+                        //                 context,
+                        //                 records,
+                        //               ),
+                        //           context: context,
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ],
+                        // ),
+                        // SizedBox(height: 0),
+                        Column(
+                          children: [
+                            SizedBox(height: 2),
+                            Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment
+                                      .spaceBetween,
+                              children: [
+                                Expanded(
+                                  flex: 4,
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              widget
+                                                  .theme
+                                                  .mobileTexts
+                                                  .b4
+                                                  .fontSize,
+                                          // fontWeight: FontWeight.bold,
+                                        ),
+                                        'VAT',
+                                      ),
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              widget
+                                                  .theme
+                                                  .mobileTexts
+                                                  .b4
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                          // fontWeight: FontWeight.bold,
+                                        ),
+                                        ' (${returnReceiptProvider(context, listen: false).getVATForReceipt(context, records) != 0 ? vat : 0}%)',
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 3,
+                                  child: Text(
+                                    style: TextStyle(
+                                      fontWeight:
+                                          FontWeight.bold,
+                                      fontSize:
+                                          widget
+                                              .theme
+                                              .mobileTexts
+                                              .b4
+                                              .fontSize,
+                                    ),
+                                    formatMoney(
+                                      returnReceiptProvider(
+                                        context,
+                                        listen: false,
+                                      ).getVATForReceipt(
+                                        context,
+                                        records,
+                                      ),
+                                      context,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                         Row(
                           mainAxisAlignment:
                               MainAxisAlignment
@@ -1239,43 +1389,6 @@ class _ReceiptDetailsContainerState
                           children: [
                             Expanded(
                               flex: 4,
-                              child: Row(
-                                children: [
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          widget
-                                              .theme
-                                              .mobileTexts
-                                              .b2
-                                              .fontSize,
-                                    ),
-                                    'Discount',
-                                  ),
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          widget
-                                              .theme
-                                              .mobileTexts
-                                              .b2
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                    ),
-                                    widget
-                                                .mainReceipt
-                                                .generalDiscount !=
-                                            null
-                                        ? ' (${widget.mainReceipt.generalDiscount}%)'
-                                        : '',
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            Expanded(
-                              flex: 3,
                               child: Text(
                                 style: TextStyle(
                                   fontSize:
@@ -1283,47 +1396,6 @@ class _ReceiptDetailsContainerState
                                           .theme
                                           .mobileTexts
                                           .b2
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                ),
-                                formatMoneyMid(
-                                  amount:
-                                      returnReceiptProvider(
-                                        context,
-                                        listen: false,
-                                      ).getTotalMainRevenueReceipt(
-                                        records,
-                                        context,
-                                      ) -
-                                      returnReceiptProvider(
-                                        context,
-                                        listen: false,
-                                      ).getSubTotalRevenueForReceipt(
-                                        context,
-                                        records,
-                                      ),
-                                  context: context,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 0),
-                        Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
-                          children: [
-                            Expanded(
-                              flex: 4,
-                              child: Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      widget
-                                          .theme
-                                          .mobileTexts
-                                          .b1
                                           .fontSize,
                                 ),
                                 'Total',
@@ -1338,7 +1410,7 @@ class _ReceiptDetailsContainerState
                                       widget
                                           .theme
                                           .mobileTexts
-                                          .b1
+                                          .b2
                                           .fontSize,
                                   fontWeight:
                                       FontWeight.bold,

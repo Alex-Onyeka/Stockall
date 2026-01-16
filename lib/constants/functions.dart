@@ -96,10 +96,7 @@ double screenHeight(BuildContext context) {
   return MediaQuery.of(context).size.height;
 }
 
-List<Map<String, dynamic>> empSetup =
-    employees
-        .where((emp) => emp['position'] != 'Owner')
-        .toList();
+List<Map<String, dynamic>> empSetup = employees.toList();
 
 List<Map<String, dynamic>> employees = [
   {
@@ -133,6 +130,8 @@ List<Map<String, dynamic>> employees = [
       'Create Shop',
       'General Discount',
       'Generate Barcode',
+      'Manage VAT',
+      'Others',
     ],
   },
   {
@@ -161,6 +160,7 @@ List<Map<String, dynamic>> employees = [
       'View Date',
       'General Discount',
       'Generate Barcode',
+      'Manage VAT',
     ],
   },
   {
@@ -237,6 +237,7 @@ class Authorizations {
   String createShop = 'Create Shop';
   String deleteShop = 'Delete Shop';
   String generalDiscount = 'General Discount';
+  String manageVAT = 'Manage VAT';
   String generateBarcode = 'Generate Barcode';
 }
 
@@ -1259,6 +1260,64 @@ Future<Uint8List> _buildPdf(
                     ],
                   ),
                   pw.SizedBox(height: 5),
+                  // pw.Row(
+                  //   mainAxisAlignment:
+                  //       pw.MainAxisAlignment.spaceEvenly,
+                  //   children: [
+                  //     pw.Expanded(
+                  //       flex: 2,
+                  //       child: pw.Row(
+                  //         children: [
+                  //           pw.Text(
+                  //             style: pw.TextStyle(
+                  //               font: fontRegular,
+                  //               fontSize: 8,
+                  //             ),
+                  //             'Discount:',
+                  //           ),
+                  //           pw.Text(
+                  //             style: pw.TextStyle(
+                  //               font: fontRegular,
+                  //               fontSize: 8,
+                  //             ),
+                  //             receipt.generalDiscount !=
+                  //                     null
+                  //                 ? " (${receipt.generalDiscount}%)"
+                  //                 : '',
+                  //           ),
+                  //         ],
+                  //       ),
+                  //     ),
+                  //     pw.Expanded(
+                  //       flex: 1,
+                  //       child: pw.Text(
+                  //         style: pw.TextStyle(
+                  //           font: fontRegular,
+                  //           fontSize: 10,
+                  //         ),
+                  //         formatMoneyMid(
+                  //           amount:
+                  //               returnReceiptProvider(
+                  //                 context,
+                  //                 listen: false,
+                  //               ).getTotalMainRevenueReceipt(
+                  //                 records,
+                  //                 context,
+                  //               ) -
+                  //               returnReceiptProvider(
+                  //                 context,
+                  //                 listen: false,
+                  //               ).getSubTotalRevenueForReceipt(
+                  //                 context,
+                  //                 records,
+                  //               ),
+                  //           context: context,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
+                  // pw.SizedBox(height: 5),
                   pw.Row(
                     mainAxisAlignment:
                         pw.MainAxisAlignment.spaceEvenly,
@@ -1272,17 +1331,23 @@ Future<Uint8List> _buildPdf(
                                 font: fontRegular,
                                 fontSize: 8,
                               ),
-                              'Discount:',
+                              'VAT:',
                             ),
                             pw.Text(
                               style: pw.TextStyle(
                                 font: fontRegular,
                                 fontSize: 8,
                               ),
-                              receipt.generalDiscount !=
-                                      null
-                                  ? " (${receipt.generalDiscount}%)"
-                                  : '',
+                              returnReceiptProvider(
+                                        context,
+                                        listen: false,
+                                      ).getVATForReceipt(
+                                        context,
+                                        records,
+                                      ) !=
+                                      0
+                                  ? " ($vat%)"
+                                  : ' (0%)',
                             ),
                           ],
                         ),
@@ -1295,21 +1360,13 @@ Future<Uint8List> _buildPdf(
                             fontSize: 10,
                           ),
                           formatMoneyMid(
-                            amount:
-                                returnReceiptProvider(
-                                  context,
-                                  listen: false,
-                                ).getTotalMainRevenueReceipt(
-                                  records,
-                                  context,
-                                ) -
-                                returnReceiptProvider(
-                                  context,
-                                  listen: false,
-                                ).getSubTotalRevenueForReceipt(
-                                  context,
-                                  records,
-                                ),
+                            amount: returnReceiptProvider(
+                              context,
+                              listen: false,
+                            ).getVATForReceipt(
+                              context,
+                              records,
+                            ),
                             context: context,
                           ),
                         ),
@@ -2093,12 +2150,68 @@ Future<Uint8List> _buildPdfRoll(
                   ],
                 ),
                 pw.SizedBox(height: 1),
+                // pw.Row(
+                //   mainAxisAlignment:
+                //       pw.MainAxisAlignment.spaceEvenly,
+                //   children: [
+                //     pw.Expanded(
+                //       flex: 9,
+                //       child: pw.Row(
+                //         children: [
+                //           pw.Text(
+                //             style: pw.TextStyle(
+                //               font: fontRegular,
+                //               fontSize: parTextAlt,
+                //             ),
+                //             'Discount:',
+                //           ),
+                //           pw.Text(
+                //             style: pw.TextStyle(
+                //               font: fontRegular,
+                //               fontSize: parTextAlt,
+                //             ),
+                //             receipt.generalDiscount != null
+                //                 ? " (${receipt.generalDiscount}%)"
+                //                 : '',
+                //           ),
+                //         ],
+                //       ),
+                //     ),
+                //     pw.Expanded(
+                //       flex: 7,
+                //       child: pw.Text(
+                //         style: pw.TextStyle(
+                //           font: fontRegular,
+                //           fontSize: parText,
+                //         ),
+                //         formatMoneyMid(
+                //           amount:
+                //               returnReceiptProvider(
+                //                 context,
+                //                 listen: false,
+                //               ).getTotalMainRevenueReceipt(
+                //                 records,
+                //                 context,
+                //               ) -
+                //               returnReceiptProvider(
+                //                 context,
+                //                 listen: false,
+                //               ).getSubTotalRevenueForReceipt(
+                //                 context,
+                //                 records,
+                //               ),
+                //           context: context,
+                //         ),
+                //       ),
+                //     ),
+                //   ],
+                // ),
                 pw.Row(
                   mainAxisAlignment:
                       pw.MainAxisAlignment.spaceEvenly,
                   children: [
                     pw.Expanded(
-                      flex: 9,
+                      flex: 2,
                       child: pw.Row(
                         children: [
                           pw.Text(
@@ -2106,43 +2219,42 @@ Future<Uint8List> _buildPdfRoll(
                               font: fontRegular,
                               fontSize: parTextAlt,
                             ),
-                            'Discount:',
+                            'VAT:',
                           ),
                           pw.Text(
                             style: pw.TextStyle(
                               font: fontRegular,
                               fontSize: parTextAlt,
                             ),
-                            receipt.generalDiscount != null
-                                ? " (${receipt.generalDiscount}%)"
-                                : '',
+                            returnReceiptProvider(
+                                      context,
+                                      listen: false,
+                                    ).getVATForReceipt(
+                                      context,
+                                      records,
+                                    ) !=
+                                    0
+                                ? " ($vat%)"
+                                : ' (0%)',
                           ),
                         ],
                       ),
                     ),
                     pw.Expanded(
-                      flex: 7,
+                      flex: 1,
                       child: pw.Text(
                         style: pw.TextStyle(
                           font: fontRegular,
                           fontSize: parText,
                         ),
                         formatMoneyMid(
-                          amount:
-                              returnReceiptProvider(
-                                context,
-                                listen: false,
-                              ).getTotalMainRevenueReceipt(
-                                records,
-                                context,
-                              ) -
-                              returnReceiptProvider(
-                                context,
-                                listen: false,
-                              ).getSubTotalRevenueForReceipt(
-                                context,
-                                records,
-                              ),
+                          amount: returnReceiptProvider(
+                            context,
+                            listen: false,
+                          ).getVATForReceipt(
+                            context,
+                            records,
+                          ),
                           context: context,
                         ),
                       ),

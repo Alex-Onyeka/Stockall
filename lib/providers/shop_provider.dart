@@ -33,13 +33,17 @@ class ShopProvider extends ChangeNotifier {
     TempShopClass shop,
     BuildContext context,
   ) async {
+    print('Starting Creating Shop');
     var response =
         await supabase
             .from('subscription')
             .select()
             .eq('user_id', AuthService().currentUser!)
             .maybeSingle();
+
+    print('Subscription Result: $response');
     if (response == null) {
+      print('Subscription is Null');
       var sub = await returnSubcsription(
         // ignore: use_build_context_synchronously
         context,
@@ -47,11 +51,14 @@ class ShopProvider extends ChangeNotifier {
         // ignore: use_build_context_synchronously
       ).createSubscription(context);
       if (sub != null) {
+        print('Subscription Created');
         MultipleStoresAuthAction().numberOfStoresAction(
           // ignore: use_build_context_synchronously
           context: context,
           action: () async {
             shop.updatedAt = DateTime.now();
+            print('Creating Shop');
+            print('App State Role: $tempRole');
             // Insert the shop
             var createdShop =
                 await supabase
@@ -61,17 +68,21 @@ class ShopProvider extends ChangeNotifier {
                     .maybeSingle();
 
             if (createdShop != null) {
-              print(createdShop['name']);
+              print(
+                'Created Shop Name: ${createdShop['name']}',
+              );
+              print('Updating User Role');
               var user =
                   await supabase
                       .from('users')
-                      .update({'role': 'Owner'})
+                      .update({'role': tempRole})
                       .eq(
                         'user_id',
                         AuthService().currentUser!,
                       )
                       .select()
                       .maybeSingle();
+              print('User Role Updated: $user');
               if (user != null) {
                 print(user['name']);
               }
@@ -103,19 +114,19 @@ class ShopProvider extends ChangeNotifier {
 
           if (createdShop != null) {
             print(createdShop['name']);
-            var user =
-                await supabase
-                    .from('users')
-                    .update({'role': 'Owner'})
-                    .eq(
-                      'user_id',
-                      AuthService().currentUser!,
-                    )
-                    .select()
-                    .maybeSingle();
-            if (user != null) {
-              print(user['name']);
-            }
+            // var user =
+            //     await supabase
+            //         .from('users')
+            //         .update({'role': tempRole})
+            //         .eq(
+            //           'user_id',
+            //           AuthService().currentUser!,
+            //         )
+            //         .select()
+            //         .maybeSingle();
+            // if (user != null) {
+            //   print(user['name']);
+            // }
           }
 
           // Fetch All Shops
@@ -127,6 +138,7 @@ class ShopProvider extends ChangeNotifier {
         },
       );
     }
+    // setRole('Owner');
   }
 
   Future<int> deleteShop({
@@ -294,33 +306,6 @@ class ShopProvider extends ChangeNotifier {
       return [];
     }
   }
-
-  // Future<void> makePayment(DateTime date, int plan) async {
-  //   bool isOnline = await connectivity.isOnline();
-  //   if (isOnline) {
-  //     await supabase
-  //         .from('shops')
-  //         .update({
-  //           'next_payment': date.toIso8601String(),
-  //           'plan': plan,
-  //         })
-  //         .eq('shop_id', userShop()!.shopId!)
-  //         .maybeSingle();
-  //     print(
-  //       'Shop Next Payment date Set: ${date.toString()} and Plan Set: $plan',
-  //     );
-
-  //     final response = await getUserShops(
-  //       AuthService().currentUser!,
-  //     );
-  //     if (response.isNotEmpty) {
-  //       setShops(response);
-  //       notifyListeners();
-  //     }
-  //   } else {
-  //     print('Next Payment cant be set offline');
-  //   }
-  // }
 
   Future<void> setHeadQuarters(TempShopClass shop) async {
     bool isOnline = await connectivity.isOnline();
@@ -638,49 +623,101 @@ class ShopProvider extends ChangeNotifier {
 
   Future<void> addEmployeeToShop({
     required String newEmployeeId,
+    required String role,
+    required BuildContext context,
   }) async {
     try {
-      // Step 1: Get the current list of employees
-      final response =
-          await supabase
-              .from('shops')
-              .select('employees')
-              .eq('shop_id', userShop()!.shopId!)
-              .maybeSingle();
+      if (role != 'Owner') {
+        final response =
+            await supabase
+                .from('shops')
+                .select('employees')
+                .eq('shop_id', userShop()!.shopId!)
+                .maybeSingle();
 
-      if (response == null) {
-        print('Shop not found');
-        return;
-      }
+        if (response == null) {
+          print('Shop not found');
+          return;
+        }
 
-      List<String> currentEmployees = [];
+        List<String> currentEmployees = [];
 
-      if (response['employees'] != null) {
-        currentEmployees = List<String>.from(
-          response['employees'],
-        );
-      }
+        if (response['employees'] != null) {
+          currentEmployees = List<String>.from(
+            response['employees'],
+          );
+        }
 
-      // Step 2: Add the new employee only if it's not already in the list
-      if (!currentEmployees.contains(newEmployeeId)) {
-        currentEmployees.add(newEmployeeId);
+        // Step 2: Add the new employee only if it's not already in the list
+        if (!currentEmployees.contains(newEmployeeId)) {
+          currentEmployees.add(newEmployeeId);
+        } else {
+          return;
+        }
+
+        // Step 3: Update the shop's employees field
+        final updateResponse = await supabase
+            .from('shops')
+            .update({'employees': currentEmployees})
+            .eq('shop_id', userShop()!.shopId!);
+
+        if (updateResponse != null) {
+          print('Failed to update shop: $updateResponse');
+        } else {
+          print('Employee added successfully.');
+        }
       } else {
-        return;
-      }
+        var res =
+            await supabase
+                .from('shops')
+                .update({'user_id': newEmployeeId})
+                .eq('shop_id', userShop()!.shopId!)
+                .select()
+                .maybeSingle();
 
-      // Step 3: Update the shop's employees field
-      final updateResponse = await supabase
-          .from('shops')
-          .update({'employees': currentEmployees})
-          .eq('shop_id', userShop()!.shopId!);
+        if (res == null) {
+          print('Shop not found');
+          return;
+        }
+        print('Shop Owner Added Successfully');
 
-      if (updateResponse != null) {
-        print('Failed to update shop: $updateResponse');
-      } else {
-        print('Employee added successfully.');
+        var userRes =
+            await supabase
+                .from('users')
+                .select()
+                .eq('user_id', newEmployeeId)
+                .maybeSingle();
+        if (userRes == null) {
+          print('User not found');
+          return;
+        }
+        var currUser = TempUserClass.fromJson(userRes);
+
+        Map<String, dynamic>? subRes =
+            await supabase
+                .from('subscription')
+                .update({
+                  'user_id': newEmployeeId,
+                  'user_name':
+                      '${currUser.name} ${currUser.lastName ?? ''}',
+                })
+                .eq(
+                  'subscription_id',
+                  returnSubcsription(
+                    context,
+                    listen: false,
+                  ).subscription!.subscriptionId!,
+                )
+                .select()
+                .maybeSingle();
+        if (subRes == null) {
+          print('Subscription User Id Failed');
+          return;
+        }
+        print('Subscription Update Success');
       }
     } catch (e) {
-      print('Exception occurred: $e');
+      print('An Error occurred: $e');
     }
   }
 
@@ -734,20 +771,6 @@ class ShopProvider extends ChangeNotifier {
     }
   }
 
-  // ShopProvider() {
-  //   _init();
-  // }
-  // Future<void> _init() async {
-  //   final userId = AuthService().currentUser;
-  //   if (userShop == null) {
-  //     final shop = await getUserShop(userId!);
-  //     if (shop != null) {
-  //       setShop(shop);
-  //     }
-  //   }
-  // }
-
-  // int currentIndex = 0;
   List<TempShopClass> userShops = [];
 
   Future<void> selectShop(
@@ -910,6 +933,67 @@ class ShopProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool isVatLoading = false;
+
+  Future<int> toggleApplyVAT() async {
+    bool isOnline = await connectivity.isOnline();
+    isVatLoading = true;
+    notifyListeners();
+    try {
+      if (isOnline) {
+        Map<String, dynamic>? res =
+            await supabase
+                .from('shops')
+                .update({
+                  'apply_vat': !userShop()!.applyVAT!,
+                })
+                .eq('shop_id', userShop()!.shopId!)
+                .select()
+                .maybeSingle();
+        if (res == null) {
+          print('VAT Update Failed');
+          isVatLoading = false;
+          notifyListeners();
+          return 0;
+        }
+
+        var shops = await getUserShops();
+        setShops(shops);
+        isVatLoading = false;
+        notifyListeners();
+        return 1;
+      } else {
+        try {
+          userShop()!.updatedAt = DateTime.now();
+          userShop()!.applyVAT = !userShop()!.applyVAT!;
+          await ShopFunc().updateShop(userShop()!);
+          if (userShop() != null) {
+            await UpdatedShopFunc().createUpdatedShop(
+              UpdatedShop(shop: userShop()!),
+            );
+            // setShops(shop);
+            notifyListeners();
+          }
+          isVatLoading = false;
+          notifyListeners();
+          return 1;
+        } catch (e) {
+          print(
+            "❌ Failed to Apply VAT Offline: ${e.toString()}",
+          );
+          isVatLoading = false;
+          notifyListeners();
+          return 0;
+        }
+      }
+    } catch (e) {
+      print("❌ Failed to Apply VAT: ${e.toString()}");
+      isVatLoading = false;
+      notifyListeners();
+      return 0;
+    }
+  }
+
   String name = '';
   String country = '';
   String? email;
@@ -917,6 +1001,14 @@ class ShopProvider extends ChangeNotifier {
   String state = '';
   String city = '';
   String address = '';
+  String tempRole = '';
+
+  void setRole(String newRole) {
+    tempRole = newRole;
+    notifyListeners();
+  }
+
+  List<String> roles = ['Owner', 'General Manager'];
 
   double? generalPercentDiscount;
   double? generalFixedDiscount;

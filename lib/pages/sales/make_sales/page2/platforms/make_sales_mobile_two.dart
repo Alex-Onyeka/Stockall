@@ -5,10 +5,10 @@ import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/payment_type_button.dart';
 import 'package:stockall/components/cart_queue/cart_queue_mobile.dart';
-import 'package:stockall/components/discount_setter.dart/discount_setter_widget.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
@@ -613,11 +613,11 @@ class _MakeSalesMobileTwoState
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               SizedBox(height: 15),
-                              DiscountSetterWidget(
-                                discountPercentController:
-                                    discountPercentController,
-                              ),
-                              SizedBox(height: 5),
+                              // DiscountSetterWidget(
+                              //   discountPercentController:
+                              //       discountPercentController,
+                              // ),
+                              // SizedBox(height: 5),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment
@@ -628,7 +628,7 @@ class _MakeSalesMobileTwoState
                                       fontSize:
                                           theme
                                               .mobileTexts
-                                              .b2
+                                              .b4
                                               .fontSize,
                                       // fontWeight: FontWeight.bold,
                                     ),
@@ -639,7 +639,7 @@ class _MakeSalesMobileTwoState
                                       fontSize:
                                           theme
                                               .mobileTexts
-                                              .b1
+                                              .b4
                                               .fontSize,
                                       // fontWeight: FontWeight.bold,
                                     ),
@@ -654,59 +654,118 @@ class _MakeSalesMobileTwoState
                                 ],
                               ),
                               // SizedBox(height: 0),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .spaceBetween,
+                              // Row(
+                              //   mainAxisAlignment:
+                              //       MainAxisAlignment
+                              //           .spaceBetween,
+                              //   children: [
+                              //     Row(
+                              //       children: [
+                              //         Text(
+                              //           style: TextStyle(
+                              //             fontSize:
+                              //                 theme
+                              //                     .mobileTexts
+                              //                     .b2
+                              //                     .fontSize,
+                              //             // fontWeight: FontWeight.bold,
+                              //           ),
+                              //           'Discount',
+                              //         ),
+                              //         Visibility(
+                              //           visible:
+                              //               returnSalesProvider(
+                              //                     context,
+                              //                   )
+                              //                   .currentCart()
+                              //                   .discount !=
+                              //               null,
+                              //           child: Text(
+                              //             style: TextStyle(
+                              //               fontSize:
+                              //                   theme
+                              //                       .mobileTexts
+                              //                       .b2
+                              //                       .fontSize,
+                              //               fontWeight:
+                              //                   FontWeight
+                              //                       .bold,
+                              //               // fontWeight: FontWeight.bold,
+                              //             ),
+                              //             ' (${returnSalesProvider(context).currentCart().discount?.toStringAsFixed(0)}%)',
+                              //           ),
+                              //         ),
+                              //       ],
+                              //     ),
+                              //     Text(
+                              //       style: TextStyle(
+                              //         fontSize:
+                              //             theme
+                              //                 .mobileTexts
+                              //                 .b2
+                              //                 .fontSize,
+                              //         // fontWeight: FontWeight.bold,
+                              //       ),
+                              //       '- ${formatMoney(returnSalesProvider(context).calcDiscountMain(), context)}',
+                              //     ),
+                              //   ],
+                              // ),
+                              Column(
                                 children: [
+                                  SizedBox(height: 5),
                                   Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .spaceBetween,
                                     children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b4
+                                                      .fontSize,
+                                              // fontWeight: FontWeight.bold,
+                                            ),
+                                            'VAT',
+                                          ),
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b4
+                                                      .fontSize,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                              // fontWeight: FontWeight.bold,
+                                            ),
+                                            ' (${returnShopProvider(context).userShop()!.applyVAT! ? vat : 0}%)',
+                                          ),
+                                        ],
+                                      ),
                                       Text(
                                         style: TextStyle(
                                           fontSize:
                                               theme
                                                   .mobileTexts
-                                                  .b2
+                                                  .b4
                                                   .fontSize,
                                           // fontWeight: FontWeight.bold,
                                         ),
-                                        'Discount',
-                                      ),
-                                      Visibility(
-                                        visible:
-                                            returnSalesProvider(
-                                                  context,
-                                                )
-                                                .currentCart()
-                                                .discount !=
-                                            null,
-                                        child: Text(
-                                          style: TextStyle(
-                                            fontSize:
-                                                theme
-                                                    .mobileTexts
-                                                    .b2
-                                                    .fontSize,
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
-                                            // fontWeight: FontWeight.bold,
+                                        formatMoney(
+                                          returnSalesProvider(
+                                            context,
+                                          ).calcVatAmount(
+                                            context,
                                           ),
-                                          ' (${returnSalesProvider(context).currentCart().discount?.toStringAsFixed(0)}%)',
+                                          context,
                                         ),
                                       ),
                                     ],
-                                  ),
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b2
-                                              .fontSize,
-                                      // fontWeight: FontWeight.bold,
-                                    ),
-                                    '- ${formatMoney(returnSalesProvider(context).calcDiscountMain(), context)}',
                                   ),
                                 ],
                               ),
@@ -721,7 +780,7 @@ class _MakeSalesMobileTwoState
                                       fontSize:
                                           theme
                                               .mobileTexts
-                                              .h4
+                                              .b2
                                               .fontSize,
                                       fontWeight:
                                           FontWeight.bold,
@@ -733,7 +792,7 @@ class _MakeSalesMobileTwoState
                                       fontSize:
                                           theme
                                               .mobileTexts
-                                              .h4
+                                              .b2
                                               .fontSize,
                                       fontWeight:
                                           FontWeight.bold,
@@ -742,7 +801,9 @@ class _MakeSalesMobileTwoState
                                       amount:
                                           returnSalesProvider(
                                             context,
-                                          ).calcFinalTotalMain(),
+                                          ).calcFinalTotalMain(
+                                            context,
+                                          ),
                                       context: context,
                                     ),
                                   ),
@@ -868,7 +929,9 @@ class _MakeSalesMobileTwoState
                                                 context,
                                                 listen:
                                                     false,
-                                              ).calcFinalTotalMain()
+                                              ).calcFinalTotalMain(
+                                                context,
+                                              )
                                               : 0,
                                       cashAlt:
                                           returnSalesProvider(
@@ -894,7 +957,9 @@ class _MakeSalesMobileTwoState
                                                 context,
                                                 listen:
                                                     false,
-                                              ).calcFinalTotalMain(),
+                                              ).calcFinalTotalMain(
+                                                context,
+                                              ),
                                       paymentMethod:
                                           returnSalesProvider(
                                             context,

@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/pages/authentication/base_page/base_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class CodeSentDesktop extends StatefulWidget {
@@ -254,6 +256,27 @@ class _CodeSentDesktopState extends State<CodeSentDesktop> {
                                             .b1
                                             .textStyleNormal,
                                     'Check your mail, Copy the code, come back and paste to verify Your Account',
+                                  ),
+                                  SizedBox(height: 15),
+                                  MainButtonTransparent(
+                                    themeProvider:
+                                        widget.theme,
+                                    constraints:
+                                        BoxConstraints(),
+                                    text:
+                                        'Check Verification',
+                                    action: () {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return BasePage();
+                                          },
+                                        ),
+                                      );
+                                    },
                                   ),
                                   SizedBox(height: 50),
                                 ],

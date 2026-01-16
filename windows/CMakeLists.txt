@@ -49,6 +49,9 @@ endfunction()
 set(FLUTTER_MANAGED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/flutter")
 add_subdirectory(${FLUTTER_MANAGED_DIR})
 
+# Use embedded WebView2 runtime for MSIX builds
+set(WEBVIEW2_INSTALL_MODE "embedded")
+
 # Application build; see runner/CMakeLists.txt.
 add_subdirectory("runner")
 

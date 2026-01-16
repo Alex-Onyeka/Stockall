@@ -194,7 +194,7 @@ class _ShopSetupTwoDesktopState
                     // updateNumber: currentUpdate,
                     isVerified: false,
                     currency: selectedCurrency!,
-                    employees: [],
+                    employees: [AuthService().currentUser!],
                     createdAt: DateTime.now(),
                     userId: AuthService().currentUser!,
                     email: shopProvider.email,
@@ -216,6 +216,7 @@ class _ShopSetupTwoDesktopState
                             ).userShops.isEmpty
                             ? true
                             : false,
+                    applyVAT: false,
                   ),
                   safeContext,
                 );

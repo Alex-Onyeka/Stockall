@@ -20,6 +20,7 @@ class MyToggleButton extends StatelessWidget {
     return InkWell(
       onTap: toggle,
       child: Container(
+        height: 16,
         width: isSmall != null && isSmall == true ? 35 : 50,
         padding: EdgeInsets.symmetric(
           horizontal:

@@ -8,7 +8,6 @@ import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/small_button_main.dart';
 import 'package:stockall/components/buttons/toggle_total_price.dart';
 import 'package:stockall/components/cart_queue/cart_queue_mobile.dart';
-import 'package:stockall/components/discount_setter.dart/discount_setter_widget.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/my_calculator.dart';
@@ -1869,93 +1868,16 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                           Authorizations().addProduct,
                       context: context,
                     )) {
-                      return EmptyWidgetDisplayOnly(
-                        title: 'No Items',
-                        subText:
-                            'No Items have been added to your stock.',
-                        theme: theme,
-                        height: 30,
-                        icon: Icons.clear,
-                        altAction: () {
-                          returnSalesProvider(
-                            context,
-                            listen: false,
-                          ).toggleAddToStock(
-                            false,
-                            context,
-                          );
-                          makeCustomSale(
-                            closeAction: () {
-                              Navigator.of(context).pop();
-                            },
-                            cartItem: TempCartItem(
-                              setTotalPrice:
-                                  returnSalesProvider(
-                                    context,
-                                    listen: false,
-                                  ).setTotalPrice,
-                              item: TempProductClass(
-                                isManaged: false,
-                                uuid: uuidGen(),
-                                name: nameC.text,
-                                unit: 'Others',
-                                isRefundable: false,
-                                costPrice:
-                                    double.tryParse(
-                                      costPriceC.text,
-                                    ) ??
-                                    0,
-                                sellingPrice:
-                                    double.tryParse(
-                                      sellingPriceC.text,
-                                    ),
-                                quantity: 0,
-                                shopId:
-                                    returnShopProvider(
-                                      context,
-                                      listen: false,
-                                    ).userShop()!.shopId!,
-                                setCustomPrice: true,
-                              ),
-                              addToStock: false,
-                              quantity: 0,
-                              discount: null,
-                              setCustomPrice: true,
-                            ),
-                          );
-                        },
-                        altActionText: 'Add Custom Item',
-                        altIcon: Icons.add,
-                      );
-                    } else {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10.0,
-                        ),
-                        child: Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.center,
-                          children: [
-                            EmptyWidgetDisplay(
-                              title: 'No items',
+                      return Column(
+                        children: [
+                          Expanded(
+                            child: EmptyWidgetDisplayOnly(
+                              title: 'No Items',
                               subText:
-                                  'You currently do not have have any item. Add items to start making sales.',
+                                  'No Items have been added to your stock.',
                               theme: theme,
                               height: 30,
-                              svg: productIconSvg,
-                              buttonText: 'Add Item',
-                              action: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return AddProduct();
-                                    },
-                                  ),
-                                ).then((_) {
-                                  setState(() {});
-                                });
-                              },
+                              icon: Icons.clear,
                               altAction: () {
                                 returnSalesProvider(
                                   context,
@@ -2003,7 +1925,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                               .shopId!,
                                       setCustomPrice: true,
                                     ),
-                                    addToStock: true,
+                                    addToStock: false,
                                     quantity: 0,
                                     discount: null,
                                     setCustomPrice: true,
@@ -2014,8 +1936,223 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                   'Add Custom Item',
                               altIcon: Icons.add,
                             ),
-                          ],
-                        ),
+                          ),
+                          EmptyCartBottomWidget(
+                            action: () {
+                              returnSalesProvider(
+                                context,
+                                listen: false,
+                              ).toggleAddToStock(
+                                false,
+                                context,
+                              );
+                              makeCustomSale(
+                                closeAction: () {
+                                  Navigator.of(
+                                    context,
+                                  ).pop();
+                                },
+                                cartItem: TempCartItem(
+                                  setTotalPrice:
+                                      returnSalesProvider(
+                                        context,
+                                        listen: false,
+                                      ).setTotalPrice,
+                                  item: TempProductClass(
+                                    isManaged: false,
+                                    uuid: uuidGen(),
+                                    name: nameC.text,
+                                    unit: 'Others',
+                                    isRefundable: false,
+                                    costPrice:
+                                        double.tryParse(
+                                          costPriceC.text,
+                                        ) ??
+                                        0,
+                                    sellingPrice:
+                                        double.tryParse(
+                                          sellingPriceC
+                                              .text,
+                                        ),
+                                    quantity: 0,
+                                    shopId:
+                                        returnShopProvider(
+                                              context,
+                                              listen: false,
+                                            )
+                                            .userShop()!
+                                            .shopId!,
+                                    setCustomPrice: true,
+                                  ),
+                                  addToStock: true,
+                                  quantity: 0,
+                                  discount: null,
+                                  setCustomPrice: true,
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      );
+                    } else {
+                      return Column(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(
+                                    horizontal: 10.0,
+                                  ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .center,
+                                children: [
+                                  EmptyWidgetDisplay(
+                                    title: 'No items',
+                                    subText:
+                                        'You currently do not have have any item. Add items to start making sales.',
+                                    theme: theme,
+                                    height: 30,
+                                    svg: productIconSvg,
+                                    buttonText: 'Add Item',
+                                    action: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return AddProduct();
+                                          },
+                                        ),
+                                      ).then((_) {
+                                        setState(() {});
+                                      });
+                                    },
+                                    altAction: () {
+                                      returnSalesProvider(
+                                        context,
+                                        listen: false,
+                                      ).toggleAddToStock(
+                                        false,
+                                        context,
+                                      );
+                                      makeCustomSale(
+                                        closeAction: () {
+                                          Navigator.of(
+                                            context,
+                                          ).pop();
+                                        },
+                                        cartItem: TempCartItem(
+                                          setTotalPrice:
+                                              returnSalesProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).setTotalPrice,
+                                          item: TempProductClass(
+                                            isManaged:
+                                                false,
+                                            uuid: uuidGen(),
+                                            name:
+                                                nameC.text,
+                                            unit: 'Others',
+                                            isRefundable:
+                                                false,
+                                            costPrice:
+                                                double.tryParse(
+                                                  costPriceC
+                                                      .text,
+                                                ) ??
+                                                0,
+                                            sellingPrice:
+                                                double.tryParse(
+                                                  sellingPriceC
+                                                      .text,
+                                                ),
+                                            quantity: 0,
+                                            shopId:
+                                                returnShopProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).userShop()!.shopId!,
+                                            setCustomPrice:
+                                                true,
+                                          ),
+                                          addToStock: true,
+                                          quantity: 0,
+                                          discount: null,
+                                          setCustomPrice:
+                                              true,
+                                        ),
+                                      );
+                                    },
+                                    altActionText:
+                                        'Add Custom Item',
+                                    altIcon: Icons.add,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          EmptyCartBottomWidget(
+                            action: () {
+                              returnSalesProvider(
+                                context,
+                                listen: false,
+                              ).toggleAddToStock(
+                                false,
+                                context,
+                              );
+                              makeCustomSale(
+                                closeAction: () {
+                                  Navigator.of(
+                                    context,
+                                  ).pop();
+                                },
+                                cartItem: TempCartItem(
+                                  setTotalPrice:
+                                      returnSalesProvider(
+                                        context,
+                                        listen: false,
+                                      ).setTotalPrice,
+                                  item: TempProductClass(
+                                    isManaged: false,
+                                    uuid: uuidGen(),
+                                    name: nameC.text,
+                                    unit: 'Others',
+                                    isRefundable: false,
+                                    costPrice:
+                                        double.tryParse(
+                                          costPriceC.text,
+                                        ) ??
+                                        0,
+                                    sellingPrice:
+                                        double.tryParse(
+                                          sellingPriceC
+                                              .text,
+                                        ),
+                                    quantity: 0,
+                                    shopId:
+                                        returnShopProvider(
+                                              context,
+                                              listen: false,
+                                            )
+                                            .userShop()!
+                                            .shopId!,
+                                    setCustomPrice: true,
+                                  ),
+                                  addToStock: true,
+                                  quantity: 0,
+                                  discount: null,
+                                  setCustomPrice: true,
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                       );
                     }
                   } else {
@@ -2346,7 +2483,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment
-                                                  .spaceBetween,
+                                                  .start,
                                           children: [
                                             SubWrapper(
                                               isVisible:
@@ -2476,10 +2613,10 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                 ),
                                               ),
                                             ),
-                                            DiscountSetterWidget(
-                                              discountPercentController:
-                                                  discountPercentController,
-                                            ),
+                                            // DiscountSetterWidget(
+                                            //   discountPercentController:
+                                            //       discountPercentController,
+                                            // ),
                                           ],
                                         ),
                                         SizedBox(height: 3),
@@ -2555,7 +2692,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                               color:
                                                                   Colors.white,
                                                               size:
-                                                                  18,
+                                                                  15,
                                                               Icons.add_rounded,
                                                             ),
                                                           ),
@@ -2566,7 +2703,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                               fontWeight:
                                                                   FontWeight.w500,
                                                               fontSize:
-                                                                  theme.mobileTexts.b1.fontSize,
+                                                                  theme.mobileTexts.b3.fontSize,
                                                             ),
                                                             'Add Item',
                                                           ),
@@ -2667,7 +2804,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                           child: Text(
                                                             style: TextStyle(
                                                               fontSize:
-                                                                  theme.mobileTexts.b1.fontSize,
+                                                                  theme.mobileTexts.b3.fontSize,
                                                             ),
                                                             'Add Custom Item',
                                                           ),
@@ -2693,7 +2830,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                 fontSize:
                                                     theme
                                                         .mobileTexts
-                                                        .b2
+                                                        .b4
                                                         .fontSize,
                                                 // fontWeight: FontWeight.bold,
                                               ),
@@ -2704,7 +2841,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                 fontSize:
                                                     theme
                                                         .mobileTexts
-                                                        .b1
+                                                        .b4
                                                         .fontSize,
                                                 // fontWeight: FontWeight.bold,
                                               ),
@@ -2720,54 +2857,105 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                           ],
                                         ),
                                         // SizedBox(height: 0),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .spaceBetween,
+                                        // Row(
+                                        //   mainAxisAlignment:
+                                        //       MainAxisAlignment
+                                        //           .spaceBetween,
+                                        //   children: [
+                                        //     Row(
+                                        //       children: [
+                                        //         Text(
+                                        //           style: TextStyle(
+                                        //             fontSize:
+                                        //                 theme.mobileTexts.b2.fontSize,
+                                        //             // fontWeight: FontWeight.bold,
+                                        //           ),
+                                        //           'Discount',
+                                        //         ),
+                                        //         Visibility(
+                                        //           visible:
+                                        //               returnSalesProvider(
+                                        //                 context,
+                                        //               ).currentCart().discount !=
+                                        //               null,
+                                        //           child: Text(
+                                        //             style: TextStyle(
+                                        //               fontSize:
+                                        //                   theme.mobileTexts.b2.fontSize,
+                                        //               fontWeight:
+                                        //                   FontWeight.bold,
+                                        //               // fontWeight: FontWeight.bold,
+                                        //             ),
+                                        //             ' (${returnSalesProvider(context).currentCart().discount?.toStringAsFixed(0)}%)',
+                                        //           ),
+                                        //         ),
+                                        //       ],
+                                        //     ),
+                                        //     Text(
+                                        //       style: TextStyle(
+                                        //         fontSize:
+                                        //             theme
+                                        //                 .mobileTexts
+                                        //                 .b2
+                                        //                 .fontSize,
+                                        //         // fontWeight: FontWeight.bold,
+                                        //       ),
+                                        //       '- ${formatMoney(returnSalesProvider(context).calcDiscountMain(), context)}',
+                                        //     ),
+                                        //   ],
+                                        // ),
+                                        Column(
                                           children: [
+                                            SizedBox(
+                                              height: 5,
+                                            ),
                                             Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                               children: [
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            theme.mobileTexts.b4.fontSize,
+                                                        // fontWeight: FontWeight.bold,
+                                                      ),
+                                                      'VAT',
+                                                    ),
+                                                    Text(
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            theme.mobileTexts.b4.fontSize,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        // fontWeight: FontWeight.bold,
+                                                      ),
+                                                      ' (${returnShopProvider(context).userShop()!.applyVAT! ? vat : 0}%)',
+                                                    ),
+                                                  ],
+                                                ),
                                                 Text(
                                                   style: TextStyle(
                                                     fontSize:
-                                                        theme.mobileTexts.b2.fontSize,
+                                                        theme.mobileTexts.b4.fontSize,
                                                     // fontWeight: FontWeight.bold,
                                                   ),
-                                                  'Discount',
-                                                ),
-                                                Visibility(
-                                                  visible:
-                                                      returnSalesProvider(
-                                                        context,
-                                                      ).currentCart().discount !=
-                                                      null,
-                                                  child: Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          theme.mobileTexts.b2.fontSize,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      // fontWeight: FontWeight.bold,
+                                                  formatMoney(
+                                                    returnSalesProvider(
+                                                      context,
+                                                    ).calcVatAmount(
+                                                      context,
                                                     ),
-                                                    ' (${returnSalesProvider(context).currentCart().discount?.toStringAsFixed(0)}%)',
+                                                    context,
                                                   ),
                                                 ),
                                               ],
                                             ),
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    theme
-                                                        .mobileTexts
-                                                        .b2
-                                                        .fontSize,
-                                                // fontWeight: FontWeight.bold,
-                                              ),
-                                              '- ${formatMoney(returnSalesProvider(context).calcDiscountMain(), context)}',
-                                            ),
                                           ],
                                         ),
-                                        // SizedBox(height: 0),
+                                        SizedBox(height: 0),
                                         Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment
@@ -2778,7 +2966,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                 fontSize:
                                                     theme
                                                         .mobileTexts
-                                                        .h4
+                                                        .b1
                                                         .fontSize,
                                                 fontWeight:
                                                     FontWeight
@@ -2791,17 +2979,18 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                 fontSize:
                                                     theme
                                                         .mobileTexts
-                                                        .h4
+                                                        .b1
                                                         .fontSize,
                                                 fontWeight:
                                                     FontWeight
                                                         .bold,
                                               ),
                                               formatMoneyBig(
-                                                amount:
-                                                    returnSalesProvider(
-                                                      context,
-                                                    ).calcFinalTotalMain(),
+                                                amount: returnSalesProvider(
+                                                  context,
+                                                ).calcFinalTotalMain(
+                                                  context,
+                                                ),
                                                 context:
                                                     context,
                                               ),
@@ -2822,10 +3011,11 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                   context,
                                                 ) {
                                                   return MakeSalesTwo(
-                                                    totalAmount:
-                                                        returnSalesProvider(
-                                                          context,
-                                                        ).calcFinalTotalMain(),
+                                                    totalAmount: returnSalesProvider(
+                                                      context,
+                                                    ).calcFinalTotalMain(
+                                                      context,
+                                                    ),
                                                   );
                                                 },
                                               ),
@@ -2940,6 +3130,78 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class EmptyCartBottomWidget extends StatelessWidget {
+  final Function()? action;
+  const EmptyCartBottomWidget({
+    super.key,
+    required this.action,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = returnTheme(context);
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(30),
+          topRight: Radius.circular(30),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(30, 10, 30, 0),
+        child: Column(
+          children: [
+            SizedBox(height: 10),
+            CartQueueMobile(isFirst: true),
+            SizedBox(height: 20),
+            Material(
+              color: Colors.transparent,
+              child: SubWrapper(
+                isVisible:
+                    !SalesAuthAction()
+                        .addCustomItemToCartAction(
+                          context: context,
+                        ),
+                mainWidget: Ink(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(2),
+                    border: Border.all(
+                      color:
+                          theme.lightModeColor.prColor300,
+                    ),
+                  ),
+                  child: InkWell(
+                    onTap: action,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        vertical: 7,
+                      ),
+                      child: Center(
+                        child: Text(
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
+                          ),
+                          'Add Custom Item',
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 40),
+          ],
         ),
       ),
     );

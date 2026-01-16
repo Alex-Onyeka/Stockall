@@ -5,7 +5,6 @@ import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/payment_type_button.dart';
 import 'package:stockall/components/cart_queue/cart_queue_desktop.dart';
-import 'package:stockall/components/discount_setter.dart/discount_setter_widget.dart';
 import 'package:stockall/components/major/desktop_page_container.dart';
 import 'package:stockall/components/my_calculator_desktop.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
@@ -824,7 +823,7 @@ class _MakeSalesDesktopTwoState
                                       fontSize:
                                           theme
                                               .mobileTexts
-                                              .b3
+                                              .b4
                                               .fontSize,
                                     ),
                                     'Subtotal',
@@ -834,7 +833,7 @@ class _MakeSalesDesktopTwoState
                                       fontSize:
                                           theme
                                               .mobileTexts
-                                              .b3
+                                              .b4
                                               .fontSize,
                                       // fontWeight: FontWeight.bold,
                                     ),
@@ -848,60 +847,120 @@ class _MakeSalesDesktopTwoState
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 5),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .spaceBetween,
+                              // SizedBox(height: 5),
+                              // Row(
+                              //   mainAxisAlignment:
+                              //       MainAxisAlignment
+                              //           .spaceBetween,
+                              //   children: [
+                              //     Row(
+                              //       children: [
+                              //         Text(
+                              //           style: TextStyle(
+                              //             fontSize:
+                              //                 theme
+                              //                     .mobileTexts
+                              //                     .b3
+                              //                     .fontSize,
+                              //             // fontWeight: FontWeight.bold,
+                              //           ),
+                              //           'Discount',
+                              //         ),
+                              //         Visibility(
+                              //           visible:
+                              //               returnSalesProvider(
+                              //                     context,
+                              //                   )
+                              //                   .currentCart()
+                              //                   .discount !=
+                              //               null,
+                              //           child: Text(
+                              //             style: TextStyle(
+                              //               fontSize:
+                              //                   theme
+                              //                       .mobileTexts
+                              //                       .b4
+                              //                       .fontSize,
+                              //               fontWeight:
+                              //                   FontWeight
+                              //                       .bold,
+                              //               // fontWeight: FontWeight.bold,
+                              //             ),
+                              //             ' (${returnSalesProvider(context).currentCart().discount}%)',
+                              //           ),
+                              //         ),
+                              //       ],
+                              //     ),
+                              //     Text(
+                              //       style: TextStyle(
+                              //         fontSize:
+                              //             theme
+                              //                 .mobileTexts
+                              //                 .b3
+                              //                 .fontSize,
+                              //         // fontWeight: FontWeight.bold,
+                              //       ),
+                              //       '- ${formatMoney(returnSalesProvider(context).calcDiscountMain(), context)}',
+                              //     ),
+                              //   ],
+                              // ),
+                              // SizedBox(height: 5),
+                              Column(
                                 children: [
+                                  SizedBox(height: 5),
                                   Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .spaceBetween,
                                     children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b4
+                                                      .fontSize,
+                                              // fontWeight: FontWeight.bold,
+                                            ),
+                                            'VAT',
+                                          ),
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b4
+                                                      .fontSize,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                              // fontWeight: FontWeight.bold,
+                                            ),
+                                            ' (${returnShopProvider(context).userShop()!.applyVAT! ? vat : 0}%)',
+                                          ),
+                                        ],
+                                      ),
                                       Text(
                                         style: TextStyle(
                                           fontSize:
                                               theme
                                                   .mobileTexts
-                                                  .b3
+                                                  .b4
                                                   .fontSize,
                                           // fontWeight: FontWeight.bold,
                                         ),
-                                        'Discount',
-                                      ),
-                                      Visibility(
-                                        visible:
-                                            returnSalesProvider(
-                                                  context,
-                                                )
-                                                .currentCart()
-                                                .discount !=
-                                            null,
-                                        child: Text(
-                                          style: TextStyle(
-                                            fontSize:
-                                                theme
-                                                    .mobileTexts
-                                                    .b4
-                                                    .fontSize,
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
-                                            // fontWeight: FontWeight.bold,
+                                        formatMoney(
+                                          returnSalesProvider(
+                                            context,
+                                          ).calcVatAmount(
+                                            context,
                                           ),
-                                          ' (${returnSalesProvider(context).currentCart().discount}%)',
+                                          context,
                                         ),
                                       ),
                                     ],
-                                  ),
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                      // fontWeight: FontWeight.bold,
-                                    ),
-                                    '- ${formatMoney(returnSalesProvider(context).calcDiscountMain(), context)}',
                                   ),
                                 ],
                               ),
@@ -916,7 +975,7 @@ class _MakeSalesDesktopTwoState
                                       fontSize:
                                           theme
                                               .mobileTexts
-                                              .b1
+                                              .b2
                                               .fontSize,
                                       fontWeight:
                                           FontWeight.bold,
@@ -928,7 +987,7 @@ class _MakeSalesDesktopTwoState
                                       fontSize:
                                           theme
                                               .mobileTexts
-                                              .b1
+                                              .b2
                                               .fontSize,
                                       fontWeight:
                                           FontWeight.bold,
@@ -937,18 +996,20 @@ class _MakeSalesDesktopTwoState
                                       amount:
                                           returnSalesProvider(
                                             context,
-                                          ).calcFinalTotalMain(),
+                                          ).calcFinalTotalMain(
+                                            context,
+                                          ),
                                       context: context,
                                     ),
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 5),
+                              // SizedBox(height: 5),
 
-                              DiscountSetterWidget(
-                                discountPercentController:
-                                    discountPercentController,
-                              ),
+                              // DiscountSetterWidget(
+                              //   discountPercentController:
+                              //       discountPercentController,
+                              // ),
                               SizedBox(height: 10),
                               Visibility(
                                 visible:
@@ -1051,7 +1112,9 @@ class _MakeSalesDesktopTwoState
                                                         context,
                                                         listen:
                                                             false,
-                                                      ).calcFinalTotalMain()
+                                                      ).calcFinalTotalMain(
+                                                        context,
+                                                      )
                                                       : 0,
                                               cashAlt:
                                                   returnSalesProvider(
@@ -1075,7 +1138,7 @@ class _MakeSalesDesktopTwoState
                                                         context,
                                                         listen:
                                                             false,
-                                                      ).calcFinalTotalMain(),
+                                                      ).calcFinalTotalMain(context),
                                               paymentMethod:
                                                   returnSalesProvider(
                                                     context,

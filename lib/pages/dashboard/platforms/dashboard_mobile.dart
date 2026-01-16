@@ -949,6 +949,374 @@ class _DashboardMobileState extends State<DashboardMobile> {
                     ],
                   ),
                   Visibility(
+                    visible:
+                        appVersionMobile !=
+                            returnAppVersionProvider(
+                              context,
+                            ).appVersion?.mobileVersion &&
+                        returnAppVersionProvider(
+                              context,
+                            ).isUpdated ==
+                            false,
+                    child: Align(
+                      alignment: Alignment(0, -0.8),
+                      child: Material(
+                        elevation: 2,
+                        color: Colors.transparent,
+                        child: Container(
+                          width: 450,
+                          padding: EdgeInsets.fromLTRB(
+                            15,
+                            15,
+                            15,
+                            30,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color.fromARGB(
+                                  84,
+                                  0,
+                                  0,
+                                  0,
+                                ),
+                                blurRadius: 20,
+                                spreadRadius: 10,
+                              ),
+                            ],
+                            borderRadius:
+                                BorderRadius.circular(5),
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Row(
+                                spacing: 10,
+                                mainAxisSize:
+                                    MainAxisSize.max,
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .spaceBetween,
+                                children: [
+                                  Opacity(
+                                    opacity: 0,
+                                    child: IconButton(
+                                      onPressed: () {},
+                                      icon: Icon(
+                                        Icons.clear,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    style: TextStyle(
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    'NEW UPDATE AVAILABLE',
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      returnAppVersionProvider(
+                                        context,
+                                        listen: false,
+                                      ).toggleUpdated(true);
+                                    },
+                                    icon: Icon(Icons.clear),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b2
+                                          .fontSize,
+                                ),
+                                'New Update is Available. Please Click the button below to download the updated version.',
+                              ),
+                              Visibility(
+                                visible: kIsWeb,
+                                child: Column(
+                                  children: [
+                                    SizedBox(height: 10),
+                                    Text(
+                                      textAlign:
+                                          TextAlign.center,
+                                      style: TextStyle(
+                                        color:
+                                            theme
+                                                .lightModeColor
+                                                .secColor100,
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                      ),
+                                      'Note: If you decide to update web, You might need to refresh more than twice before the update can relfect',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(height: 15),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .center,
+                                children: [
+                                  Visibility(
+                                    visible:
+                                        kIsWeb &&
+                                        Theme.of(
+                                              context,
+                                            ).platform ==
+                                            TargetPlatform
+                                                .iOS,
+                                    child: Expanded(
+                                      child: Material(
+                                        color:
+                                            Colors
+                                                .transparent,
+                                        child: Ink(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(
+                                                  5,
+                                                ),
+                                            color:
+                                                theme
+                                                    .lightModeColor
+                                                    .prColor300,
+                                          ),
+                                          child: InkWell(
+                                            onTap: () async {
+                                              setState(() {
+                                                isUpdateLodaingWeb =
+                                                    true;
+                                              });
+                                              performRestart();
+                                            },
+                                            child: Container(
+                                              padding:
+                                                  EdgeInsets.symmetric(
+                                                    vertical:
+                                                        10,
+                                                    horizontal:
+                                                        15,
+                                                  ),
+                                              child: Center(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.only(
+                                                    bottom:
+                                                        3.0,
+                                                  ),
+                                                  child:
+                                                      isUpdateLodaingWeb
+                                                          ? CircularProgressIndicator(
+                                                            color:
+                                                                Colors.white,
+                                                          )
+                                                          : Text(
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize:
+                                                                  theme.mobileTexts.b3.fontSize,
+                                                              fontWeight:
+                                                                  FontWeight.bold,
+                                                            ),
+                                                            'Install Update',
+                                                          ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible:
+                                        !kIsWeb ||
+                                        (kIsWeb &&
+                                            Theme.of(
+                                                  context,
+                                                ).platform !=
+                                                TargetPlatform
+                                                    .iOS),
+                                    child: Expanded(
+                                      child: Material(
+                                        color:
+                                            Colors
+                                                .transparent,
+                                        child: Ink(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(
+                                                  5,
+                                                ),
+                                            color:
+                                                theme
+                                                    .lightModeColor
+                                                    .prColor300,
+                                          ),
+                                          child: InkWell(
+                                            onTap: () async {
+                                              setState(() {
+                                                isUpdateLodaingMobile =
+                                                    true;
+                                              });
+                                              downloadApkFromApp(
+                                                context:
+                                                    context,
+                                              );
+                                              setState(() {
+                                                isUpdateLodaingMobile =
+                                                    false;
+                                              });
+                                            },
+                                            child: Container(
+                                              padding:
+                                                  EdgeInsets.symmetric(
+                                                    vertical:
+                                                        10,
+                                                    horizontal:
+                                                        15,
+                                                  ),
+                                              child: Center(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.only(
+                                                    bottom:
+                                                        3.0,
+                                                  ),
+                                                  child:
+                                                      isUpdateLodaingMobile
+                                                          ? CircularProgressIndicator(
+                                                            color:
+                                                                Colors.white,
+                                                          )
+                                                          : Text(
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize:
+                                                                  theme.mobileTexts.b3.fontSize,
+                                                              fontWeight:
+                                                                  FontWeight.bold,
+                                                            ),
+                                                            !kIsWeb
+                                                                ? 'Install Update'
+                                                                : kIsWeb &&
+                                                                    Theme.of(
+                                                                          context,
+                                                                        ).platform !=
+                                                                        TargetPlatform.iOS
+                                                                ? 'Download ${screenWidth(context) > tabletScreenSmall ? 'Desktop' : ''} App'
+                                                                : '',
+                                                          ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible:
+                                        (kIsWeb &&
+                                            Theme.of(
+                                                  context,
+                                                ).platform !=
+                                                TargetPlatform
+                                                    .iOS),
+                                    child: SizedBox(
+                                      width: 10,
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible:
+                                        kIsWeb &&
+                                        Theme.of(
+                                              context,
+                                            ).platform !=
+                                            TargetPlatform
+                                                .iOS,
+                                    child: Expanded(
+                                      child: Material(
+                                        color:
+                                            Colors
+                                                .transparent,
+                                        child: Ink(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(
+                                                  5,
+                                                ),
+                                            color:
+                                                theme
+                                                    .lightModeColor
+                                                    .prColor300,
+                                          ),
+                                          child: InkWell(
+                                            onTap: () async {
+                                              setState(() {
+                                                isUpdateLodaingWeb =
+                                                    true;
+                                              });
+                                              performRestart();
+                                            },
+                                            child: Container(
+                                              padding:
+                                                  EdgeInsets.symmetric(
+                                                    vertical:
+                                                        10,
+                                                    horizontal:
+                                                        15,
+                                                  ),
+                                              child: Center(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.only(
+                                                    bottom:
+                                                        3.0,
+                                                  ),
+                                                  child:
+                                                      isUpdateLodaingWeb
+                                                          ? CircularProgressIndicator(
+                                                            color:
+                                                                Colors.white,
+                                                          )
+                                                          : Text(
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize:
+                                                                  theme.mobileTexts.b3.fontSize,
+                                                              fontWeight:
+                                                                  FontWeight.bold,
+                                                            ),
+                                                            'Install Update',
+                                                          ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Visibility(
                     visible: authorization(
                       authorized:
                           Authorizations().contactStockall,

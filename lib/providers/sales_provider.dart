@@ -7,6 +7,7 @@ import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_rec
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/local_database/products/products_func.dart';
 import 'package:stockall/main.dart';
@@ -299,7 +300,7 @@ class SalesProvider extends ChangeNotifier {
                 recepitId: receiptId ?? 0,
                 receiptUuid: receiptUuid,
                 quantity: cartItem.quantity,
-                revenue: cartItem.revenue(),
+                revenue: cartItem.revenue(context),
                 discountedAmount: cartItem.discountCost(),
                 originalCost: cartItem.totalCost(),
                 discount: cartItem.discount,
@@ -537,8 +538,20 @@ class SalesProvider extends ChangeNotifier {
     }
   }
 
-  double calcFinalTotalMain() {
-    return calcTotalMain() - calcDiscountMain();
+  double calcVatAmount(BuildContext context) {
+    if (returnShopProvider(
+      context,
+      listen: false,
+    ).userShop()!.applyVAT!) {
+      return calcTotalMain() * (vat / 100);
+    } else {
+      return 0;
+    }
+  }
+
+  double calcFinalTotalMain(BuildContext context) {
+    return (calcTotalMain() - calcDiscountMain()) +
+        calcVatAmount(context);
   }
 
   bool isSetCustomPrice() {

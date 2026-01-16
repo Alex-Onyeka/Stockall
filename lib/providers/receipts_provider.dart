@@ -1137,6 +1137,18 @@ class ReceiptsProvider extends ChangeNotifier {
     return tempRev;
   }
 
+  double getVATForReceipt(
+    BuildContext context,
+    List<TempProductSaleRecord> records,
+  ) {
+    double tempRev = 0;
+
+    for (var bean in records) {
+      tempRev += (bean.revenue - bean.originalCost!);
+    }
+    return tempRev;
+  }
+
   double getTotalMainRevenueReceipt(
     List<TempProductSaleRecord> records,
     BuildContext context,

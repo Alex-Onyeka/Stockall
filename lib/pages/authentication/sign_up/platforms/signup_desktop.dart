@@ -301,34 +301,27 @@ class _SignupDesktopState extends State<SignupDesktop> {
                     children: [
                       Row(
                         children: [
-                          InkWell(
-                            onTap: () async {
-                              await AuthService().signOut(
-                                context,
-                              );
-                            },
-                            child: Text(
-                              style: TextStyle(
-                                color:
-                                    widget
-                                        .theme
-                                        .lightModeColor
-                                        .shadesColorBlack,
-                                fontSize:
-                                    widget
-                                        .theme
-                                        .mobileTexts
-                                        .h3
-                                        .fontSize,
-                                fontWeight:
-                                    widget
-                                        .theme
-                                        .mobileTexts
-                                        .h3
-                                        .fontWeightBold,
-                              ),
-                              'Get Started Now',
+                          Text(
+                            style: TextStyle(
+                              color:
+                                  widget
+                                      .theme
+                                      .lightModeColor
+                                      .shadesColorBlack,
+                              fontSize:
+                                  widget
+                                      .theme
+                                      .mobileTexts
+                                      .h3
+                                      .fontSize,
+                              fontWeight:
+                                  widget
+                                      .theme
+                                      .mobileTexts
+                                      .h3
+                                      .fontWeightBold,
                             ),
+                            'Get Started Now',
                           ),
                         ],
                       ),

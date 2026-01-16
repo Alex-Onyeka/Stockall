@@ -424,23 +424,32 @@ class _VerifyEmailDesktopState
       setState(() {
         isLoading = true;
       });
+      print('Verification Started');
       var res = await AuthService().verifyOtp(
         context: context,
         otp: otp,
         user: widget.user,
         userId: widget.userId,
       );
+      print(
+        'Verification Ended: ${res == 1 ? 'Success' : 'Failed'}',
+      );
       if (res == 1) {
         await AuthService().client.auth.refreshSession();
-        Navigator.pushReplacement(
-          // ignore: use_build_context_synchronously
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return BasePage();
-            },
-          ),
-        );
+        if (context.mounted) {
+          print('Context is Mounted');
+          Navigator.pushReplacement(
+            // ignore: use_build_context_synchronously
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return BasePage();
+              },
+            ),
+          );
+        } else {
+          print('Context is Not Mounted');
+        }
       } else {
         showDialog(
           // ignore: use_build_context_synchronously
