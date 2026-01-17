@@ -194,7 +194,7 @@ class _ShopSetupTwoDesktopState
                     // updateNumber: currentUpdate,
                     isVerified: false,
                     currency: selectedCurrency!,
-                    employees: [AuthService().currentUser!],
+                    employees: [],
                     createdAt: DateTime.now(),
                     userId: AuthService().currentUser!,
                     email: shopProvider.email,
@@ -3658,23 +3658,34 @@ class _ShopSetupTwoDesktopState
                                           : 'Create Shop',
                                 ),
                                 SizedBox(height: 5),
-                                Visibility(
-                                  visible:
-                                      widget.shop != null,
-                                  child:
-                                      MainButtonTransparent(
-                                        themeProvider:
-                                            theme,
-                                        action: () {
-                                          Navigator.of(
-                                            context,
-                                          ).pop();
-                                        },
-                                        text: 'Cancel',
-                                        constraints:
-                                            BoxConstraints(),
-                                      ),
+                                MainButtonTransparent(
+                                  themeProvider: theme,
+                                  action: () {
+                                    Navigator.of(
+                                      context,
+                                    ).pop();
+                                  },
+                                  text: 'Cancel',
+                                  constraints:
+                                      BoxConstraints(),
                                 ),
+                                // Visibility(
+                                //   visible:
+                                //       widget.shop != null,
+                                //   child:
+                                //       MainButtonTransparent(
+                                //         themeProvider:
+                                //             theme,
+                                //         action: () {
+                                //           Navigator.of(
+                                //             context,
+                                //           ).pop();
+                                //         },
+                                //         text: 'Cancel',
+                                //         constraints:
+                                //             BoxConstraints(),
+                                //       ),
+                                // ),
                               ],
                             ),
                             SizedBox(height: 40),

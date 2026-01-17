@@ -6,6 +6,7 @@ import 'package:stockall/classes/temp_current_shop/temp_current_shop.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/classes/temp_shop/unsynced/updated_shop.dart';
 import 'package:stockall/classes/temp_shop_logos/temp_shop_logos.dart';
+import 'package:stockall/classes/temp_shop_owner/shop_owner.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/subscription/multiple_stores_auth.dart';
@@ -14,6 +15,7 @@ import 'package:stockall/local_database/shop/updated_shop/updated_shop_func.dart
 import 'package:stockall/local_database/shop_current/current_shop_func.dart';
 import 'package:stockall/local_database/shop_logos/created_shop_logo/created_shop_logos_func.dart';
 import 'package:stockall/local_database/shop_logos/shop_logos_func.dart';
+import 'package:stockall/local_database/shop_owner/shop_owner_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
 import 'package:stockall/pages/home/home.dart';
@@ -57,6 +59,11 @@ class ShopProvider extends ChangeNotifier {
           context: context,
           action: () async {
             shop.updatedAt = DateTime.now();
+            if (tempRole != 'Owner') {
+              shop.employees!.add(
+                AuthService().currentUser!,
+              );
+            }
             print('Creating Shop');
             print('App State Role: $tempRole');
             // Insert the shop
@@ -104,6 +111,9 @@ class ShopProvider extends ChangeNotifier {
         action: () async {
           shop.updatedAt = DateTime.now();
           shop.isHeadQuarters = false;
+          // if (tempRole != 'Owner') {
+          //   shop.employees!.add(AuthService().currentUser!);
+          // }
           // Insert the shop
           var createdShop =
               await supabase
@@ -114,19 +124,19 @@ class ShopProvider extends ChangeNotifier {
 
           if (createdShop != null) {
             print(createdShop['name']);
-            // var user =
-            //     await supabase
-            //         .from('users')
-            //         .update({'role': tempRole})
-            //         .eq(
-            //           'user_id',
-            //           AuthService().currentUser!,
-            //         )
-            //         .select()
-            //         .maybeSingle();
-            // if (user != null) {
-            //   print(user['name']);
-            // }
+            var user =
+                await supabase
+                    .from('users')
+                    .update({'role': 'Owner'})
+                    .eq(
+                      'user_id',
+                      AuthService().currentUser!,
+                    )
+                    .select()
+                    .maybeSingle();
+            if (user != null) {
+              print(user['name']);
+            }
           }
 
           // Fetch All Shops
@@ -230,6 +240,8 @@ class ShopProvider extends ChangeNotifier {
     }
   }
 
+  TempUserClass? shopOwnerUser;
+
   Future<List<TempShopClass>> getUserShops() async {
     bool isOnline = await connectivity.isOnline();
 
@@ -286,8 +298,26 @@ class ShopProvider extends ChangeNotifier {
           setShops(shops);
           notifyListeners();
         }
+        var res =
+            await supabase
+                .from('users')
+                .select()
+                .eq('user_id', userShop()!.userId)
+                .maybeSingle();
+
+        if (res == null) {
+          print('Shop Owner not gotten');
+        } else {
+          print('Shop Owner Gotten: ${res.toString()}');
+          shopOwnerUser = TempUserClass.fromJson(res);
+          await ShopOwnerFunc().insertShopOwner(
+            ShopOwner(shopOwner: shopOwnerUser!),
+          );
+          notifyListeners();
+        }
       } else {
         /// Offline mode
+        print('Gettiing Stores Offline');
         final shops = ShopFunc().getShops();
 
         shops.sort((a, b) {
@@ -297,6 +327,8 @@ class ShopProvider extends ChangeNotifier {
         });
 
         setShops(shops);
+        shopOwnerUser =
+            ShopOwnerFunc().getShopOwnerUser()?.shopOwner;
       }
 
       notifyListeners();

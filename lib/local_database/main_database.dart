@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:stockall/local_database/app_version/app_version_func.dart';
@@ -15,6 +14,7 @@ import 'package:stockall/local_database/products/products_func.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';
 import 'package:stockall/local_database/shop_current/current_shop_func.dart';
 import 'package:stockall/local_database/shop_logos/shop_logos_func.dart';
+import 'package:stockall/local_database/shop_owner/shop_owner_func.dart';
 import 'package:stockall/local_database/subscription/subscription_func.dart';
 import 'package:stockall/local_database/users/user_func.dart';
 import 'package:stockall/local_database/visibility_box/visibility_box.dart';
@@ -52,8 +52,9 @@ class MainDatabase extends ChangeNotifier {
     await ShopLogosFunc().init();
     await CurrentShopFunc().init();
     await SubscriptionFunc().init();
+    await ShopOwnerFunc().init();
     print('init Complete');
   }
 }
 
-int highestHiveClassIndex = 32;
+int highestHiveClassIndex = 33;

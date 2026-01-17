@@ -757,6 +757,7 @@ class DataProvider extends ChangeNotifier {
     int shopId,
   ) async {
     bool isOnline = await connectivity.isOnline();
+    // setAllowedRange(context: context)
     productList.clear();
     print('✅✅ Products List Cleared');
     if (isOnline) {
@@ -826,22 +827,24 @@ class DataProvider extends ChangeNotifier {
 
       await ProductsFunc().insertAllProducts(productList);
     } else {
-      int getRange() {
-        if ((allowedRangeItems ?? 0) >
-            ProductsFunc().getProducts().length) {
-          return ProductsFunc().getProducts().length;
-        } else {
-          return (allowedRangeItems ?? 0);
-        }
-      }
+      // int getRange() {
+      //   if ((allowedRangeItems ?? 0) >
+      //       ProductsFunc().getProducts().length) {
+      //     return ProductsFunc().getProducts().length;
+      //   } else {
+      //     return (allowedRangeItems ?? 0);
+      //   }
+      // }
 
-      var offlineData =
-          ProductsFunc()
-              .getProducts()
-              .getRange(0, getRange())
-              .toList();
-      print("Offline Data Gotten: ${offlineData.length}");
-      productList = offlineData;
+      // var offlineData =
+      //     ProductsFunc()
+      //         .getProducts()
+      //         .getRange(0, getRange())
+      //         .toList();
+      print(
+        "Offline Data Gotten: ${ProductsFunc().getProducts().length}",
+      );
+      productList = ProductsFunc().getProducts();
       // productList.clear();
     }
 

@@ -206,6 +206,7 @@ class _ShopSetupTwoMobileState
                             ).userShops.isEmpty
                             ? true
                             : false,
+                    applyVAT: false,
                   ),
                   safeContext,
                 );

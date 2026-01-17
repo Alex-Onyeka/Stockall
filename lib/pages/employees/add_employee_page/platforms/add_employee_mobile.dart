@@ -220,18 +220,12 @@ class _AddEmployeeMobileState
                                       physics:
                                           NeverScrollableScrollPhysics(),
                                       itemCount:
-                                          returnUserProvider(
+                                          returnShopProvider(
                                                     context,
-                                                  )
-                                                  .usersMain
-                                                  .where(
-                                                    (
-                                                      user,
-                                                    ) =>
-                                                        user.role ==
-                                                        'Owner',
-                                                  )
-                                                  .isNotEmpty
+                                                    listen:
+                                                        false,
+                                                  ).shopOwnerUser!.role ==
+                                                  'Owner'
                                               ? empSetup
                                                   .where((
                                                     emp,
@@ -248,18 +242,12 @@ class _AddEmployeeMobileState
                                         index,
                                       ) {
                                         var employee =
-                                            returnUserProvider(
+                                            returnShopProvider(
                                                       context,
-                                                    )
-                                                    .usersMain
-                                                    .where(
-                                                      (
-                                                        user,
-                                                      ) =>
-                                                          user.role ==
-                                                          'Owner',
-                                                    )
-                                                    .isNotEmpty
+                                                      listen:
+                                                          false,
+                                                    ).shopOwnerUser!.role ==
+                                                    'Owner'
                                                 ? empSetup
                                                     .where(
                                                       (
@@ -273,13 +261,17 @@ class _AddEmployeeMobileState
                                         return EmployeeListTile(
                                           currentSelected:
                                               currentSelected ??
-                                              5,
+                                              4,
                                           index: index,
                                           action: () {
                                             setState(() {
                                               currentSelected =
                                                   index;
                                             });
+                                            print(index);
+                                            print(
+                                              employee['position'],
+                                            );
                                           },
                                           authorizations:
                                               employee['auths'],

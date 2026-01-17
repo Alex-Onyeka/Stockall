@@ -44,7 +44,10 @@ class ProductsFunc {
       for (var product in products) {
         await productBox.put(product.uuid, product);
       }
-      print("Offline Products inserted");
+      print(
+        "Offline Products inserted: ${products.length}",
+      );
+      print(getProducts().length);
       return 1;
     } catch (e) {
       print(
