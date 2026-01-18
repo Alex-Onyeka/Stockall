@@ -2503,56 +2503,63 @@ class _MakeSalesDesktopState
                                                 .min,
                                         spacing: 10,
                                         children: [
-                                          Ink(
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    5,
-                                                  ),
-                                              color:
-                                                  theme
-                                                      .lightModeColor
-                                                      .prColor300,
-                                            ),
-                                            child: InkWell(
-                                              onTap: () {
-                                                showGeneralDialog(
-                                                  context:
+                                          Visibility(
+                                            visible:
+                                                returnData(
                                                       context,
-                                                  pageBuilder: (
-                                                    context,
-                                                    animation,
-                                                    secondaryAnimation,
-                                                  ) {
-                                                    return CustomBottomPanel(
-                                                      searchController:
-                                                          widget.searchController,
-                                                      close: () {
-                                                        Navigator.of(
-                                                          context,
-                                                        ).pop();
-                                                      },
-                                                      // products:
-                                                      //     products,
-                                                    );
-                                                  },
-                                                );
-                                              },
-                                              child: Container(
-                                                padding:
-                                                    EdgeInsets.symmetric(
-                                                      vertical:
-                                                          11,
+                                                    )
+                                                    .productList
+                                                    .isNotEmpty,
+                                            child: Ink(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                      5,
                                                     ),
-                                                child: Center(
-                                                  child: Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          theme.mobileTexts.b3.fontSize,
-                                                      color:
-                                                          Colors.white,
+                                                color:
+                                                    theme
+                                                        .lightModeColor
+                                                        .prColor300,
+                                              ),
+                                              child: InkWell(
+                                                onTap: () {
+                                                  showGeneralDialog(
+                                                    context:
+                                                        context,
+                                                    pageBuilder: (
+                                                      context,
+                                                      animation,
+                                                      secondaryAnimation,
+                                                    ) {
+                                                      return CustomBottomPanel(
+                                                        searchController:
+                                                            widget.searchController,
+                                                        close: () {
+                                                          Navigator.of(
+                                                            context,
+                                                          ).pop();
+                                                        },
+                                                        // products:
+                                                        //     products,
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                                child: Container(
+                                                  padding: EdgeInsets.symmetric(
+                                                    vertical:
+                                                        11,
+                                                  ),
+                                                  child: Center(
+                                                    child: Text(
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            theme.mobileTexts.b3.fontSize,
+                                                        color:
+                                                            Colors.white,
+                                                      ),
+                                                      'Add Item',
                                                     ),
-                                                    'Add Item',
                                                   ),
                                                 ),
                                               ),

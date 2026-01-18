@@ -2636,78 +2636,84 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                     .spaceBetween,
                                             spacing: 10,
                                             children: [
-                                              Expanded(
-                                                child: Ink(
-                                                  decoration: BoxDecoration(
-                                                    color:
-                                                        theme.lightModeColor.prColor300,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          5,
-                                                        ),
-                                                  ),
-                                                  child: InkWell(
-                                                    onTap: () {
-                                                      showGeneralDialog(
-                                                        context:
-                                                            context,
-                                                        pageBuilder: (
-                                                          context,
-                                                          animation,
-                                                          secondaryAnimation,
-                                                        ) {
-                                                          return CustomBottomPanel(
-                                                            searchController:
-                                                                widget.searchController,
-                                                            close: () {
-                                                              Navigator.of(
-                                                                context,
-                                                              ).pop();
-                                                            },
-                                                          );
-                                                        },
-                                                      );
-                                                    },
-                                                    child: Container(
-                                                      padding: EdgeInsets.symmetric(
-                                                        vertical:
-                                                            8,
-                                                      ),
-
-                                                      child: Row(
-                                                        spacing:
+                                              Visibility(
+                                                visible:
+                                                    returnData(
+                                                      context,
+                                                    ).productList.isNotEmpty,
+                                                child: Expanded(
+                                                  child: Ink(
+                                                    decoration: BoxDecoration(
+                                                      color:
+                                                          theme.lightModeColor.prColor300,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
                                                             5,
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment.center,
-                                                        children: [
-                                                          Visibility(
-                                                            visible:
-                                                                MediaQuery.of(
+                                                          ),
+                                                    ),
+                                                    child: InkWell(
+                                                      onTap: () {
+                                                        showGeneralDialog(
+                                                          context:
+                                                              context,
+                                                          pageBuilder: (
+                                                            context,
+                                                            animation,
+                                                            secondaryAnimation,
+                                                          ) {
+                                                            return CustomBottomPanel(
+                                                              searchController:
+                                                                  widget.searchController,
+                                                              close: () {
+                                                                Navigator.of(
                                                                   context,
-                                                                ).size.width >
-                                                                300,
-                                                            child: Icon(
-                                                              color:
-                                                                  Colors.white,
-                                                              size:
-                                                                  15,
-                                                              Icons.add_rounded,
+                                                                ).pop();
+                                                              },
+                                                            );
+                                                          },
+                                                        );
+                                                      },
+                                                      child: Container(
+                                                        padding: EdgeInsets.symmetric(
+                                                          vertical:
+                                                              8,
+                                                        ),
+
+                                                        child: Row(
+                                                          spacing:
+                                                              5,
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment.center,
+                                                          children: [
+                                                            Visibility(
+                                                              visible:
+                                                                  MediaQuery.of(
+                                                                    context,
+                                                                  ).size.width >
+                                                                  300,
+                                                              child: Icon(
+                                                                color:
+                                                                    Colors.white,
+                                                                size:
+                                                                    15,
+                                                                Icons.add_rounded,
+                                                              ),
                                                             ),
-                                                          ),
-                                                          Text(
-                                                            style: TextStyle(
-                                                              color:
-                                                                  Colors.white,
-                                                              fontWeight:
-                                                                  FontWeight.w500,
-                                                              fontSize:
-                                                                  theme.mobileTexts.b3.fontSize,
+                                                            Text(
+                                                              style: TextStyle(
+                                                                color:
+                                                                    Colors.white,
+                                                                fontWeight:
+                                                                    FontWeight.w500,
+                                                                fontSize:
+                                                                    theme.mobileTexts.b3.fontSize,
+                                                              ),
+                                                              'Add Item',
                                                             ),
-                                                            'Add Item',
-                                                          ),
-                                                        ],
+                                                          ],
+                                                        ),
                                                       ),
                                                     ),
                                                   ),

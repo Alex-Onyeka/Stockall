@@ -20,6 +20,7 @@ import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/providers/customers_provider.dart';
 import 'package:stockall/providers/data_provider.dart';
 import 'package:stockall/providers/expenses_provider.dart';
+import 'package:stockall/providers/multi_screen_provider.dart';
 import 'package:stockall/providers/nav_provider.dart';
 import 'package:stockall/providers/notifications_provider.dart';
 // import 'package:stockall/providers/product_suggestions_provider.dart';
@@ -65,6 +66,49 @@ void main() async {
   await MainDatabase().initHive();
   runApp(MyApp());
 }
+
+// void main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   stopwatch.start();
+
+//   SystemChrome.setSystemUIOverlayStyle(
+//     SystemUiOverlayStyle(
+//       statusBarColor: Colors.white,
+//       statusBarIconBrightness: Brightness.dark,
+//       systemNavigationBarContrastEnforced: true,
+//       statusBarBrightness: Brightness.light,
+//     ),
+//   );
+
+//   await SystemChrome.setPreferredOrientations([
+//     DeviceOrientation.portraitUp,
+//     DeviceOrientation.portraitDown,
+//   ]);
+
+//   await Supabase.initialize(
+//     url: supabaseUrl,
+//     anonKey: supabaseAnonKey,
+//   );
+//   await MainDatabase().initHive();
+
+//   if (MultiScreenProvider().isDesktop()) {
+//     final displays = await screenRetriever.getAllDisplays();
+//     if (displays.length > 1) {
+//       final customerDisplay = displays[1];
+//       final width = customerDisplay.size.width;
+//       final height = customerDisplay.size.height;
+//       // Spawn customer window on second display
+//       await MultiWindow.create(
+//         'customer',
+//         title: 'Customer Display',
+//         size: Size(width, height),
+//         alignment: Alignment.center,
+//       );
+//     }
+//   }
+
+//   runApp(MyApp());
+// }
 
 TempUserClass userGeneral(
   BuildContext context, {
@@ -272,6 +316,16 @@ AppVersionProvider returnAppVersionProvider(
   );
 }
 
+MultiScreenProvider returnMultiScreenProvider(
+  BuildContext context, {
+  bool listen = true,
+}) {
+  return Provider.of<MultiScreenProvider>(
+    context,
+    listen: listen,
+  );
+}
+
 Widget colorWidget(
   Widget widget,
   bool isPrimary,
@@ -376,6 +430,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => AppVersionProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => MultiScreenProvider(),
         ),
       ],
       child: MaterialApp(
