@@ -53,9 +53,21 @@ class _AddEmployeeDesktopState
     super.initState();
     usersFuture = getUsers();
     if (widget.employee != null) {
+      var beans =
+          returnShopProvider(
+                    context,
+                    listen: false,
+                  ).shopOwnerUser!.role ==
+                  'Owner'
+              ? empSetup
+                  .where(
+                    (emp) => emp['position'] != 'Owner',
+                  )
+                  .toList()
+              : empSetup;
       setState(() {
-        currentSelected = empSetup.indexOf(
-          empSetup.firstWhere(
+        currentSelected = beans.indexOf(
+          beans.firstWhere(
             (emp) =>
                 emp['position'] == widget.employee!.role,
           ),
@@ -492,7 +504,22 @@ class _AddEmployeeDesktopState
                                                       .text
                                                       .trim(),
                                               newRole:
-                                                  empSetup[currentSelected!]['position'],
+                                                  returnShopProvider(
+                                                            context,
+                                                            listen:
+                                                                false,
+                                                          ).shopOwnerUser!.role ==
+                                                          'Owner'
+                                                      ? empSetup
+                                                          .where(
+                                                            (
+                                                              emp,
+                                                            ) =>
+                                                                emp['position'] !=
+                                                                'Owner',
+                                                          )
+                                                          .toList()[currentSelected!]['position']
+                                                      : empSetup[currentSelected!]['position'],
                                               authUserId:
                                                   AuthService()
                                                       .currentUser!,
@@ -551,7 +578,22 @@ class _AddEmployeeDesktopState
                                               context:
                                                   context,
                                               role:
-                                                  empSetup[currentSelected!]['position'],
+                                                  returnShopProvider(
+                                                            context,
+                                                            listen:
+                                                                false,
+                                                          ).shopOwnerUser!.role ==
+                                                          'Owner'
+                                                      ? empSetup
+                                                          .where(
+                                                            (
+                                                              emp,
+                                                            ) =>
+                                                                emp['position'] !=
+                                                                'Owner',
+                                                          )
+                                                          .toList()[currentSelected!]['position']
+                                                      : empSetup[currentSelected!]['position'],
                                             );
                                             setState(() {
                                               isLoading =
@@ -649,7 +691,22 @@ class _AddEmployeeDesktopState
                                         listen: false,
                                       ).updateEmployeeRole(
                                         newRole:
-                                            empSetup[currentSelected!]['position'],
+                                            returnShopProvider(
+                                                      context,
+                                                      listen:
+                                                          false,
+                                                    ).shopOwnerUser!.role ==
+                                                    'Owner'
+                                                ? empSetup
+                                                    .where(
+                                                      (
+                                                        emp,
+                                                      ) =>
+                                                          emp['position'] !=
+                                                          'Owner',
+                                                    )
+                                                    .toList()[currentSelected!]['position']
+                                                : empSetup[currentSelected!]['position'],
                                         userId:
                                             widget.employee !=
                                                     null

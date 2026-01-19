@@ -52,12 +52,26 @@ class _AddEmployeeMobileState
     usersFuture = getUsers();
     if (widget.employee != null) {
       setState(() {
-        currentSelected = empSetup.indexOf(
-          empSetup.firstWhere(
-            (emp) =>
-                emp['position'] == widget.employee!.role,
-          ),
-        );
+        var beans =
+            returnShopProvider(
+                      context,
+                      listen: false,
+                    ).shopOwnerUser!.role ==
+                    'Owner'
+                ? empSetup
+                    .where(
+                      (emp) => emp['position'] != 'Owner',
+                    )
+                    .toList()
+                : empSetup;
+        setState(() {
+          currentSelected = beans.indexOf(
+            beans.firstWhere(
+              (emp) =>
+                  emp['position'] == widget.employee!.role,
+            ),
+          );
+        });
       });
     }
   }
@@ -485,7 +499,22 @@ class _AddEmployeeMobileState
                                                       .text
                                                       .trim(),
                                               newRole:
-                                                  empSetup[currentSelected!]['position'],
+                                                  returnShopProvider(
+                                                            context,
+                                                            listen:
+                                                                false,
+                                                          ).shopOwnerUser!.role ==
+                                                          'Owner'
+                                                      ? empSetup
+                                                          .where(
+                                                            (
+                                                              emp,
+                                                            ) =>
+                                                                emp['position'] !=
+                                                                'Owner',
+                                                          )
+                                                          .toList()[currentSelected!]['position']
+                                                      : empSetup[currentSelected!]['position'],
                                               authUserId:
                                                   AuthService()
                                                       .currentUser!,
@@ -537,7 +566,22 @@ class _AddEmployeeMobileState
 
                                             await shopProvider.addEmployeeToShop(
                                               role:
-                                                  empSetup[currentSelected!]['position'],
+                                                  returnShopProvider(
+                                                            context,
+                                                            listen:
+                                                                false,
+                                                          ).shopOwnerUser!.role ==
+                                                          'Owner'
+                                                      ? empSetup
+                                                          .where(
+                                                            (
+                                                              emp,
+                                                            ) =>
+                                                                emp['position'] !=
+                                                                'Owner',
+                                                          )
+                                                          .toList()[currentSelected!]['position']
+                                                      : empSetup[currentSelected!]['position'],
                                               newEmployeeId:
                                                   widget
                                                       .idC
@@ -643,7 +687,22 @@ class _AddEmployeeMobileState
                                         listen: false,
                                       ).updateEmployeeRole(
                                         newRole:
-                                            empSetup[currentSelected!]['position'],
+                                            returnShopProvider(
+                                                      context,
+                                                      listen:
+                                                          false,
+                                                    ).shopOwnerUser!.role ==
+                                                    'Owner'
+                                                ? empSetup
+                                                    .where(
+                                                      (
+                                                        emp,
+                                                      ) =>
+                                                          emp['position'] !=
+                                                          'Owner',
+                                                    )
+                                                    .toList()[currentSelected!]['position']
+                                                : empSetup[currentSelected!]['position'],
                                         userId:
                                             widget.employee !=
                                                     null
