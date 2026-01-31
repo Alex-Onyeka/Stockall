@@ -28,10 +28,7 @@ class _ExpensesMoblieState extends State<ExpensesMoblie> {
   @override
   void initState() {
     super.initState();
-    returnData(
-      context,
-      listen: false,
-    ).toggleFloatingAction(context);
+    returnData().toggleFloatingAction(context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       clearDate();
     });

@@ -130,21 +130,12 @@ class ReceiptsProvider extends ChangeNotifier {
         );
         if (context.mounted) {
           print('Loaded');
-          await returnData(
-            context,
-            listen: false,
-          ).getProducts(
-            returnShopProvider(
-              context,
-              listen: false,
-            ).userShop()!.shopId!,
+          await returnData().getProducts(
+            returnShopProvider().userShop()!.shopId!,
           );
           if (context.mounted) {
             await loadProductSalesRecord(
-              returnShopProvider(
-                context,
-                listen: false,
-              ).userShop()!.shopId!,
+              returnShopProvider().userShop()!.shopId!,
             );
           }
         }
@@ -156,21 +147,12 @@ class ReceiptsProvider extends ChangeNotifier {
       notifyListeners();
       if (context.mounted) {
         print('Offline Receipts Gotten');
-        await returnData(
-          context,
-          listen: false,
-        ).getProducts(
-          returnShopProvider(
-            context,
-            listen: false,
-          ).userShop()!.shopId!,
+        await returnData().getProducts(
+          returnShopProvider().userShop()!.shopId!,
         );
         if (context.mounted) {
           await loadProductSalesRecord(
-            returnShopProvider(
-              context,
-              listen: false,
-            ).userShop()!.shopId!,
+            returnShopProvider().userShop()!.shopId!,
           );
         }
       }
@@ -222,37 +204,38 @@ class ReceiptsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // UPDATE a receipt
-  Future<void> updateReceipt(
-    TempMainReceipt updated,
-  ) async {
-    // Use only the updatable fields
-    final updateData = {
-      'barcode': updated.barcode,
-      'payment_method': updated.paymentMethod,
-      'cash_alt': updated.cashAlt,
-      'bank': updated.bank,
-      'customer_id': updated.customerId,
-      'customer_uuid': updated.customerUuid,
-    };
+  // // UPDATE a receipt
+  // Future<void> updateReceipt(
+  //   TempMainReceipt updated,
+  // ) async {
+  //   // Use only the updatable fields
+  //   final updateData = {
+  //     'barcode': updated.barcode,
+  //     'payment_method': updated.paymentMethod,
+  //     'cash_alt': updated.cashAlt,
+  //     'bank': updated.bank,
+  //     'customer_id': updated.customerId,
+  //     'customer_uuid': updated.customerUuid,
+  //   };
 
-    await supabase
-        .from('receipts')
-        .update(updateData)
-        .eq('uuid', updated.uuid!);
+  //   await supabase
+  //       .from('receipts')
+  //       .update(updateData)
+  //       .eq('uuid', updated.uuid!);
 
-    final index = _receipts.indexWhere(
-      (r) => r.uuid == updated.uuid,
-    );
-    if (index != -1) {
-      _receipts[index] = updated;
-      notifyListeners();
-    }
-  }
+  //   final index = _receipts.indexWhere(
+  //     (r) => r.uuid == updated.uuid,
+  //   );
+  //   if (index != -1) {
+  //     _receipts[index] = updated;
+  //     notifyListeners();
+  //   }
+  // }
 
   // DELETE a receipt
   Future<void> deleteReceipt(
-    String uuid,
+    TempMainReceipt receipt,
+    List<String> productNames,
     BuildContext context,
   ) async {
     print('Deleting Receipt');
@@ -261,42 +244,55 @@ class ReceiptsProvider extends ChangeNotifier {
       print('Deleting Receipt Online');
       await supabase.rpc(
         'delete_receipt_and_update_inventory_new',
-        params: {'target_receipt_uuid': uuid},
+        params: {'target_receipt_uuid': receipt.uuid},
       );
       print('Finished Deleting Receipt Online');
       var containsUpdate = UpdatedReceiptsFunc()
           .getReceiptIds()
-          .where((rec) => rec.receiptUuid == uuid);
+          .where((rec) => rec.receiptUuid == receipt.uuid);
       if (containsUpdate.isNotEmpty) {
         await UpdatedReceiptsFunc().deleteUpdatedReceipt(
-          uuid,
+          receipt.uuid!,
         );
       }
     } else {
       print('Deleting Receipt Offline');
-      await MainReceiptFunc().deleteReceipt(uuid);
+      await MainReceiptFunc().deleteReceipt(receipt.uuid!);
       var containsCreated =
           CreatedReceiptsFunc()
               .getReceipts()
-              .where((rec) => rec.receipt.uuid == uuid)
+              .where(
+                (rec) => rec.receipt.uuid == receipt.uuid,
+              )
               .toList();
       var containsUpdate = UpdatedReceiptsFunc()
           .getReceiptIds()
-          .where((rec) => rec.receiptUuid == uuid);
+          .where((rec) => rec.receiptUuid == receipt.uuid!);
       if (containsCreated.isNotEmpty) {
-        await CreatedReceiptsFunc().deleteReceipt(uuid);
+        await CreatedReceiptsFunc().deleteReceipt(
+          receipt.uuid!,
+        );
       } else {
         await DeletedReceiptsFunc().createDeletedReceipt(
-          DeletedReceipts(receiptUuid: uuid),
+          DeletedReceipts(receiptUuid: receipt.uuid!),
         );
       }
       if (containsUpdate.isNotEmpty) {
         await UpdatedReceiptsFunc().deleteUpdatedReceipt(
-          uuid,
+          receipt.uuid!,
         );
       }
       await ProductRecordFunc().deleteRecordsInReceipt(
-        uuid,
+        receipt.uuid!,
+      );
+    }
+    if (productNames.isNotEmpty) {
+      await returnEventsLogProvider().createLog(
+        returnEventsLogProvider().receiptAdapter(
+          receipt,
+          productNames,
+          3,
+        ),
       );
     }
 
@@ -306,10 +302,7 @@ class ReceiptsProvider extends ChangeNotifier {
 
     if (context.mounted) {
       await loadReceipts(
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop()!.shopId!,
+        returnShopProvider().userShop()!.shopId!,
         context,
       );
     }
@@ -375,10 +368,7 @@ class ReceiptsProvider extends ChangeNotifier {
 
     if (context.mounted) {
       await loadReceipts(
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop()!.shopId!,
+        returnShopProvider().userShop()!.shopId!,
         context,
       );
     }
@@ -466,10 +456,7 @@ class ReceiptsProvider extends ChangeNotifier {
         if (context.mounted) {
           print('Mounted, refreshing Receipts ✅');
           await loadReceipts(
-            returnShopProvider(
-              context,
-              listen: false,
-            ).userShop()!.shopId!,
+            returnShopProvider().userShop()!.shopId!,
             context,
           );
         }
@@ -523,10 +510,7 @@ class ReceiptsProvider extends ChangeNotifier {
         if (context.mounted) {
           print('Mounted, refreshing Receipts ✅');
           await loadReceipts(
-            returnShopProvider(
-              context,
-              listen: false,
-            ).userShop()!.shopId!,
+            returnShopProvider().userShop()!.shopId!,
             context,
           );
         }
@@ -572,10 +556,7 @@ class ReceiptsProvider extends ChangeNotifier {
         if (context.mounted) {
           print('Mounted, refreshing Receipts ✅');
           await loadReceipts(
-            returnShopProvider(
-              context,
-              listen: false,
-            ).userShop()!.shopId!,
+            returnShopProvider().userShop()!.shopId!,
             context,
           );
         }
@@ -699,10 +680,7 @@ class ReceiptsProvider extends ChangeNotifier {
     //   _sales[index] = record;
     if (context.mounted) {
       await loadProductSalesRecord(
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop()!.shopId!,
+        returnShopProvider().userShop()!.shopId!,
       );
     }
     notifyListeners();
@@ -723,10 +701,7 @@ class ReceiptsProvider extends ChangeNotifier {
     // );
     if (context.mounted) {
       loadProductSalesRecord(
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop()!.shopId!,
+        returnShopProvider().userShop()!.shopId!,
       );
     }
     notifyListeners();

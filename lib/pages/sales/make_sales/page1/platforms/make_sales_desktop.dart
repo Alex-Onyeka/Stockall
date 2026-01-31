@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
@@ -60,7 +61,7 @@ class _MakeSalesDesktopState
 
   String formatSellingPriceEdit(TempCartItem cartItem) {
     if (priceController.text.isNotEmpty) {
-      if (returnSalesProvider(context).setTotalPrice) {
+      if (returnSalesProvider().setTotalPrice) {
         return priceController.text.replaceAll(',', '');
       } else {
         return (int.parse(
@@ -96,10 +97,9 @@ class _MakeSalesDesktopState
             cartItem.customPrice.toString().split('.')[0]
         : priceController.text = "";
 
-    returnSalesProvider(
-      context,
-      listen: false,
-    ).toggleSetTotalPrice(cartItem.setTotalPrice);
+    returnSalesProvider().toggleSetTotalPrice(
+      cartItem.setTotalPrice,
+    );
     showDialog(
       context: context,
       builder: (context) {
@@ -138,7 +138,7 @@ class _MakeSalesDesktopState
                       children: [
                         Visibility(
                           visible:
-                              (returnSalesProvider(
+                              (returnSalesProviderContext(
                                         context,
                                       ).isSetCustomPrice() ||
                                       cartItem
@@ -164,7 +164,7 @@ class _MakeSalesDesktopState
                                   width: 450,
                                   child: MoneyTextfield(
                                     title:
-                                        returnSalesProvider(
+                                        returnSalesProviderContext(
                                               context,
                                             ).setTotalPrice
                                             ? 'Total Price'
@@ -241,10 +241,8 @@ class _MakeSalesDesktopState
                               SizedBox(height: 20),
                               InkWell(
                                 onTap: () {
-                                  returnSalesProvider(
-                                    context,
-                                    listen: false,
-                                  ).toggleSetCustomPrice();
+                                  returnSalesProvider()
+                                      .toggleSetCustomPrice();
                                   priceController.clear();
                                 },
                                 child: Container(
@@ -272,7 +270,7 @@ class _MakeSalesDesktopState
                                               FontWeight
                                                   .bold,
                                         ),
-                                        returnSalesProvider(
+                                        returnSalesProviderContext(
                                               context,
                                             ).isSetCustomPrice()
                                             ? 'Cancel Custom Price'
@@ -282,9 +280,9 @@ class _MakeSalesDesktopState
                                         children: [
                                           Visibility(
                                             visible:
-                                                returnSalesProvider(
+                                                returnSalesProviderContext(
                                                   context,
-                                                ).isSetCustomPrice ==
+                                                ).isSetCustomPrice() ==
                                                 false,
                                             child:
                                                 SvgPicture.asset(
@@ -295,9 +293,9 @@ class _MakeSalesDesktopState
                                           ),
                                           Visibility(
                                             visible:
-                                                returnSalesProvider(
+                                                returnSalesProviderContext(
                                                   context,
-                                                ).isSetCustomPrice ==
+                                                ).isSetCustomPrice() ==
                                                 true,
                                             child: Icon(
                                               Icons.clear,
@@ -357,7 +355,7 @@ class _MakeSalesDesktopState
                                     priceController
                                             .text
                                             .isNotEmpty
-                                        ? returnSalesProvider(
+                                        ? returnSalesProviderContext(
                                               context,
                                             ).setTotalPrice
                                             ? priceController
@@ -563,14 +561,8 @@ class _MakeSalesDesktopState
       // nameController.text = '';
       priceController.text = '';
       if (context.mounted) {
-        returnSalesProvider(
-          context,
-          listen: false,
-        ).closeCustomPrice();
-        returnSalesProvider(
-          context,
-          listen: false,
-        ).toggleSetTotalPrice(false);
+        returnSalesProvider().closeCustomPrice();
+        returnSalesProvider().toggleSetTotalPrice(false);
       }
     });
   }
@@ -586,7 +578,9 @@ class _MakeSalesDesktopState
 
   String formatSellingPrice() {
     if (sellingPriceC.text.isNotEmpty) {
-      if (returnSalesProvider(context).setTotalPrice) {
+      if (returnSalesProviderContext(
+        context,
+      ).setTotalPrice) {
         return sellingPriceC.text.replaceAll(',', '');
       } else {
         return (int.parse(
@@ -615,13 +609,13 @@ class _MakeSalesDesktopState
       context: context,
       action: () {
         var theme = returnTheme(context, listen: false);
-        if (returnData(context, listen: false).productList
+        if (returnData().productList
                 .where(
                   (product) =>
                       product.uuid == cartItem.item.uuid,
                 )
                 .isEmpty &&
-            returnSalesProvider(context, listen: false)
+            returnSalesProvider()
                 .currentCart()
                 .cartItems
                 .where(
@@ -636,14 +630,13 @@ class _MakeSalesDesktopState
               .toStringAsFixed(0);
           sellingPriceC.text = (cartItem.customPrice ?? 0)
               .toStringAsFixed(0);
-          returnSalesProvider(
+          returnSalesProvider().toggleAddToStock(
+            cartItem.addToStock,
             context,
-            listen: false,
-          ).toggleAddToStock(cartItem.addToStock, context);
-          returnSalesProvider(
-            context,
-            listen: false,
-          ).toggleSetTotalPrice(cartItem.setTotalPrice);
+          );
+          returnSalesProvider().toggleSetTotalPrice(
+            cartItem.setTotalPrice,
+          );
         }
         showDialog(
           context: context,
@@ -699,36 +692,7 @@ class _MakeSalesDesktopState
                                     controller: nameC,
                                     lines: 1,
                                     theme: theme,
-                                    onChanged: (value) {
-                                      // final suggestions =
-                                      //     returnSuggestionProvider(
-                                      //       context,
-                                      //       listen: false,
-                                      //     ).suggestions;
-
-                                      // if (nameC
-                                      //     .text
-                                      //     .isNotEmpty) {
-                                      //   final hasMatch =
-                                      //       suggestions.any(
-                                      //         (item) => item
-                                      //             .name!
-                                      //             .toLowerCase()
-                                      //             .contains(
-                                      //               value
-                                      //                   .toLowerCase(),
-                                      //             ),
-                                      //       );
-
-                                      //   setState(() {
-                                      //     resultOn = hasMatch;
-                                      //   });
-                                      // } else {
-                                      //   setState(() {
-                                      //     resultOn = false;
-                                      //   });
-                                      // }
-                                    },
+                                    onChanged: (value) {},
                                   ),
 
                                   SizedBox(height: 10),
@@ -747,7 +711,7 @@ class _MakeSalesDesktopState
                                       Expanded(
                                         child: MoneyTextfield(
                                           title:
-                                              returnSalesProvider(
+                                              returnSalesProviderContext(
                                                     context,
                                                   ).setTotalPrice
                                                   ? 'Total Price'
@@ -885,16 +849,11 @@ class _MakeSalesDesktopState
                                         ),
                                         MyToggleButton(
                                           boolValue:
-                                              returnSalesProvider(
-                                                context,
-                                              ).addToStock,
+                                              returnSalesProvider()
+                                                  .addToStock,
                                           toggle: () {
                                             var salesProvider =
-                                                returnSalesProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                );
+                                                returnSalesProvider();
                                             showDialog(
                                               context:
                                                   context,
@@ -1057,23 +1016,18 @@ class _MakeSalesDesktopState
                                       //       context,
                                       //       listen: false,
                                       //     );
-                                      var productIndex = returnData(
-                                        context,
-                                        listen: false,
-                                      ).productList.indexWhere((
-                                        item,
-                                      ) {
-                                        return item.name
-                                                .toLowerCase() ==
-                                            nameC.text
-                                                .toLowerCase();
-                                      });
+                                      var productIndex = returnData()
+                                          .productList
+                                          .indexWhere((
+                                            item,
+                                          ) {
+                                            return item.name
+                                                    .toLowerCase() ==
+                                                nameC.text
+                                                    .toLowerCase();
+                                          });
                                       var cartItems =
-                                          returnSalesProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              )
+                                          returnSalesProvider()
                                               .currentCart()
                                               .cartItems;
                                       final index = cartItems
@@ -1195,11 +1149,8 @@ class _MakeSalesDesktopState
                                           cartItem.setCustomPrice =
                                               true;
                                           cartItem.setTotalPrice =
-                                              returnSalesProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).setTotalPrice;
+                                              returnSalesProvider()
+                                                  .setTotalPrice;
                                           cartItem
                                                   .item
                                                   .name =
@@ -1219,26 +1170,16 @@ class _MakeSalesDesktopState
                                           // cartItem.item.uuid =
                                           //     uuidGen();
                                           cartItem.addToStock =
-                                              returnSalesProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).addToStock;
+                                              returnSalesProvider()
+                                                  .addToStock;
 
-                                          returnSalesProvider(
-                                            context,
-                                            listen: false,
-                                          ).addItemToCart(
+                                          returnSalesProvider().addItemToCart(
                                             context:
                                                 context,
                                             newItem:
                                                 cartItem,
                                             isCustomEdit:
-                                                returnData(
-                                                      context,
-                                                      listen:
-                                                          false,
-                                                    )
+                                                returnData()
                                                     .productList
                                                     .where(
                                                       (
@@ -1249,29 +1190,6 @@ class _MakeSalesDesktopState
                                                     )
                                                     .isEmpty,
                                           );
-                                          // sugP.addTempSugg(
-                                          //   ProductSuggestion(
-                                          //     createdAt:
-                                          //         DateTime.now(),
-                                          //     shopId: shopId(
-                                          //       context,
-                                          //     ),
-                                          //     costPrice:
-                                          //         double.tryParse(
-                                          //           costPriceC
-                                          //               .text
-                                          //               .replaceAll(
-                                          //                 ',',
-                                          //                 '',
-                                          //               ),
-                                          //         ),
-                                          //     name: nameC.text,
-                                          //     uuid:
-                                          //         cartItem
-                                          //             .item
-                                          //             .uuid,
-                                          //   ),
-                                          // );
                                           closeAction();
                                         }
                                       }
@@ -1305,14 +1223,10 @@ class _MakeSalesDesktopState
               resultOn = false;
               isNormalEdit = true;
             });
-            returnSalesProvider(
-              context,
-              listen: false,
-            ).closeCustomPrice();
-            returnSalesProvider(
-              context,
-              listen: false,
-            ).toggleSetTotalPrice(false);
+            returnSalesProvider().closeCustomPrice();
+            returnSalesProvider().toggleSetTotalPrice(
+              false,
+            );
           }
         });
       },
@@ -1332,28 +1246,28 @@ class _MakeSalesDesktopState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _node.requestFocus();
-      returnSalesProvider(
+      returnSalesProvider().toggleSetDiscount(
+        false,
         context,
-        listen: false,
-      ).toggleSetDiscount(false, context);
+      );
       if (widget.isInvoice != null &&
-          returnSalesProvider(
-            context,
-            listen: false,
-          ).currentCart().cartItems.isEmpty) {
-        returnSalesProvider(
-          context,
-          listen: false,
-        ).switchInvoiceSale(value: true, context: context);
+          returnSalesProvider()
+              .currentCart()
+              .cartItems
+              .isEmpty) {
+        returnSalesProvider().switchInvoiceSale(
+          value: true,
+          context: context,
+        );
       } else if (widget.isInvoice == null &&
-          returnSalesProvider(
-            context,
-            listen: false,
-          ).currentCart().cartItems.isEmpty) {
-        returnSalesProvider(
-          context,
-          listen: false,
-        ).switchInvoiceSale(value: false, context: context);
+          returnSalesProvider()
+              .currentCart()
+              .cartItems
+              .isEmpty) {
+        returnSalesProvider().switchInvoiceSale(
+          value: false,
+          context: context,
+        );
       }
       setState(() {});
     });
@@ -1362,7 +1276,7 @@ class _MakeSalesDesktopState
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    var products = returnData(context).productList;
+    var products = returnData().productList;
     return GestureDetector(
       onTap: () => _node.requestFocus(),
       child: PopScope(
@@ -1436,31 +1350,26 @@ class _MakeSalesDesktopState
                             widget: Scaffold(
                               appBar: appBar(
                                 backAction:
-                                    returnSalesProvider(
-                                              context,
-                                              // listen: false,
-                                            )
+                                    returnSalesProvider()
                                             .currentCart()
                                             .isReceiptEdit
                                         ? () {
-                                          returnSalesProvider(
-                                            context,
-                                            listen: false,
-                                          ).cancelReceiptEdit(
-                                            context,
-                                          );
+                                          returnSalesProvider()
+                                              .cancelReceiptEdit(
+                                                context,
+                                              );
                                         }
                                         : null,
                                 // isMain: widget.isMain,
                                 context: context,
                                 title:
-                                    returnSalesProvider(
+                                    returnSalesProviderContext(
                                               context,
                                             )
                                             .currentCart()
                                             .isReceiptEdit
                                         ? 'Edit Receipt'
-                                        : returnSalesProvider(
+                                        : returnSalesProviderContext(
                                               context,
                                             )
                                             .currentCart()
@@ -1471,7 +1380,7 @@ class _MakeSalesDesktopState
                                   children: [
                                     Visibility(
                                       visible:
-                                          returnSalesProvider(
+                                          returnSalesProviderContext(
                                                 context,
                                               )
                                               .currentCart()
@@ -1493,16 +1402,8 @@ class _MakeSalesDesktopState
                                                 title:
                                                     'Are you sure?',
                                                 action: () {
-                                                  returnSalesProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).clearCart();
-                                                  // returnSuggestionProvider(
-                                                  //   context,
-                                                  //   listen:
-                                                  //       false,
-                                                  // ).clearSuggestions();
+                                                  returnSalesProvider()
+                                                      .clearCart();
                                                   Navigator.of(
                                                     context,
                                                   ).pop();
@@ -1560,7 +1461,7 @@ class _MakeSalesDesktopState
                                     ),
                                     Visibility(
                                       visible:
-                                          returnSalesProvider(
+                                          returnSalesProviderContext(
                                                 context,
                                               )
                                               .currentCart()
@@ -1568,30 +1469,24 @@ class _MakeSalesDesktopState
                                               .isEmpty,
                                       child: InkWell(
                                         onTap: () {
-                                          if (returnSalesProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              )
+                                          if (returnSalesProvider()
                                               .currentCart()
                                               .isInvoice) {
-                                            returnSalesProvider(
-                                              context,
-                                              listen: false,
-                                            ).switchInvoiceSale(
-                                              context:
-                                                  context,
-                                              value: false,
-                                            );
+                                            returnSalesProvider()
+                                                .switchInvoiceSale(
+                                                  context:
+                                                      context,
+                                                  value:
+                                                      false,
+                                                );
                                           } else {
-                                            returnSalesProvider(
-                                              context,
-                                              listen: false,
-                                            ).switchInvoiceSale(
-                                              context:
-                                                  context,
-                                              value: true,
-                                            );
+                                            returnSalesProvider()
+                                                .switchInvoiceSale(
+                                                  context:
+                                                      context,
+                                                  value:
+                                                      true,
+                                                );
                                           }
                                         },
                                         child: SizedBox(
@@ -1626,14 +1521,14 @@ class _MakeSalesDesktopState
                                                     shape:
                                                         BoxShape.circle,
                                                     color:
-                                                        returnSalesProvider(
+                                                        returnSalesProviderContext(
                                                               context,
                                                             ).currentCart().isInvoice
                                                             ? theme.lightModeColor.prColor250
                                                             : null,
                                                     border: Border.all(
                                                       color:
-                                                          returnSalesProvider(
+                                                          returnSalesProviderContext(
                                                                 context,
                                                               ).currentCart().isInvoice
                                                               ? theme.lightModeColor.prColor250
@@ -1644,7 +1539,7 @@ class _MakeSalesDesktopState
                                                     size:
                                                         14,
                                                     color:
-                                                        returnSalesProvider(
+                                                        returnSalesProviderContext(
                                                               context,
                                                             ).currentCart().isInvoice
                                                             ? Colors.white
@@ -1665,7 +1560,7 @@ class _MakeSalesDesktopState
                               body: Builder(
                                 builder: (context) {
                                   if (products.isEmpty &&
-                                      returnSalesProvider(
+                                      returnSalesProviderContext(
                                             context,
                                           )
                                           .currentCart()
@@ -1686,13 +1581,11 @@ class _MakeSalesDesktopState
                                         height: 30,
                                         icon: Icons.clear,
                                         altAction: () {
-                                          returnSalesProvider(
-                                            context,
-                                            listen: false,
-                                          ).toggleAddToStock(
-                                            false,
-                                            context,
-                                          );
+                                          returnSalesProvider()
+                                              .toggleAddToStock(
+                                                false,
+                                                context,
+                                              );
                                           makeCustomSale(
                                             closeAction: () {
                                               Navigator.of(
@@ -1701,11 +1594,8 @@ class _MakeSalesDesktopState
                                             },
                                             cartItem: TempCartItem(
                                               setTotalPrice:
-                                                  returnSalesProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).setTotalPrice,
+                                                  returnSalesProvider()
+                                                      .setTotalPrice,
                                               item: TempProductClass(
                                                 isManaged:
                                                     false,
@@ -1731,11 +1621,9 @@ class _MakeSalesDesktopState
                                                     ),
                                                 quantity: 0,
                                                 shopId:
-                                                    returnShopProvider(
-                                                      context,
-                                                      listen:
-                                                          false,
-                                                    ).userShop()!.shopId!,
+                                                    returnShopProvider()
+                                                        .userShop()!
+                                                        .shopId!,
                                                 setCustomPrice:
                                                     true,
                                               ),
@@ -1793,14 +1681,11 @@ class _MakeSalesDesktopState
                                                 });
                                               },
                                               altAction: () {
-                                                returnSalesProvider(
-                                                  context,
-                                                  listen:
+                                                returnSalesProvider()
+                                                    .toggleAddToStock(
                                                       false,
-                                                ).toggleAddToStock(
-                                                  false,
-                                                  context,
-                                                );
+                                                      context,
+                                                    );
                                                 makeCustomSale(
                                                   closeAction: () {
                                                     Navigator.of(
@@ -1809,11 +1694,7 @@ class _MakeSalesDesktopState
                                                   },
                                                   cartItem: TempCartItem(
                                                     setTotalPrice:
-                                                        returnSalesProvider(
-                                                          context,
-                                                          listen:
-                                                              false,
-                                                        ).setTotalPrice,
+                                                        returnSalesProvider().setTotalPrice,
                                                     item: TempProductClass(
                                                       isManaged:
                                                           false,
@@ -1836,11 +1717,7 @@ class _MakeSalesDesktopState
                                                       quantity:
                                                           0,
                                                       shopId:
-                                                          returnShopProvider(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).userShop()!.shopId!,
+                                                          returnShopProvider().userShop()!.shopId!,
                                                       setCustomPrice:
                                                           true,
                                                     ),
@@ -1899,7 +1776,7 @@ class _MakeSalesDesktopState
                                                               TempCartItem
                                                             >
                                                             items =
-                                                                returnSalesProvider(
+                                                                returnSalesProviderContext(
                                                                   context,
                                                                 ).currentCart().cartItems.reversed.toList();
 
@@ -1946,11 +1823,7 @@ class _MakeSalesDesktopState
                                                                       );
                                                                     },
                                                                     altAction: () {
-                                                                      returnSalesProvider(
-                                                                        context,
-                                                                        listen:
-                                                                            false,
-                                                                      ).toggleAddToStock(
+                                                                      returnSalesProvider().toggleAddToStock(
                                                                         false,
                                                                         context,
                                                                       );
@@ -1962,11 +1835,7 @@ class _MakeSalesDesktopState
                                                                         },
                                                                         cartItem: TempCartItem(
                                                                           setTotalPrice:
-                                                                              returnSalesProvider(
-                                                                                context,
-                                                                                listen:
-                                                                                    false,
-                                                                              ).setTotalPrice,
+                                                                              returnSalesProvider().setTotalPrice,
                                                                           item: TempProductClass(
                                                                             isManaged:
                                                                                 false,
@@ -1989,11 +1858,7 @@ class _MakeSalesDesktopState
                                                                             quantity:
                                                                                 0,
                                                                             shopId:
-                                                                                returnShopProvider(
-                                                                                  context,
-                                                                                  listen:
-                                                                                      false,
-                                                                                ).userShop()!.shopId!,
+                                                                                returnShopProvider().userShop()!.shopId!,
                                                                             setCustomPrice:
                                                                                 true,
                                                                           ),
@@ -2018,7 +1883,7 @@ class _MakeSalesDesktopState
                                                             } else {
                                                               return ListView.builder(
                                                                 itemCount:
-                                                                    returnSalesProvider(
+                                                                    returnSalesProviderContext(
                                                                       context,
                                                                     ).currentCart().cartItems.length,
                                                                 itemBuilder: (
@@ -2031,7 +1896,7 @@ class _MakeSalesDesktopState
                                                                         context:
                                                                             context,
                                                                         builder: (
-                                                                          context,
+                                                                          confirmContext,
                                                                         ) {
                                                                           return ConfirmationAlert(
                                                                             theme:
@@ -2042,39 +1907,22 @@ class _MakeSalesDesktopState
                                                                                 'Remove Item?',
                                                                             action: () {
                                                                               Navigator.of(
-                                                                                context,
+                                                                                confirmContext,
                                                                               ).pop();
-                                                                              returnSalesProvider(
-                                                                                context,
-                                                                                listen:
-                                                                                    false,
-                                                                              ).removeItemFromCart(
+                                                                              returnSalesProvider().removeItemFromCart(
                                                                                 items[index],
+                                                                                context,
                                                                               );
-                                                                              // returnSuggestionProvider(
-                                                                              //   context,
-                                                                              //   listen:
-                                                                              //       false,
-                                                                              // ).deleteTempSugg(
-                                                                              //   items[index].item.uuid!,
-                                                                              // );
                                                                             },
                                                                           );
                                                                         },
                                                                       );
                                                                     },
                                                                     editAction: () {
-                                                                      var salesProvider = returnSalesProvider(
-                                                                        context,
-                                                                        listen:
-                                                                            false,
-                                                                      );
+                                                                      var salesProvider =
+                                                                          returnSalesProvider();
 
-                                                                      if (returnData(
-                                                                            context,
-                                                                            listen:
-                                                                                false,
-                                                                          ).productList
+                                                                      if (returnData().productList
                                                                           .where(
                                                                             (
                                                                               product,
@@ -2091,11 +1939,7 @@ class _MakeSalesDesktopState
                                                                           updateAction: () {
                                                                             salesProvider.editCartItemQuantity(
                                                                               setTotalPrice:
-                                                                                  returnSalesProvider(
-                                                                                    context,
-                                                                                    listen:
-                                                                                        false,
-                                                                                  ).setTotalPrice,
+                                                                                  returnSalesProvider().setTotalPrice,
                                                                               cartItem:
                                                                                   items[index],
                                                                               number: double.parse(
@@ -2118,11 +1962,7 @@ class _MakeSalesDesktopState
                                                                               items[index],
                                                                         );
                                                                       } else {
-                                                                        returnSalesProvider(
-                                                                          context,
-                                                                          listen:
-                                                                              false,
-                                                                        ).toggleAddToStock(
+                                                                        returnSalesProvider().toggleAddToStock(
                                                                           false,
                                                                           context,
                                                                         );
@@ -2176,7 +2016,7 @@ class _MakeSalesDesktopState
                                         ),
                                         Visibility(
                                           visible:
-                                              returnSalesProvider(
+                                              returnSalesProviderContext(
                                                     context,
                                                   )
                                                   .currentCart()
@@ -2335,15 +2175,7 @@ class _MakeSalesDesktopState
                                           SizedBox(
                                             width: 10,
                                           ),
-
                                           Visibility(
-                                            // visible:
-                                            //     returnSalesProvider(
-                                            //           context,
-                                            //         )
-                                            //         .cartQueue
-                                            //         .length <=
-                                            //     4,
                                             child: SubWrapper(
                                               isVisible:
                                                   !SalesAuthAction().numberOfCartsAction(
@@ -2365,12 +2197,14 @@ class _MakeSalesDesktopState
                                                   ),
                                                   child: InkWell(
                                                     onTap: () {
-                                                      returnSalesProvider(
+                                                      returnSalesProvider().addNewCart(
                                                         context,
-                                                        listen:
-                                                            false,
-                                                      ).addNewCart(
-                                                        context,
+                                                        TempCart(
+                                                          cartItems:
+                                                              [],
+                                                          isInvoice:
+                                                              false,
+                                                        ),
                                                       );
                                                     },
                                                     child: Container(
@@ -2399,6 +2233,7 @@ class _MakeSalesDesktopState
                                         ],
                                       ),
                                     ),
+                                    ProjectDisplayWidget(),
                                     SizedBox(height: 10),
                                     SubWrapper(
                                       isVisible:
@@ -2424,11 +2259,7 @@ class _MakeSalesDesktopState
                                             action: () async {
                                               if (value
                                                   .isNotEmpty) {
-                                                var items = returnData(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).productList.where(
+                                                var items = returnData().productList.where(
                                                   (
                                                     product,
                                                   ) =>
@@ -2446,11 +2277,7 @@ class _MakeSalesDesktopState
                                                 }
                                                 if (items
                                                     .isNotEmpty) {
-                                                  returnSalesProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).addItemToCart(
+                                                  returnSalesProvider().addItemToCart(
                                                     context:
                                                         context,
                                                     newItem: TempCartItem(
@@ -2505,9 +2332,7 @@ class _MakeSalesDesktopState
                                         children: [
                                           Visibility(
                                             visible:
-                                                returnData(
-                                                      context,
-                                                    )
+                                                returnData()
                                                     .productList
                                                     .isNotEmpty,
                                             child: Ink(
@@ -2587,11 +2412,7 @@ class _MakeSalesDesktopState
                                               ),
                                               child: InkWell(
                                                 onTap: () {
-                                                  returnSalesProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).toggleAddToStock(
+                                                  returnSalesProvider().toggleAddToStock(
                                                     false,
                                                     context,
                                                   );
@@ -2603,11 +2424,7 @@ class _MakeSalesDesktopState
                                                     },
                                                     cartItem: TempCartItem(
                                                       setTotalPrice:
-                                                          returnSalesProvider(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).setTotalPrice,
+                                                          returnSalesProvider().setTotalPrice,
                                                       item: TempProductClass(
                                                         isManaged:
                                                             false,
@@ -2630,11 +2447,7 @@ class _MakeSalesDesktopState
                                                         quantity:
                                                             0,
                                                         shopId:
-                                                            returnShopProvider(
-                                                              context,
-                                                              listen:
-                                                                  false,
-                                                            ).userShop()!.shopId!,
+                                                            returnShopProvider().userShop()!.shopId!,
                                                         setCustomPrice:
                                                             true,
                                                       ),
@@ -2697,7 +2510,7 @@ class _MakeSalesDesktopState
                                           ),
                                           formatMoneyBig(
                                             amount:
-                                                returnSalesProvider(
+                                                returnSalesProviderContext(
                                                   context,
                                                 ).calcTotalMain(),
                                             context:
@@ -2787,7 +2600,7 @@ class _MakeSalesDesktopState
                                                         FontWeight.bold,
                                                     // fontWeight: FontWeight.bold,
                                                   ),
-                                                  ' (${returnShopProvider(context).userShop()!.applyVAT! ? vat : 0}%)',
+                                                  ' (${returnShopProvider().userShop()!.applyVAT! ? vat : 0}%)',
                                                 ),
                                               ],
                                             ),
@@ -2801,11 +2614,9 @@ class _MakeSalesDesktopState
                                                 // fontWeight: FontWeight.bold,
                                               ),
                                               formatMoney(
-                                                returnSalesProvider(
+                                                returnSalesProviderContext(
                                                   context,
-                                                ).calcVatAmount(
-                                                  context,
-                                                ),
+                                                ).calcVatAmount(),
                                                 context,
                                               ),
                                             ),
@@ -2844,11 +2655,10 @@ class _MakeSalesDesktopState
                                                     .bold,
                                           ),
                                           formatMoneyBig(
-                                            amount: returnSalesProvider(
-                                              context,
-                                            ).calcFinalTotalMain(
-                                              context,
-                                            ),
+                                            amount:
+                                                returnSalesProviderContext(
+                                                  context,
+                                                ).calcFinalTotalMain(),
                                             context:
                                                 context,
                                           ),
@@ -2865,10 +2675,7 @@ class _MakeSalesDesktopState
                                     MainButtonP(
                                       themeProvider: theme,
                                       action: () {
-                                        if (returnSalesProvider(
-                                              context,
-                                              listen: false,
-                                            )
+                                        if (returnSalesProvider()
                                             .currentCart()
                                             .cartItems
                                             .isNotEmpty) {
@@ -2879,11 +2686,9 @@ class _MakeSalesDesktopState
                                                 context,
                                               ) {
                                                 return MakeSalesTwo(
-                                                  totalAmount: returnSalesProvider(
-                                                    context,
-                                                  ).calcFinalTotalMain(
-                                                    context,
-                                                  ),
+                                                  totalAmount:
+                                                      returnSalesProvider()
+                                                          .calcFinalTotalMain(),
                                                 );
                                               },
                                             ),
@@ -2915,6 +2720,85 @@ class _MakeSalesDesktopState
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class ProjectDisplayWidget extends StatelessWidget {
+  const ProjectDisplayWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = returnTheme(context);
+    return Visibility(
+      visible:
+          !returnMultiDisplayProviderContext(
+            context,
+          ).checkIfWindowExists(
+            returnSalesProviderContext(context).cartIdCache,
+          ),
+      child: Column(
+        children: [
+          SizedBox(height: 5),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Material(
+                type: MaterialType.transparency,
+                child: Ink(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(3),
+                    color: theme.lightModeColor.prColor300,
+                  ),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(3),
+                    onTap: () async {
+                      returnSalesProvider().createWindow();
+                      print(
+                        returnMultiDisplayProvider()
+                            .windows,
+                      );
+                      print(
+                        returnMultiDisplayProvider()
+                            .displayIds,
+                      );
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        vertical: 5,
+                        horizontal: 7,
+                      ),
+
+                      child: Row(
+                        spacing: 4,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b4
+                                      .fontSize,
+                              color: Colors.white,
+                              fontWeight: FontWeight.normal,
+                            ),
+                            'Project',
+                          ),
+                          Icon(
+                            size: 16,
+                            color: Colors.white,
+                            Icons.screen_share_outlined,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

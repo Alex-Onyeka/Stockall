@@ -61,10 +61,7 @@ class _TotalSalesDesktopState
           context,
           listen: false,
         ).switchReturnInvoice(true);
-        returnData(
-          context,
-          listen: false,
-        ).toggleFloatingAction(context);
+        returnData().toggleFloatingAction(context);
       } else {
         returnNavProvider(
           context,
@@ -296,12 +293,10 @@ class _TotalSalesDesktopState
                                         ).switchReturnInvoice(
                                           true,
                                         );
-                                        returnData(
-                                          context,
-                                          listen: false,
-                                        ).toggleFloatingAction(
-                                          context,
-                                        );
+                                        returnData()
+                                            .toggleFloatingAction(
+                                              context,
+                                            );
                                       },
                                       child: Text(
                                         style: TextStyle(

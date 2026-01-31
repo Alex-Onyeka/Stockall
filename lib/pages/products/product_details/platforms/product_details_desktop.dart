@@ -71,13 +71,9 @@ class _ProductDetailsDesktopState
 
   @override
   Widget build(BuildContext context) {
-    final shopI =
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop()!.shopId!;
+    final shopI = returnShopProvider().userShop()!.shopId!;
     List<TempProductClass>? productList =
-        returnData(context).productList
+        returnData().productList
             .where(
               (product) =>
                   product.uuid! == widget.productUuid,
@@ -219,13 +215,11 @@ class _ProductDetailsDesktopState
                                       Navigator.of(
                                         safeContext,
                                       ).pop();
-                                      var res = returnSalesProvider(
-                                        context,
-                                        listen: false,
-                                      ).addItemToCart(
-                                        context: context,
-                                        newItem:
-                                            TempCartItem(
+                                      var res = returnSalesProvider()
+                                          .addItemToCart(
+                                            context:
+                                                context,
+                                            newItem: TempCartItem(
                                               setCustomPrice:
                                                   false,
                                               item: product,
@@ -237,8 +231,9 @@ class _ProductDetailsDesktopState
                                               setTotalPrice:
                                                   false,
                                             ),
-                                        isCustomEdit: false,
-                                      );
+                                            isCustomEdit:
+                                                false,
+                                          );
                                       if (res ==
                                           "Quantity Limit Exceeded") {
                                         return;
@@ -674,7 +669,7 @@ class _ProductDetailsDesktopState
                                                                                   context:
                                                                                       safeContext,
                                                                                   builder: (
-                                                                                    context,
+                                                                                    confirmDialog,
                                                                                   ) {
                                                                                     return ConfirmationAlert(
                                                                                       theme:
@@ -684,16 +679,11 @@ class _ProductDetailsDesktopState
                                                                                       title:
                                                                                           'Proceed?',
                                                                                       action: () async {
-                                                                                        final dataProvider = returnData(
-                                                                                          context,
-                                                                                          listen:
-                                                                                              false,
-                                                                                        );
-                                                                                        if (safeContext.mounted) {
-                                                                                          Navigator.of(
-                                                                                            safeContext,
-                                                                                          ).pop();
-                                                                                        }
+                                                                                        final dataProvider =
+                                                                                            returnData();
+                                                                                        Navigator.of(
+                                                                                          confirmDialog,
+                                                                                        ).pop();
                                                                                         setState(
                                                                                           () {
                                                                                             isLoading =
@@ -1170,17 +1160,14 @@ class _ProductDetailsDesktopState
                                                                                     final safeContext =
                                                                                         context;
 
-                                                                                    final dataProvider = returnData(
-                                                                                      context,
-                                                                                      listen:
-                                                                                          false,
-                                                                                    );
+                                                                                    final dataProvider =
+                                                                                        returnData();
 
                                                                                     showDialog(
                                                                                       context:
                                                                                           safeContext,
                                                                                       builder: (
-                                                                                        context,
+                                                                                        confirmDialog,
                                                                                       ) {
                                                                                         return ConfirmationAlert(
                                                                                           theme:
@@ -1196,11 +1183,9 @@ class _ProductDetailsDesktopState
                                                                                                   ? "Empty Stock?"
                                                                                                   : 'Proceed?',
                                                                                           action: () async {
-                                                                                            if (safeContext.mounted) {
-                                                                                              Navigator.of(
-                                                                                                safeContext,
-                                                                                              ).pop();
-                                                                                            }
+                                                                                            Navigator.of(
+                                                                                              confirmDialog,
+                                                                                            ).pop();
                                                                                             setState(
                                                                                               () {
                                                                                                 isLoading =
@@ -1447,16 +1432,13 @@ class _ProductDetailsDesktopState
                                                       action: () async {
                                                         var safeContext =
                                                             context;
-                                                        var dataProvider = returnData(
-                                                          safeContext,
-                                                          listen:
-                                                              false,
-                                                        );
+                                                        var dataProvider =
+                                                            returnData();
                                                         showDialog(
                                                           context:
                                                               context,
                                                           builder: (
-                                                            context,
+                                                            confirmDialog,
                                                           ) {
                                                             return ConfirmationAlert(
                                                               theme:
@@ -1469,7 +1451,7 @@ class _ProductDetailsDesktopState
                                                                   'Proceed with Action?',
                                                               action: () async {
                                                                 Navigator.of(
-                                                                  context,
+                                                                  confirmDialog,
                                                                 ).pop();
                                                                 setState(
                                                                   () {
@@ -1642,11 +1624,7 @@ class _ProductDetailsDesktopState
                                                 context:
                                                     context,
                                                 action: () {
-                                                  returnData(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).addToBarcodeGenerationList(
+                                                  returnData().addToBarcodeGenerationList(
                                                     ProductBarcode(
                                                       product:
                                                           product,
@@ -1681,21 +1659,13 @@ class _ProductDetailsDesktopState
                                                           );
                                                           generateBarcodeAndPrint(
                                                             context,
-                                                            returnData(
-                                                              context,
-                                                              listen:
-                                                                  false,
-                                                            ).barcodeGenerationList,
+                                                            returnData().barcodeGenerationList,
                                                             false,
                                                           ).then(
                                                             (
                                                               _,
                                                             ) {
-                                                              returnData(
-                                                                context,
-                                                                listen:
-                                                                    false,
-                                                              ).clearBarcodeGenerationList();
+                                                              returnData().clearBarcodeGenerationList();
                                                               setState(
                                                                 () {
                                                                   isLoading =
@@ -1723,11 +1693,7 @@ class _ProductDetailsDesktopState
                                                         context:
                                                             context,
                                                         action: () {
-                                                          returnData(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).addToBarcodeGenerationList(
+                                                          returnData().addToBarcodeGenerationList(
                                                             ProductBarcode(
                                                               product:
                                                                   product,
@@ -1737,11 +1703,7 @@ class _ProductDetailsDesktopState
                                                           );
                                                           generateBarcodeAndPrint(
                                                             context,
-                                                            returnData(
-                                                              context,
-                                                              listen:
-                                                                  false,
-                                                            ).barcodeGenerationList,
+                                                            returnData().barcodeGenerationList,
                                                             false,
                                                           );
                                                         },
@@ -1881,20 +1843,14 @@ class _ProductDetailsDesktopState
                                           context:
                                               safeContext,
                                           builder: (
-                                            context,
+                                            confirmDialog,
                                           ) {
                                             var provider =
-                                                returnData(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                );
+                                                returnData();
                                             var shopId =
-                                                returnShopProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).userShop()!.shopId!;
+                                                returnShopProvider()
+                                                    .userShop()!
+                                                    .shopId!;
                                             return ConfirmationAlert(
                                               theme:
                                                   returnTheme(
@@ -1905,20 +1861,16 @@ class _ProductDetailsDesktopState
                                               title:
                                                   'Are you sure?',
                                               action: () async {
-                                                if (safeContext
-                                                    .mounted) {
-                                                  Navigator.of(
-                                                    safeContext,
-                                                  ).pop();
-                                                }
+                                                Navigator.of(
+                                                  confirmDialog,
+                                                ).pop();
                                                 setState(() {
                                                   isLoading =
                                                       true;
                                                 });
                                                 await provider
                                                     .deleteProductMain(
-                                                      widget
-                                                          .productUuid,
+                                                      product,
                                                       context,
                                                     );
                                                 await provider

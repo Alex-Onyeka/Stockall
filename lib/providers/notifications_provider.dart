@@ -163,11 +163,7 @@ class NotificationProvider with ChangeNotifier {
   Future<void> markAllNotificationsAsRead({
     required BuildContext context,
   }) async {
-    var shopId =
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop()!.shopId!;
+    var shopId = returnShopProvider().userShop()!.shopId!;
     var isOnline = await connectivity.isOnline();
     if (isOnline) {
       await supabase.rpc(

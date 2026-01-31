@@ -17,16 +17,12 @@ class PaymentTypeButton extends StatelessWidget {
         ),
         child: InkWell(
           onTap: () {
-            if (returnSalesProvider(
-              context,
-              listen: false,
-            ).currentCart().isInvoice) {
+            if (returnSalesProvider()
+                .currentCart()
+                .isInvoice) {
               return;
             } else {
-              returnSalesProvider(
-                context,
-                listen: false,
-              ).changeMethod(
+              returnSalesProvider().changeMethod(
                 index: index,
                 context: context,
               );
@@ -54,13 +50,13 @@ class PaymentTypeButton extends StatelessWidget {
                               theme.mobileTexts.b1.fontSize,
                           fontWeight: FontWeight.bold,
                           color:
-                              !returnSalesProvider(
+                              !returnSalesProviderContext(
                                     context,
                                   ).currentCart().isInvoice
                                   ? null
                                   : Colors.grey,
                         ),
-                        returnSalesProvider(
+                        returnSalesProviderContext(
                           context,
                         ).paymentMethods[index]['method'],
                       ),
@@ -70,7 +66,7 @@ class PaymentTypeButton extends StatelessWidget {
                               theme.mobileTexts.b3.fontSize,
                           fontWeight: FontWeight.normal,
                           color:
-                              !returnSalesProvider(
+                              !returnSalesProviderContext(
                                     context,
                                   ).currentCart().isInvoice
                                   ? theme
@@ -78,7 +74,7 @@ class PaymentTypeButton extends StatelessWidget {
                                       .secColor200
                                   : Colors.grey,
                         ),
-                        returnSalesProvider(
+                        returnSalesProviderContext(
                           context,
                         ).paymentMethods[index]['subText'],
                       ),
@@ -86,7 +82,7 @@ class PaymentTypeButton extends StatelessWidget {
                   ),
                   Checkbox(
                     activeColor:
-                        returnSalesProvider(
+                        returnSalesProviderContext(
                               context,
                             ).currentCart().isInvoice
                             ? Colors.grey
@@ -100,21 +96,17 @@ class PaymentTypeButton extends StatelessWidget {
                           theme.lightModeColor.secColor200,
                     ),
                     value:
-                        returnSalesProvider(
+                        returnSalesProviderContext(
                           context,
                         ).currentCart().paymentMethod ==
                         index,
                     onChanged: (value) {
-                      if (returnSalesProvider(
-                        context,
-                        listen: false,
-                      ).currentCart().isInvoice) {
+                      if (returnSalesProvider()
+                          .currentCart()
+                          .isInvoice) {
                         return;
                       } else {
-                        returnSalesProvider(
-                          context,
-                          listen: false,
-                        ).changeMethod(
+                        returnSalesProvider().changeMethod(
                           context: context,
                           index: index,
                         );

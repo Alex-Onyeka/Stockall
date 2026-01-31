@@ -15,13 +15,15 @@ class CartQueueDesktop extends StatelessWidget {
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
         itemCount:
-            returnSalesProvider(context).cartQueue.length,
+            returnSalesProviderContext(
+              context,
+            ).cartQueue.length,
         itemBuilder: (context, index) {
-          var salesP = returnSalesProvider(context);
-          // var cart =
-          //     salesP
-          //         .cartQueue[index];
-          // return Container();
+          var salesP = returnSalesProviderContext(context);
+          var cartItem =
+              returnSalesProviderContext(
+                context,
+              ).cartQueue[index];
           return Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: Material(
@@ -29,7 +31,7 @@ class CartQueueDesktop extends StatelessWidget {
               child: Ink(
                 decoration: BoxDecoration(
                   color:
-                      salesP.cartIndex == index &&
+                      cartItem.id == salesP.cartIdCache &&
                               salesP.cartQueue.length > 1
                           ? Colors.grey.shade100
                           : const Color.fromARGB(
@@ -43,15 +45,15 @@ class CartQueueDesktop extends StatelessWidget {
                 child: InkWell(
                   borderRadius: BorderRadius.circular(3),
                   onTap: () {
-                    returnSalesProvider(
-                      context,
-                      listen: false,
-                    ).selectCart(index);
+                    returnSalesProvider().selectCart(
+                      cartItem.id!,
+                    );
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(
                       horizontal:
-                          salesP.cartIndex == index &&
+                          cartItem.id ==
+                                      salesP.cartIdCache &&
                                   salesP.cartQueue.length >
                                       1
                               ? 8
@@ -64,7 +66,8 @@ class CartQueueDesktop extends StatelessWidget {
                       // spacing:
                       //     10,
                       mainAxisAlignment:
-                          salesP.cartIndex == index &&
+                          cartItem.id ==
+                                      salesP.cartIdCache &&
                                   salesP.cartQueue.length >
                                       1
                               ? MainAxisAlignment
@@ -88,13 +91,15 @@ class CartQueueDesktop extends StatelessWidget {
                         ),
                         Visibility(
                           visible:
-                              salesP.cartIndex == index &&
+                              cartItem.id ==
+                                  salesP.cartIdCache &&
                               salesP.cartQueue.length > 1,
                           child: SizedBox(width: 10),
                         ),
                         Visibility(
                           visible:
-                              salesP.cartIndex == index &&
+                              cartItem.id ==
+                                  salesP.cartIdCache &&
                               salesP.cartQueue.length > 1,
                           child: Material(
                             color: Colors.transparent,
@@ -112,10 +117,7 @@ class CartQueueDesktop extends StatelessWidget {
                               ),
                               child: InkWell(
                                 onTap: () {
-                                  if (!returnSalesProvider(
-                                        context,
-                                        listen: false,
-                                      )
+                                  if (!returnSalesProvider()
                                       .currentCart()
                                       .isReceiptEdit) {
                                     showDialog(
@@ -128,12 +130,11 @@ class CartQueueDesktop extends StatelessWidget {
                                           title:
                                               'Are you sure?',
                                           action: () {
-                                            returnSalesProvider(
-                                              context,
-                                              listen: false,
-                                            ).deleteCart(
-                                              index,
-                                            );
+                                            returnSalesProvider()
+                                                .deleteCart(
+                                                  cartItem
+                                                      .id!,
+                                                );
                                             Navigator.of(
                                               context,
                                             ).pop();
@@ -142,12 +143,10 @@ class CartQueueDesktop extends StatelessWidget {
                                       },
                                     );
                                   } else {
-                                    returnSalesProvider(
-                                      context,
-                                      listen: false,
-                                    ).cancelReceiptEdit(
-                                      context,
-                                    );
+                                    returnSalesProvider()
+                                        .cancelReceiptEdit(
+                                          context,
+                                        );
                                   }
                                 },
                                 child: Container(

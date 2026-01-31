@@ -185,7 +185,7 @@ class _NotificationsMobileState
                                 context,
                                 listen: false,
                               ).fetchRecentNotifications(
-                                shopId(context),
+                                shopId(),
                               );
                             },
                             backgroundColor: Colors.white,
@@ -318,7 +318,7 @@ class _NotificationsMobileState
                                 context,
                                 listen: false,
                               ).fetchRecentNotifications(
-                                shopId(context),
+                                shopId(),
                               );
                             },
                             backgroundColor: Colors.white,
@@ -451,7 +451,7 @@ class _NotificationsMobileState
                                 context,
                                 listen: false,
                               ).fetchRecentNotifications(
-                                shopId(context),
+                                shopId(),
                               );
                             },
                             backgroundColor: Colors.white,

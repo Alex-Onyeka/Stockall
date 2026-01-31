@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
@@ -30,11 +31,17 @@ class CartQueueMobile extends StatelessWidget {
               shrinkWrap: true,
               scrollDirection: Axis.horizontal,
               itemCount:
-                  returnSalesProvider(
+                  returnSalesProviderContext(
                     context,
                   ).cartQueue.length,
               itemBuilder: (context, index) {
-                var salesP = returnSalesProvider(context);
+                var salesP = returnSalesProviderContext(
+                  context,
+                );
+                var cartItem =
+                    returnSalesProviderContext(
+                      context,
+                    ).cartQueue[index];
                 return Padding(
                   padding: const EdgeInsets.only(
                     right: 8.0,
@@ -45,7 +52,8 @@ class CartQueueMobile extends StatelessWidget {
                       decoration: BoxDecoration(
                         color:
                             isFirst
-                                ? salesP.cartIndex == index
+                                ? cartItem.id ==
+                                        salesP.cartIdCache
                                     ? Colors.grey.shade100
                                     : const Color.fromARGB(
                                       167,
@@ -53,7 +61,8 @@ class CartQueueMobile extends StatelessWidget {
                                       250,
                                       250,
                                     )
-                                : salesP.cartIndex == index
+                                : cartItem.id ==
+                                    salesP.cartIdCache
                                 ? Colors.white
                                 : const Color.fromARGB(
                                   167,
@@ -70,15 +79,16 @@ class CartQueueMobile extends StatelessWidget {
                           3,
                         ),
                         onTap: () {
-                          returnSalesProvider(
-                            context,
-                            listen: false,
-                          ).selectCart(index);
+                          returnSalesProvider().selectCart(
+                            cartItem.id!,
+                          );
                         },
                         child: Container(
                           padding: EdgeInsets.symmetric(
                             horizontal:
-                                salesP.cartIndex == index &&
+                                cartItem.id ==
+                                            salesP
+                                                .cartIdCache &&
                                         salesP
                                                 .cartQueue
                                                 .length >
@@ -93,7 +103,9 @@ class CartQueueMobile extends StatelessWidget {
                             // spacing:
                             //     10,
                             mainAxisAlignment:
-                                salesP.cartIndex == index &&
+                                cartItem.id ==
+                                            salesP
+                                                .cartIdCache &&
                                         salesP
                                                 .cartQueue
                                                 .length >
@@ -121,8 +133,9 @@ class CartQueueMobile extends StatelessWidget {
                               ),
                               Visibility(
                                 visible:
-                                    salesP.cartIndex ==
-                                        index &&
+                                    cartItem.id ==
+                                        salesP
+                                            .cartIdCache &&
                                     salesP
                                             .cartQueue
                                             .length >
@@ -131,8 +144,9 @@ class CartQueueMobile extends StatelessWidget {
                               ),
                               Visibility(
                                 visible:
-                                    salesP.cartIndex ==
-                                        index &&
+                                    cartItem.id ==
+                                        salesP
+                                            .cartIdCache &&
                                     salesP
                                             .cartQueue
                                             .length >
@@ -154,10 +168,7 @@ class CartQueueMobile extends StatelessWidget {
                                     ),
                                     child: InkWell(
                                       onTap: () {
-                                        if (!returnSalesProvider(
-                                              context,
-                                              listen: false,
-                                            )
+                                        if (!returnSalesProvider()
                                             .currentCart()
                                             .isReceiptEdit) {
                                           showDialog(
@@ -174,12 +185,9 @@ class CartQueueMobile extends StatelessWidget {
                                                 title:
                                                     'Are you sure?',
                                                 action: () {
-                                                  returnSalesProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).deleteCart(
-                                                    index,
+                                                  returnSalesProvider().deleteCart(
+                                                    cartItem
+                                                        .id!,
                                                   );
                                                   Navigator.of(
                                                     context,
@@ -189,12 +197,10 @@ class CartQueueMobile extends StatelessWidget {
                                             },
                                           );
                                         } else {
-                                          returnSalesProvider(
-                                            context,
-                                            listen: false,
-                                          ).cancelReceiptEdit(
-                                            context,
-                                          );
+                                          returnSalesProvider()
+                                              .cancelReceiptEdit(
+                                                context,
+                                              );
                                         }
                                       },
                                       child: Container(
@@ -255,10 +261,13 @@ class CartQueueMobile extends StatelessWidget {
                   ),
                   child: InkWell(
                     onTap: () {
-                      returnSalesProvider(
+                      returnSalesProvider().addNewCart(
                         context,
-                        listen: false,
-                      ).addNewCart(context);
+                        TempCart(
+                          cartItems: [],
+                          isInvoice: false,
+                        ),
+                      );
                     },
                     child: Container(
                       padding: EdgeInsets.all(4),

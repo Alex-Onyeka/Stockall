@@ -47,10 +47,7 @@ class _TotalSalesMobileState
           context,
           listen: false,
         ).switchReturnInvoice(true);
-        returnData(
-          context,
-          listen: false,
-        ).toggleFloatingAction(context);
+        returnData().toggleFloatingAction(context);
       } else {
         returnReceiptProvider(
           context,
@@ -116,10 +113,9 @@ class _TotalSalesMobileState
                         context,
                         listen: false,
                       ).switchReturnInvoice(true);
-                      returnData(
+                      returnData().toggleFloatingAction(
                         context,
-                        listen: false,
-                      ).toggleFloatingAction(context);
+                      );
                     },
                     child: Text(
                       style: TextStyle(

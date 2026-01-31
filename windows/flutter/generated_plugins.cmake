@@ -6,12 +6,14 @@ list(APPEND FLUTTER_PLUGIN_LIST
   app_links
   audioplayers_windows
   connectivity_plus
+  desktop_multi_window
   file_saver
   file_selector_windows
   flutter_inappwebview_windows
   flutter_usb_thermal_plugin
   permission_handler_windows
   printing
+  screen_retriever
   url_launcher_windows
 )
 

@@ -14,8 +14,8 @@ class CartItemMain extends StatefulWidget {
     super.key,
     required this.theme,
     required this.cartItem,
-    required this.editAction,
-    required this.deleteCartItem,
+    this.editAction,
+    this.deleteCartItem,
   });
 
   final ThemeProvider theme;
@@ -156,11 +156,16 @@ class _CartItemMainState extends State<CartItemMain> {
                               ],
                             ),
                           ),
-                          IconButton(
-                            onPressed:
-                                widget.deleteCartItem,
-                            icon: Icon(
-                              Icons.delete_outline,
+                          Visibility(
+                            visible:
+                                widget.deleteCartItem !=
+                                null,
+                            child: IconButton(
+                              onPressed:
+                                  widget.deleteCartItem,
+                              icon: Icon(
+                                Icons.delete_outline,
+                              ),
                             ),
                           ),
                         ],
@@ -245,57 +250,62 @@ class _CartItemMainState extends State<CartItemMain> {
                               ),
                             ],
                           ),
-                          Material(
-                            color: Colors.transparent,
-                            child: Ink(
-                              decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      5,
-                                    ),
-                                color: Colors.grey.shade100,
-                              ),
-                              child: InkWell(
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      5,
-                                    ),
-                                onTap: widget.editAction,
-                                child: Container(
-                                  height: 30,
-                                  padding:
-                                      EdgeInsets.symmetric(
-                                        horizontal: 10,
+                          Visibility(
+                            visible:
+                                widget.editAction != null,
+                            child: Material(
+                              color: Colors.transparent,
+                              child: Ink(
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        5,
                                       ),
-
-                                  child: Row(
-                                    spacing: 10,
-                                    children: [
-                                      Center(
-                                        child: Text(
-                                          style: TextStyle(
-                                            color:
-                                                theme
-                                                    .lightModeColor
-                                                    .prColor300,
-                                            fontSize: 18,
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
-                                          ),
-                                          widget
-                                              .cartItem
-                                              .quantity
-                                              .toStringAsFixed(
-                                                1,
-                                              ),
+                                  color:
+                                      Colors.grey.shade100,
+                                ),
+                                child: InkWell(
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        5,
+                                      ),
+                                  onTap: widget.editAction,
+                                  child: Container(
+                                    height: 30,
+                                    padding:
+                                        EdgeInsets.symmetric(
+                                          horizontal: 10,
                                         ),
-                                      ),
-                                      SvgPicture.asset(
-                                        height: 16,
-                                        editIconSvg,
-                                      ),
-                                    ],
+
+                                    child: Row(
+                                      spacing: 10,
+                                      children: [
+                                        Center(
+                                          child: Text(
+                                            style: TextStyle(
+                                              color:
+                                                  theme
+                                                      .lightModeColor
+                                                      .prColor300,
+                                              fontSize: 18,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                            ),
+                                            widget
+                                                .cartItem
+                                                .quantity
+                                                .toStringAsFixed(
+                                                  1,
+                                                ),
+                                          ),
+                                        ),
+                                        SvgPicture.asset(
+                                          height: 16,
+                                          editIconSvg,
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),

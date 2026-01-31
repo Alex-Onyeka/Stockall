@@ -42,10 +42,7 @@ class _ExpensesDesktopState extends State<ExpensesDesktop> {
   @override
   void initState() {
     super.initState();
-    returnData(
-      context,
-      listen: false,
-    ).toggleFloatingAction(context);
+    returnData().toggleFloatingAction(context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       clearDate();
     });

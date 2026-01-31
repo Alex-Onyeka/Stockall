@@ -64,10 +64,7 @@ class CustomersProvider extends ChangeNotifier {
     TempCustomersClass customer,
     final BuildContext context,
   ) async {
-    final shopProvider = returnShopProvider(
-      context,
-      listen: false,
-    );
+    final shopProvider = returnShopProvider();
     bool isOnline = await connectivity.isOnline();
     customer.updatedAt = DateTime.now();
     customer.dateAdded = DateTime.now();
@@ -83,6 +80,15 @@ class CustomersProvider extends ChangeNotifier {
 
       final newCustomer = TempCustomersClass.fromJson(res);
       await CustomerFunc().createCustomer(newCustomer);
+      await returnEventsLogProvider(
+        // ignore: use_build_context_synchronously
+      ).createLog(
+        returnEventsLogProvider(
+          // ignore: use_build_context_synchronously
+          // ignore: use_build_context_synchronously
+        ).customerAdapter(customer, 1),
+        // ignore: use_build_context_synchronously
+      );
     } else {
       GeneralSettingsAuthAction().allowOfflineUseAction(
         context: context,
@@ -90,6 +96,15 @@ class CustomersProvider extends ChangeNotifier {
           await CustomerFunc().createCustomer(customer);
           await CreatedCustomersFunc().createCustomers(
             CreatedCustomers(customer: customer),
+          );
+          await returnEventsLogProvider(
+            // ignore: use_build_context_synchronously
+          ).createLog(
+            returnEventsLogProvider(
+              // ignore: use_build_context_synchronously
+              // ignore: use_build_context_synchronously
+            ).customerAdapter(customer, 1),
+            // ignore: use_build_context_synchronously
           );
         },
       );
@@ -104,10 +119,7 @@ class CustomersProvider extends ChangeNotifier {
     TempCustomersClass customer,
     BuildContext context,
   ) async {
-    final shopProvider = returnShopProvider(
-      context,
-      listen: false,
-    );
+    final shopProvider = returnShopProvider();
     bool isOnline = await connectivity.isOnline();
     if (isOnline) {
       customer.updatedAt = DateTime.now();
@@ -115,6 +127,15 @@ class CustomersProvider extends ChangeNotifier {
           .from('customers')
           .update(customer.toJson())
           .eq('uuid', customer.uuid!);
+      await returnEventsLogProvider(
+        // ignore: use_build_context_synchronously
+      ).createLog(
+        returnEventsLogProvider(
+          // ignore: use_build_context_synchronously
+          // ignore: use_build_context_synchronously
+        ).customerAdapter(customer, 2),
+        // ignore: use_build_context_synchronously
+      );
     } else {
       await CustomerFunc().updateCustomer(customer);
       var containsCreated =
@@ -133,6 +154,15 @@ class CustomersProvider extends ChangeNotifier {
           CreatedCustomers(customer: customer),
         );
       }
+      await returnEventsLogProvider(
+        // ignore: use_build_context_synchronously
+      ).createLog(
+        returnEventsLogProvider(
+          // ignore: use_build_context_synchronously
+          // ignore: use_build_context_synchronously
+        ).customerAdapter(customer, 1),
+        // ignore: use_build_context_synchronously
+      );
     }
     await fetchCustomers(shopProvider.userShop()!.shopId!);
     notifyListeners();
@@ -140,19 +170,31 @@ class CustomersProvider extends ChangeNotifier {
 
   /// Delete a customer by ID
   Future<void> deleteCustomerMain(
-    String uuid,
+    TempCustomersClass customer,
     BuildContext context,
   ) async {
-    final shopProvider = returnShopProvider(
-      context,
-      listen: false,
-    );
+    final shopProvider = returnShopProvider();
     bool isOnline = await connectivity.isOnline();
     if (isOnline) {
       await supabase
           .from('customers')
           .delete()
-          .eq('uuid', uuid);
+          .eq('uuid', customer.uuid!);
+      print('Customer Deleted');
+      var res = await returnEventsLogProvider(
+        // ignore: use_build_context_synchronously
+      ).createLog(
+        returnEventsLogProvider(
+          // ignore: use_build_context_synchronously
+          // ignore: use_build_context_synchronously
+        ).customerAdapter(customer, 3),
+        // ignore: use_build_context_synchronously
+      );
+      if (res == 1) {
+        print('Customer Delete Logged');
+      } else {
+        print('Customer Delete Log Failed');
+      }
     } else {
       var containsCreated =
           CreatedCustomersFunc()
@@ -170,26 +212,34 @@ class CustomersProvider extends ChangeNotifier {
                     customer.customer.uuid == uuid,
               )
               .toList();
-      await CustomerFunc().deleteCustomer(uuid);
+      await CustomerFunc().deleteCustomer(customer.uuid!);
       if (containsCreated.isNotEmpty) {
-        await CreatedCustomersFunc().deleteCustomer(uuid);
+        await CreatedCustomersFunc().deleteCustomer(
+          customer.uuid!,
+        );
       } else {
         await DeletedCustomersFunc().createDeletedCustomer(
           DeletedCustomers(
-            customerUuid: uuid,
+            customerUuid: customer.uuid!,
             shopId:
-                returnShopProvider(
-                  context,
-                  listen: false,
-                ).userShop()!.shopId!,
+                returnShopProvider().userShop()!.shopId!,
           ),
         );
       }
       if (containsUpdated.isNotEmpty) {
         await UpdatedCustomersFunc().deleteUpdatedCustomer(
-          uuid,
+          customer.uuid!,
         );
       }
+      await returnEventsLogProvider(
+        // ignore: use_build_context_synchronously
+      ).createLog(
+        returnEventsLogProvider(
+          // ignore: use_build_context_synchronously
+          // ignore: use_build_context_synchronously
+        ).customerAdapter(customer, 3),
+        // ignore: use_build_context_synchronously
+      );
     }
 
     await fetchCustomers(shopProvider.userShop()!.shopId!);
@@ -231,10 +281,9 @@ class CustomersProvider extends ChangeNotifier {
   // SalesProvider salesProvider = SalesProvider();
 
   void clearSelectedCustomer(BuildContext context) {
-    returnSalesProvider(context, listen: false)
-        .currentCart()
-        .selectedCustomer = null;
-    returnSalesProvider(context, listen: false)
+    returnSalesProvider().currentCart().selectedCustomer =
+        null;
+    returnSalesProvider()
         .currentCart()
         .selectedCustomerName = null;
     notifyListeners();
@@ -245,10 +294,9 @@ class CustomersProvider extends ChangeNotifier {
     required String name,
     required BuildContext context,
   }) {
-    returnSalesProvider(context, listen: false)
-        .currentCart()
-        .selectedCustomer = id;
-    returnSalesProvider(context, listen: false)
+    returnSalesProvider().currentCart().selectedCustomer =
+        id;
+    returnSalesProvider()
         .currentCart()
         .selectedCustomerName = name;
     notifyListeners();
@@ -263,10 +311,7 @@ class CustomersProvider extends ChangeNotifier {
   Future<void> createCustomersSync(
     BuildContext context,
   ) async {
-    final shopProvider = returnShopProvider(
-      context,
-      listen: false,
-    );
+    final shopProvider = returnShopProvider();
     try {
       bool isOnline = await connectivity.isOnline();
       // Prepare batch payload
@@ -317,10 +362,7 @@ class CustomersProvider extends ChangeNotifier {
   Future<void> updateCustomersSync(
     BuildContext context,
   ) async {
-    final shopProvider = returnShopProvider(
-      context,
-      listen: false,
-    );
+    final shopProvider = returnShopProvider();
     try {
       bool isOnline = await connectivity.isOnline();
       print(
@@ -428,10 +470,7 @@ class CustomersProvider extends ChangeNotifier {
   Future<void> deletedCustomersSync(
     BuildContext context,
   ) async {
-    final shopProvider = returnShopProvider(
-      context,
-      listen: false,
-    );
+    final shopProvider = returnShopProvider();
     try {
       bool isOnline = await connectivity.isOnline();
 

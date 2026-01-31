@@ -50,19 +50,11 @@ class _HomeState extends State<Home> {
   Future<TempShopClass?> getUserShop() async {
     try {
       print('About to get Stores');
-      var shop =
-          await returnShopProvider(
-            context,
-            listen: false,
-          ).getUserShops();
+      var shop = await returnShopProvider().getUserShops();
       print('Stores Gotten: ${shop.length}');
 
       if (context.mounted) {
-        var mainShop =
-            returnShopProvider(
-              context,
-              listen: false,
-            ).userShop();
+        var mainShop = returnShopProvider().userShop();
         print('Current Shop: ${mainShop?.name}');
         return mainShop;
       } else {
@@ -202,10 +194,8 @@ class _HomeState extends State<Home> {
                             ),
                           ),
                         );
-                      } else if (returnShopProvider(
-                            context,
-                            listen: false,
-                          ).userShop() ==
+                      } else if (returnShopProvider()
+                              .userShop() ==
                           null) {
                         if (!_handledNoShop) {
                           _handledNoShop = true;

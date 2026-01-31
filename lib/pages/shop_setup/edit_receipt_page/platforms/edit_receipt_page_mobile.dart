@@ -23,7 +23,7 @@ class _EditReceiptPageMobileState
     extends State<EditReceiptPageMobile> {
   @override
   Widget build(BuildContext context) {
-    var shop = returnShopProvider(context).userShop();
+    var shop = returnShopProvider().userShop();
     var theme = returnTheme(context);
     return SafeArea(
       child: PopScope(
@@ -56,13 +56,11 @@ class _EditReceiptPageMobileState
                           return [
                             PopupMenuItem(
                               onTap: () {
-                                returnShopProvider(
-                                  context,
-                                  listen: false,
-                                ).updatePrintType(
-                                  shopId: shopId(context),
-                                  type: 1,
-                                );
+                                returnShopProvider()
+                                    .updatePrintType(
+                                      shopId: shopId(),
+                                      type: 1,
+                                    );
                               },
                               child: Text(
                                 style: TextStyle(
@@ -72,17 +70,13 @@ class _EditReceiptPageMobileState
                                           .b2
                                           .fontSize,
                                   fontWeight:
-                                      returnShopProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).userShop()!.printType !=
+                                      returnShopProvider()
+                                                      .userShop()!
+                                                      .printType !=
                                                   null &&
-                                              returnShopProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).userShop()!.printType ==
+                                              returnShopProvider()
+                                                      .userShop()!
+                                                      .printType ==
                                                   1
                                           ? FontWeight.bold
                                           : null,
@@ -94,13 +88,11 @@ class _EditReceiptPageMobileState
                             ),
                             PopupMenuItem(
                               onTap: () {
-                                returnShopProvider(
-                                  context,
-                                  listen: false,
-                                ).updatePrintType(
-                                  shopId: shopId(context),
-                                  type: 2,
-                                );
+                                returnShopProvider()
+                                    .updatePrintType(
+                                      shopId: shopId(),
+                                      type: 2,
+                                    );
                               },
                               child: Text(
                                 style: TextStyle(
@@ -110,17 +102,13 @@ class _EditReceiptPageMobileState
                                           .b2
                                           .fontSize,
                                   fontWeight:
-                                      returnShopProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).userShop()!.printType !=
+                                      returnShopProvider()
+                                                      .userShop()!
+                                                      .printType !=
                                                   null &&
-                                              returnShopProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).userShop()!.printType ==
+                                              returnShopProvider()
+                                                      .userShop()!
+                                                      .printType ==
                                                   2
                                           ? FontWeight.bold
                                           : null,
@@ -165,38 +153,22 @@ class _EditReceiptPageMobileState
                                     fontWeight:
                                         FontWeight.bold,
                                   ),
-                                  returnShopProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  )
+                                  returnShopProvider()
                                                   .userShop()!
                                                   .printType !=
                                               null &&
-                                          returnShopProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  )
+                                          returnShopProvider()
                                                   .userShop()!
                                                   .printType ==
                                               2
                                       ? (kIsWeb
                                           ? '80mm'
                                           : '( Bluetooth )')
-                                      : returnShopProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  )
+                                      : returnShopProvider()
                                                   .userShop()!
                                                   .printType !=
                                               null &&
-                                          returnShopProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  )
+                                          returnShopProvider()
                                                   .userShop()!
                                                   .printType ==
                                               1
@@ -269,27 +241,13 @@ class _ReceiptEditContainerState
     super.initState();
     getLogoFuture = getLogo();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      returnShopProvider(
-        context,
-        listen: false,
-      ).switchLogoPicked(false);
-      if (returnShopProvider(
-            context,
-            listen: false,
-          ).userShop()!.phoneNumber ==
+      returnShopProvider().switchLogoPicked(false);
+      if (returnShopProvider().userShop()!.phoneNumber ==
           null) {
-        returnShopProvider(context, listen: false)
-            .userShop()!
-            .showPhone = false;
+        returnShopProvider().userShop()!.showPhone = false;
       }
-      if (returnShopProvider(
-            context,
-            listen: false,
-          ).userShop()!.email ==
-          null) {
-        returnShopProvider(context, listen: false)
-            .userShop()!
-            .showEmail = false;
+      if (returnShopProvider().userShop()!.email == null) {
+        returnShopProvider().userShop()!.showEmail = false;
       }
       setState(() {});
     });
@@ -297,19 +255,13 @@ class _ReceiptEditContainerState
 
   late Future<Uint8List?> getLogoFuture;
   Future<Uint8List?> getLogo() async {
-    return returnShopProvider(
-      context,
-      listen: false,
-    ).getLogoImage(context);
+    return returnShopProvider().getLogoImage(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    var receipP = returnShopProvider(context).userShop()!;
-    var receiptPFalse = returnShopProvider(
-      context,
-      listen: false,
-    );
+    var receipP = returnShopProvider().userShop()!;
+    var receiptPFalse = returnShopProvider();
     return Stack(
       children: [
         Column(
@@ -364,9 +316,8 @@ class _ReceiptEditContainerState
                                     children: [
                                       Visibility(
                                         visible:
-                                            returnShopProvider(
-                                              context,
-                                            ).selectedLogo !=
+                                            returnShopProvider()
+                                                .selectedLogo !=
                                             null,
                                         child: SizedBox(
                                           height: 10,
@@ -374,25 +325,19 @@ class _ReceiptEditContainerState
                                       ),
                                       InkWell(
                                         onTap: () async {
-                                          await returnShopProvider(
-                                            context,
-                                            listen: false,
-                                          ).pickLogoImage();
+                                          await returnShopProvider()
+                                              .pickLogoImage();
                                         },
                                         child: Container(
                                           height:
-                                              returnShopProvider(
-                                                        context,
-                                                      ).imageWidth ==
+                                              returnShopProvider()
+                                                          .imageWidth ==
                                                       null
                                                   ? 50
-                                                  : returnShopProvider(
-                                                        context,
-                                                      ).imageWidth! >
+                                                  : returnShopProvider()
+                                                          .imageWidth! >
                                                       (2 *
-                                                          returnShopProvider(
-                                                            context,
-                                                          ).imageHeight!)
+                                                          returnShopProvider().imageHeight!)
                                                   ? 30
                                                   : 70,
                                           width:
@@ -405,9 +350,7 @@ class _ReceiptEditContainerState
                                                 ),
                                             border: Border.all(
                                               color:
-                                                  returnShopProvider(
-                                                            context,
-                                                          ).selectedLogo ==
+                                                  returnShopProvider().selectedLogo ==
                                                           null
                                                       ? Colors
                                                           .grey
@@ -440,9 +383,7 @@ class _ReceiptEditContainerState
                                                   ),
                                                 );
                                               } else {
-                                                return returnShopProvider(
-                                                          context,
-                                                        ).selectedLogo ==
+                                                return returnShopProvider().selectedLogo ==
                                                         null
                                                     ? Stack(
                                                       alignment: Alignment(
@@ -486,9 +427,7 @@ class _ReceiptEditContainerState
                                                       ),
                                                       children: [
                                                         Image.memory(
-                                                          returnShopProvider(
-                                                            context,
-                                                          ).selectedLogo!,
+                                                          returnShopProvider().selectedLogo!,
                                                           fit:
                                                               BoxFit.contain,
                                                         ),
@@ -499,11 +438,7 @@ class _ReceiptEditContainerState
                                                           ),
                                                           child: IconButton(
                                                             onPressed: () {
-                                                              returnShopProvider(
-                                                                context,
-                                                                listen:
-                                                                    false,
-                                                              ).clearImage();
+                                                              returnShopProvider().clearImage();
                                                             },
                                                             icon: Icon(
                                                               Icons.clear,

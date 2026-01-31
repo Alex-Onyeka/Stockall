@@ -449,7 +449,7 @@ class RightSideBar extends StatelessWidget {
                                                     ),
                                                     cutLongText(
                                                       itemName,
-                                                      13,
+                                                      12,
                                                     ),
                                                   ),
                                                 ],

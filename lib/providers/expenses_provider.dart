@@ -42,16 +42,28 @@ class ExpensesProvider extends ChangeNotifier {
         res,
       );
       await ExpensesFunc().createExpenses(exp);
+      await returnEventsLogProvider().createLog(
+        returnEventsLogProvider(
+          // ignore: use_build_context_synchronously
+        ).expensesAdapter(expense, 1),
+        // ignore: use_build_context_synchronously
+      );
     } else {
       expense.createdDate ??= DateTime.now();
       await ExpensesFunc().createExpenses(expense);
       await CreatedExpensesFunc().createExpenses(
         CreatedExpenses(expenses: expense),
       );
+      await returnEventsLogProvider().createLog(
+        returnEventsLogProvider(
+          // ignore: use_build_context_synchronously
+        ).expensesAdapter(expense, 1),
+        // ignore: use_build_context_synchronously
+      );
     }
     if (context.mounted) {
       print('Mounted: Add Expense');
-      await getExpenses(shopId(context));
+      await getExpenses(shopId());
     }
     notifyListeners();
   }
@@ -236,6 +248,12 @@ class ExpensesProvider extends ChangeNotifier {
           .from('expenses')
           .update(expense.toJson())
           .eq('uuid', expense.uuid!);
+      await returnEventsLogProvider().createLog(
+        returnEventsLogProvider(
+          // ignore: use_build_context_synchronously
+        ).expensesAdapter(expense, 2),
+        // ignore: use_build_context_synchronously
+      );
     } else {
       await ExpensesFunc().updateExpenses(expense);
       var containsCreated =
@@ -254,9 +272,15 @@ class ExpensesProvider extends ChangeNotifier {
           CreatedExpenses(expenses: expense),
         );
       }
+      await returnEventsLogProvider().createLog(
+        returnEventsLogProvider(
+          // ignore: use_build_context_synchronously
+        ).expensesAdapter(expense, 2),
+        // ignore: use_build_context_synchronously
+      );
     }
     if (context.mounted) {
-      await getExpenses(shopId(context));
+      await getExpenses(shopId());
     }
     notifyListeners();
   }
@@ -269,7 +293,7 @@ class ExpensesProvider extends ChangeNotifier {
   //
 
   Future<void> deleteExpense(
-    String uuid,
+    TempExpensesClass expenses,
     BuildContext context,
   ) async {
     bool isOnline = await connectivity.isOnline();
@@ -277,7 +301,13 @@ class ExpensesProvider extends ChangeNotifier {
       await supabase
           .from('expenses')
           .delete()
-          .eq('uuid', uuid);
+          .eq('uuid', expenses.uuid!);
+      await returnEventsLogProvider().createLog(
+        returnEventsLogProvider(
+          // ignore: use_build_context_synchronously
+        ).expensesAdapter(expenses, 3),
+        // ignore: use_build_context_synchronously
+      );
     } else {
       var containsCreated =
           CreatedExpensesFunc()
@@ -287,31 +317,40 @@ class ExpensesProvider extends ChangeNotifier {
       var containsUpdated =
           UpdatedExpensesFunc()
               .getExpenses()
-              .where((exp) => exp.expenses.uuid == uuid)
+              .where(
+                (exp) => exp.expenses.uuid == expenses.uuid,
+              )
               .toList();
-      await ExpensesFunc().deleteExpenses(uuid);
+      await ExpensesFunc().deleteExpenses(expenses.uuid!);
 
       if (containsCreated.isNotEmpty) {
-        CreatedExpensesFunc().deleteExpenses(uuid);
+        CreatedExpensesFunc().deleteExpenses(
+          expenses.uuid!,
+        );
       } else {
         await DeletedExpensesFunc().createDeletedExpense(
           DeletedExpenses(
-            expensesUuid: uuid,
+            expensesUuid: expenses.uuid!,
             shopId:
-                returnShopProvider(
-                  context,
-                  listen: false,
-                ).userShop()!.shopId!,
+                returnShopProvider().userShop()!.shopId!,
           ),
         );
       }
       if (containsUpdated.isNotEmpty) {
-        UpdatedExpensesFunc().deleteUpdatedExpense(uuid);
+        UpdatedExpensesFunc().deleteUpdatedExpense(
+          expenses.uuid!,
+        );
       }
+      await returnEventsLogProvider().createLog(
+        returnEventsLogProvider(
+          // ignore: use_build_context_synchronously
+        ).expensesAdapter(expenses, 3),
+        // ignore: use_build_context_synchronously
+      );
     }
 
     if (context.mounted) {
-      await getExpenses(shopId(context));
+      await getExpenses(shopId());
     }
     notifyListeners();
   }
@@ -360,10 +399,7 @@ class ExpensesProvider extends ChangeNotifier {
     if (context.mounted) {
       print('Mounted, refreshing Expenses ✅');
       await getExpenses(
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop()!.shopId!,
+        returnShopProvider().userShop()!.shopId!,
       );
     }
   }
@@ -414,10 +450,7 @@ class ExpensesProvider extends ChangeNotifier {
     if (context.mounted) {
       print('Mounted, refreshing Expenses ✅');
       await getExpenses(
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop()!.shopId!,
+        returnShopProvider().userShop()!.shopId!,
       );
     }
   }
@@ -521,10 +554,7 @@ class ExpensesProvider extends ChangeNotifier {
     if (context.mounted) {
       print('Mounted, refreshing Expenses ✅');
       await getExpenses(
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop()!.shopId!,
+        returnShopProvider().userShop()!.shopId!,
       );
     }
   }

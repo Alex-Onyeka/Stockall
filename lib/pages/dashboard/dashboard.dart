@@ -19,7 +19,7 @@ class _DashboardState extends State<Dashboard> {
       listen: false,
     ).clearReceiptDate();
 
-    returnData(context, listen: false).clearFields();
+    returnData().clearFields();
   }
 
   // bool stillLoading = true;
@@ -29,12 +29,7 @@ class _DashboardState extends State<Dashboard> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      print(
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop()?.name,
-      );
+      print(returnShopProvider().userShop()?.name);
       // print('$currentUpdate');
       // if (returnShopProvider(
       //       context,
@@ -72,10 +67,7 @@ class _DashboardState extends State<Dashboard> {
       context,
       listen: false,
     ).loadReceipts(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop()!.shopId!,
+      returnShopProvider().userShop()!.shopId!,
       context,
     );
     setState(() {});

@@ -38,10 +38,7 @@ class ItemsAuthAction {
       return true;
     } else {
       var currentNumberOfItems =
-          returnData(
-            context,
-            listen: false,
-          ).productList.length;
+          returnData().productList.length;
       if (subPlans
               .firstWhere((pl) => pl.plan == plan)
               .itemsAuth

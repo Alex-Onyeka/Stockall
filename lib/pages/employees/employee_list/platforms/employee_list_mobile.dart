@@ -26,10 +26,7 @@ class _EmployeeListMobileState
   void initState() {
     super.initState();
 
-    returnData(
-      context,
-      listen: false,
-    ).toggleFloatingAction(context);
+    returnData().toggleFloatingAction(context);
     if (returnUserProvider(
       context,
       listen: false,

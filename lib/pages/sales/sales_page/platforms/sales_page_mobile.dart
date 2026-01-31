@@ -50,10 +50,7 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
       context,
       listen: false,
     ).fetchRecentNotifications(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop()!.shopId!,
+      returnShopProvider().userShop()!.shopId!,
     );
 
     return tempGet;
@@ -70,10 +67,7 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
         .where(
           (beans) =>
               beans.shopId ==
-              returnShopProvider(
-                context,
-                listen: false,
-              ).userShop()!.shopId!,
+              returnShopProvider().userShop()!.shopId!,
         )
         .toList();
   }

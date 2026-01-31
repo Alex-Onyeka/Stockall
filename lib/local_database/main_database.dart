@@ -5,6 +5,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:stockall/local_database/app_version/app_version_func.dart';
 import 'package:stockall/local_database/customers/customer_func.dart';
+import 'package:stockall/local_database/events_log/events_log_func.dart';
 import 'package:stockall/local_database/expenses/expenses_func.dart';
 import 'package:stockall/local_database/logged_in_user/logged_in_user_func.dart';
 import 'package:stockall/local_database/main_receipt/main_receipt_func.dart';
@@ -53,8 +54,9 @@ class MainDatabase extends ChangeNotifier {
     await CurrentShopFunc().init();
     await SubscriptionFunc().init();
     await ShopOwnerFunc().init();
+    await EventsLogFunc().init();
     print('init Complete');
   }
 }
 
-int highestHiveClassIndex = 33;
+int highestHiveClassIndex = 35;

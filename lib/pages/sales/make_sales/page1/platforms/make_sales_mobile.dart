@@ -53,7 +53,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
 
   String formatSellingPriceEdit(TempCartItem cartItem) {
     if (priceController.text.isNotEmpty) {
-      if (returnSalesProvider(context).setTotalPrice) {
+      if (returnSalesProvider().setTotalPrice) {
         return priceController.text.replaceAll(',', '');
       } else {
         return (int.parse(
@@ -89,10 +89,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
             cartItem.customPrice.toString().split('.')[0]
         : priceController.text = "";
 
-    returnSalesProvider(
-      context,
-      listen: false,
-    ).toggleSetTotalPrice(cartItem.setTotalPrice);
+    returnSalesProvider().toggleSetTotalPrice(
+      cartItem.setTotalPrice,
+    );
     showDialog(
       context: context,
       builder: (context) {
@@ -126,7 +125,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                     children: [
                       Visibility(
                         visible:
-                            (returnSalesProvider(
+                            (returnSalesProviderContext(
                                       context,
                                     ).isSetCustomPrice() ||
                                     cartItem
@@ -151,7 +150,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                 width: 450,
                                 child: MoneyTextfield(
                                   title:
-                                      returnSalesProvider(
+                                      returnSalesProviderContext(
                                             context,
                                           ).setTotalPrice
                                           ? 'Total Price'
@@ -224,10 +223,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                             SizedBox(height: 20),
                             InkWell(
                               onTap: () {
-                                returnSalesProvider(
-                                  context,
-                                  listen: false,
-                                ).toggleSetCustomPrice();
+                                returnSalesProvider()
+                                    .toggleSetCustomPrice();
                                 priceController.clear();
                               },
                               child: Container(
@@ -254,7 +251,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         fontWeight:
                                             FontWeight.bold,
                                       ),
-                                      returnSalesProvider(
+                                      returnSalesProviderContext(
                                             context,
                                           ).isSetCustomPrice()
                                           ? 'Cancel Custom Price'
@@ -264,9 +261,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                       children: [
                                         Visibility(
                                           visible:
-                                              returnSalesProvider(
+                                              returnSalesProviderContext(
                                                 context,
-                                              ).isSetCustomPrice ==
+                                              ).isSetCustomPrice() ==
                                               false,
                                           child:
                                               SvgPicture.asset(
@@ -276,9 +273,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         ),
                                         Visibility(
                                           visible:
-                                              returnSalesProvider(
+                                              returnSalesProviderContext(
                                                 context,
-                                              ).isSetCustomPrice ==
+                                              ).isSetCustomPrice() ==
                                               true,
                                           child: Icon(
                                             Icons.clear,
@@ -337,7 +334,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                   priceController
                                           .text
                                           .isNotEmpty
-                                      ? returnSalesProvider(
+                                      ? returnSalesProviderContext(
                                             context,
                                           ).setTotalPrice
                                           ? priceController
@@ -532,14 +529,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
       quantityController.text = '';
       priceController.text = '';
       if (context.mounted) {
-        returnSalesProvider(
-          context,
-          listen: false,
-        ).closeCustomPrice();
-        returnSalesProvider(
-          context,
-          listen: false,
-        ).toggleSetTotalPrice(false);
+        returnSalesProvider().closeCustomPrice();
+        returnSalesProvider().toggleSetTotalPrice(false);
       }
     });
   }
@@ -555,7 +546,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
 
   String formatSellingPrice() {
     if (sellingPriceC.text.isNotEmpty) {
-      if (returnSalesProvider(context).setTotalPrice) {
+      if (returnSalesProvider().setTotalPrice) {
         return sellingPriceC.text.replaceAll(',', '');
       } else {
         return (int.parse(
@@ -584,13 +575,13 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
       context: context,
       action: () {
         var theme = returnTheme(context, listen: false);
-        if (returnData(context, listen: false).productList
+        if (returnData().productList
                 .where(
                   (product) =>
                       product.uuid == cartItem.item.uuid,
                 )
                 .isEmpty &&
-            returnSalesProvider(context, listen: false)
+            returnSalesProvider()
                 .currentCart()
                 .cartItems
                 .where(
@@ -604,14 +595,13 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
           pQuantity.text = cartItem.quantity.toString();
           sellingPriceC.text = (cartItem.customPrice ?? 0)
               .toStringAsFixed(0);
-          returnSalesProvider(
+          returnSalesProvider().toggleAddToStock(
+            cartItem.addToStock,
             context,
-            listen: false,
-          ).toggleAddToStock(cartItem.addToStock, context);
-          returnSalesProvider(
-            context,
-            listen: false,
-          ).toggleSetTotalPrice(cartItem.setTotalPrice);
+          );
+          returnSalesProvider().toggleSetTotalPrice(
+            cartItem.setTotalPrice,
+          );
         }
         showDialog(
           context: context,
@@ -715,7 +705,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                       Expanded(
                                         child: MoneyTextfield(
                                           title:
-                                              returnSalesProvider(
+                                              returnSalesProviderContext(
                                                     context,
                                                   ).setTotalPrice
                                                   ? 'Total Price'
@@ -851,10 +841,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                     InkWell(
                                       onTap: () {
                                         var salesProvider =
-                                            returnSalesProvider(
-                                              context,
-                                              listen: false,
-                                            );
+                                            returnSalesProvider();
                                         showDialog(
                                           context: context,
                                           builder: (
@@ -903,7 +890,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                               ),
                                           border: Border.all(
                                             color:
-                                                returnSalesProvider(
+                                                returnSalesProviderContext(
                                                       context,
                                                     ).addToStock
                                                     ? theme
@@ -913,7 +900,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                         .grey,
                                           ),
                                           color:
-                                              returnSalesProvider(
+                                              returnSalesProviderContext(
                                                     context,
                                                   ).addToStock
                                                   ? theme
@@ -925,7 +912,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         ),
                                         child: Row(
                                           mainAxisAlignment:
-                                              returnSalesProvider(
+                                              returnSalesProviderContext(
                                                     context,
                                                   ).addToStock
                                                   ? MainAxisAlignment
@@ -943,7 +930,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                     BoxShape
                                                         .circle,
                                                 color:
-                                                    returnSalesProvider(
+                                                    returnSalesProviderContext(
                                                           context,
                                                         ).addToStock
                                                         ? Colors.white
@@ -1080,23 +1067,18 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                       //       context,
                                       //       listen: false,
                                       //     );
-                                      var productIndex = returnData(
-                                        context,
-                                        listen: false,
-                                      ).productList.indexWhere((
-                                        item,
-                                      ) {
-                                        return item.name
-                                                .toLowerCase() ==
-                                            nameC.text
-                                                .toLowerCase();
-                                      });
+                                      var productIndex = returnData()
+                                          .productList
+                                          .indexWhere((
+                                            item,
+                                          ) {
+                                            return item.name
+                                                    .toLowerCase() ==
+                                                nameC.text
+                                                    .toLowerCase();
+                                          });
                                       var cartItems =
-                                          returnSalesProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              )
+                                          returnSalesProvider()
                                               .currentCart()
                                               .cartItems;
                                       final index = cartItems
@@ -1218,11 +1200,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                           cartItem.setCustomPrice =
                                               true;
                                           cartItem.setTotalPrice =
-                                              returnSalesProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).setTotalPrice;
+                                              returnSalesProvider()
+                                                  .setTotalPrice;
                                           cartItem
                                                   .item
                                                   .name =
@@ -1242,26 +1221,16 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                           // cartItem.item.uuid =
                                           //     uuidGen();
                                           cartItem.addToStock =
-                                              returnSalesProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).addToStock;
+                                              returnSalesProvider()
+                                                  .addToStock;
 
-                                          returnSalesProvider(
-                                            context,
-                                            listen: false,
-                                          ).addItemToCart(
+                                          returnSalesProvider().addItemToCart(
                                             context:
                                                 context,
                                             newItem:
                                                 cartItem,
                                             isCustomEdit:
-                                                returnData(
-                                                      context,
-                                                      listen:
-                                                          false,
-                                                    )
+                                                returnData()
                                                     .productList
                                                     .where(
                                                       (
@@ -1599,14 +1568,10 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
             if (!context.mounted) {
               return;
             }
-            returnSalesProvider(
-              context,
-              listen: false,
-            ).closeCustomPrice();
-            returnSalesProvider(
-              context,
-              listen: false,
-            ).toggleSetTotalPrice(false);
+            returnSalesProvider().closeCustomPrice();
+            returnSalesProvider().toggleSetTotalPrice(
+              false,
+            );
           }
         });
       },
@@ -1625,23 +1590,23 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.isInvoice != null &&
-          returnSalesProvider(
-            context,
-            listen: false,
-          ).currentCart().cartItems.isEmpty) {
-        returnSalesProvider(
-          context,
-          listen: false,
-        ).switchInvoiceSale(value: true, context: context);
+          returnSalesProvider()
+              .currentCart()
+              .cartItems
+              .isEmpty) {
+        returnSalesProvider().switchInvoiceSale(
+          value: true,
+          context: context,
+        );
       } else if (widget.isInvoice == null &&
-          returnSalesProvider(
-            context,
-            listen: false,
-          ).currentCart().cartItems.isEmpty) {
-        returnSalesProvider(
-          context,
-          listen: false,
-        ).switchInvoiceSale(value: false, context: context);
+          returnSalesProvider()
+              .currentCart()
+              .cartItems
+              .isEmpty) {
+        returnSalesProvider().switchInvoiceSale(
+          value: false,
+          context: context,
+        );
       }
     });
   }
@@ -1649,7 +1614,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    var products = returnData(context).productList;
+    var products = returnData().productList;
     return GestureDetector(
       onTap:
           () =>
@@ -1660,25 +1625,22 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
         child: Scaffold(
           appBar: appBar(
             backAction:
-                returnSalesProvider(
-                      context,
-                      // listen: false,
-                    ).currentCart().isReceiptEdit
+                returnSalesProvider()
+                        .currentCart()
+                        .isReceiptEdit
                     ? () {
-                      returnSalesProvider(
-                        context,
-                        listen: false,
-                      ).cancelReceiptEdit(context);
+                      returnSalesProvider()
+                          .cancelReceiptEdit(context);
                     }
                     : null,
             // isMain: widget.isMain,
             context: context,
             title:
-                returnSalesProvider(
+                returnSalesProviderContext(
                       context,
                     ).currentCart().isReceiptEdit
                     ? 'Edit Receipt'
-                    : returnSalesProvider(
+                    : returnSalesProviderContext(
                       context,
                     ).currentCart().isInvoice
                     ? 'Credit Sale'
@@ -1687,7 +1649,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
               children: [
                 Visibility(
                   visible:
-                      returnSalesProvider(
+                      returnSalesProviderContext(
                         context,
                       ).currentCart().cartItems.isNotEmpty,
                   child: InkWell(
@@ -1701,10 +1663,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                 'You are about to clear the items in your cart, are you sure you want to proceed?',
                             title: 'Are you sure?',
                             action: () {
-                              returnSalesProvider(
-                                context,
-                                listen: false,
-                              ).clearCart();
+                              returnSalesProvider()
+                                  .clearCart();
                               // returnSuggestionProvider(
                               //   context,
                               //   listen: false,
@@ -1755,30 +1715,25 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                 ),
                 Visibility(
                   visible:
-                      returnSalesProvider(
+                      returnSalesProviderContext(
                         context,
                       ).currentCart().cartItems.isEmpty,
                   child: InkWell(
                     onTap: () {
-                      if (returnSalesProvider(
-                        context,
-                        listen: false,
-                      ).currentCart().isInvoice) {
-                        returnSalesProvider(
-                          context,
-                          listen: false,
-                        ).switchInvoiceSale(
-                          context: context,
-                          value: false,
-                        );
+                      if (returnSalesProvider()
+                          .currentCart()
+                          .isInvoice) {
+                        returnSalesProvider()
+                            .switchInvoiceSale(
+                              context: context,
+                              value: false,
+                            );
                       } else {
-                        returnSalesProvider(
-                          context,
-                          listen: false,
-                        ).switchInvoiceSale(
-                          context: context,
-                          value: true,
-                        );
+                        returnSalesProvider()
+                            .switchInvoiceSale(
+                              context: context,
+                              value: true,
+                            );
                       }
                     },
                     child: SizedBox(
@@ -1809,7 +1764,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color:
-                                    returnSalesProvider(
+                                    returnSalesProviderContext(
                                               context,
                                             )
                                             .currentCart()
@@ -1820,7 +1775,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         : null,
                                 border: Border.all(
                                   color:
-                                      returnSalesProvider(
+                                      returnSalesProviderContext(
                                                 context,
                                               )
                                               .currentCart()
@@ -1834,7 +1789,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                               child: Icon(
                                 size: 14,
                                 color:
-                                    returnSalesProvider(
+                                    returnSalesProviderContext(
                                               context,
                                             )
                                             .currentCart()
@@ -1860,7 +1815,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
               Builder(
                 builder: (context) {
                   if (products.isEmpty &&
-                      returnSalesProvider(
+                      returnSalesProviderContext(
                         context,
                       ).currentCart().cartItems.isEmpty) {
                     if (!authorization(
@@ -1879,13 +1834,11 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                               height: 30,
                               icon: Icons.clear,
                               altAction: () {
-                                returnSalesProvider(
-                                  context,
-                                  listen: false,
-                                ).toggleAddToStock(
-                                  false,
-                                  context,
-                                );
+                                returnSalesProvider()
+                                    .toggleAddToStock(
+                                      false,
+                                      context,
+                                    );
                                 makeCustomSale(
                                   closeAction: () {
                                     Navigator.of(
@@ -1894,10 +1847,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                   },
                                   cartItem: TempCartItem(
                                     setTotalPrice:
-                                        returnSalesProvider(
-                                          context,
-                                          listen: false,
-                                        ).setTotalPrice,
+                                        returnSalesProvider()
+                                            .setTotalPrice,
                                     item: TempProductClass(
                                       isManaged: false,
                                       uuid: uuidGen(),
@@ -1916,11 +1867,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                           ),
                                       quantity: 0,
                                       shopId:
-                                          returnShopProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              )
+                                          returnShopProvider()
                                               .userShop()!
                                               .shopId!,
                                       setCustomPrice: true,
@@ -1939,13 +1886,11 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                           ),
                           EmptyCartBottomWidget(
                             action: () {
-                              returnSalesProvider(
-                                context,
-                                listen: false,
-                              ).toggleAddToStock(
-                                false,
-                                context,
-                              );
+                              returnSalesProvider()
+                                  .toggleAddToStock(
+                                    false,
+                                    context,
+                                  );
                               makeCustomSale(
                                 closeAction: () {
                                   Navigator.of(
@@ -1954,10 +1899,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                 },
                                 cartItem: TempCartItem(
                                   setTotalPrice:
-                                      returnSalesProvider(
-                                        context,
-                                        listen: false,
-                                      ).setTotalPrice,
+                                      returnSalesProvider()
+                                          .setTotalPrice,
                                   item: TempProductClass(
                                     isManaged: false,
                                     uuid: uuidGen(),
@@ -1976,10 +1919,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         ),
                                     quantity: 0,
                                     shopId:
-                                        returnShopProvider(
-                                              context,
-                                              listen: false,
-                                            )
+                                        returnShopProvider()
                                             .userShop()!
                                             .shopId!,
                                     setCustomPrice: true,
@@ -2031,13 +1971,11 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                       });
                                     },
                                     altAction: () {
-                                      returnSalesProvider(
-                                        context,
-                                        listen: false,
-                                      ).toggleAddToStock(
-                                        false,
-                                        context,
-                                      );
+                                      returnSalesProvider()
+                                          .toggleAddToStock(
+                                            false,
+                                            context,
+                                          );
                                       makeCustomSale(
                                         closeAction: () {
                                           Navigator.of(
@@ -2046,11 +1984,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         },
                                         cartItem: TempCartItem(
                                           setTotalPrice:
-                                              returnSalesProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).setTotalPrice,
+                                              returnSalesProvider()
+                                                  .setTotalPrice,
                                           item: TempProductClass(
                                             isManaged:
                                                 false,
@@ -2073,11 +2008,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                 ),
                                             quantity: 0,
                                             shopId:
-                                                returnShopProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).userShop()!.shopId!,
+                                                returnShopProvider()
+                                                    .userShop()!
+                                                    .shopId!,
                                             setCustomPrice:
                                                 true,
                                           ),
@@ -2099,13 +2032,11 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                           ),
                           EmptyCartBottomWidget(
                             action: () {
-                              returnSalesProvider(
-                                context,
-                                listen: false,
-                              ).toggleAddToStock(
-                                false,
-                                context,
-                              );
+                              returnSalesProvider()
+                                  .toggleAddToStock(
+                                    false,
+                                    context,
+                                  );
                               makeCustomSale(
                                 closeAction: () {
                                   Navigator.of(
@@ -2114,10 +2045,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                 },
                                 cartItem: TempCartItem(
                                   setTotalPrice:
-                                      returnSalesProvider(
-                                        context,
-                                        listen: false,
-                                      ).setTotalPrice,
+                                      returnSalesProvider()
+                                          .setTotalPrice,
                                   item: TempProductClass(
                                     isManaged: false,
                                     uuid: uuidGen(),
@@ -2136,10 +2065,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         ),
                                     quantity: 0,
                                     shopId:
-                                        returnShopProvider(
-                                              context,
-                                              listen: false,
-                                            )
+                                        returnShopProvider()
                                             .userShop()!
                                             .shopId!,
                                     setCustomPrice: true,
@@ -2184,7 +2110,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                               TempCartItem
                                             >
                                             items =
-                                                returnSalesProvider(
+                                                returnSalesProviderContext(
                                                       context,
                                                     )
                                                     .currentCart()
@@ -2237,11 +2163,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                       );
                                                     },
                                                     altAction: () {
-                                                      returnSalesProvider(
-                                                        context,
-                                                        listen:
-                                                            false,
-                                                      ).toggleAddToStock(
+                                                      returnSalesProvider().toggleAddToStock(
                                                         false,
                                                         context,
                                                       );
@@ -2253,11 +2175,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                         },
                                                         cartItem: TempCartItem(
                                                           setTotalPrice:
-                                                              returnSalesProvider(
-                                                                context,
-                                                                listen:
-                                                                    false,
-                                                              ).setTotalPrice,
+                                                              returnSalesProvider().setTotalPrice,
                                                           item: TempProductClass(
                                                             isManaged:
                                                                 false,
@@ -2280,11 +2198,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                             quantity:
                                                                 0,
                                                             shopId:
-                                                                returnShopProvider(
-                                                                  context,
-                                                                  listen:
-                                                                      false,
-                                                                ).userShop()!.shopId!,
+                                                                returnShopProvider().userShop()!.shopId!,
                                                             setCustomPrice:
                                                                 true,
                                                           ),
@@ -2309,7 +2223,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                             } else {
                                               return ListView.builder(
                                                 itemCount:
-                                                    returnSalesProvider(
+                                                    returnSalesProviderContext(
                                                           context,
                                                         )
                                                         .currentCart()
@@ -2325,7 +2239,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                         context:
                                                             context,
                                                         builder: (
-                                                          context,
+                                                          confirmContext,
                                                         ) {
                                                           return ConfirmationAlert(
                                                             theme:
@@ -2336,14 +2250,11 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                                 'Remove Item?',
                                                             action: () {
                                                               Navigator.of(
-                                                                context,
+                                                                confirmContext,
                                                               ).pop();
-                                                              returnSalesProvider(
-                                                                context,
-                                                                listen:
-                                                                    false,
-                                                              ).removeItemFromCart(
+                                                              returnSalesProvider().removeItemFromCart(
                                                                 items[index],
+                                                                context,
                                                               );
                                                               // returnSuggestionProvider(
                                                               //   context,
@@ -2358,17 +2269,10 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                       );
                                                     },
                                                     editAction: () {
-                                                      var salesProvider = returnSalesProvider(
-                                                        context,
-                                                        listen:
-                                                            false,
-                                                      );
+                                                      var salesProvider =
+                                                          returnSalesProvider();
 
-                                                      if (returnData(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          )
+                                                      if (returnData()
                                                           .productList
                                                           .where(
                                                             (
@@ -2386,11 +2290,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                           updateAction: () {
                                                             salesProvider.editCartItemQuantity(
                                                               setTotalPrice:
-                                                                  returnSalesProvider(
-                                                                    context,
-                                                                    listen:
-                                                                        false,
-                                                                  ).setTotalPrice,
+                                                                  returnSalesProvider().setTotalPrice,
                                                               cartItem:
                                                                   items[index],
                                                               number: double.parse(
@@ -2413,11 +2313,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                               items[index],
                                                         );
                                                       } else {
-                                                        returnSalesProvider(
-                                                          context,
-                                                          listen:
-                                                              false,
-                                                        ).toggleAddToStock(
+                                                        returnSalesProvider().toggleAddToStock(
                                                           false,
                                                           context,
                                                         );
@@ -2509,11 +2405,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                         if (result !=
                                                             null) {
                                                           var prod =
-                                                              returnData(
-                                                                    context,
-                                                                    listen:
-                                                                        false,
-                                                                  ).productList
+                                                              returnData().productList
                                                                   .where(
                                                                     (
                                                                       pro,
@@ -2525,12 +2417,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                           if (prod.isNotEmpty) {
                                                             var pro =
                                                                 prod.first;
-                                                            returnSalesProvider(
-                                                              // ignore: use_build_context_synchronously
-                                                              context,
-                                                              listen:
-                                                                  false,
-                                                            ).addItemToCart(
+                                                            returnSalesProvider().addItemToCart(
                                                               // ignore: use_build_context_synchronously
                                                               context:
                                                                   context,
@@ -2638,9 +2525,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                             children: [
                                               Visibility(
                                                 visible:
-                                                    returnData(
-                                                      context,
-                                                    ).productList.isNotEmpty,
+                                                    returnData()
+                                                        .productList
+                                                        .isNotEmpty,
                                                 child: Expanded(
                                                   child: Ink(
                                                     decoration: BoxDecoration(
@@ -2739,11 +2626,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                     ),
                                                     child: InkWell(
                                                       onTap: () {
-                                                        returnSalesProvider(
-                                                          context,
-                                                          listen:
-                                                              false,
-                                                        ).toggleAddToStock(
+                                                        returnSalesProvider().toggleAddToStock(
                                                           false,
                                                           context,
                                                         );
@@ -2755,11 +2638,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                           },
                                                           cartItem: TempCartItem(
                                                             setTotalPrice:
-                                                                returnSalesProvider(
-                                                                  context,
-                                                                  listen:
-                                                                      false,
-                                                                ).setTotalPrice,
+                                                                returnSalesProvider().setTotalPrice,
                                                             item: TempProductClass(
                                                               isManaged:
                                                                   false,
@@ -2782,11 +2661,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                               quantity:
                                                                   0,
                                                               shopId:
-                                                                  returnShopProvider(
-                                                                    context,
-                                                                    listen:
-                                                                        false,
-                                                                  ).userShop()!.shopId!,
+                                                                  returnShopProvider().userShop()!.shopId!,
                                                               setCustomPrice:
                                                                   true,
                                                             ),
@@ -2853,7 +2728,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                               ),
                                               formatMoneyBig(
                                                 amount:
-                                                    returnSalesProvider(
+                                                    returnSalesProviderContext(
                                                       context,
                                                     ).calcTotalMain(),
                                                 context:
@@ -2938,7 +2813,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                             FontWeight.bold,
                                                         // fontWeight: FontWeight.bold,
                                                       ),
-                                                      ' (${returnShopProvider(context).userShop()!.applyVAT! ? vat : 0}%)',
+                                                      ' (${returnShopProvider().userShop()!.applyVAT! ? vat : 0}%)',
                                                     ),
                                                   ],
                                                 ),
@@ -2949,11 +2824,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                     // fontWeight: FontWeight.bold,
                                                   ),
                                                   formatMoney(
-                                                    returnSalesProvider(
+                                                    returnSalesProviderContext(
                                                       context,
-                                                    ).calcVatAmount(
-                                                      context,
-                                                    ),
+                                                    ).calcVatAmount(),
                                                     context,
                                                   ),
                                                 ),
@@ -2992,11 +2865,10 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                         .bold,
                                               ),
                                               formatMoneyBig(
-                                                amount: returnSalesProvider(
-                                                  context,
-                                                ).calcFinalTotalMain(
-                                                  context,
-                                                ),
+                                                amount:
+                                                    returnSalesProviderContext(
+                                                      context,
+                                                    ).calcFinalTotalMain(),
                                                 context:
                                                     context,
                                               ),
@@ -3017,11 +2889,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                   context,
                                                 ) {
                                                   return MakeSalesTwo(
-                                                    totalAmount: returnSalesProvider(
-                                                      context,
-                                                    ).calcFinalTotalMain(
-                                                      context,
-                                                    ),
+                                                    totalAmount:
+                                                        returnSalesProvider().calcFinalTotalMain(),
                                                   );
                                                 },
                                               ),

@@ -92,8 +92,7 @@ class _AddProductDesktopState
         },
       );
     } else if (widget.discountController.text.isNotEmpty &&
-        returnData(context, listen: false).endDate ==
-            null) {
+        returnData().endDate == null) {
       showDialog(
         context: context,
         builder: (context) {
@@ -108,10 +107,7 @@ class _AddProductDesktopState
       );
     } else {
       final safeContext = context;
-      var samePro = returnData(
-        context,
-        listen: false,
-      ).productList.where(
+      var samePro = returnData().productList.where(
         (pr) =>
             pr.name.toLowerCase() ==
             widget.nameController.text.toLowerCase(),
@@ -119,7 +115,7 @@ class _AddProductDesktopState
 
       showDialog(
         context: safeContext,
-        builder: (context) {
+        builder: (confirmDialog) {
           return ConfirmationAlert(
             theme: returnTheme(safeContext),
             message:
@@ -131,23 +127,15 @@ class _AddProductDesktopState
                     ? 'Item Already Exists'
                     : 'Are you sure?',
             action: () async {
-              if (safeContext.mounted) {
-                Navigator.of(safeContext).pop();
-              }
+              Navigator.of(confirmDialog).pop();
 
               setState(() {
                 isLoading = true;
               });
 
-              final dataProvider = returnData(
-                safeContext,
-                listen: false,
-              );
+              final dataProvider = returnData();
               final shopId =
-                  returnShopProvider(
-                    context,
-                    listen: false,
-                  ).userShop()!.shopId;
+                  returnShopProvider().userShop()!.shopId;
 
               await dataProvider.createProduct(
                 TempProductClass(
@@ -247,7 +235,7 @@ class _AddProductDesktopState
     final safeContext = context;
     showDialog(
       context: safeContext,
-      builder: (context) {
+      builder: (confirmDialog) {
         var theme = returnTheme(context);
         return ConfirmationAlert(
           theme: theme,
@@ -255,18 +243,10 @@ class _AddProductDesktopState
               'Are you sure you want to proceed with update?',
           title: 'Proceed?',
           action: () async {
-            final provider = returnData(
-              context,
-              listen: false,
-            );
-            final shopProvider = returnShopProvider(
-              context,
-              listen: false,
-            );
+            final provider = returnData();
+            final shopProvider = returnShopProvider();
 
-            if (safeContext.mounted) {
-              Navigator.of(safeContext).pop();
-            }
+            Navigator.of(confirmDialog).pop();
 
             setState(() {
               isLoading = true;
@@ -377,25 +357,16 @@ class _AddProductDesktopState
     await Future.delayed(Duration(microseconds: 500), () {
       if (context.mounted) {
         // ignore: use_build_context_synchronously
-        returnData(
-          context,
-          listen: false,
-        ).clearFields(setIsManaged: false);
+        returnData().clearFields(setIsManaged: false);
       }
       var res = ItemsAuthAction()
           .allowStockallToManageItemAction(
             context: context,
           );
       if (res) {
-        returnData(
-          context,
-          listen: false,
-        ).toggleIsManagedTemp(true);
+        returnData().toggleIsManagedTemp(true);
       } else {
-        returnData(
-          context,
-          listen: false,
-        ).toggleIsManagedTemp(false);
+        returnData().toggleIsManagedTemp(false);
       }
       // returnData(
       //   context,
@@ -428,36 +399,27 @@ class _AddProductDesktopState
           widget.product!.discount != null
               ? widget.product!.discount.toString()
               : '';
-      returnData(
-            context,
-            listen: false,
-          ).isProductRefundable =
+      returnData().isProductRefundable =
           widget.product!.isRefundable;
-      returnData(context, listen: false).isManaged =
-          widget.product!.isManaged;
-      returnData(context, listen: false).setCustomPrice =
+      returnData().isManaged = widget.product!.isManaged;
+      returnData().setCustomPrice =
           widget.product!.setCustomPrice;
-      // returnData(context, listen: false).selectedUnit =
+      // returnData().selectedUnit =
       //     widget.product!.unit;
-      returnData(
-        context,
-        listen: false,
-      ).selectUnit(widget.product!.unit);
-      // returnData(context, listen: false).selectedSize =
+      returnData().selectUnit(widget.product!.unit);
+      // returnData().selectedSize =
       //     widget.product!.sizeType ?? '';
       widget.product!.sizeType != null
-          ? returnData(
-            context,
-            listen: false,
-          ).selectSize(widget.product!.sizeType!)
+          ? returnData().selectSize(
+            widget.product!.sizeType!,
+          )
           : null;
       widget.product!.category != null
-          ? returnData(
-            context,
-            listen: false,
-          ).selectCategory(widget.product!.category!)
+          ? returnData().selectCategory(
+            widget.product!.category!,
+          )
           : null;
-      returnData(context, listen: false).setBothDates(
+      returnData().setBothDates(
         start: widget.product!.startDate,
         end: widget.product!.endDate,
         expDate: widget.product!.expiryDate,
@@ -490,17 +452,10 @@ class _AddProductDesktopState
 
   TempShopClass? userShop;
   void setShop() async {
-    await returnShopProvider(
-      context,
-      listen: false,
-    ).getUserShops();
+    await returnShopProvider().getUserShops();
 
     setState(() {
-      userShop =
-          returnShopProvider(
-            context,
-            listen: false,
-          ).userShop();
+      userShop = returnShopProvider().userShop();
     });
   }
 
@@ -694,12 +649,11 @@ class _AddProductDesktopState
                                   SizedBox(height: 20),
                                   InkWell(
                                     onTap: () {
-                                      returnData(
-                                        context,
-                                        listen: false,
-                                      ).toggleIsManaged(
-                                        context: context,
-                                      );
+                                      returnData()
+                                          .toggleIsManaged(
+                                            context:
+                                                context,
+                                          );
                                       FocusManager
                                           .instance
                                           .primaryFocus
@@ -753,19 +707,16 @@ class _AddProductDesktopState
                                                   .lightModeColor
                                                   .secColor100,
                                           value:
-                                              returnData(
-                                                context,
-                                              ).isManaged,
+                                              returnData()
+                                                  .isManaged,
                                           onChanged: (
                                             value,
                                           ) {
-                                            returnData(
-                                              context,
-                                              listen: false,
-                                            ).toggleIsManaged(
-                                              context:
-                                                  context,
-                                            );
+                                            returnData()
+                                                .toggleIsManaged(
+                                                  context:
+                                                      context,
+                                                );
                                             FocusManager
                                                 .instance
                                                 .primaryFocus
@@ -778,10 +729,8 @@ class _AddProductDesktopState
                                   SizedBox(height: 20),
                                   InkWell(
                                     onTap: () {
-                                      returnData(
-                                        context,
-                                        listen: false,
-                                      ).toggleSetCustomPrice();
+                                      returnData()
+                                          .toggleSetCustomPrice();
                                       FocusManager
                                           .instance
                                           .primaryFocus
@@ -842,16 +791,13 @@ class _AddProductDesktopState
                                                   .lightModeColor
                                                   .secColor100,
                                           value:
-                                              returnData(
-                                                context,
-                                              ).setCustomPrice,
+                                              returnData()
+                                                  .setCustomPrice,
                                           onChanged: (
                                             value,
                                           ) {
-                                            returnData(
-                                              context,
-                                              listen: false,
-                                            ).toggleSetCustomPrice();
+                                            returnData()
+                                                .toggleSetCustomPrice();
                                             FocusManager
                                                 .instance
                                                 .primaryFocus
@@ -1166,11 +1112,7 @@ class _AddProductDesktopState
                                                         );
 
                                                         if (widget.nameController.text.isNotEmpty) {
-                                                          returnData(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).addToBarcodeGenerationList(
+                                                          returnData().addToBarcodeGenerationList(
                                                             ProductBarcode(
                                                               product:
                                                                   tempProduct,
@@ -1180,11 +1122,7 @@ class _AddProductDesktopState
                                                           );
                                                           await generateBarcodeAndPrint(
                                                             context,
-                                                            returnData(
-                                                              context,
-                                                              listen:
-                                                                  false,
-                                                            ).barcodeGenerationList,
+                                                            returnData().barcodeGenerationList,
                                                             true,
                                                           );
                                                           // if (res) {
@@ -1323,16 +1261,12 @@ class _AddProductDesktopState
                                                   decoration: BoxDecoration(
                                                     border: Border.all(
                                                       color:
-                                                          returnData(
-                                                                    context,
-                                                                  ).expiryDate !=
+                                                          returnData().expiryDate !=
                                                                   null
                                                               ? theme.lightModeColor.prColor300
                                                               : Colors.grey,
                                                       width:
-                                                          returnData(
-                                                                    context,
-                                                                  ).expiryDate !=
+                                                          returnData().expiryDate !=
                                                                   null
                                                               ? 1.3
                                                               : 1,
@@ -1355,36 +1289,26 @@ class _AddProductDesktopState
                                                           Text(
                                                             style: TextStyle(
                                                               fontSize:
-                                                                  returnData(
-                                                                            context,
-                                                                          ).expiryDate !=
+                                                                  returnData().expiryDate !=
                                                                           null
                                                                       ? theme.mobileTexts.b2.fontSize
                                                                       : theme.mobileTexts.b2.fontSize,
                                                               fontWeight:
-                                                                  returnData(
-                                                                            context,
-                                                                          ).expiryDate !=
+                                                                  returnData().expiryDate !=
                                                                           null
                                                                       ? FontWeight.bold
                                                                       : null,
                                                               color:
-                                                                  returnData(
-                                                                            context,
-                                                                          ).expiryDate !=
+                                                                  returnData().expiryDate !=
                                                                           null
                                                                       ? null
                                                                       : Colors.grey.shade500,
                                                             ),
-                                                            returnData(
-                                                                      context,
-                                                                    ).expiryDate ==
+                                                            returnData().expiryDate ==
                                                                     null
                                                                 ? 'Set Expiry Date'
                                                                 : formatDateWithDay(
-                                                                  returnData(
-                                                                        context,
-                                                                      ).expiryDate ??
+                                                                  returnData().expiryDate ??
                                                                       DateTime.now(),
                                                                 ),
                                                           ),
@@ -1396,11 +1320,7 @@ class _AddProductDesktopState
                                                             20,
                                                           ),
                                                           onTap: () {
-                                                            returnData(
-                                                              context,
-                                                              listen:
-                                                                  false,
-                                                            ).clearExpDate();
+                                                            returnData().clearExpDate();
                                                           },
                                                           child: Container(
                                                             padding: EdgeInsets.all(
@@ -1435,9 +1355,8 @@ class _AddProductDesktopState
                                                   ),
                                           mainWidget: MainDropdown(
                                             valueSet:
-                                                returnData(
-                                                  context,
-                                                ).unitValueSet,
+                                                returnData()
+                                                    .unitValueSet,
                                             onTap: () {
                                               ItemsAuthAction().applyVariationsAction(
                                                 context:
@@ -1464,9 +1383,8 @@ class _AddProductDesktopState
                                             title:
                                                 'Item Unit (Optional)',
                                             hint:
-                                                returnData(
-                                                  context,
-                                                ).selectedUnit ??
+                                                returnData()
+                                                    .selectedUnit ??
                                                 'Select Item Unit',
                                             theme: theme,
                                           ),
@@ -1483,9 +1401,8 @@ class _AddProductDesktopState
                                                   ),
                                           mainWidget: MainDropdown(
                                             valueSet:
-                                                returnData(
-                                                  context,
-                                                ).sizeValueSet,
+                                                returnData()
+                                                    .sizeValueSet,
                                             onTap: () {
                                               ItemsAuthAction().applyVariationsAction(
                                                 context:
@@ -1512,9 +1429,8 @@ class _AddProductDesktopState
                                             title:
                                                 'Size Type (Optional)',
                                             hint:
-                                                returnData(
-                                                  context,
-                                                ).selectedSize ??
+                                                returnData()
+                                                    .selectedSize ??
                                                 'Select Item Size Type',
                                             theme: theme,
                                           ),
@@ -1532,9 +1448,8 @@ class _AddProductDesktopState
                                                   ),
                                           mainWidget: MainDropdown(
                                             valueSet:
-                                                returnData(
-                                                  context,
-                                                ).catValueSet,
+                                                returnData()
+                                                    .catValueSet,
                                             onTap: () {
                                               ItemsAuthAction().applyVariationsAction(
                                                 context:
@@ -1560,9 +1475,8 @@ class _AddProductDesktopState
                                             title:
                                                 'Category (Optional)',
                                             hint:
-                                                returnData(
-                                                  context,
-                                                ).selectedCategory ??
+                                                returnData()
+                                                    .selectedCategory ??
                                                 'Select Item Category',
                                             theme: theme,
                                           ),
@@ -1675,35 +1589,24 @@ class _AddProductDesktopState
                                       focusedDay,
                                     ) {
                                       if (isExp) {
-                                        returnData(
-                                          context,
-                                          listen: false,
-                                        ).setExpDate(
-                                          selectedDay,
-                                        );
-                                        returnData(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).expiryDate !=
+                                        returnData()
+                                            .setExpDate(
+                                              selectedDay,
+                                            );
+                                        returnData().expiryDate !=
                                                 null
                                             ? expiryDateC
                                                 .text = formatDateWithDay(
-                                              returnData(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).expiryDate ??
+                                              returnData()
+                                                      .expiryDate ??
                                                   DateTime.now(),
                                             )
                                             : '';
                                       } else {
-                                        returnData(
-                                          context,
-                                          listen: false,
-                                        ).setDate(
-                                          selectedDay,
-                                        );
+                                        returnData()
+                                            .setDate(
+                                              selectedDay,
+                                            );
                                       }
                                       setState(() {
                                         setDate = false;

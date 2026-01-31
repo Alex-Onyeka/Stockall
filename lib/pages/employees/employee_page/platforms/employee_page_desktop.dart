@@ -31,10 +31,7 @@ class _EmployeePageDesktopState
   void initState() {
     super.initState();
 
-    returnData(
-      context,
-      listen: false,
-    ).toggleFloatingAction(context);
+    returnData().toggleFloatingAction(context);
   }
 
   bool isLoading = false;
@@ -134,10 +131,7 @@ class _EmployeePageDesktopState
                                 //       listen: false,
                                 //     );
                                 final shopProvider =
-                                    returnShopProvider(
-                                      context,
-                                      listen: false,
-                                    );
+                                    returnShopProvider();
                                 showDialog(
                                   context: safeContext,
                                   builder: (confirmDialg) {

@@ -120,10 +120,9 @@ class _TopNavBarState extends State<TopNavBar> {
                                       .switchStores,
                               context: context,
                             ) &&
-                            returnShopProvider(
-                                  context,
-                                  listen: false,
-                                ).userShops.length <
+                            returnShopProvider()
+                                    .userShops
+                                    .length <
                                 2) {
                           return;
                         }
@@ -206,31 +205,23 @@ class _TopNavBarState extends State<TopNavBar> {
                                   ? 300
                                   : 270,
                           height:
-                              returnShopProvider(
-                                        context,
-                                        listen: false,
-                                      ).userShops.length <
+                              returnShopProvider()
+                                          .userShops
+                                          .length <
                                       2
                                   ? 190
-                                  : returnShopProvider(
-                                        context,
-                                        listen: false,
-                                      ).userShops.length >
+                                  : returnShopProvider()
+                                          .userShops
+                                          .length >
                                       4
                                   ? 400
-                                  : (returnShopProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              )
+                                  : (returnShopProvider()
                                               .userShops
                                               .length *
                                           (68 -
-                                              returnShopProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).userShops.length *
+                                              returnShopProvider()
+                                                      .userShops
+                                                      .length *
                                                   2)) +
                                       100,
                           arrowHeight: 10,
@@ -303,7 +294,8 @@ class _TopNavBarState extends State<TopNavBar> {
                                     cutLongText(
                                       widget.title ??
                                           returnShopProvider(
-                                                context,
+                                                context:
+                                                    context,
                                               )
                                               .userShop()
                                               ?.name ??
@@ -361,7 +353,7 @@ class _TopNavBarState extends State<TopNavBar> {
                                 cutLongText(
                                   widget.subText ??
                                       returnShopProvider(
-                                        context,
+                                        context: context,
                                       ).userShop()?.email ??
                                       'Email Not Set',
                                   18,
@@ -379,7 +371,7 @@ class _TopNavBarState extends State<TopNavBar> {
                                   context: context,
                                 ) ||
                                 returnShopProvider(
-                                      context,
+                                      context: context,
                                     ).userShops.length >
                                     1,
                             child: Icon(
@@ -488,15 +480,10 @@ class _TopNavBarState extends State<TopNavBar> {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(10),
                     onTap: () async {
-                      if (returnData(
-                            context,
-                            listen: false,
-                          ).isSynced() ==
-                          0) {
-                        await returnData(
+                      if (returnData().isSynced() == 0) {
+                        await returnData().syncData(
                           context,
-                          listen: false,
-                        ).syncData(context);
+                        );
                       }
                     },
                     child: Padding(
@@ -522,12 +509,14 @@ class _TopNavBarState extends State<TopNavBar> {
                                         FontWeight.bold,
                                   ),
                                   returnData(
-                                            context,
+                                            context:
+                                                context,
                                           ).isSynced() ==
                                           1
                                       ? 'Synced'
                                       : returnData(
-                                            context,
+                                            context:
+                                                context,
                                           ).isSynced() ==
                                           0
                                       ? 'Unsynced'
@@ -542,13 +531,14 @@ class _TopNavBarState extends State<TopNavBar> {
                               Visibility(
                                 visible:
                                     returnData(
-                                      context,
+                                      context: context,
                                     ).isSynced() !=
                                     2,
                                 child: Icon(
                                   color:
                                       returnData(
-                                                context,
+                                                context:
+                                                    context,
                                               ).isSynced() ==
                                               1
                                           ? const Color.fromARGB(
@@ -560,7 +550,8 @@ class _TopNavBarState extends State<TopNavBar> {
                                           : Colors.grey,
                                   size: 18,
                                   returnData(
-                                            context,
+                                            context:
+                                                context,
                                           ).isSynced() ==
                                           1
                                       ? Icons
@@ -572,7 +563,7 @@ class _TopNavBarState extends State<TopNavBar> {
                               Visibility(
                                 visible:
                                     returnData(
-                                      context,
+                                      context: context,
                                     ).isSynced() ==
                                     2,
                                 child: Stack(
@@ -607,7 +598,8 @@ class _TopNavBarState extends State<TopNavBar> {
                                               fontSize: 8,
                                             ),
                                             returnData(
-                                                  context,
+                                                  context:
+                                                      context,
                                                 )
                                                 .syncProgress
                                                 .toStringAsFixed(
@@ -683,7 +675,7 @@ class _TopNavBarState extends State<TopNavBar> {
                               Visibility(
                                 visible:
                                     !returnData(
-                                      context,
+                                      context: context,
                                     ).isRefreshing,
                                 child: Icon(
                                   size: 18,
@@ -693,7 +685,7 @@ class _TopNavBarState extends State<TopNavBar> {
                               Visibility(
                                 visible:
                                     returnData(
-                                      context,
+                                      context: context,
                                     ).isRefreshing,
                                 child: Padding(
                                   padding:
@@ -927,7 +919,7 @@ class PopoverMenu extends StatelessWidget {
               child: ListView(
                 padding: EdgeInsets.zero,
                 children:
-                    returnShopProvider(context).userShops
+                    returnShopProvider().userShops
                         .map(
                           (shop) => ListTile(
                             shape: Border(
@@ -989,10 +981,7 @@ class PopoverMenu extends StatelessWidget {
                                 ),
                                 Visibility(
                                   visible:
-                                      returnShopProvider(
-                                            context,
-                                            listen: false,
-                                          )
+                                      returnShopProvider()
                                           .userShop()!
                                           .shopId! ==
                                       shop.shopId!,
@@ -1017,10 +1006,9 @@ class PopoverMenu extends StatelessWidget {
                                   ).isOnline();
                               if (!safeContext.mounted)
                                 return;
-                              if (returnShopProvider(
-                                    safeContext,
-                                    listen: false,
-                                  ).userShop()!.shopId! !=
+                              if (returnShopProvider()
+                                      .userShop()!
+                                      .shopId! !=
                                   shop.shopId!) {
                                 if (!isOnline) {
                                   showDialog(
@@ -1038,13 +1026,11 @@ class PopoverMenu extends StatelessWidget {
                                   return;
                                 }
                                 Navigator.of(context).pop();
-                                await returnShopProvider(
-                                  safeContext,
-                                  listen: false,
-                                ).selectShop(
-                                  safeContext,
-                                  shop,
-                                );
+                                await returnShopProvider()
+                                    .selectShop(
+                                      safeContext,
+                                      shop,
+                                    );
 
                                 // print(
                                 //   returnShopProvider(

@@ -104,10 +104,9 @@ class _DashboardDesktopState
 
   late Future<List<TempProductClass>> productsFuture;
   Future<List<TempProductClass>> getProducts() async {
-    var tempP = await returnData(
-      context,
-      listen: false,
-    ).getProducts(widget.shopId!);
+    var tempP = await returnData().getProducts(
+      widget.shopId!,
+    );
     return tempP;
   }
 
@@ -138,10 +137,7 @@ class _DashboardDesktopState
         .where(
           (beans) =>
               beans.shopId ==
-              returnShopProvider(
-                context,
-                listen: false,
-              ).userShop()!.shopId!,
+              returnShopProvider().userShop()!.shopId!,
         )
         .toList();
   }
@@ -174,10 +170,7 @@ class _DashboardDesktopState
       context,
       listen: false,
     ).fetchCustomers(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop()!.shopId!,
+      returnShopProvider().userShop()!.shopId!,
     );
 
     return customers;
@@ -257,7 +250,7 @@ class _DashboardDesktopState
         returnReceiptProvider(context).receipts;
     var expensesLocal =
         returnExpensesProvider(context).expenses;
-    var productsLocal = returnData(context).productList;
+    var productsLocal = returnData().productList;
     if (widget.shopId == null) {
       return Scaffold(
         body: returnCompProvider(

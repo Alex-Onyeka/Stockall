@@ -38,10 +38,7 @@ class _ProductReportMobileState
         context,
         listen: false,
       ).clearDate(context);
-      returnData(
-        context,
-        listen: false,
-      ).toggleIsLoading(false);
+      returnData().toggleIsLoading(false);
     });
     productsFuture = getProducts();
   }
@@ -49,7 +46,7 @@ class _ProductReportMobileState
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    var products = returnData(context).productList;
+    var products = returnData().productList;
 
     return Stack(
       children: [
@@ -209,11 +206,8 @@ class _ProductReportMobileState
                                             products:
                                                 products,
                                             shop:
-                                                returnShopProvider(
-                                                  safeContext,
-                                                  listen:
-                                                      false,
-                                                ).userShop()!,
+                                                returnShopProvider()
+                                                    .userShop()!,
                                             context:
                                                 safeContext,
                                             filename:
@@ -226,20 +220,16 @@ class _ProductReportMobileState
                                             safeContext,
                                         products: products,
                                         shop:
-                                            returnShopProvider(
-                                              context,
-                                              listen: false,
-                                            ).userShop()!,
+                                            returnShopProvider()
+                                                .userShop()!,
                                       );
 
                                       if (safeContext
                                           .mounted) {
-                                        returnData(
-                                          safeContext,
-                                          listen: false,
-                                        ).toggleIsLoading(
-                                          false,
-                                        );
+                                        returnData()
+                                            .toggleIsLoading(
+                                              false,
+                                            );
                                       }
                                     },
                                   );
@@ -457,7 +447,7 @@ class _ProductReportMobileState
                 ],
               ),
               Visibility(
-                visible: returnData(context).isLoading,
+                visible: returnData().isLoading,
                 child: returnCompProvider(
                   context,
                   listen: false,

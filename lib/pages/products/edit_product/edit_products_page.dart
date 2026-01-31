@@ -40,9 +40,9 @@
 //         widget.product.brand != null
 //             ? brandController.text = widget.product.brand!
 //             : widget.product.brand!;
-//     returnData(context, listen: false).selectedCategory =
+//     returnData().selectedCategory =
 //         widget.product.category;
-//     returnData(context, listen: false).catValueSet = true;
+//     returnData().catValueSet = true;
 //     costController.text =
 //         widget.product.costPrice.toString();
 //     sellingController.text =
@@ -51,12 +51,12 @@
 //             : widget.product.sellingPrice.toString();
 //     // sellingController.text =
 //     //     widget.product.sellingPrice.toString();
-//     returnData(context, listen: false).selectedUnit =
+//     returnData().selectedUnit =
 //         widget.product.unit;
-//     returnData(context, listen: false).unitValueSet = true;
-//     returnData(context, listen: false).selectedColor =
+//     returnData().unitValueSet = true;
+//     returnData().selectedColor =
 //         widget.product.color;
-//     returnData(context, listen: false).colorValueSet =
+//     returnData().colorValueSet =
 //         widget.product.color != null ? true : false;
 //     sizeController.text =
 //         widget.product.size != null
@@ -66,16 +66,16 @@
 //         widget.product.quantity == null
 //             ? ''
 //             : widget.product.quantity.toString();
-//     returnData(context, listen: false).selectedSize =
+//     returnData().selectedSize =
 //         widget.product.sizeType;
-//     returnData(context, listen: false).sizeValueSet =
+//     returnData().sizeValueSet =
 //         widget.product.sizeType != null ? true : false;
 
-//     returnData(context, listen: false).inStock =
+//     returnData().inStock =
 //         (widget.product.quantity ?? 0) > 0 ? true : false;
-//     returnData(context, listen: false).isRefundable =
+//     returnData().isRefundable =
 //         widget.product.isRefundable;
-//     returnData(context, listen: false).isManaged =
+//     returnData().isManaged =
 //         widget.product.isManaged;
 //   }
 

@@ -4,11 +4,13 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   audioplayers_linux
+  desktop_multi_window
   file_saver
   file_selector_linux
   gtk
   open_file_linux
   printing
+  screen_retriever
   url_launcher_linux
 )
 

@@ -36,10 +36,7 @@ class NavButton extends StatelessWidget {
               context,
               listen: false,
             ).clearReceiptDate();
-            returnData(
-              context,
-              listen: false,
-            ).clearFields();
+            returnData().clearFields();
           },
           child: SizedBox(
             height: 42,

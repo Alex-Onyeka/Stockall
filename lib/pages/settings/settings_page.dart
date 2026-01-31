@@ -50,10 +50,9 @@ Future<dynamic> setStoreAsHeadquarters(
               child: ListView(
                 scrollDirection: Axis.vertical,
                 children:
-                    returnShopProvider(
-                      context,
-                      listen: false,
-                    ).userShops.map((shop) {
+                    returnShopProvider().userShops.map((
+                      shop,
+                    ) {
                       bool isLoadingg = false;
                       return StatefulBuilder(
                         builder:
@@ -173,12 +172,10 @@ Future<dynamic> setStoreAsHeadquarters(
                                             isUpdating =
                                                 true;
                                           });
-                                          await returnShopProvider(
-                                            context,
-                                            listen: false,
-                                          ).setHeadQuarters(
-                                            shop,
-                                          );
+                                          await returnShopProvider()
+                                              .setHeadQuarters(
+                                                shop,
+                                              );
                                           setState(() {
                                             isUpdating =
                                                 false;

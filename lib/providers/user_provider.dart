@@ -17,6 +17,11 @@ class UserProvider extends ChangeNotifier {
   // final SupabaseClient _supabase = Supabase.instance.client;
   final AuthService _supabase = AuthService();
 
+  static final UserProvider _instance =
+      UserProvider._internal();
+  factory UserProvider() => _instance;
+  UserProvider._internal();
+
   List<TempUserClass> _users = [];
   List<TempUserClass> get usersMain => _users;
 
@@ -36,15 +41,9 @@ class UserProvider extends ChangeNotifier {
     bool isOnline = await ConnectivityProvider().isOnline();
 
     if (isOnline) {
-      await returnShopProvider(
-        context,
-        listen: false,
-      ).getUserShops();
+      await returnShopProvider().getUserShops();
       var employees =
-          returnShopProvider(
-            context,
-            listen: false,
-          ).userShop()!.employees!;
+          returnShopProvider().userShop()!.employees!;
       final data = await _supabase.client
           .from('users')
           .select()
@@ -83,12 +82,9 @@ class UserProvider extends ChangeNotifier {
     bool isOnline = await ConnectivityProvider().isOnline();
     if (isOnline) {
       // ignore: use_build_context_synchronously
-      if (returnData(context, listen: false).isSynced() ==
-          0) {
+      if (returnData().isSynced() == 0) {
         await returnData(
           // ignore: use_build_context_synchronously
-          context,
-          listen: false,
           // ignore: use_build_context_synchronously
         ).syncData(context);
         final authUser = _supabase.currentUser;

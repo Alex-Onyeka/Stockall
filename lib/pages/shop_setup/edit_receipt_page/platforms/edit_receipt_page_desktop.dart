@@ -24,7 +24,7 @@ class _EditReceiptPageDesktopState
     extends State<EditReceiptPageDesktop> {
   @override
   Widget build(BuildContext context) {
-    var shop = returnShopProvider(context).userShop();
+    var shop = returnShopProvider().userShop();
     var theme = returnTheme(context);
 
     return SafeArea(
@@ -63,23 +63,16 @@ class _EditReceiptPageDesktopState
                             return [
                               PopupMenuItem(
                                 onTap: () {
-                                  returnShopProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              )
+                                  returnShopProvider()
                                               .userShop()!
                                               .printType !=
                                           1
-                                      ? returnShopProvider(
-                                        context,
-                                        listen: false,
-                                      ).updatePrintType(
-                                        shopId: shopId(
-                                          context,
-                                        ),
-                                        type: 1,
-                                      )
+                                      ? returnShopProvider()
+                                          .updatePrintType(
+                                            shopId:
+                                                shopId(),
+                                            type: 1,
+                                          )
                                       : {};
                                 },
                                 child: Row(
@@ -95,17 +88,9 @@ class _EditReceiptPageDesktopState
                                                 .b2
                                                 .fontSize,
                                         fontWeight:
-                                            returnShopProvider(
-                                                          context,
-                                                          listen:
-                                                              false,
-                                                        ).userShop()!.printType !=
+                                            returnShopProvider().userShop()!.printType !=
                                                         null &&
-                                                    returnShopProvider(
-                                                          context,
-                                                          listen:
-                                                              false,
-                                                        ).userShop()!.printType ==
+                                                    returnShopProvider().userShop()!.printType ==
                                                         1
                                                 ? FontWeight
                                                     .bold
@@ -117,11 +102,7 @@ class _EditReceiptPageDesktopState
                                     ),
                                     Visibility(
                                       visible:
-                                          returnShopProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              )
+                                          returnShopProvider()
                                               .userShop()!
                                               .printType ==
                                           1,
@@ -146,23 +127,16 @@ class _EditReceiptPageDesktopState
                                     platforms(context) ==
                                         TargetPlatform.iOS,
                                 onTap: () {
-                                  returnShopProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              )
+                                  returnShopProvider()
                                               .userShop()!
                                               .printType !=
                                           2
-                                      ? returnShopProvider(
-                                        context,
-                                        listen: false,
-                                      ).updatePrintType(
-                                        shopId: shopId(
-                                          context,
-                                        ),
-                                        type: 2,
-                                      )
+                                      ? returnShopProvider()
+                                          .updatePrintType(
+                                            shopId:
+                                                shopId(),
+                                            type: 2,
+                                          )
                                       : {};
                                 },
                                 child: Row(
@@ -178,17 +152,9 @@ class _EditReceiptPageDesktopState
                                                 .b2
                                                 .fontSize,
                                         fontWeight:
-                                            returnShopProvider(
-                                                          context,
-                                                          listen:
-                                                              false,
-                                                        ).userShop()!.printType !=
+                                            returnShopProvider().userShop()!.printType !=
                                                         null &&
-                                                    returnShopProvider(
-                                                          context,
-                                                          listen:
-                                                              false,
-                                                        ).userShop()!.printType ==
+                                                    returnShopProvider().userShop()!.printType ==
                                                         2
                                                 ? FontWeight
                                                     .bold
@@ -200,11 +166,7 @@ class _EditReceiptPageDesktopState
                                     ),
                                     Visibility(
                                       visible:
-                                          returnShopProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              )
+                                          returnShopProvider()
                                               .userShop()!
                                               .printType ==
                                           2,
@@ -256,32 +218,24 @@ class _EditReceiptPageDesktopState
                                       fontWeight:
                                           FontWeight.bold,
                                     ),
-                                    returnShopProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).userShop()!.printType !=
+                                    returnShopProvider()
+                                                    .userShop()!
+                                                    .printType !=
                                                 null &&
-                                            returnShopProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).userShop()!.printType ==
+                                            returnShopProvider()
+                                                    .userShop()!
+                                                    .printType ==
                                                 2
                                         ? (kIsWeb
                                             ? '80mm'
                                             : '( Bluetooth )')
-                                        : returnShopProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).userShop()!.printType !=
+                                        : returnShopProvider()
+                                                    .userShop()!
+                                                    .printType !=
                                                 null &&
-                                            returnShopProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).userShop()!.printType ==
+                                            returnShopProvider()
+                                                    .userShop()!
+                                                    .printType ==
                                                 1
                                         ? (kIsWeb
                                             ? '58mm'
@@ -354,27 +308,13 @@ class _ReceiptEditContainerState
     super.initState();
     getLogoFuture = getLogo();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      returnShopProvider(
-        context,
-        listen: false,
-      ).switchLogoPicked(false);
-      if (returnShopProvider(
-            context,
-            listen: false,
-          ).userShop()!.phoneNumber ==
+      returnShopProvider().switchLogoPicked(false);
+      if (returnShopProvider().userShop()!.phoneNumber ==
           null) {
-        returnShopProvider(context, listen: false)
-            .userShop()!
-            .showPhone = false;
+        returnShopProvider().userShop()!.showPhone = false;
       }
-      if (returnShopProvider(
-            context,
-            listen: false,
-          ).userShop()!.email ==
-          null) {
-        returnShopProvider(context, listen: false)
-            .userShop()!
-            .showEmail = false;
+      if (returnShopProvider().userShop()!.email == null) {
+        returnShopProvider().userShop()!.showEmail = false;
       }
       setState(() {});
     });
@@ -382,19 +322,13 @@ class _ReceiptEditContainerState
 
   late Future<Uint8List?> getLogoFuture;
   Future<Uint8List?> getLogo() async {
-    return returnShopProvider(
-      context,
-      listen: false,
-    ).getLogoImage(context);
+    return returnShopProvider().getLogoImage(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    var receipP = returnShopProvider(context).userShop()!;
-    var receiptPFalse = returnShopProvider(
-      context,
-      listen: false,
-    );
+    var receipP = returnShopProvider().userShop()!;
+    var receiptPFalse = returnShopProvider();
 
     return Stack(
       children: [
@@ -450,9 +384,8 @@ class _ReceiptEditContainerState
                                     children: [
                                       Visibility(
                                         visible:
-                                            returnShopProvider(
-                                              context,
-                                            ).selectedLogo !=
+                                            returnShopProvider()
+                                                .selectedLogo !=
                                             null,
                                         child: SizedBox(
                                           height: 10,
@@ -460,25 +393,19 @@ class _ReceiptEditContainerState
                                       ),
                                       InkWell(
                                         onTap: () async {
-                                          await returnShopProvider(
-                                            context,
-                                            listen: false,
-                                          ).pickLogoImage();
+                                          await returnShopProvider()
+                                              .pickLogoImage();
                                         },
                                         child: Container(
                                           height:
-                                              returnShopProvider(
-                                                        context,
-                                                      ).imageWidth ==
+                                              returnShopProvider()
+                                                          .imageWidth ==
                                                       null
                                                   ? 60
-                                                  : returnShopProvider(
-                                                        context,
-                                                      ).imageWidth! >
+                                                  : returnShopProvider()
+                                                          .imageWidth! >
                                                       (2 *
-                                                          returnShopProvider(
-                                                            context,
-                                                          ).imageHeight!)
+                                                          returnShopProvider().imageHeight!)
                                                   ? 30
                                                   : 80,
                                           width: 400,
@@ -489,9 +416,7 @@ class _ReceiptEditContainerState
                                                 ),
                                             border: Border.all(
                                               color:
-                                                  returnShopProvider(
-                                                            context,
-                                                          ).selectedLogo ==
+                                                  returnShopProvider().selectedLogo ==
                                                           null
                                                       ? Colors
                                                           .grey
@@ -524,9 +449,7 @@ class _ReceiptEditContainerState
                                                   ),
                                                 );
                                               } else {
-                                                return returnShopProvider(
-                                                          context,
-                                                        ).selectedLogo ==
+                                                return returnShopProvider().selectedLogo ==
                                                         null
                                                     ? Stack(
                                                       alignment: Alignment(
@@ -570,9 +493,7 @@ class _ReceiptEditContainerState
                                                       ),
                                                       children: [
                                                         Image.memory(
-                                                          returnShopProvider(
-                                                            context,
-                                                          ).selectedLogo!,
+                                                          returnShopProvider().selectedLogo!,
                                                           fit:
                                                               BoxFit.contain,
                                                         ),
@@ -583,11 +504,7 @@ class _ReceiptEditContainerState
                                                           ),
                                                           child: IconButton(
                                                             onPressed: () {
-                                                              returnShopProvider(
-                                                                context,
-                                                                listen:
-                                                                    false,
-                                                              ).clearImage();
+                                                              returnShopProvider().clearImage();
                                                             },
                                                             icon: Icon(
                                                               Icons.clear,

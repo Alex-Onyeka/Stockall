@@ -30,10 +30,7 @@ class _GeneralReportDesktopState
       context,
       listen: false,
     ).loadReceipts(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop()!.shopId!,
+      returnShopProvider().userShop()!.shopId!,
       context,
     );
     return tempRece;
@@ -44,12 +41,7 @@ class _GeneralReportDesktopState
     var tempEx = await returnExpensesProvider(
       context,
       listen: false,
-    ).getExpenses(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop()!.shopId!,
-    );
+    ).getExpenses(returnShopProvider().userShop()!.shopId!);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       returnReportProvider(
         context,
@@ -67,10 +59,7 @@ class _GeneralReportDesktopState
       context,
       listen: false,
     ).loadProductSalesRecord(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop()!.shopId!,
+      returnShopProvider().userShop()!.shopId!,
     );
 
     return tempEx;
@@ -78,14 +67,8 @@ class _GeneralReportDesktopState
 
   late Future<List<TempProductClass>> productsFuture;
   Future<List<TempProductClass>> getProducts() async {
-    var tempEx = await returnData(
-      context,
-      listen: false,
-    ).getProducts(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop()!.shopId!,
+    var tempEx = await returnData().getProducts(
+      returnShopProvider().userShop()!.shopId!,
     );
 
     return tempEx;
@@ -190,12 +173,10 @@ class _GeneralReportDesktopState
 
                                           if (safeContext
                                               .mounted) {
-                                            returnSalesProvider(
-                                              safeContext,
-                                              listen: false,
-                                            ).toggleIsLoading(
-                                              false,
-                                            );
+                                            returnSalesProvider()
+                                                .toggleIsLoading(
+                                                  false,
+                                                );
                                           }
                                         },
                                       );

@@ -127,11 +127,7 @@ String currencySymbol({
   required BuildContext context,
   bool? isR,
 }) {
-  var shopC =
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop()?.currency;
+  var shopC = returnShopProvider().userShop()?.currency;
   var iR = isR != null ? true : false;
   if (shopC == '₦' && iR) {
     return 'N';
@@ -140,11 +136,7 @@ String currencySymbol({
   } else if (shopC == '₺' && iR) {
     return 'L';
   } else {
-    return returnShopProvider(
-          context,
-          listen: false,
-        ).userShop()?.currency ??
-        '';
+    return returnShopProvider().userShop()?.currency ?? '';
   }
 }
 

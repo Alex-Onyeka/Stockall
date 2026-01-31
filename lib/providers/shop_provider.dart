@@ -30,6 +30,10 @@ class ShopProvider extends ChangeNotifier {
   final supabase = Supabase.instance.client;
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
+  static final ShopProvider _instance =
+      ShopProvider._internal();
+  factory ShopProvider() => _instance;
+  ShopProvider._internal();
 
   Future<void> createShop(
     TempShopClass shop,
@@ -817,9 +821,7 @@ class ShopProvider extends ChangeNotifier {
     // );
     var isOnline = await connectivity.isOnline();
     // ignore: use_build_context_synchronously
-    if (returnData(context, listen: false).isSynced() ==
-            0 &&
-        isOnline) {
+    if (returnData().isSynced() == 0 && isOnline) {
       showDialog(
         // ignore: use_build_context_synchronously
         context: context,
@@ -833,7 +835,7 @@ class ShopProvider extends ChangeNotifier {
         },
       );
       // ignore: use_build_context_synchronously
-      returnData(context, listen: false).syncData(context);
+      returnData().syncData(context);
     } else {
       try {
         var safeContext = context;
@@ -878,7 +880,7 @@ class ShopProvider extends ChangeNotifier {
       context,
       listen: false,
     ).clearCustomers();
-    returnData(context, listen: false).clearProducts();
+    returnData().clearProducts();
     returnExpensesProvider(
       context,
       listen: false,
@@ -895,8 +897,8 @@ class ShopProvider extends ChangeNotifier {
       context,
       listen: false,
     ).load(false);
-    returnSalesProvider(context, listen: false).clearCart();
-    returnShopProvider(context, listen: false).clearShop();
+    returnSalesProvider().clearCart();
+    returnShopProvider().clearShop();
     returnUserProvider(context, listen: false).clearUsers();
   }
 

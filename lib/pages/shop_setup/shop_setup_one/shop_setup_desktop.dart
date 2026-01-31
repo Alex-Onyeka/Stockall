@@ -47,13 +47,13 @@ class _ShopSetupDesktopState
           },
         );
       } else {
-        returnShopProvider(context, listen: false).name =
+        returnShopProvider().name =
             nameController.text.trim();
-        returnShopProvider(context, listen: false).email =
+        returnShopProvider().email =
             emailController.text.isEmpty
                 ? null
                 : emailController.text;
-        returnShopProvider(context, listen: false).phone =
+        returnShopProvider().phone =
             numberController.text.isEmpty
                 ? null
                 : numberController.text;
@@ -82,10 +82,7 @@ class _ShopSetupDesktopState
       } else {
         var theme = returnTheme(context, listen: false);
         var safeContext = context;
-        var shopProvider = returnShopProvider(
-          context,
-          listen: false,
-        );
+        var shopProvider = returnShopProvider();
         showDialog(
           context: safeContext,
           builder: (context) {

@@ -298,29 +298,16 @@ class _DashboardTotalSalesBannerState
               child: InkWell(
                 borderRadius: BorderRadius.circular(5),
                 onTap: () async {
-                  if (returnData(
-                        context,
-                        listen: false,
-                      ).isSynced() ==
-                      0) {
-                    await returnData(
-                      context,
-                      listen: false,
-                    ).syncData(context);
+                  if (returnData().isSynced() == 0) {
+                    await returnData().syncData(context);
                   } else {
                     print('Data is in sync');
-                    returnData(
-                      context,
-                      listen: false,
-                    ).toggleRefreshing(true);
+                    returnData().toggleRefreshing(true);
                     await RefreshFunctions(
                       context,
                     ).refreshAll(context);
                     if (context.mounted) {
-                      returnData(
-                        context,
-                        listen: false,
-                      ).toggleRefreshing(false);
+                      returnData().toggleRefreshing(false);
                     }
                   }
                 },
@@ -365,7 +352,7 @@ class _DashboardTotalSalesBannerState
                             Visibility(
                               visible:
                                   !returnData(
-                                    context,
+                                    context: context,
                                   ).isRefreshing,
                               child: Row(
                                 // spacing: 5,
@@ -375,13 +362,15 @@ class _DashboardTotalSalesBannerState
                                       Visibility(
                                         visible:
                                             returnData(
-                                              context,
+                                              context:
+                                                  context,
                                             ).isSynced() !=
                                             2,
                                         child: Icon(
                                           color:
                                               returnData(
-                                                        context,
+                                                        context:
+                                                            context,
                                                       ).isSynced() ==
                                                       1
                                                   ? const Color.fromARGB(
@@ -394,7 +383,8 @@ class _DashboardTotalSalesBannerState
                                                       .grey,
                                           size: 14,
                                           returnData(
-                                                    context,
+                                                    context:
+                                                        context,
                                                   ).isSynced() ==
                                                   1
                                               ? Icons
@@ -406,7 +396,8 @@ class _DashboardTotalSalesBannerState
                                       Visibility(
                                         visible:
                                             returnData(
-                                              context,
+                                              context:
+                                                  context,
                                             ).isSynced() ==
                                             2,
                                         child: Row(
@@ -463,7 +454,8 @@ class _DashboardTotalSalesBannerState
                                                               6,
                                                         ),
                                                         returnData(
-                                                          context,
+                                                          context:
+                                                              context,
                                                         ).syncProgress.toStringAsFixed(
                                                           0,
                                                         ),
@@ -496,7 +488,7 @@ class _DashboardTotalSalesBannerState
                             Visibility(
                               visible:
                                   returnData(
-                                    context,
+                                    context: context,
                                   ).isRefreshing,
                               child: SizedBox(
                                 height: 13,

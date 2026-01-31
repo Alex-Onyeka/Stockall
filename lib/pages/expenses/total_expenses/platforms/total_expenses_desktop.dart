@@ -36,10 +36,7 @@ class TotalExpensesDesktopState
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       clearDate();
-      returnData(
-        context,
-        listen: false,
-      ).toggleFloatingAction(context);
+      returnData().toggleFloatingAction(context);
     });
   }
 
@@ -264,9 +261,7 @@ class TotalExpensesDesktopState
                                     return returnExpensesProvider(
                                       context,
                                       listen: false,
-                                    ).getExpenses(
-                                      shopId(context),
-                                    );
+                                    ).getExpenses(shopId());
                                   },
                                   backgroundColor:
                                       Colors.white,

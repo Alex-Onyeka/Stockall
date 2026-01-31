@@ -45,7 +45,7 @@ class _EditDiscountPageState
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.product.discount != null
-          ? returnData(context, listen: false).setBothDates(
+          ? returnData().setBothDates(
             start: widget.product.startDate,
             end: widget.product.endDate,
           )
@@ -55,11 +55,7 @@ class _EditDiscountPageState
 
   @override
   Widget build(BuildContext context) {
-    final shopI =
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop()!.shopId!;
+    final shopI = returnShopProvider().userShop()!.shopId!;
     return Stack(
       children: [
         Material(
@@ -128,14 +124,9 @@ class _EditDiscountPageState
                                 });
                               }
                               if (value.isEmpty) {
-                                returnData(
-                                  context,
-                                  listen: false,
-                                ).clearEndDate();
-                                returnData(
-                                  context,
-                                  listen: false,
-                                ).clearStartDate();
+                                returnData().clearEndDate();
+                                returnData()
+                                    .clearStartDate();
                               }
                             }
                           },
@@ -162,10 +153,8 @@ class _EditDiscountPageState
                               setState(() {
                                 setDate = true;
                               });
-                              returnData(
-                                context,
-                                listen: false,
-                              ).changeDateBoolToTrue();
+                              returnData()
+                                  .changeDateBoolToTrue();
                               FocusManager
                                   .instance
                                   .primaryFocus
@@ -196,14 +185,11 @@ class _EditDiscountPageState
                                       fontWeight:
                                           FontWeight.bold,
                                     ),
-                                    returnData(
-                                              context,
-                                            ).startDate !=
+                                    returnData().startDate !=
                                             null
                                         ? formatDateTime(
-                                          returnData(
-                                                context,
-                                              ).startDate ??
+                                          returnData()
+                                                  .startDate ??
                                               DateTime.now(),
                                         )
                                         : 'Start Date',
@@ -222,14 +208,9 @@ class _EditDiscountPageState
                               setState(() {
                                 setDate = true;
                               });
-                              returnData(
-                                context,
-                                listen: false,
-                              ).clearEndDate();
-                              returnData(
-                                context,
-                                listen: false,
-                              ).changeDateBoolToFalse();
+                              returnData().clearEndDate();
+                              returnData()
+                                  .changeDateBoolToFalse();
                               FocusManager
                                   .instance
                                   .primaryFocus
@@ -260,14 +241,11 @@ class _EditDiscountPageState
                                       fontWeight:
                                           FontWeight.bold,
                                     ),
-                                    returnData(
-                                              context,
-                                            ).endDate !=
+                                    returnData().endDate !=
                                             null
                                         ? formatDateTime(
-                                          returnData(
-                                                context,
-                                              ).endDate ??
+                                          returnData()
+                                                  .endDate ??
                                               DateTime.now(),
                                         )
                                         : 'End Date',
@@ -293,15 +271,9 @@ class _EditDiscountPageState
                             .discountController
                             .text
                             .isNotEmpty) {
-                          if (returnData(
-                                    context,
-                                    listen: false,
-                                  ).startDate ==
+                          if (returnData().startDate ==
                                   null ||
-                              returnData(
-                                    context,
-                                    listen: false,
-                                  ).endDate ==
+                              returnData().endDate ==
                                   null) {
                             showDialog(
                               context: context,
@@ -325,10 +297,7 @@ class _EditDiscountPageState
                                   title: 'Proceed?',
                                   action: () async {
                                     final dataProvider =
-                                        returnData(
-                                          context,
-                                          listen: false,
-                                        );
+                                        returnData();
                                     if (safeContext
                                         .mounted) {
                                       Navigator.of(
@@ -346,10 +315,8 @@ class _EditDiscountPageState
                                       statDate:
                                           dataProvider
                                               .startDate,
-                                      productUuid:
-                                          widget
-                                              .product
-                                              .uuid!,
+                                      product:
+                                          widget.product,
 
                                       newDiscount:
                                           widget
@@ -420,10 +387,7 @@ class _EditDiscountPageState
                               text: 'Cancel Discount',
                               action: () {
                                 final dataProvider =
-                                    returnData(
-                                      context,
-                                      listen: false,
-                                    );
+                                    returnData();
                                 final safeContext = context;
                                 showDialog(
                                   context: safeContext,
@@ -448,10 +412,9 @@ class _EditDiscountPageState
                                             .updateDiscount(
                                               context:
                                                   context,
-                                              productUuid:
+                                              product:
                                                   widget
-                                                      .product
-                                                      .uuid!,
+                                                      .product,
                                               newDiscount:
                                                   null,
                                               endDate: null,
@@ -505,10 +468,7 @@ class _EditDiscountPageState
                       child: EditButton(
                         text: 'Cancel',
                         action: () {
-                          returnData(
-                            context,
-                            listen: false,
-                          ).clearFields();
+                          returnData().clearFields();
                           Navigator.of(context).pop();
                         },
                         theme: widget.theme,
@@ -527,10 +487,7 @@ class _EditDiscountPageState
             child: InkWell(
               onTap: () {
                 setState(() {
-                  returnData(
-                    context,
-                    listen: false,
-                  ).clearEndDate();
+                  returnData().clearEndDate();
                   setDate = false;
                 });
               },
@@ -583,10 +540,9 @@ class _EditDiscountPageState
                               selectedDay,
                               focusedDay,
                             ) {
-                              returnData(
-                                context,
-                                listen: false,
-                              ).setDate(selectedDay);
+                              returnData().setDate(
+                                selectedDay,
+                              );
                               setState(() {
                                 setDate = false;
                               });

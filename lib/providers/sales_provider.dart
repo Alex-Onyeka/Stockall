@@ -11,11 +11,16 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/local_database/products/products_func.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/alt_display/alt_display.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SalesProvider extends ChangeNotifier {
+  static final SalesProvider _instance =
+      SalesProvider._internal();
+  factory SalesProvider() => _instance;
+  SalesProvider._internal();
   bool isLoading = false;
   void toggleIsLoading(bool value) {
     isLoading = value;
@@ -28,40 +33,107 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<TempCart> cartQueue = [
-    TempCart(cartItems: [], isInvoice: false),
-  ];
+  List<TempCart> cartQueue = [];
 
-  int cartIndex = 0;
-
-  TempCart currentCart() {
-    return cartQueue[cartIndex];
+  String initCart() {
+    var cartId = uuidGen();
+    cartQueue.add(
+      TempCart(cartItems: [], isInvoice: false, id: cartId),
+    );
+    cartIdCache = cartId;
+    notifyListeners();
+    return cartId;
   }
 
-  void addNewCart(BuildContext context) {
+  String cartIdCache = '';
+
+  TempCart currentCart() {
+    return cartQueue.firstWhere(
+      (cart) => cart.id == cartIdCache,
+    );
+  }
+
+  Future<void> addNewCart(
+    BuildContext context,
+    TempCart tempCart,
+  ) async {
     SalesAuthAction().numberOfCartsAction(
       context: context,
-      action: () {
-        cartQueue.add(
-          TempCart(cartItems: [], isInvoice: false),
+      action: () async {
+        var newId = uuidGen();
+        tempCart.id = newId;
+        cartQueue.add(tempCart);
+        cartIdCache = newId;
+        await returnMultiDisplayProvider().createWindow(
+          cartId: newId,
         );
-        cartIndex == cartQueue.length + 1;
+        print(cartQueue);
         notifyListeners();
       },
     );
   }
 
-  void deleteCart(int index) {
-    cartQueue.removeWhere(
-      (cart) => cartQueue.indexOf(cart) == index,
+  TempCart getTempCartByCartId(String cartId) {
+    var cartItem =
+        cartQueue.where((cart) => cart.id == cartId).first;
+    return cartItem;
+  }
+
+  TempCart getTempCartByIndex(int index) {
+    var cartItem = cartQueue[index];
+    return cartItem;
+  }
+
+  int getIndexOfCartItem(String cartId) {
+    var cartItem = cartQueue.indexWhere(
+      (cart) => cart.id == cartId,
     );
-    index == 0 ? cartIndex = 0 : cartIndex = index - 1;
+    return cartItem;
+  }
+
+  Future<void> deleteCart(String cartId) async {
+    if (getIndexOfCartItem(cartId) == 0) {
+      var newCartId = getTempCartByIndex(1).id!;
+      await selectCart(newCartId);
+    } else {
+      var newCartId =
+          getTempCartByIndex(
+            getIndexOfCartItem(cartId) - 1,
+          ).id!;
+      await selectCart(newCartId);
+    }
+    cartQueue.removeWhere((cart) => cart.id == cartId);
+    await returnMultiDisplayProvider().closeWindow(
+      cartId: cartId,
+    );
+
     notifyListeners();
   }
 
-  void selectCart(int index) {
-    cartIndex = index;
+  Future<void> selectCart(String cartId) async {
+    cartIdCache = cartId;
+    // if (cartQueue.length > 1) {
+    await returnMultiDisplayProvider().selectWindow(
+      cartId: cartId,
+      cartIndex: (getIndexOfCartItem(cartId) + 1),
+    );
+    // }
+    print(returnMultiDisplayProvider().windows.length);
     notifyListeners();
+  }
+
+  Future<void> createWindow() async {
+    try {
+      returnMultiDisplayProvider().deleteWindow(
+        cartIdCache,
+      );
+      await returnMultiDisplayProvider().createWindow(
+        cartId: cartIdCache,
+        newCartIndex: (getIndexOfCartItem(cartIdCache) + 1),
+      );
+    } catch (e) {
+      print('An Error Occured: ${e.toString()}');
+    }
   }
 
   void switchInvoiceSale({
@@ -217,6 +289,25 @@ class SalesProvider extends ChangeNotifier {
     String? customerName,
   }) async {
     bool isOnline = await connectivity.isOnline();
+    final createdAt =
+        currentCart().createdDate?.toUtc() ??
+        DateTime.now().toUtc();
+    final uuid = currentCart().receiptUuidEdit ?? uuidGen();
+    TempMainReceipt receipt = TempMainReceipt(
+      createdAt: createdAt,
+      shopId: shopId,
+      staffId: staffId,
+      staffName: staffName,
+      paymentMethod: paymentMethod,
+      bank: bank,
+      cashAlt: cashAlt,
+      isInvoice: salesCartItem.isInvoice,
+      customerName: customerName,
+      customerUuid: customerUuid,
+      uuid: uuid,
+      generalDiscount: currentCart().discount,
+      fixedDiscount: currentCart().fixedDiscount,
+    );
     if (currentCart().receiptUuidEdit != null) {
       print(
         'Receipt UUid is not null: ${currentCart().receiptUuidEdit}',
@@ -227,40 +318,44 @@ class SalesProvider extends ChangeNotifier {
           context,
           listen: false,
         ).deleteReceipt(
-          currentCart().receiptUuidEdit!,
+          receipt,
+          [],
           // ignore: use_build_context_synchronously
           context,
+        );
+        await returnEventsLogProvider().createLog(
+          returnEventsLogProvider().receiptAdapter(
+            receipt,
+            salesCartItem.cartItems
+                .map((item) => item.item.name)
+                .toList(),
+            2,
+          ),
+          // ignore: use_build_context_synchronously
         );
       } catch (e) {
         print('Error Deleting Receipt: ${e.toString()}');
         return null;
       }
     } else {
+      await returnEventsLogProvider().createLog(
+        returnEventsLogProvider(
+          // ignore: use_build_context_synchronously
+        ).receiptAdapter(
+          receipt,
+          salesCartItem.cartItems
+              .map((item) => item.item.name)
+              .toList(),
+          1,
+        ),
+        // ignore: use_build_context_synchronously
+      );
       print('Receipt Uuid is null');
     }
-    final createdAt =
-        currentCart().createdDate?.toUtc() ??
-        DateTime.now().toUtc();
-    final uuid = currentCart().receiptUuidEdit ?? uuidGen();
 
     print('Checkout Started');
 
     try {
-      TempMainReceipt receipt = TempMainReceipt(
-        createdAt: createdAt,
-        shopId: shopId,
-        staffId: staffId,
-        staffName: staffName,
-        paymentMethod: paymentMethod,
-        bank: bank,
-        cashAlt: cashAlt,
-        isInvoice: salesCartItem.isInvoice,
-        customerName: customerName,
-        customerUuid: customerUuid,
-        uuid: uuid,
-        generalDiscount: currentCart().discount,
-        fixedDiscount: currentCart().fixedDiscount,
-      );
       final receiptRes = await returnReceiptProvider(
         // ignore: use_build_context_synchronously
         context,
@@ -358,8 +453,7 @@ class SalesProvider extends ChangeNotifier {
               // ignore: use_build_context_synchronously
               if (record.addToStock == true &&
                   // ignore: use_build_context_synchronously
-                  returnData(context, listen: false)
-                      .productList
+                  returnData().productList
                       .where(
                         (pro) =>
                             pro.name == record.productName,
@@ -405,10 +499,10 @@ class SalesProvider extends ChangeNotifier {
                   uuid: uuidGen(),
                 );
                 if (context.mounted) {
-                  await returnData(
+                  await returnData().createProduct(
+                    product,
                     context,
-                    listen: false,
-                  ).createProduct(product, context);
+                  );
                 } else {
                   print(
                     'Context Not Mounted to Created New Product',
@@ -416,13 +510,53 @@ class SalesProvider extends ChangeNotifier {
                 }
               }
             }
-
             // Step 5: Reset state
             // resetPaymentMethod();
             cartQueue.length > 1
-                ? deleteCart(cartIndex)
-                : clearCart();
+                ? await deleteCart(cartIdCache)
+                : await clearCart();
 
+            // if (currentCart().receiptUuidEdit != null) {
+            //   await returnEventsLogProvider(
+            //     // ignore: use_build_context_synchronously
+            //     context,
+            //     listen: false,
+            //   ).createLog(
+            //     returnEventsLogProvider(
+            //       // ignore: use_build_context_synchronously
+            //       context,
+            //       listen: false,
+            //       // ignore: use_build_context_synchronously
+            //     ).receiptAdapter(
+            //       receipt,
+            //       productSaleRecords.last.productName,
+            //       context,
+            //       3,
+            //     ),
+            //     // ignore: use_build_context_synchronously
+            //     context,
+            //   );
+            // } else {
+            //   // await returnEventsLogProvider(
+            //   //   // ignore: use_build_context_synchronously
+            //   //   context,
+            //   //   listen: false,
+            //   // ).createLog(
+            //   //   returnEventsLogProvider(
+            //   //     // ignore: use_build_context_synchronously
+            //   //     context,
+            //   //     listen: false,
+            //   //     // ignore: use_build_context_synchronously
+            //   //   ).receiptAdapter(
+            //   //     receipt,
+            //   //     productSaleRecords.last.productName,
+            //   //     context,
+            //   //     1,
+            //   //   ),
+            //   //   // ignore: use_build_context_synchronously
+            //   //   context,
+            //   // );
+            // }
             if (context.mounted) {
               returnCustomers(
                 context,
@@ -439,7 +573,6 @@ class SalesProvider extends ChangeNotifier {
                 ).navigate(0);
               }
             }
-
             notifyListeners();
             return receipt;
           } catch (e) {
@@ -449,7 +582,13 @@ class SalesProvider extends ChangeNotifier {
               context,
               listen: false,
               // ignore: use_build_context_synchronously
-            ).deleteReceipt(receiptUuid!, context);
+            ).deleteReceipt(
+              receipt,
+              productSaleRecords
+                  .map((rec) => rec.productName)
+                  .toList(),
+              context,
+            );
             return null;
           }
         } catch (e) {
@@ -472,7 +611,7 @@ class SalesProvider extends ChangeNotifier {
           context,
           listen: false,
           // ignore: use_build_context_synchronously
-        ).deleteReceipt(receiptUuid!, context);
+        ).deleteReceipt(receipt, [], context);
         return null;
       }
     } catch (e) {
@@ -481,7 +620,7 @@ class SalesProvider extends ChangeNotifier {
     }
   }
 
-  void clearCart() {
+  Future<void> clearCart() async {
     currentCart().cartItems.clear();
     currentCart().isInvoice = false;
     currentCart().selectedCustomer = null;
@@ -489,7 +628,22 @@ class SalesProvider extends ChangeNotifier {
     currentCart().paymentMethod = 0;
     currentCart().discount = null;
     currentCart().fixedDiscount = null;
+    await returnMultiDisplayProvider().updateWindow(
+      cartClass: AltCartClass(
+        cartId: currentCart().id!,
+        currency: returnShopProvider().userShop()!.currency,
+        cartItems:
+            currentCart().cartItems.reversed.toList(),
+        subTotal: calcTotalMain(),
+        total: calcFinalTotalMain(),
+        vat:
+            returnShopProvider().userShop()!.applyVAT!
+                ? vat
+                : 0,
+      ),
+    );
     print('Cart Cleared');
+
     notifyListeners();
   }
 
@@ -538,20 +692,17 @@ class SalesProvider extends ChangeNotifier {
     }
   }
 
-  double calcVatAmount(BuildContext context) {
-    if (returnShopProvider(
-      context,
-      listen: false,
-    ).userShop()!.applyVAT!) {
+  double calcVatAmount() {
+    if (returnShopProvider().userShop()!.applyVAT!) {
       return calcTotalMain() * (vat / 100);
     } else {
       return 0;
     }
   }
 
-  double calcFinalTotalMain(BuildContext context) {
+  double calcFinalTotalMain() {
     return (calcTotalMain() - calcDiscountMain()) +
-        calcVatAmount(context);
+        calcVatAmount();
   }
 
   bool isSetCustomPrice() {
@@ -577,7 +728,6 @@ class SalesProvider extends ChangeNotifier {
   bool canAddProductToCart({
     required TempProductClass product,
     required double quantityToAdd,
-    required BuildContext context,
   }) {
     double totalInAllCarts = 0;
     for (final cart in cartQueue) {
@@ -590,10 +740,7 @@ class SalesProvider extends ChangeNotifier {
     double newTotal = totalInAllCarts + quantityToAdd;
     double availableQty = product.quantity ?? 0;
     if (newTotal > availableQty &&
-        returnData(
-          context,
-          listen: false,
-        ).productList.contains(product) &&
+        returnData().productList.contains(product) &&
         product.isManaged) {
       print(
         'Cannot add — total ($newTotal) exceeds available stock ($availableQty)',
@@ -609,13 +756,12 @@ class SalesProvider extends ChangeNotifier {
   //       100;
   // }
 
-  String addItemToCart({
+  Future<String> addItemToCart({
     required BuildContext context,
     required TempCartItem newItem,
     required bool isCustomEdit,
-  }) {
+  }) async {
     if (canAddProductToCart(
-      context: context,
       product: newItem.item,
       quantityToAdd: newItem.quantity,
     )) {
@@ -636,37 +782,65 @@ class SalesProvider extends ChangeNotifier {
             newItem.item.setCustomPrice;
         item.addToStock = newItem.addToStock;
         item.customPrice = newItem.customPrice;
-        // item.discount =
-        //     currentCart().discount ??
-        //     // calcFixedDiscountPercent() ??
-        //     newItem.discount;
         item.quantity = newItem.quantity;
         item.setCustomPrice = newItem.setCustomPrice;
         item.setTotalPrice = newItem.setTotalPrice;
+        await returnMultiDisplayProvider().updateWindow(
+          cartClass: AltCartClass(
+            cartId: currentCart().id!,
+            currency:
+                returnShopProvider().userShop()!.currency,
+            cartItems:
+                currentCart().cartItems.reversed.toList(),
+            subTotal: calcTotalMain(),
+            total: calcFinalTotalMain(),
+            vat:
+                returnShopProvider().userShop()!.applyVAT!
+                    ? vat
+                    : 0,
+          ),
+        );
         notifyListeners();
       } else {
         if (index != -1) {
-          // Item exists
-          // currentCart().cartItems[index].discount =
-          //     currentCart().discount ??
-          //     // calcFixedDiscountPercent() ??
           currentCart().cartItems[index].discount;
           currentCart().cartItems[index].quantity +=
               newItem.quantity;
+          await returnMultiDisplayProvider().updateWindow(
+            cartClass: AltCartClass(
+              cartId: currentCart().id!,
+              currency:
+                  returnShopProvider().userShop()!.currency,
+              cartItems:
+                  currentCart().cartItems.reversed.toList(),
+              subTotal: calcTotalMain(),
+              total: calcFinalTotalMain(),
+              vat:
+                  returnShopProvider().userShop()!.applyVAT!
+                      ? vat
+                      : 0,
+            ),
+          );
+          notifyListeners();
           result = 'Item Updated Successfully';
         } else {
-          // newItem.discount =
-          //     currentCart().discount ??
-          //     // calcFixedDiscountPercent() ??
-          //     newItem.discount;
           currentCart().cartItems.add(newItem);
-          // print("Main Carts Length: ${cartQueue.length}");
-          // print(
-          //   "Current Cart Length: ${currentCart().cartItems.length}",
-          // );
-          // print(
-          //   "Current Item Discount: ${newItem.discount ?? 'No Discount'}",
-          // );
+          await returnMultiDisplayProvider().updateWindow(
+            cartClass: AltCartClass(
+              cartId: currentCart().id!,
+              currency:
+                  returnShopProvider().userShop()!.currency,
+              cartItems:
+                  currentCart().cartItems.reversed.toList(),
+              subTotal: calcTotalMain(),
+              total: calcFinalTotalMain(),
+              vat:
+                  returnShopProvider().userShop()!.applyVAT!
+                      ? vat
+                      : 0,
+            ),
+          );
+          notifyListeners();
           result = 'Item Added Successfully';
         }
       }
@@ -695,19 +869,50 @@ class SalesProvider extends ChangeNotifier {
     double? customPrice,
     required bool setTotalPrice,
     required bool setCustomPrice,
-  }) {
+  }) async {
     cartItem.quantity = number;
     cartItem.customPrice = customPrice;
     cartItem.setTotalPrice = setTotalPrice;
     cartItem.setCustomPrice = setCustomPrice;
+    await returnMultiDisplayProvider().updateWindow(
+      cartClass: AltCartClass(
+        cartId: currentCart().id!,
+        currency: returnShopProvider().userShop()!.currency,
+        cartItems:
+            currentCart().cartItems.reversed.toList(),
+        subTotal: calcTotalMain(),
+        total: calcFinalTotalMain(),
+        vat:
+            returnShopProvider().userShop()!.applyVAT!
+                ? vat
+                : 0,
+      ),
+    );
     notifyListeners();
   }
 
-  void removeItemFromCart(TempCartItem item) {
+  Future<void> removeItemFromCart(
+    TempCartItem item,
+    BuildContext context,
+  ) async {
     currentCart().cartItems.remove(item);
     print("Main Carts Length: ${cartQueue.length}");
     print(
       "Current Cart Length: ${currentCart().cartItems.length}",
+    );
+    await returnMultiDisplayProvider().updateWindow(
+      cartClass: AltCartClass(
+        cartId: currentCart().id!,
+        currency: returnShopProvider().userShop()!.currency,
+        cartItems:
+            currentCart().cartItems.reversed.toList(),
+        subTotal: calcTotalMain(),
+        total: calcFinalTotalMain(),
+        vat:
+            returnShopProvider().userShop()!.applyVAT!
+                ? vat
+                : 0,
+      ),
     );
     addAnyDiscount();
     notifyListeners();
@@ -812,9 +1017,9 @@ class SalesProvider extends ChangeNotifier {
     List<TempCartItem> cartItems = [];
 
     for (var record in saleRecords) {
-      var product = returnData(context, listen: false)
-          .productList
-          .where((p) => p.uuid == record.productUuid);
+      var product = returnData().productList.where(
+        (p) => p.uuid == record.productUuid,
+      );
 
       if (product.isNotEmpty) {
         var newRecord = record.copy();
@@ -883,13 +1088,13 @@ class SalesProvider extends ChangeNotifier {
     return cartItems;
   }
 
-  onEditReceipt({
+  Future<void> onEditReceipt({
     required TempMainReceipt receipt,
     required BuildContext context,
   }) async {
     SalesAuthAction().editReceiptAction(
       context: context,
-      action: () {
+      action: () async {
         // Get all sale records for this receipt
         final saleRecords =
             returnReceiptProvider(context, listen: false)
@@ -904,7 +1109,6 @@ class SalesProvider extends ChangeNotifier {
           context: context,
         );
 
-        // Set these as the current cart items in your provider/controller
         if (cartQueue
             .where(
               (cart) =>
@@ -912,38 +1116,51 @@ class SalesProvider extends ChangeNotifier {
                   cart.receiptUuidEdit == receipt.uuid,
             )
             .isEmpty) {
-          cartQueue.add(
-            TempCart(
-              fixedDiscount: receipt.fixedDiscount,
-              createdDate: receipt.createdAt,
-              cartItems: cartItems,
-              isInvoice: receipt.isInvoice,
-              discount: receipt.generalDiscount,
-              receiptUuidEdit: receipt.uuid,
-              paymentMethod:
-                  receipt.paymentMethod == 'Cash'
-                      ? 0
-                      : receipt.paymentMethod == 'Bank'
-                      ? 1
-                      : 2,
-              selectedCustomer: receipt.customerUuid,
-              selectedCustomerName: receipt.customerName,
-              isReceiptEdit: true,
+          var newId = uuidGen();
+          var tempCart = TempCart(
+            id: newId,
+            fixedDiscount: receipt.fixedDiscount,
+            createdDate: receipt.createdAt,
+            cartItems: cartItems,
+            isInvoice: receipt.isInvoice,
+            discount: receipt.generalDiscount,
+            receiptUuidEdit: receipt.uuid,
+            paymentMethod:
+                receipt.paymentMethod == 'Cash'
+                    ? 0
+                    : receipt.paymentMethod == 'Bank'
+                    ? 1
+                    : 2,
+            selectedCustomer: receipt.customerUuid,
+            selectedCustomerName: receipt.customerName,
+            isReceiptEdit: true,
+          );
+          await addNewCart(context, tempCart);
+          await returnMultiDisplayProvider().updateWindow(
+            cartClass: AltCartClass(
+              cartId: tempCart.id!,
+              cartItems:
+                  tempCart.cartItems.reversed.toList(),
+              subTotal: calcTotalMain(),
+              total: calcFinalTotalMain(),
+              vat:
+                  returnShopProvider().userShop()!.applyVAT!
+                      ? vat
+                      : 0,
+              currency:
+                  returnShopProvider().userShop()!.currency,
             ),
           );
-          selectCart(cartQueue.indexOf(cartQueue.last));
           notifyListeners();
         } else {
-          selectCart(
-            cartQueue.indexOf(
-              cartQueue
-                  .where(
-                    (cart) =>
-                        cart.receiptUuidEdit ==
-                        receipt.uuid,
-                  )
-                  .first,
-            ),
+          await selectCart(
+            cartQueue
+                .where(
+                  (cart) =>
+                      cart.receiptUuidEdit == receipt.uuid,
+                )
+                .first
+                .id!,
           );
         }
         Navigator.push(
@@ -967,19 +1184,17 @@ class SalesProvider extends ChangeNotifier {
           message:
               'You are currently editing this receipt, are you sure you want to cancel this edit?',
           title: 'Cancel Edit?',
-          action: () {
+          action: () async {
             if (currentCart().isReceiptEdit) {
-              // var recId =
-              //     returnSalesProvider(
-              //       context,
-              //       listen: false,
-              //     ).currentCart().receiptUuidEdit;
               if (cartQueue.length == 1) {
-                addNewCart(context);
+                await addNewCart(
+                  context,
+                  TempCart(cartItems: [], isInvoice: false),
+                );
               }
 
-              deleteCart(cartIndex);
-              selectCart(0);
+              await deleteCart(cartIdCache);
+              // await selectCart(cartIndex - 1);
               notifyListeners();
               Navigator.of(context).pop();
               Navigator.of(context).pop();

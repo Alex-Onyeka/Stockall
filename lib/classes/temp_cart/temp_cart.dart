@@ -2,6 +2,7 @@ import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 
 class TempCart {
   List<TempCartItem> cartItems;
+  String? id;
   bool isInvoice;
   String? selectedCustomer;
   String? selectedCustomerName;
@@ -13,9 +14,11 @@ class TempCart {
   bool setCustomPrice;
   double? fixedDiscount;
   bool isSettingDiscountOpen;
+
   TempCart({
     required this.cartItems,
     required this.isInvoice,
+    this.id,
     this.selectedCustomer,
     this.selectedCustomerName,
     this.paymentMethod = 0,

@@ -37,10 +37,7 @@ class _CustomerListDesktopState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      returnData(
-        context,
-        listen: false,
-      ).showFloatingActionButton();
+      returnData().showFloatingActionButton();
     });
     if (returnCustomers(
       context,

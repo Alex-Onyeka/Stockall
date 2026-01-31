@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -6,6 +8,7 @@ import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/local_database/main_database.dart';
 import 'package:stockall/local_database/visibility_box/visibility_box.dart';
+import 'package:stockall/pages/alt_display/alt_display.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
 import 'package:stockall/pages/authentication/forgot_password_page/enter_new_password/enter_new_password.dart';
 import 'package:stockall/pages/authentication/launch_screen/launch_screen.dart';
@@ -19,8 +22,9 @@ import 'package:stockall/providers/comp_provider.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/providers/customers_provider.dart';
 import 'package:stockall/providers/data_provider.dart';
+import 'package:stockall/providers/events_log_provider.dart';
 import 'package:stockall/providers/expenses_provider.dart';
-import 'package:stockall/providers/multi_screen_provider.dart';
+import 'package:stockall/providers/multi_display_provider.dart';
 import 'package:stockall/providers/nav_provider.dart';
 import 'package:stockall/providers/notifications_provider.dart';
 // import 'package:stockall/providers/product_suggestions_provider.dart';
@@ -39,76 +43,55 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 Stopwatch stopwatch = Stopwatch();
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  stopwatch.start();
-  // await NotificationService.initialize();
+void main(List<String> args) async {
+  if (args.length >= 3) {
+    final windowId = int.tryParse(args[1]);
+    final argument = args[2];
+    print(windowId);
+    print(argument);
 
-  SystemChrome.setSystemUIOverlayStyle(
-    SystemUiOverlayStyle(
-      statusBarColor: Colors.white, // or any color
-      statusBarIconBrightness:
-          Brightness.dark, // for Android
-      systemNavigationBarContrastEnforced: true,
-      statusBarBrightness: Brightness.light,
-    ),
-  );
-  // Lock to portrait only
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
+    try {
+      final decoded = jsonDecode(argument);
+      if (decoded['type'] == 'alt') {
+        runApp(
+          MyAppAlt(
+            home: AltDisplay(
+              windowId: windowId ?? -1,
+              cartId: decoded['cart_id'],
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      print('An Error Occoured: $e');
+    }
+  } else {
+    WidgetsFlutterBinding.ensureInitialized();
+    stopwatch.start();
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: Colors.white, // or any color
+        statusBarIconBrightness:
+            Brightness.dark, // for Android
+        systemNavigationBarContrastEnforced: true,
+        statusBarBrightness: Brightness.light,
+      ),
+    );
+    // Lock to portrait only
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
 
-  await Supabase.initialize(
-    url: supabaseUrl,
-    anonKey: supabaseAnonKey,
-  );
-  await MainDatabase().initHive();
-  runApp(MyApp());
+    await MainDatabase().initHive();
+    await Supabase.initialize(
+      url: supabaseUrl,
+      anonKey: supabaseAnonKey,
+    );
+    print('Main started with args: $args');
+    runApp(MyApp(home: BasePage()));
+  }
 }
-
-// void main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   stopwatch.start();
-
-//   SystemChrome.setSystemUIOverlayStyle(
-//     SystemUiOverlayStyle(
-//       statusBarColor: Colors.white,
-//       statusBarIconBrightness: Brightness.dark,
-//       systemNavigationBarContrastEnforced: true,
-//       statusBarBrightness: Brightness.light,
-//     ),
-//   );
-
-//   await SystemChrome.setPreferredOrientations([
-//     DeviceOrientation.portraitUp,
-//     DeviceOrientation.portraitDown,
-//   ]);
-
-//   await Supabase.initialize(
-//     url: supabaseUrl,
-//     anonKey: supabaseAnonKey,
-//   );
-//   await MainDatabase().initHive();
-
-//   if (MultiScreenProvider().isDesktop()) {
-//     final displays = await screenRetriever.getAllDisplays();
-//     if (displays.length > 1) {
-//       final customerDisplay = displays[1];
-//       final width = customerDisplay.size.width;
-//       final height = customerDisplay.size.height;
-//       // Spawn customer window on second display
-//       await MultiWindow.create(
-//         'customer',
-//         title: 'Customer Display',
-//         size: Size(width, height),
-//         alignment: Alignment.center,
-//       );
-//     }
-//   }
-
-//   runApp(MyApp());
-// }
 
 TempUserClass userGeneral(
   BuildContext context, {
@@ -127,12 +110,8 @@ TempUserClass userGeneral(
       );
 }
 
-int shopId(BuildContext context) {
-  var tempId =
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop()!.shopId!;
+int shopId() {
+  var tempId = returnShopProvider().userShop()!.shopId!;
 
   return tempId;
 }
@@ -185,10 +164,11 @@ ReceiptsProvider returnReceiptProvider(
 }
 
 TempShopClass? shop(BuildContext context) {
-  return returnShopProvider(
-    context,
-    listen: false,
-  ).userShop();
+  return returnShopProvider(context: context).userShop();
+}
+
+UserProvider returnUserProviderSingle() {
+  return UserProvider();
 }
 
 UserProvider returnUserProvider(
@@ -198,11 +178,12 @@ UserProvider returnUserProvider(
   return Provider.of<UserProvider>(context, listen: listen);
 }
 
-ShopProvider returnShopProvider(
-  BuildContext context, {
-  bool listen = true,
-}) {
-  return Provider.of<ShopProvider>(context, listen: listen);
+ShopProvider returnShopProvider({BuildContext? context}) {
+  if (context == null) {
+    return ShopProvider();
+  } else {
+    return Provider.of<ShopProvider>(context);
+  }
 }
 
 ValidateInputProvider returnValidate(
@@ -225,11 +206,12 @@ ThemeProvider returnTheme(
   );
 }
 
-DataProvider returnData(
-  BuildContext context, {
-  bool listen = true,
-}) {
-  return Provider.of<DataProvider>(context, listen: listen);
+DataProvider returnData({BuildContext? context}) {
+  if (context == null) {
+    return DataProvider();
+  } else {
+    return Provider.of<DataProvider>(context);
+  }
 }
 
 CustomersProvider returnCustomers(
@@ -266,14 +248,14 @@ CompProvider returnCompProvider(
   return Provider.of<CompProvider>(context, listen: listen);
 }
 
-SalesProvider returnSalesProvider(
-  BuildContext context, {
-  bool listen = true,
-}) {
-  return Provider.of<SalesProvider>(
-    context,
-    listen: listen,
-  );
+SalesProvider returnSalesProvider() {
+  return SalesProvider();
+}
+
+SalesProvider returnSalesProviderContext(
+  BuildContext context,
+) {
+  return Provider.of<SalesProvider>(context);
 }
 
 TranslationProvider returnTranslationProvider(
@@ -316,14 +298,24 @@ AppVersionProvider returnAppVersionProvider(
   );
 }
 
-MultiScreenProvider returnMultiScreenProvider(
-  BuildContext context, {
-  bool listen = true,
+MultiDisplayProvider returnMultiDisplayProvider() {
+  return MultiDisplayProvider();
+}
+
+MultiDisplayProvider returnMultiDisplayProviderContext(
+  BuildContext context,
+) {
+  return Provider.of<MultiDisplayProvider>(context);
+}
+
+EventsLogProvider returnEventsLogProvider({
+  BuildContext? context,
 }) {
-  return Provider.of<MultiScreenProvider>(
-    context,
-    listen: listen,
-  );
+  if (context == null) {
+    return EventsLogProvider();
+  } else {
+    return Provider.of<EventsLogProvider>(context);
+  }
 }
 
 Widget colorWidget(
@@ -358,17 +350,18 @@ Widget colorWidget(
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final Widget home;
+  const MyApp({super.key, required this.home});
 
   @override
   Widget build(BuildContext context) {
     stopwatch.stop();
-    print(
-      "Milliseconds Load time: ${stopwatch.elapsedMilliseconds}",
-    );
-    print(
-      "Seconds Load time: ${stopwatch.elapsed.inSeconds}",
-    );
+    // print(
+    //   "Milliseconds Load time: ${stopwatch.elapsedMilliseconds}",
+    // );
+    // print(
+    //   "Seconds Load time: ${stopwatch.elapsed.inSeconds}",
+    // );
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -432,14 +425,17 @@ class MyApp extends StatelessWidget {
           create: (_) => AppVersionProvider(),
         ),
         ChangeNotifierProvider(
-          create: (_) => MultiScreenProvider(),
+          create: (_) => MultiDisplayProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => EventsLogProvider(),
         ),
       ],
       child: MaterialApp(
         title: 'Stockall Business Dashboard',
         initialRoute: "/",
         routes: {
-          '/': (context) => BasePage(),
+          '/': (context) => home,
           '/launch': (context) => LaunchScreen(),
           // '/forgot-password':
           //     (context) => ForgotPasswordPage(),
@@ -479,56 +475,41 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class TestPage extends StatefulWidget {
-  const TestPage({super.key});
-
-  @override
-  State<TestPage> createState() => _TestPageState();
-}
-
-class _TestPageState extends State<TestPage> {
-  late Future<bool> connectFuture;
-  Future<bool> connect() async {
-    return returnConnectivityProvider(
-      context,
-      listen: false,
-    ).isOnline();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    connectFuture = connect();
-  }
+class MyAppAlt extends StatelessWidget {
+  final Widget home;
+  const MyAppAlt({super.key, required this.home});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: FutureBuilder(
-          future: connectFuture,
-          builder: (context, asyncSnapshot) {
-            if (asyncSnapshot.connectionState ==
-                ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator.adaptive(),
-              );
-            } else {
-              return InkWell(
-                onTap: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return TestPage();
-                      },
-                    ),
-                  );
-                },
-                child: Text(asyncSnapshot.data.toString()),
-              );
-            }
-          },
+    stopwatch.stop();
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => ThemeProvider(),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'Stockall Business Dashboard',
+        home: home,
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          appBarTheme: AppBarTheme(
+            systemOverlayStyle: SystemUiOverlayStyle(
+              systemStatusBarContrastEnforced: true,
+            ),
+            backgroundColor: Colors.white,
+            centerTitle: true,
+            elevation: 0,
+            toolbarHeight: 80,
+          ),
+          scaffoldBackgroundColor: Colors.white,
+          fontFamily: 'Plus Jakarta Sans',
+          primaryColor: const Color.fromRGBO(
+            25,
+            43,
+            117,
+            1,
+          ),
         ),
       ),
     );

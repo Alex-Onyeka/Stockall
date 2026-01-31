@@ -20,8 +20,22 @@ class CustomerPageDesktop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    var customer = returnCustomers(context).customersMain
-        .firstWhere((cust) => cust.uuid! == uuid);
+    var tempCustomer = returnCustomers(
+      context,
+    ).customersMain.where((cust) => cust.uuid! == uuid);
+    var customer =
+        tempCustomer.isNotEmpty
+            ? tempCustomer.first
+            : TempCustomersClass(
+              name: 'Name',
+              email: 'email@gmail.com',
+              phone: '08012323215',
+              address: 'Address',
+              city: 'City',
+              state: 'State',
+              dateAdded: DateTime.now(),
+              shopId: 1,
+            );
     return SafeArea(
       child: Scaffold(
         body: Column(
@@ -231,24 +245,22 @@ class DetailsPageContainer extends StatelessWidget {
                 iconSize: 18,
                 text: 'Delete',
                 action: () {
-                  final safeContext = context;
+                  // final safeContext = context;
                   showDialog(
                     context: context,
-                    builder: (context) {
+                    builder: (confirmDialog) {
                       return ConfirmationAlert(
                         theme: theme,
                         message:
                             'You are about to delete your customer, are you sure you want to proceed?',
                         title: 'Are you sure?',
                         action: () async {
-                          if (safeContext.mounted) {
-                            Navigator.of(safeContext).pop();
-                          }
-                          returnCustomers(
+                          Navigator.of(confirmDialog).pop();
+                          await returnCustomers(
                             context,
                             listen: false,
                           ).deleteCustomerMain(
-                            customer.uuid!,
+                            customer,
                             context,
                           );
                           await Future.delayed(

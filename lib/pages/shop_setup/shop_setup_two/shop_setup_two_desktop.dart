@@ -137,10 +137,7 @@ class _ShopSetupTwoDesktopState
       TextEditingController();
 
   void checkInputs() {
-    var shopProvider = returnShopProvider(
-      context,
-      listen: false,
-    );
+    var shopProvider = returnShopProvider();
     var theme = returnTheme(context, listen: false);
     var safeContext = context;
     if (selectedCityName == 'Loading...') {
@@ -210,10 +207,9 @@ class _ShopSetupTwoDesktopState
                     refCode: referralController.text.trim(),
                     language: 'en',
                     isHeadQuarters:
-                        returnShopProvider(
-                              context,
-                              listen: false,
-                            ).userShops.isEmpty
+                        returnShopProvider()
+                                .userShops
+                                .isEmpty
                             ? true
                             : false,
                     applyVAT: false,

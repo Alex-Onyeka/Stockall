@@ -288,7 +288,7 @@ class _NotificationsDesktopState
                                           context,
                                           listen: false,
                                         ).fetchRecentNotifications(
-                                          shopId(context),
+                                          shopId(),
                                         );
                                       },
                                       backgroundColor:
@@ -433,7 +433,7 @@ class _NotificationsDesktopState
                                           context,
                                           listen: false,
                                         ).fetchRecentNotifications(
-                                          shopId(context),
+                                          shopId(),
                                         );
                                       },
                                       backgroundColor:
@@ -578,7 +578,7 @@ class _NotificationsDesktopState
                                           context,
                                           listen: false,
                                         ).fetchRecentNotifications(
-                                          shopId(context),
+                                          shopId(),
                                         );
                                       },
                                       backgroundColor:

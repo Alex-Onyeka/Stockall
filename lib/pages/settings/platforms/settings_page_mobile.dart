@@ -149,16 +149,16 @@ class _SettingsPageMobileState
                         //                   ) {
                         //                     return DialogTemplate(
                         //                       showTopSection:
-                        //                           returnShopProvider(context).userShop()!.fixedDiscount ==
+                        //                           returnShopProvider( ).userShop()!.fixedDiscount ==
                         //                                       null &&
-                        //                                   returnShopProvider(context).userShop()!.percentDiscount ==
+                        //                                   returnShopProvider( ).userShop()!.percentDiscount ==
                         //                                       null
                         //                               ? null
                         //                               : false,
                         //                       showBottomActionButtons:
-                        //                           returnShopProvider(context).userShop()!.fixedDiscount ==
+                        //                           returnShopProvider( ).userShop()!.fixedDiscount ==
                         //                                       null &&
-                        //                                   returnShopProvider(context).userShop()!.percentDiscount ==
+                        //                                   returnShopProvider( ).userShop()!.percentDiscount ==
                         //                                       null
                         //                               ? null
                         //                               : false,
@@ -435,7 +435,7 @@ class _SettingsPageMobileState
                         //                                                     fontWeight:
                         //                                                         FontWeight.bold,
                         //                                                   ),
-                        //                                                   "${returnShopProvider(context, listen: false).userShop()!.fixedDiscount == null ? '%' : ''}${returnShopProvider(context, listen: false).userShop()!.percentDiscount ?? formatMoneyMid(amount: returnShopProvider(context, listen: false).userShop()!.fixedDiscount ?? 0, context: context)} ",
+                        //                                                   "${returnShopProvider().userShop()!.fixedDiscount == null ? '%' : ''}${returnShopProvider().userShop()!.percentDiscount ?? formatMoneyMid(amount: returnShopProvider().userShop()!.fixedDiscount ?? 0, context: context)} ",
                         //                                                 ),
                         //                                               ),
                         //                                             ],
@@ -585,10 +585,7 @@ class _SettingsPageMobileState
                                   context: context,
                                   action: () {
                                     var shopProvider =
-                                        returnShopProvider(
-                                          context,
-                                          listen: false,
-                                        );
+                                        returnShopProvider();
                                     showDialog(
                                       context: context,
                                       builder: (context) {
@@ -621,9 +618,8 @@ class _SettingsPageMobileState
                               },
                               endWidget: Builder(
                                 builder: (context) {
-                                  if (returnShopProvider(
-                                    context,
-                                  ).isVatLoading) {
+                                  if (returnShopProvider()
+                                      .isVatLoading) {
                                     return SizedBox(
                                       height: 16,
                                       width: 16,
@@ -639,9 +635,7 @@ class _SettingsPageMobileState
                                     return MyToggleButton(
                                       isSmall: true,
                                       boolValue:
-                                          returnShopProvider(
-                                                context,
-                                              )
+                                          returnShopProvider()
                                               .userShop()
                                               ?.applyVAT ??
                                           true,
@@ -650,11 +644,7 @@ class _SettingsPageMobileState
                                           context: context,
                                           action: () {
                                             var shopProvider =
-                                                returnShopProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                );
+                                                returnShopProvider();
                                             showDialog(
                                               context:
                                                   context,
@@ -1124,10 +1114,7 @@ class _SettingsPageMobileState
                             action: () {
                               var safeContext = context;
                               var shopP =
-                                  returnShopProvider(
-                                    context,
-                                    listen: false,
-                                  );
+                                  returnShopProvider();
                               var userP =
                                   returnUserProvider(
                                     context,

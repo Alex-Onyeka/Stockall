@@ -29,10 +29,7 @@ class _TotalExpensesMobileState
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       clearDate();
-      returnData(
-        context,
-        listen: false,
-      ).toggleFloatingAction(context);
+      returnData().toggleFloatingAction(context);
     });
   }
 

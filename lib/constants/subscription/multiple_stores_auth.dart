@@ -61,10 +61,7 @@ class MultipleStoresAuthAction {
       return true;
     } else {
       var currentNumberofStores =
-          returnShopProvider(
-            context,
-            listen: false,
-          ).userShops.length;
+          returnShopProvider().userShops.length;
       if (currentNumberofStores <
           subPlans
               .firstWhere((pl) => pl.plan == plan)

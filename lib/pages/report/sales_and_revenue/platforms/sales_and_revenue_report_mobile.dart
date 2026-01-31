@@ -88,10 +88,7 @@ class _SalesAndRevenueReportMobileState
         context,
         listen: false,
       ).clearDate(context);
-      returnSalesProvider(
-        context,
-        listen: false,
-      ).toggleIsLoading(false);
+      returnSalesProvider().toggleIsLoading(false);
     });
     productRecordFuture = getProductRecord();
     productsFuture = getProducts();
@@ -431,11 +428,8 @@ class _SalesAndRevenueReportMobileState
                                                   summary:
                                                       summary,
                                                   shop:
-                                                      returnShopProvider(
-                                                        safeContext,
-                                                        listen:
-                                                            false,
-                                                      ).userShop()!,
+                                                      returnShopProvider()
+                                                          .userShop()!,
                                                   context:
                                                       safeContext,
                                                   filename:
@@ -446,11 +440,8 @@ class _SalesAndRevenueReportMobileState
                                                   records:
                                                       salesRecords,
                                                   shop:
-                                                      returnShopProvider(
-                                                        safeContext,
-                                                        listen:
-                                                            false,
-                                                      ).userShop()!,
+                                                      returnShopProvider()
+                                                          .userShop()!,
                                                   context:
                                                       safeContext,
                                                   filename:
@@ -464,11 +455,8 @@ class _SalesAndRevenueReportMobileState
                                               context:
                                                   safeContext,
                                               shop:
-                                                  returnShopProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).userShop()!,
+                                                  returnShopProvider()
+                                                      .userShop()!,
                                               summary:
                                                   summary,
                                             );
@@ -479,22 +467,17 @@ class _SalesAndRevenueReportMobileState
                                               records:
                                                   salesRecords,
                                               shop:
-                                                  returnShopProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).userShop()!,
+                                                  returnShopProvider()
+                                                      .userShop()!,
                                             );
                                           }
 
                                           if (safeContext
                                               .mounted) {
-                                            returnSalesProvider(
-                                              safeContext,
-                                              listen: false,
-                                            ).toggleIsLoading(
-                                              false,
-                                            );
+                                            returnSalesProvider()
+                                                .toggleIsLoading(
+                                                  false,
+                                                );
                                           }
                                         },
                                       );
@@ -901,7 +884,9 @@ class _SalesAndRevenueReportMobileState
               ),
               Visibility(
                 visible:
-                    returnSalesProvider(context).isLoading,
+                    returnSalesProviderContext(
+                      context,
+                    ).isLoading,
                 child: returnCompProvider(
                   context,
                   listen: false,

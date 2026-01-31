@@ -63,13 +63,11 @@ class _DiscountSetterWidgetState
                                     .fontSize,
                             fontWeight: FontWeight.bold,
                           ),
-                          returnSalesProvider(context)
+                          returnSalesProvider()
                                           .currentCart()
                                           .discount !=
                                       null ||
-                                  returnSalesProvider(
-                                            context,
-                                          )
+                                  returnSalesProvider()
                                           .currentCart()
                                           .fixedDiscount !=
                                       null
@@ -78,11 +76,11 @@ class _DiscountSetterWidgetState
                         ),
                         Visibility(
                           visible:
-                              returnSalesProvider(context)
+                              returnSalesProvider()
                                       .currentCart()
                                       .discount !=
                                   null ||
-                              returnSalesProvider(context)
+                              returnSalesProvider()
                                       .currentCart()
                                       .fixedDiscount !=
                                   null,
@@ -124,7 +122,7 @@ class _DiscountSetterWidgetState
                                         .lightModeColor
                                         .secColor200,
                               ),
-                              '${returnSalesProvider(context).currentCart().discount?.toStringAsFixed(0) ?? formatCompactMoney(context: context, amount: returnSalesProvider(context).currentCart().fixedDiscount)}${returnSalesProvider(context).currentCart().discount != null ? '%' : ''}',
+                              '${returnSalesProviderContext(context).currentCart().discount?.toStringAsFixed(0) ?? formatCompactMoney(context: context, amount: returnSalesProviderContext(context).currentCart().fixedDiscount)}${returnSalesProviderContext(context).currentCart().discount != null ? '%' : ''}',
                             ),
                           ),
                         ),
@@ -132,9 +130,7 @@ class _DiscountSetterWidgetState
                           children: [
                             Visibility(
                               visible:
-                                  returnSalesProvider(
-                                        context,
-                                      )
+                                  returnSalesProvider()
                                       .currentCart()
                                       .discount ==
                                   null,
@@ -149,9 +145,7 @@ class _DiscountSetterWidgetState
                             ),
                             Visibility(
                               visible:
-                                  returnSalesProvider(
-                                        context,
-                                      )
+                                  returnSalesProvider()
                                       .currentCart()
                                       .discount !=
                                   null,
@@ -175,9 +169,9 @@ class _DiscountSetterWidgetState
           ),
           Visibility(
             visible:
-                returnSalesProvider(
-                  context,
-                ).currentCart().isSettingDiscountOpen,
+                returnSalesProvider()
+                    .currentCart()
+                    .isSettingDiscountOpen,
             child: DiscountSetterBody(
               isGeneral: false,
               discountPercentController:
@@ -210,10 +204,7 @@ class _DiscountSetterBodyState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      returnShopProvider(
-        context,
-        listen: false,
-      ).switchDiscountIndex(0);
+      returnShopProvider().switchDiscountIndex(0);
     });
   }
 
@@ -244,7 +235,7 @@ class _DiscountSetterBodyState
                 visible:
                     !widget.isGeneral &&
                     returnShopProvider(
-                          context,
+                          context: context,
                         ).currentDiscount() !=
                         null &&
                     returnSubcsription(
@@ -295,21 +286,14 @@ class _DiscountSetterBodyState
                                       2,
                                     ),
                                 onTap: () {
-                                  if (returnShopProvider(
-                                            context,
-                                            listen: false,
-                                          )
+                                  if (returnShopProvider()
                                           .userShop()
                                           ?.fixedDiscount !=
                                       null) {
-                                    if (returnShopProvider(
-                                          context,
-                                          listen: false,
-                                        ).currentDiscount()! >
-                                        returnSalesProvider(
-                                          context,
-                                          listen: false,
-                                        ).calcTotalMain()) {
+                                    if (returnShopProvider()
+                                            .currentDiscount()! >
+                                        returnSalesProvider()
+                                            .calcTotalMain()) {
                                       showDialog(
                                         context: context,
                                         builder: (context) {
@@ -332,36 +316,24 @@ class _DiscountSetterBodyState
                                             context,
                                           ) >
                                           mobileScreen) {
-                                        returnSalesProvider(
-                                          context,
-                                          listen: false,
-                                        ).addGeneralFixedDiscount(
-                                          returnShopProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).currentDiscount() ??
-                                              0,
-                                        );
-                                        returnSalesProvider(
-                                          context,
-                                          listen: false,
-                                        ).toggleSetDiscount(
-                                          false,
-                                          context,
-                                        );
+                                        returnSalesProvider()
+                                            .addGeneralFixedDiscount(
+                                              returnShopProvider()
+                                                      .currentDiscount() ??
+                                                  0,
+                                            );
+                                        returnSalesProvider()
+                                            .toggleSetDiscount(
+                                              false,
+                                              context,
+                                            );
                                       } else {
-                                        returnSalesProvider(
-                                          context,
-                                          listen: false,
-                                        ).addGeneralFixedDiscount(
-                                          returnShopProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).currentDiscount() ??
-                                              0,
-                                        );
+                                        returnSalesProvider()
+                                            .addGeneralFixedDiscount(
+                                              returnShopProvider()
+                                                      .currentDiscount() ??
+                                                  0,
+                                            );
                                         Navigator.of(
                                           context,
                                         ).pop();
@@ -372,34 +344,24 @@ class _DiscountSetterBodyState
                                           context,
                                         ) >
                                         mobileScreen) {
-                                      returnSalesProvider(
-                                        context,
-                                        listen: false,
-                                      ).addGeneralDiscount(
-                                        returnShopProvider(
-                                              context,
-                                              listen: false,
-                                            ).currentDiscount() ??
-                                            0,
-                                      );
-                                      returnSalesProvider(
-                                        context,
-                                        listen: false,
-                                      ).toggleSetDiscount(
-                                        false,
-                                        context,
-                                      );
+                                      returnSalesProvider()
+                                          .addGeneralDiscount(
+                                            returnShopProvider()
+                                                    .currentDiscount() ??
+                                                0,
+                                          );
+                                      returnSalesProvider()
+                                          .toggleSetDiscount(
+                                            false,
+                                            context,
+                                          );
                                     } else {
-                                      returnSalesProvider(
-                                        context,
-                                        listen: false,
-                                      ).addGeneralDiscount(
-                                        returnShopProvider(
-                                              context,
-                                              listen: false,
-                                            ).currentDiscount() ??
-                                            0,
-                                      );
+                                      returnSalesProvider()
+                                          .addGeneralDiscount(
+                                            returnShopProvider()
+                                                    .currentDiscount() ??
+                                                0,
+                                          );
                                       Navigator.of(
                                         context,
                                       ).pop();
@@ -424,7 +386,7 @@ class _DiscountSetterBodyState
                                           FontWeight.bold,
                                       color: Colors.white,
                                     ),
-                                    "${(formatCompactMoney(context: context, amount: returnShopProvider(context).userShop()?.fixedDiscount) ?? returnShopProvider(context).userShop()?.percentDiscount ?? 0).toString()}${returnShopProvider(context).userShop()?.fixedDiscount == null ? '%' : ''}",
+                                    "${(formatCompactMoney(context: context, amount: returnShopProvider(context: context).userShop()?.fixedDiscount) ?? returnShopProvider(context: context).userShop()?.percentDiscount ?? 0).toString()}${returnShopProvider().userShop()?.fixedDiscount == null ? '%' : ''}",
                                   ),
                                 ),
                               ),
@@ -445,14 +407,12 @@ class _DiscountSetterBodyState
                     child: DiscountSelectionTab(
                       genNum:
                           returnShopProvider(
-                            context,
+                            context: context,
                           ).discountIndex,
                       title: 'Percentage',
                       action: () {
-                        returnShopProvider(
-                          context,
-                          listen: false,
-                        ).switchDiscountIndex(0);
+                        returnShopProvider()
+                            .switchDiscountIndex(0);
                         widget.discountPercentController
                             .clear();
                       },
@@ -464,13 +424,11 @@ class _DiscountSetterBodyState
                     child: DiscountSelectionTab(
                       genNum:
                           returnShopProvider(
-                            context,
+                            context: context,
                           ).discountIndex,
                       action: () {
-                        returnShopProvider(
-                          context,
-                          listen: false,
-                        ).switchDiscountIndex(1);
+                        returnShopProvider()
+                            .switchDiscountIndex(1);
                         widget.discountPercentController
                             .clear();
                       },
@@ -488,13 +446,11 @@ class _DiscountSetterBodyState
                         onTap: () {
                           if (screenWidth(context) >
                               mobileScreen) {
-                            returnSalesProvider(
-                              context,
-                              listen: false,
-                            ).toggleSetDiscount(
-                              false,
-                              context,
-                            );
+                            returnSalesProvider()
+                                .toggleSetDiscount(
+                                  false,
+                                  context,
+                                );
                             widget.discountPercentController
                                 .clear();
                           } else {
@@ -516,9 +472,7 @@ class _DiscountSetterBodyState
               SizedBox(height: 5),
               Builder(
                 builder: (context) {
-                  if (returnShopProvider(
-                        context,
-                      ).discountIndex ==
+                  if (returnShopProvider().discountIndex ==
                       0) {
                     return Column(
                       spacing: 10,
@@ -529,7 +483,7 @@ class _DiscountSetterBodyState
                               MainAxisAlignment
                                   .spaceBetween,
                           children:
-                              returnSalesProvider(context)
+                              returnSalesProvider()
                                   .returnSomeDiscounts(0, 4)
                                   .map(
                                     (dis) => Expanded(
@@ -545,47 +499,35 @@ class _DiscountSetterBodyState
                                                     context,
                                                   ) >
                                                   mobileScreen) {
-                                                returnSalesProvider(
-                                                  context,
-                                                  listen:
+                                                returnSalesProvider()
+                                                    .addGeneralDiscount(
+                                                      double.parse(
+                                                        dis,
+                                                      ),
+                                                    );
+                                                returnSalesProvider()
+                                                    .toggleSetDiscount(
                                                       false,
-                                                ).addGeneralDiscount(
-                                                  double.parse(
-                                                    dis,
-                                                  ),
-                                                );
-                                                returnSalesProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).toggleSetDiscount(
-                                                  false,
-                                                  context,
-                                                );
+                                                      context,
+                                                    );
                                               } else {
-                                                returnSalesProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).addGeneralDiscount(
-                                                  double.parse(
-                                                    dis,
-                                                  ),
-                                                );
+                                                returnSalesProvider()
+                                                    .addGeneralDiscount(
+                                                      double.parse(
+                                                        dis,
+                                                      ),
+                                                    );
                                                 Navigator.of(
                                                   context,
                                                 ).pop();
                                               }
                                             } else {
-                                              returnShopProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).setGeneralPercentageDiscountCache(
-                                                double.tryParse(
-                                                  dis,
-                                                ),
-                                              );
+                                              returnShopProvider()
+                                                  .setGeneralPercentageDiscountCache(
+                                                    double.tryParse(
+                                                      dis,
+                                                    ),
+                                                  );
                                             }
                                             widget
                                                 .discountPercentController
@@ -599,7 +541,10 @@ class _DiscountSetterBodyState
                                                   ),
                                               border: Border.all(
                                                 color:
-                                                    returnShopProvider(context).generalPercentDiscount ==
+                                                    returnShopProvider(
+                                                              context:
+                                                                  context,
+                                                            ).generalPercentDiscount ==
                                                             double.tryParse(dis)
                                                         ? theme.lightModeColor.secColor200
                                                         : Colors.grey.shade100,
@@ -621,7 +566,10 @@ class _DiscountSetterBodyState
                                                       FontWeight
                                                           .bold,
                                                   color:
-                                                      returnShopProvider(context).generalPercentDiscount ==
+                                                      returnShopProvider(
+                                                                context:
+                                                                    context,
+                                                              ).generalPercentDiscount ==
                                                               double.tryParse(dis)
                                                           ? theme.lightModeColor.secColor200
                                                           : null,
@@ -642,7 +590,7 @@ class _DiscountSetterBodyState
                               MainAxisAlignment
                                   .spaceBetween,
                           children:
-                              returnSalesProvider(context)
+                              returnSalesProvider()
                                   .returnSomeDiscounts(4, 8)
                                   .map(
                                     (dis) => Expanded(
@@ -658,47 +606,35 @@ class _DiscountSetterBodyState
                                                     context,
                                                   ) >
                                                   mobileScreen) {
-                                                returnSalesProvider(
-                                                  context,
-                                                  listen:
+                                                returnSalesProvider()
+                                                    .addGeneralDiscount(
+                                                      double.parse(
+                                                        dis,
+                                                      ),
+                                                    );
+                                                returnSalesProvider()
+                                                    .toggleSetDiscount(
                                                       false,
-                                                ).addGeneralDiscount(
-                                                  double.parse(
-                                                    dis,
-                                                  ),
-                                                );
-                                                returnSalesProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).toggleSetDiscount(
-                                                  false,
-                                                  context,
-                                                );
+                                                      context,
+                                                    );
                                               } else {
-                                                returnSalesProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).addGeneralDiscount(
-                                                  double.parse(
-                                                    dis,
-                                                  ),
-                                                );
+                                                returnSalesProvider()
+                                                    .addGeneralDiscount(
+                                                      double.parse(
+                                                        dis,
+                                                      ),
+                                                    );
                                                 Navigator.of(
                                                   context,
                                                 ).pop();
                                               }
                                             } else {
-                                              returnShopProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).setGeneralPercentageDiscountCache(
-                                                double.tryParse(
-                                                  dis,
-                                                ),
-                                              );
+                                              returnShopProvider()
+                                                  .setGeneralPercentageDiscountCache(
+                                                    double.tryParse(
+                                                      dis,
+                                                    ),
+                                                  );
                                             }
                                             widget
                                                 .discountPercentController
@@ -712,7 +648,10 @@ class _DiscountSetterBodyState
                                                   ),
                                               border: Border.all(
                                                 color:
-                                                    returnShopProvider(context).generalPercentDiscount ==
+                                                    returnShopProvider(
+                                                              context:
+                                                                  context,
+                                                            ).generalPercentDiscount ==
                                                             double.tryParse(dis)
                                                         ? theme.lightModeColor.secColor200
                                                         : Colors.grey.shade100,
@@ -734,7 +673,10 @@ class _DiscountSetterBodyState
                                                       FontWeight
                                                           .bold,
                                                   color:
-                                                      returnShopProvider(context).generalPercentDiscount ==
+                                                      returnShopProvider(
+                                                                context:
+                                                                    context,
+                                                              ).generalPercentDiscount ==
                                                               double.tryParse(dis)
                                                           ? theme.lightModeColor.secColor200
                                                           : null,
@@ -768,12 +710,10 @@ class _DiscountSetterBodyState
                                     onChanged: (value) {
                                       if (value
                                           .isNotEmpty) {
-                                        returnShopProvider(
-                                          context,
-                                          listen: false,
-                                        ).setGeneralFixedDiscountCache(
-                                          null,
-                                        );
+                                        returnShopProvider()
+                                            .setGeneralFixedDiscountCache(
+                                              null,
+                                            );
                                         if (int.parse(
                                               value,
                                             ) >
@@ -923,28 +863,23 @@ class _DiscountSetterBodyState
                                               .discountPercentController
                                               .text
                                               .isNotEmpty) {
-                                            returnSalesProvider(
-                                              context,
-                                              listen: false,
-                                            ).addGeneralDiscount(
-                                              double.parse(
-                                                widget
-                                                    .discountPercentController
-                                                    .text,
-                                              ),
-                                            );
+                                            returnSalesProvider()
+                                                .addGeneralDiscount(
+                                                  double.parse(
+                                                    widget
+                                                        .discountPercentController
+                                                        .text,
+                                                  ),
+                                                );
                                             if (screenWidth(
                                                   context,
                                                 ) >
                                                 mobileScreen) {
-                                              returnSalesProvider(
-                                                context,
-                                                listen:
+                                              returnSalesProvider()
+                                                  .toggleSetDiscount(
                                                     false,
-                                              ).toggleSetDiscount(
-                                                false,
-                                                context,
-                                              );
+                                                    context,
+                                                  );
                                               widget
                                                   .discountPercentController
                                                   .clear();
@@ -993,7 +928,7 @@ class _DiscountSetterBodyState
                               MainAxisAlignment
                                   .spaceBetween,
                           children:
-                              returnSalesProvider(context)
+                              returnSalesProvider()
                                   .returnSomeFixedDiscounts(
                                     0,
                                     4,
@@ -1012,41 +947,29 @@ class _DiscountSetterBodyState
                                                     context,
                                                   ) >
                                                   mobileScreen) {
-                                                returnSalesProvider(
-                                                  context,
-                                                  listen:
+                                                returnSalesProvider()
+                                                    .addGeneralFixedDiscount(
+                                                      dis.toDouble(),
+                                                    );
+                                                returnSalesProvider()
+                                                    .toggleSetDiscount(
                                                       false,
-                                                ).addGeneralFixedDiscount(
-                                                  dis.toDouble(),
-                                                );
-                                                returnSalesProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).toggleSetDiscount(
-                                                  false,
-                                                  context,
-                                                );
+                                                      context,
+                                                    );
                                               } else {
-                                                returnSalesProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).addGeneralFixedDiscount(
-                                                  dis.toDouble(),
-                                                );
+                                                returnSalesProvider()
+                                                    .addGeneralFixedDiscount(
+                                                      dis.toDouble(),
+                                                    );
                                                 Navigator.of(
                                                   context,
                                                 ).pop();
                                               }
                                             } else {
-                                              returnShopProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).setGeneralFixedDiscountCache(
-                                                dis.toDouble(),
-                                              );
+                                              returnShopProvider()
+                                                  .setGeneralFixedDiscountCache(
+                                                    dis.toDouble(),
+                                                  );
                                             }
                                             widget
                                                 .discountPercentController
@@ -1060,7 +983,10 @@ class _DiscountSetterBodyState
                                                   ),
                                               border: Border.all(
                                                 color:
-                                                    returnShopProvider(context).generalFixedDiscount ==
+                                                    returnShopProvider(
+                                                              context:
+                                                                  context,
+                                                            ).generalFixedDiscount ==
                                                             dis.toDouble()
                                                         ? theme.lightModeColor.secColor200
                                                         : Colors.grey.shade100,
@@ -1082,7 +1008,10 @@ class _DiscountSetterBodyState
                                                       FontWeight
                                                           .bold,
                                                   color:
-                                                      returnShopProvider(context).generalFixedDiscount ==
+                                                      returnShopProvider(
+                                                                context:
+                                                                    context,
+                                                              ).generalFixedDiscount ==
                                                               dis.toDouble()
                                                           ? theme.lightModeColor.secColor200
                                                           : null,
@@ -1103,7 +1032,7 @@ class _DiscountSetterBodyState
                               MainAxisAlignment
                                   .spaceBetween,
                           children:
-                              returnSalesProvider(context)
+                              returnSalesProvider()
                                   .returnSomeFixedDiscounts(
                                     4,
                                     8,
@@ -1118,12 +1047,10 @@ class _DiscountSetterBodyState
                                           onTap: () {
                                             if (!widget
                                                 .isGeneral) {
-                                              if (dis.toDouble() >
-                                                  returnSalesProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).calcTotalMain()) {
+                                              if (dis
+                                                      .toDouble() >
+                                                  returnSalesProvider()
+                                                      .calcTotalMain()) {
                                                 showDialog(
                                                   context:
                                                       context,
@@ -1148,29 +1075,19 @@ class _DiscountSetterBodyState
                                                       context,
                                                     ) >
                                                     mobileScreen) {
-                                                  returnSalesProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).addGeneralFixedDiscount(
-                                                    dis.toDouble(),
-                                                  );
-                                                  returnSalesProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).toggleSetDiscount(
+                                                  returnSalesProvider()
+                                                      .addGeneralFixedDiscount(
+                                                        dis.toDouble(),
+                                                      );
+                                                  returnSalesProvider().toggleSetDiscount(
                                                     false,
                                                     context,
                                                   );
                                                 } else {
-                                                  returnSalesProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).addGeneralFixedDiscount(
-                                                    dis.toDouble(),
-                                                  );
+                                                  returnSalesProvider()
+                                                      .addGeneralFixedDiscount(
+                                                        dis.toDouble(),
+                                                      );
                                                   Navigator.of(
                                                     context,
                                                   ).pop();
@@ -1180,13 +1097,10 @@ class _DiscountSetterBodyState
                                                     .clear();
                                               }
                                             } else {
-                                              returnShopProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).setGeneralFixedDiscountCache(
-                                                dis.toDouble(),
-                                              );
+                                              returnShopProvider()
+                                                  .setGeneralFixedDiscountCache(
+                                                    dis.toDouble(),
+                                                  );
                                               widget
                                                   .discountPercentController
                                                   .clear();
@@ -1200,7 +1114,10 @@ class _DiscountSetterBodyState
                                                   ),
                                               border: Border.all(
                                                 color:
-                                                    returnShopProvider(context).generalFixedDiscount ==
+                                                    returnShopProvider(
+                                                              context:
+                                                                  context,
+                                                            ).generalFixedDiscount ==
                                                             dis.toDouble()
                                                         ? theme.lightModeColor.secColor200
                                                         : Colors.grey.shade100,
@@ -1222,7 +1139,10 @@ class _DiscountSetterBodyState
                                                       FontWeight
                                                           .bold,
                                                   color:
-                                                      returnShopProvider(context).generalFixedDiscount ==
+                                                      returnShopProvider(
+                                                                context:
+                                                                    context,
+                                                              ).generalFixedDiscount ==
                                                               dis.toDouble()
                                                           ? theme.lightModeColor.secColor200
                                                           : null,
@@ -1259,20 +1179,15 @@ class _DiscountSetterBodyState
                                           .discountPercentController
                                           .text
                                           .isNotEmpty) {
-                                        returnShopProvider(
-                                          context,
-                                          listen: false,
-                                        ).setGeneralFixedDiscountCache(
-                                          null,
-                                        );
+                                        returnShopProvider()
+                                            .setGeneralFixedDiscountCache(
+                                              null,
+                                            );
                                         if (!widget
                                             .isGeneral) {
                                           var cost =
-                                              returnSalesProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).calcTotalMain();
+                                              returnSalesProvider()
+                                                  .calcTotalMain();
                                           if (cost <
                                               double.parse(
                                                 widget
@@ -1435,11 +1350,8 @@ class _DiscountSetterBodyState
                                                       .discountPercentController
                                                       .text,
                                                 ) >
-                                                returnSalesProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).calcTotalMain()) {
+                                                returnSalesProvider()
+                                                    .calcTotalMain()) {
                                               showDialog(
                                                 context:
                                                     context,
@@ -1460,11 +1372,7 @@ class _DiscountSetterBodyState
                                                 },
                                               );
                                             } else {
-                                              returnSalesProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).addGeneralFixedDiscount(
+                                              returnSalesProvider().addGeneralFixedDiscount(
                                                 double.parse(
                                                   widget
                                                       .discountPercentController
@@ -1475,14 +1383,11 @@ class _DiscountSetterBodyState
                                                     context,
                                                   ) >
                                                   mobileScreen) {
-                                                returnSalesProvider(
-                                                  context,
-                                                  listen:
+                                                returnSalesProvider()
+                                                    .toggleSetDiscount(
                                                       false,
-                                                ).toggleSetDiscount(
-                                                  false,
-                                                  context,
-                                                );
+                                                      context,
+                                                    );
                                                 widget
                                                     .discountPercentController
                                                     .clear();
@@ -1593,10 +1498,7 @@ void setDiscountAction(
   BuildContext context,
   TextEditingController discountPercentController,
 ) {
-  var salesPFalse = returnSalesProvider(
-    context,
-    listen: false,
-  );
+  var salesPFalse = returnSalesProvider();
   if (salesPFalse.currentCart().discount == null &&
       salesPFalse.currentCart().fixedDiscount == null) {
     if (salesPFalse.currentCart().isSettingDiscountOpen ==

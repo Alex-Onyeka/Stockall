@@ -68,23 +68,18 @@ class _CreateCategoryMobileState
                                   'Are you sure you want to save category?',
                               title: 'Proceed?',
                               action: () async {
-                                await returnShopProvider(
-                                  context,
-                                  listen: false,
-                                ).appendShopCategories(
-                                  shopId:
-                                      returnShopProvider(
-                                        context,
-                                        listen: false,
-                                      ).userShop()!.shopId!,
-                                  newCategories: [
-                                    controller.text.trim(),
-                                  ],
-                                );
-                                returnData(
-                                  context,
-                                  listen: false,
-                                ).selectCategory(
+                                await returnShopProvider()
+                                    .appendShopCategories(
+                                      shopId:
+                                          returnShopProvider()
+                                              .userShop()!
+                                              .shopId!,
+                                      newCategories: [
+                                        controller.text
+                                            .trim(),
+                                      ],
+                                    );
+                                returnData().selectCategory(
                                   controller.text,
                                 );
 

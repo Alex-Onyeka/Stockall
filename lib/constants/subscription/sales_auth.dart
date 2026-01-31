@@ -88,11 +88,7 @@ class SalesAuthAction {
       action == null ? {} : action();
       return true;
     } else {
-      var cartsNum =
-          returnSalesProvider(
-            context,
-            listen: false,
-          ).cartQueue.length;
+      var cartsNum = returnSalesProvider().cartQueue.length;
       if (cartsNum <
           subPlans
               .firstWhere((pl) => pl.plan == plan)

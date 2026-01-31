@@ -1935,10 +1935,9 @@ class _AddCustomerMobileState
                           ).addCustomerMain(
                             TempCustomersClass(
                               shopId:
-                                  returnShopProvider(
-                                    context,
-                                    listen: false,
-                                  ).userShop()!.shopId!,
+                                  returnShopProvider()
+                                      .userShop()!
+                                      .shopId!,
                               country:
                                   selectedCountryName ==
                                           'Select Your Country'
@@ -1984,10 +1983,9 @@ class _AddCustomerMobileState
                               uuid: widget.customer!.uuid,
                               id: widget.customer!.id,
                               shopId:
-                                  returnShopProvider(
-                                    context,
-                                    listen: false,
-                                  ).userShop()!.shopId!,
+                                  returnShopProvider()
+                                      .userShop()!
+                                      .shopId!,
                               name:
                                   widget
                                       .nameController

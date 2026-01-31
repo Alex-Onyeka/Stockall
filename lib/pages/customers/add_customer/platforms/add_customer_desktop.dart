@@ -1941,10 +1941,9 @@ class _AddCustomerDesktopState
                             ).addCustomerMain(
                               TempCustomersClass(
                                 shopId:
-                                    returnShopProvider(
-                                      context,
-                                      listen: false,
-                                    ).userShop()!.shopId!,
+                                    returnShopProvider()
+                                        .userShop()!
+                                        .shopId!,
                                 country:
                                     selectedCountryName ==
                                             'Select Your Country'
@@ -1990,10 +1989,9 @@ class _AddCustomerDesktopState
                                 uuid: widget.customer!.uuid,
                                 id: widget.customer!.id,
                                 shopId:
-                                    returnShopProvider(
-                                      context,
-                                      listen: false,
-                                    ).userShop()!.shopId!,
+                                    returnShopProvider()
+                                        .userShop()!
+                                        .shopId!,
                                 name:
                                     widget
                                         .nameController

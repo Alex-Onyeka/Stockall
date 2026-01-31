@@ -27,38 +27,24 @@ class _MakeSalesPageState extends State<MakeSalesPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (returnSalesProvider(
-        context,
-        listen: false,
-      ).currentCart().isReceiptEdit) {
-        if (returnSalesProvider(
-              context,
-              listen: false,
-            ).currentCart().discount !=
+      await returnMultiDisplayProvider().getAllSubWindows();
+      if (returnSalesProvider()
+          .currentCart()
+          .isReceiptEdit) {
+        if (returnSalesProvider().currentCart().discount !=
             null) {
-          returnSalesProvider(
-            context,
-            listen: false,
-          ).addGeneralDiscount(
-            returnSalesProvider(
-              context,
-              listen: false,
-            ).currentCart().discount,
+          returnSalesProvider().addGeneralDiscount(
+            returnSalesProvider().currentCart().discount,
           );
         }
-        if (returnSalesProvider(
-              context,
-              listen: false,
-            ).currentCart().fixedDiscount !=
+        if (returnSalesProvider()
+                .currentCart()
+                .fixedDiscount !=
             null) {
-          returnSalesProvider(
-            context,
-            listen: false,
-          ).addGeneralFixedDiscount(
-            returnSalesProvider(
-              context,
-              listen: false,
-            ).currentCart().fixedDiscount,
+          returnSalesProvider().addGeneralFixedDiscount(
+            returnSalesProvider()
+                .currentCart()
+                .fixedDiscount,
           );
         }
       }

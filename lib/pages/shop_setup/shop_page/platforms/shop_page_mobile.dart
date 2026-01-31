@@ -29,7 +29,7 @@ class ShopPageMobile extends StatefulWidget {
 class _ShopPageMobileState extends State<ShopPageMobile> {
   late Future<TempShopClass> shopFuture;
   Future<TempShopClass> getShop() async {
-    var shopP = returnShopProvider(context, listen: false);
+    var shopP = returnShopProvider();
     await shopP.getUserShops();
 
     return shopP.userShop()!;
@@ -49,26 +49,25 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         displayCurrency =
-            returnShopProvider(
-                  context,
-                  listen: false,
-                ).userShop()!.currency.isEmpty
+            returnShopProvider()
+                    .userShop()!
+                    .currency
+                    .isEmpty
                 ? 'Currency Not Set'
-                : '${currencies.firstWhere((currency) => currency.symbol == returnShopProvider(context, listen: false).userShop()!.currency).currency} (${currencies.firstWhere((currency) => currency.symbol == returnShopProvider(context, listen: false).userShop()!.currency).symbol})';
+                : '${currencies.firstWhere((currency) => currency.symbol == returnShopProvider().userShop()!.currency).currency} (${currencies.firstWhere((currency) => currency.symbol == returnShopProvider().userShop()!.currency).symbol})';
         selectedCurrency =
-            returnShopProvider(
-                  context,
-                  listen: false,
-                ).userShop()!.currency.isEmpty
+            returnShopProvider()
+                    .userShop()!
+                    .currency
+                    .isEmpty
                 ? null
                 : currencies
                     .firstWhere(
                       (currency) =>
                           currency.symbol ==
-                          returnShopProvider(
-                            context,
-                            listen: false,
-                          ).userShop()!.currency,
+                          returnShopProvider()
+                              .userShop()!
+                              .currency,
                     )
                     .symbol;
       });
@@ -1307,16 +1306,11 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                                                                       true;
                                                                                 },
                                                                               );
-                                                                              await returnShopProvider(
-                                                                                context,
-                                                                                listen:
-                                                                                    false,
-                                                                              ).updateShopCurrency(
+                                                                              await returnShopProvider().updateShopCurrency(
                                                                                 currency:
                                                                                     item.symbol,
-                                                                                shopId: shopId(
-                                                                                  context,
-                                                                                ),
+                                                                                shopId:
+                                                                                    shopId(),
                                                                               );
                                                                               setState(
                                                                                 () {
@@ -1417,19 +1411,17 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                 setState(() {
                   isLoading = true;
                 });
-                var res = await returnShopProvider(
-                  context,
-                  listen: false,
-                ).updateShopSocials(
-                  face:
-                      faceBookController.text.isEmpty
-                          ? null
-                          : faceBookController.text,
-                  insta:
-                      instaController.text.isEmpty
-                          ? null
-                          : instaController.text,
-                );
+                var res = await returnShopProvider()
+                    .updateShopSocials(
+                      face:
+                          faceBookController.text.isEmpty
+                              ? null
+                              : faceBookController.text,
+                      insta:
+                          instaController.text.isEmpty
+                              ? null
+                              : instaController.text,
+                    );
                 if (res == 1) {
                   setState(() {
                     isLoading = false;

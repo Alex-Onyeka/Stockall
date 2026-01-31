@@ -49,10 +49,7 @@ class _ReceiptPageDesktopState
           context,
           listen: false,
         ).loadReceipts(
-          returnShopProvider(
-            context,
-            listen: false,
-          ).userShop()!.shopId!,
+          returnShopProvider().userShop()!.shopId!,
           context,
         );
       });
@@ -62,7 +59,7 @@ class _ReceiptPageDesktopState
 
   @override
   Widget build(BuildContext context) {
-    var shop = returnShopProvider(context).userShop();
+    var shop = returnShopProvider().userShop();
     var theme = returnTheme(context);
 
     TempMainReceipt mainReceipt = returnReceiptProvider(
@@ -73,7 +70,7 @@ class _ReceiptPageDesktopState
           () => TempMainReceipt(
             createdAt: DateTime.now(),
             uuid: '1',
-            shopId: shopId(context),
+            shopId: shopId(),
             staffId: AuthService().currentUser!,
             staffName: 'Staff Name',
             paymentMethod: 'Cash',
@@ -122,23 +119,16 @@ class _ReceiptPageDesktopState
                             return [
                               PopupMenuItem(
                                 onTap: () {
-                                  returnShopProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              )
+                                  returnShopProvider()
                                               .userShop()!
                                               .printType !=
                                           1
-                                      ? returnShopProvider(
-                                        context,
-                                        listen: false,
-                                      ).updatePrintType(
-                                        shopId: shopId(
-                                          context,
-                                        ),
-                                        type: 1,
-                                      )
+                                      ? returnShopProvider()
+                                          .updatePrintType(
+                                            shopId:
+                                                shopId(),
+                                            type: 1,
+                                          )
                                       : {};
                                 },
                                 child: Row(
@@ -154,17 +144,9 @@ class _ReceiptPageDesktopState
                                                 .b2
                                                 .fontSize,
                                         fontWeight:
-                                            returnShopProvider(
-                                                          context,
-                                                          listen:
-                                                              false,
-                                                        ).userShop()!.printType !=
+                                            returnShopProvider().userShop()!.printType !=
                                                         null &&
-                                                    returnShopProvider(
-                                                          context,
-                                                          listen:
-                                                              false,
-                                                        ).userShop()!.printType ==
+                                                    returnShopProvider().userShop()!.printType ==
                                                         1
                                                 ? FontWeight
                                                     .bold
@@ -176,11 +158,7 @@ class _ReceiptPageDesktopState
                                     ),
                                     Visibility(
                                       visible:
-                                          returnShopProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              )
+                                          returnShopProvider()
                                               .userShop()!
                                               .printType ==
                                           1,
@@ -205,23 +183,16 @@ class _ReceiptPageDesktopState
                                     platforms(context) ==
                                         TargetPlatform.iOS,
                                 onTap: () {
-                                  returnShopProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              )
+                                  returnShopProvider()
                                               .userShop()!
                                               .printType !=
                                           2
-                                      ? returnShopProvider(
-                                        context,
-                                        listen: false,
-                                      ).updatePrintType(
-                                        shopId: shopId(
-                                          context,
-                                        ),
-                                        type: 2,
-                                      )
+                                      ? returnShopProvider()
+                                          .updatePrintType(
+                                            shopId:
+                                                shopId(),
+                                            type: 2,
+                                          )
                                       : {};
                                 },
                                 child: Row(
@@ -237,17 +208,9 @@ class _ReceiptPageDesktopState
                                                 .b2
                                                 .fontSize,
                                         fontWeight:
-                                            returnShopProvider(
-                                                          context,
-                                                          listen:
-                                                              false,
-                                                        ).userShop()!.printType !=
+                                            returnShopProvider().userShop()!.printType !=
                                                         null &&
-                                                    returnShopProvider(
-                                                          context,
-                                                          listen:
-                                                              false,
-                                                        ).userShop()!.printType ==
+                                                    returnShopProvider().userShop()!.printType ==
                                                         2
                                                 ? FontWeight
                                                     .bold
@@ -259,11 +222,7 @@ class _ReceiptPageDesktopState
                                     ),
                                     Visibility(
                                       visible:
-                                          returnShopProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              )
+                                          returnShopProvider()
                                               .userShop()!
                                               .printType ==
                                           2,
@@ -316,30 +275,26 @@ class _ReceiptPageDesktopState
                                           FontWeight.bold,
                                     ),
                                     returnShopProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
+                                                  context:
+                                                      context,
                                                 ).userShop()!.printType !=
                                                 null &&
                                             returnShopProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
+                                                  context:
+                                                      context,
                                                 ).userShop()!.printType ==
                                                 2
                                         ? (kIsWeb
                                             ? '80mm'
                                             : '( Bluetooth )')
                                         : returnShopProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
+                                                  context:
+                                                      context,
                                                 ).userShop()!.printType !=
                                                 null &&
                                             returnShopProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
+                                                  context:
+                                                      context,
                                                 ).userShop()!.printType ==
                                                 1
                                         ? (kIsWeb
@@ -412,20 +367,14 @@ class _ReceiptDetailsContainerState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await getLogo();
-      returnShopProvider(
-        context,
-        listen: false,
-      ).switchLogoPicked(false);
+      returnShopProvider().switchLogoPicked(false);
       setState(() {});
     });
   }
 
   // late Future<void> getLogoFuture;
   Future<void> getLogo() async {
-    returnShopProvider(
-      context,
-      listen: false,
-    ).getLogoImage(context);
+    returnShopProvider().getLogoImage(context);
   }
 
   @override
@@ -505,18 +454,20 @@ class _ReceiptDetailsContainerState
                             Builder(
                               builder: (context) {
                                 if (returnShopProvider(
-                                      context,
+                                      context: context,
                                     ).selectedLogo !=
                                     null) {
                                   return Container(
                                     height:
                                         (returnShopProvider(
-                                                      context,
+                                                      context:
+                                                          context,
                                                     ).imageWidth ??
                                                     0) >
                                                 (2 *
                                                     (returnShopProvider(
-                                                          context,
+                                                          context:
+                                                              context,
                                                         ).imageHeight ??
                                                         0))
                                             ? 40
@@ -526,7 +477,7 @@ class _ReceiptDetailsContainerState
                                         BoxDecoration(),
                                     child: Image.memory(
                                       returnShopProvider(
-                                        context,
+                                        context: context,
                                       ).selectedLogo!,
                                       fit: BoxFit.contain,
                                     ),
@@ -1577,10 +1528,9 @@ class _ReceiptDetailsContainerState
                               listen: false,
                             );
                         final shopId =
-                            returnShopProvider(
-                              context,
-                              listen: false,
-                            ).userShop()!.shopId!;
+                            returnShopProvider()
+                                .userShop()!
+                                .shopId!;
                         var safeContext = context;
                         if (!widget.mainReceipt.isInvoice) {
                           showDialog(
@@ -1599,13 +1549,16 @@ class _ReceiptDetailsContainerState
                                     isLoading = true;
                                   });
 
-                                  await receiptP
-                                      .deleteReceipt(
-                                        widget
-                                            .mainReceipt
-                                            .uuid!,
-                                        context,
-                                      );
+                                  await receiptP.deleteReceipt(
+                                    widget.mainReceipt,
+                                    records
+                                        .map(
+                                          (rec) =>
+                                              rec.productName,
+                                        )
+                                        .toList(),
+                                    context,
+                                  );
 
                                   if (safeContext.mounted) {
                                     await receiptP
@@ -1710,10 +1663,7 @@ class _ReceiptDetailsContainerState
                       icon: Icons.edit,
                       text: 'Edit',
                       action: () {
-                        returnSalesProvider(
-                          context,
-                          listen: false,
-                        ).onEditReceipt(
+                        returnSalesProvider().onEditReceipt(
                           receipt: widget.mainReceipt,
                           context: context,
                         );
@@ -1758,10 +1708,8 @@ class _ReceiptDetailsContainerState
                                               .mainReceipt,
                                       records: records,
                                       shop:
-                                          returnShopProvider(
-                                            safeContext,
-                                            listen: false,
-                                          ).userShop()!,
+                                          returnShopProvider()
+                                              .userShop()!,
                                     );
                                   }
                                   if (!kIsWeb) {
@@ -1778,10 +1726,8 @@ class _ReceiptDetailsContainerState
                                       records: records,
 
                                       shop:
-                                          returnShopProvider(
-                                            safeContext,
-                                            listen: false,
-                                          ).userShop()!,
+                                          returnShopProvider()
+                                              .userShop()!,
                                     );
                                   }
                                   if (safeContext.mounted) {
@@ -1811,10 +1757,9 @@ class _ReceiptDetailsContainerState
                         context: context,
                         action: () async {
                           var safeContext = context;
-                          if (returnShopProvider(
-                                context,
-                                listen: false,
-                              ).userShop()!.printType ==
+                          if (returnShopProvider()
+                                  .userShop()!
+                                  .printType ==
                               null) {
                             showDialog(
                               context: context,
@@ -1852,15 +1797,12 @@ class _ReceiptDetailsContainerState
                                           ).toggleIsLoading(
                                             true,
                                           );
-                                          await returnShopProvider(
-                                            safeContext,
-                                            listen: false,
-                                          ).updatePrintType(
-                                            shopId: shopId(
-                                              safeContext,
-                                            ),
-                                            type: 1,
-                                          );
+                                          await returnShopProvider()
+                                              .updatePrintType(
+                                                shopId:
+                                                    shopId(),
+                                                type: 1,
+                                              );
 
                                           if (safeContext
                                               .mounted) {
@@ -1895,19 +1837,16 @@ class _ReceiptDetailsContainerState
                                                 ),
                                             border: Border.all(
                                               color:
-                                                  returnShopProvider(
-                                                            safeContext,
-                                                          ).userShop()!.printType ==
+                                                  returnShopProvider().userShop()!.printType ==
                                                           1
                                                       ? Colors
                                                           .grey
-                                                      : Colors
-                                                          .transparent,
+                                                      : Colors.transparent,
                                             ),
                                             color:
-                                                returnShopProvider(
-                                                          safeContext,
-                                                        ).userShop()!.printType ==
+                                                returnShopProvider()
+                                                            .userShop()!
+                                                            .printType ==
                                                         1
                                                     ? widget
                                                         .theme
@@ -1918,9 +1857,7 @@ class _ReceiptDetailsContainerState
                                           ),
                                           child: Opacity(
                                             opacity:
-                                                returnShopProvider(
-                                                          safeContext,
-                                                        ).userShop()!.printType ==
+                                                returnShopProvider().userShop()!.printType ==
                                                         1
                                                     ? 1
                                                     : 0,
@@ -1964,15 +1901,12 @@ class _ReceiptDetailsContainerState
                                           ).toggleIsLoading(
                                             true,
                                           );
-                                          await returnShopProvider(
-                                            safeContext,
-                                            listen: false,
-                                          ).updatePrintType(
-                                            shopId: shopId(
-                                              safeContext,
-                                            ),
-                                            type: 2,
-                                          );
+                                          await returnShopProvider()
+                                              .updatePrintType(
+                                                shopId:
+                                                    shopId(),
+                                                type: 2,
+                                              );
 
                                           if (safeContext
                                               .mounted) {
@@ -2007,19 +1941,16 @@ class _ReceiptDetailsContainerState
                                                 ),
                                             border: Border.all(
                                               color:
-                                                  returnShopProvider(
-                                                            safeContext,
-                                                          ).userShop()!.printType ==
+                                                  returnShopProvider().userShop()!.printType ==
                                                           2
                                                       ? Colors
                                                           .grey
-                                                      : Colors
-                                                          .transparent,
+                                                      : Colors.transparent,
                                             ),
                                             color:
-                                                returnShopProvider(
-                                                          safeContext,
-                                                        ).userShop()!.printType ==
+                                                returnShopProvider()
+                                                            .userShop()!
+                                                            .printType ==
                                                         2
                                                     ? widget
                                                         .theme
@@ -2030,9 +1961,7 @@ class _ReceiptDetailsContainerState
                                           ),
                                           child: Opacity(
                                             opacity:
-                                                returnShopProvider(
-                                                          safeContext,
-                                                        ).userShop()!.printType ==
+                                                returnShopProvider().userShop()!.printType ==
                                                         2
                                                     ? 1
                                                     : 0,
@@ -2084,10 +2013,8 @@ class _ReceiptDetailsContainerState
                                                 .mainReceipt,
                                         records: records,
                                         shop:
-                                            returnShopProvider(
-                                              safeContext,
-                                              listen: false,
-                                            ).userShop()!,
+                                            returnShopProvider()
+                                                .userShop()!,
                                         printType:
                                             shop(
                                               context,
@@ -2105,11 +2032,7 @@ class _ReceiptDetailsContainerState
                                                 ) ==
                                                 TargetPlatform
                                                     .iOS)) {
-                                      if (returnShopProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              )
+                                      if (returnShopProvider()
                                               .userShop()!
                                               .printType! ==
                                           1) {
@@ -2121,11 +2044,8 @@ class _ReceiptDetailsContainerState
                                               safeContext,
                                           records: records,
                                           shop:
-                                              returnShopProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).userShop()!,
+                                              returnShopProvider()
+                                                  .userShop()!,
                                         );
                                       } else {
                                         scanBluetoothPrinters(
@@ -2136,11 +2056,8 @@ class _ReceiptDetailsContainerState
                                               safeContext,
                                           records: records,
                                           shop:
-                                              returnShopProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              ).userShop()!,
+                                              returnShopProvider()
+                                                  .userShop()!,
                                         );
                                       }
                                     } else {
@@ -2163,10 +2080,8 @@ class _ReceiptDetailsContainerState
                                         records: records,
 
                                         shop:
-                                            returnShopProvider(
-                                              safeContext,
-                                              listen: false,
-                                            ).userShop()!,
+                                            returnShopProvider()
+                                                .userShop()!,
                                       );
                                     }
                                     if (safeContext

@@ -72,15 +72,9 @@ class _AddExpensesMobileState
         context: safeContext,
         builder: (context) {
           var shopId =
-              returnShopProvider(
-                context,
-                listen: false,
-              ).userShop()!.shopId!;
+              returnShopProvider().userShop()!.shopId!;
 
-          var dataProvider = returnData(
-            context,
-            listen: false,
-          );
+          var dataProvider = returnData();
 
           final expensesProvider = returnExpensesProvider(
             safeContext,
@@ -126,11 +120,7 @@ class _AddExpensesMobileState
                             name:
                                 widget.nameController.text
                                     .trim(),
-                            unit:
-                                returnData(
-                                  context,
-                                  listen: false,
-                                ).selectedUnit,
+                            unit: returnData().selectedUnit,
 
                             quantity: double.tryParse(
                               widget
@@ -166,11 +156,7 @@ class _AddExpensesMobileState
                     //     .currentEmployee!
                     //     .userId!,
                     name: widget.nameController.text.trim(),
-                    unit:
-                        returnData(
-                          context,
-                          listen: false,
-                        ).selectedUnit,
+                    unit: returnData().selectedUnit,
 
                     quantity: double.tryParse(
                       widget.quantityController.text,
@@ -239,14 +225,10 @@ class _AddExpensesMobileState
               : '';
       widget.amountController.text = widget.expenses!.amount
           .toStringAsFixed(0);
-      returnData(context, listen: false).selectedUnit =
-          widget.expenses!.unit;
+      returnData().selectedUnit = widget.expenses!.unit;
     } else {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        returnData(
-          context,
-          listen: false,
-        ).clearExpenseUnit();
+        returnData().clearExpenseUnit();
       });
     }
   }
@@ -333,10 +315,7 @@ class _AddExpensesMobileState
                       ),
                       SizedBox(height: 15),
                       MainDropdown(
-                        valueSet:
-                            returnData(
-                              context,
-                            ).unitValueSet,
+                        valueSet: returnData().unitValueSet,
                         onTap: () {
                           FocusManager.instance.primaryFocus
                               ?.unfocus();
@@ -352,9 +331,7 @@ class _AddExpensesMobileState
                         isOpen: isOpenUnit,
                         title: 'Expense Unit (Optional)',
                         hint:
-                            returnData(
-                              context,
-                            ).selectedUnit ??
+                            returnData().selectedUnit ??
                             'Select Expense Unit',
                         theme: theme,
                       ),

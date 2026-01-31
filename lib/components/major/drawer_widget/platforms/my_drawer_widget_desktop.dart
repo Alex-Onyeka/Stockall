@@ -220,10 +220,8 @@ class _MyDrawerWidgetDesktopMainState
                                     safeContext,
                                     listen: false,
                                   ).clearReceiptDate();
-                                  returnData(
-                                    safeContext,
-                                    listen: false,
-                                  ).clearFields();
+                                  returnData()
+                                      .clearFields();
                                 },
                                 title: 'Dashboard',
                                 icon: Icons.home_filled,
@@ -260,10 +258,8 @@ class _MyDrawerWidgetDesktopMainState
                                     safeContext,
                                     listen: false,
                                   ).clearReceiptDate();
-                                  returnData(
-                                    safeContext,
-                                    listen: false,
-                                  ).clearFields();
+                                  returnData()
+                                      .clearFields();
                                 },
                                 title: 'Items',
                                 icon: Icons.book,
@@ -300,10 +296,8 @@ class _MyDrawerWidgetDesktopMainState
                                     safeContext,
                                     listen: false,
                                   ).clearReceiptDate();
-                                  returnData(
-                                    safeContext,
-                                    listen: false,
-                                  ).clearFields();
+                                  returnData()
+                                      .clearFields();
                                 },
                                 title: 'Sales',
                                 icon:

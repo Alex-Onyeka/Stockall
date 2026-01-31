@@ -273,7 +273,7 @@ class AuthService extends ChangeNotifier {
       context,
       listen: false,
     ).clearCustomers();
-    returnData(context, listen: false).clearProducts();
+    returnData().clearProducts();
     returnExpensesProvider(
       context,
       listen: false,
@@ -295,7 +295,7 @@ class AuthService extends ChangeNotifier {
       listen: false,
     ).load(false);
     await CurrentShopFunc().clearCurrentShop();
-    returnSalesProvider(context, listen: false).clearCart();
+    returnSalesProvider().clearCart();
     bool isOnline = await connectivity.isOnline();
 
     if (isOnline) {
@@ -314,10 +314,7 @@ class AuthService extends ChangeNotifier {
           },
         ),
       );
-      returnShopProvider(
-        context,
-        listen: false,
-      ).clearShop();
+      returnShopProvider().clearShop();
       returnUserProvider(
         context,
         listen: false,
@@ -456,10 +453,7 @@ class AuthService extends ChangeNotifier {
         print(
           "User deleted successfully: ${response.data}",
         );
-        await returnShopProvider(
-          context,
-          listen: false,
-        ).removeEmployeeFromShop(
+        await returnShopProvider().removeEmployeeFromShop(
           employeeIdToRemove:
               returnUserProvider(
                 context,

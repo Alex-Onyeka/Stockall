@@ -68,13 +68,9 @@ class _ProductDetailsMobileState
 
   @override
   Widget build(BuildContext context) {
-    final shopI =
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop()!.shopId!;
+    final shopI = returnShopProvider().userShop()!.shopId!;
     List<TempProductClass>? productList =
-        returnData(context).productList
+        returnData().productList
             .where(
               (product) =>
                   product.uuid! == widget.productUuid,
@@ -114,21 +110,19 @@ class _ProductDetailsMobileState
                           title: 'Add Item to Cart',
                           action: () {
                             Navigator.of(safeContext).pop();
-                            var res = returnSalesProvider(
-                              context,
-                              listen: false,
-                            ).addItemToCart(
-                              context: context,
-                              newItem: TempCartItem(
-                                setCustomPrice: false,
-                                item: product,
-                                quantity: 1,
-                                discount: null,
-                                addToStock: false,
-                                setTotalPrice: false,
-                              ),
-                              isCustomEdit: false,
-                            );
+                            var res = returnSalesProvider()
+                                .addItemToCart(
+                                  context: context,
+                                  newItem: TempCartItem(
+                                    setCustomPrice: false,
+                                    item: product,
+                                    quantity: 1,
+                                    discount: null,
+                                    addToStock: false,
+                                    setTotalPrice: false,
+                                  ),
+                                  isCustomEdit: false,
+                                );
                             if (res ==
                                 "Quantity Limit Exceeded") {
                               return;
@@ -447,7 +441,7 @@ class _ProductDetailsMobileState
                                                             context:
                                                                 safeContext,
                                                             builder: (
-                                                              context,
+                                                              confirmDialog,
                                                             ) {
                                                               return ConfirmationAlert(
                                                                 theme:
@@ -457,16 +451,12 @@ class _ProductDetailsMobileState
                                                                 title:
                                                                     'Proceed?',
                                                                 action: () async {
-                                                                  final dataProvider = returnData(
-                                                                    context,
-                                                                    listen:
-                                                                        false,
-                                                                  );
-                                                                  if (safeContext.mounted) {
-                                                                    Navigator.of(
-                                                                      safeContext,
-                                                                    ).pop();
-                                                                  }
+                                                                  final dataProvider =
+                                                                      returnData();
+                                                                  Navigator.of(
+                                                                    confirmDialog,
+                                                                  ).pop();
+
                                                                   setState(
                                                                     () {
                                                                       isLoading =
@@ -992,17 +982,14 @@ class _ProductDetailsMobileState
                                                                       final safeContext =
                                                                           context;
 
-                                                                      final dataProvider = returnData(
-                                                                        context,
-                                                                        listen:
-                                                                            false,
-                                                                      );
+                                                                      final dataProvider =
+                                                                          returnData();
 
                                                                       showDialog(
                                                                         context:
                                                                             safeContext,
                                                                         builder: (
-                                                                          context,
+                                                                          confirmDialog,
                                                                         ) {
                                                                           return ConfirmationAlert(
                                                                             theme:
@@ -1020,7 +1007,7 @@ class _ProductDetailsMobileState
                                                                             action: () async {
                                                                               if (safeContext.mounted) {
                                                                                 Navigator.of(
-                                                                                  safeContext,
+                                                                                  confirmDialog,
                                                                                 ).pop();
                                                                               }
                                                                               setState(
@@ -1349,16 +1336,12 @@ class _ProductDetailsMobileState
                                               var safeContext =
                                                   context;
                                               var dataProvider =
-                                                  returnData(
-                                                    safeContext,
-                                                    listen:
-                                                        false,
-                                                  );
+                                                  returnData();
                                               showDialog(
                                                 context:
                                                     context,
                                                 builder: (
-                                                  context,
+                                                  confirmDialog,
                                                 ) {
                                                   return ConfirmationAlert(
                                                     theme:
@@ -1371,7 +1354,7 @@ class _ProductDetailsMobileState
                                                         'Proceed with Action?',
                                                     action: () async {
                                                       Navigator.of(
-                                                        context,
+                                                        confirmDialog,
                                                       ).pop();
                                                       setState(() {
                                                         isLoading =
@@ -1542,16 +1525,14 @@ class _ProductDetailsMobileState
                                     ItemsAuthAction().generateBarcodeAction(
                                       context: context,
                                       action: () {
-                                        returnData(
-                                          context,
-                                          listen: false,
-                                        ).addToBarcodeGenerationList(
-                                          ProductBarcode(
-                                            product:
-                                                product,
-                                            number: 1,
-                                          ),
-                                        );
+                                        returnData()
+                                            .addToBarcodeGenerationList(
+                                              ProductBarcode(
+                                                product:
+                                                    product,
+                                                number: 1,
+                                              ),
+                                            );
                                         showDialog(
                                           context: context,
                                           builder: (
@@ -1577,18 +1558,12 @@ class _ProductDetailsMobileState
                                                 });
                                                 generateBarcodeAndPrint(
                                                   context,
-                                                  returnData(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).barcodeGenerationList,
+                                                  returnData()
+                                                      .barcodeGenerationList,
                                                   false,
                                                 ).then((_) {
-                                                  returnData(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).clearBarcodeGenerationList();
+                                                  returnData()
+                                                      .clearBarcodeGenerationList();
                                                   setState(() {
                                                     isLoading =
                                                         false;
@@ -1613,11 +1588,7 @@ class _ProductDetailsMobileState
                                               context:
                                                   context,
                                               action: () {
-                                                returnData(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).addToBarcodeGenerationList(
+                                                returnData().addToBarcodeGenerationList(
                                                   ProductBarcode(
                                                     product:
                                                         product,
@@ -1627,11 +1598,8 @@ class _ProductDetailsMobileState
                                                 );
                                                 generateBarcodeAndPrint(
                                                   context,
-                                                  returnData(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).barcodeGenerationList,
+                                                  returnData()
+                                                      .barcodeGenerationList,
                                                   false,
                                                 );
                                               },
@@ -1752,16 +1720,13 @@ class _ProductDetailsMobileState
                               final safeContext = context;
                               showDialog(
                                 context: safeContext,
-                                builder: (context) {
-                                  var provider = returnData(
-                                    context,
-                                    listen: false,
-                                  );
+                                builder: (confirmDialog) {
+                                  var provider =
+                                      returnData();
                                   var shopId =
-                                      returnShopProvider(
-                                        context,
-                                        listen: false,
-                                      ).userShop()!.shopId!;
+                                      returnShopProvider()
+                                          .userShop()!
+                                          .shopId!;
                                   return ConfirmationAlert(
                                     theme: returnTheme(
                                       context,
@@ -1770,19 +1735,16 @@ class _ProductDetailsMobileState
                                         'Are you sure you want to proceed with action?',
                                     title: 'Are you sure?',
                                     action: () async {
-                                      if (safeContext
-                                          .mounted) {
-                                        Navigator.of(
-                                          safeContext,
-                                        ).pop();
-                                      }
+                                      Navigator.of(
+                                        confirmDialog,
+                                      ).pop();
+
                                       setState(() {
                                         isLoading = true;
                                       });
                                       await provider
                                           .deleteProductMain(
-                                            widget
-                                                .productUuid,
+                                            product,
                                             context,
                                           );
                                       await provider

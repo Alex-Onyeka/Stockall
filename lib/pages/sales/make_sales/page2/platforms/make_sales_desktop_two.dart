@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
@@ -16,6 +17,7 @@ import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/customers_list/customer_list.dart';
+import 'package:stockall/pages/sales/make_sales/page1/platforms/make_sales_desktop.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -145,7 +147,7 @@ class _MakeSalesDesktopTwoState
                                           builder: (
                                             context,
                                           ) {
-                                            if (returnSalesProvider(
+                                            if (returnSalesProviderContext(
                                                       context,
                                                     )
                                                     .currentCart()
@@ -305,7 +307,7 @@ class _MakeSalesDesktopTwoState
                                                                         false,
                                                                   )
                                                                   .getCustomerByIdMain(
-                                                                    returnSalesProvider(
+                                                                    returnSalesProviderContext(
                                                                           context,
                                                                         ).currentCart().selectedCustomer ??
                                                                         '',
@@ -389,42 +391,30 @@ class _MakeSalesDesktopTwoState
                                             ),
                                             InkWell(
                                               onTap: () {
-                                                if (returnSalesProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).currentCart().isInvoice) {
-                                                  returnSalesProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).switchInvoiceSale(
+                                                if (returnSalesProvider()
+                                                    .currentCart()
+                                                    .isInvoice) {
+                                                  returnSalesProvider().switchInvoiceSale(
                                                     context:
                                                         context,
                                                     value:
                                                         false,
                                                   );
                                                 } else {
-                                                  returnSalesProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).switchInvoiceSale(
+                                                  returnSalesProvider().switchInvoiceSale(
                                                     context:
                                                         context,
                                                     value:
                                                         true,
                                                   );
                                                 }
-                                                returnSalesProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).changeMethod(
-                                                  context:
-                                                      context,
-                                                  index: 0,
-                                                );
+                                                returnSalesProvider()
+                                                    .changeMethod(
+                                                      context:
+                                                          context,
+                                                      index:
+                                                          0,
+                                                    );
                                               },
                                               child: Container(
                                                 width: 50,
@@ -441,14 +431,14 @@ class _MakeSalesDesktopTwoState
                                                       ),
                                                   border: Border.all(
                                                     color:
-                                                        returnSalesProvider(
+                                                        returnSalesProviderContext(
                                                               context,
                                                             ).currentCart().isInvoice
                                                             ? theme.lightModeColor.prColor250
                                                             : Colors.grey,
                                                   ),
                                                   color:
-                                                      returnSalesProvider(
+                                                      returnSalesProviderContext(
                                                             context,
                                                           ).currentCart().isInvoice
                                                           ? theme.lightModeColor.prColor250
@@ -456,7 +446,7 @@ class _MakeSalesDesktopTwoState
                                                 ),
                                                 child: Row(
                                                   mainAxisAlignment:
-                                                      returnSalesProvider(
+                                                      returnSalesProviderContext(
                                                             context,
                                                           ).currentCart().isInvoice
                                                           ? MainAxisAlignment.end
@@ -471,7 +461,7 @@ class _MakeSalesDesktopTwoState
                                                         shape:
                                                             BoxShape.circle,
                                                         color:
-                                                            returnSalesProvider(
+                                                            returnSalesProviderContext(
                                                                   context,
                                                                 ).currentCart().isInvoice
                                                                 ? Colors.white
@@ -530,7 +520,7 @@ class _MakeSalesDesktopTwoState
                                         ),
                                         Visibility(
                                           visible:
-                                              returnSalesProvider(
+                                              returnSalesProviderContext(
                                                     context,
                                                   )
                                                   .currentCart()
@@ -746,13 +736,6 @@ class _MakeSalesDesktopTwoState
                                     ),
                                     SizedBox(width: 10),
                                     Visibility(
-                                      // visible:
-                                      //     returnSalesProvider(
-                                      //           context,
-                                      //         )
-                                      //         .cartQueue
-                                      //         .length <=
-                                      //     4,
                                       child: SubWrapper(
                                         isVisible:
                                             !SalesAuthAction()
@@ -777,12 +760,14 @@ class _MakeSalesDesktopTwoState
                                             ),
                                             child: InkWell(
                                               onTap: () {
-                                                returnSalesProvider(
+                                                returnSalesProvider().addNewCart(
                                                   context,
-                                                  listen:
-                                                      false,
-                                                ).addNewCart(
-                                                  context,
+                                                  TempCart(
+                                                    cartItems:
+                                                        [],
+                                                    isInvoice:
+                                                        false,
+                                                  ),
                                                 );
                                               },
                                               child: Container(
@@ -812,6 +797,7 @@ class _MakeSalesDesktopTwoState
                                   ],
                                 ),
                               ),
+                              ProjectDisplayWidget(),
                               SizedBox(height: 10),
                               Row(
                                 mainAxisAlignment:
@@ -839,7 +825,7 @@ class _MakeSalesDesktopTwoState
                                     ),
                                     formatMoneyBig(
                                       amount:
-                                          returnSalesProvider(
+                                          returnSalesProviderContext(
                                             context,
                                           ).calcTotalMain(),
                                       context: context,
@@ -938,7 +924,7 @@ class _MakeSalesDesktopTwoState
                                                       .bold,
                                               // fontWeight: FontWeight.bold,
                                             ),
-                                            ' (${returnShopProvider(context).userShop()!.applyVAT! ? vat : 0}%)',
+                                            ' (${returnShopProvider().userShop()!.applyVAT! ? vat : 0}%)',
                                           ),
                                         ],
                                       ),
@@ -952,11 +938,9 @@ class _MakeSalesDesktopTwoState
                                           // fontWeight: FontWeight.bold,
                                         ),
                                         formatMoney(
-                                          returnSalesProvider(
+                                          returnSalesProviderContext(
                                             context,
-                                          ).calcVatAmount(
-                                            context,
-                                          ),
+                                          ).calcVatAmount(),
                                           context,
                                         ),
                                       ),
@@ -994,11 +978,9 @@ class _MakeSalesDesktopTwoState
                                     ),
                                     formatMoneyBig(
                                       amount:
-                                          returnSalesProvider(
+                                          returnSalesProviderContext(
                                             context,
-                                          ).calcFinalTotalMain(
-                                            context,
-                                          ),
+                                          ).calcFinalTotalMain(),
                                       context: context,
                                     ),
                                   ),
@@ -1013,7 +995,7 @@ class _MakeSalesDesktopTwoState
                               SizedBox(height: 10),
                               Visibility(
                                 visible:
-                                    returnSalesProvider(
+                                    returnSalesProviderContext(
                                           context,
                                         )
                                         .currentCart()
@@ -1030,27 +1012,23 @@ class _MakeSalesDesktopTwoState
                                         return ConfirmationAlert(
                                           theme: theme,
                                           message:
-                                              returnSalesProvider(
-                                                    context,
-                                                  ).currentCart().isReceiptEdit
+                                              returnSalesProvider()
+                                                      .currentCart()
+                                                      .isReceiptEdit
                                                   ? "You are about to update this sales Receipt, are you sure you want to Proceed?"
-                                                  : returnSalesProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).currentCart().isInvoice
+                                                  : returnSalesProvider()
+                                                      .currentCart()
+                                                      .isInvoice
                                                   ? 'You are about to record a Sale on Credit, are you sure you want to proceed?'
                                                   : 'You are about to record a Sale, are you sure you want to proceed?',
                                           title:
-                                              returnSalesProvider(
-                                                    context,
-                                                  ).currentCart().isReceiptEdit
+                                              returnSalesProvider()
+                                                      .currentCart()
+                                                      .isReceiptEdit
                                                   ? 'Update Receipt?'
-                                                  : returnSalesProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).currentCart().isInvoice
+                                                  : returnSalesProvider()
+                                                      .currentCart()
+                                                      .isInvoice
                                                   ? 'Sell on Credit?'
                                                   : 'Are you sure?',
                                           action: () async {
@@ -1064,18 +1042,12 @@ class _MakeSalesDesktopTwoState
                                                 safeContext,
                                               ).pop();
                                             }
-                                            var receipt = await returnSalesProvider(
-                                              context,
-                                              listen: false,
-                                            ).checkoutMain(
+                                            var receipt = await returnSalesProvider().checkoutMain(
                                               context:
                                                   context,
                                               salesCartItem:
-                                                  returnSalesProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).currentCart(),
+                                                  returnSalesProvider()
+                                                      .currentCart(),
                                               staffId:
                                                   AuthService()
                                                       .currentUser!,
@@ -1086,78 +1058,44 @@ class _MakeSalesDesktopTwoState
                                                         false,
                                                   ).currentUserMain!.name,
                                               shopId:
-                                                  returnShopProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).userShop()!.shopId!,
+                                                  returnShopProvider()
+                                                      .userShop()!
+                                                      .shopId!,
                                               bank:
-                                                  returnSalesProvider(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).returnPaymentMethod() ==
+                                                  returnSalesProvider().returnPaymentMethod() ==
                                                           'Split'
                                                       ? double.tryParse(
                                                             widget.bankController.text,
                                                           ) ??
                                                           0
-                                                      : returnSalesProvider(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).returnPaymentMethod() ==
+                                                      : returnSalesProvider().returnPaymentMethod() ==
                                                           'Bank'
-                                                      ? returnSalesProvider(
-                                                        context,
-                                                        listen:
-                                                            false,
-                                                      ).calcFinalTotalMain(
-                                                        context,
-                                                      )
+                                                      ? returnSalesProvider()
+                                                          .calcFinalTotalMain()
                                                       : 0,
                                               cashAlt:
-                                                  returnSalesProvider(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).returnPaymentMethod() ==
+                                                  returnSalesProvider().returnPaymentMethod() ==
                                                           'Split'
                                                       ? double.tryParse(
                                                             widget.cashController.text,
                                                           ) ??
                                                           0
-                                                      : returnSalesProvider(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).returnPaymentMethod() ==
+                                                      : returnSalesProvider().returnPaymentMethod() ==
                                                           'Bank'
                                                       ? 0
-                                                      : returnSalesProvider(
-                                                        context,
-                                                        listen:
-                                                            false,
-                                                      ).calcFinalTotalMain(context),
+                                                      : returnSalesProvider().calcFinalTotalMain(),
                                               paymentMethod:
-                                                  returnSalesProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).returnPaymentMethod(),
+                                                  returnSalesProvider()
+                                                      .returnPaymentMethod(),
                                               customerUuid:
-                                                  returnSalesProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).currentCart().selectedCustomer,
+                                                  returnSalesProvider()
+                                                      .currentCart()
+                                                      .selectedCustomer,
 
                                               customerName:
-                                                  returnSalesProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).currentCart().selectedCustomerName,
+                                                  returnSalesProvider()
+                                                      .currentCart()
+                                                      .selectedCustomerName,
                                             );
 
                                             // await suggP
@@ -1227,7 +1165,7 @@ class _MakeSalesDesktopTwoState
                                     );
                                   },
                                   text:
-                                      returnSalesProvider(
+                                      returnSalesProviderContext(
                                                 context,
                                               )
                                               .currentCart()

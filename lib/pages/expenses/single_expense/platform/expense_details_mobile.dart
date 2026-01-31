@@ -286,25 +286,22 @@ class _DetailsPageContainerState
                                 if (safeContext.mounted) {
                                   Navigator.of(
                                     safeContext,
-                                  ).pop(); // Close the dialog first
+                                  ).pop();
                                 }
                                 setState(() {
                                   isLoading = true;
                                 });
 
                                 await expP.deleteExpense(
-                                  expense.uuid!,
+                                  expense,
                                   safeContext,
                                 );
 
                                 if (safeContext.mounted) {
                                   Navigator.of(
                                     safeContext,
-                                  ).pop(); // Pop the page
+                                  ).pop();
                                 }
-                                // setState(() {
-                                //   isLoading = false;
-                                // });
                               },
                             );
                           },

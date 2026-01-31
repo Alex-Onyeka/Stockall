@@ -57,10 +57,7 @@ class _TotalProductsMobileState
   @override
   void initState() {
     super.initState();
-    returnData(
-      context,
-      listen: false,
-    ).toggleFloatingAction(context);
+    returnData().toggleFloatingAction(context);
     // _productsFuture = getProductList(context);
   }
 
@@ -81,7 +78,7 @@ class _TotalProductsMobileState
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    var products = returnData(context).productList;
+    var products = returnData().productList;
     List<TempProductClass> filterProducts() {
       switch (currentSelect) {
         case 1:

@@ -459,7 +459,7 @@ Future<dynamic> setRole(
                 mainAxisAlignment: MainAxisAlignment.center,
                 spacing: 5,
                 children:
-                    returnShopProvider(context).roles
+                    returnShopProvider().roles
                         .map(
                           (role) => Material(
                             type: MaterialType.transparency,
@@ -467,10 +467,8 @@ Future<dynamic> setRole(
                               borderRadius:
                                   BorderRadius.circular(5),
                               onTap: () {
-                                returnShopProvider(
-                                  context,
-                                  listen: false,
-                                ).setRole(role);
+                                returnShopProvider()
+                                    .setRole(role);
                               },
                               child: Container(
                                 padding:
@@ -527,9 +525,8 @@ Future<dynamic> setRole(
                                               BoxShape
                                                   .circle,
                                           color:
-                                              returnShopProvider(
-                                                        context,
-                                                      ).tempRole ==
+                                              returnShopProvider()
+                                                          .tempRole ==
                                                       role
                                                   ? theme
                                                       .lightModeColor
@@ -550,11 +547,7 @@ Future<dynamic> setRole(
                         .toList(),
               ),
               action: () {
-                if (returnShopProvider(
-                      context,
-                      listen: false,
-                    ).tempRole ==
-                    '') {
+                if (returnShopProvider().tempRole == '') {
                   showDialog(
                     context: context,
                     builder: (context) {

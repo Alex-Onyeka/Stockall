@@ -44,9 +44,7 @@ class FloatingActionButtonMain extends StatelessWidget {
               padding: EdgeInsets.only(
                 right: 15,
                 left:
-                    returnData(
-                          context,
-                        ).isFloatingButtonVisible
+                    returnData().isFloatingButtonVisible
                         ? 20
                         : 15,
                 top: 8,
@@ -54,18 +52,15 @@ class FloatingActionButtonMain extends StatelessWidget {
               ),
               child: Row(
                 spacing:
-                    returnData(
-                          context,
-                        ).isFloatingButtonVisible
+                    returnData().isFloatingButtonVisible
                         ? 5
                         : 0,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Visibility(
                     visible:
-                        returnData(
-                          context,
-                        ).isFloatingButtonVisible,
+                        returnData()
+                            .isFloatingButtonVisible,
                     child: Text(
                       style: TextStyle(
                         color: color,

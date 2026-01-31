@@ -53,7 +53,7 @@ class NavProvider extends ChangeNotifier {
   }
 
   Future<void> validate(BuildContext context) async {
-    var dataProvider = returnData(context, listen: false);
+    var dataProvider = returnData();
     final userProvider = returnUserProvider(
       context,
       listen: false,
@@ -66,10 +66,7 @@ class NavProvider extends ChangeNotifier {
     if (!context.mounted) {
       return;
     }
-    final shopProvider = returnShopProvider(
-      context,
-      listen: false,
-    );
+    final shopProvider = returnShopProvider();
 
     final subPro = returnSubcsription(
       context,
@@ -132,7 +129,7 @@ class NavProvider extends ChangeNotifier {
                 DateTime.now().isAtSameMomentAs(
                   subsription.nextPayment!,
                 )))) {
-      // returnShopProvider(context).clearDiscountsCache();
+      // returnShopProvider( ).clearDiscountsCache();
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(

@@ -26,20 +26,15 @@ class ToggleTotalPriceWidget extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(5),
           onTap: () {
-            if (returnSalesProvider(
-                  context,
-                  listen: false,
-                ).setTotalPrice ==
+            if (returnSalesProvider().setTotalPrice ==
                 true) {
-              returnSalesProvider(
-                context,
-                listen: false,
-              ).toggleSetTotalPrice(false);
+              returnSalesProvider().toggleSetTotalPrice(
+                false,
+              );
             } else {
-              returnSalesProvider(
-                context,
-                listen: false,
-              ).toggleSetTotalPrice(true);
+              returnSalesProvider().toggleSetTotalPrice(
+                true,
+              );
             }
           },
           child: Container(
@@ -57,20 +52,14 @@ class ToggleTotalPriceWidget extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () {
-                    if (returnSalesProvider(
-                          context,
-                          listen: false,
-                        ).setTotalPrice ==
+                    if (returnSalesProvider()
+                            .setTotalPrice ==
                         true) {
-                      returnSalesProvider(
-                        context,
-                        listen: false,
-                      ).toggleSetTotalPrice(false);
+                      returnSalesProvider()
+                          .toggleSetTotalPrice(false);
                     } else {
-                      returnSalesProvider(
-                        context,
-                        listen: false,
-                      ).toggleSetTotalPrice(true);
+                      returnSalesProvider()
+                          .toggleSetTotalPrice(true);
                     }
                   },
                   child: Container(
@@ -85,18 +74,16 @@ class ToggleTotalPriceWidget extends StatelessWidget {
                       ),
                       border: Border.all(
                         color:
-                            returnSalesProvider(
-                                  context,
-                                ).setTotalPrice
+                            returnSalesProvider()
+                                    .setTotalPrice
                                 ? theme
                                     .lightModeColor
                                     .prColor250
                                 : Colors.grey,
                       ),
                       color:
-                          returnSalesProvider(
-                                context,
-                              ).setTotalPrice
+                          returnSalesProvider()
+                                  .setTotalPrice
                               ? theme
                                   .lightModeColor
                                   .prColor250
@@ -104,9 +91,8 @@ class ToggleTotalPriceWidget extends StatelessWidget {
                     ),
                     child: Row(
                       mainAxisAlignment:
-                          returnSalesProvider(
-                                context,
-                              ).setTotalPrice
+                          returnSalesProvider()
+                                  .setTotalPrice
                               ? MainAxisAlignment.end
                               : MainAxisAlignment.start,
                       children: [
@@ -115,9 +101,8 @@ class ToggleTotalPriceWidget extends StatelessWidget {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color:
-                                returnSalesProvider(
-                                      context,
-                                    ).setTotalPrice
+                                returnSalesProvider()
+                                        .setTotalPrice
                                     ? Colors.white
                                     : Colors.grey.shade600,
                           ),

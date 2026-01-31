@@ -290,10 +290,9 @@ class _PricingContainerWidgetState
                               toggleLoading(true);
                               await startPayment(
                                 context,
-                                returnShopProvider(
-                                  context,
-                                  listen: false,
-                                ).userShop()!.userId,
+                                returnShopProvider()
+                                    .userShop()!
+                                    .userId,
                                 AuthService()
                                     .currentUserEmail!,
                                 widget.pricingClass.plan,

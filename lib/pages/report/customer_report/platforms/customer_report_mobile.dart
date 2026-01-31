@@ -28,10 +28,7 @@ class _CustomerReportMobileState
       context,
       listen: false,
     ).loadProductSalesRecord(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop()!.shopId!,
+      returnShopProvider().userShop()!.shopId!,
     );
 
     return tempEx;
@@ -41,14 +38,8 @@ class _CustomerReportMobileState
 
   late Future<List<TempProductClass>> productsFuture;
   Future<List<TempProductClass>> getProducts() async {
-    var tempEx = await returnData(
-      context,
-      listen: false,
-    ).getProducts(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop()!.shopId!,
+    var tempEx = await returnData().getProducts(
+      returnShopProvider().userShop()!.shopId!,
     );
 
     return tempEx;

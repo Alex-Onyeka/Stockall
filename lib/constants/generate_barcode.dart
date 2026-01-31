@@ -479,10 +479,7 @@ Future<bool> generateBarcodeAndPrint(
 
                 pr.product.barcode = newShit;
 
-                await returnData(
-                  safeContext,
-                  listen: false,
-                ).updateProduct(
+                await returnData().updateProduct(
                   product: pr.product,
                   context: safeContext,
                 );
@@ -508,18 +505,12 @@ Future<bool> generateBarcodeAndPrint(
         widget: GenerateBarcodeScreen(
           data: productUuid,
           productBarcodes:
-              returnData(
-                context,
-                listen: false,
-              ).barcodeGenerationList,
+              returnData().barcodeGenerationList,
         ),
       );
     },
   ).then((_) {
-    returnData(
-      context,
-      listen: false,
-    ).clearBarcodeGenerationList();
+    returnData().clearBarcodeGenerationList();
   });
 
   return result ?? false;
@@ -635,9 +626,7 @@ Future<dynamic> settingsGenerateProductBarcode(
                                     child: Ink(
                                       decoration: BoxDecoration(
                                         color:
-                                            returnData(
-                                                      context,
-                                                    )
+                                            returnData()
                                                     .barcodeGenerationList
                                                     .isNotEmpty
                                                 ? theme
@@ -652,11 +641,7 @@ Future<dynamic> settingsGenerateProductBarcode(
                                       ),
                                       child: InkWell(
                                         onTap: () {
-                                          if (returnData(
-                                                context,
-                                                listen:
-                                                    false,
-                                              )
+                                          if (returnData()
                                               .barcodeGenerationList
                                               .isNotEmpty) {
                                             showDialog(
@@ -681,21 +666,15 @@ Future<dynamic> settingsGenerateProductBarcode(
 
                                                     var res = await generateBarcodeAndPrint(
                                                       context,
-                                                      returnData(
-                                                        context,
-                                                        listen:
-                                                            false,
-                                                      ).barcodeGenerationList,
+                                                      returnData()
+                                                          .barcodeGenerationList,
                                                       false,
                                                     );
 
                                                     if (res &&
                                                         context.mounted) {
-                                                      returnData(
-                                                        context,
-                                                        listen:
-                                                            false,
-                                                      ).clearBarcodeGenerationList();
+                                                      returnData()
+                                                          .clearBarcodeGenerationList();
                                                     }
 
                                                     print(
@@ -770,7 +749,7 @@ Future<dynamic> settingsGenerateProductBarcode(
                                 builder: (context) {
                                   List<TempProductClass>
                                   products =
-                                      returnData(context)
+                                      returnData()
                                           .productList
                                           .where(
                                             (
@@ -809,11 +788,8 @@ Future<dynamic> settingsGenerateProductBarcode(
                                                       // } else {
                                                       //
                                                       // }
-                                                      var dataP = returnData(
-                                                        context,
-                                                        listen:
-                                                            false,
-                                                      );
+                                                      var dataP =
+                                                          returnData();
                                                       if (dataP
                                                           .barcodeGenerationList
                                                           .where(
@@ -911,9 +887,7 @@ Future<dynamic> settingsGenerateProductBarcode(
                                                           ),
                                                           Visibility(
                                                             visible:
-                                                                returnData(
-                                                                      context,
-                                                                    ).barcodeGenerationList
+                                                                returnData().barcodeGenerationList
                                                                     .where(
                                                                       (
                                                                         pr,
@@ -955,10 +929,7 @@ Future<dynamic> settingsGenerateProductBarcode(
     },
   ).then((_) {
     if (context.mounted) {
-      returnData(
-        context,
-        listen: false,
-      ).clearBarcodeGenerationList();
+      returnData().clearBarcodeGenerationList();
       productSearch.clear();
     }
   });

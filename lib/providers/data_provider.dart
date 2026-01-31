@@ -11,6 +11,7 @@ import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/created/created_customers_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/deleted/deleted_customers_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/updated/updated_customers_func.dart';
+import 'package:stockall/local_database/events_log/unsync_funcs/created_events_log_func.dart';
 import 'package:stockall/local_database/expenses/unsync_funcs/created_expenses/created_expenses_func.dart';
 import 'package:stockall/local_database/expenses/unsync_funcs/deleted_expenses/deleted_expenses_func.dart';
 import 'package:stockall/local_database/expenses/unsync_funcs/updated_expenses/updated_expenses_func.dart';
@@ -31,6 +32,10 @@ import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DataProvider extends ChangeNotifier {
+  static final DataProvider _instance =
+      DataProvider._internal();
+  factory DataProvider() => _instance;
+  DataProvider._internal();
   bool isLoading = false;
   ConnectivityProvider connectivity =
       ConnectivityProvider();
@@ -54,10 +59,6 @@ class DataProvider extends ChangeNotifier {
     product.updatedAt = DateTime.now();
 
     if (isOnline) {
-      // if (isSynced() == 0 && context.mounted) {
-      //   print('Syncing Data In t')
-      //   syncData(context);
-      // }
       var data =
           await supabase
               .from('products')
@@ -67,6 +68,12 @@ class DataProvider extends ChangeNotifier {
       print('Item added successfully');
       final newProduct = TempProductClass.fromJson(data);
       await ProductsFunc().createProduct(newProduct);
+      await returnEventsLogProvider().createLog(
+        returnEventsLogProvider(
+          // ignore: use_build_context_synchronously
+        ).productAdapter(product, 1),
+        // ignore: use_build_context_synchronously
+      );
       print('Total Success');
     } else {
       product.createdAt ??= DateTime.now();
@@ -74,6 +81,12 @@ class DataProvider extends ChangeNotifier {
       await ProductsFunc().createProduct(product);
       await CreatedProductFunc().createProduct(
         CreatedProducts(product: product),
+      );
+      await returnEventsLogProvider().createLog(
+        returnEventsLogProvider(
+          // ignore: use_build_context_synchronously
+        ).productAdapter(product, 1),
+        // ignore: use_build_context_synchronously
       );
       print('Offline Success');
       print('Offline Product inserted Successfully');
@@ -83,10 +96,7 @@ class DataProvider extends ChangeNotifier {
     if (context.mounted) {
       print('Mounted');
       await getProducts(
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop()!.shopId!,
+        returnShopProvider().userShop()!.shopId!,
       );
     }
 
@@ -126,10 +136,7 @@ class DataProvider extends ChangeNotifier {
     if (context.mounted) {
       print('Mounted, refreshing products ✅');
       await getProducts(
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop()!.shopId!,
+        returnShopProvider().userShop()!.shopId!,
       );
     }
 
@@ -176,10 +183,7 @@ class DataProvider extends ChangeNotifier {
     if (context.mounted) {
       print('Mounted, refreshing products ✅');
       await getProducts(
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop()!.shopId!,
+        returnShopProvider().userShop()!.shopId!,
       );
     }
 
@@ -281,10 +285,7 @@ class DataProvider extends ChangeNotifier {
     if (context.mounted) {
       print('Mounted, refreshing products ✅');
       await getProducts(
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop()!.shopId!,
+        returnShopProvider().userShop()!.shopId!,
       );
     }
 
@@ -336,10 +337,7 @@ class DataProvider extends ChangeNotifier {
     if (context.mounted) {
       print('Mounted, refreshing products ✅');
       await getProducts(
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop()!.shopId!,
+        returnShopProvider().userShop()!.shopId!,
       );
     }
 
@@ -354,13 +352,9 @@ class DataProvider extends ChangeNotifier {
   //
 
   Future<void> syncData(BuildContext context) async {
-    int isSynced =
-        returnData(context, listen: false).isSynced();
+    int isSynced = returnData().isSynced();
     List<TempShopClass> shop =
-        await returnShopProvider(
-          context,
-          listen: false,
-        ).getUserShops();
+        await returnShopProvider().getUserShops();
     bool isOnline = await connectivity.isOnline();
     if (isOnline) {
       if (shop.isNotEmpty) {
@@ -541,10 +535,9 @@ class DataProvider extends ChangeNotifier {
                     .isNotEmpty &&
                 context.mounted &&
                 isOnline) {
-              await returnShopProvider(
+              await returnShopProvider().updateShopSync(
                 context,
-                listen: false,
-              ).updateShopSync(context);
+              );
               print('Finished Syncing Created Receipts');
               setSyncProgress(16);
             }
@@ -552,12 +545,22 @@ class DataProvider extends ChangeNotifier {
                     null &&
                 context.mounted &&
                 isOnline) {
-              await returnShopProvider(
+              await returnShopProvider().uploadShopLogoSync(
                 context,
-                listen: false,
-              ).uploadShopLogoSync(context);
+              );
               print('Finished Syncing Created Logo');
               setSyncProgress(17);
+            }
+            if (CreatedEventsLogFunc()
+                    .getCreatedEventsLogs()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnEventsLogProvider().eventsLogSync(
+                context,
+              );
+              print('Finished Syncing Created Events Log');
+              setSyncProgress(18);
             }
             await clearTotalCache();
             toggleSyncing(false);
@@ -605,7 +608,7 @@ class DataProvider extends ChangeNotifier {
   bool isSyncing = false;
   double syncProgress = 0;
   void setSyncProgress(int value) {
-    syncProgress = (value / 17) * 100;
+    syncProgress = (value / 18) * 100;
     notifyListeners();
   }
 
@@ -639,7 +642,10 @@ class DataProvider extends ChangeNotifier {
           DeletedReceiptsFunc().getReceiptIds().isEmpty &&
           UpdatedReceiptsFunc().getReceiptIds().isEmpty &&
           UpdatedShopFunc().getUpdatedShop().isEmpty &&
-          CreatedShopLogosFunc().getCreatedLogo() == null
+          CreatedShopLogosFunc().getCreatedLogo() == null &&
+          CreatedEventsLogFunc()
+              .getCreatedEventsLogs()
+              .isEmpty
       // && DeletedRecordsFunc().getRecordIds().isEmpty &&
       // IncrementedProductsFunc()
       //     .getIncrementedProducts()
@@ -671,6 +677,7 @@ class DataProvider extends ChangeNotifier {
     await UpdatedShopFunc().clearUpdatedShop();
     await SalesProductFunc().clearProducts();
     await CreatedShopLogosFunc().clearCreatedLogos();
+    await CreatedEventsLogFunc().clearEvents();
   }
 
   DateTime? expiryDate;
@@ -856,7 +863,7 @@ class DataProvider extends ChangeNotifier {
     BuildContext context,
     String name,
   ) async {
-    var temp = await getProducts(shopId(context));
+    var temp = await getProducts(shopId());
     final tempData =
         temp
             .where((product) => product.name.contains(name))
@@ -893,6 +900,12 @@ class DataProvider extends ChangeNotifier {
           .update(product.toJson())
           .eq('uuid', product.uuid!);
       print('${product.uuid}');
+      await returnEventsLogProvider().createLog(
+        returnEventsLogProvider(
+          // ignore: use_build_context_synchronously
+        ).productAdapter(product, 2),
+        // ignore: use_build_context_synchronously
+      );
     } else {
       await ProductsFunc().updateProduct(product);
       var containsCreated =
@@ -915,14 +928,17 @@ class DataProvider extends ChangeNotifier {
       }
       print(product.updatedAt.toString());
       print('${product.uuid}');
+      await returnEventsLogProvider().createLog(
+        returnEventsLogProvider(
+          // ignore: use_build_context_synchronously
+        ).productAdapter(product, 2),
+        // ignore: use_build_context_synchronously
+      );
     }
     if (context.mounted) {
       print('Context Mounted');
       await getProducts(
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop()!.shopId!,
+        returnShopProvider().userShop()!.shopId!,
       );
     } else {
       print('Context Not Mounted');
@@ -957,7 +973,7 @@ class DataProvider extends ChangeNotifier {
   // }
 
   Future<bool> updateDiscount({
-    required String productUuid,
+    required TempProductClass product,
     required double? newDiscount,
     DateTime? statDate,
     DateTime? endDate,
@@ -980,15 +996,18 @@ class DataProvider extends ChangeNotifier {
                       .first,
               'updated_at': DateTime.now(),
             })
-            .eq('uuid', productUuid)
+            .eq('uuid', product.uuid!)
             .maybeSingle();
+    await returnEventsLogProvider().createLog(
+      returnEventsLogProvider(
+        // ignore: use_build_context_synchronously
+      ).productAdapter(product, 2),
+      // ignore: use_build_context_synchronously
+    );
 
     if (context.mounted) {
       await getProducts(
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop()!.shopId!,
+        returnShopProvider().userShop()!.shopId!,
       );
     }
     notifyListeners();
@@ -1025,7 +1044,7 @@ class DataProvider extends ChangeNotifier {
   // }
 
   Future<void> deleteProductMain(
-    String productUuid,
+    TempProductClass product,
     BuildContext context,
   ) async {
     bool isOnline = await connectivity.isOnline();
@@ -1033,15 +1052,22 @@ class DataProvider extends ChangeNotifier {
       await supabase
           .from('products')
           .delete()
-          .eq('uuid', productUuid);
+          .eq('uuid', product.uuid!);
+      await returnEventsLogProvider().createLog(
+        returnEventsLogProvider(
+          // ignore: use_build_context_synchronously
+        ).productAdapter(product, 3),
+        // ignore: use_build_context_synchronously
+      );
     } else {
-      await ProductsFunc().deleteProduct(productUuid);
+      await ProductsFunc().deleteProduct(product.uuid!);
       var containsCreated =
           CreatedProductFunc()
               .getProducts()
               .where(
                 (product) =>
-                    product.product.uuid == productUuid,
+                    product.product.uuid ==
+                    product.product.uuid,
               )
               .toList();
 
@@ -1050,7 +1076,8 @@ class DataProvider extends ChangeNotifier {
               .getProducts()
               .where(
                 (product) =>
-                    product.product.uuid == productUuid,
+                    product.product.uuid ==
+                    product.product.uuid,
               )
               .toList();
       print(
@@ -1061,11 +1088,11 @@ class DataProvider extends ChangeNotifier {
       );
       if (containsCreated.isNotEmpty) {
         await CreatedProductFunc().createdProductsBox
-            .delete(productUuid);
+            .delete(product.uuid);
       } else {
         await DeletedProductsFunc().createDeletedProduct(
           DeletedProducts(
-            productUuid: productUuid,
+            productUuid: product.uuid!,
             date: DateTime.now(),
           ),
         );
@@ -1076,13 +1103,16 @@ class DataProvider extends ChangeNotifier {
         );
         print('Deleted Update Log');
       }
+      await returnEventsLogProvider().createLog(
+        returnEventsLogProvider(
+          // ignore: use_build_context_synchronously
+        ).productAdapter(product, 3),
+        // ignore: use_build_context_synchronously
+      );
     }
     if (context.mounted) {
       await getProducts(
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop()!.shopId!,
+        returnShopProvider().userShop()!.shopId!,
       );
     }
     notifyListeners();
@@ -1436,7 +1466,7 @@ class DataProvider extends ChangeNotifier {
     Future.microtask(() {
       if (!context.mounted) return;
 
-      // final uiProvider = returnData(context, listen: false);
+      // final uiProvider = returnData();
 
       if (!isFloatingButtonVisible) {
         showFloatingActionButton();
@@ -1551,10 +1581,7 @@ class _ProductBarcodeCounterState
   TextEditingController numberC = TextEditingController();
 
   void editNumberLocal(bool isAdd) {
-    returnData(
-      context,
-      listen: false,
-    ).editNumber(isAdd, widget.pBarcode);
+    returnData().editNumber(isAdd, widget.pBarcode);
     numberC.text = '${widget.pBarcode.number}';
     setState(() {});
   }
@@ -1649,16 +1676,13 @@ class _ProductBarcodeCounterState
                     ),
                 onChanged: (value) {
                   if (value.isEmpty || value == '0') {
-                    returnData(
-                      context,
-                      listen: false,
-                    ).setBarcodeNumber(1, widget.pBarcode);
+                    returnData().setBarcodeNumber(
+                      1,
+                      widget.pBarcode,
+                    );
                     numberC.text = '1';
                   } else {
-                    returnData(
-                      context,
-                      listen: false,
-                    ).setBarcodeNumber(
+                    returnData().setBarcodeNumber(
                       int.parse(value),
                       widget.pBarcode,
                     );

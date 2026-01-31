@@ -148,6 +148,41 @@ String formatMoneyMid({
   }
 }
 
+String formatMoneyAlt({
+  required num amount,
+  required BuildContext context,
+  required String currency,
+  bool? isR,
+}) {
+  if (amount < 100000000) {
+    return NumberFormat.currency(
+      locale: 'en_NG',
+      symbol: currency,
+      decimalDigits: 1,
+    ).format(amount);
+  } else {
+    // String symbol = currencySymbol(
+    //   context: context,
+    //   isR: isR,
+    // );
+    String suffix = '';
+    double value = amount.toDouble();
+
+    if (value >= 1_000_000_000) {
+      value = value / 1_000_000_000;
+      suffix = 'B';
+    } else if (value >= 1_000_000) {
+      value = value / 1_000_000;
+      suffix = 'M';
+    }
+
+    String formatted = value.toStringAsFixed(
+      1,
+    ); // Ensures .0 is included
+    return '$currency$formatted $suffix';
+  }
+}
+
 String formatMoneyBig({
   required num amount,
   required BuildContext context,

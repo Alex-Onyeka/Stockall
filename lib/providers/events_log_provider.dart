@@ -1,0 +1,343 @@
+import 'package:flutter/widgets.dart';
+import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
+import 'package:stockall/classes/temp_event_log/temp_event_log_class.dart';
+import 'package:stockall/classes/temp_event_log/unsynced/created_events_log_class.dart';
+import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
+import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
+import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
+import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/local_database/events_log/events_log_func.dart';
+import 'package:stockall/local_database/events_log/unsync_funcs/created_events_log_func.dart';
+import 'package:stockall/main.dart';
+import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+class EventsLogProvider with ChangeNotifier {
+  final SupabaseClient client = Supabase.instance.client;
+  final String tableName = 'event_logs';
+  static final EventsLogProvider _instance =
+      EventsLogProvider._internal();
+  factory EventsLogProvider() => _instance;
+  EventsLogProvider._internal();
+
+  List<TempEventLogClass> logs = [];
+
+  DateTime? dateSet;
+
+  void clearDate() {
+    dateSet = null;
+    notifyListeners();
+  }
+
+  void setDate(DateTime date) {
+    if (dateSet == null) {
+      dateSet = date;
+      print('Date set: $date');
+    } else {
+      dateSet = null;
+      print('Date Cleared');
+    }
+    notifyListeners();
+  }
+
+  List<TempEventLogClass> returnLogs() {
+    logs.sort(
+      (a, b) => b.createdAt!.compareTo(a.createdAt!),
+    );
+    if (dateSet == null) {
+      logs.sort(
+        (a, b) => b.createdAt!.compareTo(a.createdAt!),
+      );
+      return logs;
+    } else {
+      return logs
+          .where(
+            (log) =>
+                (log.createdAt!.day == dateSet!.day) &&
+                (log.createdAt!.month == dateSet!.month) &&
+                (log.createdAt!.year == dateSet!.year),
+          )
+          .toList();
+      // return logs;
+    }
+  }
+
+  Future<List<TempEventLogClass>> getEventLogs() async {
+    bool isOnline = await ConnectivityProvider().isOnline();
+    var shopId = returnShopProvider().userShop()!.shopId!;
+    if (isOnline) {
+      try {
+        var res = await client
+            .from(tableName)
+            .select()
+            .eq('shop_id', shopId)
+            .order('created_at', ascending: false);
+        if (res.isEmpty) {
+          print('No Event Logs Returned');
+          logs.clear();
+          EventsLogFunc().clearEventsLog();
+          notifyListeners();
+          return [];
+        }
+        var tempLogs =
+            res
+                .map((m) => TempEventLogClass.fromJson(m))
+                .toList();
+        logs = tempLogs;
+        await EventsLogFunc().insertAllEventsLog(tempLogs);
+        print('✅✅ Events Gotten Successfully Online');
+        notifyListeners();
+
+        return tempLogs;
+      } catch (e) {
+        print(
+          '❌❌ Events Getting Online Failed: ${e.toString()}',
+        );
+        return [];
+      }
+    } else {
+      logs = EventsLogFunc().getEventsLogs();
+      print('Events Gotten Successfully Offline');
+      notifyListeners();
+      return logs;
+    }
+  }
+
+  Future<int> createLog(TempEventLogClass log) async {
+    bool isOnline = await ConnectivityProvider().isOnline();
+    log.uuid = uuidGen();
+    log.createdAt ??= DateTime.now();
+    if (isOnline) {
+      try {
+        Map<String, dynamic>? res =
+            await client
+                .from(tableName)
+                .insert(log.toJson())
+                .select()
+                .maybeSingle();
+        if (res == null) {
+          print('Event Logging Failed');
+          return 0;
+        }
+        logs.add(TempEventLogClass.fromJson(res));
+        await EventsLogFunc().createEventsLog(
+          TempEventLogClass.fromJson(res),
+        );
+        notifyListeners();
+        await getEventLogs();
+        print('✅✅ Event Logged Successfully Online');
+        return 1;
+      } catch (e) {
+        print(
+          'Event Creating Online Failed: ${e.toString()}',
+        );
+        return 0;
+      }
+    } else {
+      try {
+        await EventsLogFunc().createEventsLog(log);
+        await CreatedEventsLogFunc().createEventLog(
+          CreatedEventsLogClass(eventLog: log),
+        );
+        await getEventLogs();
+        return 1;
+      } catch (e) {
+        print(
+          'Offline Event Creating Failed: ${e.toString()}',
+        );
+        return 0;
+      }
+    }
+  }
+
+  TempEventLogClass customerAdapter(
+    TempCustomersClass customer,
+    int event,
+  ) {
+    return TempEventLogClass(
+      shopId: shopId(),
+      tableName: 'customers',
+      title: customer.name,
+      event:
+          event == 1
+              ? 'created'
+              : event == 2
+              ? 'updated'
+              : 'deleted',
+      message:
+          event == 1
+              ? 'Customer Created #${customer.uuid!.split('-').first.substring(0, 5).toUpperCase()}'
+              : event == 2
+              ? 'Customer Updated #${customer.uuid!.split('-').first.substring(0, 5).toUpperCase()}'
+              : 'Customer Deleted #${customer.uuid!.split('-').first.substring(0, 5).toUpperCase()}',
+      staffName:
+          returnUserProviderSingle().currentUserMain!.name,
+    );
+  }
+
+  TempEventLogClass expensesAdapter(
+    TempExpensesClass expenses,
+    int event,
+  ) {
+    return TempEventLogClass(
+      shopId: shopId(),
+      tableName: 'expenses',
+      title: expenses.name,
+      event:
+          event == 1
+              ? 'created'
+              : event == 2
+              ? 'updated'
+              : 'deleted',
+      message:
+          event == 1
+              ? 'Expenses Created #${expenses.uuid!.split('-').first.substring(0, 5).toUpperCase()}'
+              : event == 2
+              ? 'Expenses Updated #${expenses.uuid!.split('-').first.substring(0, 5).toUpperCase()}'
+              : 'Expenses Deleted #${expenses.uuid!.split('-').first.substring(0, 5).toUpperCase()}',
+      staffName:
+          returnUserProviderSingle().currentUserMain!.name,
+      amount: expenses.amount,
+    );
+  }
+
+  TempEventLogClass productAdapter(
+    TempProductClass product,
+    int event,
+  ) {
+    return TempEventLogClass(
+      shopId: shopId(),
+      tableName: 'products',
+      title: product.name,
+      event:
+          event == 1
+              ? 'created'
+              : event == 2
+              ? 'updated'
+              : 'deleted',
+      message:
+          event == 1
+              ? 'Item Created #${product.uuid!.split('-').first.substring(0, 5).toUpperCase()}'
+              : event == 2
+              ? 'Item Updated #${product.uuid!.split('-').first.substring(0, 5).toUpperCase()}'
+              : 'Item Deleted #${product.uuid!.split('-').first.substring(0, 5).toUpperCase()}',
+      staffName:
+          returnUserProviderSingle().currentUserMain!.name,
+      amount: product.sellingPrice,
+    );
+  }
+
+  TempEventLogClass receiptAdapter(
+    TempMainReceipt receipt,
+    List<String> productNames,
+    int event,
+  ) {
+    return TempEventLogClass(
+      shopId: shopId(),
+      tableName: 'receipts',
+      title:
+          '${productNames.last} and (${productNames.length - 1}) others.',
+      event:
+          event == 1
+              ? 'created'
+              : event == 2
+              ? 'updated'
+              : 'deleted',
+      message:
+          event == 1
+              ? 'New Sale Created #${receipt.uuid!.split('-').first.substring(0, 5).toUpperCase()}'
+              : event == 2
+              ? 'Sale Updated #${receipt.uuid!.split('-').first.substring(0, 5).toUpperCase()}'
+              : 'Sale Deleted #${receipt.uuid!.split('-').first.substring(0, 5).toUpperCase()}',
+      staffName:
+          returnUserProviderSingle().currentUserMain!.name,
+      amount:
+          event == 3
+              ? (-1 * (receipt.bank + receipt.cashAlt))
+              : (receipt.bank + receipt.cashAlt),
+    );
+  }
+
+  Future<void> eventsLogSync(BuildContext context) async {
+    try {
+      bool isOnline =
+          await returnConnectivityProvider(
+            context,
+            listen: false,
+          ).isOnline();
+      // Prepare batch payload
+      if (CreatedEventsLogFunc()
+              .getCreatedEventsLogs()
+              .isNotEmpty &&
+          isOnline) {
+        final tempEventLogs =
+            CreatedEventsLogFunc()
+                .getCreatedEventsLogs()
+                .toList();
+        var newEvents = tempEventLogs.map((log) {
+          log.eventLog.createdAt = log.eventLog.createdAt!;
+          return log;
+        });
+        final payload =
+            newEvents
+                .map((p) => p.eventLog.toJson())
+                .toList();
+
+        // Insert all at once
+        final data =
+            await client
+                .from(tableName)
+                .insert(payload)
+                .select();
+
+        print(
+          '${data.length} Event Log items added successfully ✅',
+        );
+        await CreatedEventsLogFunc().clearEvents();
+        print('Unsynced Event Logs Cleared');
+        if (context.mounted) {
+          print('Mounted, refreshing Receipts ✅');
+          await getEventLogs();
+        }
+      }
+    } catch (e) {
+      print('Batch Event Logs insert failed ❌: $e');
+    }
+  }
+
+  List<TempEventLogClass> testLogs = [
+    TempEventLogClass(
+      uuid: uuidGen(),
+      shopId: 12,
+      tableName: 'products',
+      title: 'Beans and Rice',
+      event: 'updated',
+      amount: 18000,
+      createdAt: DateTime.now(),
+      message: 'A new Item is Created',
+      staffName: 'Alex Onyeka',
+    ),
+    TempEventLogClass(
+      uuid: uuidGen(),
+      shopId: 12,
+      tableName: 'expenses',
+      title: 'I Ate Beans and Rice',
+      event: 'created',
+      amount: 5000,
+      createdAt: DateTime.now(),
+      message: 'A New Expenses was Created',
+      staffName: 'Alex Onyeka',
+    ),
+    TempEventLogClass(
+      uuid: uuidGen(),
+      shopId: 12,
+      tableName: 'shops',
+      title: '12 Itemss Sold',
+      event: 'deleted',
+      amount: 12000,
+      createdAt: DateTime.now(),
+      message: 'A New Sales was Made',
+      staffName: 'Alex Onyeka',
+    ),
+  ];
+}

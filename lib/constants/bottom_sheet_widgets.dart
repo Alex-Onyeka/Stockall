@@ -45,7 +45,7 @@ void unitsBottomSheet(
         maxChildSize: 0.9,
         minChildSize: 0.3,
         builder: (context, scrollController) {
-          List<String> units = returnData(context).units;
+          List<String> units = returnData().units;
           units.sort();
 
           return Container(
@@ -105,7 +105,7 @@ void unitsBottomSheet(
                         FocusScope.of(context).unfocus();
                       },
                       icon: Icon(
-                        returnData(context).unitValueSet
+                        returnData().unitValueSet
                             ? Icons.check
                             : Icons.clear_rounded,
                       ),
@@ -155,10 +155,9 @@ void unitsBottomSheet(
                                 units[index],
                               ),
                               onTap: () {
-                                returnData(
-                                  context,
-                                  listen: false,
-                                ).selectUnit(unit);
+                                returnData().selectUnit(
+                                  unit,
+                                );
                               },
                               trailing: Checkbox(
                                 shape: CircleBorder(
@@ -174,15 +173,13 @@ void unitsBottomSheet(
                                         .lightModeColor
                                         .prColor250,
                                 value:
-                                    returnData(
-                                      context,
-                                    ).selectedUnit ==
+                                    returnData()
+                                        .selectedUnit ==
                                     unit,
                                 onChanged: (value) {
-                                  returnData(
-                                    context,
-                                    listen: false,
-                                  ).selectUnit(unit);
+                                  returnData().selectUnit(
+                                    unit,
+                                  );
                                 },
                               ),
                             ),
@@ -229,8 +226,7 @@ void categoriesBottomSheet(
 
   var shopCat =
       returnShopProvider(
-        context,
-        listen: false,
+        context: context,
       ).userShop()!.categories ??
       [];
 
@@ -339,7 +335,7 @@ void categoriesBottomSheet(
                             ).unfocus();
                           },
                           icon: Icon(
-                            returnData(context).catValueSet
+                            returnData().catValueSet
                                 ? Icons.check
                                 : Icons.clear_rounded,
                           ),
@@ -454,12 +450,10 @@ void categoriesBottomSheet(
                                           shopCat[index],
                                         ),
                                         onTap: () {
-                                          returnData(
-                                            context,
-                                            listen: false,
-                                          ).selectCategory(
-                                            category,
-                                          );
+                                          returnData()
+                                              .selectCategory(
+                                                category,
+                                              );
                                         },
                                         trailing: Checkbox(
                                           shape: CircleBorder(
@@ -480,9 +474,8 @@ void categoriesBottomSheet(
                                                   .lightModeColor
                                                   .prColor250,
                                           value:
-                                              returnData(
-                                                context,
-                                              ).selectedCategory ==
+                                              returnData()
+                                                  .selectedCategory ==
                                               category,
                                           onChanged: (
                                             value,
@@ -657,9 +650,8 @@ void categoriesBottomSheet(
                                                 FontWeight
                                                     .bold,
                                           ),
-                                          returnData(
-                                                context,
-                                              ).catValueSet
+                                          returnData()
+                                                  .catValueSet
                                               ? 'Select'
                                               : 'Cancel',
                                         ),
@@ -668,9 +660,8 @@ void categoriesBottomSheet(
                                           color:
                                               Colors.grey,
 
-                                          returnData(
-                                                context,
-                                              ).catValueSet
+                                          returnData()
+                                                  .catValueSet
                                               ? Icons.check
                                               : Icons.clear,
                                         ),
@@ -691,10 +682,8 @@ void categoriesBottomSheet(
                           SmallButtonMain(
                             theme: returnTheme(context),
                             action: () {
-                              if (returnData(
-                                    context,
-                                    listen: false,
-                                  ).catValueSet ==
+                              if (returnData()
+                                      .catValueSet ==
                                   true) {
                                 Navigator.of(context).pop();
                               } else {
@@ -710,9 +699,7 @@ void categoriesBottomSheet(
                               }
                             },
                             buttonText:
-                                returnData(
-                                          context,
-                                        ).catValueSet ==
+                                returnData().catValueSet ==
                                         true
                                     ? 'Save Category'
                                     : 'Add New Category',
@@ -720,18 +707,14 @@ void categoriesBottomSheet(
                           SmallButtonMain(
                             theme: returnTheme(context),
                             action: () {
-                              if (returnData(
-                                    context,
-                                    listen: false,
-                                  ).catValueSet ==
+                              if (returnData()
+                                      .catValueSet ==
                                   true) {
                                 Navigator.of(context).pop();
                               } else {}
                             },
                             buttonText:
-                                returnData(
-                                          context,
-                                        ).catValueSet ==
+                                returnData().catValueSet ==
                                         true
                                     ? 'Save Category'
                                     : 'Add New Category',
@@ -777,7 +760,7 @@ void colorsBottomSheet(
         maxChildSize: 0.9,
         minChildSize: 0.3,
         builder: (context, scrollController) {
-          List<String> colors = returnData(context).colors;
+          List<String> colors = returnData().colors;
           colors.sort();
 
           return Container(
@@ -837,7 +820,7 @@ void colorsBottomSheet(
                         FocusScope.of(context).unfocus();
                       },
                       icon: Icon(
-                        returnData(context).colorValueSet
+                        returnData().colorValueSet
                             ? Icons.check
                             : Icons.clear_rounded,
                       ),
@@ -889,9 +872,8 @@ void colorsBottomSheet(
                                       .lightModeColor
                                       .prColor250,
                               value:
-                                  returnData(
-                                    context,
-                                  ).selectedColor ==
+                                  returnData()
+                                      .selectedColor ==
                                   color,
                               onChanged: (value) {
                                 Provider.of<DataProvider>(
@@ -946,7 +928,7 @@ void sizeTypeBottomSheet(
         maxChildSize: 0.9,
         minChildSize: 0.3,
         builder: (context, scrollController) {
-          List<String> sizes = returnData(context).sizes;
+          List<String> sizes = returnData().sizes;
           // sizes.sort();
 
           return Container(
@@ -1013,7 +995,7 @@ void sizeTypeBottomSheet(
                             ).unfocus();
                           },
                           icon: Icon(
-                            returnData(context).sizeValueSet
+                            returnData().sizeValueSet
                                 ? Icons.check
                                 : Icons.clear_rounded,
                           ),
@@ -1070,9 +1052,8 @@ void sizeTypeBottomSheet(
                                           .lightModeColor
                                           .prColor250,
                                   value:
-                                      returnData(
-                                        context,
-                                      ).selectedSize ==
+                                      returnData()
+                                          .selectedSize ==
                                       size,
                                   onChanged: (value) {
                                     Provider.of<
@@ -1353,7 +1334,7 @@ class _CustomBottomPanelState
                     children: [
                       Visibility(
                         visible:
-                            returnSalesProvider(
+                            returnSalesProviderContext(
                                   context,
                                 ).isSetCustomPrice() &&
                                 cartItem
@@ -1374,7 +1355,7 @@ class _CustomBottomPanelState
                             Expanded(
                               child: MoneyTextfield(
                                 title:
-                                    returnSalesProvider(
+                                    returnSalesProviderContext(
                                           context,
                                         ).setTotalPrice
                                         ? 'Total Price'
@@ -1409,16 +1390,13 @@ class _CustomBottomPanelState
                             double entered =
                                 double.tryParse(value) ?? 0;
                             if (cartItem.item.isManaged) {
-                              if (!returnSalesProvider(
-                                context,
-                                listen: false,
-                              ).canAddProductToCart(
-                                product: cartItem.item,
-                                quantityToAdd:
-                                    entered +
-                                    cartItem.quantity,
-                                context: context,
-                              )) {
+                              if (!returnSalesProvider()
+                                  .canAddProductToCart(
+                                    product: cartItem.item,
+                                    quantityToAdd:
+                                        entered +
+                                        cartItem.quantity,
+                                  )) {
                                 showDialog(
                                   context: context,
                                   builder:
@@ -1477,10 +1455,8 @@ class _CustomBottomPanelState
                             cartItem.item.setCustomPrice,
                         child: InkWell(
                           onTap: () {
-                            returnSalesProvider(
-                              context,
-                              listen: false,
-                            ).toggleSetCustomPrice();
+                            returnSalesProvider()
+                                .toggleSetCustomPrice();
                             priceController.clear();
                           },
                           child: Container(
@@ -1505,7 +1481,7 @@ class _CustomBottomPanelState
                                     fontWeight:
                                         FontWeight.bold,
                                   ),
-                                  returnSalesProvider(
+                                  returnSalesProviderContext(
                                         context,
                                       ).isSetCustomPrice()
                                       ? 'Cancel Custom Price'
@@ -1515,9 +1491,9 @@ class _CustomBottomPanelState
                                   children: [
                                     Visibility(
                                       visible:
-                                          returnSalesProvider(
+                                          returnSalesProviderContext(
                                             context,
-                                          ).isSetCustomPrice ==
+                                          ).isSetCustomPrice() ==
                                           false,
                                       child:
                                           SvgPicture.asset(
@@ -1527,9 +1503,9 @@ class _CustomBottomPanelState
                                     ),
                                     Visibility(
                                       visible:
-                                          returnSalesProvider(
+                                          returnSalesProviderContext(
                                             context,
-                                          ).isSetCustomPrice ==
+                                          ).isSetCustomPrice() ==
                                           true,
                                       child: Icon(
                                         Icons.clear,
@@ -1659,16 +1635,13 @@ class _CustomBottomPanelState
                                   if (cartItem
                                       .item
                                       .isManaged) {
-                                    if (!returnSalesProvider(
-                                      context,
-                                      listen: false,
-                                    ).canAddProductToCart(
-                                      product:
-                                          cartItem.item,
-                                      quantityToAdd:
-                                          qqty + 1,
-                                      context: context,
-                                    )) {
+                                    if (!returnSalesProvider()
+                                        .canAddProductToCart(
+                                          product:
+                                              cartItem.item,
+                                          quantityToAdd:
+                                              qqty + 1,
+                                        )) {
                                       showDialog(
                                         context: context,
                                         builder:
@@ -1780,10 +1753,8 @@ class _CustomBottomPanelState
                                         false;
                                   }
                                   cartItem.setTotalPrice =
-                                      returnSalesProvider(
-                                        context,
-                                        listen: false,
-                                      ).setTotalPrice;
+                                      returnSalesProvider()
+                                          .setTotalPrice;
                                   cartItem.quantity =
                                       qqty.toDouble();
                                   // cartItem.setCustomPrice =
@@ -1795,17 +1766,12 @@ class _CustomBottomPanelState
                                   //       context,
                                   //       listen: false,
                                   //     ).isSetCustomPrice();
-                                  returnSalesProvider(
-                                    context,
-                                    listen: false,
-                                  ).addItemToCart(
+                                  returnSalesProvider().addItemToCart(
                                     context: context,
                                     newItem: cartItem,
                                     isCustomEdit:
-                                        returnData(
-                                              context,
-                                              listen: false,
-                                            ).productList
+                                        returnData()
+                                            .productList
                                             .where(
                                               (product) =>
                                                   product
@@ -1841,14 +1807,8 @@ class _CustomBottomPanelState
       priceController.clear();
       widget.searchController.clear();
       if (context.mounted) {
-        returnSalesProvider(
-          context,
-          listen: false,
-        ).closeCustomPrice();
-        returnSalesProvider(
-          context,
-          listen: false,
-        ).toggleSetTotalPrice(false);
+        returnSalesProvider().closeCustomPrice();
+        returnSalesProvider().toggleSetTotalPrice(false);
       }
     });
   }
@@ -1869,7 +1829,7 @@ class _CustomBottomPanelState
 
   String formatSellingPrice(TempCartItem cartItem) {
     if (priceController.text.isNotEmpty) {
-      if (returnSalesProvider(context).setTotalPrice) {
+      if (returnSalesProvider().setTotalPrice) {
         return priceController.text.replaceAll(',', '');
       } else {
         return (int.parse(
@@ -2079,15 +2039,15 @@ class _CustomBottomPanelState
                                     searchResult =
                                         value.toLowerCase();
                                   });
-                                  var items = returnData(
-                                    context,
-                                    listen: false,
-                                  ).productList.where(
-                                    (product) =>
-                                        product.barcode
-                                            ?.toLowerCase() ==
-                                        value.toLowerCase(),
-                                  );
+                                  var items = returnData()
+                                      .productList
+                                      .where(
+                                        (product) =>
+                                            product.barcode
+                                                ?.toLowerCase() ==
+                                            value
+                                                .toLowerCase(),
+                                      );
                                   if (items.isNotEmpty) {
                                     SalesAuthAction()
                                         .useBarcodeAction(
@@ -2121,14 +2081,14 @@ class _CustomBottomPanelState
                                           .searchController
                                           .text = result;
                                     }
-                                    var items = returnData(
-                                      context,
-                                      listen: false,
-                                    ).productList.where(
-                                      (product) =>
-                                          product.barcode ==
-                                          result,
-                                    );
+                                    var items = returnData()
+                                        .productList
+                                        .where(
+                                          (product) =>
+                                              product
+                                                  .barcode ==
+                                              result,
+                                        );
                                     if (items.isNotEmpty) {
                                       setState(() {
                                         scanResult = result;
@@ -2181,9 +2141,8 @@ class _CustomBottomPanelState
                                       ],
                                     ),
                                   );
-                                } else if (returnData(
-                                          context,
-                                        ).productList
+                                } else if (returnData()
+                                        .productList
                                         .where(
                                           (product) =>
                                               product.name
@@ -2241,18 +2200,12 @@ class _CustomBottomPanelState
                                       .isNotEmpty) {
                                     return RefreshIndicator(
                                       onRefresh: () async {
-                                        await returnData(
-                                          context,
-                                          listen: false,
-                                        ).getProducts(
-                                          returnShopProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              )
-                                              .userShop()!
-                                              .shopId!,
-                                        );
+                                        await returnData()
+                                            .getProducts(
+                                              returnShopProvider()
+                                                  .userShop()!
+                                                  .shopId!,
+                                            );
                                         setState(() {});
                                       },
                                       backgroundColor:
@@ -2279,11 +2232,7 @@ class _CustomBottomPanelState
                                             action: () {
                                               if (!product
                                                   .isManaged) {
-                                                if (returnSalesProvider(
-                                                      context,
-                                                      listen:
-                                                          false,
-                                                    )
+                                                if (returnSalesProvider()
                                                     .currentCart()
                                                     .cartItems
                                                     .where(
@@ -2299,11 +2248,7 @@ class _CustomBottomPanelState
                                                         theme,
                                                     cartItem: TempCartItem(
                                                       setTotalPrice:
-                                                          returnSalesProvider(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).setTotalPrice,
+                                                          returnSalesProvider().setTotalPrice,
                                                       addToStock:
                                                           false,
                                                       discount:
@@ -2311,11 +2256,7 @@ class _CustomBottomPanelState
                                                       item:
                                                           product,
                                                       quantity:
-                                                          returnSalesProvider(
-                                                                context,
-                                                                listen:
-                                                                    false,
-                                                              )
+                                                          returnSalesProvider()
                                                               .currentCart()
                                                               .cartItems
                                                               .firstWhere(
@@ -2338,11 +2279,7 @@ class _CustomBottomPanelState
                                                         theme,
                                                     cartItem: TempCartItem(
                                                       setTotalPrice:
-                                                          returnSalesProvider(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).setTotalPrice,
+                                                          returnSalesProvider().setTotalPrice,
                                                       addToStock:
                                                           false,
                                                       discount:
@@ -2391,11 +2328,7 @@ class _CustomBottomPanelState
                                                       );
                                                     },
                                                   );
-                                                } else if (returnSalesProvider(
-                                                      context,
-                                                      listen:
-                                                          false,
-                                                    )
+                                                } else if (returnSalesProvider()
                                                     .currentCart()
                                                     .cartItems
                                                     .where(
@@ -2411,11 +2344,7 @@ class _CustomBottomPanelState
                                                         theme,
                                                     cartItem: TempCartItem(
                                                       setTotalPrice:
-                                                          returnSalesProvider(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).setTotalPrice,
+                                                          returnSalesProvider().setTotalPrice,
                                                       addToStock:
                                                           false,
                                                       discount:
@@ -2423,11 +2352,7 @@ class _CustomBottomPanelState
                                                       item:
                                                           product,
                                                       quantity:
-                                                          returnSalesProvider(
-                                                                context,
-                                                                listen:
-                                                                    false,
-                                                              )
+                                                          returnSalesProvider()
                                                               .currentCart()
                                                               .cartItems
                                                               .firstWhere(
@@ -2450,11 +2375,7 @@ class _CustomBottomPanelState
                                                         theme,
                                                     cartItem: TempCartItem(
                                                       setTotalPrice:
-                                                          returnSalesProvider(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).setTotalPrice,
+                                                          returnSalesProvider().setTotalPrice,
                                                       addToStock:
                                                           false,
                                                       discount:
@@ -2490,18 +2411,12 @@ class _CustomBottomPanelState
                                   } else {
                                     return RefreshIndicator(
                                       onRefresh: () async {
-                                        await returnData(
-                                          context,
-                                          listen: false,
-                                        ).getProducts(
-                                          returnShopProvider(
-                                                context,
-                                                listen:
-                                                    false,
-                                              )
-                                              .userShop()!
-                                              .shopId!,
-                                        );
+                                        await returnData()
+                                            .getProducts(
+                                              returnShopProvider()
+                                                  .userShop()!
+                                                  .shopId!,
+                                            );
                                         setState(() {});
                                       },
                                       backgroundColor:
@@ -2517,9 +2432,7 @@ class _CustomBottomPanelState
                                               top: 10,
                                             ),
                                         itemCount:
-                                            returnData(
-                                                  context,
-                                                )
+                                            returnData()
                                                 .productList
                                                 .where(
                                                   (
@@ -2540,9 +2453,7 @@ class _CustomBottomPanelState
                                           index,
                                         ) {
                                           final product =
-                                              returnData(
-                                                    context,
-                                                  )
+                                              returnData()
                                                   .productList
                                                   .where(
                                                     (
@@ -2562,11 +2473,7 @@ class _CustomBottomPanelState
                                             action: () {
                                               if (!product
                                                   .isManaged) {
-                                                if (returnSalesProvider(
-                                                      context,
-                                                      listen:
-                                                          false,
-                                                    )
+                                                if (returnSalesProvider()
                                                     .currentCart()
                                                     .cartItems
                                                     .where(
@@ -2582,11 +2489,7 @@ class _CustomBottomPanelState
                                                         theme,
                                                     cartItem: TempCartItem(
                                                       setTotalPrice:
-                                                          returnSalesProvider(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).setTotalPrice,
+                                                          returnSalesProvider().setTotalPrice,
                                                       addToStock:
                                                           false,
                                                       discount:
@@ -2594,11 +2497,7 @@ class _CustomBottomPanelState
                                                       item:
                                                           product,
                                                       quantity:
-                                                          returnSalesProvider(
-                                                                context,
-                                                                listen:
-                                                                    false,
-                                                              )
+                                                          returnSalesProvider()
                                                               .currentCart()
                                                               .cartItems
                                                               .firstWhere(
@@ -2621,11 +2520,7 @@ class _CustomBottomPanelState
                                                         theme,
                                                     cartItem: TempCartItem(
                                                       setTotalPrice:
-                                                          returnSalesProvider(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).setTotalPrice,
+                                                          returnSalesProvider().setTotalPrice,
                                                       addToStock:
                                                           false,
                                                       discount:
@@ -2674,11 +2569,7 @@ class _CustomBottomPanelState
                                                       );
                                                     },
                                                   );
-                                                } else if (returnSalesProvider(
-                                                      context,
-                                                      listen:
-                                                          false,
-                                                    )
+                                                } else if (returnSalesProvider()
                                                     .currentCart()
                                                     .cartItems
                                                     .where(
@@ -2694,11 +2585,7 @@ class _CustomBottomPanelState
                                                         theme,
                                                     cartItem: TempCartItem(
                                                       setTotalPrice:
-                                                          returnSalesProvider(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).setTotalPrice,
+                                                          returnSalesProvider().setTotalPrice,
                                                       addToStock:
                                                           false,
                                                       discount:
@@ -2706,11 +2593,7 @@ class _CustomBottomPanelState
                                                       item:
                                                           product,
                                                       quantity:
-                                                          returnSalesProvider(
-                                                                context,
-                                                                listen:
-                                                                    false,
-                                                              )
+                                                          returnSalesProvider()
                                                               .currentCart()
                                                               .cartItems
                                                               .firstWhere(
@@ -2733,11 +2616,7 @@ class _CustomBottomPanelState
                                                         theme,
                                                     cartItem: TempCartItem(
                                                       setTotalPrice:
-                                                          returnSalesProvider(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).setTotalPrice,
+                                                          returnSalesProvider().setTotalPrice,
                                                       addToStock:
                                                           false,
                                                       discount:
@@ -3220,23 +3099,23 @@ void selectProduct(
                 SizedBox(height: 20),
                 SmallButtonMain(
                   theme: theme,
-                  action: () {
-                    String result = returnSalesProvider(
-                      context,
-                      listen: false,
-                    ).addItemToCart(
-                      context: context,
-                      newItem: cartItem,
-                      isCustomEdit:
-                          returnData(context, listen: false)
-                              .productList
-                              .where(
-                                (product) =>
-                                    product.uuid ==
-                                    cartItem.item.uuid,
-                              )
-                              .isEmpty,
-                    );
+                  action: () async {
+                    String result =
+                        await returnSalesProvider()
+                            .addItemToCart(
+                              context: context,
+                              newItem: cartItem,
+                              isCustomEdit:
+                                  returnData().productList
+                                      .where(
+                                        (product) =>
+                                            product.uuid ==
+                                            cartItem
+                                                .item
+                                                .uuid,
+                                      )
+                                      .isEmpty,
+                            );
                     Navigator.of(context).pop();
                     closeAction();
                     ScaffoldMessenger.of(

@@ -43,9 +43,9 @@
 //   //       },
 //   //     );
 //   //   } else {
-//   //     returnData(context, listen: false).size =
+//   //     returnData().size =
 //   //         widget.sizeController.text;
-//   //     returnData(context, listen: false).discount =
+//   //     returnData().discount =
 //   //         double.tryParse(widget.discountController.text);
 //   //     returnData(
 //   //       context,
@@ -53,19 +53,19 @@
 //   //     ).quantity = double.parse(
 //   //       widget.quantityController.text.replaceAll(',', ''),
 //   //     );
-//   //     returnData(context, listen: false).sizeType =
-//   //         returnData(context, listen: false).selectedSize ??
+//   //     returnData().sizeType =
+//   //         returnData().selectedSize ??
 //   //         '';
-//   //     returnData(context, listen: false).isRefundable =
+//   //     returnData().isRefundable =
 //   //         returnData(
 //   //           context,
 //   //           listen: false,
 //   //         ).isProductRefundable;
 
-//   //     returnData(context, listen: false).addProduct(
+//   //     returnData().addProduct(
 //   //       TempProductClass(
 //   //         shopId:
-//   //             returnShopProvider(context, listen: false)
+//   //             returnShopProvider()
 //   //                 .returnShop(
 //   //                   returnUserProvider(
 //   //                     context,
@@ -81,36 +81,36 @@
 //   //             1,
 
 //   //         barcode:
-//   //             returnData(context, listen: false).barcode,
-//   //         brand: returnData(context, listen: false).brand,
-//   //         color: returnData(context, listen: false).color,
-//   //         size: returnData(context, listen: false).size,
+//   //             returnData().barcode,
+//   //         brand: returnData().brand,
+//   //         color: returnData().color,
+//   //         size: returnData().size,
 //   //         sizeType:
-//   //             returnData(context, listen: false).sizeType,
-//   //         name: returnData(context, listen: false).name,
+//   //             returnData().sizeType,
+//   //         name: returnData().name,
 //   //         category:
-//   //             returnData(context, listen: false).category,
-//   //         unit: returnData(context, listen: false).unit,
+//   //             returnData().category,
+//   //         unit: returnData().unit,
 //   //         isRefundable:
 //   //             returnData(
 //   //               context,
 //   //               listen: false,
 //   //             ).isRefundable,
 //   //         costPrice:
-//   //             returnData(context, listen: false).costPrice,
+//   //             returnData().costPrice,
 //   //         sellingPrice:
 //   //             returnData(
 //   //               context,
 //   //               listen: false,
 //   //             ).sellingPrice,
 //   //         quantity:
-//   //             returnData(context, listen: false).quantity,
+//   //             returnData().quantity,
 //   //         discount:
-//   //             returnData(context, listen: false).discount,
+//   //             returnData().discount,
 //   //       ),
 //   //     );
 
-//   //     returnData(context, listen: false).clearFields();
+//   //     returnData().clearFields();
 
 //   //     Provider.of<CompProvider>(
 //   //       context,

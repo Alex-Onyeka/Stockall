@@ -245,7 +245,7 @@ class DetailsPageContainer extends StatelessWidget {
                             context,
                             listen: false,
                           ).deleteCustomerMain(
-                            customer.uuid!,
+                            customer,
                             context,
                           );
                           await Future.delayed(

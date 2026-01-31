@@ -54,10 +54,7 @@ class _AddEmployeeDesktopState
     usersFuture = getUsers();
     if (widget.employee != null) {
       var beans =
-          returnShopProvider(
-                    context,
-                    listen: false,
-                  ).shopOwnerUser!.role ==
+          returnShopProvider().shopOwnerUser!.role ==
                   'Owner'
               ? empSetup
                   .where(
@@ -239,9 +236,8 @@ class _AddEmployeeDesktopState
                                           NeverScrollableScrollPhysics(),
                                       itemCount:
                                           returnShopProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
+                                                    context:
+                                                        context,
                                                   ).shopOwnerUser!.role ==
                                                   'Owner'
                                               ? empSetup
@@ -261,9 +257,8 @@ class _AddEmployeeDesktopState
                                       ) {
                                         var employee =
                                             returnShopProvider(
-                                                      context,
-                                                      listen:
-                                                          false,
+                                                      context:
+                                                          context,
                                                     ).shopOwnerUser!.role ==
                                                     'Owner'
                                                 ? empSetup
@@ -357,10 +352,7 @@ class _AddEmployeeDesktopState
                                     );
                                 // var safeContext = context;
                                 var shopProvider =
-                                    returnShopProvider(
-                                      context,
-                                      listen: false,
-                                    );
+                                    returnShopProvider();
                                 showDialog(
                                   context: context,
                                   builder: (dialogContext) {
@@ -504,11 +496,7 @@ class _AddEmployeeDesktopState
                                                       .text
                                                       .trim(),
                                               newRole:
-                                                  returnShopProvider(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).shopOwnerUser!.role ==
+                                                  returnShopProvider().shopOwnerUser!.role ==
                                                           'Owner'
                                                       ? empSetup
                                                           .where(
@@ -578,11 +566,7 @@ class _AddEmployeeDesktopState
                                               context:
                                                   context,
                                               role:
-                                                  returnShopProvider(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).shopOwnerUser!.role ==
+                                                  returnShopProvider().shopOwnerUser!.role ==
                                                           'Owner'
                                                       ? empSetup
                                                           .where(
@@ -691,11 +675,9 @@ class _AddEmployeeDesktopState
                                         listen: false,
                                       ).updateEmployeeRole(
                                         newRole:
-                                            returnShopProvider(
-                                                      context,
-                                                      listen:
-                                                          false,
-                                                    ).shopOwnerUser!.role ==
+                                            returnShopProvider()
+                                                        .shopOwnerUser!
+                                                        .role ==
                                                     'Owner'
                                                 ? empSetup
                                                     .where(

@@ -36,7 +36,7 @@ class SubscriptionProvider extends ChangeNotifier {
   Future<TempShopClass> userShop(
     BuildContext context,
   ) async {
-    var shopP = returnShopProvider(context, listen: false);
+    var shopP = returnShopProvider();
     if (shopP.userShop() == null) {
       await shopP.getUserShops();
       return shopP.userShop()!;

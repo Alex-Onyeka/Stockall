@@ -63,10 +63,7 @@ class CreatedShopLogosFunc {
     try {
       await clearCreatedLogos();
       await createdShopLogosBox.put(
-        returnShopProvider(
-          context,
-          listen: false,
-        ).userShop()!.shopId!,
+        returnShopProvider().userShop()!.shopId!,
         createdLogo,
       );
       print('Offline Created Logo inserted successfully ✅');

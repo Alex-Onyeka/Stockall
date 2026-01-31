@@ -259,7 +259,7 @@ class _DetailsPageContainerState
                                 });
 
                                 await expP.deleteExpense(
-                                  expense.uuid!,
+                                  expense,
                                   safeContext,
                                 );
 

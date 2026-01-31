@@ -81,7 +81,7 @@
 
 //   void clearCache(BuildContext context) {
 //     currentReferree = null;
-//     returnShopProvider(context, listen: false).clearShops();
+//     returnShopProvider().clearShops();
 //     notifyListeners();
 //   }
 

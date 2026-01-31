@@ -24,6 +24,30 @@ class TempCartItem {
     this.salesRecordId,
   });
 
+  Map<String, dynamic> toJson() => {
+    'item': item.toJson(),
+    'discount': discount,
+    'quantity': quantity,
+    'customPrice': customPrice,
+    'setCustomPrice': setCustomPrice,
+    'setTotalPrice': setTotalPrice,
+    'addToStock': addToStock,
+    'salesRecordId': salesRecordId,
+  };
+
+  factory TempCartItem.fromJson(Map<String, dynamic> json) {
+    return TempCartItem(
+      item: TempProductClass.fromJson(json['item']),
+      discount: json['discount'],
+      quantity: json['quantity'],
+      customPrice: json['customPrice'],
+      setCustomPrice: json['setCustomPrice'],
+      addToStock: json['addToStock'],
+      setTotalPrice: json['setTotalPrice'],
+      salesRecordId: json['salesRecordId'],
+    );
+  }
+
   double? returnDiscount() {
     return discount ?? item.discount;
   }
@@ -52,10 +76,7 @@ class TempCartItem {
   }
 
   double revenue(BuildContext context) {
-    if (returnShopProvider(
-      context,
-      listen: false,
-    ).userShop()!.applyVAT!) {
+    if (returnShopProvider().userShop()!.applyVAT!) {
       return (totalCost() - discountCost()) +
           (totalCost() * (vat / 100));
     } else {

@@ -73,10 +73,7 @@ class _ProductPageDesktopState
       context,
       listen: false,
     ).fetchRecentNotifications(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop()!.shopId!,
+      returnShopProvider().userShop()!.shopId!,
     );
 
     return tempGet;

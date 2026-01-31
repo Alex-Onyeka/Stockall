@@ -94,23 +94,19 @@ class TopBannerTwo extends StatelessWidget {
                   ),
                   Opacity(
                     opacity: 0,
-                    child: Visibility(
-                      visible: !isMain,
-                      child: InkWell(
-                        onTap: () {},
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 10,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.circular(10),
-                          ),
-                          child: Icon(
-                            Icons
-                                .arrow_back_ios_new_rounded,
-                          ),
+                    child: InkWell(
+                      onTap: () {},
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(10),
+                        ),
+                        child: Icon(
+                          Icons.arrow_back_ios_new_rounded,
                         ),
                       ),
                     ),

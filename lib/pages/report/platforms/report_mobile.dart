@@ -4,6 +4,7 @@ import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/customer_report/customer_report_page.dart';
+import 'package:stockall/pages/report/events_log/events_log.dart';
 import 'package:stockall/pages/report/general_report/general_report_page.dart';
 import 'package:stockall/pages/report/product_report/product_report_page.dart';
 import 'package:stockall/pages/report/sales_and_revenue/sales_and_revenue_report.dart';
@@ -122,6 +123,23 @@ class ReportMobile extends StatelessWidget {
                           subText:
                               'View a detailed summary of your customers purchases.',
                           title: 'Customer Report',
+                        ),
+                        ReportListTile(
+                          isActive: true,
+                          theme: theme,
+                          action: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return EventsLog();
+                                },
+                              ),
+                            );
+                          },
+                          subText:
+                              'View a List of all Event Logs',
+                          title: 'Events Log',
                         ),
                         ReportListTile(
                           isActive: false,

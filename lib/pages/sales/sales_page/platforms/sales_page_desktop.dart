@@ -54,10 +54,7 @@ class _SalesPageDesktopState
       context,
       listen: false,
     ).fetchRecentNotifications(
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop()!.shopId!,
+      returnShopProvider().userShop()!.shopId!,
     );
 
     return tempGet;
@@ -74,10 +71,7 @@ class _SalesPageDesktopState
         .where(
           (beans) =>
               beans.shopId ==
-              returnShopProvider(
-                context,
-                listen: false,
-              ).userShop()!.shopId!,
+              returnShopProvider().userShop()!.shopId!,
         )
         .toList();
   }

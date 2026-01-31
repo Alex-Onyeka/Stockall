@@ -40,7 +40,7 @@
 //   void checkFields() {
 //     if (widget.costController.text.isEmpty ||
 //         widget.sellingController.text.isEmpty ||
-//         returnData(context, listen: false).selectedUnit ==
+//         returnData().selectedUnit ==
 //             null) {
 //       showDialog(
 //         context: context,
@@ -55,7 +55,7 @@
 //         },
 //       );
 //     } else {
-//       returnData(context, listen: false).barcode =
+//       returnData().barcode =
 //           barcode ?? '';
 //       returnData(
 //         context,
@@ -69,9 +69,9 @@
 //       ).sellingPrice = double.parse(
 //         widget.sellingController.text.replaceAll(',', ''),
 //       );
-//       returnData(context, listen: false).unit =
-//           returnData(context, listen: false).selectedUnit!;
-//       returnData(context, listen: false).color =
+//       returnData().unit =
+//           returnData().selectedUnit!;
+//       returnData().color =
 //           returnData(
 //             context,
 //             listen: false,

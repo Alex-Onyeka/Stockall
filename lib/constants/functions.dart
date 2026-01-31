@@ -530,35 +530,25 @@ Future<Uint8List> _buildPdf(
                             builder: (
                               pw.Context pdfContext,
                             ) {
-                              if (returnShopProvider(
-                                    context,
-                                    listen: false,
-                                  ).selectedLogo !=
+                              if (returnShopProvider()
+                                      .selectedLogo !=
                                   null) {
                                 return pw.Container(
                                   height:
-                                      (returnShopProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).imageWidth ??
+                                      (returnShopProvider()
+                                                      .imageWidth ??
                                                   0) >
                                               (2 *
-                                                  (returnShopProvider(
-                                                        context,
-                                                        listen:
-                                                            false,
-                                                      ).imageHeight ??
+                                                  (returnShopProvider()
+                                                          .imageHeight ??
                                                       0))
                                           ? 35
                                           : 80,
                                   width: 200,
                                   child: pw.Image(
                                     pw.MemoryImage(
-                                      returnShopProvider(
-                                            context,
-                                            listen: false,
-                                          ).selectedLogo ??
+                                      returnShopProvider()
+                                              .selectedLogo ??
                                           Uint8List(12),
                                     ),
                                     fit: pw.BoxFit.contain,
@@ -1508,43 +1498,32 @@ Future<Uint8List> _buildPdfRoll(
                   children: [
                     pw.Column(
                       children: [
-                        if (returnShopProvider(
-                              context,
-                              listen: false,
-                            ).selectedLogo !=
+                        if (returnShopProvider()
+                                .selectedLogo !=
                             null)
                           pw.Container(
                             height:
-                                (returnShopProvider(
-                                              context,
-                                              listen: false,
-                                            ).imageWidth ??
+                                (returnShopProvider()
+                                                .imageWidth ??
                                             0) >
                                         (2 *
-                                            (returnShopProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).imageHeight ??
+                                            (returnShopProvider()
+                                                    .imageHeight ??
                                                 0))
                                     ? 25
                                     : 75,
                             width: 200,
                             child: pw.Image(
                               pw.MemoryImage(
-                                returnShopProvider(
-                                      context,
-                                      listen: false,
-                                    ).selectedLogo ??
+                                returnShopProvider()
+                                        .selectedLogo ??
                                     Uint8List(12),
                               ),
                               fit: pw.BoxFit.contain,
                             ),
                           ),
-                        if (returnShopProvider(
-                              context,
-                              listen: false,
-                            ).selectedLogo !=
+                        if (returnShopProvider()
+                                .selectedLogo !=
                             null)
                           pw.SizedBox(height: 2),
                         pw.Builder(
@@ -2386,10 +2365,7 @@ void downloadPdfWeb({
           receipt,
           staffName,
           records,
-          returnShopProvider(
-            context,
-            listen: false,
-          ).userShop()!,
+          returnShopProvider().userShop()!,
           context,
         );
         final blob = html.Blob([
@@ -2439,10 +2415,7 @@ void downloadPdfWebRoll({
           receipt,
           records,
           staffName,
-          returnShopProvider(
-            context,
-            listen: false,
-          ).userShop()!,
+          returnShopProvider().userShop()!,
           context,
           printType,
         );
@@ -2518,7 +2491,7 @@ Future<void> generateAndPreviewPdfProducts({
   required BuildContext context,
 }) async {
   // 1. Build the PDF once (fastest way)
-  returnData(context, listen: false).toggleIsLoading(true);
+  returnData().toggleIsLoading(true);
   final Uint8List pdfBytes = await _buildPdfProducts(
     products,
     shop,
@@ -2528,10 +2501,7 @@ Future<void> generateAndPreviewPdfProducts({
   // 2. Open native print/share/save dialog (cross-platform)
   await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
   if (context.mounted) {
-    returnData(
-      context,
-      listen: false,
-    ).toggleIsLoading(false);
+    returnData().toggleIsLoading(false);
   }
 }
 
@@ -3328,10 +3298,7 @@ void downloadPdfWebProducts({
     print('Begin Download');
     final pdfBytes = await _buildPdfProducts(
       products,
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop()!,
+      returnShopProvider().userShop()!,
       context,
     );
     final blob = html.Blob([pdfBytes]);
@@ -3349,10 +3316,7 @@ void downloadPdfWebProducts({
 
     html.Url.revokeObjectUrl(url);
     if (context.mounted) {
-      returnData(
-        context,
-        listen: false,
-      ).toggleIsLoading(false);
+      returnData().toggleIsLoading(false);
     }
   } catch (e, stackTrace) {
     print('❌ Error downloading PDF: $e\n$stackTrace');
@@ -3384,10 +3348,7 @@ Future<void> generateAndPreviewPdfSales({
   required BuildContext context,
 }) async {
   // 1. Build the PDF once (fastest way)
-  returnSalesProvider(
-    context,
-    listen: false,
-  ).toggleIsLoading(true);
+  returnSalesProvider().toggleIsLoading(true);
   final Uint8List pdfBytes = await _buildPdfSales(
     records,
     shop,
@@ -3397,10 +3358,7 @@ Future<void> generateAndPreviewPdfSales({
   // 2. Open native print/share/save dialog (cross-platform)
   await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
   if (context.mounted) {
-    returnData(
-      context,
-      listen: false,
-    ).toggleIsLoading(false);
+    returnData().toggleIsLoading(false);
   }
 }
 
@@ -4005,10 +3963,7 @@ void downloadPdfWebSales({
     print('Begin Download');
     final pdfBytes = await _buildPdfSales(
       records,
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop()!,
+      returnShopProvider().userShop()!,
       context,
     );
     final blob = html.Blob([pdfBytes]);
@@ -4026,10 +3981,7 @@ void downloadPdfWebSales({
 
     html.Url.revokeObjectUrl(url);
     if (context.mounted) {
-      returnSalesProvider(
-        context,
-        listen: false,
-      ).toggleIsLoading(false);
+      returnSalesProvider().toggleIsLoading(false);
     }
   } catch (e, stackTrace) {
     print('❌ Error downloading PDF: $e\n$stackTrace');
@@ -4047,10 +3999,7 @@ Future<void> generateAndPreviewPdfSalesSummary({
   required BuildContext context,
 }) async {
   // 1. Build the PDF once (fastest way)
-  returnSalesProvider(
-    context,
-    listen: false,
-  ).toggleIsLoading(true);
+  returnSalesProvider().toggleIsLoading(true);
   final Uint8List pdfBytes = await _buildPdfSalesSummary(
     summary,
     shop,
@@ -4060,10 +4009,7 @@ Future<void> generateAndPreviewPdfSalesSummary({
   // 2. Open native print/share/save dialog (cross-platform)
   await Printing.layoutPdf(onLayout: (_) async => pdfBytes);
   if (context.mounted) {
-    returnData(
-      context,
-      listen: false,
-    ).toggleIsLoading(false);
+    returnData().toggleIsLoading(false);
   }
 }
 
@@ -4564,10 +4510,7 @@ void downloadPdfWebSalesSummary({
     print('Begin Download');
     final pdfBytes = await _buildPdfSalesSummary(
       summary,
-      returnShopProvider(
-        context,
-        listen: false,
-      ).userShop()!,
+      returnShopProvider().userShop()!,
       context,
     );
     final blob = html.Blob([pdfBytes]);
@@ -4585,10 +4528,7 @@ void downloadPdfWebSalesSummary({
 
     html.Url.revokeObjectUrl(url);
     if (context.mounted) {
-      returnSalesProvider(
-        context,
-        listen: false,
-      ).toggleIsLoading(false);
+      returnSalesProvider().toggleIsLoading(false);
     }
   } catch (e, stackTrace) {
     print('❌ Error downloading PDF: $e\n$stackTrace');

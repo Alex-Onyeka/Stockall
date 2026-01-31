@@ -73,15 +73,9 @@ class _AddExpensesDesktopState
         context: safeContext,
         builder: (context) {
           var shopId =
-              returnShopProvider(
-                context,
-                listen: false,
-              ).userShop()!.shopId!;
+              returnShopProvider().userShop()!.shopId!;
 
-          var dataProvider = returnData(
-            context,
-            listen: false,
-          );
+          var dataProvider = returnData();
 
           final expensesProvider = returnExpensesProvider(
             safeContext,
@@ -127,11 +121,7 @@ class _AddExpensesDesktopState
                             name:
                                 widget.nameController.text
                                     .trim(),
-                            unit:
-                                returnData(
-                                  context,
-                                  listen: false,
-                                ).selectedUnit,
+                            unit: returnData().selectedUnit,
 
                             quantity: double.tryParse(
                               widget
@@ -167,11 +157,7 @@ class _AddExpensesDesktopState
                     //     .currentEmployee!
                     //     .userId!,
                     name: widget.nameController.text.trim(),
-                    unit:
-                        returnData(
-                          context,
-                          listen: false,
-                        ).selectedUnit,
+                    unit: returnData().selectedUnit,
 
                     quantity: double.tryParse(
                       widget.quantityController.text,
@@ -240,14 +226,10 @@ class _AddExpensesDesktopState
               : '';
       widget.amountController.text = widget.expenses!.amount
           .toStringAsFixed(0);
-      returnData(context, listen: false).selectedUnit =
-          widget.expenses!.unit;
+      returnData().selectedUnit = widget.expenses!.unit;
     } else {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        returnData(
-          context,
-          listen: false,
-        ).clearExpenseUnit();
+        returnData().clearExpenseUnit();
       });
     }
   }
@@ -339,9 +321,7 @@ class _AddExpensesDesktopState
                         SizedBox(height: 15),
                         MainDropdown(
                           valueSet:
-                              returnData(
-                                context,
-                              ).unitValueSet,
+                              returnData().unitValueSet,
                           onTap: () {
                             FocusManager
                                 .instance
@@ -359,9 +339,7 @@ class _AddExpensesDesktopState
                           isOpen: isOpenUnit,
                           title: 'Expense Unit (Optional)',
                           hint:
-                              returnData(
-                                context,
-                              ).selectedUnit ??
+                              returnData().selectedUnit ??
                               'Select Expense Unit',
                           theme: theme,
                         ),

@@ -30,10 +30,7 @@ class _EmployeePageMobileState
   void initState() {
     super.initState();
 
-    returnData(
-      context,
-      listen: false,
-    ).toggleFloatingAction(context);
+    returnData().toggleFloatingAction(context);
   }
 
   bool isLoading = false;
@@ -127,10 +124,7 @@ class _EmployeePageMobileState
                                 }
                                 final safeContext = context;
                                 final shopProvider =
-                                    returnShopProvider(
-                                      context,
-                                      listen: false,
-                                    );
+                                    returnShopProvider();
                                 showDialog(
                                   context: safeContext,
                                   builder: (context) {

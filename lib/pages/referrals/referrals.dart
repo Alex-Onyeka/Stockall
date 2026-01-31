@@ -17,10 +17,7 @@ class _ReferralsState extends State<Referrals> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final userShop =
-          await returnShopProvider(
-            context,
-            listen: false,
-          ).getUserShops();
+          await returnShopProvider().getUserShops();
       if (context.mounted && userShop.isEmpty) {
         Navigator.pushAndRemoveUntil(
           context,
