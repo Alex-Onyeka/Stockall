@@ -296,6 +296,14 @@ class _CustomerListDesktopState
                                   setState(() {});
                                 });
                               },
+                              altAction: () async {
+                                await returnCustomers(
+                                  context,
+                                  listen: false,
+                                ).fetchCustomers(shopId());
+                              },
+                              altActionText: 'Refresh',
+                              altIcon: Icons.refresh,
                             );
                           } else {
                             return Padding(

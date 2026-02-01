@@ -198,18 +198,30 @@ class _EventsLogMobileState extends State<EventsLogMobile> {
                         children: [
                           SizedBox(height: 10),
                           Expanded(
-                            child: ListView.builder(
-                              itemCount: logs.length,
-                              itemBuilder: (
-                                context,
-                                index,
-                              ) {
-                                TempEventLogClass log =
-                                    logs[index];
-                                return LogWidgetMobile(
-                                  log: log,
-                                );
+                            child: RefreshIndicator(
+                              onRefresh: () async {
+                                await returnEventsLogProvider()
+                                    .getEventLogs();
                               },
+                              backgroundColor: Colors.white,
+                              color:
+                                  theme
+                                      .lightModeColor
+                                      .prColor300,
+                              displacement: 10,
+                              child: ListView.builder(
+                                itemCount: logs.length,
+                                itemBuilder: (
+                                  context,
+                                  index,
+                                ) {
+                                  TempEventLogClass log =
+                                      logs[index];
+                                  return LogWidgetMobile(
+                                    log: log,
+                                  );
+                                },
+                              ),
                             ),
                           ),
                         ],

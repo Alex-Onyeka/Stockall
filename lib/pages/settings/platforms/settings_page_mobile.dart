@@ -618,8 +618,9 @@ class _SettingsPageMobileState
                               },
                               endWidget: Builder(
                                 builder: (context) {
-                                  if (returnShopProvider()
-                                      .isVatLoading) {
+                                  if (returnShopProvider(
+                                    context: context,
+                                  ).isVatLoading) {
                                     return SizedBox(
                                       height: 16,
                                       width: 16,
@@ -635,7 +636,10 @@ class _SettingsPageMobileState
                                     return MyToggleButton(
                                       isSmall: true,
                                       boolValue:
-                                          returnShopProvider()
+                                          returnShopProvider(
+                                                context:
+                                                    context,
+                                              )
                                               .userShop()
                                               ?.applyVAT ??
                                           true,

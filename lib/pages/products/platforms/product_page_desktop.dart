@@ -399,6 +399,17 @@ class _ProductPageDesktopState
                                               theme:
                                                   widget
                                                       .theme,
+                                              altAction: () async {
+                                                await returnData()
+                                                    .getProducts(
+                                                      shopId(),
+                                                    );
+                                              },
+                                              altActionText:
+                                                  'Refresh',
+                                              altIcon:
+                                                  Icons
+                                                      .refresh,
                                             ),
                                           ),
                                         ),
@@ -450,6 +461,17 @@ class _ProductPageDesktopState
                                               theme:
                                                   widget
                                                       .theme,
+                                              altAction: () async {
+                                                await returnData()
+                                                    .getProducts(
+                                                      shopId(),
+                                                    );
+                                              },
+                                              altActionText:
+                                                  'Refresh',
+                                              altIcon:
+                                                  Icons
+                                                      .refresh,
                                             ),
                                           ),
                                         ),

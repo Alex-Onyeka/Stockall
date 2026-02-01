@@ -169,122 +169,128 @@ class _EventsLogDesktopState
                     ),
                     body: Column(
                       children: [
-                        Padding(
-                          padding:
-                              const EdgeInsets.symmetric(
-                                vertical: 10.0,
-                                horizontal: 20,
-                              ),
-                          child: Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
+                        Container(
+                          color: Colors.white,
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(
+                                  vertical: 10.0,
+                                  horizontal: 20,
                                 ),
-                                returnEventsLogProvider(
-                                          context: context,
-                                        ).dateSet !=
-                                        null
-                                    ? formatDateTime(
-                                      returnEventsLogProvider(
+                            child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment
+                                      .spaceBetween,
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                  returnEventsLogProvider(
                                             context:
                                                 context,
-                                          ).dateSet ??
-                                          DateTime.now(),
-                                    )
-                                    : 'All Logs',
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  returnEventsLogProvider()
-                                              .dateSet ==
+                                          ).dateSet !=
                                           null
-                                      ? showDatePicker(
-                                        context: context,
-                                        firstDate: DateTime(
-                                          2017,
-                                          9,
-                                          7,
-                                          17,
-                                          30,
-                                        ),
-                                        lastDate: DateTime(
-                                          2027,
-                                          9,
-                                          7,
-                                          17,
-                                          30,
-                                        ),
-                                      ).then((value) {
-                                        value != null
-                                            ? returnEventsLogProvider()
-                                                .setDate(
-                                                  value,
-                                                )
-                                            : {};
-                                      })
-                                      : returnEventsLogProvider()
-                                          .clearDate();
-                                },
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.all(
-                                        10.0,
-                                      ),
-                                  child: Row(
-                                    spacing: 4,
-                                    children: [
-                                      Icon(
-                                        size: 16,
-                                        color:
-                                            theme
-                                                .lightModeColor
-                                                .prColor300,
+                                      ? formatDateTime(
                                         returnEventsLogProvider(
-                                                  context:
-                                                      context,
-                                                ).dateSet ==
-                                                null
-                                            ? Icons
-                                                .calendar_month
-                                            : Icons.clear,
-                                      ),
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
+                                              context:
+                                                  context,
+                                            ).dateSet ??
+                                            DateTime.now(),
+                                      )
+                                      : 'All Logs',
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    returnEventsLogProvider()
+                                                .dateSet ==
+                                            null
+                                        ? showDatePicker(
+                                          context: context,
+                                          firstDate:
+                                              DateTime(
+                                                2017,
+                                                9,
+                                                7,
+                                                17,
+                                                30,
+                                              ),
+                                          lastDate:
+                                              DateTime(
+                                                2027,
+                                                9,
+                                                7,
+                                                17,
+                                                30,
+                                              ),
+                                        ).then((value) {
+                                          value != null
+                                              ? returnEventsLogProvider()
+                                                  .setDate(
+                                                    value,
+                                                  )
+                                              : {};
+                                        })
+                                        : returnEventsLogProvider()
+                                            .clearDate();
+                                  },
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.all(
+                                          10.0,
+                                        ),
+                                    child: Row(
+                                      spacing: 4,
+                                      children: [
+                                        Icon(
+                                          size: 16,
+                                          color:
                                               theme
-                                                  .mobileTexts
-                                                  .b3
-                                                  .fontSize,
-                                        ),
-                                        returnEventsLogProvider(
-                                                  context:
-                                                      context,
-                                                ).dateSet !=
-                                                null
-                                            ? formatDateTime(
-                                              returnEventsLogProvider(
+                                                  .lightModeColor
+                                                  .prColor300,
+                                          returnEventsLogProvider(
                                                     context:
                                                         context,
-                                                  ).dateSet ??
-                                                  DateTime.now(),
-                                            )
-                                            : 'Set Date',
-                                      ),
-                                    ],
+                                                  ).dateSet ==
+                                                  null
+                                              ? Icons
+                                                  .calendar_month
+                                              : Icons.clear,
+                                        ),
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b3
+                                                    .fontSize,
+                                          ),
+                                          returnEventsLogProvider(
+                                                    context:
+                                                        context,
+                                                  ).dateSet !=
+                                                  null
+                                              ? formatDateTime(
+                                                returnEventsLogProvider(
+                                                      context:
+                                                          context,
+                                                    ).dateSet ??
+                                                    DateTime.now(),
+                                              )
+                                              : 'Set Date',
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                         Expanded(

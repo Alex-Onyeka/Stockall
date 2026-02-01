@@ -3628,7 +3628,10 @@ class _ShopSetupTwoDesktopState
                             ),
 
                             Visibility(
-                              visible: widget.shop == null,
+                              visible:
+                                  returnShopProvider(
+                                    context: context,
+                                  ).userShops.isEmpty,
                               child: GeneralTextField(
                                 title:
                                     'Referral Code (Optional)',

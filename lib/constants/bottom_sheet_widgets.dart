@@ -45,7 +45,8 @@ void unitsBottomSheet(
         maxChildSize: 0.9,
         minChildSize: 0.3,
         builder: (context, scrollController) {
-          List<String> units = returnData().units;
+          List<String> units =
+              returnData(context: context).units;
           units.sort();
 
           return Container(
@@ -105,7 +106,9 @@ void unitsBottomSheet(
                         FocusScope.of(context).unfocus();
                       },
                       icon: Icon(
-                        returnData().unitValueSet
+                        returnData(
+                              context: context,
+                            ).unitValueSet
                             ? Icons.check
                             : Icons.clear_rounded,
                       ),
@@ -173,8 +176,9 @@ void unitsBottomSheet(
                                         .lightModeColor
                                         .prColor250,
                                 value:
-                                    returnData()
-                                        .selectedUnit ==
+                                    returnData(
+                                      context: context,
+                                    ).selectedUnit ==
                                     unit,
                                 onChanged: (value) {
                                   returnData().selectUnit(
@@ -210,25 +214,8 @@ void categoriesBottomSheet(
   BuildContext context,
   Function()? action,
 ) async {
-  // Future<List<String>> getCategories() async {
-  //   var tempCat = returnShopProvider(
-  //     context,
-  //     listen: false,
-  //   ).fetchShopCategories(
-  //     returnShopProvider(
-  //       context,
-  //       listen: false,
-  //     ). userShop()!.shopId!,
-  //   );
-  //   categoriesFuture = tempCat;
-  //   return tempCat;
-  // }
-
   var shopCat =
-      returnShopProvider(
-        context: context,
-      ).userShop()!.categories ??
-      [];
+      returnShopProvider().userShop()!.categories ?? [];
 
   // getCategories();
 
@@ -259,30 +246,7 @@ void categoriesBottomSheet(
               color: Colors.white,
               child: Ink(
                 color: Colors.white,
-                child:
-                // FutureBuilder(
-                //   future: categoriesFuture,
-                //   builder: (context, snapshot) {
-                //     if (snapshot.connectionState ==
-                //         ConnectionState.waiting) {
-                //       return returnCompProvider(
-                //         context,
-                //         listen: false,
-                //       ).showLoader('Loading');
-                //     } else if (snapshot.hasError) {
-                //       return EmptyWidgetDisplayOnly(
-                //         title: 'An Error Occured',
-                //         subText:
-                //             'Please check your internet and try again.',
-                //         theme: returnTheme(context),
-                //         height: 30,
-                //         icon: Icons.clear,
-                //       );
-                //     } else {
-                //     }
-                //   },
-                // ),
-                Column(
+                child: Column(
                   children: [
                     Center(
                       child: Container(
@@ -335,7 +299,9 @@ void categoriesBottomSheet(
                             ).unfocus();
                           },
                           icon: Icon(
-                            returnData().catValueSet
+                            returnData(
+                                  context: context,
+                                ).catValueSet
                                 ? Icons.check
                                 : Icons.clear_rounded,
                           ),
@@ -354,30 +320,6 @@ void categoriesBottomSheet(
                         ),
                         child: Builder(
                           builder: (context) {
-                            // if (snapshot
-                            //         .connectionState ==
-                            //     ConnectionState
-                            //         .waiting) {
-                            //   return returnCompProvider(
-                            //     context,
-                            //     listen: false,
-                            //   ).showLoader('Loading');
-                            // } else if (snapshot
-                            //     .hasError) {
-                            //   return SingleChildScrollView(
-                            //     child: EmptyWidgetDisplayOnly(
-                            //       title: 'Error ',
-                            //       subText:
-                            //           'Error Fetching Categories',
-                            //       theme: returnTheme(
-                            //         context,
-                            //       ),
-                            //       height: 30,
-                            //       icon: Icons.clear,
-                            //     ),
-                            //   );
-                            // } else
-
                             if (shopCat.isEmpty) {
                               return Material(
                                 color: Colors.white,
@@ -405,6 +347,14 @@ void categoriesBottomSheet(
                                       ),
                                     );
                                   },
+                                  altAction: () async {
+                                    await returnShopProvider()
+                                        .fetchShopCategories(
+                                          shopId(),
+                                        );
+                                  },
+                                  altActionText: 'Refresh',
+                                  altIcon: Icons.refresh,
                                 ),
                               );
                             } else {
@@ -474,8 +424,10 @@ void categoriesBottomSheet(
                                                   .lightModeColor
                                                   .prColor250,
                                           value:
-                                              returnData()
-                                                  .selectedCategory ==
+                                              returnData(
+                                                context:
+                                                    context,
+                                              ).selectedCategory ==
                                               category,
                                           onChanged: (
                                             value,
@@ -650,8 +602,10 @@ void categoriesBottomSheet(
                                                 FontWeight
                                                     .bold,
                                           ),
-                                          returnData()
-                                                  .catValueSet
+                                          returnData(
+                                                context:
+                                                    context,
+                                              ).catValueSet
                                               ? 'Select'
                                               : 'Cancel',
                                         ),
@@ -660,8 +614,10 @@ void categoriesBottomSheet(
                                           color:
                                               Colors.grey,
 
-                                          returnData()
-                                                  .catValueSet
+                                          returnData(
+                                                context:
+                                                    context,
+                                              ).catValueSet
                                               ? Icons.check
                                               : Icons.clear,
                                         ),
@@ -699,7 +655,9 @@ void categoriesBottomSheet(
                               }
                             },
                             buttonText:
-                                returnData().catValueSet ==
+                                returnData(
+                                          context: context,
+                                        ).catValueSet ==
                                         true
                                     ? 'Save Category'
                                     : 'Add New Category',
@@ -714,7 +672,9 @@ void categoriesBottomSheet(
                               } else {}
                             },
                             buttonText:
-                                returnData().catValueSet ==
+                                returnData(
+                                          context: context,
+                                        ).catValueSet ==
                                         true
                                     ? 'Save Category'
                                     : 'Add New Category',
@@ -928,7 +888,8 @@ void sizeTypeBottomSheet(
         maxChildSize: 0.9,
         minChildSize: 0.3,
         builder: (context, scrollController) {
-          List<String> sizes = returnData().sizes;
+          List<String> sizes =
+              returnData(context: context).sizes;
           // sizes.sort();
 
           return Container(
@@ -995,7 +956,9 @@ void sizeTypeBottomSheet(
                             ).unfocus();
                           },
                           icon: Icon(
-                            returnData().sizeValueSet
+                            returnData(
+                                  context: context,
+                                ).sizeValueSet
                                 ? Icons.check
                                 : Icons.clear_rounded,
                           ),
@@ -1052,8 +1015,9 @@ void sizeTypeBottomSheet(
                                           .lightModeColor
                                           .prColor250,
                                   value:
-                                      returnData()
-                                          .selectedSize ==
+                                      returnData(
+                                        context: context,
+                                      ).selectedSize ==
                                       size,
                                   onChanged: (value) {
                                     Provider.of<
@@ -1085,184 +1049,6 @@ void sizeTypeBottomSheet(
 
 //
 //
-//
-//
-// S I Z E  T Y P E   B O T T O M  S H E E T
-
-// void editProductBottomSheet(
-//   BuildContext context,
-//   Function()? action,
-//   TempProductClass product,
-// ) async {
-//   await showModalBottomSheet(
-//     context: context,
-//     isScrollControlled: true,
-//     shape: RoundedRectangleBorder(
-//       borderRadius: BorderRadius.vertical(
-//         top: Radius.circular(20),
-//       ),
-//     ),
-//     backgroundColor: Colors.white,
-//     builder: (BuildContext context) {
-//       return DraggableScrollableSheet(
-//         expand: false,
-//         initialChildSize: 0.47,
-//         maxChildSize: 0.47,
-//         minChildSize: 0.3,
-//         builder: (context, scrollController) {
-//           return Container(
-//             color: Colors.white,
-//             padding: const EdgeInsets.fromLTRB(
-//               30,
-//               15,
-//               30,
-//               45,
-//             ),
-//             child: Column(
-//               children: [
-//                 Center(
-//                   child: Container(
-//                     height: 4,
-//                     width: 70,
-//                     decoration: BoxDecoration(
-//                       borderRadius: BorderRadius.circular(
-//                         5,
-//                       ),
-//                       color: Colors.grey.shade400,
-//                     ),
-//                   ),
-//                 ),
-//                 SizedBox(height: 20),
-//                 Row(
-//                   mainAxisAlignment:
-//                       MainAxisAlignment.spaceBetween,
-//                   children: [
-//                     Column(
-//                       crossAxisAlignment:
-//                           CrossAxisAlignment.start,
-//                       children: [
-//                         Text(
-//                           'Action Menu',
-//                           style: TextStyle(
-//                             fontSize:
-//                                 returnTheme(
-//                                   context,
-//                                 ).mobileTexts.b1.fontSize,
-//                             fontWeight: FontWeight.bold,
-//                           ),
-//                         ),
-//                         Text(
-//                           'Select the action you want to Perform',
-//                           style: TextStyle(
-//                             fontSize:
-//                                 returnTheme(
-//                                   context,
-//                                 ).mobileTexts.b2.fontSize,
-//                           ),
-//                         ),
-//                       ],
-//                     ),
-//                     IconButton(
-//                       onPressed: () {
-//                         Navigator.of(context).pop();
-//                         FocusScope.of(context).unfocus();
-//                       },
-//                       icon: Icon(Icons.clear_rounded),
-//                     ),
-//                   ],
-//                 ),
-//                 SizedBox(height: 10),
-//                 Expanded(
-//                   child: Container(
-//                     decoration: BoxDecoration(
-//                       color: Colors.white,
-//                       borderRadius: BorderRadius.circular(
-//                         10,
-//                       ),
-//                       border: Border.all(
-//                         color: Colors.grey.shade300,
-//                       ),
-//                     ),
-//                     child: Column(
-//                       spacing: 5,
-//                       children: [
-//                         ProductActionTile(
-//                           svg: editIconSvg,
-//                           text: 'View Product',
-//                           action: () {
-//                             Navigator.push(
-//                               context,
-//                               MaterialPageRoute(
-//                                 builder: (context) {
-//                                   return ProductDetailsPage(
-//                                     productId: product.id!,
-//                                   );
-//                                 },
-//                               ),
-//                             );
-//                           },
-//                         ),
-//                         ProductActionTile(
-//                           svg: editIconSvg,
-//                           text: 'Edit Product',
-//                           action: () {
-//                             Navigator.of(context).pop();
-//                             Navigator.push(
-//                               context,
-//                               MaterialPageRoute(
-//                                 builder: (context) {
-//                                   return EditProductsPage(
-//                                     product: product,
-//                                   );
-//                                 },
-//                               ),
-//                             );
-//                           },
-//                         ),
-//                         ProductActionTile(
-//                           svg: addIconSvg,
-//                           text: 'Add New Product',
-//                           action: () {
-//                             Navigator.push(
-//                               context,
-//                               MaterialPageRoute(
-//                                 builder: (context) {
-//                                   return AddProduct();
-//                                 },
-//                               ),
-//                             );
-//                           },
-//                         ),
-//                         ProductActionTile(
-//                           svg: deleteIconSvg,
-//                           text: 'Delete Product',
-//                           action: () {
-//                             returnData(
-//                               context,
-//                               listen: false,
-//                             ).deleteProduct(product);
-//                             Navigator.of(context).pop();
-//                           },
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           );
-//         },
-//       );
-//     },
-//   );
-
-//   action!();
-// }
-
-//
-//
-//
-//
 // C A R T   B O T T O M  S H E E T
 
 class CustomBottomPanel extends StatefulWidget {
@@ -1273,7 +1059,6 @@ class CustomBottomPanel extends StatefulWidget {
     super.key,
     required this.searchController,
     required this.close,
-    // required this.products,
   });
 
   @override
@@ -3300,6 +3085,14 @@ class _CountryBottomSheetState
                               Navigator.of(context).pop();
                             },
                             icon: Icons.clear,
+                            altAction: () async {
+                              // await returnShopProvider()
+                              //     .fetchShopCategories(
+                              //       shopId(),
+                              //     );
+                            },
+                            altActionText: 'Refresh',
+                            altIcon: Icons.refresh,
                           ),
                         );
                       } else {
@@ -3317,6 +3110,12 @@ class _CountryBottomSheetState
                                 Navigator.of(context).pop();
                               },
                               icon: Icons.clear,
+                              altAction: () async {
+                                await returnData()
+                                    .getProducts(shopId());
+                              },
+                              altActionText: 'Refresh',
+                              altIcon: Icons.refresh,
                             ),
                           );
                         } else {

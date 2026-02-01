@@ -626,9 +626,10 @@ Future<dynamic> settingsGenerateProductBarcode(
                                     child: Ink(
                                       decoration: BoxDecoration(
                                         color:
-                                            returnData()
-                                                    .barcodeGenerationList
-                                                    .isNotEmpty
+                                            returnData(
+                                                  context:
+                                                      context,
+                                                ).barcodeGenerationList.isNotEmpty
                                                 ? theme
                                                     .lightModeColor
                                                     .prColor300
@@ -749,8 +750,10 @@ Future<dynamic> settingsGenerateProductBarcode(
                                 builder: (context) {
                                   List<TempProductClass>
                                   products =
-                                      returnData()
-                                          .productList
+                                      returnData(
+                                            context:
+                                                context,
+                                          ).productList
                                           .where(
                                             (
                                               product,
@@ -777,17 +780,6 @@ Future<dynamic> settingsGenerateProductBarcode(
                                                           .transparent,
                                                   child: InkWell(
                                                     onTap: () {
-                                                      // if (product.barcode ==
-                                                      //     null) {
-                                                      //   generateBarcodeAndPrint(
-                                                      //     context,
-                                                      //     [
-                                                      //       product,
-                                                      //     ],
-                                                      //   );
-                                                      // } else {
-                                                      //
-                                                      // }
                                                       var dataP =
                                                           returnData();
                                                       if (dataP
@@ -887,7 +879,10 @@ Future<dynamic> settingsGenerateProductBarcode(
                                                           ),
                                                           Visibility(
                                                             visible:
-                                                                returnData().barcodeGenerationList
+                                                                returnData(
+                                                                      context:
+                                                                          context,
+                                                                    ).barcodeGenerationList
                                                                     .where(
                                                                       (
                                                                         pr,

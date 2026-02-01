@@ -218,24 +218,28 @@ class _EditReceiptPageDesktopState
                                       fontWeight:
                                           FontWeight.bold,
                                     ),
-                                    returnShopProvider()
-                                                    .userShop()!
-                                                    .printType !=
+                                    returnShopProvider(
+                                                  context:
+                                                      context,
+                                                ).userShop()!.printType !=
                                                 null &&
-                                            returnShopProvider()
-                                                    .userShop()!
-                                                    .printType ==
+                                            returnShopProvider(
+                                                  context:
+                                                      context,
+                                                ).userShop()!.printType ==
                                                 2
                                         ? (kIsWeb
                                             ? '80mm'
                                             : '( Bluetooth )')
-                                        : returnShopProvider()
-                                                    .userShop()!
-                                                    .printType !=
+                                        : returnShopProvider(
+                                                  context:
+                                                      context,
+                                                ).userShop()!.printType !=
                                                 null &&
-                                            returnShopProvider()
-                                                    .userShop()!
-                                                    .printType ==
+                                            returnShopProvider(
+                                                  context:
+                                                      context,
+                                                ).userShop()!.printType ==
                                                 1
                                         ? (kIsWeb
                                             ? '58mm'
@@ -327,7 +331,8 @@ class _ReceiptEditContainerState
 
   @override
   Widget build(BuildContext context) {
-    var receipP = returnShopProvider().userShop()!;
+    var receipP =
+        returnShopProvider(context: context).userShop()!;
     var receiptPFalse = returnShopProvider();
 
     return Stack(

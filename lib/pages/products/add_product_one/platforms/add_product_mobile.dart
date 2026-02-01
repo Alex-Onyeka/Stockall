@@ -687,8 +687,10 @@ class _AddProductMobileState
                                               .lightModeColor
                                               .secColor100,
                                       value:
-                                          returnData()
-                                              .isManaged,
+                                          returnData(
+                                            context:
+                                                context,
+                                          ).isManaged,
                                       onChanged: (value) {
                                         returnData()
                                             .toggleIsManaged(
@@ -769,8 +771,10 @@ class _AddProductMobileState
                                               .lightModeColor
                                               .secColor100,
                                       value:
-                                          returnData()
-                                              .setCustomPrice,
+                                          returnData(
+                                            context:
+                                                context,
+                                          ).setCustomPrice,
                                       onChanged: (value) {
                                         returnData()
                                             .toggleSetCustomPrice();
@@ -1208,8 +1212,10 @@ class _AddProductMobileState
                                               ),
                                       mainWidget: MainDropdown(
                                         valueSet:
-                                            returnData()
-                                                .unitValueSet,
+                                            returnData(
+                                              context:
+                                                  context,
+                                            ).unitValueSet,
                                         onTap: () {
                                           ItemsAuthAction().applyVariationsAction(
                                             context:
@@ -1235,8 +1241,10 @@ class _AddProductMobileState
                                         title:
                                             'Item Unit (Optional)',
                                         hint:
-                                            returnData()
-                                                .selectedUnit ??
+                                            returnData(
+                                              context:
+                                                  context,
+                                            ).selectedUnit ??
                                             'Select Item Unit',
                                         theme: theme,
                                       ),
@@ -1251,8 +1259,10 @@ class _AddProductMobileState
                                               ),
                                       mainWidget: MainDropdown(
                                         valueSet:
-                                            returnData()
-                                                .sizeValueSet,
+                                            returnData(
+                                              context:
+                                                  context,
+                                            ).sizeValueSet,
                                         onTap: () {
                                           ItemsAuthAction().applyVariationsAction(
                                             context:
@@ -1279,8 +1289,10 @@ class _AddProductMobileState
                                         title:
                                             'Size Type (Optional)',
                                         hint:
-                                            returnData()
-                                                .selectedSize ??
+                                            returnData(
+                                              context:
+                                                  context,
+                                            ).selectedSize ??
                                             'Select Item Size Type',
                                         theme: theme,
                                       ),
@@ -1296,8 +1308,10 @@ class _AddProductMobileState
                                               ),
                                       mainWidget: MainDropdown(
                                         valueSet:
-                                            returnData()
-                                                .catValueSet,
+                                            returnData(
+                                              context:
+                                                  context,
+                                            ).catValueSet,
                                         onTap: () {
                                           ItemsAuthAction().applyVariationsAction(
                                             context:
@@ -1323,354 +1337,15 @@ class _AddProductMobileState
                                         title:
                                             'Category (Optional)',
                                         hint:
-                                            returnData()
-                                                .selectedCategory ??
+                                            returnData(
+                                              context:
+                                                  context,
+                                            ).selectedCategory ??
                                             'Select Item Category',
                                         theme: theme,
                                       ),
                                     ),
                                     SizedBox(height: 10),
-                                    // EditCartTextField(
-                                    //   discount: true,
-                                    //   onChanged: (value) {
-                                    //     setState(() {
-                                    //       if (value
-                                    //               .toString()
-                                    //               .length >
-                                    //           2) {
-                                    //         discount = 100;
-                                    //       } else {
-                                    //         discount =
-                                    //             double.tryParse(
-                                    //               value,
-                                    //             ) ??
-                                    //             0;
-                                    //       }
-                                    //     });
-                                    //     checkDiscount();
-
-                                    //     if (value.isEmpty) {
-                                    //       returnData(
-                                    //         context,
-                                    //         listen: false,
-                                    //       ).clearEndDate();
-                                    //       returnData(
-                                    //         context,
-                                    //         listen: false,
-                                    //       ).clearStartDate();
-                                    //       widget
-                                    //           .discountController
-                                    //           .text = '';
-                                    //     } else if (int.parse(
-                                    //           widget
-                                    //               .discountController
-                                    //               .text,
-                                    //         ) >
-                                    //         99) {
-                                    //       widget
-                                    //           .discountController
-                                    //           .text = '100';
-                                    //       value = '100';
-                                    //     }
-                                    //   },
-                                    //   theme: theme,
-                                    //   hint:
-                                    //       'Set Discount %',
-                                    //   title:
-                                    //       'Discount (Optional)',
-                                    //   controller:
-                                    //       widget
-                                    //           .discountController,
-                                    // ),
-                                    // Visibility(
-                                    //   visible:
-                                    //       widget
-                                    //           .discountController
-                                    //           .text
-                                    //           .isNotEmpty,
-                                    //   child: Column(
-                                    //     children: [
-                                    //       SizedBox(
-                                    //         height: 5,
-                                    //       ),
-                                    //       Row(
-                                    //         spacing: 15,
-                                    //         mainAxisAlignment:
-                                    //             MainAxisAlignment
-                                    //                 .center,
-                                    //         children: [
-                                    //           Row(
-                                    //             spacing: 5,
-                                    //             children: [
-                                    //               Text(
-                                    //                 style: TextStyle(
-                                    //                   color:
-                                    //                       Colors.grey,
-                                    //                   fontSize:
-                                    //                       theme.mobileTexts.b3.fontSize,
-                                    //                   fontWeight:
-                                    //                       FontWeight.bold,
-                                    //                 ),
-                                    //                 'Selling-price',
-                                    //               ),
-                                    //               Text(
-                                    //                 style: TextStyle(
-                                    //                   color:
-                                    //                       theme.lightModeColor.secColor200,
-                                    //                   fontSize:
-                                    //                       theme.mobileTexts.b2.fontSize,
-                                    //                   fontWeight:
-                                    //                       FontWeight.bold,
-                                    //                 ),
-                                    //                 '$nairaSymbol${formatLargeNumberDouble(sellingDiscount)}',
-                                    //               ),
-                                    //             ],
-                                    //           ),
-                                    //           Row(
-                                    //             spacing: 5,
-                                    //             children: [
-                                    //               Text(
-                                    //                 style: TextStyle(
-                                    //                   color:
-                                    //                       Colors.grey,
-                                    //                   fontSize:
-                                    //                       theme.mobileTexts.b3.fontSize,
-                                    //                   fontWeight:
-                                    //                       FontWeight.bold,
-                                    //                 ),
-                                    //                 'Discount:',
-                                    //               ),
-                                    //               Text(
-                                    //                 style: TextStyle(
-                                    //                   color:
-                                    //                       theme.lightModeColor.secColor200,
-                                    //                   fontSize:
-                                    //                       theme.mobileTexts.b2.fontSize,
-                                    //                   fontWeight:
-                                    //                       FontWeight.bold,
-                                    //                 ),
-                                    //                 '$nairaSymbol${formatLargeNumberDouble(costDiscount)}',
-                                    //               ),
-                                    //             ],
-                                    //           ),
-                                    //         ],
-                                    //       ),
-                                    //     ],
-                                    //   ),
-                                    // ),
-                                    // SizedBox(height: 15),
-                                    // Visibility(
-                                    //   visible:
-                                    //       widget
-                                    //           .discountController
-                                    //           .text
-                                    //           .isNotEmpty,
-                                    //   child: Row(
-                                    //     mainAxisAlignment:
-                                    //         MainAxisAlignment
-                                    //             .center,
-                                    //     spacing: 10,
-                                    //     children: [
-                                    //       InkWell(
-                                    //         onTap: () {
-                                    //           setState(() {
-                                    //             isExp =
-                                    //                 false;
-                                    //             setDate =
-                                    //                 true;
-                                    //           });
-                                    //           returnData(
-                                    //             context,
-                                    //             listen:
-                                    //                 false,
-                                    //           ).changeDateBoolToTrue();
-                                    //           FocusManager
-                                    //               .instance
-                                    //               .primaryFocus
-                                    //               ?.unfocus();
-                                    //         },
-                                    //         child: Container(
-                                    //           padding:
-                                    //               EdgeInsets.symmetric(
-                                    //                 horizontal:
-                                    //                     10,
-                                    //                 vertical:
-                                    //                     5,
-                                    //               ),
-                                    //           decoration: BoxDecoration(
-                                    //             border: Border.all(
-                                    //               color:
-                                    //                   Colors
-                                    //                       .grey
-                                    //                       .shade200,
-                                    //             ),
-                                    //           ),
-                                    //           child: Row(
-                                    //             spacing: 5,
-                                    //             children: [
-                                    //               Text(
-                                    //                 style: TextStyle(
-                                    //                   fontSize:
-                                    //                       theme.mobileTexts.b2.fontSize,
-                                    //                   fontWeight:
-                                    //                       FontWeight.bold,
-                                    //                 ),
-                                    //                 formatDateTime(
-                                    //                   returnData(
-                                    //                         context,
-                                    //                       ).startDate ??
-                                    //                       DateTime.now(),
-                                    //                 ),
-                                    //               ),
-                                    //               Icon(
-                                    //                 size:
-                                    //                     20,
-                                    //                 Icons
-                                    //                     .calendar_month_outlined,
-                                    //               ),
-                                    //             ],
-                                    //           ),
-                                    //         ),
-                                    //       ),
-                                    //       InkWell(
-                                    //         onTap: () {
-                                    //           setState(() {
-                                    //             isExp =
-                                    //                 false;
-                                    //             setDate =
-                                    //                 true;
-                                    //           });
-                                    //           returnData(
-                                    //             context,
-                                    //             listen:
-                                    //                 false,
-                                    //           ).clearEndDate();
-                                    //           returnData(
-                                    //             context,
-                                    //             listen:
-                                    //                 false,
-                                    //           ).changeDateBoolToFalse();
-                                    //           FocusManager
-                                    //               .instance
-                                    //               .primaryFocus
-                                    //               ?.unfocus();
-                                    //         },
-                                    //         child: Container(
-                                    //           padding:
-                                    //               EdgeInsets.symmetric(
-                                    //                 horizontal:
-                                    //                     10,
-                                    //                 vertical:
-                                    //                     5,
-                                    //               ),
-                                    //           decoration: BoxDecoration(
-                                    //             border: Border.all(
-                                    //               color:
-                                    //                   Colors
-                                    //                       .grey
-                                    //                       .shade200,
-                                    //             ),
-                                    //           ),
-                                    //           child: Row(
-                                    //             spacing: 5,
-                                    //             children: [
-                                    //               Text(
-                                    //                 style: TextStyle(
-                                    //                   fontSize:
-                                    //                       theme.mobileTexts.b2.fontSize,
-                                    //                   fontWeight:
-                                    //                       FontWeight.bold,
-                                    //                 ),
-                                    //                 returnData(
-                                    //                           context,
-                                    //                         ).endDate !=
-                                    //                         null
-                                    //                     ? formatDateTime(
-                                    //                       returnData(
-                                    //                             context,
-                                    //                           ).endDate ??
-                                    //                           DateTime.now(),
-                                    //                     )
-                                    //                     : 'Set End Date',
-                                    //               ),
-                                    //               Icon(
-                                    //                 size:
-                                    //                     20,
-                                    //                 Icons
-                                    //                     .calendar_month_outlined,
-                                    //               ),
-                                    //             ],
-                                    //           ),
-                                    //         ),
-                                    //       ),
-                                    //     ],
-                                    //   ),
-                                    // ),
-                                    // SizedBox(height: 20),
-                                    // InkWell(
-                                    //   onTap: () {
-                                    //     returnData(
-                                    //       context,
-                                    //       listen: false,
-                                    //     ).toggleRefundable();
-                                    //     FocusManager
-                                    //         .instance
-                                    //         .primaryFocus
-                                    //         ?.unfocus();
-                                    //   },
-                                    //   child: Row(
-                                    //     mainAxisAlignment:
-                                    //         MainAxisAlignment
-                                    //             .spaceBetween,
-                                    //     children: [
-                                    //       Flexible(
-                                    //         child: Column(
-                                    //           crossAxisAlignment:
-                                    //               CrossAxisAlignment
-                                    //                   .start,
-                                    //           children: [
-                                    //             Text(
-                                    //               style: TextStyle(
-                                    //                 fontSize:
-                                    //                     theme.mobileTexts.b1.fontSize,
-                                    //                 fontWeight:
-                                    //                     FontWeight.bold,
-                                    //               ),
-                                    //               'Refundable?',
-                                    //             ),
-                                    //             Text(
-                                    //               'Allow Customers return this product after Purchase?',
-                                    //             ),
-                                    //           ],
-                                    //         ),
-                                    //       ),
-                                    //       Checkbox(
-                                    //         activeColor:
-                                    //             theme
-                                    //                 .lightModeColor
-                                    //                 .secColor100,
-                                    //         value:
-                                    //             returnData(
-                                    //               context,
-                                    //             ).isProductRefundable,
-                                    //         onChanged: (
-                                    //           value,
-                                    //         ) {
-                                    //           returnData(
-                                    //             context,
-                                    //             listen:
-                                    //                 false,
-                                    //           ).toggleRefundable();
-                                    //           FocusManager
-                                    //               .instance
-                                    //               .primaryFocus
-                                    //               ?.unfocus();
-                                    //         },
-                                    //       ),
-                                    //     ],
-                                    //   ),
-                                    // ),
-                                    // SizedBox(height: 10),
                                   ],
                                 ),
                               ),

@@ -261,6 +261,14 @@ class _TotalProductsMobileState
                                   });
                                 },
                                 theme: widget.theme,
+                                altAction: () async {
+                                  await returnData()
+                                      .getProducts(
+                                        shopId(),
+                                      );
+                                },
+                                altActionText: 'Refresh',
+                                altIcon: Icons.refresh,
                               ),
                             ),
                           ),

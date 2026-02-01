@@ -134,6 +134,14 @@ class _CustomerListMobileState
                     setState(() {});
                   });
                 },
+                altAction: () async {
+                  await returnCustomers(
+                    context,
+                    listen: false,
+                  ).fetchCustomers(shopId());
+                },
+                altActionText: 'Refresh',
+                altIcon: Icons.refresh,
               );
             } else {
               return Padding(

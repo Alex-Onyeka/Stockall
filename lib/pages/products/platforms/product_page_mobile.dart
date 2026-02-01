@@ -349,6 +349,14 @@ class _ProductPageMobileState
                                       'You have no Items Yet',
                                   height: 35,
                                   icon: Icons.clear,
+                                  altAction: () async {
+                                    await returnData()
+                                        .getProducts(
+                                          shopId(),
+                                        );
+                                  },
+                                  altActionText: 'Refresh',
+                                  altIcon: Icons.refresh,
 
                                   theme: widget.theme,
                                 ),
@@ -390,6 +398,14 @@ class _ProductPageMobileState
                                     });
                                   },
                                   theme: widget.theme,
+                                  altAction: () async {
+                                    await returnData()
+                                        .getProducts(
+                                          shopId(),
+                                        );
+                                  },
+                                  altActionText: 'Refresh',
+                                  altIcon: Icons.refresh,
                                 ),
                               ),
                             ),

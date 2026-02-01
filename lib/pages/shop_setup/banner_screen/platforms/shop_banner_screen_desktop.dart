@@ -459,7 +459,8 @@ Future<dynamic> setRole(
                 mainAxisAlignment: MainAxisAlignment.center,
                 spacing: 5,
                 children:
-                    returnShopProvider().roles
+                    returnShopProvider(context: context)
+                        .roles
                         .map(
                           (role) => Material(
                             type: MaterialType.transparency,
@@ -525,8 +526,10 @@ Future<dynamic> setRole(
                                               BoxShape
                                                   .circle,
                                           color:
-                                              returnShopProvider()
-                                                          .tempRole ==
+                                              returnShopProvider(
+                                                        context:
+                                                            context,
+                                                      ).tempRole ==
                                                       role
                                                   ? theme
                                                       .lightModeColor

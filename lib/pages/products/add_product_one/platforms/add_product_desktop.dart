@@ -707,8 +707,10 @@ class _AddProductDesktopState
                                                   .lightModeColor
                                                   .secColor100,
                                           value:
-                                              returnData()
-                                                  .isManaged,
+                                              returnData(
+                                                context:
+                                                    context,
+                                              ).isManaged,
                                           onChanged: (
                                             value,
                                           ) {
@@ -791,8 +793,10 @@ class _AddProductDesktopState
                                                   .lightModeColor
                                                   .secColor100,
                                           value:
-                                              returnData()
-                                                  .setCustomPrice,
+                                              returnData(
+                                                context:
+                                                    context,
+                                              ).setCustomPrice,
                                           onChanged: (
                                             value,
                                           ) {
@@ -1355,8 +1359,10 @@ class _AddProductDesktopState
                                                   ),
                                           mainWidget: MainDropdown(
                                             valueSet:
-                                                returnData()
-                                                    .unitValueSet,
+                                                returnData(
+                                                  context:
+                                                      context,
+                                                ).unitValueSet,
                                             onTap: () {
                                               ItemsAuthAction().applyVariationsAction(
                                                 context:
@@ -1383,8 +1389,10 @@ class _AddProductDesktopState
                                             title:
                                                 'Item Unit (Optional)',
                                             hint:
-                                                returnData()
-                                                    .selectedUnit ??
+                                                returnData(
+                                                  context:
+                                                      context,
+                                                ).selectedUnit ??
                                                 'Select Item Unit',
                                             theme: theme,
                                           ),
@@ -1401,8 +1409,10 @@ class _AddProductDesktopState
                                                   ),
                                           mainWidget: MainDropdown(
                                             valueSet:
-                                                returnData()
-                                                    .sizeValueSet,
+                                                returnData(
+                                                  context:
+                                                      context,
+                                                ).sizeValueSet,
                                             onTap: () {
                                               ItemsAuthAction().applyVariationsAction(
                                                 context:
@@ -1448,8 +1458,10 @@ class _AddProductDesktopState
                                                   ),
                                           mainWidget: MainDropdown(
                                             valueSet:
-                                                returnData()
-                                                    .catValueSet,
+                                                returnData(
+                                                  context:
+                                                      context,
+                                                ).catValueSet,
                                             onTap: () {
                                               ItemsAuthAction().applyVariationsAction(
                                                 context:
@@ -1475,8 +1487,10 @@ class _AddProductDesktopState
                                             title:
                                                 'Category (Optional)',
                                             hint:
-                                                returnData()
-                                                    .selectedCategory ??
+                                                returnData(
+                                                  context:
+                                                      context,
+                                                ).selectedCategory ??
                                                 'Select Item Category',
                                             theme: theme,
                                           ),
