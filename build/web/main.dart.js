@@ -167737,7 +167737,7 @@ m=a0.d
 b=A.J(new A.bL(new A.b8(1,b1),a1,a1,A.az(!1,B.M,!0,a1,A.cc(a1,A.v(a1,A.av(B.a_,A.a([a9,A.J(A.cc(a1,A.t(A.a([A.a6(B.c3,B.w,a1,16)],e),B.f,B.F,B.a7,0),B.ai,!1,a1,a1,a1,a1,a1,a1,a1,a1,a1,a1,a1,a1,a1,new A.buX(a0),a1,a1,a1,a1,a1,a1),!m)],e),B.A,B.S),B.m,a1,a1,new A.D(o,a1,a1,new A.dN(new A.b5(5,5),B.ao,new A.b5(5,5),B.ao),a1,a1,B.x),a1,a1,a1,a1,new A.y(10,15,p,15),a1,a1,a1),B.ai,!1,a1,a1,a1,a1,a1,a1,a1,a1,a1,a1,a1,a1,a1,new A.buY(a0),a1,a1,a1,a1,a1,a1),B.m,B.U,2,a1,a1,a1,a1,a1,B.X),a1),b)
 a9=t.Cx
 b1=A.d(b4,!0,a9).c
-a9="1.1.10.0"!==(b1==null?a1:b1.f)&&!A.d(b4,!0,a9).d
+a9="1.1.11.0"!==(b1==null?a1:b1.f)&&!A.d(b4,!0,a9).d
 k=A.a([new A.bw(10,B.aj,B.rP,B.J,20)],k)
 b1=A.T(5)
 p=A.p(A.a([A.fA(A.cX(a1,a1,a1,A.a6(B.ae,a1,a1,a1),a1,a1,new A.buZ(),a1,a1,a1,a1),0),A.e("NEW UPDATE AVAILABLE",a1,a1,a1,a1,A.f(a1,a1,a1,a1,a1,a1,a1,a1,a1,a1,a1,a1,a1,a1,B.u,a1,a1,!0,a1,a1,a1,a1,a1,a1,a1,a1),a1,a1,a1),A.cX(a1,a1,a1,A.a6(B.ae,a1,a1,a1),a1,a1,new A.bv_(b4),a1,a1,a1,a1)],e),B.f,B.K,B.e,10)
@@ -168229,7 +168229,7 @@ h=b1.e
 h=A.t(A.a([q,A.F(A.ey(B.w,new A.H(B.b1,A.jZ(A.a([n,new A.ym(k,l,m,b3,b0,a4),j,f,e,A.t(A.a([A.p(A.a([A.e("Quick Actions",a4,a4,a4,a4,A.f(a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,h.a,a4,a4,h.c,a4,a4,!0,a4,a4,a4,a4,a4,a4,a4,a4),a4,a4,a4)],d),B.f,B.j,B.e,0),A.h(a4,15,a4),A.h(A.d5(new A.bwl(a3,b0)),a4,1/0)],d),B.f,B.j,B.e,0),A.h(a4,30,a4)],d),a4,B.W,!1),a4),o,10,new A.bwm(b5)),1)],d),B.f,B.j,B.e,0)
 q=t.Cx
 n=A.d(b5,!0,q).c
-n="1.1.0+10"!==(n==null?a4:n.e)&&!A.d(b5,!0,q).d
+n="1.1.0+11"!==(n==null?a4:n.e)&&!A.d(b5,!0,q).d
 m=t.V
 l=A.a([new A.bw(10,B.aj,B.rP,B.J,20)],m)
 k=A.T(5)
@@ -168265,7 +168265,7 @@ k=A.J(A.p(A.a([A.t(A.a([A.a6(B.bu,B.w,a4,16)],d),B.f,B.F,B.a7,0),A.h(a4,a4,10),A
 f=a3.d
 l=A.J(new A.bL(new A.b8(1,j),a4,a4,A.az(!1,B.M,!0,a4,A.cc(a4,A.v(a4,A.av(B.a_,A.a([k,A.J(A.cc(a4,A.t(A.a([A.a6(B.c3,B.w,a4,16)],d),B.f,B.F,B.a7,0),B.ai,!1,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,new A.bw9(a3),a4,a4,a4,a4,a4,a4),!f)],d),B.A,B.S),B.m,a4,a4,new A.D(p,a4,a4,new A.dN(new A.b5(5,5),B.ao,new A.b5(5,5),B.ao),a4,a4,B.x),a4,a4,a4,a4,new A.y(10,15,g,15),a4,a4,a4),B.ai,!1,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,new A.bwa(a3),a4,a4,a4,a4,a4,a4),B.m,B.U,2,a4,a4,a4,a4,a4,B.X),a4),l)
 k=A.d(b5,!0,q).c
-q="1.1.10.0"!==(k==null?a4:k.f)&&!A.d(b5,!0,q).d
+q="1.1.11.0"!==(k==null?a4:k.f)&&!A.d(b5,!0,q).d
 m=A.a([new A.bw(10,B.aj,B.rP,B.J,20)],m)
 k=A.T(5)
 j=A.p(A.a([A.fA(A.cX(a4,a4,a4,A.a6(B.ae,a4,a4,a4),a4,a4,new A.bwb(),a4,a4,a4,a4),0),A.e("APP UPDATE AVAILABLE",a4,a4,a4,a4,A.f(a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,B.u,a4,a4,!0,a4,a4,a4,a4,a4,a4,a4,a4),a4,a4,a4),A.cX(a4,a4,a4,A.a6(B.ae,a4,a4,a4),a4,a4,new A.bwc(b5),a4,a4,a4,a4)],d),B.f,B.K,B.e,10)
@@ -184703,7 +184703,7 @@ h=A.es(new A.c4t(),d,d,18,B.iW,d,d,"Privacy P. & Terms/C.")
 g=A.es(new A.c4u(),d,d,18,B.CA,d,d,"Go to Wesbite.")
 f=A.bJ(a0,a7)
 a4=a4.w.a
-a4=A.t(A.a([A.F(A.bF(A.az(!1,B.M,!0,d,A.t(A.a([a2,a5,a3,A.t(A.a([s,r,q,p,o,n,m,l,k,j,i,h,g,A.J(A.es(new A.c4v(e,a7,a1),B.cW,d,18,B.cT,d,d,a0),f)],a6),B.f,B.j,B.e,0),A.h(d,A.U(a7,d,t.l).w.a.b*0.2,d)],a6),B.f,B.j,B.e,0),B.m,B.U,0,d,d,d,d,d,B.X),B.A,d,d,d,B.W),1),A.h(d,15,d),A.v(d,new A.H(B.aT,A.p(A.a([A.p(A.a([A.e("Current Version:",d,d,d,d,A.f(d,d,B.dg,d,d,d,d,d,d,d,d,a4,B.hv,d,d,d,d,!0,d,d,d,d,d,d,d,d),d,d,d)],a6),B.f,B.j,B.e,10),A.e("1.1.10.0",d,d,d,d,A.f(d,d,B.bl,d,d,d,d,d,d,d,d,a4,B.hv,d,B.u,d,d,!0,d,d,d,d,d,d,d,d),d,d,d)],a6),B.f,B.F,B.e,10),d),B.m,B.U,d,d,d,20,d,d,d,d,d,d),A.h(d,10,d)],a6),B.f,B.j,B.e,0)
+a4=A.t(A.a([A.F(A.bF(A.az(!1,B.M,!0,d,A.t(A.a([a2,a5,a3,A.t(A.a([s,r,q,p,o,n,m,l,k,j,i,h,g,A.J(A.es(new A.c4v(e,a7,a1),B.cW,d,18,B.cT,d,d,a0),f)],a6),B.f,B.j,B.e,0),A.h(d,A.U(a7,d,t.l).w.a.b*0.2,d)],a6),B.f,B.j,B.e,0),B.m,B.U,0,d,d,d,d,d,B.X),B.A,d,d,d,B.W),1),A.h(d,15,d),A.v(d,new A.H(B.aT,A.p(A.a([A.p(A.a([A.e("Current Version:",d,d,d,d,A.f(d,d,B.dg,d,d,d,d,d,d,d,d,a4,B.hv,d,d,d,d,!0,d,d,d,d,d,d,d,d),d,d,d)],a6),B.f,B.j,B.e,10),A.e("1.1.11.0",d,d,d,d,A.f(d,d,B.bl,d,d,d,d,d,d,d,d,a4,B.hv,d,B.u,d,d,!0,d,d,d,d,d,d,d,d),d,d,d)],a6),B.f,B.F,B.e,10),d),B.m,B.U,d,d,d,20,d,d,d,d,d,d),A.h(d,10,d)],a6),B.f,B.j,B.e,0)
 f=e.r
 return A.av(B.a_,A.a([new A.jr(d,a4,d),A.J(A.d(a7,!1,t.r).bc("Deleting Store"),f)],a6),B.A,B.S)}}
 A.c4o.prototype={
@@ -184966,7 +184966,7 @@ g=t.p
 h=A.F(A.jZ(A.a([a2,a3,s,r,q,p,o,n,m,l,k,j,i,A.J(A.es(new A.c59(f,a4,a0),B.cW,e,18,B.cT,e,e,a),h)],g),e,B.W,!1),1)
 i=A.h(e,15,e)
 a0=a0.b.w.a
-a0=A.aI(a1,e,A.hy(!0,new A.H(B.iB,A.t(A.a([h,i,A.v(e,new A.H(B.aT,A.p(A.a([A.p(A.a([A.e("Current Version:",e,e,e,e,A.f(e,e,B.dg,e,e,e,e,e,e,e,e,a0,B.hv,e,e,e,e,!0,e,e,e,e,e,e,e,e),e,e,e)],g),B.f,B.j,B.e,10),A.e("1.1.0+10",e,e,e,e,A.f(e,e,B.bl,e,e,e,e,e,e,e,e,a0,B.hv,e,B.u,e,e,!0,e,e,e,e,e,e,e,e),e,e,e)],g),B.f,B.F,B.e,10),e),B.m,B.U,e,e,e,20,e,e,e,e,e,e),A.h(e,20,e)],g),B.f,B.j,B.e,0),e),B.at,!0),e,e,e,e,e,e)
+a0=A.aI(a1,e,A.hy(!0,new A.H(B.iB,A.t(A.a([h,i,A.v(e,new A.H(B.aT,A.p(A.a([A.p(A.a([A.e("Current Version:",e,e,e,e,A.f(e,e,B.dg,e,e,e,e,e,e,e,e,a0,B.hv,e,e,e,e,!0,e,e,e,e,e,e,e,e),e,e,e)],g),B.f,B.j,B.e,10),A.e("1.1.0+11",e,e,e,e,A.f(e,e,B.bl,e,e,e,e,e,e,e,e,a0,B.hv,e,B.u,e,e,!0,e,e,e,e,e,e,e,e),e,e,e)],g),B.f,B.F,B.e,10),e),B.m,B.U,e,e,e,20,e,e,e,e,e,e),A.h(e,20,e)],g),B.f,B.j,B.e,0),e),B.at,!0),e,e,e,e,e,e)
 i=f.r
 return A.av(B.a_,A.a([a0,A.J(A.d(a4,!1,t.r).bc("Deleting Store"),i)],g),B.A,B.S)}}
 A.c52.prototype={
@@ -190571,10 +190571,10 @@ $.crt().QC(A.cyN(m))
 n.F()
 A.x("App Version gotten Successfully")
 if(A.U(a,null,t.l).w.a.a<=650){k=n.c
-if((k==null?null:k.e)!=="1.1.0+10"){n.d=!1
+if((k==null?null:k.e)!=="1.1.0+11"){n.d=!1
 n.F()}else{n.d=!0
 n.F()}}else{k=n.c
-if((k==null?null:k.f)!=="1.1.10.0"){n.d=!1
+if((k==null?null:k.f)!=="1.1.11.0"){n.d=!1
 n.F()}else{n.d=!0
 n.F()}}k=n.c
 q=k
@@ -190610,10 +190610,10 @@ k=k.aX()
 k=k.b.$1(J.iq(k.a))}else k=null
 n.c=k
 if(A.U(a,null,t.l).w.a.a<=650){k=n.c
-if((k==null?null:k.e)!=="1.1.0+10"){n.d=!1
+if((k==null?null:k.e)!=="1.1.0+11"){n.d=!1
 n.F()}else{n.d=!0
 n.F()}}else{k=n.c
-if((k==null?null:k.f)!=="1.1.10.0"){n.d=!1
+if((k==null?null:k.f)!=="1.1.11.0"){n.d=!1
 n.F()}else{n.d=!0
 n.F()}}A.x("App version gotten Offline")
 q=n.c
