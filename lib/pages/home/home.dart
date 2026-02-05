@@ -11,6 +11,7 @@ import 'package:stockall/pages/profile/edit/edit.dart';
 import 'package:stockall/pages/sales/sales_page/sales_page.dart';
 import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart';
 import 'package:stockall/providers/nav_provider.dart';
+import 'package:stockall/services/barcode_generation/barcode_import_helper.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -33,13 +34,6 @@ class _HomeState extends State<Home> {
     print(user?.email);
     return user;
   }
-
-  // Future<SubscriptionClass?> getSubscription() async {
-  //   return await returnSubcsription(
-  //     context,
-  //     listen: false,
-  //   ).getSubscription(context);
-  // }
 
   void _handleNoShop() {
     if (!context.mounted) return;
@@ -80,6 +74,7 @@ class _HomeState extends State<Home> {
     // getSubscription();
     userFuture = getUser();
     shopFuture = getUserShop();
+    listPrinters();
   }
 
   @override

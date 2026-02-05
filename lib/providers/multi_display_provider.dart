@@ -1,10 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 import 'package:desktop_multi_window/desktop_multi_window.dart';
+import 'package:stockall/main.dart';
 import 'package:stockall/pages/alt_display/alt_display.dart';
 
 class MultiDisplayProvider extends ChangeNotifier {
@@ -13,26 +11,24 @@ class MultiDisplayProvider extends ChangeNotifier {
   factory MultiDisplayProvider() => _instance;
   MultiDisplayProvider._internal();
   Future<bool> isAllowed() async {
-    if (kIsWeb ||
-        Platform.isAndroid ||
-        Platform.isFuchsia ||
-        Platform.isIOS) {
+    if (returnShopProvider().isDesktop()) {
+      var screen = await getAltDisplay();
+      if (screen == null) {
+        return false;
+      }
+      for (var win in windows) {
+        await win.controller.setFrame(
+          screen.visiblePosition! & screen.visibleSize!,
+        );
+      }
+      return true;
+    } else {
       return false;
     }
-    var screens = await screenRetriever.getAllDisplays();
-    if (screens.length < 2) return false;
-    for (var win in windows) {
-      await win.controller.setFrame(
-        screens[1].visiblePosition! &
-            screens[1].visibleSize!,
-      );
-    }
-    return Platform.isWindows ||
-        Platform.isLinux ||
-        Platform.isMacOS;
   }
 
   List<WindowInfo> windows = [];
+
   void deleteWindow(String cartId) {
     windows.removeWhere((win) => win.id == cartId);
     notifyListeners();
@@ -49,35 +45,37 @@ class MultiDisplayProvider extends ChangeNotifier {
     }
   }
 
+  Display? altDisplay;
   Future<Display?> getAltDisplay() async {
-    var yes = await isAllowed();
-    if (yes) {
-      var displays = await screenRetriever.getAllDisplays();
+    var displays = await screenRetriever.getAllDisplays();
+    if (displays.length > 1) {
+      altDisplay = displays[1];
+      notifyListeners();
       return displays[1];
     } else {
+      altDisplay = null;
+      notifyListeners();
       return null;
     }
   }
 
   bool checkIfWindowExists(String cartId) {
-    if (kIsWeb ||
-        Platform.isAndroid ||
-        Platform.isFuchsia ||
-        Platform.isIOS) {
+    if (returnShopProvider().isDesktop()) {
+      try {
+        var displayId =
+            windows
+                .firstWhere((win) => win.id == cartId)
+                .controller
+                .windowId;
+        return displayIds.contains(displayId);
+      } catch (e) {
+        print(
+          'Error Occured Checking if Window Exists: ${e.toString()}',
+        );
+        return false;
+      }
+    } else {
       return true;
-    }
-    try {
-      var displayId =
-          windows
-              .firstWhere((win) => win.id == cartId)
-              .controller
-              .windowId;
-      return displayIds.contains(displayId);
-    } catch (e) {
-      print(
-        'Error Occured Checking if Window Exists: ${e.toString()}',
-      );
-      return false;
     }
   }
 
@@ -88,7 +86,7 @@ class MultiDisplayProvider extends ChangeNotifier {
     var yes = await isAllowed();
     if (yes) {
       try {
-        var main = await getAltDisplay();
+        // var main = await getAltDisplay();
 
         final name =
             'Cart ${newCartIndex ?? windows.length + 1}';
@@ -104,10 +102,10 @@ class MultiDisplayProvider extends ChangeNotifier {
 
         windowController
           ..setFrame(
-            main!.visiblePosition! &
+            altDisplay!.visiblePosition! &
                 Size(
-                  main.visibleSize!.width + 200,
-                  main.visibleSize!.height + 200,
+                  altDisplay!.visibleSize!.width + 200,
+                  altDisplay!.visibleSize!.height + 200,
                 ),
           )
           ..setTitle(name)
@@ -178,28 +176,38 @@ class MultiDisplayProvider extends ChangeNotifier {
   }) async {
     var yes = await isAllowed();
     await getAllSubWindows();
+    print(cartId);
+    print(cartIndex);
     if (yes) {
-      var selWin =
-          windows.where((win) => win.id == cartId).first;
-      await selWin.controller.show();
-      if (cartIndex !=
-          int.parse(selWin.name.split(' ').last)) {
-        await selWin.controller.setTitle('Cart $cartIndex');
-        selWin.name = 'Cart $cartIndex';
-        print(
-          'Updated Window Name and Title Numbers to $cartIndex',
-        );
-      }
+      var selWins = windows.where(
+        (win) => win.id == cartId,
+      );
+      if (selWins.isEmpty) {
+        returnSalesProvider().createWindow();
+      } else {
+        var selWin = selWins.first;
+        await selWin.controller.show();
+        if (cartIndex !=
+            int.parse(selWin.name.split(' ').last)) {
+          await selWin.controller.setTitle(
+            'Cart $cartIndex',
+          );
+          selWin.name = 'Cart $cartIndex';
+          print(
+            'Updated Window Name and Title Numbers to $cartIndex',
+          );
+        }
 
-      for (var win in windows.where(
-        (win) =>
-            win.controller.windowId !=
-            selWin.controller.windowId,
-      )) {
-        await win.controller.hide();
-      }
+        for (var win in windows.where(
+          (win) =>
+              win.controller.windowId !=
+              selWin.controller.windowId,
+        )) {
+          await win.controller.hide();
+        }
 
-      notifyListeners();
+        notifyListeners();
+      }
     }
   }
 

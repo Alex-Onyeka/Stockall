@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
@@ -13,6 +14,7 @@ import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
+import 'package:stockall/pages/barcode_printing_page/barcode_printing_page.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
 import 'package:stockall/pages/settings/settings_page.dart';
 import 'package:stockall/pages/shop_setup/edit_receipt_page/edit_receipt.dart';
@@ -244,16 +246,28 @@ class _SettingsPageDesktopState
                                 mainWidget: NavListTileDesktopAlt(
                                   height: 18,
                                   action: () {
-                                    ItemsAuthAction()
-                                        .generateBarcodeAction(
-                                          context: context,
-                                          action: () {
-                                            settingsGenerateProductBarcode(
-                                              context,
-                                              productSearch,
-                                            );
-                                          },
-                                        );
+                                    ItemsAuthAction().generateBarcodeAction(
+                                      context: context,
+                                      action: () {
+                                        if (kIsWeb) {
+                                          settingsGenerateProductBarcode(
+                                            context,
+                                            productSearch,
+                                          );
+                                        } else {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (
+                                                context,
+                                              ) {
+                                                return BarcodePrintingPage();
+                                              },
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    );
                                   },
                                   title:
                                       'Generate Product Barcode',

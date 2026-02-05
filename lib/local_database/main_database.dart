@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:stockall/local_database/app_version/app_version_func.dart';
+import 'package:stockall/local_database/barcode_printer_func/barcode_printer_local_func.dart';
 import 'package:stockall/local_database/customers/customer_func.dart';
 import 'package:stockall/local_database/events_log/events_log_func.dart';
 import 'package:stockall/local_database/expenses/expenses_func.dart';
@@ -19,6 +20,7 @@ import 'package:stockall/local_database/shop_owner/shop_owner_func.dart';
 import 'package:stockall/local_database/subscription/subscription_func.dart';
 import 'package:stockall/local_database/users/user_func.dart';
 import 'package:stockall/local_database/visibility_box/visibility_box.dart';
+import 'package:stockall/main.dart';
 
 class MainDatabase extends ChangeNotifier {
   static final MainDatabase _instance =
@@ -27,9 +29,8 @@ class MainDatabase extends ChangeNotifier {
   MainDatabase._internal();
 
   Future<void> initHive() async {
-    // await Hive.initFlutter();
     if (kIsWeb) {
-      await Hive.initFlutter(); // web uses IndexedDB
+      await Hive.initFlutter();
     } else {
       final dir = await getApplicationSupportDirectory();
       final stockallDir = Directory('${dir.path}/Stockall');
@@ -47,7 +48,6 @@ class MainDatabase extends ChangeNotifier {
     await NotificationFunc().init();
     await ProductsFunc().init();
     await ProductRecordFunc().init();
-    // await ProductSuggestionFunc().init();
     await MainReceiptFunc().init();
     await LoggedInUserFunc().init();
     await ShopLogosFunc().init();
@@ -55,8 +55,11 @@ class MainDatabase extends ChangeNotifier {
     await SubscriptionFunc().init();
     await ShopOwnerFunc().init();
     await EventsLogFunc().init();
+    if (returnShopProvider().isDesktop()) {
+      await BarcodePrinterLocalFunc().init();
+    }
     print('init Complete');
   }
 }
 
-int highestHiveClassIndex = 35;
+int highestHiveClassIndex = 38;

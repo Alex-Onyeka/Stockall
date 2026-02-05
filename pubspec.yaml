@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.1.0+11
+version: 1.1.0+12
 
 environment:
   sdk: ^3.7.2
@@ -80,6 +80,8 @@ dependencies:
   flutter_inappwebview: ^6.1.5
   desktop_multi_window: ^0.2.1
   screen_retriever: ^0.1.9
+  win32: ^5.15.0
+  ffi: ^2.1.5
   # multi_window: ^0.2.0
   # flutter_local_notifications: ^19.5.0
   # blue_thermal_printer: ^1.2.3
@@ -110,7 +112,7 @@ msix_config:
   display_name: Stockall
   publisher_display_name: Stockall Solutions
   identity_name: StockallSolutions.Stockall
-  msix_version: 1.1.11.0
+  msix_version: 1.1.12.0
   logo_path: assets/images/logos/fav_icon.png
   start_menu_icon_path: assets/images/logos/fav_icon.png
   tile_icon_path: assets/images/logos/fav_icon.png

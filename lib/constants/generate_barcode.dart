@@ -15,6 +15,8 @@ import 'package:flutter/foundation.dart';
 import 'package:stockall/providers/data_provider.dart';
 import 'package:universal_html/html.dart' as html;
 
+import '../services/barcode_generation/barcode_import_helper.dart';
+
 String returnOnlyDigits(String text) {
   List<String> temp = [];
 
@@ -245,168 +247,127 @@ class _GenerateBarcodeScreenState
   }
 }
 
-Future<bool> printBarcode(
-  // String data,
+Future<bool> printBarcodeWebAndMobile(
   BuildContext context,
   List<ProductBarcode> productBarcodes,
 ) async {
   final barcode = Barcode.ean13();
-
   final pdf = pw.Document();
 
-  pdf.addPage(
-    pw.Page(
-      pageFormat: PdfPageFormat(
-        58 * PdfPageFormat.mm,
-        40 * PdfPageFormat.mm,
-        marginLeft:
-            kIsWeb ||
-                    screenWidth(context) < tabletScreenSmall
-                ? 10
-                : 5,
-        marginTop: 25,
-        marginRight: 30,
-        marginBottom: 0,
-        // marginAll: 5,
-      ),
-      // margin: pw.EdgeInsets.only(
-      //   left:
-      //       kIsWeb ||
-      //               screenWidth(context) < tabletScreenSmall
-      //           ? 10
-      //           : 5,
-      //   top: 5,
-      //   right: 30,
-      //   bottom: 2,
-      // ),
-      build: (pw.Context pcontext) {
-        return pw.Center(
-          child: pw.Column(
-            mainAxisSize: pw.MainAxisSize.min,
-            children: [
-              ...productBarcodes.map(
-                (productBarcode) => pw.Column(
+  // Loop through each product and create a page
+  for (var productBarcode in productBarcodes) {
+    pdf.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat(
+          58 * PdfPageFormat.mm,
+          40 * PdfPageFormat.mm,
+          marginAll: 5,
+        ),
+        build: (pw.Context pcontext) {
+          return pw.Center(
+            child: pw.Column(
+              mainAxisSize: pw.MainAxisSize.min,
+              children: [
+                // Product name
+                pw.Text(
+                  productBarcode.product.name.isEmpty
+                      ? 'Name Not Set'
+                      : productBarcode.product.name,
+                  textAlign: pw.TextAlign.center,
+                  style: pw.TextStyle(
+                    fontSize: 6,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
+                pw.SizedBox(height: 2),
+
+                // Barcode
+                pw.SvgImage(
+                  svg: barcode.toSvg(
+                    returnOnlyDigits(
+                      productBarcode.product.uuid!,
+                    ),
+                    width: 100,
+                    height: 45,
+                    fontHeight: 10,
+                    drawText: true,
+                  ),
+                ),
+                pw.SizedBox(height: 3),
+
+                // Price row
+                pw.Row(
+                  mainAxisAlignment:
+                      pw.MainAxisAlignment.center,
                   children: [
-                    // pw.Text(
-                    //   style: pw.TextStyle(fontSize: 5),
-                    //   '-',
-                    // ),
-                    // pw.SizedBox(height: 5),
-                    // pw.Text(
-                    //   textAlign: pw.TextAlign.center,
-                    //   style: pw.TextStyle(
-                    //     fontSize: 6,
-                    //     fontWeight: pw.FontWeight.bold,
-                    //   ),
-                    //   productBarcode.product.name.isEmpty
-                    //       ? 'Name Not Set'
-                    //       : productBarcode.product.name,
-                    // ),
-                    // pw.SizedBox(height: 2),
-                    pw.SvgImage(
-                      svg: barcode.toSvg(
-                        returnOnlyDigits(
-                          productBarcode.product.uuid!,
-                        ),
-                        width: 100,
-                        height: 45,
-                        fontHeight: 10,
-                        drawText: true,
+                    pw.Text(
+                      'Price: ',
+                      style: pw.TextStyle(fontSize: 5),
+                    ),
+                    pw.Text(
+                      productBarcode.product.sellingPrice ==
+                                  null ||
+                              productBarcode
+                                      .product
+                                      .sellingPrice ==
+                                  0
+                          ? 'Not Set'
+                          : 'N ${formatLargeNumberDouble(productBarcode.product.sellingPrice ?? 0)}',
+                      style: pw.TextStyle(
+                        fontSize: 7,
+                        fontWeight: pw.FontWeight.bold,
                       ),
                     ),
-                    // pw.SizedBox(height: 3),
-                    // pw.Row(
-                    //   mainAxisAlignment:
-                    //       pw.MainAxisAlignment.center,
-                    //   mainAxisSize: pw.MainAxisSize.min,
-                    //   children: [
-                    //     pw.Text(
-                    //       style: pw.TextStyle(fontSize: 5),
-                    //       'Price: ',
-                    //     ),
-                    //     pw.Text(
-                    //       style: pw.TextStyle(
-                    //         fontSize: 7,
-                    //         fontWeight: pw.FontWeight.bold,
-                    //       ),
-                    //       productBarcode
-                    //                       .product
-                    //                       .sellingPrice ==
-                    //                   null ||
-                    //               productBarcode
-                    //                       .product
-                    //                       .sellingPrice ==
-                    //                   0
-                    //           ? 'Not Set'
-                    //           : 'N ${formatLargeNumberDouble(productBarcode.product.sellingPrice ?? 0)}',
-                    //     ),
-                    //   ],
-                    // ),
-                    // pw.SizedBox(height: 5),
-                    // pw.Text(
-                    //   style: pw.TextStyle(fontSize: 5),
-                    //   '-',
-                    // ),
-                    // pw.SizedBox(height: 5),
-                    // pw.Text(
-                    //   style: pw.TextStyle(fontSize: 5),
-                    //   '-',
-                    // ),
                   ],
                 ),
-              ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
 
-              // pw.SizedBox(height: 80),
-            ],
-          ),
-        );
-      },
-    ),
-  );
+  // Save PDF
+  final pdfBytes = await pdf.save();
 
+  // Handle platform-specific printing/sharing
   if (kIsWeb) {
     if (platforms(context) == TargetPlatform.iOS) {
+      // iOS web printing
       var res = await Printing.layoutPdf(
-        onLayout:
-            (PdfPageFormat format) async => pdf.save(),
+        onLayout: (PdfPageFormat format) async => pdfBytes,
       );
       return res;
     } else {
-      final blob = html.Blob([
-        await pdf.save(),
-      ], 'application/pdf');
+      // Web download
+      final blob = html.Blob([pdfBytes], 'application/pdf');
       final url = html.Url.createObjectUrlFromBlob(blob);
 
       final anchor =
           html.AnchorElement(href: url)
-            ..download = returnOnlyDigits(
-              productBarcodes[0].product.uuid!,
-            )
-            // '${products[0].uuid!.split('-').first.substring(0, 5).toUpperCase()}${products[0].uuid!.split('-')[1].toUpperCase()}'
+            ..download = 'barcodes.pdf'
             ..style.display = 'none';
 
       html.document.body?.append(anchor);
       anchor.click();
       anchor.remove();
-
       html.Url.revokeObjectUrl(url);
       return true;
     }
   } else {
     if (screenWidth(context) > tabletScreenSmall) {
+      // Desktop printing
       var res = await Printing.layoutPdf(
-        onLayout:
-            (PdfPageFormat format) async => pdf.save(),
+        onLayout: (PdfPageFormat format) async => pdfBytes,
       );
       return res;
     } else {
-      final pdfBytes = await pdf.save();
+      // Mobile sharing
       var res = await Printing.sharePdf(
         bytes: pdfBytes,
-        filename: returnOnlyDigits(
-          productBarcodes[0].product.uuid!,
-        ),
-        // 'barcode_${'${products[0].uuid!.split('-').first.substring(0, 5).toUpperCase()}${products[0].uuid!.split('-')[1].toUpperCase()}'.replaceAll(' ', '_')}.pdf',
+        filename:
+            '${returnOnlyDigits(productBarcodes[0].product.uuid!)}.pdf',
       );
       return res;
     }
@@ -420,11 +381,13 @@ Future<bool> generateBarcodeAndPrint(
 ) async {
   print('Starting Generation');
   final safeContext = context;
+  for (var pr in productBarcodes) {
+    print(pr.product.barcode);
+  }
 
   final productUuid = returnOnlyDigits(
     productBarcodes[0].product.uuid!,
   );
-  // '${products[0].uuid!.split('-').first.substring(0, 5).toUpperCase()}${products[0].uuid!.split('-')[1].toUpperCase()}';
 
   final result = await showDialog<bool>(
     context: safeContext,
@@ -443,6 +406,7 @@ Future<bool> generateBarcodeAndPrint(
             List<ProductBarcode> temp = [];
             for (var prB in productBarcodes) {
               for (var i = 0; i < prB.number; i++) {
+                print("❤❌❌❌✅${prB.product.barcode}");
                 temp.add(
                   ProductBarcode(
                     product: prB.product,
@@ -451,33 +415,50 @@ Future<bool> generateBarcodeAndPrint(
                 );
               }
             }
+            print(temp.length);
             return temp;
           }
 
-          bool printingSuccess = await printBarcode(
-            // productUuid,
-            safeContext,
-            productBarcodesTemp(),
-          );
+          bool
+          printingSuccess =
+              (kIsWeb ||
+                      // ignore: use_build_context_synchronously
+                      screenWidth(safeContext) <
+                          tabletScreenSmall)
+                  ? await printBarcodeWebAndMobile(
+                    // ignore: use_build_context_synchronously
+                    safeContext,
+                    productBarcodesTemp(),
+                  )
+                  : await printBarcodeDesktop(
+                    returnShopProvider()
+                            .printerCache
+                            ?.name ??
+                        '',
+                    productBarcodesTemp(),
+                  );
+          print(printingSuccess);
 
           if (!printingSuccess && safeContext.mounted) {
             print('Printing Cancelled');
-            Navigator.pop(
-              safeContext,
-              false,
-            ); // return false
+            Navigator.pop(safeContext, false);
             return;
+          }
+
+          for (var pr in productBarcodes) {
+            print("✅✅✅✅ ${pr.product.barcode}");
           }
 
           if (safeContext.mounted) {
             if (!isEdit) {
-              for (var pr in productBarcodes) {
+              for (var pr
+                  in returnData().barcodeGenerationList) {
                 final newShit = returnOnlyDigits(
-                  productBarcodes[0].product.uuid!,
+                  pr.product.uuid!,
                 );
-                // '${pr.uuid!.split('-').first.substring(0, 5).toUpperCase()}${pr.uuid!.split('-')[1].toUpperCase()}';
 
                 pr.product.barcode = newShit;
+                print("✅✅✅❌$newShit");
 
                 await returnData().updateProduct(
                   product: pr.product,

@@ -30,23 +30,6 @@ class _DashboardState extends State<Dashboard> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       print(returnShopProvider().userShop()?.name);
-      // print('$currentUpdate');
-      // if (returnShopProvider(
-      //       context,
-      //       listen: false,
-      //     ).userShop()?.updateNumber !=
-      //     currentUpdate) {
-      //   returnShopProvider(
-      //     context,
-      //     listen: false,
-      //   ).toggleUpdated(false);
-      // } else {
-      //   returnShopProvider(
-      //     context,
-      //     listen: false,
-      //   ).toggleUpdated(true);
-      // }
-
       _handlePostFrameLogic();
     });
     setState(() {});

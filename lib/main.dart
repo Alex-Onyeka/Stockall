@@ -83,11 +83,11 @@ void main(List<String> args) async {
       DeviceOrientation.portraitDown,
     ]);
 
-    await MainDatabase().initHive();
     await Supabase.initialize(
       url: supabaseUrl,
       anonKey: supabaseAnonKey,
     );
+    await MainDatabase().initHive();
     print('Main started with args: $args');
     runApp(MyApp(home: BasePage()));
   }

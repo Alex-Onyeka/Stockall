@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 // import 'package:path/path.dart';
@@ -19,6 +20,7 @@ import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
+import 'package:stockall/pages/barcode_printing_page/barcode_printing_page.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/providers/data_provider.dart';
@@ -73,7 +75,7 @@ class _ProductDetailsDesktopState
   Widget build(BuildContext context) {
     final shopI = returnShopProvider().userShop()!.shopId!;
     List<TempProductClass>? productList =
-        returnData().productList
+        returnData(context: context).productList
             .where(
               (product) =>
                   product.uuid! == widget.productUuid,
@@ -1624,64 +1626,80 @@ class _ProductDetailsDesktopState
                                                 context:
                                                     context,
                                                 action: () {
-                                                  returnData().addToBarcodeGenerationList(
-                                                    ProductBarcode(
-                                                      product:
-                                                          product,
-                                                      number:
-                                                          1,
-                                                    ),
-                                                  );
-                                                  showDialog(
-                                                    context:
-                                                        context,
-                                                    builder: (
-                                                      firstContext,
-                                                    ) {
-                                                      return ConfirmationAlert(
-                                                        theme:
-                                                            widget.theme,
-                                                        message:
-                                                            'You are about to regenrate and print the barcode of this item, are you sure you want to proceed?',
-                                                        actionButtonText:
-                                                            'Generate',
-                                                        title:
-                                                            'Regenerate and Print Barcode?',
-                                                        action: () async {
-                                                          Navigator.of(
-                                                            firstContext,
-                                                          ).pop();
-                                                          setState(
-                                                            () {
-                                                              isLoading =
-                                                                  true;
-                                                            },
-                                                          );
-                                                          generateBarcodeAndPrint(
-                                                            context,
-                                                            returnData().barcodeGenerationList,
-                                                            false,
-                                                          ).then(
-                                                            (
-                                                              _,
-                                                            ) {
-                                                              returnData().clearBarcodeGenerationList();
-                                                              setState(
-                                                                () {
-                                                                  isLoading =
-                                                                      false;
-                                                                },
-                                                              );
-                                                            },
-                                                          );
+                                                  if (kIsWeb) {
+                                                    showDialog(
+                                                      context:
+                                                          context,
+                                                      builder: (
+                                                        firstContext,
+                                                      ) {
+                                                        return ConfirmationAlert(
+                                                          theme:
+                                                              widget.theme,
+                                                          message:
+                                                              'You are about to regenrate and print the barcode of this item, are you sure you want to proceed?',
+                                                          actionButtonText:
+                                                              'Generate',
+                                                          title:
+                                                              'Regenerate and Print Barcode?',
+                                                          action: () async {
+                                                            Navigator.of(
+                                                              firstContext,
+                                                            ).pop();
+                                                            setState(
+                                                              () {
+                                                                isLoading =
+                                                                    true;
+                                                              },
+                                                            );
+                                                            returnData().addToBarcodeGenerationList(
+                                                              ProductBarcode(
+                                                                product:
+                                                                    product,
+                                                                number:
+                                                                    1,
+                                                              ),
+                                                            );
+                                                            generateBarcodeAndPrint(
+                                                              context,
+                                                              returnData().barcodeGenerationList,
+                                                              false,
+                                                            ).then(
+                                                              (
+                                                                _,
+                                                              ) {
+                                                                returnData().clearBarcodeGenerationList();
+                                                                setState(
+                                                                  () {
+                                                                    isLoading =
+                                                                        false;
+                                                                  },
+                                                                );
+                                                              },
+                                                            );
 
-                                                          print(
-                                                            'Generate Clicked',
+                                                            print(
+                                                              'Generate Clicked',
+                                                            );
+                                                          },
+                                                        );
+                                                      },
+                                                    );
+                                                  } else {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (
+                                                          context,
+                                                        ) {
+                                                          return BarcodePrintingPage(
+                                                            product:
+                                                                product,
                                                           );
                                                         },
-                                                      );
-                                                    },
-                                                  );
+                                                      ),
+                                                    );
+                                                  }
                                                 },
                                               );
                                             },
@@ -1693,19 +1711,35 @@ class _ProductDetailsDesktopState
                                                         context:
                                                             context,
                                                         action: () {
-                                                          returnData().addToBarcodeGenerationList(
-                                                            ProductBarcode(
-                                                              product:
-                                                                  product,
-                                                              number:
-                                                                  1,
-                                                            ),
-                                                          );
-                                                          generateBarcodeAndPrint(
-                                                            context,
-                                                            returnData().barcodeGenerationList,
-                                                            false,
-                                                          );
+                                                          if (kIsWeb) {
+                                                            returnData().addToBarcodeGenerationList(
+                                                              ProductBarcode(
+                                                                product:
+                                                                    product,
+                                                                number:
+                                                                    1,
+                                                              ),
+                                                            );
+                                                            generateBarcodeAndPrint(
+                                                              context,
+                                                              returnData().barcodeGenerationList,
+                                                              false,
+                                                            );
+                                                          } else {
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder: (
+                                                                  context,
+                                                                ) {
+                                                                  return BarcodePrintingPage(
+                                                                    product:
+                                                                        product,
+                                                                  );
+                                                                },
+                                                              ),
+                                                            );
+                                                          }
                                                         },
                                                       );
                                                     }

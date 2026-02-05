@@ -901,10 +901,10 @@ class DataProvider extends ChangeNotifier {
           .eq('uuid', product.uuid!);
       print('${product.uuid}');
       await returnEventsLogProvider().createLog(
-        returnEventsLogProvider(
-          // ignore: use_build_context_synchronously
-        ).productAdapter(product, 2),
-        // ignore: use_build_context_synchronously
+        returnEventsLogProvider().productAdapter(
+          product,
+          2,
+        ),
       );
     } else {
       await ProductsFunc().updateProduct(product);
@@ -1465,8 +1465,6 @@ class DataProvider extends ChangeNotifier {
   void toggleFloatingAction(BuildContext context) {
     Future.microtask(() {
       if (!context.mounted) return;
-
-      // final uiProvider = returnData();
 
       if (!isFloatingButtonVisible) {
         showFloatingActionButton();

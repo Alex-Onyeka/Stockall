@@ -12,6 +12,7 @@ class DialogTemplate extends StatelessWidget {
   final String? actionButtonText;
   final bool? showBottomActionButtons;
   final bool? showTopSection;
+  final Widget? topRightWidget;
   const DialogTemplate({
     super.key,
     required this.theme,
@@ -22,6 +23,7 @@ class DialogTemplate extends StatelessWidget {
     this.actionButtonText,
     this.showBottomActionButtons,
     this.showTopSection,
+    this.topRightWidget,
   });
 
   @override
@@ -57,21 +59,39 @@ class DialogTemplate extends StatelessWidget {
                     visible: showTopSection == null,
                     child: Column(
                       children: [
-                        Text(
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .h3
-                                    .fontSize,
-                            fontWeight:
-                                theme
-                                    .mobileTexts
-                                    .h3
-                                    .fontWeightBold,
-                          ),
-                          title,
+                        Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceBetween,
+                          children: [
+                            Opacity(
+                              opacity: 0,
+                              child: topRightWidget,
+                            ),
+                            Text(
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .h3
+                                        .fontSize,
+                                fontWeight:
+                                    theme
+                                        .mobileTexts
+                                        .h3
+                                        .fontWeightBold,
+                              ),
+                              title,
+                            ),
+                            Opacity(
+                              opacity:
+                                  topRightWidget != null
+                                      ? 1
+                                      : 0,
+                              child: topRightWidget,
+                            ),
+                          ],
                         ),
                         Text(
                           textAlign: TextAlign.center,

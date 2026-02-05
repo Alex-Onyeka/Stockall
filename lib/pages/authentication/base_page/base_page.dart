@@ -43,10 +43,6 @@ class _BasePageState extends State<BasePage> {
         listen: false,
       ).setVisible();
       getUserAuthId();
-      // var screens = await screenRetriever.getAllDisplays();
-      // var windows =
-      //     await DesktopMultiWindow.getAllSubWindowIds();
-
       if (returnSalesProvider().cartQueue.isEmpty) {
         var cartId = returnSalesProvider().initCart();
         await returnMultiDisplayProvider().createWindow(

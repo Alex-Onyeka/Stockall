@@ -2016,9 +2016,9 @@ class _ReceiptDetailsContainerState
                                             returnShopProvider()
                                                 .userShop()!,
                                         printType:
-                                            shop(
-                                              context,
-                                            )!.printType!,
+                                            returnShopProvider()
+                                                .userShop()!
+                                                .printType!,
                                       );
                                     }
                                     if (!kIsWeb &&

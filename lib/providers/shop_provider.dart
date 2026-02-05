@@ -1,15 +1,22 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:ui' as ui;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_barcode_printer_class/barcode_printer_local.dart';
+import 'package:stockall/classes/temp_barcode_printer_class/printer_settings/printer_settings.dart';
+import 'package:stockall/classes/temp_barcode_printer_class/temp_barcode_printer_class/temp_barcode_printer_class.dart';
 import 'package:stockall/classes/temp_current_shop/temp_current_shop.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/classes/temp_shop/unsynced/updated_shop.dart';
 import 'package:stockall/classes/temp_shop_logos/temp_shop_logos.dart';
 import 'package:stockall/classes/temp_shop_owner/shop_owner.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
+import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/subscription/multiple_stores_auth.dart';
+import 'package:stockall/local_database/barcode_printer_func/barcode_printer_local_func.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';
 import 'package:stockall/local_database/shop/updated_shop/updated_shop_func.dart';
 import 'package:stockall/local_database/shop_current/current_shop_func.dart';
@@ -23,7 +30,6 @@ import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 
 class ShopProvider extends ChangeNotifier {
@@ -71,6 +77,7 @@ class ShopProvider extends ChangeNotifier {
             print('Creating Shop');
             print('App State Role: $tempRole');
             // Insert the shop
+            shop.refCode?.toLowerCase();
             var createdShop =
                 await supabase
                     .from('shops')
@@ -119,6 +126,7 @@ class ShopProvider extends ChangeNotifier {
           //   shop.employees!.add(AuthService().currentUser!);
           // }
           // Insert the shop
+          shop.refCode?.toLowerCase();
           var createdShop =
               await supabase
                   .from('shops')
@@ -1814,6 +1822,121 @@ class ShopProvider extends ChangeNotifier {
         clearImage();
         return 'Error uploading logo: The File extension type you selected is not Support. Please Select .jpeg, .jpg, or .png images.';
       }
+    }
+  }
+
+  TempBarcodePrinterClass? printerCache;
+
+  void setPrinterCache() {
+    printerCache =
+        BarcodePrinterLocalFunc()
+            .getbarcodePrinterLocal()
+            ?.printer;
+  }
+
+  PrinterSettings? printerSettings;
+
+  void setPrinterSettingsCache() {
+    printerSettings =
+        BarcodePrinterLocalFunc()
+            .getbarcodePrinterLocal()
+            ?.settings ??
+        defaultPrinterSettings;
+    notifyListeners();
+  }
+
+  PrinterSettings defaultPrinterSettings = PrinterSettings(
+    widthMm: 58,
+    heightMm: 25,
+    startX: 30,
+    startY: 20,
+    gapMm: 2,
+    barcodeHeight: 80,
+    barcodeScale: 3,
+    verticalSpacing: 10,
+  );
+
+  bool isDesktop() {
+    if (!kIsWeb) {
+      if (Platform.isLinux ||
+          Platform.isMacOS ||
+          Platform.isWindows) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  Future<void> updatePrinterSettings(
+    PrinterSettings newSettings,
+  ) async {
+    if (isDesktop()) {
+      await BarcodePrinterLocalFunc().insertbarcodePrinter(
+        BarcodePrinterLocal(
+          printer: printerCache!,
+          settings: newSettings,
+        ),
+      );
+      printerSettings = newSettings;
+      notifyListeners();
+    }
+  }
+
+  List<TempBarcodePrinterClass> printers = [];
+
+  void listPrintersSub(TempBarcodePrinterClass printer) {
+    printers.add(printer);
+    notifyListeners();
+  }
+
+  void clearPrinters() {
+    printers.clear();
+    notifyListeners();
+  }
+
+  Future<void> selectPrinter(
+    TempBarcodePrinterClass newPrinter,
+    BuildContext context,
+  ) async {
+    if (isDesktop()) {
+      showDialog(
+        context: context,
+        builder: (confirmDialog) {
+          return ConfirmationAlert(
+            theme: returnTheme(context, listen: false),
+            message:
+                'This printer will be automatically used to print all your subsiquent barcodes, unless if you select another.',
+            title: 'Select Printer?',
+            action: () {
+              Navigator.of(confirmDialog).pop();
+              if (BarcodePrinterLocalFunc()
+                      .getbarcodePrinterLocal() ==
+                  null) {
+                BarcodePrinterLocalFunc()
+                    .insertbarcodePrinter(
+                      BarcodePrinterLocal(
+                        printer: newPrinter,
+                        settings: defaultPrinterSettings,
+                      ),
+                    );
+              } else {
+                BarcodePrinterLocalFunc()
+                    .insertbarcodePrinter(
+                      BarcodePrinterLocal(
+                        printer: newPrinter,
+                        settings: printerSettings!,
+                      ),
+                    );
+              }
+              printerCache = newPrinter;
+              notifyListeners();
+            },
+          );
+        },
+      );
     }
   }
 }
