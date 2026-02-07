@@ -38,7 +38,7 @@ class TempExpensesClass extends HiveObject {
   String? departmentName;
 
   @HiveField(11)
-  int? departmentId;
+  String? departmentUuid;
 
   @HiveField(12)
   String? uuid;
@@ -61,7 +61,7 @@ class TempExpensesClass extends HiveObject {
     this.createdDate,
     required this.userId,
     this.departmentName,
-    this.departmentId,
+    this.departmentUuid,
     this.uuid,
     this.updatedAt,
     this.userName,
@@ -87,7 +87,7 @@ class TempExpensesClass extends HiveObject {
       unit: json['unit'],
       userId: json['user_id'],
       creator: json['creator'],
-      departmentId: json['department_id'],
+      departmentUuid: json['department_uuid'],
       departmentName: json['department_name'],
       uuid: json['uuid'] as String?,
       updatedAt:
@@ -110,7 +110,7 @@ class TempExpensesClass extends HiveObject {
       'unit': unit,
       'user_id': userId,
       'creator': creator,
-      'department_id': departmentId,
+      'department_uuid': departmentUuid,
       'department_name': departmentName,
       'uuid': uuid,
       'updated_at': updatedAt?.toIso8601String(),

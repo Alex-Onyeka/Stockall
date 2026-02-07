@@ -35,7 +35,7 @@ class TempProductSaleRecordAdapter extends TypeAdapter<TempProductSaleRecord> {
       costPrice: fields[15] as double?,
       customPriceSet: fields[16] as bool,
       departmentName: fields[17] as String?,
-      departmentId: fields[18] as int?,
+      departmentUuid: fields[18] as String?,
       addToStock: fields[19] as bool?,
       uuid: fields[20] as String?,
       productUuid: fields[21] as String?,
@@ -86,7 +86,7 @@ class TempProductSaleRecordAdapter extends TypeAdapter<TempProductSaleRecord> {
       ..writeByte(17)
       ..write(obj.departmentName)
       ..writeByte(18)
-      ..write(obj.departmentId)
+      ..write(obj.departmentUuid)
       ..writeByte(19)
       ..write(obj.addToStock)
       ..writeByte(20)

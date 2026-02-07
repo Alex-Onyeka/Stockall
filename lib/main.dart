@@ -22,6 +22,7 @@ import 'package:stockall/providers/comp_provider.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/providers/customers_provider.dart';
 import 'package:stockall/providers/data_provider.dart';
+import 'package:stockall/providers/department_provider.dart';
 import 'package:stockall/providers/events_log_provider.dart';
 import 'package:stockall/providers/expenses_provider.dart';
 import 'package:stockall/providers/multi_display_provider.dart';
@@ -41,14 +42,14 @@ import 'package:stockall/services/auth_service.dart';
 import 'package:stockall/services/payment_result_page.dart/payment_result_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-Stopwatch stopwatch = Stopwatch();
+// Stopwatch stopwatch = Stopwatch();
 
 void main(List<String> args) async {
   if (args.length >= 3) {
     final windowId = int.tryParse(args[1]);
     final argument = args[2];
-    print(windowId);
-    print(argument);
+    // print(windowId);
+    // print(argument);
 
     try {
       final decoded = jsonDecode(argument);
@@ -67,7 +68,6 @@ void main(List<String> args) async {
     }
   } else {
     WidgetsFlutterBinding.ensureInitialized();
-    stopwatch.start();
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
         statusBarColor: Colors.white, // or any color
@@ -88,7 +88,7 @@ void main(List<String> args) async {
       anonKey: supabaseAnonKey,
     );
     await MainDatabase().initHive();
-    print('Main started with args: $args');
+    // print('Main started with args: $args');
     runApp(MyApp(home: BasePage()));
   }
 }
@@ -318,6 +318,16 @@ EventsLogProvider returnEventsLogProvider({
   }
 }
 
+DepartmentProvider returnDepartmentProvider({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return DepartmentProvider();
+  } else {
+    return Provider.of<DepartmentProvider>(context);
+  }
+}
+
 Widget colorWidget(
   Widget widget,
   bool isPrimary,
@@ -355,13 +365,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    stopwatch.stop();
-    // print(
-    //   "Milliseconds Load time: ${stopwatch.elapsedMilliseconds}",
-    // );
-    // print(
-    //   "Seconds Load time: ${stopwatch.elapsed.inSeconds}",
-    // );
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -430,6 +433,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => EventsLogProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => DepartmentProvider(),
+        ),
       ],
       child: MaterialApp(
         title: 'Stockall Business Dashboard',
@@ -481,7 +487,6 @@ class MyAppAlt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    stopwatch.stop();
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(

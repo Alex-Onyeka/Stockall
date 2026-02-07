@@ -28,7 +28,7 @@ class TempCustomersClassAdapter extends TypeAdapter<TempCustomersClass> {
       dateAdded: fields[1] as DateTime,
       shopId: fields[2] as int,
       departmentName: fields[10] as String?,
-      departmentId: fields[11] as int?,
+      departmentUuid: fields[11] as String?,
       uuid: fields[12] as String?,
       updatedAt: fields[13] as DateTime?,
     );
@@ -61,7 +61,7 @@ class TempCustomersClassAdapter extends TypeAdapter<TempCustomersClass> {
       ..writeByte(10)
       ..write(obj.departmentName)
       ..writeByte(11)
-      ..write(obj.departmentId)
+      ..write(obj.departmentUuid)
       ..writeByte(12)
       ..write(obj.uuid)
       ..writeByte(13)

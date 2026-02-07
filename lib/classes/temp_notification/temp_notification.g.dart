@@ -29,7 +29,7 @@ class TempNotificationAdapter extends TypeAdapter<TempNotification> {
       itemName: fields[4] as String?,
       uuid: fields[13] as String?,
       departmentName: fields[11] as String?,
-      departmentId: fields[12] as int?,
+      departmentUuid: fields[12] as String?,
       productUuid: fields[14] as String?,
       expensesUuid: fields[15] as String?,
     );
@@ -62,7 +62,7 @@ class TempNotificationAdapter extends TypeAdapter<TempNotification> {
       ..writeByte(11)
       ..write(obj.departmentName)
       ..writeByte(12)
-      ..write(obj.departmentId)
+      ..write(obj.departmentUuid)
       ..writeByte(13)
       ..write(obj.uuid)
       ..writeByte(14)

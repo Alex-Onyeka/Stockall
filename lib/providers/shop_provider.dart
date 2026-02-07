@@ -821,12 +821,6 @@ class ShopProvider extends ChangeNotifier {
     BuildContext context,
     TempShopClass shopC,
   ) async {
-    // MultipleStoresAuthAction().numberOfStoresAction(
-    //   context: context,
-    //   action: () async {
-
-    //   },
-    // );
     var isOnline = await connectivity.isOnline();
     // ignore: use_build_context_synchronously
     if (returnData().isSynced() == 0 && isOnline) {

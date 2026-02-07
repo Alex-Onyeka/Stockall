@@ -29,7 +29,7 @@ class TempMainReceiptAdapter extends TypeAdapter<TempMainReceipt> {
       bank: fields[10] as double,
       cashAlt: fields[9] as double,
       departmentName: fields[11] as String?,
-      departmentId: fields[12] as int?,
+      departmentUuid: fields[12] as int?,
       isInvoice: fields[13] as bool,
       uuid: fields[14] as String?,
       customerUuid: fields[15] as String?,
@@ -67,7 +67,7 @@ class TempMainReceiptAdapter extends TypeAdapter<TempMainReceipt> {
       ..writeByte(11)
       ..write(obj.departmentName)
       ..writeByte(12)
-      ..write(obj.departmentId)
+      ..write(obj.departmentUuid)
       ..writeByte(13)
       ..write(obj.isInvoice)
       ..writeByte(14)

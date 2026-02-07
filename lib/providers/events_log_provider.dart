@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
+import 'package:stockall/classes/temp_departments_class/department_class.dart';
 import 'package:stockall/classes/temp_event_log/temp_event_log_class.dart';
 import 'package:stockall/classes/temp_event_log/unsynced/created_events_log_class.dart';
 import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
@@ -198,6 +199,32 @@ class EventsLogProvider with ChangeNotifier {
       staffName:
           returnUserProviderSingle().currentUserMain!.name,
       amount: expenses.amount,
+    );
+  }
+
+  TempEventLogClass departmentAdapter(
+    DepartmentClass department,
+    int event,
+  ) {
+    return TempEventLogClass(
+      shopId: shopId(),
+      tableName: 'department',
+      title: department.name,
+      event:
+          event == 1
+              ? 'created'
+              : event == 2
+              ? 'updated'
+              : 'deleted',
+      message:
+          event == 1
+              ? 'Expenses Created #${department.uuid.split('-').first.substring(0, 5).toUpperCase()}'
+              : event == 2
+              ? 'Expenses Updated #${department.uuid.split('-').first.substring(0, 5).toUpperCase()}'
+              : 'Expenses Deleted #${department.uuid.split('-').first.substring(0, 5).toUpperCase()}',
+      staffName:
+          returnUserProviderSingle().currentUserMain!.name,
+      amount: null,
     );
   }
 

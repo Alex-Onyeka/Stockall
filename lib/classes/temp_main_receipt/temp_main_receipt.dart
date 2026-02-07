@@ -41,7 +41,7 @@ class TempMainReceipt extends HiveObject {
   String? departmentName;
 
   @HiveField(12)
-  int? departmentId;
+  int? departmentUuid;
 
   @HiveField(13)
   bool isInvoice;
@@ -71,7 +71,7 @@ class TempMainReceipt extends HiveObject {
     required this.bank,
     required this.cashAlt,
     this.departmentName,
-    this.departmentId,
+    this.departmentUuid,
     required this.isInvoice,
     this.uuid,
     this.customerUuid,
@@ -95,7 +95,7 @@ class TempMainReceipt extends HiveObject {
       paymentMethod: json['payment_method'],
       cashAlt: (json['cash_alt'] as num).toDouble(),
       bank: (json['bank'] as num).toDouble(),
-      departmentId: json['department_id'],
+      departmentUuid: json['department_uuid'],
       departmentName: json['department_name'],
       isInvoice: json['is_invoice'],
       uuid: json['uuid'] as String?,
@@ -120,7 +120,7 @@ class TempMainReceipt extends HiveObject {
       'payment_method': paymentMethod,
       'cash_alt': cashAlt,
       'bank': bank,
-      'department_id': departmentId,
+      'department_uuid': departmentUuid,
       'department_name': departmentName,
       'is_invoice': isInvoice,
       'uuid': uuid,

@@ -37,7 +37,7 @@ class TempProductClassAdapter extends TypeAdapter<TempProductClass> {
       createdAt: fields[4] as DateTime?,
       setCustomPrice: fields[18] as bool,
       departmentName: fields[19] as String?,
-      departmentId: fields[20] as int?,
+      departmentUuid: fields[20] as String?,
       lowQtty: fields[21] as double?,
       expiryDate: fields[22] as DateTime?,
       isManaged: fields[23] as bool,
@@ -91,7 +91,7 @@ class TempProductClassAdapter extends TypeAdapter<TempProductClass> {
       ..writeByte(19)
       ..write(obj.departmentName)
       ..writeByte(20)
-      ..write(obj.departmentId)
+      ..write(obj.departmentUuid)
       ..writeByte(21)
       ..write(obj.lowQtty)
       ..writeByte(22)

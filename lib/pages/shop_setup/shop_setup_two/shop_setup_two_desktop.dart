@@ -204,7 +204,10 @@ class _ShopSetupTwoDesktopState
                             : addressController.text,
                     city: selectedCityName,
                     phoneNumber: shopProvider.phone,
-                    refCode: referralController.text.trim(),
+                    refCode:
+                        referralController.text
+                            .trim()
+                            .toLowerCase(),
                     language: 'en',
                     isHeadQuarters:
                         returnShopProvider()
@@ -3627,20 +3630,14 @@ class _ShopSetupTwoDesktopState
                               lines: 1,
                             ),
 
-                            Visibility(
-                              visible:
-                                  returnShopProvider(
-                                    context: context,
-                                  ).userShops.isEmpty,
-                              child: GeneralTextField(
-                                title:
-                                    'Referral Code (Optional)',
-                                theme: theme,
-                                hint: 'Enter Referral Code',
-                                controller:
-                                    referralController,
-                                lines: 1,
-                              ),
+                            GeneralTextField(
+                              title:
+                                  'Referral Code (Optional)',
+                              theme: theme,
+                              hint: 'Enter Referral Code',
+                              controller:
+                                  referralController,
+                              lines: 1,
                             ),
 
                             Column(

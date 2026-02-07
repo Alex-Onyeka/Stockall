@@ -27,7 +27,7 @@ class TempUserClassAdapter extends TypeAdapter<TempUserClass> {
       role: fields[7] as String,
       authUserId: fields[8] as String?,
       departmentName: fields[9] as String?,
-      departmentId: fields[10] as int?,
+      departmentUuid: fields[10] as String?,
       pin: fields[11] as String?,
     );
   }
@@ -57,7 +57,7 @@ class TempUserClassAdapter extends TypeAdapter<TempUserClass> {
       ..writeByte(9)
       ..write(obj.departmentName)
       ..writeByte(10)
-      ..write(obj.departmentId)
+      ..write(obj.departmentUuid)
       ..writeByte(11)
       ..write(obj.pin);
   }

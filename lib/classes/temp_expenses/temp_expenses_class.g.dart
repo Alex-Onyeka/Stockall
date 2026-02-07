@@ -28,7 +28,7 @@ class TempExpensesClassAdapter extends TypeAdapter<TempExpensesClass> {
       createdDate: fields[1] as DateTime?,
       userId: fields[9] as String,
       departmentName: fields[10] as String?,
-      departmentId: fields[11] as int?,
+      departmentUuid: fields[11] as String?,
       uuid: fields[12] as String?,
       updatedAt: fields[13] as DateTime?,
       userName: fields[14] as String?,
@@ -62,7 +62,7 @@ class TempExpensesClassAdapter extends TypeAdapter<TempExpensesClass> {
       ..writeByte(10)
       ..write(obj.departmentName)
       ..writeByte(11)
-      ..write(obj.departmentId)
+      ..write(obj.departmentUuid)
       ..writeByte(12)
       ..write(obj.uuid)
       ..writeByte(13)

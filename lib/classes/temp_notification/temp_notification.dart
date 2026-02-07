@@ -41,7 +41,7 @@ class TempNotification {
   String? departmentName;
 
   @HiveField(12)
-  int? departmentId;
+  String? departmentUuid;
 
   @HiveField(13)
   String? uuid;
@@ -66,7 +66,7 @@ class TempNotification {
     this.itemName,
     this.uuid,
     this.departmentName,
-    this.departmentId,
+    this.departmentUuid,
     this.productUuid,
     this.expensesUuid,
   });
@@ -86,7 +86,7 @@ class TempNotification {
       isViewed: json['is_viewed'],
       category: json['category'],
       itemName: json['item_name'],
-      departmentId: json['department_id'],
+      departmentUuid: json['department_uuid'],
       departmentName: json['department_name'],
       productUuid: json['product_uuid'] as String?,
       expensesUuid: json['expenses_uuid'] as String?,
@@ -107,7 +107,7 @@ class TempNotification {
       'is_viewed': isViewed,
       'category': category,
       'item_name': itemName,
-      'department_id': departmentId,
+      'department_uuid': departmentUuid,
       'department_name': departmentName,
       'product_uuid': productUuid,
       'expenses_uuid': expensesUuid,

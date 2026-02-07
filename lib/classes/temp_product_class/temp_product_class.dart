@@ -65,7 +65,7 @@ class TempProductClass {
   String? departmentName;
 
   @HiveField(20)
-  int? departmentId;
+  String? departmentUuid;
 
   @HiveField(21)
   double? lowQtty;
@@ -103,7 +103,7 @@ class TempProductClass {
     this.createdAt,
     required this.setCustomPrice,
     this.departmentName,
-    this.departmentId,
+    this.departmentUuid,
     this.lowQtty,
     this.expiryDate,
     required this.isManaged,
@@ -159,7 +159,7 @@ class TempProductClass {
               ? DateTime.parse(json['updated_at'] as String)
               : null,
       setCustomPrice: json['set_custom_price'] as bool,
-      departmentId: json['department_id'] as int?,
+      departmentUuid: json['department_uuid'] as String?,
       departmentName: json['department_name'] as String?,
       isManaged: json['is_managed'] as bool,
       uuid: json['uuid'] as String?,
@@ -189,7 +189,7 @@ class TempProductClass {
           expiryDate?.toIso8601String().split('T').first,
       'quantity': quantity,
       'set_custom_price': setCustomPrice,
-      'department_id': departmentId,
+      'department_uuid': departmentUuid,
       'department_name': departmentName,
       'low_qtty': lowQtty,
       'is_managed': isManaged,

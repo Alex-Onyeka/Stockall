@@ -59,7 +59,7 @@ class TempProductSaleRecord {
   String? departmentName;
 
   @HiveField(18)
-  int? departmentId;
+  String? departmentUuid;
 
   @HiveField(19)
   bool? addToStock;
@@ -100,7 +100,7 @@ class TempProductSaleRecord {
     this.costPrice,
     required this.customPriceSet,
     this.departmentName,
-    this.departmentId,
+    this.departmentUuid,
     this.addToStock,
     this.uuid,
     this.productUuid,
@@ -135,7 +135,7 @@ class TempProductSaleRecord {
           (json['original_cost'] as num?)?.toDouble(),
       costPrice: (json['cost_price'] as num?)?.toDouble(),
       customPriceSet: json['custom_price_set'] as bool,
-      departmentId: json['department_id'] as int?,
+      departmentUuid: json['department_uuid'] as String?,
       departmentName: json['department_name'] as String?,
       uuid: json['uuid'] as String?,
       productUuid: json['product_uuid'] as String?,
@@ -164,7 +164,7 @@ class TempProductSaleRecord {
       'original_cost': originalCost,
       'cost_price': costPrice,
       'custom_price_set': customPriceSet,
-      'department_id': departmentId,
+      'department_uuid': departmentUuid,
       'department_name': departmentName,
       'uuid': uuid,
       'product_uuid': productUuid,
@@ -194,7 +194,7 @@ class TempProductSaleRecord {
     double? costPrice,
     bool? customPriceSet,
     String? departmentName,
-    int? departmentId,
+    String? departmentUuid,
     bool? addToStock,
     String? uuid,
     String? productUuid,
@@ -224,7 +224,7 @@ class TempProductSaleRecord {
       costPrice: costPrice ?? this.costPrice,
       customPriceSet: customPriceSet ?? this.customPriceSet,
       departmentName: departmentName ?? this.departmentName,
-      departmentId: departmentId ?? this.departmentId,
+      departmentUuid: departmentUuid ?? this.departmentUuid,
       addToStock: addToStock ?? this.addToStock,
       uuid: uuid ?? this.uuid,
       productUuid: productUuid ?? this.productUuid,

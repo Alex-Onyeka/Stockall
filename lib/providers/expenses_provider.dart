@@ -109,30 +109,6 @@ class ExpensesProvider extends ChangeNotifier {
   //
   //
   //
-
-  // Future<List<TempExpensesClass>> getExpensesByUser({
-  //   required int shopId,
-  //   required String userId,
-  // }) async {
-  //   final supabase = Supabase.instance.client;
-
-  //   final response = await supabase
-  //       .from('expenses')
-  //       .select()
-  //       .eq('shop_id', shopId)
-  //       .eq('user_id', userId)
-  //       .order('created_date', ascending: false);
-
-  //   return (response as List)
-  //       .map((e) => TempExpensesClass.fromJson(e))
-  //       .toList();
-  // }
-
-  //
-  //
-  //
-  //
-  //
   //
   //
   //

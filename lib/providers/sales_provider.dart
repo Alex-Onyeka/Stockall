@@ -403,7 +403,8 @@ class SalesProvider extends ChangeNotifier {
                 addToStock: cartItem.addToStock,
                 departmentName:
                     cartItem.item.departmentName,
-                departmentId: cartItem.item.departmentId,
+                departmentUuid:
+                    cartItem.item.departmentUuid,
                 uuid: cartItem.salesRecordId ?? uuidGen(),
                 isProductManaged: cartItem.item.isManaged,
                 setTotalPrice: cartItem.setTotalPrice,
@@ -484,7 +485,7 @@ class SalesProvider extends ChangeNotifier {
                   category: null,
                   color: null,
                   createdAt: DateTime.now(),
-                  departmentId: record.departmentId,
+                  departmentUuid: record.departmentUuid,
                   departmentName: record.departmentName,
                   discount: null,
                   endDate: null,
@@ -1063,7 +1064,7 @@ class SalesProvider extends ChangeNotifier {
           category: null,
           color: null,
           createdAt: DateTime.now(),
-          departmentId: record.departmentId,
+          departmentUuid: record.departmentUuid,
           departmentName: record.departmentName,
           discount: null,
           endDate: null,

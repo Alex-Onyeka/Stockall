@@ -35,7 +35,7 @@ class TempUserClass extends HiveObject {
   String? departmentName;
 
   @HiveField(10)
-  int? departmentId;
+  String? departmentUuid;
 
   @HiveField(11)
   String? pin;
@@ -51,7 +51,7 @@ class TempUserClass extends HiveObject {
     required this.role,
     this.authUserId,
     this.departmentName,
-    this.departmentId,
+    this.departmentUuid,
     this.pin,
   });
 
@@ -70,7 +70,7 @@ class TempUserClass extends HiveObject {
       role: json['role'] ?? '',
       authUserId: json['auth_user_id'],
       password: json['password'] ?? '',
-      departmentId: json['department_id'],
+      departmentUuid: json['department_uuid'],
       departmentName: json['department_name'],
       pin: json['pin'],
     );
@@ -85,7 +85,7 @@ class TempUserClass extends HiveObject {
       'role': role,
       'password': password,
       'auth_user_id': authUserId,
-      'department_id': departmentId,
+      'department_uuid': departmentUuid,
       'department_name': departmentName,
       'pin': pin,
     };

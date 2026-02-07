@@ -38,7 +38,7 @@ class TempCustomersClass extends HiveObject {
   String? departmentName;
 
   @HiveField(11)
-  int? departmentId;
+  String? departmentUuid;
 
   @HiveField(12)
   String? uuid;
@@ -58,7 +58,7 @@ class TempCustomersClass extends HiveObject {
     required this.dateAdded,
     required this.shopId,
     this.departmentName,
-    this.departmentId,
+    this.departmentUuid,
     this.uuid,
     this.updatedAt,
   });
@@ -78,7 +78,7 @@ class TempCustomersClass extends HiveObject {
       address: json['address'] as String?,
       city: json['city'] as String?,
       state: json['state'] as String?,
-      departmentId: json['department_id'] as int?,
+      departmentUuid: json['department_uuid'] as String?,
       departmentName: json['department_name'] as String?,
       updatedAt:
           json['updated_at'] != null
@@ -99,7 +99,7 @@ class TempCustomersClass extends HiveObject {
       'address': address,
       'city': city,
       'state': state,
-      'department_id': departmentId,
+      'department_uuid': departmentUuid,
       'department_name': departmentName,
       'uuid': uuid,
       'updated_at': updatedAt?.toIso8601String(),
