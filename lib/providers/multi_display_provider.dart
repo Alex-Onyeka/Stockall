@@ -72,7 +72,7 @@ class MultiDisplayProvider extends ChangeNotifier {
         print(
           'Error Occured Checking if Window Exists: ${e.toString()}',
         );
-        return false;
+        return true;
       }
     } else {
       return true;
@@ -104,9 +104,10 @@ class MultiDisplayProvider extends ChangeNotifier {
           ..setFrame(
             altDisplay!.visiblePosition! &
                 Size(
-                  altDisplay!.visibleSize!.width + 200,
-                  altDisplay!.visibleSize!.height + 200,
+                  altDisplay!.visibleSize!.width + 270,
+                  altDisplay!.visibleSize!.height + 270,
                 ),
+            // const Offset(0, 0) & const Size(1000, 500),
           )
           ..setTitle(name)
           ..show();
@@ -135,6 +136,7 @@ class MultiDisplayProvider extends ChangeNotifier {
 
   Future<void> updateWindow({
     required AltCartClass cartClass,
+    bool? showCart,
   }) async {
     var yes = await isAllowed();
     if (yes) {
@@ -156,11 +158,19 @@ class MultiDisplayProvider extends ChangeNotifier {
               : null;
       if (windowId != null) {
         try {
-          await DesktopMultiWindow.invokeMethod(
-            windowId,
-            'update_user',
-            jsonEncode(cartClass.toJson()),
-          );
+          if (showCart == null) {
+            await DesktopMultiWindow.invokeMethod(
+              windowId,
+              'update_cart',
+              jsonEncode(cartClass.toJson()),
+            );
+          } else {
+            await DesktopMultiWindow.invokeMethod(
+              windowId,
+              'show_cart',
+              jsonEncode(cartClass.toJson()),
+            );
+          }
         } catch (e) {
           print('Error Updating Cart: ${e.toString()}');
         }
@@ -176,8 +186,8 @@ class MultiDisplayProvider extends ChangeNotifier {
   }) async {
     var yes = await isAllowed();
     await getAllSubWindows();
-    print(cartId);
-    print(cartIndex);
+    // print(cartId);
+    // print(cartIndex);
     if (yes) {
       var selWins = windows.where(
         (win) => win.id == cartId,
@@ -193,6 +203,13 @@ class MultiDisplayProvider extends ChangeNotifier {
             'Cart $cartIndex',
           );
           selWin.name = 'Cart $cartIndex';
+          await selWin.controller.setFrame(
+            altDisplay!.visiblePosition! &
+                Size(
+                  altDisplay!.visibleSize!.width + 270,
+                  altDisplay!.visibleSize!.height + 270,
+                ),
+          );
           print(
             'Updated Window Name and Title Numbers to $cartIndex',
           );

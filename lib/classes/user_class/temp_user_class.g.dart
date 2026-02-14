@@ -29,13 +29,14 @@ class TempUserClassAdapter extends TypeAdapter<TempUserClass> {
       departmentName: fields[9] as String?,
       departmentUuid: fields[10] as String?,
       pin: fields[11] as String?,
+      departmentUuids: (fields[12] as List?)?.cast<String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, TempUserClass obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
@@ -59,7 +60,9 @@ class TempUserClassAdapter extends TypeAdapter<TempUserClass> {
       ..writeByte(10)
       ..write(obj.departmentUuid)
       ..writeByte(11)
-      ..write(obj.pin);
+      ..write(obj.pin)
+      ..writeByte(12)
+      ..write(obj.departmentUuids);
   }
 
   @override

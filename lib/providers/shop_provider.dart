@@ -122,10 +122,6 @@ class ShopProvider extends ChangeNotifier {
         action: () async {
           shop.updatedAt = DateTime.now();
           shop.isHeadQuarters = false;
-          // if (tempRole != 'Owner') {
-          //   shop.employees!.add(AuthService().currentUser!);
-          // }
-          // Insert the shop
           shop.refCode?.toLowerCase();
           var createdShop =
               await supabase
@@ -320,7 +316,7 @@ class ShopProvider extends ChangeNotifier {
         if (res == null) {
           print('Shop Owner not gotten');
         } else {
-          print('Shop Owner Gotten: ${res.toString()}');
+          // print('Shop Owner Gotten: ${res.toString()}');
           shopOwnerUser = TempUserClass.fromJson(res);
           await ShopOwnerFunc().insertShopOwner(
             ShopOwner(shopOwner: shopOwnerUser!),

@@ -573,7 +573,7 @@ class DataProvider extends ChangeNotifier {
                 context.mounted &&
                 isOnline) {
               await DepartmentProvider()
-                  .createDepartmentsSync(context);
+                  .createDepartmentsSync();
               print('Finished Syncing Created Departments');
               setSyncProgress(19);
             }
@@ -583,7 +583,7 @@ class DataProvider extends ChangeNotifier {
                 context.mounted &&
                 isOnline) {
               await DepartmentProvider()
-                  .updateDepartmentsSync(context);
+                  .updateDepartmentsSync();
               print('Finished Syncing Updated Departments');
               setSyncProgress(20);
             }
@@ -593,7 +593,7 @@ class DataProvider extends ChangeNotifier {
                 context.mounted &&
                 isOnline) {
               await DepartmentProvider()
-                  .deleteDepartmentsSync(context);
+                  .deleteDepartmentsSync();
               print('Finished Syncing Deleted Departments');
               setSyncProgress(21);
             }
@@ -847,7 +847,7 @@ class DataProvider extends ChangeNotifier {
               1001,
               allowedRangeItems != null
                   ? (allowedRangeItems ?? 0) - 1
-                  : 1500,
+                  : 2000,
             );
         print('Items 2 gotten: ${data2.length}');
         productList.addAll(
@@ -859,14 +859,14 @@ class DataProvider extends ChangeNotifier {
         );
         print('Product List 2 Set: ${productList.length}');
 
-        if (data2.length > 1499) {
+        if (productList.length > 1999) {
           final data3 = await supabase
               .from('products')
               .select()
               .eq('shop_id', shopId)
               .order('name', ascending: true)
-              .range(1501, allowedRangeItems ?? 2000);
-          print('Items 2 gotten: ${data2.length}');
+              .range(2001, allowedRangeItems ?? 3000);
+          print('Items 3 gotten: ${data3.length}');
           productList.addAll(
             (data3 as List)
                 .map(
@@ -875,7 +875,9 @@ class DataProvider extends ChangeNotifier {
                 )
                 .toList(),
           );
-          print('Product List 3 Set: ${data3.length}');
+          print(
+            'Product List 3 Set: ${productList.length}',
+          );
         }
         notifyListeners();
       }

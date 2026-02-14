@@ -28,6 +28,7 @@ import 'package:stockall/constants/play_sounds.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/alt_display/alt_display.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/products/compnents/cart_item_main.dart';
 import 'package:stockall/pages/sales/make_sales/page2/make_sales_two.dart';
@@ -1244,12 +1245,13 @@ class _MakeSalesDesktopState
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       _node.requestFocus();
       returnSalesProvider().toggleSetDiscount(
         false,
         context,
       );
+
       if (widget.isInvoice != null &&
           returnSalesProvider()
               .currentCart()
@@ -1269,7 +1271,52 @@ class _MakeSalesDesktopState
           context: context,
         );
       }
+      for (var cart in returnSalesProvider().cartQueue) {
+        // print(cart.id);
+        await returnMultiDisplayProvider().updateWindow(
+          cartClass: AltCartClass(
+            cartId: cart.id!,
+            currency:
+                returnShopProvider().userShop()!.currency,
+            cartItems: cart.cartItems.reversed.toList(),
+            subTotal: returnSalesProvider().calcTotalMain(),
+            total:
+                returnSalesProvider().calcFinalTotalMain(),
+            vat:
+                returnShopProvider().userShop()!.applyVAT!
+                    ? vat
+                    : 0,
+          ),
+        );
+      }
       setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await returnMultiDisplayProvider().updateWindow(
+        showCart: false,
+        cartClass: AltCartClass(
+          cartId: returnSalesProvider().currentCart().id!,
+          currency:
+              returnShopProvider().userShop()!.currency,
+          cartItems:
+              returnSalesProvider()
+                  .currentCart()
+                  .cartItems
+                  .reversed
+                  .toList(),
+          subTotal: returnSalesProvider().calcTotalMain(),
+          total: returnSalesProvider().calcFinalTotalMain(),
+          vat:
+              returnShopProvider().userShop()!.applyVAT!
+                  ? vat
+                  : 0,
+        ),
+      );
     });
   }
 
@@ -2264,17 +2311,17 @@ class _MakeSalesDesktopState
                                                     product,
                                                   ) =>
                                                       product.barcode?.toLowerCase() ==
-                                                          value ||
+                                                          value.toLowerCase() ||
                                                       product.name.toLowerCase() ==
                                                           value.toLowerCase(),
                                                 );
-                                                if (value
-                                                        .length <
-                                                    5) {
-                                                  widget
-                                                      .searchController
-                                                      .clear();
-                                                }
+                                                // if (value
+                                                //         .length <
+                                                //     2) {
+                                                //   widget
+                                                //       .searchController
+                                                //       .clear();
+                                                // }
                                                 if (items
                                                     .isNotEmpty) {
                                                   returnSalesProvider().addItemToCart(
@@ -2305,6 +2352,8 @@ class _MakeSalesDesktopState
                                                   setState(
                                                     () {},
                                                   );
+                                                  _node
+                                                      .requestFocus();
                                                 }
                                               }
                                             },
@@ -2667,7 +2716,7 @@ class _MakeSalesDesktopState
                                     ),
                                     // SizedBox(height: 5),
 
-                                    // DiscountSetterWidget(
+                                    // DiscountSetterWidgets(
                                     //   discountPercentController:
                                     //       discountPercentController,
                                     // ),

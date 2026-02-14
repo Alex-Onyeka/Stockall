@@ -149,16 +149,16 @@ class _SettingsPageMobileState
                         //                   ) {
                         //                     return DialogTemplate(
                         //                       showTopSection:
-                        //                           returnShopProvider( ).userShop()!.fixedDiscount ==
+                        //                           returnShopProvider().userShop()!.fixedDiscount ==
                         //                                       null &&
-                        //                                   returnShopProvider( ).userShop()!.percentDiscount ==
+                        //                                   returnShopProvider().userShop()!.percentDiscount ==
                         //                                       null
                         //                               ? null
                         //                               : false,
                         //                       showBottomActionButtons:
-                        //                           returnShopProvider( ).userShop()!.fixedDiscount ==
+                        //                           returnShopProvider().userShop()!.fixedDiscount ==
                         //                                       null &&
-                        //                                   returnShopProvider( ).userShop()!.percentDiscount ==
+                        //                                   returnShopProvider().userShop()!.percentDiscount ==
                         //                                       null
                         //                               ? null
                         //                               : false,
@@ -169,17 +169,11 @@ class _SettingsPageMobileState
                         //                           'Set General Discount',
                         //                       action: () async {
                         //                         var fixedDiscount =
-                        //                             returnShopProvider(
-                        //                               context,
-                        //                               listen:
-                        //                                   false,
-                        //                             ).generalFixedDiscount;
+                        //                             returnShopProvider()
+                        //                                 .generalFixedDiscount;
                         //                         var percentDiscount =
-                        //                             returnShopProvider(
-                        //                               context,
-                        //                               listen:
-                        //                                   false,
-                        //                             ).generalPercentDiscount;
+                        //                             returnShopProvider()
+                        //                                 .generalPercentDiscount;
                         //                         if (!isDiscountLoading) {
                         //                           if (fixedDiscount ==
                         //                                   null &&
@@ -222,11 +216,7 @@ class _SettingsPageMobileState
                         //                                     Navigator.of(
                         //                                       mainDialog,
                         //                                     ).pop();
-                        //                                     if (returnShopProvider(
-                        //                                           context,
-                        //                                           listen:
-                        //                                               false,
-                        //                                         ).discountIndex ==
+                        //                                     if (returnShopProvider().discountIndex ==
                         //                                         0) {
                         //                                       setState(
                         //                                         () {
@@ -234,17 +224,9 @@ class _SettingsPageMobileState
                         //                                               true;
                         //                                         },
                         //                                       );
-                        //                                       await returnShopProvider(
-                        //                                         context,
-                        //                                         listen:
-                        //                                             false,
-                        //                                       ).setPercentDiscount(
+                        //                                       await returnShopProvider().setPercentDiscount(
                         //                                         discount:
-                        //                                             returnShopProvider(
-                        //                                               context,
-                        //                                               listen:
-                        //                                                   false,
-                        //                                             ).generalPercentDiscount ??
+                        //                                             returnShopProvider().generalPercentDiscount ??
                         //                                             double.parse(
                         //                                               discountPercentController.text,
                         //                                             ),
@@ -262,17 +244,9 @@ class _SettingsPageMobileState
                         //                                               true;
                         //                                         },
                         //                                       );
-                        //                                       await returnShopProvider(
-                        //                                         context,
-                        //                                         listen:
-                        //                                             false,
-                        //                                       ).setFixedDiscount(
+                        //                                       await returnShopProvider().setFixedDiscount(
                         //                                         discount:
-                        //                                             returnShopProvider(
-                        //                                               context,
-                        //                                               listen:
-                        //                                                   false,
-                        //                                             ).generalFixedDiscount ??
+                        //                                             returnShopProvider().generalFixedDiscount ??
                         //                                             double.parse(
                         //                                               discountPercentController.text,
                         //                                             ),
@@ -301,11 +275,13 @@ class _SettingsPageMobileState
                         //                           Visibility(
                         //                             visible:
                         //                                 returnShopProvider(
-                        //                                       context,
+                        //                                       context:
+                        //                                           context,
                         //                                     ).userShop()?.fixedDiscount ==
                         //                                     null &&
                         //                                 returnShopProvider(
-                        //                                       context,
+                        //                                       context:
+                        //                                           context,
                         //                                     ).userShop()?.percentDiscount ==
                         //                                     null,
                         //                             child: Stack(
@@ -348,11 +324,13 @@ class _SettingsPageMobileState
                         //                           Visibility(
                         //                             visible:
                         //                                 returnShopProvider(
-                        //                                       context,
+                        //                                       context:
+                        //                                           context,
                         //                                     ).userShop()?.fixedDiscount !=
                         //                                     null ||
                         //                                 returnShopProvider(
-                        //                                       context,
+                        //                                       context:
+                        //                                           context,
                         //                                     ).userShop()?.percentDiscount !=
                         //                                     null,
                         //                             child: ConstrainedBox(
@@ -474,11 +452,7 @@ class _SettingsPageMobileState
                         //                                                         Navigator.of(
                         //                                                           clearDiscountDialog,
                         //                                                         ).pop();
-                        //                                                         await returnShopProvider(
-                        //                                                           context,
-                        //                                                           listen:
-                        //                                                               false,
-                        //                                                         ).setPercentDiscount(
+                        //                                                         await returnShopProvider().setPercentDiscount(
                         //                                                           discount:
                         //                                                               null,
                         //                                                         );
@@ -551,10 +525,8 @@ class _SettingsPageMobileState
                         //                 );
                         //               },
                         //             ).then((_) {
-                        //               returnShopProvider(
-                        //                 context,
-                        //                 listen: false,
-                        //               ).clearDiscountsCache();
+                        //               returnShopProvider()
+                        //                   .clearDiscountsCache();
                         //               discountPercentController
                         //                   .clear();
                         //             });

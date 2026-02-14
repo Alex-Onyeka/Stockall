@@ -183,6 +183,7 @@ class _SignupMobileState extends State<SignupMobile> {
                               widget
                                   .lastNameController
                                   .text,
+                          departmentUuids: [],
                         ),
                       ),
                 ),

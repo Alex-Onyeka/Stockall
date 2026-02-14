@@ -16,6 +16,9 @@ const String logoIconWhite =
 const String mainLogo =
     'assets/images/logos/icon_white.png';
 
+const String mainnLogo =
+    'assets/images/logos/mainn_logo.png';
+
 const String appMockUp = 'assets/images/logos/App_Png.png';
 
 const String backGroundImage =
@@ -144,8 +147,8 @@ const String appName = 'Stockall';
 const String appDesc =
     'Your smart inventory companion. Track stock, manage sales, and grow your business with ease — all in one place. Let\'s simplify your workflow and boost your efficiency. 🚀';
 
-const String appVersionMobile = '1.1.0+12';
-const String appVersionDesktop = '1.1.12.0';
+const String appVersionMobile = '1.1.0+13';
+const String appVersionDesktop = '1.1.13.0';
 
 const double vat = 7.5;
 

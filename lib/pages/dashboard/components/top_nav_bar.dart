@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:popover/popover.dart';
-import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -10,11 +9,9 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/multiple_stores_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/shop_setup/shop_page/shop_page.dart';
 import 'package:stockall/pages/shop_setup/shop_setup_one/shop_setup_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
-import 'package:stockall/services/auth_service.dart';
 
 class TopNavBar extends StatefulWidget {
   final Function()? refreshAction;
@@ -800,74 +797,74 @@ class _TopNavBarState extends State<TopNavBar> {
                       ],
                     ),
                   ),
-                  Visibility(
-                    visible:
-                        !authorization(
-                          authorized:
-                              Authorizations()
-                                  .notificationsPage,
-                          context: context,
-                        ),
-                    child: Stack(
-                      alignment: Alignment(1.2, -1.8),
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (dialogContext) {
-                                return ConfirmationAlert(
-                                  theme: widget.theme,
-                                  message:
-                                      'You are about to Logout',
-                                  title: 'Are you Sure?',
-                                  action: () async {
-                                    Navigator.of(
-                                      dialogContext,
-                                    ).pop();
+                  // Visibility(
+                  //   visible:
+                  //       !authorization(
+                  //         authorized:
+                  //             Authorizations()
+                  //                 .notificationsPage,
+                  //         context: context,
+                  //       ),
+                  //   child: Stack(
+                  //     alignment: Alignment(1.2, -1.8),
+                  //     children: [
+                  //       InkWell(
+                  //         onTap: () {
+                  //           showDialog(
+                  //             context: context,
+                  //             builder: (dialogContext) {
+                  //               return ConfirmationAlert(
+                  //                 theme: widget.theme,
+                  //                 message:
+                  //                     'You are about to Logout',
+                  //                 title: 'Are you Sure?',
+                  //                 action: () async {
+                  //                   Navigator.of(
+                  //                     dialogContext,
+                  //                   ).pop();
 
-                                    await AuthService()
-                                        .signOut(context);
-                                    if (context.mounted) {
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (
-                                            context,
-                                          ) {
-                                            return AuthScreensPage();
-                                          },
-                                        ),
-                                      );
-                                      returnNavProvider(
-                                        context,
-                                        listen: false,
-                                      ).navigate(0);
-                                    }
-                                  },
-                                );
-                              },
-                            );
-                          },
-                          child: Container(
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(
-                                208,
-                                245,
-                                245,
-                                245,
-                              ),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.logout_rounded,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  //                   await AuthService()
+                  //                       .signOut(context);
+                  //                   if (context.mounted) {
+                  //                     Navigator.pushReplacement(
+                  //                       context,
+                  //                       MaterialPageRoute(
+                  //                         builder: (
+                  //                           context,
+                  //                         ) {
+                  //                           return AuthScreensPage();
+                  //                         },
+                  //                       ),
+                  //                     );
+                  //                     returnNavProvider(
+                  //                       context,
+                  //                       listen: false,
+                  //                     ).navigate(0);
+                  //                   }
+                  //                 },
+                  //               );
+                  //             },
+                  //           );
+                  //         },
+                  //         child: Container(
+                  //           padding: EdgeInsets.all(10),
+                  //           decoration: BoxDecoration(
+                  //             color: const Color.fromARGB(
+                  //               208,
+                  //               245,
+                  //               245,
+                  //               245,
+                  //             ),
+                  //             shape: BoxShape.circle,
+                  //           ),
+                  //           child: Icon(
+                  //             Icons.logout_rounded,
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                 ],
               ),
             ],

@@ -191,6 +191,7 @@ class _SignupDesktopState extends State<SignupDesktop> {
                               widget
                                   .lastNameController
                                   .text,
+                          departmentUuids: [],
                         ),
                       ),
                 ),

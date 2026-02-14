@@ -124,6 +124,7 @@ class AuthService extends ChangeNotifier {
         role: user.role,
         authUserId: userId,
         password: user.password,
+        departmentUuids: [],
       );
 
       // if (newEmail != null) {

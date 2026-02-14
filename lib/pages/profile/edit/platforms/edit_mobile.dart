@@ -309,6 +309,10 @@ class _EditMobileState extends State<EditMobile> {
                                               : widget
                                                   .phoneController
                                                   .text,
+                                      departmentUuids:
+                                          widget
+                                              .user
+                                              .departmentUuids,
                                     ),
                                     context,
                                   );

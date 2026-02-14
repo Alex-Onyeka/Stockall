@@ -709,14 +709,22 @@ class _DashboardDesktopState
                                                 children: [
                                                   Row(
                                                     children: [
-                                                      Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              theme.mobileTexts.b1.fontSize,
-                                                          fontWeight:
-                                                              theme.mobileTexts.b1.fontWeightBold,
+                                                      InkWell(
+                                                        onTap: () async {
+                                                          await returnMultiDisplayProvider().createWindow(
+                                                            cartId:
+                                                                'cartId',
+                                                          );
+                                                        },
+                                                        child: Text(
+                                                          style: TextStyle(
+                                                            fontSize:
+                                                                theme.mobileTexts.b1.fontSize,
+                                                            fontWeight:
+                                                                theme.mobileTexts.b1.fontWeightBold,
+                                                          ),
+                                                          'Quick Actions',
                                                         ),
-                                                        'Quick Actions',
                                                       ),
                                                     ],
                                                   ),

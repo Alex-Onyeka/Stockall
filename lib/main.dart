@@ -107,6 +107,7 @@ TempUserClass userGeneral(
         email: 'email',
         role: 'Owner',
         authUserId: 'dfsgdhjfh',
+        departmentUuids: [],
       );
 }
 

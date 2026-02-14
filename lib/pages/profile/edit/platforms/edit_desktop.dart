@@ -444,6 +444,10 @@ class _EditDesktopState extends State<EditDesktop> {
                                                       : widget
                                                           .phoneController
                                                           .text,
+                                              departmentUuids:
+                                                  widget
+                                                      .user
+                                                      .departmentUuids,
                                             ),
                                             context,
                                           );

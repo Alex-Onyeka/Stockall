@@ -31,7 +31,6 @@ class DepartmentProvider with ChangeNotifier {
 
   Future<void> createDepartment(
     DepartmentClass department,
-    BuildContext context,
   ) async {
     try {
       bool isOnline = await connectivity.isOnline();
@@ -67,16 +66,13 @@ class DepartmentProvider with ChangeNotifier {
           CreatedDepartments(department: department),
         );
         await returnEventsLogProvider().createLog(
-          returnEventsLogProvider(
-            // ignore: use_build_context_synchronously
-          ).departmentAdapter(department, 1),
-          // ignore: use_build_context_synchronously
+          returnEventsLogProvider().departmentAdapter(
+            department,
+            1,
+          ),
         );
       }
-      if (context.mounted) {
-        print('Mounted: Add Department');
-        await getDepartments();
-      }
+      await getDepartments();
       notifyListeners();
     } catch (e) {
       print('Error Creating Department: ${e.toString()}');
@@ -114,7 +110,6 @@ class DepartmentProvider with ChangeNotifier {
 
   Future<void> updateDeparment(
     DepartmentClass department,
-    BuildContext context,
   ) async {
     bool isOnline = await connectivity.isOnline();
     department.updatedAt = DateTime.now();
@@ -154,15 +149,13 @@ class DepartmentProvider with ChangeNotifier {
           );
         }
         await returnEventsLogProvider().createLog(
-          returnEventsLogProvider(
-            // ignore: use_build_context_synchronously
-          ).departmentAdapter(department, 2),
-          // ignore: use_build_context_synchronously
+          returnEventsLogProvider().departmentAdapter(
+            department,
+            2,
+          ),
         );
       }
-      if (context.mounted) {
-        await getDepartments();
-      }
+      await getDepartments();
       notifyListeners();
     } catch (e) {
       print('Error Updating Department: ${e.toString()}');
@@ -171,7 +164,6 @@ class DepartmentProvider with ChangeNotifier {
 
   Future<void> deleteDepartment(
     DepartmentClass department,
-    BuildContext context,
   ) async {
     bool isOnline = await connectivity.isOnline();
     if (isOnline) {
@@ -180,10 +172,10 @@ class DepartmentProvider with ChangeNotifier {
           .delete()
           .eq('uuid', department.uuid);
       await returnEventsLogProvider().createLog(
-        returnEventsLogProvider(
-          // ignore: use_build_context_synchronously
-        ).departmentAdapter(department, 3),
-        // ignore: use_build_context_synchronously
+        returnEventsLogProvider().departmentAdapter(
+          department,
+          3,
+        ),
       );
     } else {
       var containsCreated =
@@ -235,15 +227,11 @@ class DepartmentProvider with ChangeNotifier {
       );
     }
 
-    if (context.mounted) {
-      await getDepartments();
-    }
+    await getDepartments();
     notifyListeners();
   }
 
-  Future<void> createDepartmentsSync(
-    BuildContext context,
-  ) async {
+  Future<void> createDepartmentsSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
       // Prepare batch payload
@@ -265,14 +253,13 @@ class DepartmentProvider with ChangeNotifier {
                 .map((p) => p.department.toJson())
                 .toList();
 
-        // Insert all at once
         final data =
             await supabase
                 .from(tableName)
                 .insert(payload)
                 .select();
 
-        print('${data.length} items added successfully ✅');
+        print('${data.length} items added Successfully ✅');
         await CreatedDepartmentsFunc().clearDepartment();
         print('Unsynced Departments Cleared');
       }
@@ -280,10 +267,8 @@ class DepartmentProvider with ChangeNotifier {
       print('Batch Departments insert failed ❌: $e');
     }
 
-    if (context.mounted) {
-      print('Mounted, refreshing Departments ✅');
-      await getDepartments();
-    }
+    print('Mounted, refreshing Departments ✅');
+    await getDepartments();
   }
 
   //
@@ -292,9 +277,7 @@ class DepartmentProvider with ChangeNotifier {
   //
   //
 
-  Future<void> deleteDepartmentsSync(
-    BuildContext context,
-  ) async {
+  Future<void> deleteDepartmentsSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
 
@@ -330,19 +313,15 @@ class DepartmentProvider with ChangeNotifier {
       print('Batch Departments delete failed ❌: $e');
     }
 
-    if (context.mounted) {
-      print('Mounted, refreshing Departments ✅');
-      await getDepartments();
-    }
+    print('Mounted, refreshing Departments ✅');
+    await getDepartments();
   }
 
   //
   //
   //
 
-  Future<void> updateDepartmentsSync(
-    BuildContext context,
-  ) async {
+  Future<void> updateDepartmentsSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
       print(
@@ -433,10 +412,8 @@ class DepartmentProvider with ChangeNotifier {
       print('Batch Departments update failed ❌: $e');
     }
 
-    if (context.mounted) {
-      print('Mounted, refreshing Departments ✅');
-      await getDepartments();
-    }
+    print('Mounted, refreshing Departments ✅');
+    await getDepartments();
   }
 
   //

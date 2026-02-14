@@ -2210,6 +2210,7 @@ class TabContainer extends StatelessWidget {
     required this.price,
     required this.text,
     required this.isMoney,
+    this.priceTextSize,
     this.isDiscount,
   });
   final Color backGround;
@@ -2219,6 +2220,7 @@ class TabContainer extends StatelessWidget {
   final String text;
   final bool isMoney;
   final bool? isDiscount;
+  final double? priceTextSize;
 
   @override
   Widget build(BuildContext context) {
@@ -2245,7 +2247,9 @@ class TabContainer extends StatelessWidget {
               Text(
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: theme.mobileTexts.b1.fontSize,
+                  fontSize:
+                      priceTextSize ??
+                      theme.mobileTexts.b1.fontSize,
                   fontWeight: FontWeight.bold,
                 ),
                 '${isMoney ? currencySymbol(context: context) : ''}${formatLargeNumberDouble(price)}${isDiscount != null ? '%' : ''}',
