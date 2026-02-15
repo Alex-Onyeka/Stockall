@@ -28,9 +28,31 @@ class SubscriptionProvider extends ChangeNotifier {
   }
 
   int? remainingDays() {
-    return subscription?.lastPayment != null
-        ? getDayDifference(subscription!.lastPayment!)
+    return subscription?.nextPayment != null
+        ? getDayDifference(subscription!.nextPayment!)
         : null;
+  }
+
+  bool isClicked = false;
+
+  void toggleIsClicked(bool value) {
+    isClicked = value;
+    notifyListeners();
+    print("Is Clicked Value: $isClicked");
+  }
+
+  void checkSubscriptionExpiryNotification() {
+    if (remainingDays() != null &&
+        remainingDays()! <= 7 &&
+        subscription?.plan != 0) {
+      isClicked = false;
+      notifyListeners();
+      print('Is Clicked is False');
+    } else {
+      isClicked = true;
+      notifyListeners();
+      print('Is Clicked is True');
+    }
   }
 
   Future<TempShopClass> userShop(

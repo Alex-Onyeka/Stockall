@@ -529,16 +529,16 @@ class _ProductReportMobileState
                                                         });
                                                         var product =
                                                             products[index];
-                                                        var productIndex =
-                                                            products.indexOf(
-                                                              product,
-                                                            ) +
-                                                            1;
+                                                        // var productIndex =
+                                                        //     products.indexOf(
+                                                        //       product,
+                                                        //     ) +
+                                                        //     1;
                                                         return TableRowRecordWidget(
                                                           theme:
                                                               theme,
-                                                          productIndex:
-                                                              productIndex,
+                                                          // productIndex:
+                                                          //     productIndex,
                                                           product:
                                                               product,
                                                         );
@@ -602,7 +602,7 @@ class _ProductReportMobileState
                                     const EdgeInsets.symmetric(
                                       horizontal: 15.0,
                                     ),
-                                child: Column(
+                                child: ListView(
                                   children: [
                                     Container(
                                       width:
@@ -688,7 +688,7 @@ class _ProductReportMobileState
                                                         .h4
                                                         .fontSize,
                                                 isMoney:
-                                                    false,
+                                                    true,
                                                 text:
                                                     'Total Amount',
                                                 price:
@@ -837,7 +837,7 @@ class _ProductReportMobileState
                                                       .infinity,
                                               child: TabContainer(
                                                 isMoney:
-                                                    true,
+                                                    false,
                                                 text:
                                                     'Out Of Stock',
                                                 price:
@@ -850,8 +850,8 @@ class _ProductReportMobileState
                                                           (
                                                             item,
                                                           ) =>
-                                                              item.quantity ==
-                                                                  null ||
+                                                              item.quantity !=
+                                                                  null &&
                                                               item.quantity ==
                                                                   0,
                                                         )
@@ -873,6 +873,44 @@ class _ProductReportMobileState
                                                       148,
                                                       3,
                                                     ),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width:
+                                                  double
+                                                      .infinity,
+                                              child: TabContainer(
+                                                isMoney:
+                                                    false,
+                                                text:
+                                                    'Un-Managed Items',
+                                                price:
+                                                    returnData(
+                                                          context:
+                                                              context,
+                                                        )
+                                                        .productList
+                                                        .where(
+                                                          (
+                                                            item,
+                                                          ) =>
+                                                              !item.isManaged,
+                                                        )
+                                                        .length
+                                                        .toDouble(),
+                                                theme:
+                                                    theme,
+                                                backGround:
+                                                    const Color.fromARGB(
+                                                      141,
+                                                      245,
+                                                      245,
+                                                      245,
+                                                    ),
+                                                border:
+                                                    Colors
+                                                        .grey
+                                                        .shade300,
                                               ),
                                             ),
                                           ],
@@ -900,7 +938,7 @@ class _ProductReportMobileState
                       child: Row(
                         mainAxisAlignment:
                             MainAxisAlignment.end,
-                        spacing: 2,
+                        spacing: 1,
                         children: [
                           Material(
                             type: MaterialType.transparency,
@@ -927,30 +965,65 @@ class _ProductReportMobileState
                                 ),
                                 child: Icon(
                                   size: 16,
-                                  color: Colors.grey,
+                                  color:
+                                      start == 0
+                                          ? Colors
+                                              .grey
+                                              .shade400
+                                          : Colors
+                                              .grey
+                                              .shade800,
                                   Icons.arrow_back_sharp,
                                 ),
                               ),
                             ),
                           ),
-                          Container(
-                            padding: EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.circular(5),
-                            ),
-                            child: Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b3
-                                        .fontSize,
-                                color: Colors.grey.shade700,
-                                fontWeight: FontWeight.bold,
+                          Row(
+                            spacing: 3,
+                            mainAxisAlignment:
+                                MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b3
+                                          .fontSize,
+                                  color:
+                                      Colors.grey.shade700,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+                                count.toString(),
                               ),
-                              count.toString(),
-                            ),
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b3
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                  color: Colors.grey,
+                                ),
+                                '/',
+                              ),
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b3
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                  color: Colors.grey,
+                                ),
+                                "${returnData(context: context).productList.length > 50 ? (returnData(context: context).productList.length / 50).ceil() : 1}",
+                              ),
+                            ],
                           ),
                           Material(
                             type: MaterialType.transparency,
@@ -977,7 +1050,23 @@ class _ProductReportMobileState
                                 ),
                                 child: Icon(
                                   size: 16,
-                                  color: Colors.grey,
+                                  color:
+                                      end ==
+                                                  returnData(
+                                                    context:
+                                                        context,
+                                                  ).productList.length ||
+                                              returnData(
+                                                    context:
+                                                        context,
+                                                  ).productList.length <=
+                                                  50
+                                          ? Colors
+                                              .grey
+                                              .shade400
+                                          : Colors
+                                              .grey
+                                              .shade800,
                                   Icons.arrow_forward_sharp,
                                 ),
                               ),
@@ -1600,12 +1689,12 @@ class TableRowRecordWidget extends StatefulWidget {
   const TableRowRecordWidget({
     super.key,
     required this.theme,
-    required this.productIndex,
+    // required this.productIndex,
     required this.product,
   });
 
   final ThemeProvider theme;
-  final int productIndex;
+  // final int productIndex;
   final TempProductClass product;
 
   @override
@@ -1649,7 +1738,15 @@ class _TableRowRecordWidgetState
                                   .fontSize,
                           fontWeight: FontWeight.bold,
                         ),
-                        widget.productIndex.toString(),
+                        (returnData(
+                                  context: context,
+                                ).productList.indexWhere(
+                                  (item) =>
+                                      item.uuid ==
+                                      widget.product.uuid,
+                                ) +
+                                1)
+                            .toString(),
                       ),
                     ),
                   ],

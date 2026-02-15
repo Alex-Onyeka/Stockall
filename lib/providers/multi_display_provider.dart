@@ -102,12 +102,14 @@ class MultiDisplayProvider extends ChangeNotifier {
 
         windowController
           ..setFrame(
-            altDisplay!.visiblePosition! &
+            Offset(
+                  altDisplay!.visiblePosition!.dx - 10,
+                  altDisplay!.visiblePosition!.dy - 25,
+                ) &
                 Size(
-                  altDisplay!.visibleSize!.width + 270,
-                  altDisplay!.visibleSize!.height + 270,
+                  altDisplay!.visibleSize!.width + 20,
+                  altDisplay!.visibleSize!.height + 35,
                 ),
-            // const Offset(0, 0) & const Size(1000, 500),
           )
           ..setTitle(name)
           ..show();
@@ -132,6 +134,7 @@ class MultiDisplayProvider extends ChangeNotifier {
       }
     }
     await getAllSubWindows();
+    // await selectWindow(cartId: cartId);
   }
 
   Future<void> updateWindow({
@@ -182,7 +185,7 @@ class MultiDisplayProvider extends ChangeNotifier {
 
   Future<void> selectWindow({
     required String cartId,
-    required int cartIndex,
+    int? cartIndex,
   }) async {
     var yes = await isAllowed();
     await getAllSubWindows();
@@ -193,27 +196,30 @@ class MultiDisplayProvider extends ChangeNotifier {
         (win) => win.id == cartId,
       );
       if (selWins.isEmpty) {
-        returnSalesProvider().createWindow();
+        await returnSalesProvider().createWindow();
       } else {
         var selWin = selWins.first;
-        await selWin.controller.show();
         if (cartIndex !=
             int.parse(selWin.name.split(' ').last)) {
           await selWin.controller.setTitle(
             'Cart $cartIndex',
           );
           selWin.name = 'Cart $cartIndex';
-          await selWin.controller.setFrame(
-            altDisplay!.visiblePosition! &
-                Size(
-                  altDisplay!.visibleSize!.width + 270,
-                  altDisplay!.visibleSize!.height + 270,
-                ),
-          );
           print(
             'Updated Window Name and Title Numbers to $cartIndex',
           );
         }
+        await selWin.controller.setFrame(
+          Offset(
+                altDisplay!.visiblePosition!.dx - 10,
+                altDisplay!.visiblePosition!.dy - 25,
+              ) &
+              Size(
+                altDisplay!.visibleSize!.width + 20,
+                altDisplay!.visibleSize!.height + 35,
+              ),
+        );
+        await selWin.controller.show();
 
         for (var win in windows.where(
           (win) =>

@@ -41,7 +41,6 @@ class _DashboardState extends State<Dashboard> {
       listen: false,
     ).validate(context);
     clearDate();
-
     if (!mounted) return;
   }
 

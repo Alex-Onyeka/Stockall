@@ -22,6 +22,7 @@ import 'package:stockall/helpers/clean_up_url/clean_up_url.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/dashboard/components/button_tab.dart';
+import 'package:stockall/pages/dashboard/components/expiry_sub_popup_desktop.dart';
 import 'package:stockall/pages/dashboard/components/main_bottom_nav.dart';
 import 'package:stockall/pages/dashboard/components/main_info_tab.dart';
 import 'package:stockall/pages/dashboard/components/top_nav_bar.dart';
@@ -1309,6 +1310,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                       ),
                     ),
                   ),
+                  ExpirySubPopUpDesktop(),
                   Visibility(
                     visible: authorization(
                       authorized:

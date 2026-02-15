@@ -836,6 +836,7 @@ class DataProvider extends ChangeNotifier {
                 (json) => TempProductClass.fromJson(json),
               )
               .toList();
+      productList.sort((a, b) => a.name.compareTo(b.name));
       print('Product List Set: ${productList.length}');
       if (data.length > 999) {
         final data2 = await supabase
@@ -857,6 +858,9 @@ class DataProvider extends ChangeNotifier {
               )
               .toList(),
         );
+        productList.sort(
+          (a, b) => a.name.compareTo(b.name),
+        );
         print('Product List 2 Set: ${productList.length}');
 
         if (productList.length > 1999) {
@@ -874,6 +878,9 @@ class DataProvider extends ChangeNotifier {
                       TempProductClass.fromJson(stuff),
                 )
                 .toList(),
+          );
+          productList.sort(
+            (a, b) => a.name.compareTo(b.name),
           );
           print(
             'Product List 3 Set: ${productList.length}',

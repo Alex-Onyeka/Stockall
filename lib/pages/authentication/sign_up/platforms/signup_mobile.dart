@@ -281,32 +281,28 @@ class _SignupMobileState extends State<SignupMobile> {
                 ),
               ),
             ),
-            leadingWidth: 10,
+            leadingWidth: 60,
             centerTitle: true,
-            title: InkWell(
-              onTap: () {
-                Navigator.of(context).pop();
-              },
-              child: Row(
-                spacing: 10,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(mainLogoIcon, height: 20),
-                  Text(
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 25,
-                      fontWeight:
-                          widget
-                              .theme
-                              .mobileTexts
-                              .h3
-                              .fontWeightBold,
-                    ),
-                    appName,
+            title: Row(
+              spacing: 10,
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(mainLogoIcon, height: 20),
+                Text(
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 25,
+                    fontWeight:
+                        widget
+                            .theme
+                            .mobileTexts
+                            .h3
+                            .fontWeightBold,
                   ),
-                ],
-              ),
+                  appName,
+                ),
+              ],
             ),
             actions: [
               Opacity(

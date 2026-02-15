@@ -52,7 +52,19 @@ class NavProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void checkSubExp(BuildContext context) {
+    if (context.mounted) {
+      returnSubcsription(
+        context,
+        listen: false,
+      ).checkSubscriptionExpiryNotification();
+    }
+  }
+
   Future<void> validate(BuildContext context) async {
+    if (context.mounted) {
+      checkSubExp(context);
+    }
     var dataProvider = returnData();
     final userProvider = returnUserProvider(
       context,
@@ -169,6 +181,9 @@ class NavProvider extends ChangeNotifier {
           }
         }
       }
+    }
+    if (context.mounted) {
+      checkSubExp(context);
     }
   }
 

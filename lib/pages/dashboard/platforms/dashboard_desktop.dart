@@ -24,6 +24,7 @@ import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/helpers/clean_up_url/clean_up_url.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/dashboard/components/button_tab.dart';
+import 'package:stockall/pages/dashboard/components/expiry_sub_popup_desktop.dart';
 import 'package:stockall/pages/dashboard/components/main_info_tab.dart';
 import 'package:stockall/pages/dashboard/components/top_nav_bar.dart';
 import 'package:stockall/pages/dashboard/components/total_sales_banner.dart';
@@ -709,22 +710,14 @@ class _DashboardDesktopState
                                                 children: [
                                                   Row(
                                                     children: [
-                                                      InkWell(
-                                                        onTap: () async {
-                                                          await returnMultiDisplayProvider().createWindow(
-                                                            cartId:
-                                                                'cartId',
-                                                          );
-                                                        },
-                                                        child: Text(
-                                                          style: TextStyle(
-                                                            fontSize:
-                                                                theme.mobileTexts.b1.fontSize,
-                                                            fontWeight:
-                                                                theme.mobileTexts.b1.fontWeightBold,
-                                                          ),
-                                                          'Quick Actions',
+                                                      Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              theme.mobileTexts.b1.fontSize,
+                                                          fontWeight:
+                                                              theme.mobileTexts.b1.fontWeightBold,
                                                         ),
+                                                        'Quick Actions',
                                                       ),
                                                     ],
                                                   ),
@@ -1550,6 +1543,7 @@ class _DashboardDesktopState
                                     ),
                                   ),
                                 ),
+                                ExpirySubPopUpDesktop(),
                                 Visibility(
                                   visible:
                                       context

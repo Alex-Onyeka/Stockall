@@ -561,16 +561,16 @@ class ProductReportDesktopState
                                                           );
                                                           var product =
                                                               products[index];
-                                                          var productIndex =
-                                                              products.indexOf(
-                                                                product,
-                                                              ) +
-                                                              1;
+                                                          // var productIndex =
+                                                          //     products.indexOf(
+                                                          //       product,
+                                                          //     ) +
+                                                          //     1;
                                                           return TableRowRecordWidget(
                                                             theme:
                                                                 theme,
-                                                            productIndex:
-                                                                productIndex,
+                                                            // productIndex:
+                                                            //     productIndex,
                                                             product:
                                                                 product,
                                                           );
@@ -709,7 +709,7 @@ class ProductReportDesktopState
                                                         .h3
                                                         .fontSize,
                                                 isMoney:
-                                                    false,
+                                                    true,
                                                 text:
                                                     'Total Amount',
                                                 price:
@@ -771,7 +771,7 @@ class ProductReportDesktopState
                                         ),
                                         SizedBox(height: 8),
                                         Row(
-                                          spacing: 10,
+                                          spacing: 0,
                                           mainAxisAlignment:
                                               MainAxisAlignment
                                                   .center,
@@ -805,6 +805,17 @@ class ProductReportDesktopState
                                                     ),
                                               ),
                                             ),
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        Row(
+                                          spacing: 10,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment
+                                                  .center,
+                                          children: [
                                             Expanded(
                                               child: TabContainer(
                                                 isMoney:
@@ -849,7 +860,7 @@ class ProductReportDesktopState
                                             Expanded(
                                               child: TabContainer(
                                                 isMoney:
-                                                    true,
+                                                    false,
                                                 text:
                                                     'Out Of Stock',
                                                 price:
@@ -862,8 +873,8 @@ class ProductReportDesktopState
                                                           (
                                                             item,
                                                           ) =>
-                                                              item.quantity ==
-                                                                  null ||
+                                                              item.quantity !=
+                                                                  null &&
                                                               item.quantity ==
                                                                   0,
                                                         )
@@ -887,6 +898,41 @@ class ProductReportDesktopState
                                                     ),
                                               ),
                                             ),
+                                            Expanded(
+                                              child: TabContainer(
+                                                isMoney:
+                                                    false,
+                                                text:
+                                                    'Un-Managed Items',
+                                                price:
+                                                    returnData(
+                                                          context:
+                                                              context,
+                                                        )
+                                                        .productList
+                                                        .where(
+                                                          (
+                                                            item,
+                                                          ) =>
+                                                              !item.isManaged,
+                                                        )
+                                                        .length
+                                                        .toDouble(),
+                                                theme:
+                                                    theme,
+                                                backGround:
+                                                    const Color.fromARGB(
+                                                      141,
+                                                      245,
+                                                      245,
+                                                      245,
+                                                    ),
+                                                border:
+                                                    Colors
+                                                        .grey
+                                                        .shade300,
+                                              ),
+                                            ),
                                           ],
                                         ),
                                       ],
@@ -904,7 +950,7 @@ class ProductReportDesktopState
                       child: Row(
                         mainAxisAlignment:
                             MainAxisAlignment.end,
-                        spacing: 5,
+                        spacing: 0,
                         children: [
                           IconButton(
                             onPressed: () {
@@ -916,26 +962,60 @@ class ProductReportDesktopState
                               );
                             },
                             icon: Icon(
+                              size: 20,
+                              color:
+                                  start == 0
+                                      ? Colors.grey.shade400
+                                      : Colors
+                                          .grey
+                                          .shade800,
                               Icons.arrow_back_sharp,
                             ),
                           ),
-                          Container(
-                            padding: EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.circular(5),
-                            ),
-                            child: Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b2
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
+                          Row(
+                            mainAxisAlignment:
+                                MainAxisAlignment.center,
+                            spacing: 3,
+                            children: [
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b2
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+                                count.toString(),
                               ),
-                              count.toString(),
-                            ),
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b2
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                  color: Colors.grey,
+                                ),
+                                '/',
+                              ),
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b2
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                  color: Colors.grey,
+                                ),
+                                "${returnData(context: context).productList.length > 50 ? (returnData(context: context).productList.length / 50).ceil() : 1}",
+                              ),
+                            ],
                           ),
                           IconButton(
                             onPressed: () {
@@ -947,6 +1027,26 @@ class ProductReportDesktopState
                               );
                             },
                             icon: Icon(
+                              size: 20,
+                              color:
+                                  end ==
+                                              returnData(
+                                                    context:
+                                                        context,
+                                                  )
+                                                  .productList
+                                                  .length ||
+                                          returnData(
+                                                    context:
+                                                        context,
+                                                  )
+                                                  .productList
+                                                  .length <=
+                                              50
+                                      ? Colors.grey.shade400
+                                      : Colors
+                                          .grey
+                                          .shade800,
                               Icons.arrow_forward_sharp,
                             ),
                           ),
@@ -1569,12 +1669,12 @@ class TableRowRecordWidget extends StatefulWidget {
   const TableRowRecordWidget({
     super.key,
     required this.theme,
-    required this.productIndex,
+    // required this.productIndex,
     required this.product,
   });
 
   final ThemeProvider theme;
-  final int productIndex;
+  // final int productIndex;
   final TempProductClass product;
 
   @override
@@ -1618,7 +1718,15 @@ class _TableRowRecordWidgetState
                                   .fontSize,
                           fontWeight: FontWeight.bold,
                         ),
-                        widget.productIndex.toString(),
+                        (returnData(
+                                  context: context,
+                                ).productList.indexWhere(
+                                  (item) =>
+                                      item.uuid ==
+                                      widget.product.uuid,
+                                ) +
+                                1)
+                            .toString(),
                       ),
                     ),
                   ],
