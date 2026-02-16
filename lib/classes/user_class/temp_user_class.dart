@@ -78,7 +78,9 @@ class TempUserClass extends HiveObject {
       departmentName: json['department_name'],
       pin: json['pin'],
       departmentUuids:
-          json['department_uuids'] as List<String>?,
+          (json['department_uuids'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList(),
     );
   }
 

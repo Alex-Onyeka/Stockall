@@ -84,6 +84,7 @@ class _BarcodePrintingPageState
       }
       listPrinters();
     });
+    setState(() {});
   }
 
   @override

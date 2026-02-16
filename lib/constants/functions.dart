@@ -166,6 +166,7 @@ List<Map<String, dynamic>> employees = [
   {
     'position': 'Manager',
     'auths': [
+      'Add Items',
       'Add Customers',
       'Update Customers',
       'Delete Customers',
@@ -183,7 +184,6 @@ List<Map<String, dynamic>> employees = [
   {
     'position': 'Asst. Manager',
     'auths': [
-      'Add Items',
       'Add Customers',
       'Update Customers',
       'Delete Customers',

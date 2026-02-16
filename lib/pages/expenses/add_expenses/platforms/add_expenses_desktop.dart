@@ -138,8 +138,32 @@ class _AddExpensesDesktopState
                             uuid: uuidGen(),
                             createdDate: DateTime.now(),
                           ),
-                          safeContext,
                         );
+                        setState(() {
+                          isLoading = false;
+                          showSuccess = true;
+                        });
+
+                        // Clear data before popping
+                        if (safeContext.mounted) {
+                          dataProvider.clearFields();
+                        }
+
+                        await Future.delayed(
+                          Duration(seconds: 2),
+                          () {
+                            // Pop current screen
+                            if (safeContext.mounted) {
+                              Navigator.of(
+                                safeContext,
+                              ).pop(); // pop current page
+                            }
+                          },
+                        );
+                        setState(() {
+                          isLoading = false;
+                          showSuccess = false;
+                        });
                       },
                     );
               } else {
@@ -175,35 +199,32 @@ class _AddExpensesDesktopState
                   ),
                   safeContext,
                 );
-              }
-              // if (context.mounted) {
-              //   await expensesProvider.getExpenses(shopId);
-              // }
-              setState(() {
-                isLoading = false;
-                showSuccess = true;
-              });
+                setState(() {
+                  isLoading = false;
+                  showSuccess = true;
+                });
 
-              // Clear data before popping
-              if (safeContext.mounted) {
-                dataProvider.clearFields();
-              }
+                // Clear data before popping
+                if (safeContext.mounted) {
+                  dataProvider.clearFields();
+                }
 
-              await Future.delayed(
-                Duration(seconds: 2),
-                () {
-                  // Pop current screen
-                  if (safeContext.mounted) {
-                    Navigator.of(
-                      safeContext,
-                    ).pop(); // pop current page
-                  }
-                },
-              );
-              setState(() {
-                isLoading = false;
-                showSuccess = false;
-              });
+                await Future.delayed(
+                  Duration(seconds: 2),
+                  () {
+                    // Pop current screen
+                    if (safeContext.mounted) {
+                      Navigator.of(
+                        safeContext,
+                      ).pop(); // pop current page
+                    }
+                  },
+                );
+                setState(() {
+                  isLoading = false;
+                  showSuccess = false;
+                });
+              }
             },
           );
         },

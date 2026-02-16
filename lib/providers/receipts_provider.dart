@@ -385,7 +385,9 @@ class ReceiptsProvider extends ChangeNotifier {
         final updateData = {
           'is_invoice': false,
           'created_at':
-              DateTime.now().toLocal().toIso8601String(),
+              DateTime.now()
+                  .subtract(Duration(hours: 1))
+                  .toIso8601String(),
         };
 
         final response =

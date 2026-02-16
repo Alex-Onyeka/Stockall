@@ -1832,8 +1832,17 @@ class ShopProvider extends ChangeNotifier {
             .getbarcodePrinterLocal()
             ?.settings ??
         defaultPrinterSettings;
-    notifyListeners();
+    // notifyListeners();
   }
+
+  // void setPrinterSettingsCacheInit() {
+  //   printerSettings =
+  //       BarcodePrinterLocalFunc()
+  //           .getbarcodePrinterLocal()
+  //           ?.settings ??
+  //       defaultPrinterSettings;
+  //   // notifyListeners();
+  // }
 
   PrinterSettings defaultPrinterSettings = PrinterSettings(
     widthMm: 58,
@@ -1879,12 +1888,12 @@ class ShopProvider extends ChangeNotifier {
 
   void listPrintersSub(TempBarcodePrinterClass printer) {
     printers.add(printer);
-    notifyListeners();
+    // notifyListeners();
   }
 
   void clearPrinters() {
     printers.clear();
-    notifyListeners();
+    // notifyListeners();
   }
 
   Future<void> selectPrinter(

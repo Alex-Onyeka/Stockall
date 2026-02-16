@@ -26,7 +26,7 @@ class ExpensesProvider extends ChangeNotifier {
 
   Future<void> addExpense(
     TempExpensesClass expense,
-    BuildContext context,
+    // BuildContext context,
   ) async {
     bool isOnline = await connectivity.isOnline();
     expense.updatedAt = DateTime.now();
@@ -61,10 +61,12 @@ class ExpensesProvider extends ChangeNotifier {
         // ignore: use_build_context_synchronously
       );
     }
-    if (context.mounted) {
-      print('Mounted: Add Expense');
-      await getExpenses(shopId());
-    }
+    // if (context.mounted) {
+    print('Mounted: Add Expense');
+    await getExpenses(shopId());
+    // } else {
+    //   print('Context not Mounted for create Expenses');
+    // }
     notifyListeners();
   }
 

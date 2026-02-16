@@ -107,173 +107,186 @@ class _ProductReportMobileState
           appBar: appBar(
             context: context,
             title: sortIndex == 1 ? 'Items' : 'Summary',
-            widget: Padding(
-              padding: const EdgeInsets.only(right: 15.0),
-              child: PopupMenuButton(
-                offset: Offset(-20, 30),
-                color: Colors.white,
-                itemBuilder: (context) {
-                  return [
-                    PopupMenuItem(
-                      onTap: () {
-                        setState(() {
-                          sortIndex = 1;
-                        });
-                      },
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b2.fontSize,
-                          fontWeight:
-                              sortIndex == 1
-                                  ? FontWeight.bold
-                                  : null,
-                        ),
-                        'View Table',
-                      ),
-                    ),
-                    PopupMenuItem(
-                      onTap: () {
-                        setState(() {
-                          sortIndex = 2;
-                        });
-                      },
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b2.fontSize,
-                          fontWeight:
-                              sortIndex == 2
-                                  ? FontWeight.bold
-                                  : null,
-                        ),
-                        'View Total Summary',
-                      ),
-                    ),
-                    // PopupMenuItem(
-                    //   onTap: () {
-                    //     setState(() {
-                    //       sortIndex = 1;
-                    //     });
-                    //   },
-                    //   child: Text(
-                    //     style: TextStyle(
-                    //       fontSize:
-                    //           theme.mobileTexts.b2.fontSize,
-                    //       fontWeight:
-                    //           sortIndex == 1
-                    //               ? FontWeight.bold
-                    //               : null,
-                    //     ),
-                    //     'Sort By Name',
-                    //   ),
-                    // ),
-                    // PopupMenuItem(
-                    //   onTap: () {
-                    //     setState(() {
-                    //       sortIndex = 2;
-                    //     });
-                    //   },
-                    //   child: Text(
-                    //     style: TextStyle(
-                    //       fontSize:
-                    //           theme.mobileTexts.b2.fontSize,
-                    //       fontWeight:
-                    //           sortIndex == 2
-                    //               ? FontWeight.bold
-                    //               : null,
-                    //     ),
-                    //     'Sort By Quantity',
-                    //   ),
-                    // ),
-                    // PopupMenuItem(
-                    //   onTap: () {
-                    //     setState(() {
-                    //       sortIndex = 3;
-                    //     });
-                    //   },
-                    //   child: Text(
-                    //     style: TextStyle(
-                    //       fontSize:
-                    //           theme.mobileTexts.b2.fontSize,
-                    //       fontWeight:
-                    //           sortIndex == 3
-                    //               ? FontWeight.bold
-                    //               : null,
-                    //     ),
-                    //     'Sort By Created Date',
-                    //   ),
-                    // ),
-                  ];
-                },
-                child: Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Column(
-                      mainAxisAlignment:
-                          MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          style: TextStyle(
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b4
-                                    .fontSize,
-                          ),
-                          'View:',
-                        ),
-                        Text(
+            widget: Visibility(
+              visible:
+                  returnUserProvider(
+                    context,
+                  ).currentUserMain?.role ==
+                  'Owner',
+              child: Padding(
+                padding: const EdgeInsets.only(right: 15.0),
+                child: PopupMenuButton(
+                  offset: Offset(-20, 30),
+                  color: Colors.white,
+                  itemBuilder: (context) {
+                    return [
+                      PopupMenuItem(
+                        onTap: () {
+                          setState(() {
+                            sortIndex = 1;
+                          });
+                        },
+                        child: Text(
                           style: TextStyle(
                             fontSize:
                                 theme
                                     .mobileTexts
                                     .b2
                                     .fontSize,
-                            fontWeight: FontWeight.bold,
+                            fontWeight:
+                                sortIndex == 1
+                                    ? FontWeight.bold
+                                    : null,
                           ),
-                          sortIndex == 1
-                              ? 'Table'
-                              : sortIndex == 2
-                              ? 'Summary'
-                              : 'Table',
+                          'View Table',
                         ),
-                        // Text(
-                        //   style: TextStyle(
-                        //     fontSize:
-                        //         theme
-                        //             .mobileTexts
-                        //             .b4
-                        //             .fontSize,
-                        //   ),
-                        //   'Sorted by:',
-                        // ),
-                        // Text(
-                        //   style: TextStyle(
-                        //     fontSize:
-                        //         theme
-                        //             .mobileTexts
-                        //             .b2
-                        //             .fontSize,
-                        //     fontWeight: FontWeight.bold,
-                        //   ),
-                        //   sortIndex == 1
-                        //       ? 'Name'
-                        //       : sortIndex == 2
-                        //       ? 'Quantity'
-                        //       // : sortIndex == 2
-                        //       // ? 'Price'
-                        //       : sortIndex == 3
-                        //       ? 'Date/Time'
-                        //       : 'Name',
-                        // ),
-                      ],
-                    ),
-                    Icon(Icons.more_vert_rounded),
-                  ],
+                      ),
+                      PopupMenuItem(
+                        onTap: () {
+                          setState(() {
+                            sortIndex = 2;
+                          });
+                        },
+                        child: Text(
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b2
+                                    .fontSize,
+                            fontWeight:
+                                sortIndex == 2
+                                    ? FontWeight.bold
+                                    : null,
+                          ),
+                          'View Total Summary',
+                        ),
+                      ),
+                      // PopupMenuItem(
+                      //   onTap: () {
+                      //     setState(() {
+                      //       sortIndex = 1;
+                      //     });
+                      //   },
+                      //   child: Text(
+                      //     style: TextStyle(
+                      //       fontSize:
+                      //           theme.mobileTexts.b2.fontSize,
+                      //       fontWeight:
+                      //           sortIndex == 1
+                      //               ? FontWeight.bold
+                      //               : null,
+                      //     ),
+                      //     'Sort By Name',
+                      //   ),
+                      // ),
+                      // PopupMenuItem(
+                      //   onTap: () {
+                      //     setState(() {
+                      //       sortIndex = 2;
+                      //     });
+                      //   },
+                      //   child: Text(
+                      //     style: TextStyle(
+                      //       fontSize:
+                      //           theme.mobileTexts.b2.fontSize,
+                      //       fontWeight:
+                      //           sortIndex == 2
+                      //               ? FontWeight.bold
+                      //               : null,
+                      //     ),
+                      //     'Sort By Quantity',
+                      //   ),
+                      // ),
+                      // PopupMenuItem(
+                      //   onTap: () {
+                      //     setState(() {
+                      //       sortIndex = 3;
+                      //     });
+                      //   },
+                      //   child: Text(
+                      //     style: TextStyle(
+                      //       fontSize:
+                      //           theme.mobileTexts.b2.fontSize,
+                      //       fontWeight:
+                      //           sortIndex == 3
+                      //               ? FontWeight.bold
+                      //               : null,
+                      //     ),
+                      //     'Sort By Created Date',
+                      //   ),
+                      // ),
+                    ];
+                  },
+                  child: Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Column(
+                        mainAxisAlignment:
+                            MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b4
+                                      .fontSize,
+                            ),
+                            'View:',
+                          ),
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b2
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            sortIndex == 1
+                                ? 'Table'
+                                : sortIndex == 2
+                                ? 'Summary'
+                                : 'Table',
+                          ),
+                          // Text(
+                          //   style: TextStyle(
+                          //     fontSize:
+                          //         theme
+                          //             .mobileTexts
+                          //             .b4
+                          //             .fontSize,
+                          //   ),
+                          //   'Sorted by:',
+                          // ),
+                          // Text(
+                          //   style: TextStyle(
+                          //     fontSize:
+                          //         theme
+                          //             .mobileTexts
+                          //             .b2
+                          //             .fontSize,
+                          //     fontWeight: FontWeight.bold,
+                          //   ),
+                          //   sortIndex == 1
+                          //       ? 'Name'
+                          //       : sortIndex == 2
+                          //       ? 'Quantity'
+                          //       // : sortIndex == 2
+                          //       // ? 'Price'
+                          //       : sortIndex == 3
+                          //       ? 'Date/Time'
+                          //       : 'Name',
+                          // ),
+                        ],
+                      ),
+                      Icon(Icons.more_vert_rounded),
+                    ],
+                  ),
                 ),
               ),
             ),
