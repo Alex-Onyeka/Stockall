@@ -9,6 +9,7 @@ class ItemsAuth {
   final bool setexpiryDate;
   final bool allowStockallToManageInventory;
   final bool generateItemBarcode;
+  final bool manageInventoryStore;
 
   ItemsAuth({
     required this.numberOfItems,
@@ -17,6 +18,7 @@ class ItemsAuth {
     required this.setexpiryDate,
     required this.allowStockallToManageInventory,
     required this.generateItemBarcode,
+    required this.manageInventoryStore,
   });
 }
 
@@ -49,6 +51,41 @@ class ItemsAuthAction {
       } else {
         if (action != null) {
           showUnauthorizedDialog(context);
+        }
+        return false;
+      }
+    }
+  }
+
+  bool manageInventoryStoreAction({
+    required BuildContext context,
+    Function()? action,
+    Function()? failAction,
+  }) {
+    var plan =
+        returnSubcsription(
+          context,
+          listen: false,
+        ).subscription?.plan;
+    if (plan == null) {
+      return false;
+    }
+    if (plan == 3) {
+      action == null ? {} : action();
+      return true;
+    } else {
+      if (subPlans
+          .firstWhere((pl) => pl.plan == plan)
+          .itemsAuth
+          .manageInventoryStore) {
+        action == null ? {} : action();
+        return true;
+      } else {
+        if (action != null) {
+          showUnauthorizedDialog(context);
+          if (failAction != null) {
+            failAction();
+          }
         }
         return false;
       }

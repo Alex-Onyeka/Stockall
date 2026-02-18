@@ -9,6 +9,7 @@ class TopBannerTwo extends StatelessWidget {
   final double topSpace;
   final double bottomSpace;
   final bool isMain;
+  final Function()? popAction;
   const TopBannerTwo({
     super.key,
     required this.title,
@@ -16,6 +17,7 @@ class TopBannerTwo extends StatelessWidget {
     required this.bottomSpace,
     required this.topSpace,
     required this.isMain,
+    this.popAction,
   });
 
   @override
@@ -60,7 +62,9 @@ class TopBannerTwo extends StatelessWidget {
                           listen: false,
                         ).navigate(2);
                       } else {
-                        Navigator.of(context).pop();
+                        popAction != null
+                            ? popAction!()
+                            : Navigator.of(context).pop();
                       }
                     },
                     child: Container(

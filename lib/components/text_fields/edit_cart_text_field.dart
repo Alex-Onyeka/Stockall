@@ -9,6 +9,8 @@ class EditCartTextField extends StatefulWidget {
   final ThemeProvider theme;
   final Function(String)? onChanged;
   final bool? discount;
+  final FocusNode? focusNode;
+  final Function(String)? onSubmitted;
 
   const EditCartTextField({
     super.key,
@@ -18,6 +20,8 @@ class EditCartTextField extends StatefulWidget {
     required this.theme,
     this.onChanged,
     this.discount,
+    this.focusNode,
+    this.onSubmitted,
   });
 
   @override
@@ -44,6 +48,8 @@ class _EditCartTextFieldState
         ),
         SizedBox(height: 5),
         TextFormField(
+          focusNode: widget.focusNode,
+          onFieldSubmitted: widget.onSubmitted,
           onChanged: widget.onChanged,
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,

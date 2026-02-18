@@ -3,6 +3,7 @@ import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/pages/employees/add_employee_page/platforms/add_employee_desktop.dart';
 import 'package:stockall/pages/employees/add_employee_page/platforms/add_employee_mobile.dart';
+import 'package:stockall/pages/products/add_product_one/add_product.dart';
 
 class AddEmployeePage extends StatefulWidget {
   final TempUserClass? employee;
@@ -28,20 +29,30 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       onTap:
           () =>
               FocusManager.instance.primaryFocus?.unfocus(),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          if (constraints.maxWidth < mobileScreen) {
-            return AddEmployeeMobile(
-              idC: idC,
-              employee: widget.employee,
-            );
-          } else {
-            return AddEmployeeDesktop(
-              idC: idC,
-              employee: widget.employee,
-            );
-          }
+      child: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          checkPop(
+            context: context,
+            didPop: didPop,
+            conditionX: idC.text.isNotEmpty,
+          );
         },
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            if (constraints.maxWidth < mobileScreen) {
+              return AddEmployeeMobile(
+                idC: idC,
+                employee: widget.employee,
+              );
+            } else {
+              return AddEmployeeDesktop(
+                idC: idC,
+                employee: widget.employee,
+              );
+            }
+          },
+        ),
       ),
     );
   }

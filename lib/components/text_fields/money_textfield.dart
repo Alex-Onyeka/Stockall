@@ -10,6 +10,8 @@ class MoneyTextfield extends StatefulWidget {
   final TextEditingController controller;
   final Function(String)? onChanged;
   final ThemeProvider theme;
+  final FocusNode? focusNode;
+  final Function(String)? onSubmitted;
 
   const MoneyTextfield({
     super.key,
@@ -18,6 +20,8 @@ class MoneyTextfield extends StatefulWidget {
     required this.controller,
     required this.theme,
     this.onChanged,
+    this.focusNode,
+    this.onSubmitted,
   });
 
   @override
@@ -86,6 +90,8 @@ class _MoneyTextfieldState extends State<MoneyTextfield> {
         ),
         SizedBox(height: 5),
         TextFormField(
+          focusNode: widget.focusNode,
+          onFieldSubmitted: widget.onSubmitted,
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
           ],

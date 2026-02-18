@@ -1026,6 +1026,71 @@ class ShopProvider extends ChangeNotifier {
     }
   }
 
+  bool isManageInventoryStoreLoading = false;
+
+  Future<int> toggleManageInventoryStore() async {
+    bool isOnline = await connectivity.isOnline();
+    isManageInventoryStoreLoading = true;
+    notifyListeners();
+    try {
+      if (isOnline) {
+        Map<String, dynamic>? res =
+            await supabase
+                .from('shops')
+                .update({
+                  'manage_inventory_store':
+                      !userShop()!.manageInventoryStore!,
+                })
+                .eq('shop_id', userShop()!.shopId!)
+                .select()
+                .maybeSingle();
+        if (res == null) {
+          print('Manage Inventory Store Update Failed');
+          isManageInventoryStoreLoading = false;
+          notifyListeners();
+          return 0;
+        }
+
+        var shops = await getUserShops();
+        setShops(shops);
+        isManageInventoryStoreLoading = false;
+        notifyListeners();
+        return 1;
+      } else {
+        try {
+          userShop()!.updatedAt = DateTime.now();
+          userShop()!.manageInventoryStore =
+              !userShop()!.manageInventoryStore!;
+          await ShopFunc().updateShop(userShop()!);
+          if (userShop() != null) {
+            await UpdatedShopFunc().createUpdatedShop(
+              UpdatedShop(shop: userShop()!),
+            );
+            // setShops(shop);
+            notifyListeners();
+          }
+          isManageInventoryStoreLoading = false;
+          notifyListeners();
+          return 1;
+        } catch (e) {
+          print(
+            "❌ Failed to Update Manage Inventory Store Offline: ${e.toString()}",
+          );
+          isManageInventoryStoreLoading = false;
+          notifyListeners();
+          return 0;
+        }
+      }
+    } catch (e) {
+      print(
+        "❌ Failed to Update Manage Inventory Store: ${e.toString()}",
+      );
+      isManageInventoryStoreLoading = false;
+      notifyListeners();
+      return 0;
+    }
+  }
+
   String name = '';
   String country = '';
   String? email;

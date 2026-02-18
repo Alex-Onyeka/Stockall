@@ -35,6 +35,10 @@ class _EmpAuthState extends State<EmpAuth> {
   // String value = '0';
 
   // String value2 = '0';
+  // void _handleNoShop() {
+  //   if (!context.mounted) return;
+  //   returnNavProvider(context, listen: false).verify();
+  // }
 
   Future<TempUserClass?> fetchUserFromDatabase(
     String email,
@@ -49,18 +53,6 @@ class _EmpAuthState extends State<EmpAuth> {
 
   TextEditingController pinController =
       TextEditingController();
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   pinController = TextEditingController();
-  // }
-
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-  //   pinController = TextEditingController();
-  // }
 
   @override
   Widget build(BuildContext context) {

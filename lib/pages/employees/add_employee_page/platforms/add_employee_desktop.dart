@@ -5,7 +5,6 @@ import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
-import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/employee_auth.dart';
@@ -86,12 +85,27 @@ class _AddEmployeeDesktopState
                   : screenWidth(context) - 40,
           mainWidget: Scaffold(
             backgroundColor: Colors.grey.shade100,
-            appBar: appBar(
-              context: context,
-              title:
-                  widget.employee != null
-                      ? 'Edit Employee'
-                      : 'Add New Employee',
+            appBar: AppBar(
+              scrolledUnderElevation: 0,
+              toolbarHeight: 60,
+              centerTitle: true,
+              title: Column(
+                crossAxisAlignment:
+                    CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    style: TextStyle(
+                      fontSize:
+                          theme.mobileTexts.h4.fontSize,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    widget.employee != null
+                        ? 'Edit Employee'
+                        : 'Add New Employee',
+                  ),
+                ],
+              ),
             ),
             body: Column(
               children: [

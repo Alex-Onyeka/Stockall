@@ -102,6 +102,7 @@ List<Map<String, dynamic>> employees = [
   {
     'position': 'Owner',
     'auths': [
+      'Manage Invetory Store',
       'Add Items',
       'Update Items',
       'Delete Items',
@@ -137,6 +138,7 @@ List<Map<String, dynamic>> employees = [
   {
     'position': 'General Manager',
     'auths': [
+      'Manage Invetory Store',
       'Add Items',
       'Update Items',
       'Delete Items',
@@ -239,6 +241,7 @@ class Authorizations {
   String generalDiscount = 'General Discount';
   String manageVAT = 'Manage VAT';
   String generateBarcode = 'Generate Barcode';
+  String manageInventoryStore = 'Manage Invetory Store';
 }
 
 bool authorization({

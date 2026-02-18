@@ -473,6 +473,8 @@ class _ProductDetailsMobileState
                                                                           product.setCustomPrice,
                                                                       isManaged:
                                                                           product.isManaged,
+                                                                      totalQttyInStore:
+                                                                          product.totalQttyInStore,
                                                                       uuid:
                                                                           product.uuid,
                                                                       name:
@@ -1034,6 +1036,8 @@ class _ProductDetailsMobileState
                                                                                       product.unit,
                                                                                   isRefundable:
                                                                                       product.isRefundable,
+                                                                                  totalQttyInStore:
+                                                                                      product.totalQttyInStore,
                                                                                   costPrice:
                                                                                       product.costPrice,
                                                                                   sellingPrice:
@@ -1366,6 +1370,8 @@ class _ProductDetailsMobileState
                                                         product: TempProductClass(
                                                           updatedAt:
                                                               DateTime.now(),
+                                                          totalQttyInStore:
+                                                              product.totalQttyInStore,
                                                           setCustomPrice:
                                                               product.setCustomPrice,
                                                           isManaged:

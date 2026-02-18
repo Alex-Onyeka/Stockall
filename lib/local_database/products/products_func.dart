@@ -36,6 +36,20 @@ class ProductsFunc {
     return products;
   }
 
+  TempProductClass? getSingleProduct({
+    required String uuid,
+  }) {
+    List<TempProductClass> products =
+        productBox.values
+            .where((pro) => pro.uuid == uuid)
+            .toList();
+    if (products.isNotEmpty) {
+      return products.first;
+    } else {
+      return null;
+    }
+  }
+
   Future<int> insertAllProducts(
     List<TempProductClass> products,
   ) async {

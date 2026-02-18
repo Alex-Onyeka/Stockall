@@ -11,6 +11,8 @@ class GeneralTextField extends StatefulWidget {
   final bool? isEnabled;
   final ThemeProvider theme;
   final String? initialValue;
+  final FocusNode? focusNode;
+  final Function(String)? onSubmitted;
 
   const GeneralTextField({
     super.key,
@@ -23,6 +25,8 @@ class GeneralTextField extends StatefulWidget {
     this.isEmail,
     this.isEnabled,
     this.initialValue,
+    this.focusNode,
+    this.onSubmitted,
   });
 
   @override
@@ -55,6 +59,8 @@ class _GeneralTextFieldState
           widget.title,
         ),
         TextFormField(
+          focusNode: widget.focusNode,
+          onFieldSubmitted: widget.onSubmitted,
           enabled: widget.isEnabled ?? true,
           style: TextStyle(
             fontSize: 14,

@@ -8,6 +8,7 @@ import 'package:stockall/components/text_fields/general_textfield_only.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/shop_setup/edit_receipt_page/platforms/edit_receipt_page_desktop.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -40,6 +41,9 @@ class _EditReceiptPageMobileState
                     Align(
                       alignment: Alignment(0, -1),
                       child: TopBannerTwo(
+                        popAction: () {
+                          checkPop(context: context);
+                        },
                         isMain: false,
                         title: 'Edit Template',
                         theme: theme,

@@ -194,6 +194,133 @@ class _SettingsPageDesktopState
                               visible: authorization(
                                 authorized:
                                     Authorizations()
+                                        .manageInventoryStore,
+                                context: context,
+                              ),
+                              child: SubWrapper(
+                                isVisible:
+                                    !ItemsAuthAction()
+                                        .manageInventoryStoreAction(
+                                          context: context,
+                                        ),
+                                mainWidget: NavListTileDesktopAlt(
+                                  height: 18,
+                                  action: () {
+                                    ItemsAuthAction().manageInventoryStoreAction(
+                                      context: context,
+                                      action: () {
+                                        var shopProvider =
+                                            returnShopProvider();
+                                        showDialog(
+                                          context: context,
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return ConfirmationAlert(
+                                              theme: theme,
+                                              message:
+                                                  shopProvider
+                                                          .userShop()!
+                                                          .manageInventoryStore!
+                                                      ? 'Your Inventory Store will not be managed, are you sure you want to proceed?'
+                                                      : 'Your Inventory Store will be managed, will, are you sure you want to proceed?',
+                                              title:
+                                                  shopProvider
+                                                          .userShop()!
+                                                          .manageInventoryStore!
+                                                      ? 'Turn Off Inventory Store'
+                                                      : 'Turn On Inventory Store',
+                                              action: () async {
+                                                Navigator.of(
+                                                  context,
+                                                ).pop();
+                                                shopProvider
+                                                    .toggleManageInventoryStore();
+                                              },
+                                            );
+                                          },
+                                        );
+                                      },
+                                    );
+                                  },
+                                  endWidget: Builder(
+                                    builder: (context) {
+                                      if (returnShopProvider(
+                                        context: context,
+                                      ).isManageInventoryStoreLoading) {
+                                        return SizedBox(
+                                          height: 16,
+                                          width: 16,
+                                          child: CircularProgressIndicator(
+                                            color:
+                                                theme
+                                                    .lightModeColor
+                                                    .secColor200,
+                                            strokeWidth: 2,
+                                          ),
+                                        );
+                                      } else {
+                                        return MyToggleButton(
+                                          isSmall: true,
+                                          boolValue:
+                                              returnShopProvider(
+                                                    context:
+                                                        context,
+                                                  )
+                                                  .userShop()
+                                                  ?.manageInventoryStore ??
+                                              true,
+                                          toggle: () {
+                                            GeneralSettingsAuthAction().manageVATAction(
+                                              context:
+                                                  context,
+                                              action: () {
+                                                var shopProvider =
+                                                    returnShopProvider();
+                                                showDialog(
+                                                  context:
+                                                      context,
+                                                  builder: (
+                                                    context,
+                                                  ) {
+                                                    return ConfirmationAlert(
+                                                      theme:
+                                                          theme,
+                                                      message:
+                                                          shopProvider.userShop()!.manageInventoryStore!
+                                                              ? 'Your Inventory Store will not be managed, are you sure you want to proceed?'
+                                                              : 'Your Inventory Store will be managed, will, are you sure you want to proceed?',
+                                                      title:
+                                                          shopProvider.userShop()!.manageInventoryStore!
+                                                              ? 'Turn Off Inventory Store'
+                                                              : 'Turn On Inventory Store',
+                                                      action: () async {
+                                                        Navigator.of(
+                                                          context,
+                                                        ).pop();
+                                                        shopProvider.toggleManageInventoryStore();
+                                                      },
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                            );
+                                          },
+                                          theme: theme,
+                                        );
+                                      }
+                                    },
+                                  ),
+                                  title:
+                                      'Manage Inventory Store',
+                                  icon: Icons.manage_search,
+                                ),
+                              ),
+                            ),
+                            Visibility(
+                              visible: authorization(
+                                authorized:
+                                    Authorizations()
                                         .editReceiptTemplate,
                                 context: context,
                               ),
@@ -817,6 +944,7 @@ class _SettingsPageDesktopState
                                 ),
                               ),
                             ),
+
                             // NavListTileDesktopAlt(
                             //   height: 18,
                             //   action: () {

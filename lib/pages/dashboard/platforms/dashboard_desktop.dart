@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -91,11 +93,6 @@ class _DashboardDesktopState
   bool isLoading = false;
   // bool showSuccess = false;
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
   void clearDate() {
     returnReportProvider(
       context,
@@ -181,6 +178,7 @@ class _DashboardDesktopState
       TextEditingController();
   TextEditingController passwordController =
       TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -207,39 +205,6 @@ class _DashboardDesktopState
   final GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>();
 
-  //
-  //
-  //
-  //
-
-  // ShopProvider shopProvider = ShopProvider();
-  //   ProductSuggestionProvider suggestionProvider =
-  //       ProductSuggestionProvider();
-  //   ReceiptsProvider receiptsProvider = ReceiptsProvider();
-  //   DataProvider dataProvider = DataProvider();
-  //   NotificationProvider notificationProvider =
-  //       NotificationProvider();
-  //   ExpensesProvider expensesProvider = ExpensesProvider();
-  //   UserProvider userProvider = UserProvider();
-
-  // Future<List<TempMainReceipt>> getMainReceipts(
-  //   BuildContext context,
-  // ) async {
-  //   var tempReceipts = await receiptsProvider.loadReceipts(
-  //     shopProvider. userShop()!.shopId!,
-  //     context,
-  //   );
-  //   return tempReceipts;
-  // }
-
-  // Future getUserShop() async {
-  //   return await shopProvider.getUserShops(
-  //     AuthService().currentUser!,
-  //   );
-  // }
-
-  //
-  //
   //
   //
   //
@@ -1543,6 +1508,9 @@ class _DashboardDesktopState
                                     ),
                                   ),
                                 ),
+                                // DesktopFocusBarcodeWidget(
+                                //   theme: theme,
+                                // ),
                                 ExpirySubPopUpDesktop(),
                                 Visibility(
                                   visible:
@@ -1591,3 +1559,99 @@ class _DashboardDesktopState
     }
   }
 }
+
+// class DesktopFocusBarcodeWidget extends StatefulWidget {
+//   const DesktopFocusBarcodeWidget({
+//     super.key,
+//     required this.theme,
+//   });
+
+//   final ThemeProvider theme;
+
+//   @override
+//   State<DesktopFocusBarcodeWidget> createState() =>
+//       _DesktopFocusBarcodeWidgetState();
+// }
+
+// class _DesktopFocusBarcodeWidgetState
+//     extends State<DesktopFocusBarcodeWidget> {
+//   @override
+//   void initState() {
+//     super.initState();
+//     returnData().keepNodeFocus();
+//     returnData().startBarcodeTimer();
+//     print('❌❌✅✅ Barcode Timer Created');
+//   }
+
+//   @override
+//   void didChangeDependencies() {
+//     super.didChangeDependencies();
+//     returnData().keepNodeFocus();
+//   }
+
+//   @override
+//   void dispose() {
+//     super.dispose();
+//     print('❌❌✅✅Disposed');
+//     returnData().cancelBarcodeTimer();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return SizedBox(
+//       height: 60,
+//       width: 500,
+//       child: GeneralTextField(
+//         title: 'title',
+//         hint: 'hint',
+//         controller: returnData().barcodeController,
+//         lines: 1,
+//         theme: widget.theme,
+//         focusNode: returnData().barcodeNode,
+//         onChanged: (value) {
+//           if (returnData().barcodeController.text.length >
+//               20) {
+//             returnData().clearBarcodeTextField();
+//           } else {
+//             if (value.isNotEmpty) {
+//               var items = returnData().productList.where(
+//                 (product) =>
+//                     product.barcode?.toLowerCase() ==
+//                         value.toLowerCase() ||
+//                     product.name.toLowerCase() ==
+//                         value.toLowerCase(),
+//               );
+//               if (items.isNotEmpty) {
+//                 returnSalesProvider().addItemToCart(
+//                   context: context,
+//                   newItem: TempCartItem(
+//                     setCustomPrice: false,
+//                     item: items.first,
+//                     quantity: 1,
+//                     discount: null,
+//                     addToStock: false,
+//                     setTotalPrice: false,
+//                   ),
+//                   isCustomEdit: false,
+//                 );
+//                 // returnData().clearBarcodeTextField();
+//                 Navigator.push(
+//                   context,
+//                   MaterialPageRoute(
+//                     builder: (context) {
+//                       return MakeSalesPage();
+//                     },
+//                   ),
+//                 );
+//                 // await playBeep();
+//                 // setState(() {});
+//                 // barcodeNode.requestFocus();
+//               }
+//             }
+//           }
+//           print("Barcode Value: $value");
+//         },
+//       ),
+//     );
+//   }
+// }

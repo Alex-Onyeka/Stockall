@@ -1068,6 +1068,7 @@ class CustomBottomPanel extends StatefulWidget {
 
 class _CustomBottomPanelState
     extends State<CustomBottomPanel> {
+  FocusNode qttyNode = FocusNode();
   //
   //
   //
@@ -1077,6 +1078,7 @@ class _CustomBottomPanelState
     required Function() closeAction,
     required TextEditingController priceController,
   }) {
+    qttyNode.requestFocus();
     showDialog(
       context: context,
       builder: (context) {
@@ -1171,6 +1173,96 @@ class _CustomBottomPanelState
                       SizedBox(
                         width: 450,
                         child: EditCartTextField(
+                          focusNode: qttyNode,
+                          onSubmitted: (value) {
+                            if (cartItem
+                                        .item
+                                        .sellingPrice ==
+                                    null &&
+                                priceController
+                                    .text
+                                    .isEmpty) {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return InfoAlert(
+                                    theme: theme,
+                                    message:
+                                        'Custom Price Must be set before Item can be added to cart.',
+                                    title:
+                                        'Custom Price Not Set',
+                                  );
+                                },
+                              ).then((_) {
+                                qttyNode.requestFocus();
+                              });
+                            } else {
+                              if (quantityController
+                                      .text
+                                      .isEmpty ||
+                                  qqty == 0) {
+                                // Navigator.of(context).pop();
+
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return InfoAlert(
+                                      theme: theme,
+                                      message:
+                                          'Item quantity cannot be set to (0)',
+                                      title:
+                                          'Invalid Quantity',
+                                    );
+                                  },
+                                ).then((_) {
+                                  qttyNode.requestFocus();
+                                });
+                                ;
+                              } else {
+                                if (priceController
+                                    .text
+                                    .isNotEmpty) {
+                                  cartItem.customPrice =
+                                      double.tryParse(
+                                        priceController.text
+                                            .replaceAll(
+                                              ',',
+                                              '',
+                                            ),
+                                      );
+                                  cartItem.setCustomPrice =
+                                      true;
+                                } else {
+                                  cartItem.setCustomPrice =
+                                      false;
+                                }
+                                cartItem.setTotalPrice =
+                                    returnSalesProvider()
+                                        .setTotalPrice;
+                                cartItem.quantity =
+                                    qqty.toDouble();
+                                returnSalesProvider()
+                                    .addItemToCart(
+                                      context: context,
+                                      newItem: cartItem,
+                                      isCustomEdit:
+                                          returnData()
+                                              .productList
+                                              .where(
+                                                (product) =>
+                                                    product
+                                                        .uuid ==
+                                                    cartItem
+                                                        .item
+                                                        .uuid,
+                                              )
+                                              .isEmpty,
+                                    );
+                                Navigator.of(context).pop();
+                                closeAction();
+                              }
+                            }
+                          },
                           onChanged: (value) {
                             double entered =
                                 double.tryParse(value) ?? 0;
@@ -1192,7 +1284,10 @@ class _CustomBottomPanelState
                                             "Only ${cartItem.item.quantity} available in stock.",
                                         theme: theme,
                                       ),
-                                );
+                                ).then((_) {
+                                  qttyNode.requestFocus();
+                                });
+                                ;
 
                                 Future.delayed(
                                   Duration(
@@ -1542,15 +1637,6 @@ class _CustomBottomPanelState
                                           .setTotalPrice;
                                   cartItem.quantity =
                                       qqty.toDouble();
-                                  // cartItem.setCustomPrice =
-                                  //     cartItem
-                                  //             .item
-                                  //             .sellingPrice ==
-                                  //         null ||
-                                  //     returnSalesProvider(
-                                  //       context,
-                                  //       listen: false,
-                                  //     ).isSetCustomPrice();
                                   returnSalesProvider().addItemToCart(
                                     context: context,
                                     newItem: cartItem,

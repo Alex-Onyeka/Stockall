@@ -6,6 +6,7 @@ import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/products/compnents/products_summary_tab.dart';
+import 'package:stockall/pages/products/store_page/store_page.dart';
 
 class ItemsSummary extends StatefulWidget {
   final TextEditingController? searchController;
@@ -355,6 +356,81 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                             ),
                           ),
                         ],
+                      ),
+                      Visibility(
+                        visible:
+                            widget.isProduct != null &&
+                            authorization(
+                              authorized:
+                                  Authorizations()
+                                      .manageInventoryStore,
+                              context: context,
+                            ) &&
+                            shop(
+                                  context,
+                                )?.manageInventoryStore ==
+                                true,
+                        child: SubWrapper(
+                          isVisible:
+                              !ItemsAuthAction()
+                                  .manageInventoryStoreAction(
+                                    context: context,
+                                  ),
+                          mainWidget: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius:
+                                  BorderRadius.circular(10),
+                              onTap: () {
+                                ItemsAuthAction()
+                                    .manageInventoryStoreAction(
+                                      context: context,
+                                      action: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (
+                                              context,
+                                            ) {
+                                              return StorePage();
+                                            },
+                                          ),
+                                        );
+                                      },
+                                    );
+                              },
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.all(
+                                      10,
+                                    ),
+                                child: Row(
+                                  spacing: 5,
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      'Store',
+                                    ),
+                                    Icon(
+                                      size: 18,
+                                      Icons
+                                          .arrow_forward_ios_rounded,
+                                      color: Colors.grey,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),

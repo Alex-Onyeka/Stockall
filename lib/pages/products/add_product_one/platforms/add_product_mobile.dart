@@ -135,6 +135,16 @@ class _AddProductMobileState
 
               await dataProvider.createProduct(
                 TempProductClass(
+                  totalQttyInStore:
+                      widget
+                              .quantityController
+                              .text
+                              .isNotEmpty
+                          ? int.parse(
+                            widget.quantityController.text
+                                .replaceAll(',', ''),
+                          )
+                          : null,
                   isManaged:
                       widget.quantityController.text.isEmpty
                           ? false
@@ -264,6 +274,8 @@ class _AddProductMobileState
                 name: widget.nameController.text,
                 unit: provider.selectedUnit!,
                 isRefundable: provider.isProductRefundable,
+                totalQttyInStore:
+                    widget.product?.totalQttyInStore,
                 costPrice:
                     widget.costController.text.isNotEmpty
                         ? double.parse(
@@ -489,20 +501,20 @@ class _AddProductMobileState
         Scaffold(
           appBar: AppBar(
             scrolledUnderElevation: 0,
-            leading: IconButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              icon: Padding(
-                padding: const EdgeInsets.only(
-                  left: 20.0,
-                  right: 10,
-                ),
-                child: Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                ),
-              ),
-            ),
+            // leading: IconButton(
+            //   onPressed: () {
+            //     Navigator.of(context).pop();
+            //   },
+            //   icon: Padding(
+            //     padding: const EdgeInsets.only(
+            //       left: 20.0,
+            //       right: 10,
+            //     ),
+            //     child: Icon(
+            //       Icons.arrow_back_ios_new_rounded,
+            //     ),
+            //   ),
+            // ),
             centerTitle: true,
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.center,

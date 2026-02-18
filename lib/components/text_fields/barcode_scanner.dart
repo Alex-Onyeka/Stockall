@@ -9,6 +9,8 @@ class BarcodeScanner extends StatelessWidget {
   final String hint;
   final Function()? onTap;
   final ThemeProvider theme;
+  final TextEditingController? controller;
+  final FocusNode? focusNode;
 
   const BarcodeScanner({
     super.key,
@@ -17,6 +19,8 @@ class BarcodeScanner extends StatelessWidget {
     required this.theme,
     required this.onTap,
     required this.valueSet,
+    this.controller,
+    this.focusNode,
   });
 
   @override
@@ -39,7 +43,10 @@ class BarcodeScanner extends StatelessWidget {
                   platforms(context) == TargetPlatform.iOS,
               child: InkWell(
                 onTap: onTap,
+
                 child: TextFormField(
+                  focusNode: focusNode,
+                  controller: controller,
                   enabled: false,
                   decoration: InputDecoration(
                     isCollapsed: true,

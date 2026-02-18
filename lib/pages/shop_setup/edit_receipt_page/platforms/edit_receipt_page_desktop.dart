@@ -10,6 +10,7 @@ import 'package:stockall/components/toggle_button/my_toggle_button.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class EditReceiptPageDesktop extends StatefulWidget {
@@ -46,6 +47,9 @@ class _EditReceiptPageDesktopState
                         alignment: Alignment(0, -1),
                         child: SizedBox(
                           child: TopBannerTwo(
+                            popAction: () {
+                              checkPop(context: context);
+                            },
                             isMain: false,
                             title: 'Edit Receipt Template',
                             theme: theme,

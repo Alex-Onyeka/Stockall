@@ -61,13 +61,6 @@ class _HomeState extends State<Home> {
     }
   }
 
-  // Future<void> setLogo() async {
-  //   returnShopProvider(
-  //     context,
-  //     listen: false,
-  //   ).getLogoImage(context);
-  // }
-
   @override
   void initState() {
     super.initState();
@@ -203,36 +196,46 @@ class _HomeState extends State<Home> {
                         }
                         return ShopBannerScreen();
                       } else {
-                        switch (navProv.currentPage) {
-                          case 0:
-                            return Dashboard(
-                              shopId:
-                                  shop(context)?.shopId!,
-                            );
-                          case 1:
-                            return const ProductsPage();
-                          case 2:
-                            return const SalesPage();
-                          default:
-                            return Dashboard(
-                              shopId:
-                                  shop(context)?.shopId!,
-                            );
+                        if (!returnNavProvider(
+                          context,
+                        ).isNotVerified) {
+                          switch (navProv.currentPage) {
+                            case 0:
+                              return Dashboard(
+                                shopId:
+                                    shop(context)?.shopId!,
+                              );
+                            case 1:
+                              return const ProductsPage();
+                            case 2:
+                              return const SalesPage();
+                            default:
+                              return Dashboard(
+                                shopId:
+                                    shop(context)?.shopId!,
+                              );
+                          }
+                        } else {
+                          return EmpAuth(
+                            action: () {
+                              _handleNoShop();
+                            },
+                          );
                         }
                       }
                     },
                   ),
-                  Visibility(
-                    visible:
-                        returnNavProvider(
-                          context,
-                        ).isNotVerified,
-                    child: EmpAuth(
-                      action: () {
-                        _handleNoShop();
-                      },
-                    ),
-                  ),
+                  // Visibility(
+                  //   visible:
+                  //       returnNavProvider(
+                  //         context,
+                  //       ).isNotVerified,
+                  //   child: EmpAuth(
+                  //     action: () {
+                  //       _handleNoShop();
+                  //     },
+                  //   ),
+                  // ),
                 ],
               );
             }
@@ -245,32 +248,42 @@ class _HomeState extends State<Home> {
           Scaffold(
             body: Builder(
               builder: (context) {
-                switch (navProv.currentPage) {
-                  case 0:
-                    return Dashboard(
-                      shopId: shop(context)?.shopId!,
-                    );
-                  case 1:
-                    return const ProductsPage();
-                  case 2:
-                    return const SalesPage();
-                  default:
-                    return Dashboard(
-                      shopId: shop(context)?.shopId!,
-                    );
+                if (!returnNavProvider(
+                  context,
+                ).isNotVerified) {
+                  switch (navProv.currentPage) {
+                    case 0:
+                      return Dashboard(
+                        shopId: shop(context)?.shopId!,
+                      );
+                    case 1:
+                      return const ProductsPage();
+                    case 2:
+                      return const SalesPage();
+                    default:
+                      return Dashboard(
+                        shopId: shop(context)?.shopId!,
+                      );
+                  }
+                } else {
+                  return EmpAuth(
+                    action: () {
+                      _handleNoShop();
+                    },
+                  );
                 }
               },
             ),
           ),
-          Visibility(
-            visible:
-                returnNavProvider(context).isNotVerified,
-            child: EmpAuth(
-              action: () {
-                _handleNoShop();
-              },
-            ),
-          ),
+          // Visibility(
+          //   visible:
+          //       returnNavProvider(context).isNotVerified,
+          //   child: EmpAuth(
+          //     action: () {
+          //       _handleNoShop();
+          //     },
+          //   ),
+          // ),
         ],
       );
     }

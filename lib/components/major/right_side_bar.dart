@@ -416,7 +416,10 @@ class RightSideBar extends StatelessWidget {
                                                 );
                                               },
                                             ),
-                                          );
+                                          ).then((_) {
+                                            // returnData()
+                                            //     .startBarcodeTimer();
+                                          });
                                         },
                                         child: Padding(
                                           padding:
@@ -515,7 +518,9 @@ class RightSideBar extends StatelessWidget {
                         return MakeSalesPage();
                       },
                     ),
-                  );
+                  ).then((_) {
+                    // returnData().startBarcodeTimer();
+                  });
                 },
                 text: 'Make New Sale',
               ),
@@ -539,7 +544,9 @@ class RightSideBar extends StatelessWidget {
                             return MakeSalesPage();
                           },
                         ),
-                      );
+                      ).then((_) {
+                        // returnData().startBarcodeTimer();
+                      });
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(

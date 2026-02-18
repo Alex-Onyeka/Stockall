@@ -160,12 +160,32 @@ class AltDisplayState extends State<AltDisplay> {
 
   AltCartClass? cartClass;
 
+  double calcTotalMain() {
+    double tempTotal = 0;
+    for (var item in cartClass!.cartItems) {
+      tempTotal += item.totalCost();
+    }
+    return tempTotal;
+  }
+
+  double calcVatAmount() {
+    if (cartClass!.vat != 0) {
+      return calcTotalMain() * (cartClass!.vat / 100);
+    } else {
+      return 0;
+    }
+  }
+
+  double calcFinalTotalMain() {
+    return calcTotalMain() + calcVatAmount();
+  }
+
   void initCartClass() {
     cartClass = AltCartClass(
       cartId: widget.cartId,
       cartItems: [],
-      subTotal: 0,
-      total: 0,
+      // subTotal: 0,
+      // total: 0,
       vat: 0,
       currency: '#',
     );
@@ -464,8 +484,7 @@ class AltDisplayState extends State<AltDisplay> {
                                                   cartClass!
                                                       .currency,
                                               amount:
-                                                  cartClass!
-                                                      .subTotal,
+                                                  calcTotalMain(),
                                               context:
                                                   context,
                                             ),
@@ -523,7 +542,7 @@ class AltDisplayState extends State<AltDisplay> {
                                                               0
                                                           ? ((cartClass!.vat /
                                                                   100) *
-                                                              cartClass!.subTotal)
+                                                              calcTotalMain())
                                                           : 0,
                                                   context:
                                                       context,
@@ -566,8 +585,7 @@ class AltDisplayState extends State<AltDisplay> {
                                                   cartClass!
                                                       .currency,
                                               amount:
-                                                  cartClass!
-                                                      .total,
+                                                  calcFinalTotalMain(),
                                               context:
                                                   context,
                                             ),
@@ -600,16 +618,16 @@ class AltDisplayState extends State<AltDisplay> {
 class AltCartClass {
   final String cartId;
   final List<TempCartItem> cartItems;
-  final double subTotal;
-  final double total;
+  // final double subTotal;
+  // final double total;
   final double vat;
   final String currency;
 
   AltCartClass({
     required this.cartId,
     required this.cartItems,
-    required this.subTotal,
-    required this.total,
+    // required this.subTotal,
+    // required this.total,
     required this.vat,
     required this.currency,
   });
@@ -617,8 +635,8 @@ class AltCartClass {
   Map<String, dynamic> toJson() => {
     'cart_id': cartId,
     'cart_items': cartItems.map((c) => c.toJson()).toList(),
-    'sub_total': subTotal,
-    'total': total,
+    // 'sub_total': subTotal,
+    // 'total': total,
     'vat': vat,
     'currency': currency,
   };
@@ -635,8 +653,8 @@ class AltCartClass {
                 ),
               )
               .toList(),
-      subTotal: (json['sub_total'] as num).toDouble(),
-      total: (json['total'] as num).toDouble(),
+      // subTotal: (json['sub_total'] as num).toDouble(),
+      // total: (json['total'] as num).toDouble(),
       vat: (json['vat'] as num).toDouble(),
       currency: json['currency'] as String,
     );

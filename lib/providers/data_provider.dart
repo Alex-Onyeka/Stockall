@@ -40,6 +40,35 @@ class DataProvider extends ChangeNotifier {
       DataProvider._internal();
   factory DataProvider() => _instance;
   DataProvider._internal();
+  // final TextEditingController barcodeController =
+  //     TextEditingController();
+  // final FocusNode barcodeNode = FocusNode();
+
+  // void keepNodeFocus() {
+  //   if (!barcodeNode.hasFocus) {
+  //     barcodeNode.requestFocus();
+  //   }
+  // }
+
+  // void clearBarcodeTextField() {
+  //   barcodeController.clear();
+  // }
+
+  // Timer? timer;
+  // void startBarcodeTimer() {
+  //   cancelBarcodeTimer();
+  //   keepNodeFocus();
+  //   timer = Timer.periodic(Duration(seconds: 2), (timer) {
+  //     keepNodeFocus();
+  //   });
+  //   print('Timer Started');
+  // }
+
+  // void cancelBarcodeTimer() {
+  //   timer?.cancel();
+  //   print('Timer Cancelled');
+  // }
+
   bool isLoading = false;
   ConnectivityProvider connectivity =
       ConnectivityProvider();
@@ -943,64 +972,99 @@ class DataProvider extends ChangeNotifier {
     return tempData.toList();
   }
 
-  Future<void> updateProduct({
+  Future<TempProductClass?> updateProduct({
     required TempProductClass product,
     required BuildContext context,
   }) async {
     bool isOnline = await connectivity.isOnline();
 
-    print(product.isManaged.toString());
-    if (isOnline) {
-      product.updatedAt = DateTime.now().toLocal();
-      await supabase
-          .from('products')
-          .update(product.toJson())
-          .eq('uuid', product.uuid!);
-      print('${product.uuid}');
-      await returnEventsLogProvider().createLog(
-        returnEventsLogProvider().productAdapter(
-          product,
-          2,
-        ),
-      );
-    } else {
-      await ProductsFunc().updateProduct(product);
-      var containsCreated =
-          CreatedProductFunc()
-              .getProducts()
-              .where(
-                (createdProduct) =>
-                    createdProduct.product.uuid ==
-                    product.uuid,
-              )
-              .toList();
-      if (containsCreated.isEmpty) {
-        await UpdatedProductsFunc().createUpdatedProduct(
-          UpdatedProducts(product: product),
-        );
+    try {
+      print(product.isManaged.toString());
+      if (isOnline) {
+        product.updatedAt = DateTime.now().toLocal();
+        var res =
+            await supabase
+                .from('products')
+                .update(product.toJson())
+                .eq('uuid', product.uuid!)
+                .select()
+                .maybeSingle();
+        if (res != null) {
+          print('${product.uuid}');
+          await returnEventsLogProvider().createLog(
+            returnEventsLogProvider().productAdapter(
+              product,
+              2,
+            ),
+          );
+          if (context.mounted) {
+            print('Context Mounted');
+            await getProducts(
+              returnShopProvider().userShop()!.shopId!,
+            );
+          } else {
+            print('Context Not Mounted');
+          }
+          notifyListeners();
+          return TempProductClass.fromJson(res);
+        } else {
+          print('Product Update Failed');
+          return null;
+        }
       } else {
-        await CreatedProductFunc().updateProduct(
-          CreatedProducts(product: product),
+        var res = await ProductsFunc().updateProduct(
+          product,
         );
+        if (res == 1) {
+          var containsCreated =
+              CreatedProductFunc()
+                  .getProducts()
+                  .where(
+                    (createdProduct) =>
+                        createdProduct.product.uuid ==
+                        product.uuid,
+                  )
+                  .toList();
+          if (containsCreated.isEmpty) {
+            await UpdatedProductsFunc()
+                .createUpdatedProduct(
+                  UpdatedProducts(product: product),
+                );
+          } else {
+            await CreatedProductFunc().updateProduct(
+              CreatedProducts(product: product),
+            );
+          }
+          print(product.updatedAt.toString());
+          print('${product.uuid}');
+          await returnEventsLogProvider().createLog(
+            returnEventsLogProvider(
+              // ignore: use_build_context_synchronously
+            ).productAdapter(product, 2),
+            // ignore: use_build_context_synchronously
+          );
+          if (context.mounted) {
+            print('Context Mounted');
+            await getProducts(
+              returnShopProvider().userShop()!.shopId!,
+            );
+          } else {
+            print('Context Not Mounted');
+          }
+          notifyListeners();
+          return ProductsFunc().getSingleProduct(
+            uuid: product.uuid!,
+          );
+        } else {
+          notifyListeners();
+          return null;
+        }
       }
-      print(product.updatedAt.toString());
-      print('${product.uuid}');
-      await returnEventsLogProvider().createLog(
-        returnEventsLogProvider(
-          // ignore: use_build_context_synchronously
-        ).productAdapter(product, 2),
-        // ignore: use_build_context_synchronously
-      );
+    } catch (e) {
+      notifyListeners();
+      print("Error Updating Product: ${e.toString()}");
+      return null;
     }
-    if (context.mounted) {
-      print('Context Mounted');
-      await getProducts(
-        returnShopProvider().userShop()!.shopId!,
-      );
-    } else {
-      print('Context Not Mounted');
-    }
-    notifyListeners();
   }
 
   // Future<bool> updateQuantity({

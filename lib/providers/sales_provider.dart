@@ -635,8 +635,8 @@ class SalesProvider extends ChangeNotifier {
         currency: returnShopProvider().userShop()!.currency,
         cartItems:
             currentCart().cartItems.reversed.toList(),
-        subTotal: calcTotalMain(),
-        total: calcFinalTotalMain(),
+        // subTotal: calcTotalMain(),
+        // total: calcFinalTotalMain(),
         vat:
             returnShopProvider().userShop()!.applyVAT!
                 ? vat
@@ -793,8 +793,8 @@ class SalesProvider extends ChangeNotifier {
                 returnShopProvider().userShop()!.currency,
             cartItems:
                 currentCart().cartItems.reversed.toList(),
-            subTotal: calcTotalMain(),
-            total: calcFinalTotalMain(),
+            // subTotal: calcTotalMain(),
+            // total: calcFinalTotalMain(),
             vat:
                 returnShopProvider().userShop()!.applyVAT!
                     ? vat
@@ -814,8 +814,8 @@ class SalesProvider extends ChangeNotifier {
                   returnShopProvider().userShop()!.currency,
               cartItems:
                   currentCart().cartItems.reversed.toList(),
-              subTotal: calcTotalMain(),
-              total: calcFinalTotalMain(),
+              // subTotal: calcTotalMain(),
+              // total: calcFinalTotalMain(),
               vat:
                   returnShopProvider().userShop()!.applyVAT!
                       ? vat
@@ -833,8 +833,8 @@ class SalesProvider extends ChangeNotifier {
                   returnShopProvider().userShop()!.currency,
               cartItems:
                   currentCart().cartItems.reversed.toList(),
-              subTotal: calcTotalMain(),
-              total: calcFinalTotalMain(),
+              // subTotal: calcTotalMain(),
+              // total: calcFinalTotalMain(),
               vat:
                   returnShopProvider().userShop()!.applyVAT!
                       ? vat
@@ -881,8 +881,8 @@ class SalesProvider extends ChangeNotifier {
         currency: returnShopProvider().userShop()!.currency,
         cartItems:
             currentCart().cartItems.reversed.toList(),
-        subTotal: calcTotalMain(),
-        total: calcFinalTotalMain(),
+        // subTotal: calcTotalMain(),
+        // total: calcFinalTotalMain(),
         vat:
             returnShopProvider().userShop()!.applyVAT!
                 ? vat
@@ -907,8 +907,8 @@ class SalesProvider extends ChangeNotifier {
         currency: returnShopProvider().userShop()!.currency,
         cartItems:
             currentCart().cartItems.reversed.toList(),
-        subTotal: calcTotalMain(),
-        total: calcFinalTotalMain(),
+        // subTotal: calcTotalMain(),
+        // total: calcFinalTotalMain(),
         vat:
             returnShopProvider().userShop()!.applyVAT!
                 ? vat
@@ -1142,8 +1142,8 @@ class SalesProvider extends ChangeNotifier {
               cartId: tempCart.id!,
               cartItems:
                   tempCart.cartItems.reversed.toList(),
-              subTotal: calcTotalMain(),
-              total: calcFinalTotalMain(),
+              // subTotal: calcTotalMain(),
+              // total: calcFinalTotalMain(),
               vat:
                   returnShopProvider().userShop()!.applyVAT!
                       ? vat

@@ -6,8 +6,7 @@ part of 'temp_user_class.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class TempUserClassAdapter
-    extends TypeAdapter<TempUserClass> {
+class TempUserClassAdapter extends TypeAdapter<TempUserClass> {
   @override
   final int typeId = 0;
 
@@ -15,8 +14,7 @@ class TempUserClassAdapter
   TempUserClass read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++)
-        reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return TempUserClass(
       userId: fields[0] as String?,
@@ -31,8 +29,7 @@ class TempUserClassAdapter
       departmentName: fields[9] as String?,
       departmentUuid: fields[10] as String?,
       pin: fields[11] as String?,
-      departmentUuids:
-          (fields[12] as List?)?.cast<String>(),
+      departmentUuids: (fields[12] as List?)?.cast<String>(),
     );
   }
 

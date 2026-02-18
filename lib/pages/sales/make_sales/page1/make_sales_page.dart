@@ -59,6 +59,14 @@ class _MakeSalesPageState extends State<MakeSalesPage> {
     });
   }
 
+  // final FocusNode barcodeNode = FocusNode();
+
+  // @override
+  // void dispose() {
+  //   super.dispose();
+  //   barcodeNode.dispose();
+  // }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(

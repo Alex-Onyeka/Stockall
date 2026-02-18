@@ -24,17 +24,6 @@ class _DashboardState extends State<Dashboard> {
 
   // bool stillLoading = true;
 
-  @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      print(returnShopProvider().userShop()?.name);
-      _handlePostFrameLogic();
-    });
-    setState(() {});
-  }
-
   Future<void> _handlePostFrameLogic() async {
     await returnNavProvider(
       context,
@@ -56,21 +45,24 @@ class _DashboardState extends State<Dashboard> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      print(returnShopProvider().userShop()?.name);
+      _handlePostFrameLogic();
+    });
+    setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth < mobileScreen) {
-            return DashboardMobile(
-              shopId: widget.shopId,
-              // stillLoading: stillLoading,
-            );
+            return DashboardMobile(shopId: widget.shopId);
           } else {
-            return DashboardDesktop(
-              shopId: widget.shopId,
-              // stillLoading: stillLoading,
-            );
-            // return DashboardDesktop();
+            return DashboardDesktop(shopId: widget.shopId);
           }
         },
       ),

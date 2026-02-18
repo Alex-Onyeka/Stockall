@@ -3,6 +3,7 @@ import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/pages/customers/add_customer/platforms/add_customer_desktop.dart';
 import 'package:stockall/pages/customers/add_customer/platforms/add_customer_mobile.dart';
+import 'package:stockall/pages/products/add_product_one/add_product.dart';
 
 class AddCustomer extends StatefulWidget {
   final TempCustomersClass? customer;
@@ -37,26 +38,40 @@ class _AddCustomerState extends State<AddCustomer> {
       onTap:
           () =>
               FocusManager.instance.primaryFocus?.unfocus(),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          if (constraints.maxWidth < mobileScreen) {
-            return AddCustomerMobile(
-              emailController: emailController,
-              nameController: nameController,
-              phoneController: phoneController,
-              addressController: addressController,
-              customer: widget.customer,
-            );
-          } else {
-            return AddCustomerDesktop(
-              emailController: emailController,
-              nameController: nameController,
-              phoneController: phoneController,
-              addressController: addressController,
-              customer: widget.customer,
-            );
-          }
+      child: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          checkPop(
+            context: context,
+            didPop: didPop,
+            conditionX:
+                nameController.text.isNotEmpty ||
+                emailController.text.isNotEmpty ||
+                phoneController.text.isNotEmpty ||
+                addressController.text.isNotEmpty,
+          );
         },
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            if (constraints.maxWidth < mobileScreen) {
+              return AddCustomerMobile(
+                emailController: emailController,
+                nameController: nameController,
+                phoneController: phoneController,
+                addressController: addressController,
+                customer: widget.customer,
+              );
+            } else {
+              return AddCustomerDesktop(
+                emailController: emailController,
+                nameController: nameController,
+                phoneController: phoneController,
+                addressController: addressController,
+                customer: widget.customer,
+              );
+            }
+          },
+        ),
       ),
     );
   }

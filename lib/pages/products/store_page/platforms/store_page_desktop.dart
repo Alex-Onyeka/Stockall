@@ -1,5 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
@@ -9,23 +10,24 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
+import 'package:stockall/constants/subscription/items_auth.dart';
+import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/platforms/product_details_desktop.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
-class ProductReportDesktop extends StatefulWidget {
-  const ProductReportDesktop({super.key});
+class StorePageDesktop extends StatefulWidget {
+  const StorePageDesktop({super.key});
 
   @override
-  State<ProductReportDesktop> createState() =>
-      ProductReportDesktopState();
+  State<StorePageDesktop> createState() =>
+      StorePageDesktopState();
 }
 
-class ProductReportDesktopState
-    extends State<ProductReportDesktop> {
+class StorePageDesktopState
+    extends State<StorePageDesktop> {
   int sortIndex = 1;
 
-  // late Future<void> productsFuture;
   Future<void> getProducts() async {
     await RefreshFunctions(
       context,
@@ -33,40 +35,40 @@ class ProductReportDesktopState
   }
 
   int start = 0;
-  int end = 50;
+  int end = 100;
   int count = 1;
 
   void navigate(bool isIncrease, int length) {
     setState(() {
-      if (length > 50) {
+      if (length > 100) {
         if (isIncrease) {
           if (length != end) {
-            if (length < (end + 50)) {
+            if (length < (end + 100)) {
               start = length - (length - end);
               end = length;
             } else {
-              if ((end - start) < 50) {
-                end += 50;
-                start = end - 50;
+              if ((end - start) < 100) {
+                end += 100;
+                start = end - 100;
               } else {
-                start += 50;
-                end += 50;
+                start += 100;
+                end += 100;
               }
             }
             count++;
           }
         } else {
           if (start != 0) {
-            if ((start - 50) <= 0) {
+            if ((start - 100) <= 0) {
               start = 0;
-              end = length > 50 ? 50 : length;
+              end = length > 100 ? 100 : length;
             } else {
-              if ((end - start) < 50) {
-                end -= 50;
-                start = end - 50;
+              if ((end - start) < 100) {
+                end -= 100;
+                start = end - 100;
               } else {
-                start -= 50;
-                end -= 50;
+                start -= 100;
+                end -= 100;
               }
             }
             count--;
@@ -74,21 +76,6 @@ class ProductReportDesktopState
         }
       }
     });
-    // print(start);
-    // print(end);
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      returnReportProvider(
-        context,
-        listen: false,
-      ).clearDate(context);
-      returnData().toggleIsLoading(false);
-    });
-    // productsFuture = getProducts();
   }
 
   @override
@@ -98,7 +85,7 @@ class ProductReportDesktopState
       context: context,
     ).productList.sublist(
       start,
-      returnData(context: context).productList.length > 50
+      returnData(context: context).productList.length > 100
           ? end
           : returnData(context: context).productList.length,
     );
@@ -352,113 +339,6 @@ class ProductReportDesktopState
               children: [
                 Column(
                   children: [
-                    Visibility(
-                      visible: false,
-                      // products.isEmpty,
-                      child: SizedBox(height: 20),
-                    ),
-                    Visibility(
-                      visible: false,
-                      // products.isNotEmpty,
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          right: 10.0,
-                        ),
-                        child: Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.end,
-                          children: [
-                            InkWell(
-                              onTap: () {
-                                var safeContext = context;
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return ConfirmationAlert(
-                                      theme: theme,
-                                      message:
-                                          'You are about to convert all your product records to pdf, are you sure you want to proceed?',
-                                      title:
-                                          'Are you sure?',
-                                      action: () async {
-                                        Navigator.of(
-                                          context,
-                                        ).pop();
-                                        if (kIsWeb) {
-                                          if (safeContext
-                                              .mounted) {
-                                            downloadPdfWebProducts(
-                                              products:
-                                                  products,
-                                              shop:
-                                                  returnShopProvider()
-                                                      .userShop()!,
-                                              context:
-                                                  safeContext,
-                                              filename:
-                                                  'Stockall_Items Record ${DateTime.now().month}-${DateTime.now().day}-${DateTime.now().hour}-${DateTime.now().minute}.pdf',
-                                            );
-                                          }
-                                        }
-                                        await generateAndPreviewPdfProducts(
-                                          context:
-                                              safeContext,
-                                          products:
-                                              products,
-                                          shop:
-                                              returnShopProvider()
-                                                  .userShop()!,
-                                        );
-
-                                        if (safeContext
-                                            .mounted) {
-                                          returnData()
-                                              .toggleIsLoading(
-                                                false,
-                                              );
-                                        }
-                                      },
-                                    );
-                                  },
-                                );
-                              },
-                              child: Container(
-                                padding:
-                                    EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                    ),
-                                child: Row(
-                                  spacing: 5,
-                                  children: [
-                                    Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b3
-                                                .fontSize,
-                                        color:
-                                            Colors
-                                                .grey
-                                                .shade700,
-                                        fontWeight:
-                                            FontWeight.bold,
-                                      ),
-                                      'Downalod Pdf',
-                                    ),
-                                    Icon(
-                                      color: Colors.grey,
-                                      Icons.print,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 5),
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
@@ -1167,6 +1047,14 @@ class _SummaryTableHeadingBarState
     return tempTotal;
   }
 
+  double getTotalQuantityInStore() {
+    double tempTotal = 0;
+    for (var item in widget.product) {
+      tempTotal += item.totalQttyInStore ?? 0;
+    }
+    return tempTotal;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -1225,9 +1113,6 @@ class _SummaryTableHeadingBarState
               ),
               decoration: BoxDecoration(
                 border: Border(
-                  // right: BorderSide(
-                  //   color: Colors.grey,
-                  // ),
                   left: BorderSide(color: Colors.grey),
                 ),
               ),
@@ -1262,7 +1147,79 @@ class _SummaryTableHeadingBarState
             ),
           ),
           Expanded(
-            flex: 3,
+            flex: 5,
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: 5,
+                vertical: 10,
+              ),
+              decoration: BoxDecoration(
+                border: Border(
+                  right: BorderSide(color: Colors.grey),
+                  left: BorderSide(color: Colors.grey),
+                ),
+              ),
+              child: Center(
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              widget
+                                  .theme
+                                  .mobileTexts
+                                  .b3
+                                  .fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        widget.isHeading
+                            ? 'Total Qtty'
+                            : (getTotalQuantityInStore() +
+                                    getTotalQuantity())
+                                .toString(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 5,
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: 5,
+                vertical: 10,
+              ),
+              decoration: BoxDecoration(),
+              child: Center(
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              widget
+                                  .theme
+                                  .mobileTexts
+                                  .b3
+                                  .fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        widget.isHeading
+                            ? 'Qtty In Store'
+                            : getTotalQuantityInStore()
+                                .toString(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 5,
             child: Container(
               padding: EdgeInsets.symmetric(
                 horizontal: 5,
@@ -1299,7 +1256,7 @@ class _SummaryTableHeadingBarState
             ),
           ),
           Expanded(
-            flex: 5,
+            flex: 4,
             child: Container(
               padding: EdgeInsets.symmetric(
                 horizontal: 5,
@@ -1335,7 +1292,7 @@ class _SummaryTableHeadingBarState
           Visibility(
             visible: widget.product.isNotEmpty,
             child: Expanded(
-              flex: 5,
+              flex: 4,
               child: Container(
                 decoration: BoxDecoration(
                   border: Border(
@@ -1378,307 +1335,12 @@ class _SummaryTableHeadingBarState
           Visibility(
             visible: widget.product.isNotEmpty,
             child: Expanded(
-              flex: 3,
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 5,
-                  vertical: 10,
-                ),
-                child: Center(
-                  child: Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          style: TextStyle(
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          widget.isHeading ? 'Barcode' : '',
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Visibility(
-            visible: widget.product.isNotEmpty,
-            child: Expanded(
               flex: 4,
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    right: BorderSide(color: Colors.grey),
-                    left: BorderSide(color: Colors.grey),
-                  ),
-                ),
-                padding: EdgeInsets.symmetric(
-                  horizontal: 5,
-                  vertical: 10,
-                ),
-                child: Center(
-                  child: Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          style: TextStyle(
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          widget.isHeading
-                              ? 'Qtty Alert'
-                              : '',
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Visibility(
-            visible: widget.product.isNotEmpty,
-            child: Expanded(
-              flex: 3,
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 5,
-                  vertical: 10,
-                ),
-                child: Center(
-                  child: Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          style: TextStyle(
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          widget.isHeading ? 'Unit' : '',
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Visibility(
-            visible: widget.product.isNotEmpty,
-            child: Expanded(
-              flex: 3,
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    right: BorderSide(color: Colors.grey),
-                    left: BorderSide(color: Colors.grey),
-                  ),
-                ),
-                padding: EdgeInsets.symmetric(
-                  horizontal: 5,
-                  vertical: 10,
-                ),
-                child: Center(
-                  child: Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          style: TextStyle(
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          widget.isHeading
-                              ? 'Size Type'
-                              : '',
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Visibility(
-            visible: widget.product.isNotEmpty,
-            child: Expanded(
-              flex: 4,
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 5,
-                  vertical: 10,
-                ),
-                child: Center(
-                  child: Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          style: TextStyle(
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          widget.isHeading
-                              ? 'Category'
-                              : '',
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Visibility(
-            visible: false,
-            // widget.product.isNotEmpty,
-            child: Expanded(
-              flex: 3,
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    right: BorderSide(color: Colors.grey),
-                    left: BorderSide(color: Colors.grey),
-                  ),
-                ),
-                padding: EdgeInsets.symmetric(
-                  horizontal: 5,
-                  vertical: 10,
-                ),
-                child: Center(
-                  child: Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          style: TextStyle(
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          widget.isHeading
-                              ? 'Discount'
-                              : '',
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Visibility(
-            visible: false,
-            // widget.product.isNotEmpty,
-            child: Expanded(
-              flex: 5,
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 5,
-                  vertical: 10,
-                ),
-                child: Center(
-                  child: Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          style: TextStyle(
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          widget.isHeading
-                              ? 'Discount Start'
-                              : '',
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Visibility(
-            visible: false,
-            // widget.product.isNotEmpty,
-            child: Expanded(
-              flex: 5,
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    right: BorderSide(color: Colors.grey),
-                    left: BorderSide(color: Colors.grey),
-                  ),
-                ),
-                padding: EdgeInsets.symmetric(
-                  horizontal: 5,
-                  vertical: 10,
-                ),
-                child: Center(
-                  child: Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          style: TextStyle(
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          widget.isHeading
-                              ? 'Discount End'
-                              : '',
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Visibility(
-            visible: widget.product.isNotEmpty,
-            child: Expanded(
-              flex: 5,
               child: Container(
                 decoration: BoxDecoration(
                   border: Border(
                     // right: BorderSide(color: Colors.grey),
-                    left: BorderSide(color: Colors.grey),
+                    // left: BorderSide(color: Colors.grey),
                   ),
                 ),
                 padding: EdgeInsets.symmetric(
@@ -1817,15 +1479,15 @@ class _TableRowRecordWidgetState
             ),
           ),
           Expanded(
-            flex: 3,
+            flex: 5,
             child: Container(
-              padding: EdgeInsets.all(5),
               decoration: BoxDecoration(
                 border: Border(
                   right: BorderSide(color: Colors.grey),
                   left: BorderSide(color: Colors.grey),
                 ),
               ),
+              padding: EdgeInsets.all(5),
               child: Center(
                 child: Row(
                   children: [
@@ -1840,7 +1502,11 @@ class _TableRowRecordWidgetState
                                   .fontSize,
                           fontWeight: FontWeight.bold,
                         ),
-                        widget.product.quantity.toString(),
+                        ((widget.product.totalQttyInStore ??
+                                    0) +
+                                (widget.product.quantity ??
+                                    0))
+                            .toString(),
                       ),
                     ),
                   ],
@@ -1850,6 +1516,20 @@ class _TableRowRecordWidgetState
           ),
           Expanded(
             flex: 5,
+            child: QuantityEditWidget(
+              isTotal: true,
+              product: widget.product,
+            ),
+          ),
+          Expanded(
+            flex: 5,
+            child: QuantityEditWidget(
+              isTotal: false,
+              product: widget.product,
+            ),
+          ),
+          Expanded(
+            flex: 4,
             child: Container(
               padding: EdgeInsets.all(5),
               child: Center(
@@ -1880,7 +1560,7 @@ class _TableRowRecordWidgetState
             ),
           ),
           Expanded(
-            flex: 5,
+            flex: 4,
             child: Container(
               decoration: BoxDecoration(
                 border: Border(
@@ -1915,325 +1595,711 @@ class _TableRowRecordWidgetState
             ),
           ),
           Expanded(
-            flex: 3,
-            child: Container(
-              padding: EdgeInsets.all(5),
-              child: Center(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b3
-                                  .fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-
-                        widget.product.barcode != null
-                            ? 'true'
-                            : 'false',
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Expanded(
             flex: 4,
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  right: BorderSide(color: Colors.grey),
-                  left: BorderSide(color: Colors.grey),
-                ),
-              ),
-              padding: EdgeInsets.all(5),
-              child: Center(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b3
-                                  .fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-
-                        (widget.product.lowQtty ?? 0)
-                            .toString(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 3,
-            child: Container(
-              padding: EdgeInsets.all(5),
-              child: Center(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b3
-                                  .fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-
-                        widget.product.unit,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 3,
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  right: BorderSide(color: Colors.grey),
-                  left: BorderSide(color: Colors.grey),
-                ),
-              ),
-              padding: EdgeInsets.all(5),
-              child: Center(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b3
-                                  .fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-
-                        widget.product.sizeType ??
-                            'Not Set',
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 4,
-            child: Container(
-              padding: EdgeInsets.all(5),
-              child: Center(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b3
-                                  .fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-
-                        widget.product.category ??
-                            'Not Set',
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          // Expanded(
-          //   flex: 3,
-          //   child: Container(
-          //     decoration: BoxDecoration(
-          //       border: Border(
-          //         right: BorderSide(color: Colors.grey),
-          //         left: BorderSide(color: Colors.grey),
-          //       ),
-          //     ),
-          //     padding: EdgeInsets.all(5),
-          //     child: Center(
-          //       child: Row(
-          //         children: [
-          //           Flexible(
-          //             child: Text(
-          //               style: TextStyle(
-          //                 fontSize:
-          //                     widget
-          //                         .theme
-          //                         .mobileTexts
-          //                         .b3
-          //                         .fontSize,
-          //                 fontWeight: FontWeight.bold,
-          //               ),
-
-          //               (widget.product.discount ?? 0)
-          //                   .toString(),
-          //             ),
-          //           ),
-          //         ],
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          // Expanded(
-          //   flex: 5,
-          //   child: Container(
-          //     padding: EdgeInsets.all(5),
-          //     child: Center(
-          //       child: Row(
-          //         children: [
-          //           Flexible(
-          //             child: Text(
-          //               style: TextStyle(
-          //                 fontSize:
-          //                     widget
-          //                         .theme
-          //                         .mobileTexts
-          //                         .b3
-          //                         .fontSize,
-          //                 fontWeight: FontWeight.bold,
-          //               ),
-
-          //               widget.product.discount != null
-          //                   ? formatDateWithoutYear(
-          //                     widget.product.startDate ??
-          //                         DateTime.now(),
-          //                   )
-          //                   : 'Not Set',
-          //             ),
-          //           ),
-          //         ],
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          // Expanded(
-          //   flex: 5,
-          //   child: Container(
-          //     decoration: BoxDecoration(
-          //       border: Border(
-          //         right: BorderSide(color: Colors.grey),
-          //         left: BorderSide(color: Colors.grey),
-          //       ),
-          //     ),
-          //     padding: EdgeInsets.all(5),
-          //     child: Center(
-          //       child: Row(
-          //         children: [
-          //           Flexible(
-          //             child: Text(
-          //               style: TextStyle(
-          //                 fontSize:
-          //                     widget
-          //                         .theme
-          //                         .mobileTexts
-          //                         .b3
-          //                         .fontSize,
-          //                 fontWeight: FontWeight.bold,
-          //               ),
-
-          //               widget.product.discount != null
-          //                   ? formatDateWithoutYear(
-          //                     widget.product.endDate ??
-          //                         DateTime.now(),
-          //                   )
-          //                   : 'Not Set',
-          //             ),
-          //           ),
-          //         ],
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          Expanded(
-            flex: 5,
             child: Container(
               decoration: BoxDecoration(
                 border: Border(
                   // right: BorderSide(color: Colors.grey),
-                  left: BorderSide(color: Colors.grey),
+                  // left: BorderSide(color: Colors.grey),
                 ),
               ),
               padding: EdgeInsets.all(5),
               child: Center(
                 child: Row(
                   children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b3
-                                  .fontSize,
-                          fontWeight: FontWeight.bold,
-                          color:
-                              getDayDifference(
-                                            widget
-                                                    .product
-                                                    .expiryDate ??
-                                                DateTime.now(),
-                                          ) <
-                                          1 &&
-                                      widget
-                                              .product
-                                              .expiryDate !=
-                                          null
-                                  ? widget
-                                      .theme
-                                      .lightModeColor
-                                      .errorColor200
-                                  : null,
-                        ),
+                    IsManagedToggleWidget(
+                      product: widget.product,
+                    ),
+                    // Flexible(
+                    //   child: Text(
+                    //     style: TextStyle(
+                    //       fontSize:
+                    //           widget
+                    //               .theme
+                    //               .mobileTexts
+                    //               .b3
+                    //               .fontSize,
+                    //       fontWeight: FontWeight.bold,
+                    //       color:
+                    //           getDayDifference(
+                    //                         widget
+                    //                                 .product
+                    //                                 .expiryDate ??
+                    //                             DateTime.now(),
+                    //                       ) <
+                    //                       1 &&
+                    //                   widget
+                    //                           .product
+                    //                           .expiryDate !=
+                    //                       null
+                    //               ? widget
+                    //                   .theme
+                    //                   .lightModeColor
+                    //                   .errorColor200
+                    //               : null,
+                    //     ),
 
-                        widget.product.expiryDate != null
-                            ? getDayDifference(
-                                      widget
-                                              .product
-                                              .expiryDate ??
-                                          DateTime.now(),
-                                    ) >=
-                                    1
-                                ? formatDateTime(
-                                  widget
-                                          .product
-                                          .expiryDate ??
-                                      DateTime.now(),
-                                )
-                                : 'Item Expired'
-                            : 'Not Set',
+                    //     widget.product.expiryDate != null
+                    //         ? getDayDifference(
+                    //                   widget
+                    //                           .product
+                    //                           .expiryDate ??
+                    //                       DateTime.now(),
+                    //                 ) >=
+                    //                 1
+                    //             ? formatDateTime(
+                    //               widget
+                    //                       .product
+                    //                       .expiryDate ??
+                    //                   DateTime.now(),
+                    //             )
+                    //             : 'Item Expired'
+                    //         : 'Not Set',
+                    //   ),
+                    // ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class IsManagedToggleWidget extends StatefulWidget {
+  final TempProductClass product;
+  const IsManagedToggleWidget({
+    super.key,
+    required this.product,
+  });
+
+  @override
+  State<IsManagedToggleWidget> createState() =>
+      _IsManagedToggleWidgetState();
+}
+
+class _IsManagedToggleWidgetState
+    extends State<IsManagedToggleWidget> {
+  bool isLoading = false;
+  @override
+  Widget build(BuildContext context) {
+    var theme = returnTheme(context, listen: false);
+    return InkWell(
+      onTap: () {
+        ItemsAuthAction().allowStockallToManageItemAction(
+          context: context,
+          action: () async {
+            var safeContext = context;
+            var dataProvider = returnData();
+            showDialog(
+              context: context,
+              builder: (confirmDialog) {
+                return ConfirmationAlert(
+                  theme: theme,
+                  message:
+                      widget.product.isManaged
+                          ? 'This item quantity will no longer be automatically managed by Stockall, are you sure you want to proceed?'
+                          : 'This item quantity will now be automatically managed by Stockall, are you sure you want to proceed?',
+                  title: 'Proceed with Action?',
+                  action: () async {
+                    Navigator.of(confirmDialog).pop();
+                    setState(() {
+                      isLoading = true;
+                    });
+                    await dataProvider.updateProduct(
+                      context: safeContext,
+                      product: TempProductClass(
+                        updatedAt: DateTime.now(),
+                        setCustomPrice:
+                            widget.product.setCustomPrice,
+                        isManaged:
+                            widget.product.isManaged
+                                ? false
+                                : true,
+                        name: widget.product.name,
+                        totalQttyInStore:
+                            widget.product.totalQttyInStore,
+                        unit: widget.product.unit,
+                        isRefundable:
+                            widget.product.isRefundable,
+                        costPrice: widget.product.costPrice,
+                        sellingPrice:
+                            widget.product.sellingPrice,
+                        quantity:
+                            !widget.product.isManaged &&
+                                    widget
+                                            .product
+                                            .quantity ==
+                                        null
+                                ? 0
+                                : widget.product.quantity,
+                        shopId: widget.product.shopId,
+                        barcode: widget.product.barcode,
+                        category: widget.product.category,
+                        createdAt: widget.product.createdAt,
+                        discount: widget.product.discount,
+                        endDate: widget.product.endDate,
+                        expiryDate:
+                            widget.product.expiryDate,
+                        lowQtty: widget.product.lowQtty,
+                        sizeType: widget.product.sizeType,
+                        startDate: widget.product.startDate,
+                        uuid: widget.product.uuid,
+                      ),
+                    );
+                    setState(() {
+                      isLoading = false;
+                    });
+                  },
+                );
+              },
+            );
+          },
+        );
+      },
+      child: SubWrapper(
+        isVisible:
+            !ItemsAuthAction()
+                .allowStockallToManageItemAction(
+                  context: context,
+                ),
+        mainWidget: Stack(
+          children: [
+            Visibility(
+              visible: !isLoading,
+              child: Container(
+                width: 38,
+                padding: EdgeInsets.symmetric(
+                  horizontal: 7,
+                  vertical: 3.5,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color:
+                        widget.product.isManaged
+                            ? theme
+                                .lightModeColor
+                                .prColor300
+                            : Colors.grey,
+                  ),
+                  color:
+                      widget.product.isManaged
+                          ? theme.lightModeColor.prColor300
+                          : Colors.grey.shade200,
+                ),
+                child: Row(
+                  mainAxisAlignment:
+                      widget.product.isManaged
+                          ? MainAxisAlignment.end
+                          : MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color:
+                            widget.product.isManaged
+                                ? Colors.white
+                                : Colors.grey.shade600,
                       ),
                     ),
                   ],
                 ),
               ),
             ),
+            Visibility(
+              visible: isLoading,
+              child: SizedBox(
+                height: 15,
+                width: 15,
+                child: CircularProgressIndicator(
+                  strokeWidth: 3,
+                  color: theme.lightModeColor.secColor200,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class QuantityEditWidget extends StatefulWidget {
+  final TempProductClass product;
+  final bool isTotal;
+  const QuantityEditWidget({
+    super.key,
+    required this.product,
+    required this.isTotal,
+  });
+
+  @override
+  State<QuantityEditWidget> createState() =>
+      _QuantityEditWidgetState();
+}
+
+class _QuantityEditWidgetState
+    extends State<QuantityEditWidget> {
+  bool isActive = false;
+  final node = FocusNode();
+  final controller = TextEditingController();
+
+  final NumberFormat _formatter =
+      NumberFormat.decimalPattern('en_NG');
+
+  String _rawValue = '';
+  bool _isEditing = false;
+  bool isLoading = false;
+
+  bool errorUpdating = false;
+
+  void saveEdit() async {
+    showDialog(
+      context: context,
+      builder: (newC) {
+        return ConfirmationAlert(
+          theme: returnTheme(context, listen: false),
+          message:
+              'You are about to permanently Save this update, are you sure you want to proceed?',
+          title: 'Save Update',
+          action: () async {
+            Navigator.of(newC).pop();
+            node.unfocus();
+            setState(() {
+              isActive = false;
+              errorUpdating = false;
+              isLoading = true;
+            });
+
+            if (widget.isTotal) {
+              var tempPro = TempProductClass(
+                id: widget.product.id,
+                uuid: widget.product.uuid,
+                barcode: widget.product.barcode,
+                brand: widget.product.brand,
+                category: widget.product.category,
+                color: widget.product.color,
+                createdAt: widget.product.createdAt,
+                departmentName:
+                    widget.product.departmentName,
+                departmentUuid:
+                    widget.product.departmentUuid,
+                discount: widget.product.discount,
+                endDate: widget.product.endDate,
+                expiryDate: widget.product.expiryDate,
+                lowQtty: widget.product.lowQtty,
+                sellingPrice: widget.product.sellingPrice,
+                size: widget.product.size,
+                sizeType: widget.product.sizeType,
+                startDate: widget.product.startDate,
+                updatedAt: widget.product.updatedAt,
+                quantity: widget.product.quantity,
+                totalQttyInStore: int.tryParse(
+                  controller.text,
+                ),
+                name: widget.product.name,
+                unit: widget.product.unit,
+                isRefundable: widget.product.isRefundable,
+                costPrice: widget.product.costPrice,
+                shopId: widget.product.shopId,
+                setCustomPrice:
+                    widget.product.setCustomPrice,
+                isManaged: widget.product.isManaged,
+              );
+              var res = await returnData().updateProduct(
+                product: tempPro,
+                context: context,
+              );
+              setState(() {
+                isLoading = false;
+              });
+              if (res == null) {
+                controller.text = formatLargeNumber(
+                  widget.product.totalQttyInStore
+                          ?.toStringAsFixed(0) ??
+                      '0',
+                );
+                setState(() {
+                  errorUpdating = true;
+                });
+              } else {
+                controller.text = (res.totalQttyInStore ??
+                        0)
+                    .toStringAsFixed(0);
+              }
+            } else {
+              var tempPro = TempProductClass(
+                id: widget.product.id,
+                uuid: widget.product.uuid,
+                barcode: widget.product.barcode,
+                brand: widget.product.brand,
+                category: widget.product.category,
+                color: widget.product.color,
+                createdAt: widget.product.createdAt,
+                departmentName:
+                    widget.product.departmentName,
+                departmentUuid:
+                    widget.product.departmentUuid,
+                discount: widget.product.discount,
+                endDate: widget.product.endDate,
+                expiryDate: widget.product.expiryDate,
+                lowQtty: widget.product.lowQtty,
+                sellingPrice: widget.product.sellingPrice,
+                size: widget.product.size,
+                sizeType: widget.product.sizeType,
+                startDate: widget.product.startDate,
+                updatedAt: widget.product.updatedAt,
+                quantity: double.tryParse(controller.text),
+                totalQttyInStore:
+                    (widget.product.totalQttyInStore ?? 0) -
+                    ((double.tryParse(controller.text) ??
+                                0) -
+                            (widget.product.quantity ?? 0))
+                        .toInt(),
+                name: widget.product.name,
+                unit: widget.product.unit,
+                isRefundable: widget.product.isRefundable,
+                costPrice: widget.product.costPrice,
+                shopId: widget.product.shopId,
+                setCustomPrice:
+                    widget.product.setCustomPrice,
+                isManaged: widget.product.isManaged,
+              );
+              var res = await returnData().updateProduct(
+                product: tempPro,
+                context: context,
+              );
+              setState(() {
+                isLoading = false;
+              });
+              if (res == null) {
+                controller.text = formatLargeNumber(
+                  widget.product.quantity?.toStringAsFixed(
+                        0,
+                      ) ??
+                      '0',
+                );
+                setState(() {
+                  errorUpdating = true;
+                });
+              } else {
+                controller.text = (res.quantity ?? 0)
+                    .toStringAsFixed(0);
+              }
+            }
+          },
+        );
+      },
+    );
+  }
+
+  void cancelEdit() async {
+    showDialog(
+      context: context,
+      builder: (newC) {
+        return ConfirmationAlert(
+          theme: returnTheme(context, listen: false),
+          message:
+              'You are about to cancel this edit. Are you sure you want to proceed?',
+          title: 'Cancel Edit',
+          action: () async {
+            Navigator.of(newC).pop();
+            // node.removeListener(keepNodeFocus);
+            node.unfocus();
+            setState(() {
+              isActive = false;
+              errorUpdating = false;
+            });
+            if (widget.isTotal) {
+              controller.text =
+                  (widget.product.totalQttyInStore ?? '0')
+                      .toString();
+            } else {
+              controller.text =
+                  (widget.product.quantity ?? '0')
+                      .toString();
+            }
+          },
+        );
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.isTotal) {
+      controller.text = formatLargeNumber(
+        widget.product.totalQttyInStore?.toStringAsFixed(
+              0,
+            ) ??
+            '0',
+      );
+    } else {
+      controller.text = formatLargeNumber(
+        widget.product.quantity?.toStringAsFixed(0) ?? '0',
+      );
+    }
+
+    controller.addListener(() {
+      if (_isEditing) return;
+
+      final rawText = controller.text.replaceAll(
+        RegExp(r'[^0-9]'),
+        '',
+      );
+
+      final cleaned = rawText.replaceFirst(
+        RegExp(r'^0+'),
+        '',
+      );
+
+      if (cleaned != _rawValue) {
+        _rawValue = cleaned;
+
+        final int amount =
+            int.tryParse(
+              _rawValue.isEmpty ? '0' : _rawValue,
+            ) ??
+            0;
+        final formatted =
+            amount == 0 ? '' : _formatter.format(amount);
+
+        _isEditing = true;
+        controller.value = TextEditingValue(
+          text: formatted,
+          selection: TextSelection.collapsed(
+            offset: formatted.length,
+          ),
+        );
+        _isEditing = false;
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    controller.dispose();
+    node.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = returnTheme(context);
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          right: BorderSide(color: Colors.grey.shade500),
+        ),
+      ),
+      child: Stack(
+        // alignment: Alignment(1, 0),
+        children: [
+          Opacity(
+            opacity: isActive ? 1 : 0,
+            child: TextFormField(
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+              ],
+              keyboardType: TextInputType.number,
+              focusNode: node,
+              controller: controller,
+              readOnly: !isActive,
+              style: TextStyle(
+                fontSize: theme.mobileTexts.b3.fontSize,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey.shade900,
+              ),
+              decoration: InputDecoration(
+                hintText: '',
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.grey,
+                    width: 1,
+                  ),
+                ),
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.all(10),
+                isCollapsed: true,
+              ),
+              onFieldSubmitted: (value) {
+                saveEdit();
+              },
+              onChanged: (value) {
+                if (!widget.isTotal &&
+                    value.isNotEmpty &&
+                    widget.product.isManaged) {
+                  if ((widget.product.totalQttyInStore ??
+                          0) <
+                      int.parse(
+                        controller.text.replaceAll(
+                          RegExp(r','),
+                          '',
+                        ),
+                      )) {
+                    controller.text =
+                        (widget.product.quantity ?? 0)
+                            .toStringAsFixed(0);
+                  }
+                }
+              },
+            ),
+          ),
+          Row(
+            mainAxisAlignment:
+                MainAxisAlignment.spaceBetween,
+            children: [
+              Opacity(
+                opacity: isActive ? 0 : 1,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    left: 13.0,
+                  ),
+                  child: Text(
+                    style: TextStyle(
+                      fontSize:
+                          theme.mobileTexts.b3.fontSize,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey.shade900,
+                    ),
+                    "${widget.isTotal ? widget.product.totalQttyInStore ?? 0 : widget.product.quantity ?? 0}",
+                  ),
+                ),
+              ),
+              Stack(
+                children: [
+                  Visibility(
+                    visible: !isLoading && !errorUpdating,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: 2,
+                      children: [
+                        Visibility(
+                          visible: isActive,
+                          child: InkWell(
+                            onTap: () {
+                              cancelEdit();
+                            },
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(
+                                    vertical: 8.0,
+                                    horizontal: 5,
+                                  ),
+                              child: Icon(
+                                size: 15,
+                                Icons.clear,
+                              ),
+                            ),
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            if (isActive) {
+                              saveEdit();
+                            } else {
+                              setState(() {
+                                isActive = true;
+                              });
+                              node.requestFocus();
+                              if (widget.isTotal) {
+                                controller
+                                    .text = formatLargeNumber(
+                                  widget
+                                          .product
+                                          .totalQttyInStore
+                                          ?.toStringAsFixed(
+                                            0,
+                                          ) ??
+                                      '0',
+                                );
+                              } else {
+                                controller
+                                    .text = formatLargeNumber(
+                                  widget.product.quantity
+                                          ?.toStringAsFixed(
+                                            0,
+                                          ) ??
+                                      '0',
+                                );
+                              }
+                            }
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(
+                              8.0,
+                            ),
+                            child: Icon(
+                              size: !isActive ? 12 : 15,
+                              !isActive
+                                  ? Icons.edit
+                                  : Icons.check,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Visibility(
+                    visible: isLoading && !errorUpdating,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SizedBox(
+                        height: 15,
+                        width: 15,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color:
+                              theme
+                                  .lightModeColor
+                                  .secColor200,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Visibility(
+                    visible: errorUpdating,
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          isActive = true;
+                          errorUpdating = false;
+                        });
+                        node.requestFocus();
+                        if (widget.isTotal) {
+                          controller
+                              .text = formatLargeNumber(
+                            widget.product.totalQttyInStore
+                                    ?.toStringAsFixed(0) ??
+                                '0',
+                          );
+                        } else {
+                          controller
+                              .text = formatLargeNumber(
+                            widget.product.quantity
+                                    ?.toStringAsFixed(0) ??
+                                '0',
+                          );
+                        }
+                      },
+                      child: Padding(
+                        padding: EdgeInsetsGeometry.all(8),
+                        child: Icon(
+                          size: 18,
+                          color: Colors.red,
+                          Icons.error_outline_outlined,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ],
       ),

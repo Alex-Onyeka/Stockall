@@ -698,6 +698,8 @@ class _ProductDetailsDesktopState
                                                                                           product: TempProductClass(
                                                                                             updatedAt:
                                                                                                 DateTime.now(),
+                                                                                            totalQttyInStore:
+                                                                                                product.totalQttyInStore,
                                                                                             setCustomPrice:
                                                                                                 product.setCustomPrice,
                                                                                             isManaged:
@@ -1006,6 +1008,42 @@ class _ProductDetailsDesktopState
                                                                                               );
                                                                                             },
                                                                                           );
+                                                                                        } else if (isAddToQuantity) {
+                                                                                          if (product.isManaged &&
+                                                                                              returnShopProvider().userShop()?.manageInventoryStore ==
+                                                                                                  true) {
+                                                                                            if (((int.tryParse(
+                                                                                                          value,
+                                                                                                        ) ??
+                                                                                                        0) +
+                                                                                                    (product.quantity ??
+                                                                                                        0)) >
+                                                                                                (product.totalQttyInStore ??
+                                                                                                    0)) {
+                                                                                              quantityController.text = (product.quantity ??
+                                                                                                      0)
+                                                                                                  .toStringAsFixed(
+                                                                                                    0,
+                                                                                                  );
+                                                                                            }
+                                                                                          }
+                                                                                        } else {
+                                                                                          if (product.isManaged &&
+                                                                                              returnShopProvider().userShop()?.manageInventoryStore ==
+                                                                                                  true) {
+                                                                                            if (((int.tryParse(
+                                                                                                      value,
+                                                                                                    ) ??
+                                                                                                    0)) >
+                                                                                                (product.totalQttyInStore ??
+                                                                                                    0)) {
+                                                                                              quantityController.text = (product.quantity ??
+                                                                                                      0)
+                                                                                                  .toStringAsFixed(
+                                                                                                    0,
+                                                                                                  );
+                                                                                            }
+                                                                                          }
                                                                                         }
                                                                                       },
                                                                                       title:
@@ -1202,6 +1240,26 @@ class _ProductDetailsDesktopState
                                                                                                     DateTime.now(),
                                                                                                 setCustomPrice:
                                                                                                     product.setCustomPrice,
+                                                                                                totalQttyInStore:
+                                                                                                    returnShopProvider().userShop()?.manageInventoryStore ==
+                                                                                                            true
+                                                                                                        ? (isAddToQuantity
+                                                                                                                ? ((product.totalQttyInStore ??
+                                                                                                                        0) -
+                                                                                                                    (int.tryParse(
+                                                                                                                          quantityController.text,
+                                                                                                                        ) ??
+                                                                                                                        0))
+                                                                                                                : ((product.totalQttyInStore ??
+                                                                                                                        0) -
+                                                                                                                    ((int.tryParse(
+                                                                                                                              quantityController.text,
+                                                                                                                            ) ??
+                                                                                                                            0) -
+                                                                                                                        (product.quantity ??
+                                                                                                                            0))))
+                                                                                                            .toInt()
+                                                                                                        : null,
                                                                                                 isManaged:
                                                                                                     product.isManaged,
                                                                                                 // id:
@@ -1467,6 +1525,8 @@ class _ProductDetailsDesktopState
                                                                   product: TempProductClass(
                                                                     updatedAt:
                                                                         DateTime.now(),
+                                                                    totalQttyInStore:
+                                                                        product.totalQttyInStore,
                                                                     setCustomPrice:
                                                                         product.setCustomPrice,
                                                                     isManaged:

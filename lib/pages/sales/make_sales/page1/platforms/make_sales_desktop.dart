@@ -82,6 +82,8 @@ class _MakeSalesDesktopState
     }
   }
 
+  final FocusNode qttyNode = FocusNode();
+
   double currentValue = 0;
   double qqty = 0;
   void editCartItem({
@@ -90,6 +92,8 @@ class _MakeSalesDesktopState
     required Function()? updateAction,
     required TempCartItem cartItem,
   }) {
+    _node.removeListener(keepBarcodeFocused);
+    qttyNode.requestFocus();
     var theme = returnTheme(context, listen: false);
     quantityController.text = cartItem.quantity.toString();
     double qqty = cartItem.quantity.toDouble();
@@ -104,461 +108,463 @@ class _MakeSalesDesktopState
     showDialog(
       context: context,
       builder: (context) {
-        return GestureDetector(
-          onTap:
-              () =>
-                  FocusManager.instance.primaryFocus
-                      ?.unfocus(),
-          child: StatefulBuilder(
-            builder: (context, setState) {
-              return AlertDialog(
-                insetPadding: EdgeInsets.symmetric(
-                  horizontal: 15,
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              insetPadding: EdgeInsets.symmetric(
+                horizontal: 15,
+              ),
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 15,
+                vertical: 20,
+              ),
+              backgroundColor: Colors.white,
+              title: Text(
+                'Edit Cart Item',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: theme.mobileTexts.h4.fontSize,
+                  fontWeight: FontWeight.bold,
                 ),
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 15,
-                  vertical: 20,
-                ),
-                backgroundColor: Colors.white,
-                title: Text(
-                  'Edit Cart Item',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: theme.mobileTexts.h4.fontSize,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                content: SingleChildScrollView(
-                  child: SizedBox(
-                    width:
-                        screenWidth(context) > 450
-                            ? 450
-                            : null,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Visibility(
-                          visible:
-                              (returnSalesProviderContext(
-                                        context,
-                                      ).isSetCustomPrice() ||
-                                      cartItem
-                                          .setCustomPrice) &&
-                                  cartItem
-                                      .item
-                                      .setCustomPrice ||
-                              cartItem.item.sellingPrice ==
-                                  null,
-                          child: Row(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.end,
-                            spacing: 10,
-                            children: [
-                              Expanded(
-                                child:
-                                    ToggleTotalPriceWidget(
-                                      theme: theme,
-                                    ),
+              ),
+              content: SingleChildScrollView(
+                child: SizedBox(
+                  width:
+                      screenWidth(context) > 450
+                          ? 450
+                          : null,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Visibility(
+                        visible:
+                            (returnSalesProviderContext(
+                                      context,
+                                    ).isSetCustomPrice() ||
+                                    cartItem
+                                        .setCustomPrice) &&
+                                cartItem
+                                    .item
+                                    .setCustomPrice ||
+                            cartItem.item.sellingPrice ==
+                                null,
+                        child: Row(
+                          crossAxisAlignment:
+                              CrossAxisAlignment.end,
+                          spacing: 10,
+                          children: [
+                            Expanded(
+                              child: ToggleTotalPriceWidget(
+                                theme: theme,
                               ),
-                              Expanded(
-                                child: SizedBox(
-                                  width: 450,
-                                  child: MoneyTextfield(
-                                    title:
-                                        returnSalesProviderContext(
-                                              context,
-                                            ).setTotalPrice
-                                            ? 'Total Price'
-                                            : 'Individual Price',
-                                    hint: 'Enter Price',
-                                    controller:
-                                        priceController,
-                                    theme: theme,
-                                    onChanged: (p0) {
-                                      setState(() {});
-                                    },
-                                  ),
+                            ),
+                            Expanded(
+                              child: SizedBox(
+                                width: 450,
+                                child: MoneyTextfield(
+                                  title:
+                                      returnSalesProviderContext(
+                                            context,
+                                          ).setTotalPrice
+                                          ? 'Total Price'
+                                          : 'Individual Price',
+                                  hint: 'Enter Price',
+                                  controller:
+                                      priceController,
+                                  theme: theme,
+                                  onChanged: (p0) {
+                                    setState(() {});
+                                  },
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 20),
-                        SizedBox(
-                          width: 450,
-                          child: EditCartTextField(
-                            onChanged: (value) {
-                              final parsedValue =
-                                  double.tryParse(value) ??
-                                  0;
-                              if (cartItem.item.isManaged) {
-                                if (parsedValue >
-                                    (cartItem
-                                            .item
-                                            .quantity ??
-                                        0)) {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return InfoAlert(
-                                        theme: theme,
-                                        message:
-                                            "Only (${cartItem.item.quantity}) items available in stock.",
-                                        title:
-                                            'Quantity Limit Reached',
-                                      );
-                                    },
+                      ),
+                      SizedBox(height: 20),
+                      SizedBox(
+                        width: 450,
+                        child: EditCartTextField(
+                          focusNode: qttyNode,
+                          onSubmitted: (_) {
+                            if (quantityController
+                                    .text
+                                    .isEmpty ||
+                                qqty == 0) {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return InfoAlert(
+                                    theme: theme,
+                                    message:
+                                        'Item quantity cannot be set to (0)',
+                                    title:
+                                        'Invalid Quantity',
                                   );
-                                  // Optionally reset to max or previous value
-                                  setState(() {
-                                    quantityController
-                                            .text =
-                                        qqty.toString();
-                                  });
-                                } else {
-                                  setState(() {
-                                    qqty = parsedValue;
-                                  });
-                                }
+                                },
+                              ).then((context) {
+                                qttyNode.requestFocus();
+                              });
+                            } else {
+                              updateAction!();
+                            }
+                          },
+                          onChanged: (value) {
+                            final parsedValue =
+                                double.tryParse(value) ?? 0;
+                            if (cartItem.item.isManaged) {
+                              if (parsedValue >
+                                  (cartItem.item.quantity ??
+                                      0)) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return InfoAlert(
+                                      theme: theme,
+                                      message:
+                                          "Only (${cartItem.item.quantity}) items available in stock.",
+                                      title:
+                                          'Quantity Limit Reached',
+                                    );
+                                  },
+                                );
+                                // Optionally reset to max or previous value
+                                setState(() {
+                                  quantityController.text =
+                                      qqty.toString();
+                                });
                               } else {
                                 setState(() {
                                   qqty = parsedValue;
                                 });
                               }
-                            },
+                            } else {
+                              setState(() {
+                                qqty = parsedValue;
+                              });
+                            }
+                          },
 
-                            title: 'Enter Item Quantity',
-                            hint: 'Quantity',
-                            controller: quantityController,
-                            theme: theme,
-                          ),
+                          title: 'Enter Item Quantity',
+                          hint: 'Quantity',
+                          controller: quantityController,
+                          theme: theme,
                         ),
-                        Visibility(
-                          visible:
-                              !cartItem.setCustomPrice &&
-                              cartItem.item.setCustomPrice,
-                          child: Column(
-                            children: [
-                              SizedBox(height: 20),
-                              InkWell(
-                                onTap: () {
-                                  returnSalesProvider()
-                                      .toggleSetCustomPrice();
-                                  priceController.clear();
-                                },
-                                child: Container(
-                                  padding:
-                                      EdgeInsets.symmetric(
-                                        vertical: 5,
-                                        horizontal: 10,
-                                      ),
-                                  child: Row(
-                                    mainAxisSize:
-                                        MainAxisSize.min,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .center,
-                                    spacing: 5,
-                                    children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b1
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
-                                        ),
-                                        returnSalesProviderContext(
-                                              context,
-                                            ).isSetCustomPrice()
-                                            ? 'Cancel Custom Price'
-                                            : 'Set Custom Price',
-                                      ),
-                                      Stack(
-                                        children: [
-                                          Visibility(
-                                            visible:
-                                                returnSalesProviderContext(
-                                                  context,
-                                                ).isSetCustomPrice() ==
-                                                false,
-                                            child:
-                                                SvgPicture.asset(
-                                                  editIconSvg,
-                                                  height:
-                                                      20,
-                                                ),
-                                          ),
-                                          Visibility(
-                                            visible:
-                                                returnSalesProviderContext(
-                                                  context,
-                                                ).isSetCustomPrice() ==
-                                                true,
-                                            child: Icon(
-                                              Icons.clear,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.circular(10),
-                            color: Colors.grey.shade100,
-                          ),
-                          padding:
-                              const EdgeInsets.symmetric(
-                                horizontal: 20.0,
-                                vertical: 10,
-                              ),
-                          child: Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b1
-                                          .fontSize,
-                                ),
-                                'Total',
-                              ),
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b1
-                                          .fontSize,
-                                  fontWeight:
-                                      theme
-                                          .mobileTexts
-                                          .b1
-                                          .fontWeightBold,
-                                ),
-                                formatMoneyMid(
-                                  amount: double.parse(
-                                    priceController
-                                            .text
-                                            .isNotEmpty
-                                        ? returnSalesProviderContext(
-                                              context,
-                                            ).setTotalPrice
-                                            ? priceController
-                                                .text
-                                                .replaceAll(
-                                                  ',',
-                                                  '',
-                                                )
-                                            : (int.parse(
-                                                      priceController.text.isNotEmpty
-                                                          ? priceController.text.replaceAll(
-                                                            ',',
-                                                            '',
-                                                          )
-                                                          : '0',
-                                                    ) *
-                                                    qqty.toInt())
-                                                .toString()
-                                        : (qqty *
-                                                (cartItem
-                                                        .item
-                                                        .sellingPrice ??
-                                                    0))
-                                            .toString(),
-                                  ),
-                                  context: context,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                        Padding(
-                          padding:
-                              const EdgeInsets.symmetric(
-                                horizontal: 20.0,
-                              ),
-                          child: Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment.center,
-                            spacing: 15,
-                            children: [
-                              Ink(
-                                decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                        5,
-                                      ),
-                                  color:
-                                      Colors.grey.shade100,
-                                ),
-                                child: InkWell(
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                        5,
-                                      ),
-                                  onTap: () {
-                                    setState(() {
-                                      if (qqty > 0) qqty--;
-                                      quantityController
-                                              .text =
-                                          qqty.toString();
-                                    });
-                                  },
-                                  child: SizedBox(
-                                    height: 30,
-                                    width: 50,
-                                    child: Icon(
-                                      Icons.remove,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Text(
-                                qqty.toString(),
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .h4
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                ),
-                              ),
-                              Ink(
-                                decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                        5,
-                                      ),
-                                  color:
-                                      Colors.grey.shade100,
-                                ),
-                                child: InkWell(
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                        5,
-                                      ),
-                                  onTap: () {
-                                    if (cartItem
-                                        .item
-                                        .isManaged) {
-                                      if (qqty >=
-                                          (cartItem
-                                                  .item
-                                                  .quantity ??
-                                              0)) {
-                                        showDialog(
-                                          context: context,
-                                          builder:
-                                              (
-                                                _,
-                                              ) => InfoAlert(
-                                                title:
-                                                    "Quantity Limit Reached",
-                                                message:
-                                                    "Only (${cartItem.item.quantity}) items available in stock.",
-                                                theme:
-                                                    theme,
-                                              ),
-                                        );
-                                        return;
-                                      }
-                                    }
-                                    setState(() {
-                                      qqty++;
-                                      quantityController
-                                              .text =
-                                          qqty.toString();
-                                    });
-                                  },
-
-                                  child: SizedBox(
-                                    height: 30,
-                                    width: 50,
-                                    child: Center(
-                                      child: Icon(
-                                        Icons.add,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.center,
-                          spacing: 5,
+                      ),
+                      Visibility(
+                        visible:
+                            !cartItem.setCustomPrice &&
+                            cartItem.item.setCustomPrice,
+                        child: Column(
                           children: [
-                            MaterialButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                                quantityController.clear();
-                                qqty = 0;
+                            SizedBox(height: 20),
+                            InkWell(
+                              onTap: () {
+                                returnSalesProvider()
+                                    .toggleSetCustomPrice();
+                                priceController.clear();
                               },
-                              child: Text('Cancel'),
-                            ),
-                            SmallButtonMain(
-                              theme: theme,
-                              action: () {
-                                if (quantityController
-                                        .text
-                                        .isEmpty ||
-                                    qqty == 0) {
-                                  // Navigator.of(context).pop();
-
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return InfoAlert(
-                                        theme: theme,
-                                        message:
-                                            'Item quantity cannot be set to (0)',
-                                        title:
-                                            'Invalid Quantity',
-                                      );
-                                    },
-                                  );
-                                } else {
-                                  updateAction!();
-                                }
-                              },
-                              buttonText: 'Update Item',
+                              child: Container(
+                                padding:
+                                    EdgeInsets.symmetric(
+                                      vertical: 5,
+                                      horizontal: 10,
+                                    ),
+                                child: Row(
+                                  mainAxisSize:
+                                      MainAxisSize.min,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .center,
+                                  spacing: 5,
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b1
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      returnSalesProviderContext(
+                                            context,
+                                          ).isSetCustomPrice()
+                                          ? 'Cancel Custom Price'
+                                          : 'Set Custom Price',
+                                    ),
+                                    Stack(
+                                      children: [
+                                        Visibility(
+                                          visible:
+                                              returnSalesProviderContext(
+                                                context,
+                                              ).isSetCustomPrice() ==
+                                              false,
+                                          child:
+                                              SvgPicture.asset(
+                                                editIconSvg,
+                                                height: 20,
+                                              ),
+                                        ),
+                                        Visibility(
+                                          visible:
+                                              returnSalesProviderContext(
+                                                context,
+                                              ).isSetCustomPrice() ==
+                                              true,
+                                          child: Icon(
+                                            Icons.clear,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ],
                         ),
-                      ],
-                    ),
+                      ),
+                      SizedBox(height: 20),
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(10),
+                          color: Colors.grey.shade100,
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20.0,
+                          vertical: 10,
+                        ),
+                        child: Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceBetween,
+                          children: [
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b1
+                                        .fontSize,
+                              ),
+                              'Total',
+                            ),
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b1
+                                        .fontSize,
+                                fontWeight:
+                                    theme
+                                        .mobileTexts
+                                        .b1
+                                        .fontWeightBold,
+                              ),
+                              formatMoneyMid(
+                                amount: double.parse(
+                                  priceController
+                                          .text
+                                          .isNotEmpty
+                                      ? returnSalesProviderContext(
+                                            context,
+                                          ).setTotalPrice
+                                          ? priceController
+                                              .text
+                                              .replaceAll(
+                                                ',',
+                                                '',
+                                              )
+                                          : (int.parse(
+                                                    priceController.text.isNotEmpty
+                                                        ? priceController.text.replaceAll(
+                                                          ',',
+                                                          '',
+                                                        )
+                                                        : '0',
+                                                  ) *
+                                                  qqty.toInt())
+                                              .toString()
+                                      : (qqty *
+                                              (cartItem
+                                                      .item
+                                                      .sellingPrice ??
+                                                  0))
+                                          .toString(),
+                                ),
+                                context: context,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20.0,
+                        ),
+                        child: Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment.center,
+                          spacing: 15,
+                          children: [
+                            Ink(
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      5,
+                                    ),
+                                color: Colors.grey.shade100,
+                              ),
+                              child: InkWell(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      5,
+                                    ),
+                                onTap: () {
+                                  setState(() {
+                                    if (qqty > 0) qqty--;
+                                    quantityController
+                                            .text =
+                                        qqty.toString();
+                                  });
+                                },
+                                child: SizedBox(
+                                  height: 30,
+                                  width: 50,
+                                  child: Icon(Icons.remove),
+                                ),
+                              ),
+                            ),
+                            Text(
+                              qqty.toString(),
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .h4
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Ink(
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      5,
+                                    ),
+                                color: Colors.grey.shade100,
+                              ),
+                              child: InkWell(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      5,
+                                    ),
+                                onTap: () {
+                                  if (cartItem
+                                      .item
+                                      .isManaged) {
+                                    if (qqty >=
+                                        (cartItem
+                                                .item
+                                                .quantity ??
+                                            0)) {
+                                      showDialog(
+                                        context: context,
+                                        builder:
+                                            (
+                                              _,
+                                            ) => InfoAlert(
+                                              title:
+                                                  "Quantity Limit Reached",
+                                              message:
+                                                  "Only (${cartItem.item.quantity}) items available in stock.",
+                                              theme: theme,
+                                            ),
+                                      );
+                                      return;
+                                    }
+                                  }
+                                  setState(() {
+                                    qqty++;
+                                    quantityController
+                                            .text =
+                                        qqty.toString();
+                                  });
+                                },
+
+                                child: SizedBox(
+                                  height: 30,
+                                  width: 50,
+                                  child: Center(
+                                    child: Icon(Icons.add),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment:
+                            MainAxisAlignment.center,
+                        spacing: 5,
+                        children: [
+                          MaterialButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              quantityController.clear();
+                              qqty = 0;
+                            },
+                            child: Text('Cancel'),
+                          ),
+                          SmallButtonMain(
+                            theme: theme,
+                            action: () {
+                              if (quantityController
+                                      .text
+                                      .isEmpty ||
+                                  qqty == 0) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return InfoAlert(
+                                      theme: theme,
+                                      message:
+                                          'Item quantity cannot be set to (0)',
+                                      title:
+                                          'Invalid Quantity',
+                                    );
+                                  },
+                                ).then((_) {
+                                  qttyNode.requestFocus();
+                                });
+                              } else {
+                                updateAction!();
+                              }
+                            },
+                            buttonText: 'Update Item',
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         );
       },
     ).then((value) {
       qqty = 0;
       quantityController.text = '';
+      _node.addListener(keepBarcodeFocused);
       // nameController.text = '';
       priceController.text = '';
       if (context.mounted) {
@@ -601,6 +607,8 @@ class _MakeSalesDesktopState
   }
 
   bool isNormalEdit = true;
+
+  FocusNode nameEditNode = FocusNode();
 
   void makeCustomSale({
     required TempCartItem cartItem,
@@ -649,6 +657,8 @@ class _MakeSalesDesktopState
                           ?.unfocus(),
               child: StatefulBuilder(
                 builder: (context, setState) {
+                  _node.removeListener(keepBarcodeFocused);
+                  nameEditNode.requestFocus();
                   return AlertDialog(
                     insetPadding: EdgeInsets.symmetric(
                       horizontal: 15,
@@ -688,6 +698,7 @@ class _MakeSalesDesktopState
                               Column(
                                 children: [
                                   GeneralTextField(
+                                    focusNode: nameEditNode,
                                     title: 'Item Name',
                                     hint: 'Enter Item name',
                                     controller: nameC,
@@ -1214,6 +1225,8 @@ class _MakeSalesDesktopState
           },
         ).then((value) {
           qqty = 0;
+          _node.addListener(keepBarcodeFocused);
+          _node.requestFocus();
 
           nameC.clear();
           pQuantity.clear();
@@ -1247,6 +1260,7 @@ class _MakeSalesDesktopState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _node.requestFocus();
+      _node.addListener(keepBarcodeFocused);
       returnSalesProvider().toggleSetDiscount(
         false,
         context,
@@ -1279,9 +1293,9 @@ class _MakeSalesDesktopState
             currency:
                 returnShopProvider().userShop()!.currency,
             cartItems: cart.cartItems.reversed.toList(),
-            subTotal: returnSalesProvider().calcTotalMain(),
-            total:
-                returnSalesProvider().calcFinalTotalMain(),
+            // subTotal: returnSalesProvider().calcTotalMain(),
+            // total:
+            //     returnSalesProvider().calcFinalTotalMain(),
             vat:
                 returnShopProvider().userShop()!.applyVAT!
                     ? vat
@@ -1291,6 +1305,12 @@ class _MakeSalesDesktopState
       }
       setState(() {});
     });
+  }
+
+  void keepBarcodeFocused() {
+    if (!_node.hasFocus) {
+      FocusScope.of(context).requestFocus(_node);
+    }
   }
 
   @override
@@ -1309,8 +1329,8 @@ class _MakeSalesDesktopState
                   .cartItems
                   .reversed
                   .toList(),
-          subTotal: returnSalesProvider().calcTotalMain(),
-          total: returnSalesProvider().calcFinalTotalMain(),
+          // subTotal: returnSalesProvider().calcTotalMain(),
+          // total: returnSalesProvider().calcFinalTotalMain(),
           vat:
               returnShopProvider().userShop()!.applyVAT!
                   ? vat
@@ -1318,6 +1338,9 @@ class _MakeSalesDesktopState
         ),
       );
     });
+    _node.dispose();
+    qttyNode.dispose();
+    nameEditNode.dispose();
   }
 
   @override
@@ -1846,6 +1869,9 @@ class _MakeSalesDesktopState
                                                                     height:
                                                                         35,
                                                                     action: () {
+                                                                      _node.removeListener(
+                                                                        keepBarcodeFocused,
+                                                                      );
                                                                       showGeneralDialog(
                                                                         context:
                                                                             context,
@@ -1865,6 +1891,19 @@ class _MakeSalesDesktopState
                                                                             },
                                                                             // products:
                                                                             //     products,
+                                                                          );
+                                                                        },
+                                                                      ).then(
+                                                                        (
+                                                                          _,
+                                                                        ) {
+                                                                          _node.addListener(
+                                                                            keepBarcodeFocused,
+                                                                          );
+                                                                          setState(
+                                                                            () {
+                                                                              _node.requestFocus();
+                                                                            },
                                                                           );
                                                                         },
                                                                       );
@@ -2243,8 +2282,8 @@ class _MakeSalesDesktopState
                                                         ),
                                                   ),
                                                   child: InkWell(
-                                                    onTap: () {
-                                                      returnSalesProvider().addNewCart(
+                                                    onTap: () async {
+                                                      await returnSalesProvider().addNewCart(
                                                         context,
                                                         TempCart(
                                                           cartItems:
@@ -2253,6 +2292,8 @@ class _MakeSalesDesktopState
                                                               false,
                                                         ),
                                                       );
+                                                      _node
+                                                          .requestFocus();
                                                     },
                                                     child: Container(
                                                       padding:
@@ -2315,13 +2356,6 @@ class _MakeSalesDesktopState
                                                       product.name.toLowerCase() ==
                                                           value.toLowerCase(),
                                                 );
-                                                // if (value
-                                                //         .length <
-                                                //     2) {
-                                                //   widget
-                                                //       .searchController
-                                                //       .clear();
-                                                // }
                                                 if (items
                                                     .isNotEmpty) {
                                                   returnSalesProvider().addItemToCart(
@@ -2397,6 +2431,9 @@ class _MakeSalesDesktopState
                                               ),
                                               child: InkWell(
                                                 onTap: () {
+                                                  _node.removeListener(
+                                                    keepBarcodeFocused,
+                                                  );
                                                   showGeneralDialog(
                                                     context:
                                                         context,
@@ -2413,11 +2450,20 @@ class _MakeSalesDesktopState
                                                             context,
                                                           ).pop();
                                                         },
-                                                        // products:
-                                                        //     products,
                                                       );
                                                     },
-                                                  );
+                                                  ).then((
+                                                    _,
+                                                  ) {
+                                                    _node.addListener(
+                                                      keepBarcodeFocused,
+                                                    );
+                                                    setState(
+                                                      () {
+                                                        _node.requestFocus();
+                                                      },
+                                                    );
+                                                  });
                                                 },
                                                 child: Container(
                                                   padding: EdgeInsets.symmetric(
@@ -2744,12 +2790,18 @@ class _MakeSalesDesktopState
                                           ).then((_) {
                                             if (context
                                                 .mounted) {
+                                              _node.addListener(
+                                                keepBarcodeFocused,
+                                              );
                                               setState(() {
                                                 _node
                                                     .requestFocus();
                                               });
                                             }
                                           });
+                                          _node.removeListener(
+                                            keepBarcodeFocused,
+                                          );
                                         }
                                       },
                                       text: 'Proceed',

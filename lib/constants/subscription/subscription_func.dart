@@ -26,6 +26,7 @@ List<SubplanClass> subPlans = [
       setexpiryDate: true,
       allowStockallToManageInventory: true,
       generateItemBarcode: true,
+      manageInventoryStore: true,
     ),
     salesAuth: SalesAuth(
       useOfBarcode: true,
@@ -89,6 +90,7 @@ List<SubplanClass> subPlans = [
       setexpiryDate: true,
       allowStockallToManageInventory: false,
       generateItemBarcode: false,
+      manageInventoryStore: false,
     ),
     salesAuth: SalesAuth(
       useOfBarcode: false,
@@ -146,6 +148,7 @@ List<SubplanClass> subPlans = [
     price: 0,
     planName: 'Free',
     itemsAuth: ItemsAuth(
+      manageInventoryStore: false,
       numberOfItems: 250,
       useOfBarcode: false,
       applyVariationToItems: false,
