@@ -83,7 +83,7 @@ class TempProductClass {
   String? uuid;
 
   @HiveField(26)
-  int? totalQttyInStore;
+  int? totalQttyInStorage;
 
   TempProductClass({
     this.id,
@@ -112,7 +112,7 @@ class TempProductClass {
     required this.isManaged,
     this.updatedAt,
     this.uuid,
-    this.totalQttyInStore,
+    this.totalQttyInStorage,
   });
 
   factory TempProductClass.fromJson(
@@ -167,8 +167,8 @@ class TempProductClass {
       departmentName: json['department_name'] as String?,
       isManaged: json['is_managed'] as bool,
       uuid: json['uuid'] as String?,
-      totalQttyInStore:
-          (json['total_qtty_in_store'] as num?)?.toInt(),
+      totalQttyInStorage:
+          (json['total_qtty_in_storage'] as num?)?.toInt(),
     );
   }
 
@@ -201,7 +201,7 @@ class TempProductClass {
       'is_managed': isManaged,
       'updated_at': updatedAt?.toIso8601String(),
       'uuid': uuid,
-      'total_qtty_in_store': totalQttyInStore,
+      'total_qtty_in_storage': totalQttyInStorage,
     };
   }
 }

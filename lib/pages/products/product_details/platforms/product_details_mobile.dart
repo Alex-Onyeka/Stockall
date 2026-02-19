@@ -473,8 +473,8 @@ class _ProductDetailsMobileState
                                                                           product.setCustomPrice,
                                                                       isManaged:
                                                                           product.isManaged,
-                                                                      totalQttyInStore:
-                                                                          product.totalQttyInStore,
+                                                                      totalQttyInStorage:
+                                                                          product.totalQttyInStorage,
                                                                       uuid:
                                                                           product.uuid,
                                                                       name:
@@ -828,6 +828,53 @@ class _ProductDetailsMobileState
                                                                                 );
                                                                               },
                                                                             );
+                                                                          } else if (isAddToQuantity) {
+                                                                            if (product.isManaged &&
+                                                                                returnShopProvider().userShop()?.manageInventoryStorage ==
+                                                                                    true) {
+                                                                              if (((int.tryParse(
+                                                                                            value,
+                                                                                          ) ??
+                                                                                          0) +
+                                                                                      (int.tryParse(
+                                                                                            product.quantity?.toStringAsFixed(
+                                                                                                  0,
+                                                                                                ) ??
+                                                                                                '0',
+                                                                                          ) ??
+                                                                                          0)) >
+                                                                                  ((product.totalQttyInStorage ??
+                                                                                          0) +
+                                                                                      (int.tryParse(
+                                                                                            product.quantity?.toStringAsFixed(
+                                                                                                  0,
+                                                                                                ) ??
+                                                                                                '0',
+                                                                                          ) ??
+                                                                                          0))) {
+                                                                                quantityController.text = '0';
+                                                                              }
+                                                                            }
+                                                                          } else if (!isAddToQuantity) {
+                                                                            if (product.isManaged &&
+                                                                                returnShopProvider().userShop()?.manageInventoryStorage ==
+                                                                                    true) {
+                                                                              if (((int.tryParse(
+                                                                                        value,
+                                                                                      ) ??
+                                                                                      0)) >
+                                                                                  ((product.totalQttyInStorage ??
+                                                                                          0) +
+                                                                                      (int.tryParse(
+                                                                                            product.quantity?.toStringAsFixed(
+                                                                                                  0,
+                                                                                                ) ??
+                                                                                                '0',
+                                                                                          ) ??
+                                                                                          0))) {
+                                                                                quantityController.text = '0';
+                                                                              }
+                                                                            }
                                                                           }
                                                                         },
                                                                         title:
@@ -849,7 +896,7 @@ class _ProductDetailsMobileState
                                                                     mainAxisAlignment:
                                                                         MainAxisAlignment.center,
                                                                     spacing:
-                                                                        10,
+                                                                        5,
                                                                     children: [
                                                                       Material(
                                                                         color:
@@ -866,13 +913,13 @@ class _ProductDetailsMobileState
                                                                           child: Container(
                                                                             padding: EdgeInsets.symmetric(
                                                                               horizontal:
-                                                                                  10,
+                                                                                  8,
                                                                               vertical:
-                                                                                  10,
+                                                                                  8,
                                                                             ),
                                                                             child: Row(
                                                                               spacing:
-                                                                                  10,
+                                                                                  5,
                                                                               children: [
                                                                                 Container(
                                                                                   decoration: BoxDecoration(
@@ -891,7 +938,7 @@ class _ProductDetailsMobileState
                                                                                   ),
                                                                                   child: Icon(
                                                                                     size:
-                                                                                        16,
+                                                                                        14,
                                                                                     color:
                                                                                         Colors.white,
                                                                                     Icons.check,
@@ -900,7 +947,7 @@ class _ProductDetailsMobileState
                                                                                 Text(
                                                                                   style: TextStyle(
                                                                                     fontSize:
-                                                                                        widget.theme.mobileTexts.b3.fontSize,
+                                                                                        widget.theme.mobileTexts.b4.fontSize,
                                                                                     fontWeight:
                                                                                         FontWeight.bold,
                                                                                   ),
@@ -926,9 +973,9 @@ class _ProductDetailsMobileState
                                                                           child: Container(
                                                                             padding: EdgeInsets.symmetric(
                                                                               vertical:
-                                                                                  10,
+                                                                                  8,
                                                                               horizontal:
-                                                                                  10,
+                                                                                  8,
                                                                             ),
                                                                             child: Row(
                                                                               spacing:
@@ -951,7 +998,7 @@ class _ProductDetailsMobileState
                                                                                   ),
                                                                                   child: Icon(
                                                                                     size:
-                                                                                        16,
+                                                                                        14,
                                                                                     color:
                                                                                         Colors.white,
                                                                                     Icons.check,
@@ -960,7 +1007,7 @@ class _ProductDetailsMobileState
                                                                                 Text(
                                                                                   style: TextStyle(
                                                                                     fontSize:
-                                                                                        widget.theme.mobileTexts.b3.fontSize,
+                                                                                        widget.theme.mobileTexts.b4.fontSize,
                                                                                     fontWeight:
                                                                                         FontWeight.bold,
                                                                                   ),
@@ -1018,6 +1065,38 @@ class _ProductDetailsMobileState
                                                                                       true;
                                                                                 },
                                                                               );
+                                                                              int totalQttyInStorageCalc() {
+                                                                                final total =
+                                                                                    product.totalQttyInStorage ??
+                                                                                    0;
+                                                                                final qty =
+                                                                                    int.tryParse(
+                                                                                      quantityController.text,
+                                                                                    ) ??
+                                                                                    0;
+                                                                                final currentQty =
+                                                                                    product.quantity ??
+                                                                                    0;
+
+                                                                                int result;
+                                                                                if (isAddToQuantity) {
+                                                                                  result =
+                                                                                      total -
+                                                                                      qty;
+                                                                                } else {
+                                                                                  result =
+                                                                                      (total -
+                                                                                              (qty -
+                                                                                                  currentQty))
+                                                                                          .toInt();
+                                                                                }
+
+                                                                                return result <
+                                                                                        0
+                                                                                    ? 0
+                                                                                    : result;
+                                                                              }
+
                                                                               await dataProvider.updateProduct(
                                                                                 context:
                                                                                     context,
@@ -1026,6 +1105,8 @@ class _ProductDetailsMobileState
                                                                                       DateTime.now(),
                                                                                   setCustomPrice:
                                                                                       product.setCustomPrice,
+                                                                                  totalQttyInStorage:
+                                                                                      totalQttyInStorageCalc(),
                                                                                   isManaged:
                                                                                       product.isManaged,
                                                                                   // id:
@@ -1036,8 +1117,6 @@ class _ProductDetailsMobileState
                                                                                       product.unit,
                                                                                   isRefundable:
                                                                                       product.isRefundable,
-                                                                                  totalQttyInStore:
-                                                                                      product.totalQttyInStore,
                                                                                   costPrice:
                                                                                       product.costPrice,
                                                                                   sellingPrice:
@@ -1370,8 +1449,8 @@ class _ProductDetailsMobileState
                                                         product: TempProductClass(
                                                           updatedAt:
                                                               DateTime.now(),
-                                                          totalQttyInStore:
-                                                              product.totalQttyInStore,
+                                                          totalQttyInStorage:
+                                                              product.totalQttyInStorage,
                                                           setCustomPrice:
                                                               product.setCustomPrice,
                                                           isManaged:

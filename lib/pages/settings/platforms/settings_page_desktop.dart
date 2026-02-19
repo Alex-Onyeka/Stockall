@@ -194,19 +194,19 @@ class _SettingsPageDesktopState
                               visible: authorization(
                                 authorized:
                                     Authorizations()
-                                        .manageInventoryStore,
+                                        .manageInventoryStorage,
                                 context: context,
                               ),
                               child: SubWrapper(
                                 isVisible:
                                     !ItemsAuthAction()
-                                        .manageInventoryStoreAction(
+                                        .manageInventoryStorageAction(
                                           context: context,
                                         ),
                                 mainWidget: NavListTileDesktopAlt(
                                   height: 18,
                                   action: () {
-                                    ItemsAuthAction().manageInventoryStoreAction(
+                                    ItemsAuthAction().manageInventoryStorageAction(
                                       context: context,
                                       action: () {
                                         var shopProvider =
@@ -221,21 +221,21 @@ class _SettingsPageDesktopState
                                               message:
                                                   shopProvider
                                                           .userShop()!
-                                                          .manageInventoryStore!
-                                                      ? 'Your Inventory Store will not be managed, are you sure you want to proceed?'
-                                                      : 'Your Inventory Store will be managed, will, are you sure you want to proceed?',
+                                                          .manageInventoryStorage!
+                                                      ? 'Your Inventory Storage will not be managed, are you sure you want to proceed?'
+                                                      : 'Your Inventory Storage will be managed, will, are you sure you want to proceed?',
                                               title:
                                                   shopProvider
                                                           .userShop()!
-                                                          .manageInventoryStore!
-                                                      ? 'Turn Off Inventory Store'
-                                                      : 'Turn On Inventory Store',
+                                                          .manageInventoryStorage!
+                                                      ? 'Turn Off Inventory Storage'
+                                                      : 'Turn On Inventory Storage',
                                               action: () async {
                                                 Navigator.of(
                                                   context,
                                                 ).pop();
                                                 shopProvider
-                                                    .toggleManageInventoryStore();
+                                                    .togglemanageInventoryStorage();
                                               },
                                             );
                                           },
@@ -247,7 +247,7 @@ class _SettingsPageDesktopState
                                     builder: (context) {
                                       if (returnShopProvider(
                                         context: context,
-                                      ).isManageInventoryStoreLoading) {
+                                      ).ismanageInventoryStorageLoading) {
                                         return SizedBox(
                                           height: 16,
                                           width: 16,
@@ -268,7 +268,7 @@ class _SettingsPageDesktopState
                                                         context,
                                                   )
                                                   .userShop()
-                                                  ?.manageInventoryStore ??
+                                                  ?.manageInventoryStorage ??
                                               true,
                                           toggle: () {
                                             GeneralSettingsAuthAction().manageVATAction(
@@ -287,18 +287,18 @@ class _SettingsPageDesktopState
                                                       theme:
                                                           theme,
                                                       message:
-                                                          shopProvider.userShop()!.manageInventoryStore!
-                                                              ? 'Your Inventory Store will not be managed, are you sure you want to proceed?'
-                                                              : 'Your Inventory Store will be managed, will, are you sure you want to proceed?',
+                                                          shopProvider.userShop()!.manageInventoryStorage!
+                                                              ? 'Your Inventory Storage will not be managed, are you sure you want to proceed?'
+                                                              : 'Your Inventory Storage will be managed, will, are you sure you want to proceed?',
                                                       title:
-                                                          shopProvider.userShop()!.manageInventoryStore!
-                                                              ? 'Turn Off Inventory Store'
-                                                              : 'Turn On Inventory Store',
+                                                          shopProvider.userShop()!.manageInventoryStorage!
+                                                              ? 'Turn Off Inventory Storage'
+                                                              : 'Turn On Inventory Storage',
                                                       action: () async {
                                                         Navigator.of(
                                                           context,
                                                         ).pop();
-                                                        shopProvider.toggleManageInventoryStore();
+                                                        shopProvider.togglemanageInventoryStorage();
                                                       },
                                                     );
                                                   },
@@ -312,7 +312,7 @@ class _SettingsPageDesktopState
                                     },
                                   ),
                                   title:
-                                      'Manage Inventory Store',
+                                      'Manage Inventory Storage',
                                   icon: Icons.manage_search,
                                 ),
                               ),

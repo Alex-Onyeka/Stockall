@@ -40,18 +40,38 @@ class DataProvider extends ChangeNotifier {
       DataProvider._internal();
   factory DataProvider() => _instance;
   DataProvider._internal();
-  // final TextEditingController barcodeController =
+  // final TextEditingController searchController =
   //     TextEditingController();
-  // final FocusNode barcodeNode = FocusNode();
+  final FocusNode searchNode = FocusNode();
 
-  // void keepNodeFocus() {
-  //   if (!barcodeNode.hasFocus) {
-  //     barcodeNode.requestFocus();
-  //   }
-  // }
+  void keepNodeFocus() {
+    if (!searchNode.hasFocus) {
+      searchNode.requestFocus();
+    }
+  }
 
-  // void clearBarcodeTextField() {
-  //   barcodeController.clear();
+  void addSearchNodeListener() {
+    searchNode.addListener(keepNodeFocus);
+    notifyListeners();
+  }
+
+  void removeSearchNodeListener() {
+    searchNode.removeListener(keepNodeFocus);
+    notifyListeners();
+  }
+
+  void requestFocusSearchNode() {
+    searchNode.requestFocus();
+    notifyListeners();
+  }
+
+  void unFocusSearchNode() {
+    searchNode.unfocus();
+    notifyListeners();
+  }
+
+  // void clearsearchTextField() {
+  //   searchController.clear();
   // }
 
   // Timer? timer;
@@ -865,7 +885,11 @@ class DataProvider extends ChangeNotifier {
                 (json) => TempProductClass.fromJson(json),
               )
               .toList();
-      productList.sort((a, b) => a.name.compareTo(b.name));
+      productList.sort(
+        (a, b) => a.name.toLowerCase().compareTo(
+          b.name.toLowerCase(),
+        ),
+      );
       print('Product List Set: ${productList.length}');
       if (data.length > 999) {
         final data2 = await supabase
@@ -888,7 +912,9 @@ class DataProvider extends ChangeNotifier {
               .toList(),
         );
         productList.sort(
-          (a, b) => a.name.compareTo(b.name),
+          (a, b) => a.name.toLowerCase().compareTo(
+            b.name.toLowerCase(),
+          ),
         );
         print('Product List 2 Set: ${productList.length}');
 
@@ -909,7 +935,9 @@ class DataProvider extends ChangeNotifier {
                 .toList(),
           );
           productList.sort(
-            (a, b) => a.name.compareTo(b.name),
+            (a, b) => a.name.toLowerCase().compareTo(
+              b.name.toLowerCase(),
+            ),
           );
           print(
             'Product List 3 Set: ${productList.length}',

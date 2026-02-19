@@ -9,7 +9,7 @@ class ItemsAuth {
   final bool setexpiryDate;
   final bool allowStockallToManageInventory;
   final bool generateItemBarcode;
-  final bool manageInventoryStore;
+  final bool manageInventoryStorage;
 
   ItemsAuth({
     required this.numberOfItems,
@@ -18,7 +18,7 @@ class ItemsAuth {
     required this.setexpiryDate,
     required this.allowStockallToManageInventory,
     required this.generateItemBarcode,
-    required this.manageInventoryStore,
+    required this.manageInventoryStorage,
   });
 }
 
@@ -57,7 +57,7 @@ class ItemsAuthAction {
     }
   }
 
-  bool manageInventoryStoreAction({
+  bool manageInventoryStorageAction({
     required BuildContext context,
     Function()? action,
     Function()? failAction,
@@ -77,7 +77,7 @@ class ItemsAuthAction {
       if (subPlans
           .firstWhere((pl) => pl.plan == plan)
           .itemsAuth
-          .manageInventoryStore) {
+          .manageInventoryStorage) {
         action == null ? {} : action();
         return true;
       } else {

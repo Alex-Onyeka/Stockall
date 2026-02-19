@@ -146,13 +146,15 @@ class _AddProductDesktopState
                           ? false
                           : dataProvider.isManaged,
                   name: widget.nameController.text.trim(),
-                  totalQttyInStore:
+                  totalQttyInStorage:
                       widget
-                              .quantityController
+                              .storageQuantityController
                               .text
                               .isNotEmpty
                           ? int.parse(
-                            widget.quantityController.text
+                            widget
+                                .storageQuantityController
+                                .text
                                 .replaceAll(',', ''),
                           )
                           : null,
@@ -264,6 +266,23 @@ class _AddProductDesktopState
               isLoading = true;
             });
 
+            int totalQttyInStorageCalc() {
+              final total =
+                  widget.product?.totalQttyInStorage ?? 0;
+              final qty =
+                  int.tryParse(
+                    widget.quantityController.text,
+                  ) ??
+                  0;
+              final currentQty =
+                  widget.product?.quantity ?? 0;
+
+              int result =
+                  (total - (qty - currentQty)).toInt();
+
+              return result < 0 ? 0 : result;
+            }
+
             await provider.updateProduct(
               context: context,
               product: TempProductClass(
@@ -272,8 +291,8 @@ class _AddProductDesktopState
                     widget.quantityController.text.isEmpty
                         ? false
                         : provider.isManaged,
-                totalQttyInStore:
-                    widget.product?.totalQttyInStore,
+                totalQttyInStorage:
+                    totalQttyInStorageCalc(),
                 uuid: widget.product?.uuid,
                 name: widget.nameController.text,
                 unit: provider.selectedUnit!,
@@ -697,7 +716,7 @@ class _AddProductDesktopState
                                         visible:
                                             returnShopProvider()
                                                     .userShop()
-                                                    ?.manageInventoryStore ==
+                                                    ?.manageInventoryStorage ==
                                                 true &&
                                             widget.product ==
                                                 null,
@@ -716,7 +735,7 @@ class _AddProductDesktopState
                                             },
                                             theme: theme,
                                             hint:
-                                                'Enter Quantity In Store',
+                                                'Enter Quantity In Storage',
                                             title:
                                                 'Storage Quantity (Optional)',
                                             controller:
@@ -728,9 +747,11 @@ class _AddProductDesktopState
                                       Visibility(
                                         visible:
                                             returnShopProvider()
-                                                .userShop()
-                                                ?.manageInventoryStore ==
-                                            true,
+                                                    .userShop()
+                                                    ?.manageInventoryStorage ==
+                                                true &&
+                                            widget.product ==
+                                                null,
                                         child: SizedBox(
                                           width: 10,
                                         ),
@@ -756,6 +777,43 @@ class _AddProductDesktopState
                                           controller:
                                               widget
                                                   .quantityController,
+                                          onChanged: (
+                                            value,
+                                          ) {
+                                            if (value
+                                                .isNotEmpty) {
+                                              if (widget.product !=
+                                                      null &&
+                                                  widget.product?.isManaged ==
+                                                      true &&
+                                                  returnShopProvider()
+                                                          .userShop()
+                                                          ?.manageInventoryStorage ==
+                                                      true) {
+                                                if (((int.tryParse(
+                                                          value,
+                                                        ) ??
+                                                        0)) >
+                                                    ((widget.product?.totalQttyInStorage ??
+                                                            0) +
+                                                        (int.tryParse(
+                                                              widget.product?.quantity?.toStringAsFixed(
+                                                                    0,
+                                                                  ) ??
+                                                                  '0',
+                                                            ) ??
+                                                            0))) {
+                                                  widget
+                                                      .quantityController
+                                                      .text = (widget.product?.quantity ??
+                                                          0)
+                                                      .toStringAsFixed(
+                                                        0,
+                                                      );
+                                                }
+                                              }
+                                            }
+                                          },
                                         ),
                                       ),
                                     ],

@@ -82,6 +82,7 @@ dependencies:
   screen_retriever: ^0.1.9
   win32: ^5.15.0
   ffi: ^2.1.5
+  window_manager: ^0.4.2
   # multi_window: ^0.2.0
   # flutter_local_notifications: ^19.5.0
   # blue_thermal_printer: ^1.2.3

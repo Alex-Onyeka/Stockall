@@ -30,6 +30,7 @@ class AddProductMobile extends StatefulWidget {
   final TextEditingController lowQttyController;
   final TextEditingController quantityController;
   final TextEditingController discountController;
+  final TextEditingController storageQuantityController;
 
   const AddProductMobile({
     super.key,
@@ -39,6 +40,7 @@ class AddProductMobile extends StatefulWidget {
     required this.lowQttyController,
     required this.quantityController,
     required this.discountController,
+    required this.storageQuantityController,
     this.product,
   });
 
@@ -135,13 +137,15 @@ class _AddProductMobileState
 
               await dataProvider.createProduct(
                 TempProductClass(
-                  totalQttyInStore:
+                  totalQttyInStorage:
                       widget
-                              .quantityController
+                              .storageQuantityController
                               .text
                               .isNotEmpty
                           ? int.parse(
-                            widget.quantityController.text
+                            widget
+                                .storageQuantityController
+                                .text
                                 .replaceAll(',', ''),
                           )
                           : null,
@@ -249,7 +253,6 @@ class _AddProductMobileState
               'Are you sure you want to proceed with update?',
           title: 'Proceed?',
           action: () async {
-            // ✅ GET THE PROVIDER INSTANCE EARLY
             final provider = returnData();
             final shopProvider = returnShopProvider();
 
@@ -260,6 +263,22 @@ class _AddProductMobileState
             setState(() {
               isLoading = true;
             });
+            int totalQttyInStorageCalc() {
+              final total =
+                  widget.product?.totalQttyInStorage ?? 0;
+              final qty =
+                  int.tryParse(
+                    widget.quantityController.text,
+                  ) ??
+                  0;
+              final currentQty =
+                  widget.product?.quantity ?? 0;
+
+              int result =
+                  (total - (qty - currentQty)).toInt();
+
+              return result < 0 ? 0 : result;
+            }
 
             await provider.updateProduct(
               context: context,
@@ -270,12 +289,12 @@ class _AddProductMobileState
                         ? false
                         : provider.isManaged,
                 // id: widget.product!.id,
+                totalQttyInStorage:
+                    totalQttyInStorageCalc(),
                 uuid: widget.product!.uuid,
                 name: widget.nameController.text,
                 unit: provider.selectedUnit!,
                 isRefundable: provider.isProductRefundable,
-                totalQttyInStore:
-                    widget.product?.totalQttyInStore,
                 costPrice:
                     widget.costController.text.isNotEmpty
                         ? double.parse(
@@ -629,6 +648,29 @@ class _AddProductMobileState
                                   ),
                                 ],
                               ),
+                              Visibility(
+                                visible:
+                                    returnShopProvider()
+                                            .userShop()
+                                            ?.manageInventoryStorage ==
+                                        true &&
+                                    widget.product == null,
+                                child: Column(
+                                  children: [
+                                    SizedBox(height: 10),
+                                    EditCartTextField(
+                                      theme: theme,
+                                      hint:
+                                          'Enter Quantity In Storage',
+                                      title:
+                                          'Storage Quantity (Optional)',
+                                      controller:
+                                          widget
+                                              .storageQuantityController,
+                                    ),
+                                  ],
+                                ),
+                              ),
                               SizedBox(height: 10),
                               EditCartTextField(
                                 theme: theme,
@@ -638,6 +680,46 @@ class _AddProductMobileState
                                 controller:
                                     widget
                                         .quantityController,
+                                onChanged: (value) {
+                                  if (value.isNotEmpty) {
+                                    if (widget.product !=
+                                            null &&
+                                        widget
+                                                .product
+                                                ?.isManaged ==
+                                            true &&
+                                        returnShopProvider()
+                                                .userShop()
+                                                ?.manageInventoryStorage ==
+                                            true) {
+                                      if (((int.tryParse(
+                                                value,
+                                              ) ??
+                                              0)) >
+                                          ((widget
+                                                      .product
+                                                      ?.totalQttyInStorage ??
+                                                  0) +
+                                              (int.tryParse(
+                                                    widget.product?.quantity?.toStringAsFixed(
+                                                          0,
+                                                        ) ??
+                                                        '0',
+                                                  ) ??
+                                                  0))) {
+                                        widget
+                                            .quantityController
+                                            .text = (widget
+                                                    .product
+                                                    ?.quantity ??
+                                                0)
+                                            .toStringAsFixed(
+                                              0,
+                                            );
+                                      }
+                                    }
+                                  }
+                                },
                               ),
                               SizedBox(height: 20),
                               InkWell(

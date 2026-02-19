@@ -705,6 +705,131 @@ class _SettingsPageMobileState
                           visible: authorization(
                             authorized:
                                 Authorizations()
+                                    .manageInventoryStorage,
+                            context: context,
+                          ),
+                          child: SubWrapper(
+                            isVisible:
+                                !ItemsAuthAction()
+                                    .manageInventoryStorageAction(
+                                      context: context,
+                                    ),
+                            mainWidget: NavListTileDesktopAlt(
+                              height: 18,
+                              action: () {
+                                ItemsAuthAction().manageInventoryStorageAction(
+                                  context: context,
+                                  action: () {
+                                    var shopProvider =
+                                        returnShopProvider();
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return ConfirmationAlert(
+                                          theme: theme,
+                                          message:
+                                              shopProvider
+                                                      .userShop()!
+                                                      .manageInventoryStorage!
+                                                  ? 'Your Inventory Storage will not be managed, are you sure you want to proceed?'
+                                                  : 'Your Inventory Storage will be managed, will, are you sure you want to proceed?',
+                                          title:
+                                              shopProvider
+                                                      .userShop()!
+                                                      .manageInventoryStorage!
+                                                  ? 'Turn Off Inventory Storage'
+                                                  : 'Turn On Inventory Storage',
+                                          action: () async {
+                                            Navigator.of(
+                                              context,
+                                            ).pop();
+                                            shopProvider
+                                                .togglemanageInventoryStorage();
+                                          },
+                                        );
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                              endWidget: Builder(
+                                builder: (context) {
+                                  if (returnShopProvider(
+                                    context: context,
+                                  ).ismanageInventoryStorageLoading) {
+                                    return SizedBox(
+                                      height: 16,
+                                      width: 16,
+                                      child: CircularProgressIndicator(
+                                        color:
+                                            theme
+                                                .lightModeColor
+                                                .secColor200,
+                                        strokeWidth: 2,
+                                      ),
+                                    );
+                                  } else {
+                                    return MyToggleButton(
+                                      isSmall: true,
+                                      boolValue:
+                                          returnShopProvider(
+                                                context:
+                                                    context,
+                                              )
+                                              .userShop()
+                                              ?.manageInventoryStorage ??
+                                          true,
+                                      toggle: () {
+                                        GeneralSettingsAuthAction().manageVATAction(
+                                          context: context,
+                                          action: () {
+                                            var shopProvider =
+                                                returnShopProvider();
+                                            showDialog(
+                                              context:
+                                                  context,
+                                              builder: (
+                                                context,
+                                              ) {
+                                                return ConfirmationAlert(
+                                                  theme:
+                                                      theme,
+                                                  message:
+                                                      shopProvider.userShop()!.manageInventoryStorage!
+                                                          ? 'Your Inventory Storage will not be managed, are you sure you want to proceed?'
+                                                          : 'Your Inventory Storage will be managed, will, are you sure you want to proceed?',
+                                                  title:
+                                                      shopProvider.userShop()!.manageInventoryStorage!
+                                                          ? 'Turn Off Inventory Storage'
+                                                          : 'Turn On Inventory Storage',
+                                                  action: () async {
+                                                    Navigator.of(
+                                                      context,
+                                                    ).pop();
+                                                    shopProvider
+                                                        .togglemanageInventoryStorage();
+                                                  },
+                                                );
+                                              },
+                                            );
+                                          },
+                                        );
+                                      },
+                                      theme: theme,
+                                    );
+                                  }
+                                },
+                              ),
+                              title:
+                                  'Manage Inventory Storage',
+                              icon: Icons.manage_search,
+                            ),
+                          ),
+                        ),
+                        Visibility(
+                          visible: authorization(
+                            authorized:
+                                Authorizations()
                                     .generateBarcode,
                             context: context,
                           ),

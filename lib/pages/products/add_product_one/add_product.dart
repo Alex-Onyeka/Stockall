@@ -66,6 +66,8 @@ class _AddProductState extends State<AddProduct> {
           builder: (context, constraints) {
             if (constraints.maxWidth < mobileScreen) {
               return AddProductMobile(
+                storageQuantityController:
+                    storageQuantityController,
                 product: widget.product,
                 discountController: discountController,
                 lowQttyController: lowQttyController,

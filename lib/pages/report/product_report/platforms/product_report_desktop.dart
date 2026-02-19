@@ -572,44 +572,44 @@ class ProductReportDesktopState
                                                           context,
                                                           index,
                                                         ) {
-                                                          num
-                                                          returnNum(
-                                                            num?
-                                                            number,
-                                                          ) {
-                                                            if (number ==
-                                                                null) {
-                                                              return 0;
-                                                            } else {
-                                                              return number;
-                                                            }
-                                                          }
+                                                          // num
+                                                          // returnNum(
+                                                          //   num?
+                                                          //   number,
+                                                          // ) {
+                                                          //   if (number ==
+                                                          //       null) {
+                                                          //     return 0;
+                                                          //   } else {
+                                                          //     return number;
+                                                          //   }
+                                                          // }
 
-                                                          products.sort(
-                                                            (
-                                                              a,
-                                                              b,
-                                                            ) {
-                                                              switch (sortIndex) {
-                                                                case 1:
-                                                                  return a.name.compareTo(
-                                                                    b.name,
-                                                                  );
-                                                                case 2:
-                                                                  return returnNum(
-                                                                    b.quantity,
-                                                                  ).compareTo(
-                                                                    returnNum(
-                                                                      a.quantity,
-                                                                    ),
-                                                                  );
-                                                                default:
-                                                                  return b.createdAt!.compareTo(
-                                                                    a.createdAt!,
-                                                                  );
-                                                              }
-                                                            },
-                                                          );
+                                                          // products.sort(
+                                                          //   (
+                                                          //     a,
+                                                          //     b,
+                                                          //   ) {
+                                                          //     switch (sortIndex) {
+                                                          //       case 1:
+                                                          //         return a.name.compareTo(
+                                                          //           b.name,
+                                                          //         );
+                                                          //       case 2:
+                                                          //         return returnNum(
+                                                          //           b.quantity,
+                                                          //         ).compareTo(
+                                                          //           returnNum(
+                                                          //             a.quantity,
+                                                          //           ),
+                                                          //         );
+                                                          //       default:
+                                                          //         return b.createdAt!.compareTo(
+                                                          //           a.createdAt!,
+                                                          //         );
+                                                          //     }
+                                                          //   },
+                                                          // );
                                                           var product =
                                                               products[index];
                                                           // var productIndex =

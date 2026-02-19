@@ -6,7 +6,8 @@ part of 'temp_product_class.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class TempProductClassAdapter extends TypeAdapter<TempProductClass> {
+class TempProductClassAdapter
+    extends TypeAdapter<TempProductClass> {
   @override
   final int typeId = 5;
 
@@ -14,7 +15,8 @@ class TempProductClassAdapter extends TypeAdapter<TempProductClass> {
   TempProductClass read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++)
+        reader.readByte(): reader.read(),
     };
     return TempProductClass(
       id: fields[0] as int?,
@@ -43,7 +45,7 @@ class TempProductClassAdapter extends TypeAdapter<TempProductClass> {
       isManaged: fields[23] as bool,
       updatedAt: fields[24] as DateTime?,
       uuid: fields[25] as String?,
-      totalQttyInStore: fields[26] as int?,
+      totalQttyInStorage: fields[26] as int?,
     );
   }
 
@@ -104,7 +106,7 @@ class TempProductClassAdapter extends TypeAdapter<TempProductClass> {
       ..writeByte(25)
       ..write(obj.uuid)
       ..writeByte(26)
-      ..write(obj.totalQttyInStore);
+      ..write(obj.totalQttyInStorage);
   }
 
   @override

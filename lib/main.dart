@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -41,6 +42,7 @@ import 'package:stockall/providers/validate_input_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:stockall/services/payment_result_page.dart/payment_result_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:window_manager/window_manager.dart';
 
 // Stopwatch stopwatch = Stopwatch();
 
@@ -70,9 +72,8 @@ void main(List<String> args) async {
     WidgetsFlutterBinding.ensureInitialized();
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
-        statusBarColor: Colors.white, // or any color
-        statusBarIconBrightness:
-            Brightness.dark, // for Android
+        statusBarColor: Colors.white,
+        statusBarIconBrightness: Brightness.dark,
         systemNavigationBarContrastEnforced: true,
         statusBarBrightness: Brightness.light,
       ),
@@ -88,8 +89,32 @@ void main(List<String> args) async {
       anonKey: supabaseAnonKey,
     );
     await MainDatabase().initHive();
+    if (returnShopProvider().isDesktop()) {
+      await windowManager.ensureInitialized();
+      maxWindow();
+      print("Maximize In Main Dot Dart");
+    }
     // print('Main started with args: $args');
     runApp(MyApp(home: BasePage()));
+  }
+}
+
+Timer? timer;
+
+void maxWindow() {
+  if (returnShopProvider().isDesktop()) {
+    timer = Timer.periodic(Duration(seconds: 1), (
+      timer,
+    ) async {
+      var isMax = await windowManager.isMaximized();
+      if (!isMax) {
+        await windowManager.maximize();
+        print("Maximize In Emp Auth Page");
+      } else {
+        timer.cancel();
+        print('Timer Cancelled');
+      }
+    });
   }
 }
 

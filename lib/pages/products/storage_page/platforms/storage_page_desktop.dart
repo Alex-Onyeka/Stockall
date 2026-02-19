@@ -9,6 +9,7 @@ import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/play_sounds.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
@@ -16,16 +17,16 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/platforms/product_details_desktop.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
-class StorePageDesktop extends StatefulWidget {
-  const StorePageDesktop({super.key});
+class StoragePageDesktop extends StatefulWidget {
+  const StoragePageDesktop({super.key});
 
   @override
-  State<StorePageDesktop> createState() =>
-      StorePageDesktopState();
+  State<StoragePageDesktop> createState() =>
+      StoragePageDesktopState();
 }
 
-class StorePageDesktopState
-    extends State<StorePageDesktop> {
+class StoragePageDesktopState
+    extends State<StoragePageDesktop> {
   int sortIndex = 1;
 
   Future<void> getProducts() async {
@@ -35,40 +36,40 @@ class StorePageDesktopState
   }
 
   int start = 0;
-  int end = 100;
+  int end = 50;
   int count = 1;
 
   void navigate(bool isIncrease, int length) {
     setState(() {
-      if (length > 100) {
+      if (length > 50) {
         if (isIncrease) {
           if (length != end) {
-            if (length < (end + 100)) {
+            if (length < (end + 50)) {
               start = length - (length - end);
               end = length;
             } else {
-              if ((end - start) < 100) {
-                end += 100;
-                start = end - 100;
+              if ((end - start) < 50) {
+                end += 50;
+                start = end - 50;
               } else {
-                start += 100;
-                end += 100;
+                start += 50;
+                end += 50;
               }
             }
             count++;
           }
         } else {
           if (start != 0) {
-            if ((start - 100) <= 0) {
+            if ((start - 50) <= 0) {
               start = 0;
-              end = length > 100 ? 100 : length;
+              end = length > 50 ? 50 : length;
             } else {
-              if ((end - start) < 100) {
-                end -= 100;
-                start = end - 100;
+              if ((end - start) < 50) {
+                end -= 50;
+                start = end - 50;
               } else {
-                start -= 100;
-                end -= 100;
+                start -= 50;
+                end -= 50;
               }
             }
             count--;
@@ -78,17 +79,89 @@ class StorePageDesktopState
     });
   }
 
+  final searchController = TextEditingController();
+  // final searchNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      returnData().requestFocusSearchNode();
+      returnData().addSearchNodeListener();
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      returnData().removeSearchNodeListener();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    var products = returnData(
-      context: context,
-    ).productList.sublist(
-      start,
-      returnData(context: context).productList.length > 100
-          ? end
-          : returnData(context: context).productList.length,
-    );
+    var products =
+        searchController.text.isNotEmpty
+            ? returnData(context: context).productList
+                .where(
+                  (pr) =>
+                      pr.name.toLowerCase().contains(
+                        searchController.text.toLowerCase(),
+                      ) ||
+                      pr.barcode == searchController.text,
+                )
+                .toList()
+                .sublist(
+                  0,
+                  returnData(context: context).productList
+                              .where(
+                                (pr) =>
+                                    pr.name
+                                        .toLowerCase()
+                                        .contains(
+                                          searchController
+                                              .text
+                                              .toLowerCase(),
+                                        ) ||
+                                    pr.barcode ==
+                                        searchController
+                                            .text,
+                              )
+                              .toList()
+                              .length >
+                          100
+                      ? 100
+                      : returnData(context: context)
+                          .productList
+                          .where(
+                            (pr) =>
+                                pr.name
+                                    .toLowerCase()
+                                    .contains(
+                                      searchController.text
+                                          .toLowerCase(),
+                                    ) ||
+                                pr.barcode ==
+                                    searchController.text,
+                          )
+                          .toList()
+                          .length,
+                )
+            : returnData(
+              context: context,
+            ).productList.sublist(
+              start,
+              returnData(
+                        context: context,
+                      ).productList.length >
+                      50
+                  ? end
+                  : returnData(
+                    context: context,
+                  ).productList.length,
+            );
 
     return Stack(
       children: [
@@ -409,17 +482,25 @@ class StorePageDesktopState
                                           ) {
                                             if (products
                                                 .isEmpty) {
-                                              return EmptyWidgetDisplayOnly(
-                                                title:
-                                                    'Empty List',
-                                                subText:
-                                                    'No Item has been recorded yet',
-                                                theme:
-                                                    theme,
-                                                height: 35,
-                                                icon:
-                                                    Icons
-                                                        .clear,
+                                              return Padding(
+                                                padding:
+                                                    const EdgeInsets.only(
+                                                      top:
+                                                          100.0,
+                                                    ),
+                                                child: EmptyWidgetDisplayOnly(
+                                                  title:
+                                                      'Empty List',
+                                                  subText:
+                                                      'No Item has been recorded yet',
+                                                  theme:
+                                                      theme,
+                                                  height:
+                                                      35,
+                                                  icon:
+                                                      Icons
+                                                          .clear,
+                                                ),
                                               );
                                             } else {
                                               return RefreshIndicator(
@@ -452,56 +533,49 @@ class StorePageDesktopState
                                                           context,
                                                           index,
                                                         ) {
-                                                          num
-                                                          returnNum(
-                                                            num?
-                                                            number,
-                                                          ) {
-                                                            if (number ==
-                                                                null) {
-                                                              return 0;
-                                                            } else {
-                                                              return number;
-                                                            }
-                                                          }
+                                                          // num
+                                                          // returnNum(
+                                                          //   num?
+                                                          //   number,
+                                                          // ) {
+                                                          //   if (number ==
+                                                          //       null) {
+                                                          //     return 0;
+                                                          //   } else {
+                                                          //     return number;
+                                                          //   }
+                                                          // }
 
-                                                          products.sort(
-                                                            (
-                                                              a,
-                                                              b,
-                                                            ) {
-                                                              switch (sortIndex) {
-                                                                case 1:
-                                                                  return a.name.compareTo(
-                                                                    b.name,
-                                                                  );
-                                                                case 2:
-                                                                  return returnNum(
-                                                                    b.quantity,
-                                                                  ).compareTo(
-                                                                    returnNum(
-                                                                      a.quantity,
-                                                                    ),
-                                                                  );
-                                                                default:
-                                                                  return b.createdAt!.compareTo(
-                                                                    a.createdAt!,
-                                                                  );
-                                                              }
-                                                            },
-                                                          );
+                                                          // products.sort(
+                                                          //   (
+                                                          //     a,
+                                                          //     b,
+                                                          //   ) {
+                                                          //     switch (sortIndex) {
+                                                          //       case 1:
+                                                          //         return a.name.compareTo(
+                                                          //           b.name,
+                                                          //         );
+                                                          //       case 2:
+                                                          //         return returnNum(
+                                                          //           b.quantity,
+                                                          //         ).compareTo(
+                                                          //           returnNum(
+                                                          //             a.quantity,
+                                                          //           ),
+                                                          //         );
+                                                          //       default:
+                                                          //         return b.createdAt!.compareTo(
+                                                          //           a.createdAt!,
+                                                          //         );
+                                                          //     }
+                                                          //   },
+                                                          // );
                                                           var product =
                                                               products[index];
-                                                          // var productIndex =
-                                                          //     products.indexOf(
-                                                          //       product,
-                                                          //     ) +
-                                                          //     1;
                                                           return TableRowRecordWidget(
                                                             theme:
                                                                 theme,
-                                                            // productIndex:
-                                                            //     productIndex,
                                                             product:
                                                                 product,
                                                           );
@@ -876,109 +950,228 @@ class StorePageDesktopState
                         ),
                       ),
                     ),
+                    SizedBox(height: 10),
                     Opacity(
                       opacity: sortIndex == 2 ? 0 : 1,
                       child: Row(
+                        spacing: 5,
                         mainAxisAlignment:
                             MainAxisAlignment.end,
-                        spacing: 0,
                         children: [
-                          IconButton(
-                            onPressed: () {
-                              navigate(
-                                false,
-                                returnData()
-                                    .productList
-                                    .length,
-                              );
-                            },
-                            icon: Icon(
-                              size: 20,
-                              color:
-                                  start == 0
-                                      ? Colors.grey.shade400
-                                      : Colors
-                                          .grey
-                                          .shade800,
-                              Icons.arrow_back_sharp,
+                          SizedBox(
+                            height: 30,
+                            width: 200,
+                            child: TextField(
+                              focusNode:
+                                  returnData().searchNode,
+                              controller: searchController,
+                              onChanged: (value) async {
+                                if (value.isNotEmpty) {
+                                  if (value.length > 20) {
+                                    searchController
+                                        .clear();
+                                  } else {
+                                    var allPrs =
+                                        returnData()
+                                            .productList
+                                            .where(
+                                              (pr) =>
+                                                  pr.barcode ==
+                                                  searchController
+                                                      .text,
+                                            )
+                                            .toList();
+                                    if (allPrs.isNotEmpty) {
+                                      await playBeep();
+                                    }
+                                  }
+                                }
+                                setState(() {
+                                  start = 0;
+                                  count = 1;
+                                });
+                                // setState(() {});
+                              },
+                              style: TextStyle(
+                                fontSize: 12,
+                              ),
+                              decoration: InputDecoration(
+                                suffixIcon: InkWell(
+                                  onTap: () {
+                                    if (searchController
+                                        .text
+                                        .isNotEmpty) {
+                                      searchController
+                                          .clear();
+                                      setState(() {
+                                        count = 1;
+                                      });
+                                    }
+                                  },
+                                  child: Icon(
+                                    size: 16,
+                                    Icons.clear,
+                                  ),
+                                ),
+                                hintText:
+                                    'Search Name or Scan',
+                                contentPadding:
+                                    EdgeInsets.symmetric(
+                                      vertical: 5,
+                                      horizontal: 5,
+                                    ),
+                                fillColor:
+                                    Colors.grey.shade200,
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color:
+                                        Colors
+                                            .grey
+                                            .shade200,
+                                    width: 2,
+                                  ),
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        3,
+                                      ),
+                                ),
+                                focusedBorder:
+                                    OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade400,
+                                        width: 2,
+                                      ),
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                            3,
+                                          ),
+                                    ),
+                              ),
                             ),
                           ),
-                          Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment.center,
-                            spacing: 3,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b2
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
+                          Opacity(
+                            opacity:
+                                searchController
+                                        .text
+                                        .isNotEmpty
+                                    ? 0
+                                    : 1,
+                            child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.end,
+                              spacing: 0,
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    if (start != 0) {
+                                      navigate(
+                                        false,
+                                        returnData()
+                                            .productList
+                                            .length,
+                                      );
+                                    }
+                                  },
+                                  icon: Icon(
+                                    size: 20,
+                                    color:
+                                        start == 0
+                                            ? Colors
+                                                .grey
+                                                .shade400
+                                            : Colors
+                                                .grey
+                                                .shade800,
+                                    Icons.arrow_back_sharp,
+                                  ),
                                 ),
-                                count.toString(),
-                              ),
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b2
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                  color: Colors.grey,
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .center,
+                                  spacing: 3,
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b2
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      count.toString(),
+                                    ),
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b2
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                        color: Colors.grey,
+                                      ),
+                                      '/',
+                                    ),
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b2
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                        color: Colors.grey,
+                                      ),
+                                      "${returnData(context: context).productList.length > 50 ? (returnData(context: context).productList.length / 50).ceil() : 1}",
+                                    ),
+                                  ],
                                 ),
-                                '/',
-                              ),
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b2
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                  color: Colors.grey,
+                                IconButton(
+                                  onPressed: () {
+                                    if (end !=
+                                        returnData()
+                                            .productList
+                                            .length) {
+                                      navigate(
+                                        true,
+                                        returnData()
+                                            .productList
+                                            .length,
+                                      );
+                                    }
+                                  },
+                                  icon: Icon(
+                                    size: 20,
+                                    color:
+                                        end ==
+                                                    returnData(
+                                                      context:
+                                                          context,
+                                                    ).productList.length ||
+                                                returnData(
+                                                      context:
+                                                          context,
+                                                    ).productList.length <=
+                                                    50
+                                            ? Colors
+                                                .grey
+                                                .shade400
+                                            : Colors
+                                                .grey
+                                                .shade800,
+                                    Icons
+                                        .arrow_forward_sharp,
+                                  ),
                                 ),
-                                "${returnData(context: context).productList.length > 50 ? (returnData(context: context).productList.length / 50).ceil() : 1}",
-                              ),
-                            ],
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              navigate(
-                                true,
-                                returnData()
-                                    .productList
-                                    .length,
-                              );
-                            },
-                            icon: Icon(
-                              size: 20,
-                              color:
-                                  end ==
-                                              returnData(
-                                                    context:
-                                                        context,
-                                                  )
-                                                  .productList
-                                                  .length ||
-                                          returnData(
-                                                    context:
-                                                        context,
-                                                  )
-                                                  .productList
-                                                  .length <=
-                                              50
-                                      ? Colors.grey.shade400
-                                      : Colors
-                                          .grey
-                                          .shade800,
-                              Icons.arrow_forward_sharp,
+                              ],
                             ),
                           ),
                         ],
@@ -1047,10 +1240,10 @@ class _SummaryTableHeadingBarState
     return tempTotal;
   }
 
-  double getTotalQuantityInStore() {
+  double getTotalQuantityInStorage() {
     double tempTotal = 0;
     for (var item in widget.product) {
-      tempTotal += item.totalQttyInStore ?? 0;
+      tempTotal += item.totalQttyInStorage ?? 0;
     }
     return tempTotal;
   }
@@ -1175,7 +1368,7 @@ class _SummaryTableHeadingBarState
                         ),
                         widget.isHeading
                             ? 'Total Qtty'
-                            : (getTotalQuantityInStore() +
+                            : (getTotalQuantityInStorage() +
                                     getTotalQuantity())
                                 .toString(),
                       ),
@@ -1208,8 +1401,8 @@ class _SummaryTableHeadingBarState
                           fontWeight: FontWeight.bold,
                         ),
                         widget.isHeading
-                            ? 'Qtty In Store'
-                            : getTotalQuantityInStore()
+                            ? 'Qtty In Storage'
+                            : getTotalQuantityInStorage()
                                 .toString(),
                       ),
                     ),
@@ -1362,7 +1555,7 @@ class _SummaryTableHeadingBarState
                             fontWeight: FontWeight.bold,
                           ),
                           widget.isHeading
-                              ? 'Expiry Date'
+                              ? 'Is Managed'
                               : '',
                         ),
                       ),
@@ -1382,12 +1575,10 @@ class TableRowRecordWidget extends StatefulWidget {
   const TableRowRecordWidget({
     super.key,
     required this.theme,
-    // required this.productIndex,
     required this.product,
   });
 
   final ThemeProvider theme;
-  // final int productIndex;
   final TempProductClass product;
 
   @override
@@ -1502,7 +1693,7 @@ class _TableRowRecordWidgetState
                                   .fontSize,
                           fontWeight: FontWeight.bold,
                         ),
-                        ((widget.product.totalQttyInStore ??
+                        ((widget.product.totalQttyInStorage ??
                                     0) +
                                 (widget.product.quantity ??
                                     0))
@@ -1719,8 +1910,10 @@ class _IsManagedToggleWidgetState
                                 ? false
                                 : true,
                         name: widget.product.name,
-                        totalQttyInStore:
-                            widget.product.totalQttyInStore,
+                        totalQttyInStorage:
+                            widget
+                                .product
+                                .totalQttyInStorage,
                         unit: widget.product.unit,
                         isRefundable:
                             widget.product.isRefundable,
@@ -1898,7 +2091,7 @@ class _QuantityEditWidgetState
                 startDate: widget.product.startDate,
                 updatedAt: widget.product.updatedAt,
                 quantity: widget.product.quantity,
-                totalQttyInStore: int.tryParse(
+                totalQttyInStorage: int.tryParse(
                   controller.text,
                 ),
                 name: widget.product.name,
@@ -1919,7 +2112,7 @@ class _QuantityEditWidgetState
               });
               if (res == null) {
                 controller.text = formatLargeNumber(
-                  widget.product.totalQttyInStore
+                  widget.product.totalQttyInStorage
                           ?.toStringAsFixed(0) ??
                       '0',
                 );
@@ -1927,7 +2120,7 @@ class _QuantityEditWidgetState
                   errorUpdating = true;
                 });
               } else {
-                controller.text = (res.totalQttyInStore ??
+                controller.text = (res.totalQttyInStorage ??
                         0)
                     .toStringAsFixed(0);
               }
@@ -1954,12 +2147,34 @@ class _QuantityEditWidgetState
                 startDate: widget.product.startDate,
                 updatedAt: widget.product.updatedAt,
                 quantity: double.tryParse(controller.text),
-                totalQttyInStore:
-                    (widget.product.totalQttyInStore ?? 0) -
-                    ((double.tryParse(controller.text) ??
+                totalQttyInStorage:
+                    (widget.product.totalQttyInStorage ??
+                                    0) -
+                                ((double.tryParse(
+                                              controller
+                                                  .text,
+                                            ) ??
+                                            0) -
+                                        (widget
+                                                .product
+                                                .quantity ??
+                                            0))
+                                    .toInt() >=
+                            0
+                        ? (widget
+                                    .product
+                                    .totalQttyInStorage ??
                                 0) -
-                            (widget.product.quantity ?? 0))
-                        .toInt(),
+                            ((double.tryParse(
+                                          controller.text,
+                                        ) ??
+                                        0) -
+                                    (widget
+                                            .product
+                                            .quantity ??
+                                        0))
+                                .toInt()
+                        : 0,
                 name: widget.product.name,
                 unit: widget.product.unit,
                 isRefundable: widget.product.isRefundable,
@@ -1994,7 +2209,10 @@ class _QuantityEditWidgetState
           },
         );
       },
-    );
+    ).then((_) {
+      returnData().requestFocusSearchNode();
+      returnData().addSearchNodeListener();
+    });
   }
 
   void cancelEdit() async {
@@ -2008,7 +2226,6 @@ class _QuantityEditWidgetState
           title: 'Cancel Edit',
           action: () async {
             Navigator.of(newC).pop();
-            // node.removeListener(keepNodeFocus);
             node.unfocus();
             setState(() {
               isActive = false;
@@ -2016,7 +2233,7 @@ class _QuantityEditWidgetState
             });
             if (widget.isTotal) {
               controller.text =
-                  (widget.product.totalQttyInStore ?? '0')
+                  (widget.product.totalQttyInStorage ?? '0')
                       .toString();
             } else {
               controller.text =
@@ -2026,7 +2243,10 @@ class _QuantityEditWidgetState
           },
         );
       },
-    );
+    ).then((_) {
+      returnData().requestFocusSearchNode();
+      returnData().addSearchNodeListener();
+    });
   }
 
   @override
@@ -2034,7 +2254,7 @@ class _QuantityEditWidgetState
     super.initState();
     if (widget.isTotal) {
       controller.text = formatLargeNumber(
-        widget.product.totalQttyInStore?.toStringAsFixed(
+        widget.product.totalQttyInStorage?.toStringAsFixed(
               0,
             ) ??
             '0',
@@ -2134,8 +2354,9 @@ class _QuantityEditWidgetState
                 if (!widget.isTotal &&
                     value.isNotEmpty &&
                     widget.product.isManaged) {
-                  if ((widget.product.totalQttyInStore ??
-                          0) <
+                  if (((widget.product.totalQttyInStorage ??
+                              0) +
+                          (widget.product.quantity ?? 0)) <
                       int.parse(
                         controller.text.replaceAll(
                           RegExp(r','),
@@ -2167,7 +2388,7 @@ class _QuantityEditWidgetState
                       fontWeight: FontWeight.bold,
                       color: Colors.grey.shade900,
                     ),
-                    "${widget.isTotal ? widget.product.totalQttyInStore ?? 0 : widget.product.quantity ?? 0}",
+                    "${widget.isTotal ? widget.product.totalQttyInStorage ?? 0 : widget.product.quantity ?? 0}",
                   ),
                 ),
               ),
@@ -2203,6 +2424,10 @@ class _QuantityEditWidgetState
                             if (isActive) {
                               saveEdit();
                             } else {
+                              returnData()
+                                  .unFocusSearchNode();
+                              returnData()
+                                  .removeSearchNodeListener();
                               setState(() {
                                 isActive = true;
                               });
@@ -2212,7 +2437,7 @@ class _QuantityEditWidgetState
                                     .text = formatLargeNumber(
                                   widget
                                           .product
-                                          .totalQttyInStore
+                                          .totalQttyInStorage
                                           ?.toStringAsFixed(
                                             0,
                                           ) ??
@@ -2266,6 +2491,9 @@ class _QuantityEditWidgetState
                     visible: errorUpdating,
                     child: InkWell(
                       onTap: () {
+                        returnData().unFocusSearchNode();
+                        returnData()
+                            .removeSearchNodeListener();
                         setState(() {
                           isActive = true;
                           errorUpdating = false;
@@ -2274,7 +2502,9 @@ class _QuantityEditWidgetState
                         if (widget.isTotal) {
                           controller
                               .text = formatLargeNumber(
-                            widget.product.totalQttyInStore
+                            widget
+                                    .product
+                                    .totalQttyInStorage
                                     ?.toStringAsFixed(0) ??
                                 '0',
                           );

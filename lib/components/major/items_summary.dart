@@ -6,7 +6,7 @@ import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/products/compnents/products_summary_tab.dart';
-import 'package:stockall/pages/products/store_page/store_page.dart';
+import 'package:stockall/pages/products/storage_page/storage_page.dart';
 
 class ItemsSummary extends StatefulWidget {
   final TextEditingController? searchController;
@@ -190,14 +190,14 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                           color: Colors.transparent,
                           child: InkWell(
                             borderRadius:
-                                BorderRadius.circular(10),
+                                BorderRadius.circular(5),
                             onTap: widget.refreshAction,
                             child: Padding(
                               padding: const EdgeInsets.all(
-                                10,
+                                7,
                               ),
                               child: Row(
-                                spacing: 5,
+                                spacing: 3,
                                 children: [
                                   Text(
                                     style: TextStyle(
@@ -212,7 +212,7 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                                     'Refresh',
                                   ),
                                   Icon(
-                                    size: 18,
+                                    size: 16,
                                     Icons.refresh_rounded,
                                   ),
                                 ],
@@ -237,7 +237,7 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                                       fontSize:
                                           theme
                                               .mobileTexts
-                                              .b2
+                                              .b3
                                               .fontSize,
                                       fontWeight:
                                           FontWeight.bold,
@@ -258,7 +258,7 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                                         : 'Set Date',
                                   ),
                                   Icon(
-                                    size: 20,
+                                    size: 17,
                                     color:
                                         theme
                                             .lightModeColor
@@ -301,7 +301,7 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                                 child: InkWell(
                                   borderRadius:
                                       BorderRadius.circular(
-                                        10,
+                                        5,
                                       ),
                                   onTap: () {
                                     ItemsAuthAction()
@@ -324,10 +324,10 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                                   child: Padding(
                                     padding:
                                         const EdgeInsets.all(
-                                          10,
+                                          7,
                                         ),
                                     child: Row(
-                                      spacing: 5,
+                                      spacing: 3,
                                       children: [
                                         Text(
                                           style: TextStyle(
@@ -343,7 +343,7 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                                           'Add Item',
                                         ),
                                         Icon(
-                                          size: 18,
+                                          size: 15,
                                           Icons.add,
                                           color:
                                               Colors.amber,
@@ -363,27 +363,27 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                             authorization(
                               authorized:
                                   Authorizations()
-                                      .manageInventoryStore,
+                                      .manageInventoryStorage,
                               context: context,
                             ) &&
                             shop(
                                   context,
-                                )?.manageInventoryStore ==
+                                )?.manageInventoryStorage ==
                                 true,
                         child: SubWrapper(
                           isVisible:
                               !ItemsAuthAction()
-                                  .manageInventoryStoreAction(
+                                  .manageInventoryStorageAction(
                                     context: context,
                                   ),
                           mainWidget: Material(
                             color: Colors.transparent,
                             child: InkWell(
                               borderRadius:
-                                  BorderRadius.circular(10),
+                                  BorderRadius.circular(5),
                               onTap: () {
                                 ItemsAuthAction()
-                                    .manageInventoryStoreAction(
+                                    .manageInventoryStorageAction(
                                       context: context,
                                       action: () {
                                         Navigator.push(
@@ -392,7 +392,7 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                                             builder: (
                                               context,
                                             ) {
-                                              return StorePage();
+                                              return StoragePage();
                                             },
                                           ),
                                         );
@@ -400,12 +400,9 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                                     );
                               },
                               child: Padding(
-                                padding:
-                                    const EdgeInsets.all(
-                                      10,
-                                    ),
+                                padding: EdgeInsets.all(7),
                                 child: Row(
-                                  spacing: 5,
+                                  spacing: 3,
                                   children: [
                                     Text(
                                       style: TextStyle(
@@ -420,7 +417,7 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                                       'Store',
                                     ),
                                     Icon(
-                                      size: 18,
+                                      size: 14,
                                       Icons
                                           .arrow_forward_ios_rounded,
                                       color: Colors.grey,

@@ -1026,11 +1026,11 @@ class ShopProvider extends ChangeNotifier {
     }
   }
 
-  bool isManageInventoryStoreLoading = false;
+  bool ismanageInventoryStorageLoading = false;
 
-  Future<int> toggleManageInventoryStore() async {
+  Future<int> togglemanageInventoryStorage() async {
     bool isOnline = await connectivity.isOnline();
-    isManageInventoryStoreLoading = true;
+    ismanageInventoryStorageLoading = true;
     notifyListeners();
     try {
       if (isOnline) {
@@ -1038,29 +1038,29 @@ class ShopProvider extends ChangeNotifier {
             await supabase
                 .from('shops')
                 .update({
-                  'manage_inventory_store':
-                      !userShop()!.manageInventoryStore!,
+                  'manage_inventory_storage':
+                      !userShop()!.manageInventoryStorage!,
                 })
                 .eq('shop_id', userShop()!.shopId!)
                 .select()
                 .maybeSingle();
         if (res == null) {
-          print('Manage Inventory Store Update Failed');
-          isManageInventoryStoreLoading = false;
+          print('Manage Inventory Storage Update Failed');
+          ismanageInventoryStorageLoading = false;
           notifyListeners();
           return 0;
         }
 
         var shops = await getUserShops();
         setShops(shops);
-        isManageInventoryStoreLoading = false;
+        ismanageInventoryStorageLoading = false;
         notifyListeners();
         return 1;
       } else {
         try {
           userShop()!.updatedAt = DateTime.now();
-          userShop()!.manageInventoryStore =
-              !userShop()!.manageInventoryStore!;
+          userShop()!.manageInventoryStorage =
+              !userShop()!.manageInventoryStorage!;
           await ShopFunc().updateShop(userShop()!);
           if (userShop() != null) {
             await UpdatedShopFunc().createUpdatedShop(
@@ -1069,23 +1069,23 @@ class ShopProvider extends ChangeNotifier {
             // setShops(shop);
             notifyListeners();
           }
-          isManageInventoryStoreLoading = false;
+          ismanageInventoryStorageLoading = false;
           notifyListeners();
           return 1;
         } catch (e) {
           print(
-            "❌ Failed to Update Manage Inventory Store Offline: ${e.toString()}",
+            "❌ Failed to Update Manage Inventory Storage Offline: ${e.toString()}",
           );
-          isManageInventoryStoreLoading = false;
+          ismanageInventoryStorageLoading = false;
           notifyListeners();
           return 0;
         }
       }
     } catch (e) {
       print(
-        "❌ Failed to Update Manage Inventory Store: ${e.toString()}",
+        "❌ Failed to Update Manage Inventory Storage: ${e.toString()}",
       );
-      isManageInventoryStoreLoading = false;
+      ismanageInventoryStorageLoading = false;
       notifyListeners();
       return 0;
     }
