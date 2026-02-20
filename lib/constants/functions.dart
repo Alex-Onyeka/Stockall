@@ -132,6 +132,7 @@ List<Map<String, dynamic>> employees = [
       'General Discount',
       'Generate Barcode',
       'Manage VAT',
+      'View Items Summary',
       'Others',
     ],
   },
@@ -163,6 +164,7 @@ List<Map<String, dynamic>> employees = [
       'General Discount',
       'Generate Barcode',
       'Manage VAT',
+      'View Items Summary',
     ],
   },
   {
@@ -242,6 +244,7 @@ class Authorizations {
   String manageVAT = 'Manage VAT';
   String generateBarcode = 'Generate Barcode';
   String manageInventoryStorage = 'Manage Invetory Storage';
+  String viewItemsSummary = 'View Items Summary';
 }
 
 bool authorization({

@@ -23,24 +23,10 @@ class _ProductReportMobileState
     extends State<ProductReportMobile> {
   int sortIndex = 1;
 
-  // late Future<void> productsFuture;
   Future<void> getProducts() async {
     await RefreshFunctions(
       context,
     ).refreshProducts(context);
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      returnReportProvider(
-        context,
-        listen: false,
-      ).clearDate(context);
-      returnData().toggleIsLoading(false);
-    });
-    // productsFuture = getProducts();
   }
 
   int start = 0;
@@ -85,21 +71,72 @@ class _ProductReportMobileState
         }
       }
     });
-    // print(start);
-    // print(end);
   }
 
+  final searchController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    var products = returnData(
-      context: context,
-    ).productList.sublist(
-      start,
-      returnData(context: context).productList.length > 50
-          ? end
-          : returnData(context: context).productList.length,
-    );
+    var products =
+        searchController.text.isNotEmpty
+            ? returnData(context: context).productList
+                .where(
+                  (pr) =>
+                      pr.name.toLowerCase().contains(
+                        searchController.text.toLowerCase(),
+                      ) ||
+                      pr.barcode == searchController.text,
+                )
+                .toList()
+                .sublist(
+                  0,
+                  returnData(context: context).productList
+                              .where(
+                                (pr) =>
+                                    pr.name
+                                        .toLowerCase()
+                                        .contains(
+                                          searchController
+                                              .text
+                                              .toLowerCase(),
+                                        ) ||
+                                    pr.barcode ==
+                                        searchController
+                                            .text,
+                              )
+                              .toList()
+                              .length >
+                          100
+                      ? 100
+                      : returnData(context: context)
+                          .productList
+                          .where(
+                            (pr) =>
+                                pr.name
+                                    .toLowerCase()
+                                    .contains(
+                                      searchController.text
+                                          .toLowerCase(),
+                                    ) ||
+                                pr.barcode ==
+                                    searchController.text,
+                          )
+                          .toList()
+                          .length,
+                )
+            : returnData(
+              context: context,
+            ).productList.sublist(
+              start,
+              returnData(
+                        context: context,
+                      ).productList.length >
+                      50
+                  ? end
+                  : returnData(
+                    context: context,
+                  ).productList.length,
+            );
 
     return Stack(
       children: [
@@ -108,11 +145,11 @@ class _ProductReportMobileState
             context: context,
             title: sortIndex == 1 ? 'Items' : 'Summary',
             widget: Visibility(
-              visible:
-                  returnUserProvider(
-                    context,
-                  ).currentUserMain?.role ==
-                  'Owner',
+              visible: authorization(
+                authorized:
+                    Authorizations().viewItemsSummary,
+                context: context,
+              ),
               child: Padding(
                 padding: const EdgeInsets.only(right: 15.0),
                 child: PopupMenuButton(
@@ -424,7 +461,7 @@ class _ProductReportMobileState
                                         ? MediaQuery.of(
                                               context,
                                             ).size.width +
-                                            550
+                                            580
                                         : MediaQuery.of(
                                                   context,
                                                 ).size.width >
@@ -436,7 +473,7 @@ class _ProductReportMobileState
                                         ? MediaQuery.of(
                                               context,
                                             ).size.width +
-                                            350
+                                            380
                                         : MediaQuery.of(
                                           context,
                                         ).size.width,
@@ -462,16 +499,24 @@ class _ProductReportMobileState
                                         builder: (context) {
                                           if (products
                                               .isEmpty) {
-                                            return EmptyWidgetDisplayOnly(
-                                              title:
-                                                  'Empty List',
-                                              subText:
-                                                  'No Item has been recorded yet',
-                                              theme: theme,
-                                              height: 35,
-                                              icon:
-                                                  Icons
-                                                      .clear,
+                                            return Padding(
+                                              padding:
+                                                  const EdgeInsets.only(
+                                                    top:
+                                                        100.0,
+                                                  ),
+                                              child: EmptyWidgetDisplayOnly(
+                                                title:
+                                                    'Empty List',
+                                                subText:
+                                                    'No Item has been recorded yet',
+                                                theme:
+                                                    theme,
+                                                height: 35,
+                                                icon:
+                                                    Icons
+                                                        .clear,
+                                              ),
                                             );
                                           } else {
                                             return RefreshIndicator(
@@ -582,33 +627,6 @@ class _ProductReportMobileState
                               ),
                             );
                           } else {
-                            double getCostPrice() {
-                              double temp = 0;
-                              for (var item
-                                  in returnData(
-                                    context: context,
-                                  ).productList) {
-                                temp +=
-                                    item.costPrice *
-                                    (item.quantity ?? 1);
-                              }
-                              return temp;
-                            }
-
-                            double getAmountPrice() {
-                              double temp = 0;
-                              for (var item
-                                  in returnData(
-                                    context: context,
-                                  ).productList) {
-                                temp +=
-                                    (item.sellingPrice ??
-                                        0) *
-                                    (item.quantity ?? 1);
-                              }
-                              return temp;
-                            }
-
                             return SizedBox(
                               child: Padding(
                                 padding:
@@ -645,7 +663,7 @@ class _ProductReportMobileState
                                                     FontWeight
                                                         .bold,
                                               ),
-                                              'Finance',
+                                              'FINANCE',
                                             ),
                                           ],
                                         ),
@@ -669,9 +687,12 @@ class _ProductReportMobileState
                                                 isMoney:
                                                     true,
                                                 text:
-                                                    'Total Cost',
+                                                    'Total Cost Value',
                                                 price:
-                                                    getCostPrice(),
+                                                    returnData(
+                                                      context:
+                                                          context,
+                                                    ).getTotalCostPrice(),
                                                 theme:
                                                     theme,
                                                 backGround:
@@ -703,9 +724,12 @@ class _ProductReportMobileState
                                                 isMoney:
                                                     true,
                                                 text:
-                                                    'Total Amount',
+                                                    'Total Selling Value',
                                                 price:
-                                                    getAmountPrice(),
+                                                    returnData(
+                                                      context:
+                                                          context,
+                                                    ).getTotalSellingPrice(),
                                                 theme:
                                                     theme,
                                                 backGround:
@@ -757,7 +781,7 @@ class _ProductReportMobileState
                                                     FontWeight
                                                         .bold,
                                               ),
-                                              'Items',
+                                              'ITEMS',
                                             ),
                                           ],
                                         ),
@@ -939,44 +963,115 @@ class _ProductReportMobileState
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      8.0,
-                      5,
-                      10,
-                      10,
-                    ),
-                    child: Opacity(
-                      opacity: sortIndex == 2 ? 0 : 1,
-                      child: Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.end,
-                        spacing: 1,
-                        children: [
-                          Material(
-                            type: MaterialType.transparency,
-                            child: InkWell(
-                              onTap: () {
-                                navigate(
-                                  false,
-                                  returnData()
-                                      .productList
-                                      .length,
-                                );
-                              },
-                              child: Container(
-                                padding:
-                                    EdgeInsets.symmetric(
-                                      vertical: 3,
-                                      horizontal: 10,
-                                    ),
-                                decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                        4,
-                                      ),
-                                ),
+                  SizedBox(height: 10),
+                  Opacity(
+                    opacity: sortIndex == 2 ? 0 : 1,
+                    child: Row(
+                      spacing: 5,
+                      mainAxisAlignment:
+                          MainAxisAlignment.end,
+                      children: [
+                        SizedBox(
+                          height: 30,
+                          width: 150,
+                          child: TextField(
+                            focusNode:
+                                returnData().searchNode,
+                            controller: searchController,
+                            onChanged: (value) async {
+                              setState(() {
+                                start = 0;
+                                end =
+                                    returnData()
+                                                .productList
+                                                .length >
+                                            50
+                                        ? 50
+                                        : returnData()
+                                            .productList
+                                            .length;
+                                count = 1;
+                              });
+                            },
+                            style: TextStyle(fontSize: 12),
+                            decoration: InputDecoration(
+                              suffixIcon: InkWell(
+                                onTap: () {
+                                  if (searchController
+                                      .text
+                                      .isNotEmpty) {
+                                    searchController
+                                        .clear();
+                                    setState(() {
+                                      count = 1;
+                                    });
+                                  }
+                                },
                                 child: Icon(
+                                  size: 16,
+                                  Icons.clear,
+                                ),
+                              ),
+                              hintText: 'Search Name',
+                              contentPadding:
+                                  EdgeInsets.symmetric(
+                                    vertical: 5,
+                                    horizontal: 5,
+                                  ),
+                              fillColor:
+                                  Colors.grey.shade200,
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color:
+                                      Colors.grey.shade200,
+                                  width: 2,
+                                ),
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      3,
+                                    ),
+                              ),
+                              focusedBorder:
+                                  OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color:
+                                          Colors
+                                              .grey
+                                              .shade400,
+                                      width: 2,
+                                    ),
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                          3,
+                                        ),
+                                  ),
+                            ),
+                          ),
+                        ),
+                        Opacity(
+                          opacity:
+                              searchController
+                                      .text
+                                      .isNotEmpty
+                                  ? 0
+                                  : 1,
+                          child: Row(
+                            mainAxisAlignment:
+                                MainAxisAlignment.end,
+                            spacing: 0,
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  if (start != 0) {
+                                    navigate(
+                                      false,
+                                      returnData()
+                                          .productList
+                                          .length,
+                                    );
+                                  }
+                                },
+                                icon: Icon(
                                   size: 16,
                                   color:
                                       start == 0
@@ -989,79 +1084,67 @@ class _ProductReportMobileState
                                   Icons.arrow_back_sharp,
                                 ),
                               ),
-                            ),
-                          ),
-                          Row(
-                            spacing: 3,
-                            mainAxisAlignment:
-                                MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
-                                  color:
-                                      Colors.grey.shade700,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                ),
-                                count.toString(),
-                              ),
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                  color: Colors.grey,
-                                ),
-                                '/',
-                              ),
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b3
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                  color: Colors.grey,
-                                ),
-                                "${returnData(context: context).productList.length > 50 ? (returnData(context: context).productList.length / 50).ceil() : 1}",
-                              ),
-                            ],
-                          ),
-                          Material(
-                            type: MaterialType.transparency,
-                            child: InkWell(
-                              onTap: () {
-                                navigate(
-                                  true,
-                                  returnData()
-                                      .productList
-                                      .length,
-                                );
-                              },
-                              child: Container(
-                                padding:
-                                    EdgeInsets.symmetric(
-                                      vertical: 3,
-                                      horizontal: 10,
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .center,
+                                spacing: 3,
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
                                     ),
-                                decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                        4,
-                                      ),
-                                ),
-                                child: Icon(
+                                    count.toString(),
+                                  ),
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                      color: Colors.grey,
+                                    ),
+                                    '/',
+                                  ),
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                      color: Colors.grey,
+                                    ),
+                                    "${returnData(context: context).productList.length > 50 ? (returnData(context: context).productList.length / 50).ceil() : 1}",
+                                  ),
+                                ],
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  if (end !=
+                                      returnData()
+                                          .productList
+                                          .length) {
+                                    navigate(
+                                      true,
+                                      returnData()
+                                          .productList
+                                          .length,
+                                    );
+                                  }
+                                },
+                                icon: Icon(
                                   size: 16,
                                   color:
                                       end ==
@@ -1083,12 +1166,13 @@ class _ProductReportMobileState
                                   Icons.arrow_forward_sharp,
                                 ),
                               ),
-                            ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
+                  SizedBox(height: 10),
                 ],
               ),
               Visibility(

@@ -210,11 +210,11 @@ class StoragePageDesktopState
                     ),
                   ),
                   Visibility(
-                    visible:
-                        returnUserProvider(
-                          context,
-                        ).currentUserMain?.role ==
-                        'Owner',
+                    visible: authorization(
+                      authorized:
+                          Authorizations().viewItemsSummary,
+                      context: context,
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.only(
                         right: 15.0,
@@ -606,32 +606,32 @@ class StoragePageDesktopState
                                 ),
                               );
                             } else {
-                              double getCostPrice() {
-                                double temp = 0;
-                                for (var item
-                                    in returnData(
-                                      context: context,
-                                    ).productList) {
-                                  temp +=
-                                      item.costPrice *
-                                      (item.quantity ?? 1);
-                                }
-                                return temp;
-                              }
+                              // double getCostPrice() {
+                              //   double temp = 0;
+                              //   for (var item
+                              //       in returnData(
+                              //         context: context,
+                              //       ).productList) {
+                              //     temp +=
+                              //         item.costPrice *
+                              //         (item.quantity ?? 1);
+                              //   }
+                              //   return temp;
+                              // }
 
-                              double getAmountPrice() {
-                                double temp = 0;
-                                for (var item
-                                    in returnData(
-                                      context: context,
-                                    ).productList) {
-                                  temp +=
-                                      (item.sellingPrice ??
-                                          0) *
-                                      (item.quantity ?? 1);
-                                }
-                                return temp;
-                              }
+                              // double getAmountPrice() {
+                              //   double temp = 0;
+                              //   for (var item
+                              //       in returnData(
+                              //         context: context,
+                              //       ).productList) {
+                              //     temp +=
+                              //         (item.sellingPrice ??
+                              //             0) *
+                              //         (item.quantity ?? 1);
+                              //   }
+                              //   return temp;
+                              // }
 
                               return SizedBox(
                                 child: Column(
@@ -685,9 +685,12 @@ class StoragePageDesktopState
                                                 isMoney:
                                                     true,
                                                 text:
-                                                    'Total Cost',
+                                                    'Total Cost Value',
                                                 price:
-                                                    getCostPrice(),
+                                                    returnData(
+                                                      context:
+                                                          context,
+                                                    ).getTotalCostPrice(),
                                                 theme:
                                                     theme,
                                                 backGround:
@@ -716,9 +719,12 @@ class StoragePageDesktopState
                                                 isMoney:
                                                     true,
                                                 text:
-                                                    'Total Amount',
+                                                    'Total Selling Value',
                                                 price:
-                                                    getAmountPrice(),
+                                                    returnData(
+                                                      context:
+                                                          context,
+                                                    ).getTotalSellingPrice(),
                                                 theme:
                                                     theme,
                                                 backGround:
@@ -770,7 +776,7 @@ class StoragePageDesktopState
                                                     FontWeight
                                                         .bold,
                                               ),
-                                              'Items',
+                                              'ITEMS',
                                             ),
                                           ],
                                         ),
@@ -988,6 +994,15 @@ class StoragePageDesktopState
                                 }
                                 setState(() {
                                   start = 0;
+                                  end =
+                                      returnData()
+                                                  .productList
+                                                  .length >
+                                              50
+                                          ? 50
+                                          : returnData()
+                                              .productList
+                                              .length;
                                   count = 1;
                                 });
                                 // setState(() {});
@@ -1215,38 +1230,8 @@ class SummaryTableHeadingBar extends StatefulWidget {
 
 class _SummaryTableHeadingBarState
     extends State<SummaryTableHeadingBar> {
-  double getTotal() {
-    double tempTotal = 0;
-    for (var item in widget.product) {
-      tempTotal +=
-          ((item.sellingPrice ?? 0) * (item.quantity ?? 0));
-    }
-    return tempTotal;
-  }
-
-  double getTotalCostPrice() {
-    double tempTotal = 0;
-    for (var item in widget.product) {
-      tempTotal += item.costPrice * (item.quantity ?? 0);
-    }
-    return tempTotal;
-  }
-
-  double getTotalQuantity() {
-    double tempTotal = 0;
-    for (var item in widget.product) {
-      tempTotal += item.quantity ?? 0;
-    }
-    return tempTotal;
-  }
-
-  double getTotalQuantityInStorage() {
-    double tempTotal = 0;
-    for (var item in widget.product) {
-      tempTotal += item.totalQttyInStorage ?? 0;
-    }
-    return tempTotal;
-  }
+  //
+  //
 
   @override
   Widget build(BuildContext context) {
@@ -1298,7 +1283,7 @@ class _SummaryTableHeadingBarState
             ),
           ),
           Expanded(
-            flex: 6,
+            flex: 9,
             child: Container(
               padding: EdgeInsets.symmetric(
                 horizontal: 5,
@@ -1340,7 +1325,7 @@ class _SummaryTableHeadingBarState
             ),
           ),
           Expanded(
-            flex: 5,
+            flex: 7,
             child: Container(
               padding: EdgeInsets.symmetric(
                 horizontal: 5,
@@ -1368,8 +1353,10 @@ class _SummaryTableHeadingBarState
                         ),
                         widget.isHeading
                             ? 'Total Qtty'
-                            : (getTotalQuantityInStorage() +
-                                    getTotalQuantity())
+                            : returnData(context: context)
+                                .getTotalOverallQuantity(
+                                  products: widget.product,
+                                )
                                 .toString(),
                       ),
                     ),
@@ -1379,7 +1366,7 @@ class _SummaryTableHeadingBarState
             ),
           ),
           Expanded(
-            flex: 5,
+            flex: 7,
             child: Container(
               padding: EdgeInsets.symmetric(
                 horizontal: 5,
@@ -1402,7 +1389,10 @@ class _SummaryTableHeadingBarState
                         ),
                         widget.isHeading
                             ? 'Qtty In Storage'
-                            : getTotalQuantityInStorage()
+                            : returnData(context: context)
+                                .getTotalQuantityInStorage(
+                                  products: widget.product,
+                                )
                                 .toString(),
                       ),
                     ),
@@ -1412,7 +1402,7 @@ class _SummaryTableHeadingBarState
             ),
           ),
           Expanded(
-            flex: 5,
+            flex: 7,
             child: Container(
               padding: EdgeInsets.symmetric(
                 horizontal: 5,
@@ -1440,7 +1430,11 @@ class _SummaryTableHeadingBarState
                         ),
                         widget.isHeading
                             ? 'Qtty'
-                            : getTotalQuantity().toString(),
+                            : returnData(context: context)
+                                .getTotalQuantity(
+                                  products: widget.product,
+                                )
+                                .toString(),
                       ),
                     ),
                   ],
@@ -1449,7 +1443,7 @@ class _SummaryTableHeadingBarState
             ),
           ),
           Expanded(
-            flex: 4,
+            flex: 7,
             child: Container(
               padding: EdgeInsets.symmetric(
                 horizontal: 5,
@@ -1472,7 +1466,11 @@ class _SummaryTableHeadingBarState
                         widget.isHeading
                             ? 'Selling-Price'
                             : formatMoneyMid(
-                              amount: getTotal(),
+                              amount: returnData(
+                                context: context,
+                              ).getTotalSellingPrice(
+                                products: widget.product,
+                              ),
                               context: context,
                             ),
                       ),
@@ -1485,7 +1483,7 @@ class _SummaryTableHeadingBarState
           Visibility(
             visible: widget.product.isNotEmpty,
             child: Expanded(
-              flex: 4,
+              flex: 7,
               child: Container(
                 decoration: BoxDecoration(
                   border: Border(
@@ -1514,7 +1512,11 @@ class _SummaryTableHeadingBarState
                           widget.isHeading
                               ? 'Cost-Price'
                               : formatMoneyBig(
-                                amount: getTotalCostPrice(),
+                                amount: returnData(
+                                  context: context,
+                                ).getTotalCostPrice(
+                                  products: widget.product,
+                                ),
                                 context: context,
                               ),
                         ),
@@ -1528,14 +1530,9 @@ class _SummaryTableHeadingBarState
           Visibility(
             visible: widget.product.isNotEmpty,
             child: Expanded(
-              flex: 4,
+              flex: 5,
               child: Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    // right: BorderSide(color: Colors.grey),
-                    // left: BorderSide(color: Colors.grey),
-                  ),
-                ),
+                decoration: BoxDecoration(),
                 padding: EdgeInsets.symmetric(
                   horizontal: 5,
                   vertical: 10,
@@ -1639,7 +1636,7 @@ class _TableRowRecordWidgetState
             ),
           ),
           Expanded(
-            flex: 6,
+            flex: 9,
             child: Container(
               padding: EdgeInsets.all(5),
               decoration: BoxDecoration(
@@ -1670,7 +1667,7 @@ class _TableRowRecordWidgetState
             ),
           ),
           Expanded(
-            flex: 5,
+            flex: 7,
             child: Container(
               decoration: BoxDecoration(
                 border: Border(
@@ -1706,21 +1703,21 @@ class _TableRowRecordWidgetState
             ),
           ),
           Expanded(
-            flex: 5,
+            flex: 7,
             child: QuantityEditWidget(
               isTotal: true,
               product: widget.product,
             ),
           ),
           Expanded(
-            flex: 5,
+            flex: 7,
             child: QuantityEditWidget(
               isTotal: false,
               product: widget.product,
             ),
           ),
           Expanded(
-            flex: 4,
+            flex: 7,
             child: Container(
               padding: EdgeInsets.all(5),
               child: Center(
@@ -1751,7 +1748,7 @@ class _TableRowRecordWidgetState
             ),
           ),
           Expanded(
-            flex: 4,
+            flex: 7,
             child: Container(
               decoration: BoxDecoration(
                 border: Border(
@@ -1786,7 +1783,7 @@ class _TableRowRecordWidgetState
             ),
           ),
           Expanded(
-            flex: 4,
+            flex: 5,
             child: Container(
               decoration: BoxDecoration(
                 border: Border(
@@ -2318,58 +2315,65 @@ class _QuantityEditWidgetState
         ),
       ),
       child: Stack(
-        // alignment: Alignment(1, 0),
         children: [
-          Visibility(
-            visible: isActive,
-            child: TextFormField(
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
-              ],
-              keyboardType: TextInputType.number,
-              focusNode: node,
-              controller: controller,
-              readOnly: !isActive,
-              style: TextStyle(
-                fontSize: theme.mobileTexts.b3.fontSize,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey.shade900,
-              ),
-              decoration: InputDecoration(
-                hintText: '',
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.grey,
-                    width: 1,
+          Builder(
+            builder: (context) {
+              if (isActive) {
+                return TextFormField(
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                  ],
+                  keyboardType: TextInputType.number,
+                  focusNode: node,
+                  controller: controller,
+                  readOnly: !isActive,
+                  style: TextStyle(
+                    fontSize: theme.mobileTexts.b3.fontSize,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade900,
                   ),
-                ),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.all(10),
-                isCollapsed: true,
-              ),
-              onFieldSubmitted: (value) {
-                saveEdit();
-              },
-              onChanged: (value) {
-                if (!widget.isTotal &&
-                    value.isNotEmpty &&
-                    widget.product.isManaged) {
-                  if (((widget.product.totalQttyInStorage ??
-                              0) +
-                          (widget.product.quantity ?? 0)) <
-                      int.parse(
-                        controller.text.replaceAll(
-                          RegExp(r','),
-                          '',
-                        ),
-                      )) {
-                    controller.text =
-                        (widget.product.quantity ?? 0)
-                            .toStringAsFixed(0);
-                  }
-                }
-              },
-            ),
+                  decoration: InputDecoration(
+                    hintText: '',
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.grey,
+                        width: 1,
+                      ),
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.all(10),
+                    isCollapsed: true,
+                  ),
+                  onFieldSubmitted: (value) {
+                    saveEdit();
+                  },
+                  onChanged: (value) {
+                    if (!widget.isTotal &&
+                        value.isNotEmpty &&
+                        widget.product.isManaged) {
+                      if (((widget
+                                      .product
+                                      .totalQttyInStorage ??
+                                  0) +
+                              (widget.product.quantity ??
+                                  0)) <
+                          int.parse(
+                            controller.text.replaceAll(
+                              RegExp(r','),
+                              '',
+                            ),
+                          )) {
+                        controller.text =
+                            (widget.product.quantity ?? 0)
+                                .toStringAsFixed(0);
+                      }
+                    }
+                  },
+                );
+              } else {
+                return Container();
+              }
+            },
           ),
           Row(
             mainAxisAlignment:

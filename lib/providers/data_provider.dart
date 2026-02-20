@@ -1709,6 +1709,80 @@ class DataProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  double getTotalSellingPrice({
+    List<TempProductClass>? products,
+  }) {
+    double tempTotal = 0;
+
+    if (returnShopProvider()
+            .userShop()
+            ?.manageInventoryStorage ==
+        true) {
+      for (var item in (products ?? productList)) {
+        tempTotal +=
+            ((item.sellingPrice ?? 0) *
+                ((item.quantity ?? 0) +
+                    (item.totalQttyInStorage ?? 0)));
+      }
+    } else {
+      for (var item in (products ?? productList)) {
+        tempTotal +=
+            ((item.sellingPrice ?? 0) *
+                (item.quantity ?? 0));
+      }
+    }
+    return tempTotal;
+  }
+
+  double getTotalCostPrice({
+    List<TempProductClass>? products,
+  }) {
+    double tempTotal = 0;
+    if (returnShopProvider()
+            .userShop()
+            ?.manageInventoryStorage ==
+        true) {
+      for (var item in (products ?? productList)) {
+        tempTotal +=
+            item.costPrice *
+            ((item.quantity ?? 0) +
+                (item.totalQttyInStorage ?? 0));
+      }
+    } else {
+      for (var item in (products ?? productList)) {
+        tempTotal += item.costPrice * (item.quantity ?? 0);
+      }
+    }
+    return tempTotal;
+  }
+
+  double getTotalQuantity({
+    List<TempProductClass>? products,
+  }) {
+    double tempTotal = 0;
+    for (var item in (products ?? productList)) {
+      tempTotal += item.quantity ?? 0;
+    }
+    return tempTotal;
+  }
+
+  double getTotalQuantityInStorage({
+    List<TempProductClass>? products,
+  }) {
+    double tempTotal = 0;
+    for (var item in (products ?? productList)) {
+      tempTotal += item.totalQttyInStorage ?? 0;
+    }
+    return tempTotal;
+  }
+
+  double getTotalOverallQuantity({
+    List<TempProductClass>? products,
+  }) {
+    return getTotalQuantity(products: products) +
+        getTotalQuantityInStorage(products: products);
+  }
 }
 
 class ProductBarcodeCounter extends StatefulWidget {

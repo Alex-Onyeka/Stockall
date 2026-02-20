@@ -8,6 +8,7 @@ import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/play_sounds.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/platforms/product_details_desktop.dart';
@@ -25,7 +26,6 @@ class ProductReportDesktopState
     extends State<ProductReportDesktop> {
   int sortIndex = 1;
 
-  // late Future<void> productsFuture;
   Future<void> getProducts() async {
     await RefreshFunctions(
       context,
@@ -74,34 +74,91 @@ class ProductReportDesktopState
         }
       }
     });
-    // print(start);
-    // print(end);
   }
+
+  final searchController = TextEditingController();
+  // final searchNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      returnReportProvider(
-        context,
-        listen: false,
-      ).clearDate(context);
-      returnData().toggleIsLoading(false);
+      returnData().requestFocusSearchNode();
+      returnData().addSearchNodeListener();
     });
-    // productsFuture = getProducts();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      returnData().removeSearchNodeListener();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    var products = returnData(
-      context: context,
-    ).productList.sublist(
-      start,
-      returnData(context: context).productList.length > 50
-          ? end
-          : returnData(context: context).productList.length,
-    );
+    var products =
+        searchController.text.isNotEmpty
+            ? returnData(context: context).productList
+                .where(
+                  (pr) =>
+                      pr.name.toLowerCase().contains(
+                        searchController.text.toLowerCase(),
+                      ) ||
+                      pr.barcode == searchController.text,
+                )
+                .toList()
+                .sublist(
+                  0,
+                  returnData(context: context).productList
+                              .where(
+                                (pr) =>
+                                    pr.name
+                                        .toLowerCase()
+                                        .contains(
+                                          searchController
+                                              .text
+                                              .toLowerCase(),
+                                        ) ||
+                                    pr.barcode ==
+                                        searchController
+                                            .text,
+                              )
+                              .toList()
+                              .length >
+                          100
+                      ? 100
+                      : returnData(context: context)
+                          .productList
+                          .where(
+                            (pr) =>
+                                pr.name
+                                    .toLowerCase()
+                                    .contains(
+                                      searchController.text
+                                          .toLowerCase(),
+                                    ) ||
+                                pr.barcode ==
+                                    searchController.text,
+                          )
+                          .toList()
+                          .length,
+                )
+            : returnData(
+              context: context,
+            ).productList.sublist(
+              start,
+              returnData(
+                        context: context,
+                      ).productList.length >
+                      50
+                  ? end
+                  : returnData(
+                    context: context,
+                  ).productList.length,
+            );
 
     return Stack(
       children: [
@@ -150,11 +207,11 @@ class ProductReportDesktopState
                     ),
                   ),
                   Visibility(
-                    visible:
-                        returnUserProvider(
-                          context,
-                        ).currentUserMain?.role ==
-                        'Owner',
+                    visible: authorization(
+                      authorized:
+                          Authorizations().viewItemsSummary,
+                      context: context,
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.only(
                         right: 15.0,
@@ -529,17 +586,25 @@ class ProductReportDesktopState
                                           ) {
                                             if (products
                                                 .isEmpty) {
-                                              return EmptyWidgetDisplayOnly(
-                                                title:
-                                                    'Empty List',
-                                                subText:
-                                                    'No Item has been recorded yet',
-                                                theme:
-                                                    theme,
-                                                height: 35,
-                                                icon:
-                                                    Icons
-                                                        .clear,
+                                              return Padding(
+                                                padding:
+                                                    const EdgeInsets.only(
+                                                      top:
+                                                          100.0,
+                                                    ),
+                                                child: EmptyWidgetDisplayOnly(
+                                                  title:
+                                                      'Empty List',
+                                                  subText:
+                                                      'No Item has been recorded yet',
+                                                  theme:
+                                                      theme,
+                                                  height:
+                                                      35,
+                                                  icon:
+                                                      Icons
+                                                          .clear,
+                                                ),
                                               );
                                             } else {
                                               return RefreshIndicator(
@@ -652,33 +717,6 @@ class ProductReportDesktopState
                                 ),
                               );
                             } else {
-                              double getCostPrice() {
-                                double temp = 0;
-                                for (var item
-                                    in returnData(
-                                      context: context,
-                                    ).productList) {
-                                  temp +=
-                                      item.costPrice *
-                                      (item.quantity ?? 1);
-                                }
-                                return temp;
-                              }
-
-                              double getAmountPrice() {
-                                double temp = 0;
-                                for (var item
-                                    in returnData(
-                                      context: context,
-                                    ).productList) {
-                                  temp +=
-                                      (item.sellingPrice ??
-                                          0) *
-                                      (item.quantity ?? 1);
-                                }
-                                return temp;
-                              }
-
                               return SizedBox(
                                 child: Column(
                                   children: [
@@ -710,7 +748,7 @@ class ProductReportDesktopState
                                                     FontWeight
                                                         .bold,
                                               ),
-                                              'Finance',
+                                              'FINANCE',
                                             ),
                                           ],
                                         ),
@@ -731,9 +769,12 @@ class ProductReportDesktopState
                                                 isMoney:
                                                     true,
                                                 text:
-                                                    'Total Cost',
+                                                    'Total Cost Value',
                                                 price:
-                                                    getCostPrice(),
+                                                    returnData(
+                                                      context:
+                                                          context,
+                                                    ).getTotalCostPrice(),
                                                 theme:
                                                     theme,
                                                 backGround:
@@ -762,9 +803,12 @@ class ProductReportDesktopState
                                                 isMoney:
                                                     true,
                                                 text:
-                                                    'Total Amount',
+                                                    'Total Selling Value',
                                                 price:
-                                                    getAmountPrice(),
+                                                    returnData(
+                                                      context:
+                                                          context,
+                                                    ).getTotalSellingPrice(),
                                                 theme:
                                                     theme,
                                                 backGround:
@@ -816,7 +860,7 @@ class ProductReportDesktopState
                                                     FontWeight
                                                         .bold,
                                               ),
-                                              'Items',
+                                              'ITEMS',
                                             ),
                                           ],
                                         ),
@@ -996,109 +1040,237 @@ class ProductReportDesktopState
                         ),
                       ),
                     ),
+                    SizedBox(height: 10),
                     Opacity(
                       opacity: sortIndex == 2 ? 0 : 1,
                       child: Row(
+                        spacing: 5,
                         mainAxisAlignment:
                             MainAxisAlignment.end,
-                        spacing: 0,
                         children: [
-                          IconButton(
-                            onPressed: () {
-                              navigate(
-                                false,
-                                returnData()
-                                    .productList
-                                    .length,
-                              );
-                            },
-                            icon: Icon(
-                              size: 20,
-                              color:
-                                  start == 0
-                                      ? Colors.grey.shade400
-                                      : Colors
-                                          .grey
-                                          .shade800,
-                              Icons.arrow_back_sharp,
+                          SizedBox(
+                            height: 30,
+                            width: 200,
+                            child: TextField(
+                              focusNode:
+                                  returnData().searchNode,
+                              controller: searchController,
+                              onChanged: (value) async {
+                                if (value.isNotEmpty) {
+                                  if (value.length > 20) {
+                                    searchController
+                                        .clear();
+                                  } else {
+                                    var allPrs =
+                                        returnData()
+                                            .productList
+                                            .where(
+                                              (pr) =>
+                                                  pr.barcode ==
+                                                  searchController
+                                                      .text,
+                                            )
+                                            .toList();
+                                    if (allPrs.isNotEmpty) {
+                                      await playBeep();
+                                    }
+                                  }
+                                }
+                                setState(() {
+                                  start = 0;
+                                  end =
+                                      returnData()
+                                                  .productList
+                                                  .length >
+                                              50
+                                          ? 50
+                                          : returnData()
+                                              .productList
+                                              .length;
+                                  count = 1;
+                                });
+                                // setState(() {});
+                              },
+                              style: TextStyle(
+                                fontSize: 12,
+                              ),
+                              decoration: InputDecoration(
+                                suffixIcon: InkWell(
+                                  onTap: () {
+                                    if (searchController
+                                        .text
+                                        .isNotEmpty) {
+                                      searchController
+                                          .clear();
+                                      setState(() {
+                                        count = 1;
+                                      });
+                                    }
+                                  },
+                                  child: Icon(
+                                    size: 16,
+                                    Icons.clear,
+                                  ),
+                                ),
+                                hintText:
+                                    'Search Name or Scan',
+                                contentPadding:
+                                    EdgeInsets.symmetric(
+                                      vertical: 5,
+                                      horizontal: 5,
+                                    ),
+                                fillColor:
+                                    Colors.grey.shade200,
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color:
+                                        Colors
+                                            .grey
+                                            .shade200,
+                                    width: 2,
+                                  ),
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        3,
+                                      ),
+                                ),
+                                focusedBorder:
+                                    OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade400,
+                                        width: 2,
+                                      ),
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                            3,
+                                          ),
+                                    ),
+                              ),
                             ),
                           ),
-                          Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment.center,
-                            spacing: 3,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b2
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
+                          Opacity(
+                            opacity:
+                                searchController
+                                        .text
+                                        .isNotEmpty
+                                    ? 0
+                                    : 1,
+                            child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.end,
+                              spacing: 0,
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    if (start != 0) {
+                                      navigate(
+                                        false,
+                                        returnData()
+                                            .productList
+                                            .length,
+                                      );
+                                    }
+                                  },
+                                  icon: Icon(
+                                    size: 20,
+                                    color:
+                                        start == 0
+                                            ? Colors
+                                                .grey
+                                                .shade400
+                                            : Colors
+                                                .grey
+                                                .shade800,
+                                    Icons.arrow_back_sharp,
+                                  ),
                                 ),
-                                count.toString(),
-                              ),
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b2
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                  color: Colors.grey,
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .center,
+                                  spacing: 3,
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b2
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      count.toString(),
+                                    ),
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b2
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                        color: Colors.grey,
+                                      ),
+                                      '/',
+                                    ),
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b2
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                        color: Colors.grey,
+                                      ),
+                                      "${returnData(context: context).productList.length > 50 ? (returnData(context: context).productList.length / 50).ceil() : 1}",
+                                    ),
+                                  ],
                                 ),
-                                '/',
-                              ),
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b2
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                  color: Colors.grey,
+                                IconButton(
+                                  onPressed: () {
+                                    if (end !=
+                                        returnData()
+                                            .productList
+                                            .length) {
+                                      navigate(
+                                        true,
+                                        returnData()
+                                            .productList
+                                            .length,
+                                      );
+                                    }
+                                  },
+                                  icon: Icon(
+                                    size: 20,
+                                    color:
+                                        end ==
+                                                    returnData(
+                                                      context:
+                                                          context,
+                                                    ).productList.length ||
+                                                returnData(
+                                                      context:
+                                                          context,
+                                                    ).productList.length <=
+                                                    50
+                                            ? Colors
+                                                .grey
+                                                .shade400
+                                            : Colors
+                                                .grey
+                                                .shade800,
+                                    Icons
+                                        .arrow_forward_sharp,
+                                  ),
                                 ),
-                                "${returnData(context: context).productList.length > 50 ? (returnData(context: context).productList.length / 50).ceil() : 1}",
-                              ),
-                            ],
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              navigate(
-                                true,
-                                returnData()
-                                    .productList
-                                    .length,
-                              );
-                            },
-                            icon: Icon(
-                              size: 20,
-                              color:
-                                  end ==
-                                              returnData(
-                                                    context:
-                                                        context,
-                                                  )
-                                                  .productList
-                                                  .length ||
-                                          returnData(
-                                                    context:
-                                                        context,
-                                                  )
-                                                  .productList
-                                                  .length <=
-                                              50
-                                      ? Colors.grey.shade400
-                                      : Colors
-                                          .grey
-                                          .shade800,
-                              Icons.arrow_forward_sharp,
+                              ],
                             ),
                           ),
                         ],

@@ -6,6 +6,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
@@ -148,11 +149,11 @@ class _StoragePageMobileState
             context: context,
             title: sortIndex == 1 ? 'Items' : 'Summary',
             widget: Visibility(
-              visible:
-                  returnUserProvider(
-                    context,
-                  ).currentUserMain?.role ==
-                  'Owner',
+              visible: authorization(
+                authorized:
+                    Authorizations().viewItemsSummary,
+                context: context,
+              ),
               child: Padding(
                 padding: const EdgeInsets.only(right: 15.0),
                 child: PopupMenuButton(
@@ -439,33 +440,6 @@ class _StoragePageMobileState
                               ),
                             );
                           } else {
-                            double getCostPrice() {
-                              double temp = 0;
-                              for (var item
-                                  in returnData(
-                                    context: context,
-                                  ).productList) {
-                                temp +=
-                                    item.costPrice *
-                                    (item.quantity ?? 1);
-                              }
-                              return temp;
-                            }
-
-                            double getAmountPrice() {
-                              double temp = 0;
-                              for (var item
-                                  in returnData(
-                                    context: context,
-                                  ).productList) {
-                                temp +=
-                                    (item.sellingPrice ??
-                                        0) *
-                                    (item.quantity ?? 1);
-                              }
-                              return temp;
-                            }
-
                             return SizedBox(
                               child: Column(
                                 children: [
@@ -496,74 +470,92 @@ class _StoragePageMobileState
                                                   FontWeight
                                                       .bold,
                                             ),
-                                            'Finance',
+                                            'FINANCE',
                                           ),
                                         ],
                                       ),
                                       SizedBox(height: 8),
-                                      Row(
+                                      Column(
                                         spacing: 10,
                                         mainAxisAlignment:
                                             MainAxisAlignment
                                                 .center,
                                         children: [
-                                          Expanded(
-                                            child: TabContainer(
-                                              priceTextSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .h3
-                                                      .fontSize,
-                                              isMoney: true,
-                                              text:
-                                                  'Total Cost',
-                                              price:
-                                                  getCostPrice(),
-                                              theme: theme,
-                                              backGround:
-                                                  const Color.fromARGB(
-                                                    11,
-                                                    15,
-                                                    4,
-                                                    114,
-                                                  ),
-                                              border:
-                                                  const Color.fromARGB(
-                                                    32,
-                                                    45,
-                                                    3,
-                                                    255,
-                                                  ),
-                                            ),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: TabContainer(
+                                                  priceTextSize:
+                                                      theme
+                                                          .mobileTexts
+                                                          .h4
+                                                          .fontSize,
+                                                  isMoney:
+                                                      true,
+                                                  text:
+                                                      'Total Cost Value',
+                                                  price:
+                                                      returnData(
+                                                        context:
+                                                            context,
+                                                      ).getTotalCostPrice(),
+                                                  theme:
+                                                      theme,
+                                                  backGround:
+                                                      const Color.fromARGB(
+                                                        11,
+                                                        15,
+                                                        4,
+                                                        114,
+                                                      ),
+                                                  border:
+                                                      const Color.fromARGB(
+                                                        32,
+                                                        45,
+                                                        3,
+                                                        255,
+                                                      ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                          Expanded(
-                                            child: TabContainer(
-                                              priceTextSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .h3
-                                                      .fontSize,
-                                              isMoney: true,
-                                              text:
-                                                  'Total Amount',
-                                              price:
-                                                  getAmountPrice(),
-                                              theme: theme,
-                                              backGround:
-                                                  const Color.fromARGB(
-                                                    18,
-                                                    2,
-                                                    163,
-                                                    31,
-                                                  ),
-                                              border:
-                                                  const Color.fromARGB(
-                                                    63,
-                                                    2,
-                                                    163,
-                                                    31,
-                                                  ),
-                                            ),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: TabContainer(
+                                                  priceTextSize:
+                                                      theme
+                                                          .mobileTexts
+                                                          .h4
+                                                          .fontSize,
+                                                  isMoney:
+                                                      true,
+                                                  text:
+                                                      'Total Sales Value',
+                                                  price:
+                                                      returnData(
+                                                        context:
+                                                            context,
+                                                      ).getTotalSellingPrice(),
+                                                  theme:
+                                                      theme,
+                                                  backGround:
+                                                      const Color.fromARGB(
+                                                        18,
+                                                        2,
+                                                        163,
+                                                        31,
+                                                      ),
+                                                  border:
+                                                      const Color.fromARGB(
+                                                        63,
+                                                        2,
+                                                        163,
+                                                        31,
+                                                      ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),
@@ -597,7 +589,7 @@ class _StoragePageMobileState
                                                   FontWeight
                                                       .bold,
                                             ),
-                                            'Items',
+                                            'ITEMS',
                                           ),
                                         ],
                                       ),
@@ -642,125 +634,137 @@ class _StoragePageMobileState
                                         ],
                                       ),
                                       SizedBox(height: 10),
-                                      Row(
+                                      Column(
                                         spacing: 10,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment
-                                                .center,
                                         children: [
-                                          Expanded(
-                                            child: TabContainer(
-                                              isMoney:
-                                                  false,
-                                              text:
-                                                  'In Stock',
-                                              price:
-                                                  returnData(
-                                                        context:
-                                                            context,
-                                                      )
-                                                      .productList
-                                                      .where(
-                                                        (
-                                                          item,
-                                                        ) =>
-                                                            item.quantity !=
-                                                                null &&
-                                                            item.quantity !=
-                                                                0,
-                                                      )
-                                                      .length
-                                                      .toDouble(),
-                                              theme: theme,
-                                              backGround:
-                                                  const Color.fromARGB(
-                                                    18,
-                                                    2,
-                                                    163,
-                                                    31,
-                                                  ),
-                                              border:
-                                                  const Color.fromARGB(
-                                                    63,
-                                                    2,
-                                                    163,
-                                                    31,
-                                                  ),
-                                            ),
+                                          Row(
+                                            spacing: 10,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .center,
+                                            children: [
+                                              Expanded(
+                                                child: TabContainer(
+                                                  isMoney:
+                                                      false,
+                                                  text:
+                                                      'In Stock',
+                                                  price:
+                                                      returnData(
+                                                            context:
+                                                                context,
+                                                          )
+                                                          .productList
+                                                          .where(
+                                                            (
+                                                              item,
+                                                            ) =>
+                                                                item.quantity !=
+                                                                    null &&
+                                                                item.quantity !=
+                                                                    0,
+                                                          )
+                                                          .length
+                                                          .toDouble(),
+                                                  theme:
+                                                      theme,
+                                                  backGround:
+                                                      const Color.fromARGB(
+                                                        18,
+                                                        2,
+                                                        163,
+                                                        31,
+                                                      ),
+                                                  border:
+                                                      const Color.fromARGB(
+                                                        63,
+                                                        2,
+                                                        163,
+                                                        31,
+                                                      ),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: TabContainer(
+                                                  isMoney:
+                                                      false,
+                                                  text:
+                                                      'Out Of Stock',
+                                                  price:
+                                                      returnData(
+                                                            context:
+                                                                context,
+                                                          )
+                                                          .productList
+                                                          .where(
+                                                            (
+                                                              item,
+                                                            ) =>
+                                                                item.quantity !=
+                                                                    null &&
+                                                                item.quantity ==
+                                                                    0,
+                                                          )
+                                                          .length
+                                                          .toDouble(),
+                                                  theme:
+                                                      theme,
+                                                  backGround:
+                                                      const Color.fromARGB(
+                                                        25,
+                                                        235,
+                                                        150,
+                                                        3,
+                                                      ),
+                                                  border:
+                                                      const Color.fromARGB(
+                                                        74,
+                                                        232,
+                                                        148,
+                                                        3,
+                                                      ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                          Expanded(
-                                            child: TabContainer(
-                                              isMoney:
-                                                  false,
-                                              text:
-                                                  'Out Of Stock',
-                                              price:
-                                                  returnData(
-                                                        context:
-                                                            context,
-                                                      )
-                                                      .productList
-                                                      .where(
-                                                        (
-                                                          item,
-                                                        ) =>
-                                                            item.quantity !=
-                                                                null &&
-                                                            item.quantity ==
-                                                                0,
-                                                      )
-                                                      .length
-                                                      .toDouble(),
-                                              theme: theme,
-                                              backGround:
-                                                  const Color.fromARGB(
-                                                    25,
-                                                    235,
-                                                    150,
-                                                    3,
-                                                  ),
-                                              border:
-                                                  const Color.fromARGB(
-                                                    74,
-                                                    232,
-                                                    148,
-                                                    3,
-                                                  ),
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: TabContainer(
-                                              isMoney:
-                                                  false,
-                                              text:
-                                                  'Un-Managed Items',
-                                              price:
-                                                  returnData(
-                                                        context:
-                                                            context,
-                                                      )
-                                                      .productList
-                                                      .where(
-                                                        (
-                                                          item,
-                                                        ) =>
-                                                            !item.isManaged,
-                                                      )
-                                                      .length
-                                                      .toDouble(),
-                                              theme: theme,
-                                              backGround:
-                                                  const Color.fromARGB(
-                                                    141,
-                                                    245,
-                                                    245,
-                                                    245,
-                                                  ),
-                                              border:
-                                                  Colors
-                                                      .grey
-                                                      .shade300,
-                                            ),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: TabContainer(
+                                                  isMoney:
+                                                      false,
+                                                  text:
+                                                      'Un-Managed Items',
+                                                  price:
+                                                      returnData(
+                                                            context:
+                                                                context,
+                                                          )
+                                                          .productList
+                                                          .where(
+                                                            (
+                                                              item,
+                                                            ) =>
+                                                                !item.isManaged,
+                                                          )
+                                                          .length
+                                                          .toDouble(),
+                                                  theme:
+                                                      theme,
+                                                  backGround:
+                                                      const Color.fromARGB(
+                                                        141,
+                                                        245,
+                                                        245,
+                                                        245,
+                                                      ),
+                                                  border:
+                                                      Colors
+                                                          .grey
+                                                          .shade300,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),
@@ -792,6 +796,15 @@ class _StoragePageMobileState
                             onChanged: (value) async {
                               setState(() {
                                 start = 0;
+                                end =
+                                    returnData()
+                                                .productList
+                                                .length >
+                                            50
+                                        ? 50
+                                        : returnData()
+                                            .productList
+                                            .length;
                                 count = 1;
                               });
                             },
@@ -874,7 +887,7 @@ class _StoragePageMobileState
                                   }
                                 },
                                 icon: Icon(
-                                  size: 20,
+                                  size: 16,
                                   color:
                                       start == 0
                                           ? Colors
@@ -897,7 +910,7 @@ class _StoragePageMobileState
                                       fontSize:
                                           theme
                                               .mobileTexts
-                                              .b2
+                                              .b3
                                               .fontSize,
                                       fontWeight:
                                           FontWeight.bold,
@@ -909,7 +922,7 @@ class _StoragePageMobileState
                                       fontSize:
                                           theme
                                               .mobileTexts
-                                              .b2
+                                              .b3
                                               .fontSize,
                                       fontWeight:
                                           FontWeight.bold,
@@ -922,7 +935,7 @@ class _StoragePageMobileState
                                       fontSize:
                                           theme
                                               .mobileTexts
-                                              .b2
+                                              .b3
                                               .fontSize,
                                       fontWeight:
                                           FontWeight.bold,
@@ -947,7 +960,7 @@ class _StoragePageMobileState
                                   }
                                 },
                                 icon: Icon(
-                                  size: 20,
+                                  size: 16,
                                   color:
                                       end ==
                                                   returnData(
@@ -1010,39 +1023,6 @@ class SummaryTableHeadingBar extends StatefulWidget {
 
 class _SummaryTableHeadingBarState
     extends State<SummaryTableHeadingBar> {
-  double getTotal() {
-    double tempTotal = 0;
-    for (var item in widget.product) {
-      tempTotal +=
-          ((item.sellingPrice ?? 0) * (item.quantity ?? 0));
-    }
-    return tempTotal;
-  }
-
-  double getTotalCostPrice() {
-    double tempTotal = 0;
-    for (var item in widget.product) {
-      tempTotal += item.costPrice * (item.quantity ?? 0);
-    }
-    return tempTotal;
-  }
-
-  double getTotalQuantity() {
-    double tempTotal = 0;
-    for (var item in widget.product) {
-      tempTotal += item.quantity ?? 0;
-    }
-    return tempTotal;
-  }
-
-  double getTotalQuantityInStorage() {
-    double tempTotal = 0;
-    for (var item in widget.product) {
-      tempTotal += item.totalQttyInStorage ?? 0;
-    }
-    return tempTotal;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -1093,7 +1073,7 @@ class _SummaryTableHeadingBarState
             ),
           ),
           Expanded(
-            flex: widget.product.isNotEmpty ? 6 : 4,
+            flex: widget.product.isNotEmpty ? 9 : 4,
             child: Container(
               padding: EdgeInsets.symmetric(
                 horizontal: 5,
@@ -1135,7 +1115,7 @@ class _SummaryTableHeadingBarState
             ),
           ),
           Expanded(
-            flex: 5,
+            flex: 7,
             child: Container(
               padding: EdgeInsets.symmetric(
                 horizontal: 5,
@@ -1163,8 +1143,10 @@ class _SummaryTableHeadingBarState
                         ),
                         widget.isHeading
                             ? 'Total Qtty'
-                            : (getTotalQuantityInStorage() +
-                                    getTotalQuantity())
+                            : returnData(context: context)
+                                .getTotalOverallQuantity(
+                                  products: widget.product,
+                                )
                                 .toString(),
                       ),
                     ),
@@ -1174,7 +1156,7 @@ class _SummaryTableHeadingBarState
             ),
           ),
           Expanded(
-            flex: 5,
+            flex: 7,
             child: Container(
               padding: EdgeInsets.symmetric(
                 horizontal: 5,
@@ -1197,7 +1179,10 @@ class _SummaryTableHeadingBarState
                         ),
                         widget.isHeading
                             ? 'Qtty In Storage'
-                            : getTotalQuantityInStorage()
+                            : returnData(context: context)
+                                .getTotalQuantityInStorage(
+                                  products: widget.product,
+                                )
                                 .toString(),
                       ),
                     ),
@@ -1207,7 +1192,7 @@ class _SummaryTableHeadingBarState
             ),
           ),
           Expanded(
-            flex: 5,
+            flex: 7,
             child: Container(
               padding: EdgeInsets.symmetric(
                 horizontal: 5,
@@ -1235,7 +1220,11 @@ class _SummaryTableHeadingBarState
                         ),
                         widget.isHeading
                             ? 'Qtty'
-                            : getTotalQuantity().toString(),
+                            : returnData(context: context)
+                                .getTotalQuantity(
+                                  products: widget.product,
+                                )
+                                .toString(),
                       ),
                     ),
                   ],
@@ -1246,7 +1235,7 @@ class _SummaryTableHeadingBarState
           Visibility(
             visible: widget.product.isNotEmpty,
             child: Expanded(
-              flex: 4,
+              flex: 7,
               child: Container(
                 padding: EdgeInsets.symmetric(
                   horizontal: 5,
@@ -1269,7 +1258,11 @@ class _SummaryTableHeadingBarState
                           widget.isHeading
                               ? 'Selling-Price'
                               : formatMoneyMid(
-                                amount: getTotal(),
+                                amount: returnData(
+                                  context: context,
+                                ).getTotalSellingPrice(
+                                  products: widget.product,
+                                ),
                                 context: context,
                               ),
                         ),
@@ -1283,7 +1276,7 @@ class _SummaryTableHeadingBarState
           Visibility(
             visible: widget.product.isNotEmpty,
             child: Expanded(
-              flex: 4,
+              flex: 7,
               child: Container(
                 decoration: BoxDecoration(
                   border: Border(
@@ -1312,7 +1305,11 @@ class _SummaryTableHeadingBarState
                           widget.isHeading
                               ? 'Cost-Price'
                               : formatMoneyBig(
-                                amount: getTotalCostPrice(),
+                                amount: returnData(
+                                  context: context,
+                                ).getTotalCostPrice(
+                                  products: widget.product,
+                                ),
                                 context: context,
                               ),
                         ),
@@ -1326,7 +1323,7 @@ class _SummaryTableHeadingBarState
           Visibility(
             visible: widget.product.isNotEmpty,
             child: Expanded(
-              flex: 4,
+              flex: 5,
               child: Container(
                 decoration: BoxDecoration(
                   border: Border(
@@ -1437,7 +1434,7 @@ class _TableRowRecordWidgetState
             ),
           ),
           Expanded(
-            flex: 6,
+            flex: 9,
             child: Container(
               padding: EdgeInsets.all(5),
               decoration: BoxDecoration(
@@ -1468,7 +1465,7 @@ class _TableRowRecordWidgetState
             ),
           ),
           Expanded(
-            flex: 5,
+            flex: 7,
             child: Container(
               decoration: BoxDecoration(
                 border: Border(
@@ -1504,21 +1501,21 @@ class _TableRowRecordWidgetState
             ),
           ),
           Expanded(
-            flex: 5,
+            flex: 7,
             child: QuantityEditWidget(
               isTotal: true,
               product: widget.product,
             ),
           ),
           Expanded(
-            flex: 5,
+            flex: 7,
             child: QuantityEditWidget(
               isTotal: false,
               product: widget.product,
             ),
           ),
           Expanded(
-            flex: 4,
+            flex: 7,
             child: Container(
               padding: EdgeInsets.all(5),
               child: Center(
@@ -1549,7 +1546,7 @@ class _TableRowRecordWidgetState
             ),
           ),
           Expanded(
-            flex: 4,
+            flex: 7,
             child: Container(
               decoration: BoxDecoration(
                 border: Border(
@@ -1584,14 +1581,9 @@ class _TableRowRecordWidgetState
             ),
           ),
           Expanded(
-            flex: 4,
+            flex: 5,
             child: Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  // right: BorderSide(color: Colors.grey),
-                  // left: BorderSide(color: Colors.grey),
-                ),
-              ),
+              decoration: BoxDecoration(),
               padding: EdgeInsets.all(5),
               child: Center(
                 child: Row(
@@ -1599,53 +1591,6 @@ class _TableRowRecordWidgetState
                     IsManagedToggleWidget(
                       product: widget.product,
                     ),
-                    // Flexible(
-                    //   child: Text(
-                    //     style: TextStyle(
-                    //       fontSize:
-                    //           widget
-                    //               .theme
-                    //               .mobileTexts
-                    //               .b3
-                    //               .fontSize,
-                    //       fontWeight: FontWeight.bold,
-                    //       color:
-                    //           getDayDifference(
-                    //                         widget
-                    //                                 .product
-                    //                                 .expiryDate ??
-                    //                             DateTime.now(),
-                    //                       ) <
-                    //                       1 &&
-                    //                   widget
-                    //                           .product
-                    //                           .expiryDate !=
-                    //                       null
-                    //               ? widget
-                    //                   .theme
-                    //                   .lightModeColor
-                    //                   .errorColor200
-                    //               : null,
-                    //     ),
-
-                    //     widget.product.expiryDate != null
-                    //         ? getDayDifference(
-                    //                   widget
-                    //                           .product
-                    //                           .expiryDate ??
-                    //                       DateTime.now(),
-                    //                 ) >=
-                    //                 1
-                    //             ? formatDateTime(
-                    //               widget
-                    //                       .product
-                    //                       .expiryDate ??
-                    //                   DateTime.now(),
-                    //             )
-                    //             : 'Item Expired'
-                    //         : 'Not Set',
-                    //   ),
-                    // ),
                   ],
                 ),
               ),
@@ -2112,56 +2057,63 @@ class _QuantityEditWidgetState
       child: Stack(
         // alignment: Alignment(1, 0),
         children: [
-          Visibility(
-            visible: isActive,
-            child: TextFormField(
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
-              ],
-              keyboardType: TextInputType.number,
-              focusNode: node,
-              controller: controller,
-              readOnly: !isActive,
-              style: TextStyle(
-                fontSize: theme.mobileTexts.b3.fontSize,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey.shade900,
-              ),
-              decoration: InputDecoration(
-                hintText: '',
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Colors.grey,
-                    width: 1,
+          Builder(
+            builder: (context) {
+              if (isActive) {
+                return TextFormField(
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                  ],
+                  keyboardType: TextInputType.number,
+                  focusNode: node,
+                  controller: controller,
+                  readOnly: !isActive,
+                  style: TextStyle(
+                    fontSize: theme.mobileTexts.b3.fontSize,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade900,
                   ),
-                ),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.all(10),
-                isCollapsed: true,
-              ),
-              onFieldSubmitted: (value) {
-                saveEdit();
-              },
-              onChanged: (value) {
-                if (!widget.isTotal &&
-                    value.isNotEmpty &&
-                    widget.product.isManaged) {
-                  if (((widget.product.totalQttyInStorage ??
-                              0) +
-                          (widget.product.quantity ?? 0)) <
-                      int.parse(
-                        controller.text.replaceAll(
-                          RegExp(r','),
-                          '',
-                        ),
-                      )) {
-                    controller.text =
-                        (widget.product.quantity ?? 0)
-                            .toStringAsFixed(0);
-                  }
-                }
-              },
-            ),
+                  decoration: InputDecoration(
+                    hintText: '',
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.grey,
+                        width: 1,
+                      ),
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.all(10),
+                    isCollapsed: true,
+                  ),
+                  onFieldSubmitted: (value) {
+                    saveEdit();
+                  },
+                  onChanged: (value) {
+                    if (!widget.isTotal &&
+                        value.isNotEmpty &&
+                        widget.product.isManaged) {
+                      if (((widget
+                                      .product
+                                      .totalQttyInStorage ??
+                                  0) +
+                              (widget.product.quantity ??
+                                  0)) <
+                          int.parse(
+                            controller.text.replaceAll(
+                              RegExp(r','),
+                              '',
+                            ),
+                          )) {
+                        controller.text =
+                            (widget.product.quantity ?? 0)
+                                .toStringAsFixed(0);
+                      }
+                    }
+                  },
+                );
+              }
+              return Container();
+            },
           ),
           Row(
             mainAxisAlignment:

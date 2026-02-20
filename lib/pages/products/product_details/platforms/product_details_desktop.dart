@@ -2324,7 +2324,7 @@ class TabContainer extends StatelessWidget {
               Text(
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: theme.mobileTexts.b3.fontSize,
+                  fontSize: theme.mobileTexts.b4.fontSize,
                   fontWeight: FontWeight.normal,
                 ),
                 text,
