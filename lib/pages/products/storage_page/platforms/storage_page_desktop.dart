@@ -2347,6 +2347,9 @@ class _QuantityEditWidgetState
                   onFieldSubmitted: (value) {
                     saveEdit();
                   },
+                  onTap: () {
+                    returnData().removeSearchNodeListener();
+                  },
                   onChanged: (value) {
                     if (!widget.isTotal &&
                         value.isNotEmpty &&

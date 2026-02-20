@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
@@ -55,9 +57,22 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Timer? timer;
+
   void removeSearchNodeListener() {
-    searchNode.removeListener(keepNodeFocus);
-    notifyListeners();
+    timer = Timer.periodic(Duration(microseconds: 10), (
+      timer,
+    ) {
+      if (searchNode.hasFocus) {
+        searchNode.removeListener(keepNodeFocus);
+        unFocusSearchNode();
+        print('Search Node has Listners');
+      } else {
+        timer.cancel();
+        print('Search Node Does not have Listners');
+        notifyListeners();
+      }
+    });
   }
 
   void requestFocusSearchNode() {

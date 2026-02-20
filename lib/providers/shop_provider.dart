@@ -52,6 +52,7 @@ class ShopProvider extends ChangeNotifier {
             .select()
             .eq('user_id', AuthService().currentUser!)
             .maybeSingle();
+    shop.manageInventoryStorage = false;
 
     print('Subscription Result: $response');
     if (response == null) {

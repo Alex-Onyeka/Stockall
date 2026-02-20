@@ -647,6 +647,8 @@ class _MakeSalesDesktopState
             cartItem.setTotalPrice,
           );
         }
+        _node.removeListener(keepBarcodeFocused);
+        nameEditNode.requestFocus();
         showDialog(
           context: context,
           builder: (context) {
@@ -657,8 +659,6 @@ class _MakeSalesDesktopState
                           ?.unfocus(),
               child: StatefulBuilder(
                 builder: (context, setState) {
-                  _node.removeListener(keepBarcodeFocused);
-                  nameEditNode.requestFocus();
                   return AlertDialog(
                     insetPadding: EdgeInsets.symmetric(
                       horizontal: 15,
