@@ -15,6 +15,14 @@ import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+// // //
+
+// // // //
+
+// I WANT TO START WORKING ON THE INVOICE
+
+// ///////
+
 class ReceiptsProvider extends ChangeNotifier {
   bool isLoading = false;
   void toggleIsLoading(bool value) {
