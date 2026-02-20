@@ -2320,8 +2320,8 @@ class _QuantityEditWidgetState
       child: Stack(
         // alignment: Alignment(1, 0),
         children: [
-          Opacity(
-            opacity: isActive ? 1 : 0,
+          Visibility(
+            visible: isActive,
             child: TextFormField(
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,
@@ -2409,7 +2409,7 @@ class _QuantityEditWidgetState
                             child: Padding(
                               padding:
                                   const EdgeInsets.symmetric(
-                                    vertical: 8.0,
+                                    vertical: 9.0,
                                     horizontal: 5,
                                   ),
                               child: Icon(
@@ -2457,7 +2457,7 @@ class _QuantityEditWidgetState
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(
-                              8.0,
+                              9.0,
                             ),
                             child: Icon(
                               size: !isActive ? 12 : 15,
@@ -2473,7 +2473,7 @@ class _QuantityEditWidgetState
                   Visibility(
                     visible: isLoading && !errorUpdating,
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(9.0),
                       child: SizedBox(
                         height: 15,
                         width: 15,
@@ -2518,7 +2518,7 @@ class _QuantityEditWidgetState
                         }
                       },
                       child: Padding(
-                        padding: EdgeInsetsGeometry.all(8),
+                        padding: EdgeInsetsGeometry.all(9),
                         child: Icon(
                           size: 18,
                           color: Colors.red,
