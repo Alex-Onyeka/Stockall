@@ -12,9 +12,9 @@ import 'package:stockall/pages/customers/customers_list/customer_list.dart';
 import 'package:stockall/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockall/pages/expenses/expenses_page.dart';
 import 'package:stockall/pages/home/home.dart';
+import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
 import 'package:stockall/pages/report/report_page.dart';
-import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
 import 'package:stockall/pages/settings/settings_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -412,10 +412,7 @@ class _MyDrawerWidgetDesktopMainState
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) {
-                                        return TotalSalesPage(
-                                          turnOff: true,
-                                          isInvoice: true,
-                                        );
+                                        return InvoiceListPage();
                                       },
                                     ),
                                   ).then((_) {
@@ -448,7 +445,6 @@ class _MyDrawerWidgetDesktopMainState
                                   authorized:
                                       Authorizations()
                                           .employeePage,
-                                  context: context,
                                 ),
                                 child: NavListTileDesktopAlt(
                                   itemIndex: 7,

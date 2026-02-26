@@ -31,7 +31,6 @@ class _GeneralReportDesktopState
       listen: false,
     ).loadReceipts(
       returnShopProvider().userShop()!.shopId!,
-      context,
     );
     return tempRece;
   }
@@ -223,7 +222,6 @@ class _GeneralReportDesktopState
                           visible: authorization(
                             authorized:
                                 Authorizations().viewDate,
-                            context: context,
                           ),
                           child: Row(
                             mainAxisAlignment:
@@ -466,7 +464,7 @@ class _GeneralReportDesktopState
                                                                           FontWeight.w700,
                                                                     ),
 
-                                                                    '#${returnReceiptProvider(context).returnOwnReceiptsByDayOrWeek(context, receiptSnapshot.data!).length}',
+                                                                    '#${returnReceiptProvider(context).returnOwnReceiptsByDayOrWeek(receiptSnapshot.data!).length}',
                                                                   );
                                                                 }
                                                               },
@@ -544,12 +542,11 @@ class _GeneralReportDesktopState
                                                                         listen:
                                                                             false,
                                                                       ).getTotalRevenueForSelectedDay(
-                                                                        context,
                                                                         receiptSnapshot.data!,
-                                                                        productRecordSnapShot.connectionState ==
-                                                                                ConnectionState.waiting
-                                                                            ? []
-                                                                            : productRecordSnapShot.data!,
+                                                                        // productRecordSnapShot.connectionState ==
+                                                                        //         ConnectionState.waiting
+                                                                        //     ? []
+                                                                        //     : productRecordSnapShot.data!,
                                                                       );
                                                                       return Text(
                                                                         style: TextStyle(
@@ -852,7 +849,6 @@ class _GeneralReportDesktopState
                                                                     listen:
                                                                         false,
                                                                   ).returnOwnReceiptsByDayOrWeek(
-                                                                    context,
                                                                     receiptSnapshot.data!,
                                                                   );
                                                                   var total = returnReceiptProvider(
@@ -860,12 +856,11 @@ class _GeneralReportDesktopState
                                                                     listen:
                                                                         false,
                                                                   ).getTotalRevenueForSelectedDay(
-                                                                    context,
                                                                     receipts,
-                                                                    productRecordSnapShot.connectionState ==
-                                                                            ConnectionState.waiting
-                                                                        ? []
-                                                                        : productRecordSnapShot.data!,
+                                                                    // productRecordSnapShot.connectionState ==
+                                                                    //         ConnectionState.waiting
+                                                                    //     ? []
+                                                                    //     : productRecordSnapShot.data!,
                                                                   );
 
                                                                   double totalExpenses() {
@@ -963,7 +958,6 @@ class _GeneralReportDesktopState
                                                                         listen:
                                                                             false,
                                                                       ).returnOwnReceiptsByDayOrWeek(
-                                                                        context,
                                                                         receiptSnapshot.data!,
                                                                       );
                                                                       var total = returnReceiptProvider(
@@ -971,12 +965,11 @@ class _GeneralReportDesktopState
                                                                         listen:
                                                                             false,
                                                                       ).getTotalRevenueForSelectedDay(
-                                                                        context,
                                                                         receipts,
-                                                                        productRecordSnapShot.connectionState ==
-                                                                                ConnectionState.waiting
-                                                                            ? []
-                                                                            : productRecordSnapShot.data!,
+                                                                        // productRecordSnapShot.connectionState ==
+                                                                        //         ConnectionState.waiting
+                                                                        //     ? []
+                                                                        //     : productRecordSnapShot.data!,
                                                                       );
 
                                                                       double totalExpenses() {
@@ -1038,776 +1031,776 @@ class _GeneralReportDesktopState
                                                   ),
                                                 ],
                                               ),
-                                              Divider(
-                                                color:
-                                                    Colors
-                                                        .grey
-                                                        .shade500,
-                                                height: 30,
-                                              ),
-                                              SizedBox(
-                                                height: 10,
-                                              ),
-
-                                              Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment
-                                                        .start,
-                                                children: [
-                                                  Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          theme.mobileTexts.b1.fontSize,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                    'Standard Item Sales Profit',
-                                                  ),
-                                                  Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          theme.mobileTexts.b4.fontSize,
-                                                    ),
-                                                    '(Items with both Cost Price and Selling Price)',
-                                                  ),
-                                                ],
-                                              ),
+                                              // Divider(
+                                              //   color:
+                                              //       Colors
+                                              //           .grey
+                                              //           .shade500,
+                                              //   height: 30,
+                                              // ),
                                               // SizedBox(
+                                              //   height: 10,
+                                              // ),
+
+                                              // Column(
+                                              //   crossAxisAlignment:
+                                              //       CrossAxisAlignment
+                                              //           .start,
+                                              //   children: [
+                                              //     Text(
+                                              //       style: TextStyle(
+                                              //         fontSize:
+                                              //             theme.mobileTexts.b1.fontSize,
+                                              //         fontWeight:
+                                              //             FontWeight.bold,
+                                              //       ),
+                                              //       'Standard Item Sales Profit',
+                                              //     ),
+                                              //     Text(
+                                              //       style: TextStyle(
+                                              //         fontSize:
+                                              //             theme.mobileTexts.b4.fontSize,
+                                              //       ),
+                                              //       '(Items with both Cost Price and Selling Price)',
+                                              //     ),
+                                              //   ],
+                                              // ),
+                                              // // SizedBox(
+                                              // //   height: 20,
+                                              // // ),
+                                              // Divider(
+                                              //   color:
+                                              //       Colors
+                                              //           .grey
+                                              //           .shade300,
                                               //   height: 20,
                                               // ),
-                                              Divider(
-                                                color:
-                                                    Colors
-                                                        .grey
-                                                        .shade300,
-                                                height: 20,
-                                              ),
 
-                                              Text(
-                                                style: TextStyle(
-                                                  fontWeight:
-                                                      FontWeight
-                                                          .bold,
-                                                  color:
-                                                      theme
-                                                          .lightModeColor
-                                                          .secColor200,
-                                                  fontSize:
-                                                      theme
-                                                          .mobileTexts
-                                                          .b3
-                                                          .fontSize,
-                                                ),
-                                                'Gross Profit/Loss',
-                                              ),
-                                              Divider(
-                                                height: 10,
-                                                color:
-                                                    Colors
-                                                        .grey
-                                                        .shade300,
-                                              ),
-                                              Column(
-                                                children: [
-                                                  Row(
-                                                    spacing:
-                                                        10,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment.start,
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.spaceBetween,
-                                                    children: [
-                                                      Expanded(
-                                                        flex:
-                                                            6,
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment.start,
-                                                          children: [
-                                                            Text(
-                                                              style: TextStyle(
-                                                                fontSize:
-                                                                    theme.mobileTexts.b3.fontSize,
-                                                                fontWeight:
-                                                                    FontWeight.normal,
-                                                              ),
-                                                              '(Total Revenue - Total Cost Price)',
-                                                            ),
-                                                            Builder(
-                                                              builder: (
-                                                                context,
-                                                              ) {
-                                                                if (receiptSnapshot.connectionState ==
-                                                                    ConnectionState.waiting) {
-                                                                  return Text(
-                                                                    style: TextStyle(
-                                                                      fontSize:
-                                                                          theme.mobileTexts.b3.fontSize,
-                                                                      color:
-                                                                          Colors.grey.shade700,
-                                                                      fontWeight:
-                                                                          FontWeight.w700,
-                                                                    ),
-                                                                    '${currencySymbol(context: context)} 0.0 - ${currencySymbol(context: context)} 0.0',
-                                                                  );
-                                                                } else if (productRecordSnapShot.hasError) {
-                                                                  return Text(
-                                                                    style: TextStyle(
-                                                                      fontSize:
-                                                                          theme.mobileTexts.b3.fontSize,
-                                                                      color:
-                                                                          Colors.grey.shade700,
-                                                                      fontWeight:
-                                                                          FontWeight.w700,
-                                                                    ),
-                                                                    '${currencySymbol(context: context)} 0.0 - ${currencySymbol(context: context)} 0.0',
-                                                                  );
-                                                                } else {
-                                                                  var receipts = returnReceiptProvider(
-                                                                    context,
-                                                                    listen:
-                                                                        false,
-                                                                  ).returnOwnReceiptsByDayOrWeek(
-                                                                    context,
-                                                                    receiptSnapshot.data!,
-                                                                  );
+                                              // Text(
+                                              //   style: TextStyle(
+                                              //     fontWeight:
+                                              //         FontWeight
+                                              //             .bold,
+                                              //     color:
+                                              //         theme
+                                              //             .lightModeColor
+                                              //             .secColor200,
+                                              //     fontSize:
+                                              //         theme
+                                              //             .mobileTexts
+                                              //             .b3
+                                              //             .fontSize,
+                                              //   ),
+                                              //   'Gross Profit/Loss',
+                                              // ),
+                                              // Divider(
+                                              //   height: 10,
+                                              //   color:
+                                              //       Colors
+                                              //           .grey
+                                              //           .shade300,
+                                              // ),
+                                              // Column(
+                                              //   children: [
+                                              //     Row(
+                                              //       spacing:
+                                              //           10,
+                                              //       crossAxisAlignment:
+                                              //           CrossAxisAlignment.start,
+                                              //       mainAxisAlignment:
+                                              //           MainAxisAlignment.spaceBetween,
+                                              //       children: [
+                                              //         Expanded(
+                                              //           flex:
+                                              //               6,
+                                              //           child: Column(
+                                              //             crossAxisAlignment:
+                                              //                 CrossAxisAlignment.start,
+                                              //             children: [
+                                              //               Text(
+                                              //                 style: TextStyle(
+                                              //                   fontSize:
+                                              //                       theme.mobileTexts.b3.fontSize,
+                                              //                   fontWeight:
+                                              //                       FontWeight.normal,
+                                              //                 ),
+                                              //                 '(Total Revenue - Total Cost Price)',
+                                              //               ),
+                                              //               Builder(
+                                              //                 builder: (
+                                              //                   context,
+                                              //                 ) {
+                                              //                   if (receiptSnapshot.connectionState ==
+                                              //                       ConnectionState.waiting) {
+                                              //                     return Text(
+                                              //                       style: TextStyle(
+                                              //                         fontSize:
+                                              //                             theme.mobileTexts.b3.fontSize,
+                                              //                         color:
+                                              //                             Colors.grey.shade700,
+                                              //                         fontWeight:
+                                              //                             FontWeight.w700,
+                                              //                       ),
+                                              //                       '${currencySymbol(context: context)} 0.0 - ${currencySymbol(context: context)} 0.0',
+                                              //                     );
+                                              //                   } else if (productRecordSnapShot.hasError) {
+                                              //                     return Text(
+                                              //                       style: TextStyle(
+                                              //                         fontSize:
+                                              //                             theme.mobileTexts.b3.fontSize,
+                                              //                         color:
+                                              //                             Colors.grey.shade700,
+                                              //                         fontWeight:
+                                              //                             FontWeight.w700,
+                                              //                       ),
+                                              //                       '${currencySymbol(context: context)} 0.0 - ${currencySymbol(context: context)} 0.0',
+                                              //                     );
+                                              //                   } else {
+                                              //                     var receipts = returnReceiptProvider(
+                                              //                       context,
+                                              //                       listen:
+                                              //                           false,
+                                              //                     ).returnOwnReceiptsByDayOrWeek(
+                                              //                       context,
+                                              //                       receiptSnapshot.data!,
+                                              //                     );
 
-                                                                  if (productRecordSnapShot.connectionState ==
-                                                                      ConnectionState.waiting) {
-                                                                    return Text(
-                                                                      style: TextStyle(
-                                                                        fontSize:
-                                                                            theme.mobileTexts.b3.fontSize,
-                                                                        color:
-                                                                            Colors.grey.shade700,
-                                                                        fontWeight:
-                                                                            FontWeight.w700,
-                                                                      ),
-                                                                      '${currencySymbol(context: context)} 0.0 - ${currencySymbol(context: context)} 0.0',
-                                                                    );
-                                                                  } else if (productRecordSnapShot.hasError) {
-                                                                    return Text(
-                                                                      style: TextStyle(
-                                                                        fontSize:
-                                                                            theme.mobileTexts.b3.fontSize,
-                                                                        color:
-                                                                            Colors.grey.shade700,
-                                                                        fontWeight:
-                                                                            FontWeight.w700,
-                                                                      ),
-                                                                      '${currencySymbol(context: context)} 0.0 - ${currencySymbol(context: context)} 0.0',
-                                                                    );
-                                                                  } else {
-                                                                    var total = returnReceiptProvider(
-                                                                      context,
-                                                                      listen:
-                                                                          false,
-                                                                    ).getTotalRevenueForSelectedDay(
-                                                                      context,
-                                                                      receipts,
-                                                                      productRecordSnapShot.connectionState ==
-                                                                              ConnectionState.waiting
-                                                                          ? []
-                                                                          : productRecordSnapShot.data!
-                                                                              .where(
-                                                                                (
-                                                                                  record,
-                                                                                ) =>
-                                                                                    record.costPrice !=
-                                                                                    0,
-                                                                              )
-                                                                              .toList(),
-                                                                    );
+                                              //                     if (productRecordSnapShot.connectionState ==
+                                              //                         ConnectionState.waiting) {
+                                              //                       return Text(
+                                              //                         style: TextStyle(
+                                              //                           fontSize:
+                                              //                               theme.mobileTexts.b3.fontSize,
+                                              //                           color:
+                                              //                               Colors.grey.shade700,
+                                              //                           fontWeight:
+                                              //                               FontWeight.w700,
+                                              //                         ),
+                                              //                         '${currencySymbol(context: context)} 0.0 - ${currencySymbol(context: context)} 0.0',
+                                              //                       );
+                                              //                     } else if (productRecordSnapShot.hasError) {
+                                              //                       return Text(
+                                              //                         style: TextStyle(
+                                              //                           fontSize:
+                                              //                               theme.mobileTexts.b3.fontSize,
+                                              //                           color:
+                                              //                               Colors.grey.shade700,
+                                              //                           fontWeight:
+                                              //                               FontWeight.w700,
+                                              //                         ),
+                                              //                         '${currencySymbol(context: context)} 0.0 - ${currencySymbol(context: context)} 0.0',
+                                              //                       );
+                                              //                     } else {
+                                              //                       var total = returnReceiptProvider(
+                                              //                         context,
+                                              //                         listen:
+                                              //                             false,
+                                              //                       ).getTotalRevenueForSelectedDay(
+                                              //                         context,
+                                              //                         receipts,
+                                              //                         // productRecordSnapShot.connectionState ==
+                                              //                         //         ConnectionState.waiting
+                                              //                         //     ? []
+                                              //                         //     : productRecordSnapShot.data!
+                                              //                         //         .where(
+                                              //                         //           (
+                                              //                         //             record,
+                                              //                         //           ) =>
+                                              //                         //               record.costPrice !=
+                                              //                         //               0,
+                                              //                         //         )
+                                              //                         //         .toList(),
+                                              //                       );
 
-                                                                    var totalCostPrice = returnReceiptProvider(
-                                                                      context,
-                                                                      listen:
-                                                                          false,
-                                                                    ).getTotalCostPriceForSelectedDay(
-                                                                      context,
-                                                                      receipts,
-                                                                      productRecordSnapShot.connectionState ==
-                                                                              ConnectionState.waiting
-                                                                          ? []
-                                                                          : productRecordSnapShot.data!
-                                                                              .where(
-                                                                                (
-                                                                                  record,
-                                                                                ) =>
-                                                                                    record.costPrice !=
-                                                                                    0,
-                                                                              )
-                                                                              .toList(),
-                                                                    );
-                                                                    return Text(
-                                                                      style: TextStyle(
-                                                                        fontSize:
-                                                                            theme.mobileTexts.b3.fontSize,
-                                                                        color:
-                                                                            Colors.grey.shade700,
-                                                                        fontWeight:
-                                                                            FontWeight.w700,
-                                                                      ),
-                                                                      '${formatMoneyMid(amount: total, context: context)} - ${formatMoneyMid(amount: totalCostPrice, context: context)}',
-                                                                    );
-                                                                  }
-                                                                }
-                                                              },
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      Expanded(
-                                                        flex:
-                                                            3,
-                                                        child: Column(
-                                                          spacing:
-                                                              10,
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment.start,
-                                                          children: [
-                                                            Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment.start,
-                                                              children: [
-                                                                Text(
-                                                                  style: TextStyle(
-                                                                    fontSize:
-                                                                        theme.mobileTexts.b3.fontSize,
-                                                                    fontWeight:
-                                                                        FontWeight.normal,
-                                                                  ),
-                                                                  'Total Amount:',
-                                                                ),
+                                              //                       var totalCostPrice = returnReceiptProvider(
+                                              //                         context,
+                                              //                         listen:
+                                              //                             false,
+                                              //                       ).getTotalCostPriceForSelectedDay(
+                                              //                         context,
+                                              //                         receipts,
+                                              //                         productRecordSnapShot.connectionState ==
+                                              //                                 ConnectionState.waiting
+                                              //                             ? []
+                                              //                             : productRecordSnapShot.data!
+                                              //                                 .where(
+                                              //                                   (
+                                              //                                     record,
+                                              //                                   ) =>
+                                              //                                       record.costPrice !=
+                                              //                                       0,
+                                              //                                 )
+                                              //                                 .toList(),
+                                              //                       );
+                                              //                       return Text(
+                                              //                         style: TextStyle(
+                                              //                           fontSize:
+                                              //                               theme.mobileTexts.b3.fontSize,
+                                              //                           color:
+                                              //                               Colors.grey.shade700,
+                                              //                           fontWeight:
+                                              //                               FontWeight.w700,
+                                              //                         ),
+                                              //                         '${formatMoneyMid(amount: total, context: context)} - ${formatMoneyMid(amount: totalCostPrice, context: context)}',
+                                              //                       );
+                                              //                     }
+                                              //                   }
+                                              //                 },
+                                              //               ),
+                                              //             ],
+                                              //           ),
+                                              //         ),
+                                              //         Expanded(
+                                              //           flex:
+                                              //               3,
+                                              //           child: Column(
+                                              //             spacing:
+                                              //                 10,
+                                              //             crossAxisAlignment:
+                                              //                 CrossAxisAlignment.start,
+                                              //             children: [
+                                              //               Column(
+                                              //                 crossAxisAlignment:
+                                              //                     CrossAxisAlignment.start,
+                                              //                 children: [
+                                              //                   Text(
+                                              //                     style: TextStyle(
+                                              //                       fontSize:
+                                              //                           theme.mobileTexts.b3.fontSize,
+                                              //                       fontWeight:
+                                              //                           FontWeight.normal,
+                                              //                     ),
+                                              //                     'Total Amount:',
+                                              //                   ),
 
-                                                                Builder(
-                                                                  builder: (
-                                                                    context,
-                                                                  ) {
-                                                                    if (receiptSnapshot.connectionState ==
-                                                                        ConnectionState.waiting) {
-                                                                      return Text(
-                                                                        style: TextStyle(
-                                                                          fontSize:
-                                                                              theme.mobileTexts.b3.fontSize,
-                                                                          fontWeight:
-                                                                              FontWeight.bold,
-                                                                          color: const Color.fromARGB(
-                                                                            255,
-                                                                            45,
-                                                                            137,
-                                                                            48,
-                                                                          ),
-                                                                        ),
-                                                                        '${currencySymbol(context: context)} 0.0',
-                                                                      );
-                                                                    } else if (productRecordSnapShot.hasError) {
-                                                                      return Text(
-                                                                        style: TextStyle(
-                                                                          fontSize:
-                                                                              theme.mobileTexts.b3.fontSize,
-                                                                          fontWeight:
-                                                                              FontWeight.bold,
-                                                                          color: const Color.fromARGB(
-                                                                            255,
-                                                                            45,
-                                                                            137,
-                                                                            48,
-                                                                          ),
-                                                                        ),
-                                                                        '${currencySymbol(context: context)} 0.0',
-                                                                      );
-                                                                    } else {
-                                                                      var receipts = returnReceiptProvider(
-                                                                        context,
-                                                                        listen:
-                                                                            false,
-                                                                      ).returnOwnReceiptsByDayOrWeek(
-                                                                        context,
-                                                                        receiptSnapshot.data!,
-                                                                      );
-                                                                      if (productRecordSnapShot.connectionState ==
-                                                                          ConnectionState.waiting) {
-                                                                        return Text(
-                                                                          style: TextStyle(
-                                                                            fontSize:
-                                                                                theme.mobileTexts.b3.fontSize,
-                                                                            fontWeight:
-                                                                                FontWeight.bold,
-                                                                            color: const Color.fromARGB(
-                                                                              255,
-                                                                              45,
-                                                                              137,
-                                                                              48,
-                                                                            ),
-                                                                          ),
-                                                                          '${currencySymbol(context: context)} 0.0',
-                                                                        );
-                                                                      } else if (productRecordSnapShot.hasError) {
-                                                                        return Text(
-                                                                          style: TextStyle(
-                                                                            fontSize:
-                                                                                theme.mobileTexts.b3.fontSize,
-                                                                            fontWeight:
-                                                                                FontWeight.bold,
-                                                                            color: const Color.fromARGB(
-                                                                              255,
-                                                                              45,
-                                                                              137,
-                                                                              48,
-                                                                            ),
-                                                                          ),
-                                                                          '${currencySymbol(context: context)} 0.0',
-                                                                        );
-                                                                      } else {
-                                                                        var total = returnReceiptProvider(
-                                                                          context,
-                                                                          listen:
-                                                                              false,
-                                                                        ).getTotalRevenueForSelectedDay(
-                                                                          context,
-                                                                          receipts,
-                                                                          productRecordSnapShot.connectionState ==
-                                                                                  ConnectionState.waiting
-                                                                              ? []
-                                                                              : productRecordSnapShot.data!
-                                                                                  .where(
-                                                                                    (
-                                                                                      record,
-                                                                                    ) =>
-                                                                                        record.costPrice !=
-                                                                                        0,
-                                                                                  )
-                                                                                  .toList(),
-                                                                        );
+                                              //                   Builder(
+                                              //                     builder: (
+                                              //                       context,
+                                              //                     ) {
+                                              //                       if (receiptSnapshot.connectionState ==
+                                              //                           ConnectionState.waiting) {
+                                              //                         return Text(
+                                              //                           style: TextStyle(
+                                              //                             fontSize:
+                                              //                                 theme.mobileTexts.b3.fontSize,
+                                              //                             fontWeight:
+                                              //                                 FontWeight.bold,
+                                              //                             color: const Color.fromARGB(
+                                              //                               255,
+                                              //                               45,
+                                              //                               137,
+                                              //                               48,
+                                              //                             ),
+                                              //                           ),
+                                              //                           '${currencySymbol(context: context)} 0.0',
+                                              //                         );
+                                              //                       } else if (productRecordSnapShot.hasError) {
+                                              //                         return Text(
+                                              //                           style: TextStyle(
+                                              //                             fontSize:
+                                              //                                 theme.mobileTexts.b3.fontSize,
+                                              //                             fontWeight:
+                                              //                                 FontWeight.bold,
+                                              //                             color: const Color.fromARGB(
+                                              //                               255,
+                                              //                               45,
+                                              //                               137,
+                                              //                               48,
+                                              //                             ),
+                                              //                           ),
+                                              //                           '${currencySymbol(context: context)} 0.0',
+                                              //                         );
+                                              //                       } else {
+                                              //                         var receipts = returnReceiptProvider(
+                                              //                           context,
+                                              //                           listen:
+                                              //                               false,
+                                              //                         ).returnOwnReceiptsByDayOrWeek(
+                                              //                           context,
+                                              //                           receiptSnapshot.data!,
+                                              //                         );
+                                              //                         if (productRecordSnapShot.connectionState ==
+                                              //                             ConnectionState.waiting) {
+                                              //                           return Text(
+                                              //                             style: TextStyle(
+                                              //                               fontSize:
+                                              //                                   theme.mobileTexts.b3.fontSize,
+                                              //                               fontWeight:
+                                              //                                   FontWeight.bold,
+                                              //                               color: const Color.fromARGB(
+                                              //                                 255,
+                                              //                                 45,
+                                              //                                 137,
+                                              //                                 48,
+                                              //                               ),
+                                              //                             ),
+                                              //                             '${currencySymbol(context: context)} 0.0',
+                                              //                           );
+                                              //                         } else if (productRecordSnapShot.hasError) {
+                                              //                           return Text(
+                                              //                             style: TextStyle(
+                                              //                               fontSize:
+                                              //                                   theme.mobileTexts.b3.fontSize,
+                                              //                               fontWeight:
+                                              //                                   FontWeight.bold,
+                                              //                               color: const Color.fromARGB(
+                                              //                                 255,
+                                              //                                 45,
+                                              //                                 137,
+                                              //                                 48,
+                                              //                               ),
+                                              //                             ),
+                                              //                             '${currencySymbol(context: context)} 0.0',
+                                              //                           );
+                                              //                         } else {
+                                              //                           var total = returnReceiptProvider(
+                                              //                             context,
+                                              //                             listen:
+                                              //                                 false,
+                                              //                           ).getTotalRevenueForSelectedDay(
+                                              //                             context,
+                                              //                             receipts,
+                                              //                             // productRecordSnapShot.connectionState ==
+                                              //                             //         ConnectionState.waiting
+                                              //                             //     ? []
+                                              //                             //     : productRecordSnapShot.data!
+                                              //                             //         .where(
+                                              //                             //           (
+                                              //                             //             record,
+                                              //                             //           ) =>
+                                              //                             //               record.costPrice !=
+                                              //                             //               0,
+                                              //                             //         )
+                                              //                             //         .toList(),
+                                              //                           );
 
-                                                                        var totalCostPrice = returnReceiptProvider(
-                                                                          context,
-                                                                          listen:
-                                                                              false,
-                                                                        ).getTotalCostPriceForSelectedDay(
-                                                                          context,
-                                                                          receipts,
-                                                                          productRecordSnapShot.connectionState ==
-                                                                                  ConnectionState.waiting
-                                                                              ? []
-                                                                              : productRecordSnapShot.data!
-                                                                                  .where(
-                                                                                    (
-                                                                                      record,
-                                                                                    ) =>
-                                                                                        record.costPrice !=
-                                                                                        0,
-                                                                                  )
-                                                                                  .toList(),
-                                                                        );
+                                              //                           var totalCostPrice = returnReceiptProvider(
+                                              //                             context,
+                                              //                             listen:
+                                              //                                 false,
+                                              //                           ).getTotalCostPriceForSelectedDay(
+                                              //                             context,
+                                              //                             receipts,
+                                              //                             productRecordSnapShot.connectionState ==
+                                              //                                     ConnectionState.waiting
+                                              //                                 ? []
+                                              //                                 : productRecordSnapShot.data!
+                                              //                                     .where(
+                                              //                                       (
+                                              //                                         record,
+                                              //                                       ) =>
+                                              //                                           record.costPrice !=
+                                              //                                           0,
+                                              //                                     )
+                                              //                                     .toList(),
+                                              //                           );
 
-                                                                        return Text(
-                                                                          style: TextStyle(
-                                                                            fontSize:
-                                                                                theme.mobileTexts.b3.fontSize,
-                                                                            fontWeight:
-                                                                                FontWeight.bold,
-                                                                            color:
-                                                                                (total -
-                                                                                            totalCostPrice)
-                                                                                        .isNegative
-                                                                                    ? Colors.redAccent
-                                                                                    : total -
-                                                                                            totalCostPrice ==
-                                                                                        0
-                                                                                    ? Colors.grey
-                                                                                    : const Color.fromARGB(
-                                                                                      255,
-                                                                                      45,
-                                                                                      137,
-                                                                                      48,
-                                                                                    ),
-                                                                          ),
-                                                                          formatMoneyMid(
-                                                                            amount:
-                                                                                total -
-                                                                                totalCostPrice,
-                                                                            context:
-                                                                                context,
-                                                                          ),
-                                                                        );
-                                                                      }
-                                                                    }
-                                                                  },
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                              Divider(
-                                                color:
-                                                    Colors
-                                                        .grey
-                                                        .shade300,
-                                                height: 30,
-                                              ),
-                                              Text(
-                                                style: TextStyle(
-                                                  fontWeight:
-                                                      FontWeight
-                                                          .bold,
-                                                  color:
-                                                      theme
-                                                          .lightModeColor
-                                                          .secColor200,
-                                                  fontSize:
-                                                      theme
-                                                          .mobileTexts
-                                                          .b3
-                                                          .fontSize,
-                                                ),
-                                                'Net Profit/Loss',
-                                              ),
-                                              Divider(
-                                                height: 10,
-                                                color:
-                                                    Colors
-                                                        .grey
-                                                        .shade300,
-                                              ),
-                                              Column(
-                                                children: [
-                                                  Row(
-                                                    spacing:
-                                                        10,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment.start,
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.spaceBetween,
-                                                    children: [
-                                                      Expanded(
-                                                        flex:
-                                                            6,
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment.start,
-                                                          children: [
-                                                            Text(
-                                                              style: TextStyle(
-                                                                fontSize:
-                                                                    theme.mobileTexts.b3.fontSize,
-                                                                fontWeight:
-                                                                    FontWeight.normal,
-                                                              ),
-                                                              '(Gross Profit - Expenses)',
-                                                            ),
-                                                            Builder(
-                                                              builder: (
-                                                                context,
-                                                              ) {
-                                                                if (receiptSnapshot.connectionState ==
-                                                                        ConnectionState.waiting ||
-                                                                    expensesSnapshot.connectionState ==
-                                                                        ConnectionState.waiting ||
-                                                                    productRecordSnapShot.connectionState ==
-                                                                        ConnectionState.waiting) {
-                                                                  return Text(
-                                                                    style: TextStyle(
-                                                                      fontSize:
-                                                                          theme.mobileTexts.b3.fontSize,
-                                                                      color:
-                                                                          Colors.grey.shade700,
-                                                                      fontWeight:
-                                                                          FontWeight.w700,
-                                                                    ),
-                                                                    '${currencySymbol(context: context)} 0.0 - ${currencySymbol(context: context)} 0.0',
-                                                                  );
-                                                                } else if (productRecordSnapShot.hasError ||
-                                                                    expensesSnapshot.hasError ||
-                                                                    productRecordSnapShot.hasError) {
-                                                                  return Text(
-                                                                    style: TextStyle(
-                                                                      fontSize:
-                                                                          theme.mobileTexts.b3.fontSize,
-                                                                      color:
-                                                                          Colors.grey.shade700,
-                                                                      fontWeight:
-                                                                          FontWeight.w700,
-                                                                    ),
-                                                                    '${currencySymbol(context: context)} 0.0 - ${currencySymbol(context: context)} 0.0',
-                                                                  );
-                                                                } else {
-                                                                  var receipts = returnReceiptProvider(
-                                                                    context,
-                                                                    listen:
-                                                                        false,
-                                                                  ).returnOwnReceiptsByDayOrWeek(
-                                                                    context,
-                                                                    receiptSnapshot.data!,
-                                                                  );
+                                              //                           return Text(
+                                              //                             style: TextStyle(
+                                              //                               fontSize:
+                                              //                                   theme.mobileTexts.b3.fontSize,
+                                              //                               fontWeight:
+                                              //                                   FontWeight.bold,
+                                              //                               color:
+                                              //                                   (total -
+                                              //                                               totalCostPrice)
+                                              //                                           .isNegative
+                                              //                                       ? Colors.redAccent
+                                              //                                       : total -
+                                              //                                               totalCostPrice ==
+                                              //                                           0
+                                              //                                       ? Colors.grey
+                                              //                                       : const Color.fromARGB(
+                                              //                                         255,
+                                              //                                         45,
+                                              //                                         137,
+                                              //                                         48,
+                                              //                                       ),
+                                              //                             ),
+                                              //                             formatMoneyMid(
+                                              //                               amount:
+                                              //                                   total -
+                                              //                                   totalCostPrice,
+                                              //                               context:
+                                              //                                   context,
+                                              //                             ),
+                                              //                           );
+                                              //                         }
+                                              //                       }
+                                              //                     },
+                                              //                   ),
+                                              //                 ],
+                                              //               ),
+                                              //             ],
+                                              //           ),
+                                              //         ),
+                                              //       ],
+                                              //     ),
+                                              //   ],
+                                              // ),
+                                              // Divider(
+                                              //   color:
+                                              //       Colors
+                                              //           .grey
+                                              //           .shade300,
+                                              //   height: 30,
+                                              // ),
+                                              // Text(
+                                              //   style: TextStyle(
+                                              //     fontWeight:
+                                              //         FontWeight
+                                              //             .bold,
+                                              //     color:
+                                              //         theme
+                                              //             .lightModeColor
+                                              //             .secColor200,
+                                              //     fontSize:
+                                              //         theme
+                                              //             .mobileTexts
+                                              //             .b3
+                                              //             .fontSize,
+                                              //   ),
+                                              //   'Net Profit/Loss',
+                                              // ),
+                                              // Divider(
+                                              //   height: 10,
+                                              //   color:
+                                              //       Colors
+                                              //           .grey
+                                              //           .shade300,
+                                              // ),
+                                              // Column(
+                                              //   children: [
+                                              //     Row(
+                                              //       spacing:
+                                              //           10,
+                                              //       crossAxisAlignment:
+                                              //           CrossAxisAlignment.start,
+                                              //       mainAxisAlignment:
+                                              //           MainAxisAlignment.spaceBetween,
+                                              //       children: [
+                                              //         Expanded(
+                                              //           flex:
+                                              //               6,
+                                              //           child: Column(
+                                              //             crossAxisAlignment:
+                                              //                 CrossAxisAlignment.start,
+                                              //             children: [
+                                              //               Text(
+                                              //                 style: TextStyle(
+                                              //                   fontSize:
+                                              //                       theme.mobileTexts.b3.fontSize,
+                                              //                   fontWeight:
+                                              //                       FontWeight.normal,
+                                              //                 ),
+                                              //                 '(Gross Profit - Expenses)',
+                                              //               ),
+                                              //               Builder(
+                                              //                 builder: (
+                                              //                   context,
+                                              //                 ) {
+                                              //                   if (receiptSnapshot.connectionState ==
+                                              //                           ConnectionState.waiting ||
+                                              //                       expensesSnapshot.connectionState ==
+                                              //                           ConnectionState.waiting ||
+                                              //                       productRecordSnapShot.connectionState ==
+                                              //                           ConnectionState.waiting) {
+                                              //                     return Text(
+                                              //                       style: TextStyle(
+                                              //                         fontSize:
+                                              //                             theme.mobileTexts.b3.fontSize,
+                                              //                         color:
+                                              //                             Colors.grey.shade700,
+                                              //                         fontWeight:
+                                              //                             FontWeight.w700,
+                                              //                       ),
+                                              //                       '${currencySymbol(context: context)} 0.0 - ${currencySymbol(context: context)} 0.0',
+                                              //                     );
+                                              //                   } else if (productRecordSnapShot.hasError ||
+                                              //                       expensesSnapshot.hasError ||
+                                              //                       productRecordSnapShot.hasError) {
+                                              //                     return Text(
+                                              //                       style: TextStyle(
+                                              //                         fontSize:
+                                              //                             theme.mobileTexts.b3.fontSize,
+                                              //                         color:
+                                              //                             Colors.grey.shade700,
+                                              //                         fontWeight:
+                                              //                             FontWeight.w700,
+                                              //                       ),
+                                              //                       '${currencySymbol(context: context)} 0.0 - ${currencySymbol(context: context)} 0.0',
+                                              //                     );
+                                              //                   } else {
+                                              //                     var receipts = returnReceiptProvider(
+                                              //                       context,
+                                              //                       listen:
+                                              //                           false,
+                                              //                     ).returnOwnReceiptsByDayOrWeek(
+                                              //                       context,
+                                              //                       receiptSnapshot.data!,
+                                              //                     );
 
-                                                                  var expenses = returnExpensesProvider(
-                                                                    context,
-                                                                    listen:
-                                                                        false,
-                                                                  ).returnExpensesByDayOrWeek(
-                                                                    context,
-                                                                    expensesSnapshot.data!,
-                                                                  );
+                                              //                     var expenses = returnExpensesProvider(
+                                              //                       context,
+                                              //                       listen:
+                                              //                           false,
+                                              //                     ).returnExpensesByDayOrWeek(
+                                              //                       context,
+                                              //                       expensesSnapshot.data!,
+                                              //                     );
 
-                                                                  double getExpensesTotal() {
-                                                                    double tempTotal =
-                                                                        0;
-                                                                    for (var item in expenses) {
-                                                                      tempTotal +=
-                                                                          item.amount;
-                                                                    }
+                                              //                     double getExpensesTotal() {
+                                              //                       double tempTotal =
+                                              //                           0;
+                                              //                       for (var item in expenses) {
+                                              //                         tempTotal +=
+                                              //                             item.amount;
+                                              //                       }
 
-                                                                    return tempTotal;
-                                                                  }
+                                              //                       return tempTotal;
+                                              //                     }
 
-                                                                  var total = returnReceiptProvider(
-                                                                    context,
-                                                                    listen:
-                                                                        false,
-                                                                  ).getTotalRevenueForSelectedDay(
-                                                                    context,
-                                                                    receipts,
-                                                                    productRecordSnapShot.connectionState ==
-                                                                            ConnectionState.waiting
-                                                                        ? []
-                                                                        : productRecordSnapShot.data!
-                                                                            .where(
-                                                                              (
-                                                                                record,
-                                                                              ) =>
-                                                                                  record.costPrice !=
-                                                                                  0,
-                                                                            )
-                                                                            .toList(),
-                                                                  );
+                                              //                     var total = returnReceiptProvider(
+                                              //                       context,
+                                              //                       listen:
+                                              //                           false,
+                                              //                     ).getTotalRevenueForSelectedDay(
+                                              //                       context,
+                                              //                       receipts,
+                                              //                       // productRecordSnapShot.connectionState ==
+                                              //                       //         ConnectionState.waiting
+                                              //                       //     ? []
+                                              //                       //     : productRecordSnapShot.data!
+                                              //                       //         .where(
+                                              //                       //           (
+                                              //                       //             record,
+                                              //                       //           ) =>
+                                              //                       //               record.costPrice !=
+                                              //                       //               0,
+                                              //                       //         )
+                                              //                       //         .toList(),
+                                              //                     );
 
-                                                                  var totalCostPrice = returnReceiptProvider(
-                                                                    context,
-                                                                    listen:
-                                                                        false,
-                                                                  ).getTotalCostPriceForSelectedDay(
-                                                                    context,
-                                                                    receipts,
-                                                                    productRecordSnapShot.connectionState ==
-                                                                            ConnectionState.waiting
-                                                                        ? []
-                                                                        : productRecordSnapShot.data!
-                                                                            .where(
-                                                                              (
-                                                                                record,
-                                                                              ) =>
-                                                                                  record.costPrice !=
-                                                                                  0,
-                                                                            )
-                                                                            .toList(),
-                                                                  );
+                                              //                     var totalCostPrice = returnReceiptProvider(
+                                              //                       context,
+                                              //                       listen:
+                                              //                           false,
+                                              //                     ).getTotalCostPriceForSelectedDay(
+                                              //                       context,
+                                              //                       receipts,
+                                              //                       productRecordSnapShot.connectionState ==
+                                              //                               ConnectionState.waiting
+                                              //                           ? []
+                                              //                           : productRecordSnapShot.data!
+                                              //                               .where(
+                                              //                                 (
+                                              //                                   record,
+                                              //                                 ) =>
+                                              //                                     record.costPrice !=
+                                              //                                     0,
+                                              //                               )
+                                              //                               .toList(),
+                                              //                     );
 
-                                                                  return Text(
-                                                                    style: TextStyle(
-                                                                      fontSize:
-                                                                          theme.mobileTexts.b3.fontSize,
-                                                                      color:
-                                                                          Colors.grey.shade700,
-                                                                      fontWeight:
-                                                                          FontWeight.w700,
-                                                                    ),
-                                                                    '${formatMoneyMid(amount: total - totalCostPrice, context: context)} - (-${formatMoneyMid(amount: getExpensesTotal(), context: context)})',
-                                                                  );
-                                                                }
-                                                              },
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      Expanded(
-                                                        flex:
-                                                            3,
-                                                        child: Column(
-                                                          spacing:
-                                                              10,
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment.start,
-                                                          children: [
-                                                            Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment.start,
-                                                              children: [
-                                                                Text(
-                                                                  style: TextStyle(
-                                                                    fontSize:
-                                                                        theme.mobileTexts.b3.fontSize,
-                                                                    fontWeight:
-                                                                        FontWeight.normal,
-                                                                  ),
-                                                                  'Total Amount:',
-                                                                ),
-                                                                Builder(
-                                                                  builder: (
-                                                                    context,
-                                                                  ) {
-                                                                    if (receiptSnapshot.connectionState ==
-                                                                            ConnectionState.waiting ||
-                                                                        expensesSnapshot.connectionState ==
-                                                                            ConnectionState.waiting ||
-                                                                        productRecordSnapShot.connectionState ==
-                                                                            ConnectionState.waiting) {
-                                                                      return Text(
-                                                                        style: TextStyle(
-                                                                          fontSize:
-                                                                              theme.mobileTexts.b3.fontSize,
-                                                                          fontWeight:
-                                                                              FontWeight.bold,
-                                                                          color: const Color.fromARGB(
-                                                                            255,
-                                                                            45,
-                                                                            137,
-                                                                            48,
-                                                                          ),
-                                                                        ),
-                                                                        '${currencySymbol(context: context)} 0.0',
-                                                                      );
-                                                                    } else if (productRecordSnapShot.hasError ||
-                                                                        expensesSnapshot.hasError ||
-                                                                        productRecordSnapShot.hasError) {
-                                                                      return Text(
-                                                                        style: TextStyle(
-                                                                          fontSize:
-                                                                              theme.mobileTexts.b3.fontSize,
-                                                                          fontWeight:
-                                                                              FontWeight.bold,
-                                                                          color: const Color.fromARGB(
-                                                                            255,
-                                                                            45,
-                                                                            137,
-                                                                            48,
-                                                                          ),
-                                                                        ),
-                                                                        '${currencySymbol(context: context)} 0.0',
-                                                                      );
-                                                                    } else {
-                                                                      var receipts = returnReceiptProvider(
-                                                                        context,
-                                                                        listen:
-                                                                            false,
-                                                                      ).returnOwnReceiptsByDayOrWeek(
-                                                                        context,
-                                                                        receiptSnapshot.data!,
-                                                                      );
+                                              //                     return Text(
+                                              //                       style: TextStyle(
+                                              //                         fontSize:
+                                              //                             theme.mobileTexts.b3.fontSize,
+                                              //                         color:
+                                              //                             Colors.grey.shade700,
+                                              //                         fontWeight:
+                                              //                             FontWeight.w700,
+                                              //                       ),
+                                              //                       '${formatMoneyMid(amount: total - totalCostPrice, context: context)} - (-${formatMoneyMid(amount: getExpensesTotal(), context: context)})',
+                                              //                     );
+                                              //                   }
+                                              //                 },
+                                              //               ),
+                                              //             ],
+                                              //           ),
+                                              //         ),
+                                              //         Expanded(
+                                              //           flex:
+                                              //               3,
+                                              //           child: Column(
+                                              //             spacing:
+                                              //                 10,
+                                              //             crossAxisAlignment:
+                                              //                 CrossAxisAlignment.start,
+                                              //             children: [
+                                              //               Column(
+                                              //                 crossAxisAlignment:
+                                              //                     CrossAxisAlignment.start,
+                                              //                 children: [
+                                              //                   Text(
+                                              //                     style: TextStyle(
+                                              //                       fontSize:
+                                              //                           theme.mobileTexts.b3.fontSize,
+                                              //                       fontWeight:
+                                              //                           FontWeight.normal,
+                                              //                     ),
+                                              //                     'Total Amount:',
+                                              //                   ),
+                                              //                   Builder(
+                                              //                     builder: (
+                                              //                       context,
+                                              //                     ) {
+                                              //                       if (receiptSnapshot.connectionState ==
+                                              //                               ConnectionState.waiting ||
+                                              //                           expensesSnapshot.connectionState ==
+                                              //                               ConnectionState.waiting ||
+                                              //                           productRecordSnapShot.connectionState ==
+                                              //                               ConnectionState.waiting) {
+                                              //                         return Text(
+                                              //                           style: TextStyle(
+                                              //                             fontSize:
+                                              //                                 theme.mobileTexts.b3.fontSize,
+                                              //                             fontWeight:
+                                              //                                 FontWeight.bold,
+                                              //                             color: const Color.fromARGB(
+                                              //                               255,
+                                              //                               45,
+                                              //                               137,
+                                              //                               48,
+                                              //                             ),
+                                              //                           ),
+                                              //                           '${currencySymbol(context: context)} 0.0',
+                                              //                         );
+                                              //                       } else if (productRecordSnapShot.hasError ||
+                                              //                           expensesSnapshot.hasError ||
+                                              //                           productRecordSnapShot.hasError) {
+                                              //                         return Text(
+                                              //                           style: TextStyle(
+                                              //                             fontSize:
+                                              //                                 theme.mobileTexts.b3.fontSize,
+                                              //                             fontWeight:
+                                              //                                 FontWeight.bold,
+                                              //                             color: const Color.fromARGB(
+                                              //                               255,
+                                              //                               45,
+                                              //                               137,
+                                              //                               48,
+                                              //                             ),
+                                              //                           ),
+                                              //                           '${currencySymbol(context: context)} 0.0',
+                                              //                         );
+                                              //                       } else {
+                                              //                         var receipts = returnReceiptProvider(
+                                              //                           context,
+                                              //                           listen:
+                                              //                               false,
+                                              //                         ).returnOwnReceiptsByDayOrWeek(
+                                              //                           context,
+                                              //                           receiptSnapshot.data!,
+                                              //                         );
 
-                                                                      var expenses = returnExpensesProvider(
-                                                                        context,
-                                                                        listen:
-                                                                            false,
-                                                                      ).returnExpensesByDayOrWeek(
-                                                                        context,
-                                                                        expensesSnapshot.data!,
-                                                                      );
+                                              //                         var expenses = returnExpensesProvider(
+                                              //                           context,
+                                              //                           listen:
+                                              //                               false,
+                                              //                         ).returnExpensesByDayOrWeek(
+                                              //                           context,
+                                              //                           expensesSnapshot.data!,
+                                              //                         );
 
-                                                                      double getExpensesTotal() {
-                                                                        double tempTotal =
-                                                                            0;
-                                                                        for (var item in expenses) {
-                                                                          tempTotal +=
-                                                                              item.amount;
-                                                                        }
+                                              //                         double getExpensesTotal() {
+                                              //                           double tempTotal =
+                                              //                               0;
+                                              //                           for (var item in expenses) {
+                                              //                             tempTotal +=
+                                              //                                 item.amount;
+                                              //                           }
 
-                                                                        return tempTotal;
-                                                                      }
+                                              //                           return tempTotal;
+                                              //                         }
 
-                                                                      var total = returnReceiptProvider(
-                                                                        context,
-                                                                        listen:
-                                                                            false,
-                                                                      ).getTotalRevenueForSelectedDay(
-                                                                        context,
-                                                                        receipts,
-                                                                        productRecordSnapShot.connectionState ==
-                                                                                ConnectionState.waiting
-                                                                            ? []
-                                                                            : productRecordSnapShot.data!
-                                                                                .where(
-                                                                                  (
-                                                                                    record,
-                                                                                  ) =>
-                                                                                      record.costPrice !=
-                                                                                      0,
-                                                                                )
-                                                                                .toList(),
-                                                                      );
+                                              //                         var total = returnReceiptProvider(
+                                              //                           context,
+                                              //                           listen:
+                                              //                               false,
+                                              //                         ).getTotalRevenueForSelectedDay(
+                                              //                           context,
+                                              //                           receipts,
+                                              //                           // productRecordSnapShot.connectionState ==
+                                              //                           //         ConnectionState.waiting
+                                              //                           //     ? []
+                                              //                           //     : productRecordSnapShot.data!
+                                              //                           //         .where(
+                                              //                           //           (
+                                              //                           //             record,
+                                              //                           //           ) =>
+                                              //                           //               record.costPrice !=
+                                              //                           //               0,
+                                              //                           //         )
+                                              //                           //         .toList(),
+                                              //                         );
 
-                                                                      var totalCostPrice = returnReceiptProvider(
-                                                                        context,
-                                                                        listen:
-                                                                            false,
-                                                                      ).getTotalCostPriceForSelectedDay(
-                                                                        context,
-                                                                        receipts,
-                                                                        productRecordSnapShot.connectionState ==
-                                                                                ConnectionState.waiting
-                                                                            ? []
-                                                                            : productRecordSnapShot.data!
-                                                                                .where(
-                                                                                  (
-                                                                                    record,
-                                                                                  ) =>
-                                                                                      record.costPrice !=
-                                                                                      0,
-                                                                                )
-                                                                                .toList(),
-                                                                      );
+                                              //                         var totalCostPrice = returnReceiptProvider(
+                                              //                           context,
+                                              //                           listen:
+                                              //                               false,
+                                              //                         ).getTotalCostPriceForSelectedDay(
+                                              //                           context,
+                                              //                           receipts,
+                                              //                           productRecordSnapShot.connectionState ==
+                                              //                                   ConnectionState.waiting
+                                              //                               ? []
+                                              //                               : productRecordSnapShot.data!
+                                              //                                   .where(
+                                              //                                     (
+                                              //                                       record,
+                                              //                                     ) =>
+                                              //                                         record.costPrice !=
+                                              //                                         0,
+                                              //                                   )
+                                              //                                   .toList(),
+                                              //                         );
 
-                                                                      return Text(
-                                                                        style: TextStyle(
-                                                                          fontSize:
-                                                                              theme.mobileTexts.b3.fontSize,
-                                                                          fontWeight:
-                                                                              FontWeight.bold,
-                                                                          color:
-                                                                              ((total -
-                                                                                              totalCostPrice) -
-                                                                                          getExpensesTotal())
-                                                                                      .isNegative
-                                                                                  ? Colors.redAccent
-                                                                                  : (total -
-                                                                                              totalCostPrice) -
-                                                                                          getExpensesTotal() ==
-                                                                                      0
-                                                                                  ? Colors.grey
-                                                                                  : const Color.fromARGB(
-                                                                                    255,
-                                                                                    45,
-                                                                                    137,
-                                                                                    48,
-                                                                                  ),
-                                                                        ),
-                                                                        formatMoneyMid(
-                                                                          amount:
-                                                                              (total -
-                                                                                  totalCostPrice) -
-                                                                              getExpensesTotal(),
-                                                                          context:
-                                                                              context,
-                                                                        ),
-                                                                      );
-                                                                    }
-                                                                  },
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
+                                              //                         return Text(
+                                              //                           style: TextStyle(
+                                              //                             fontSize:
+                                              //                                 theme.mobileTexts.b3.fontSize,
+                                              //                             fontWeight:
+                                              //                                 FontWeight.bold,
+                                              //                             color:
+                                              //                                 ((total -
+                                              //                                                 totalCostPrice) -
+                                              //                                             getExpensesTotal())
+                                              //                                         .isNegative
+                                              //                                     ? Colors.redAccent
+                                              //                                     : (total -
+                                              //                                                 totalCostPrice) -
+                                              //                                             getExpensesTotal() ==
+                                              //                                         0
+                                              //                                     ? Colors.grey
+                                              //                                     : const Color.fromARGB(
+                                              //                                       255,
+                                              //                                       45,
+                                              //                                       137,
+                                              //                                       48,
+                                              //                                     ),
+                                              //                           ),
+                                              //                           formatMoneyMid(
+                                              //                             amount:
+                                              //                                 (total -
+                                              //                                     totalCostPrice) -
+                                              //                                 getExpensesTotal(),
+                                              //                             context:
+                                              //                                 context,
+                                              //                           ),
+                                              //                         );
+                                              //                       }
+                                              //                     },
+                                              //                   ),
+                                              //                 ],
+                                              //               ),
+                                              //             ],
+                                              //           ),
+                                              //         ),
+                                              //       ],
+                                              //     ),
+                                              //   ],
+                                              // ),
                                             ],
                                           ),
                                         ),
@@ -1880,7 +1873,6 @@ class _GeneralReportDesktopState
                                                 listen:
                                                     false,
                                               ).returnproductsRecordByDayOrWeek(
-                                                context,
                                                 productRecordSnapShot
                                                     .data!,
                                               );

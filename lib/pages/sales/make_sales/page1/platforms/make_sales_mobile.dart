@@ -8,6 +8,7 @@ import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/small_button_main.dart';
 import 'package:stockall/components/buttons/toggle_total_price.dart';
 import 'package:stockall/components/cart_queue/cart_queue_mobile.dart';
+import 'package:stockall/components/discount_setter.dart/discount_setter_widget.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/my_calculator.dart';
@@ -1821,7 +1822,6 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                     if (!authorization(
                       authorized:
                           Authorizations().addProduct,
-                      context: context,
                     )) {
                       return Column(
                         children: [
@@ -2379,7 +2379,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment
-                                                  .start,
+                                                  .spaceBetween,
                                           children: [
                                             SubWrapper(
                                               isVisible:
@@ -2500,10 +2500,14 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                 ),
                                               ),
                                             ),
-                                            // DiscountSetterWidget(
-                                            //   discountPercentController:
-                                            //       discountPercentController,
-                                            // ),
+                                            DiscountSetterWidget(
+                                              discountPercentController:
+                                                  discountPercentController,
+                                              addListener:
+                                                  () {},
+                                              removeListener:
+                                                  () {},
+                                            ),
                                           ],
                                         ),
                                         SizedBox(height: 3),
@@ -2730,65 +2734,79 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                 amount:
                                                     returnSalesProviderContext(
                                                       context,
-                                                    ).calcTotalMain(),
+                                                    ).calcSubTotal(),
                                                 context:
                                                     context,
                                               ),
                                             ),
                                           ],
                                         ),
-                                        // SizedBox(height: 0),
-                                        // Row(
-                                        //   mainAxisAlignment:
-                                        //       MainAxisAlignment
-                                        //           .spaceBetween,
-                                        //   children: [
-                                        //     Row(
-                                        //       children: [
-                                        //         Text(
-                                        //           style: TextStyle(
-                                        //             fontSize:
-                                        //                 theme.mobileTexts.b2.fontSize,
-                                        //             // fontWeight: FontWeight.bold,
-                                        //           ),
-                                        //           'Discount',
-                                        //         ),
-                                        //         Visibility(
-                                        //           visible:
-                                        //               returnSalesProvider(
-                                        //                 context,
-                                        //               ).currentCart().discount !=
-                                        //               null,
-                                        //           child: Text(
-                                        //             style: TextStyle(
-                                        //               fontSize:
-                                        //                   theme.mobileTexts.b2.fontSize,
-                                        //               fontWeight:
-                                        //                   FontWeight.bold,
-                                        //               // fontWeight: FontWeight.bold,
-                                        //             ),
-                                        //             ' (${returnSalesProvider(context).currentCart().discount?.toStringAsFixed(0)}%)',
-                                        //           ),
-                                        //         ),
-                                        //       ],
-                                        //     ),
-                                        //     Text(
-                                        //       style: TextStyle(
-                                        //         fontSize:
-                                        //             theme
-                                        //                 .mobileTexts
-                                        //                 .b2
-                                        //                 .fontSize,
-                                        //         // fontWeight: FontWeight.bold,
-                                        //       ),
-                                        //       '- ${formatMoney(returnSalesProvider(context).calcDiscountMain(), context)}',
-                                        //     ),
-                                        //   ],
-                                        // ),
+                                        Visibility(
+                                          visible:
+                                              returnSalesProviderContext(
+                                                    context,
+                                                  ).currentCart().discount !=
+                                                  null ||
+                                              returnSalesProviderContext(
+                                                    context,
+                                                  ).currentCart().fixedDiscount !=
+                                                  null,
+                                          child: Column(
+                                            children: [
+                                              SizedBox(
+                                                height: 0,
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              theme.mobileTexts.b4.fontSize,
+                                                          // fontWeight: FontWeight.bold,
+                                                        ),
+                                                        'Discount',
+                                                      ),
+                                                      Visibility(
+                                                        visible:
+                                                            returnSalesProviderContext(
+                                                              context,
+                                                            ).currentCart().discount !=
+                                                            null,
+                                                        child: Text(
+                                                          style: TextStyle(
+                                                            fontSize:
+                                                                theme.mobileTexts.b4.fontSize,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            // fontWeight: FontWeight.bold,
+                                                          ),
+                                                          ' (${returnSalesProviderContext(context).currentCart().discount?.toStringAsFixed(0)}%)',
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          theme.mobileTexts.b4.fontSize,
+                                                      // fontWeight: FontWeight.bold,
+                                                    ),
+                                                    '- ${formatMoney(returnSalesProviderContext(context).calcDiscountMain(), context)}',
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                         Column(
                                           children: [
                                             SizedBox(
-                                              height: 5,
+                                              height: 0,
                                             ),
                                             Row(
                                               mainAxisAlignment:
@@ -2813,7 +2831,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                             FontWeight.bold,
                                                         // fontWeight: FontWeight.bold,
                                                       ),
-                                                      ' (${returnShopProvider().userShop()!.applyVAT! ? vat : 0}%)',
+                                                      ' (${returnShopProvider().getVat()}%)',
                                                     ),
                                                   ],
                                                 ),
@@ -2868,7 +2886,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                 amount:
                                                     returnSalesProviderContext(
                                                       context,
-                                                    ).calcFinalTotalMain(),
+                                                    ).calcFinalTotal(),
                                                 context:
                                                     context,
                                               ),
@@ -2890,7 +2908,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                 ) {
                                                   return MakeSalesTwo(
                                                     totalAmount:
-                                                        returnSalesProvider().calcFinalTotalMain(),
+                                                        returnSalesProvider().calcFinalTotal(),
                                                   );
                                                 },
                                               ),

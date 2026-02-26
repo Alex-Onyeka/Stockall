@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:stockall/classes/checkout_response.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
@@ -8,7 +9,6 @@ import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/top_banner_two.dart';
 import 'package:stockall/constants/calculations.dart';
-import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
@@ -20,10 +20,10 @@ import 'package:stockall/services/printing/import_helper.dart'
 
 class ReceiptPageDesktop extends StatefulWidget {
   final bool isMain;
-  final String receiptUuid;
+  final CheckoutResponse response;
   const ReceiptPageDesktop({
     super.key,
-    required this.receiptUuid,
+    required this.response,
     required this.isMain,
   });
 
@@ -50,7 +50,6 @@ class _ReceiptPageDesktopState
           listen: false,
         ).loadReceipts(
           returnShopProvider().userShop()!.shopId!,
-          context,
         );
       });
       setState(() {});
@@ -65,7 +64,7 @@ class _ReceiptPageDesktopState
     TempMainReceipt mainReceipt = returnReceiptProvider(
       context,
     ).receipts.firstWhere(
-      (rec) => rec.uuid! == widget.receiptUuid,
+      (rec) => rec.uuid! == widget.response.resUuid,
       orElse:
           () => TempMainReceipt(
             createdAt: DateTime.now(),
@@ -99,11 +98,7 @@ class _ReceiptPageDesktopState
                         child: SizedBox(
                           child: TopBannerTwo(
                             isMain: widget.isMain,
-                            title:
-                                mainReceipt.isInvoice ==
-                                        true
-                                    ? 'Invoice'
-                                    : 'Receipt',
+                            title: 'Receipt',
                             theme: theme,
                             bottomSpace: 200,
                             topSpace: 10,
@@ -152,9 +147,10 @@ class _ReceiptPageDesktopState
                                                     .bold
                                                 : null,
                                       ),
-                                      kIsWeb
-                                          ? 'Printer Type -- 58mm'
-                                          : 'Select USB Printer',
+                                      // kIsWeb
+                                      //     ?
+                                      'Printer Type -- 58mm',
+                                      // : 'Select USB Printer',
                                     ),
                                     Visibility(
                                       visible:
@@ -175,13 +171,13 @@ class _ReceiptPageDesktopState
                                 ),
                               ),
                               PopupMenuItem(
-                                enabled:
-                                    kIsWeb ||
-                                    platforms(context) ==
-                                        TargetPlatform
-                                            .android ||
-                                    platforms(context) ==
-                                        TargetPlatform.iOS,
+                                // enabled:
+                                //     kIsWeb ||
+                                //     platforms(context) ==
+                                //         TargetPlatform
+                                //             .android ||
+                                //     platforms(context) ==
+                                //         TargetPlatform.iOS,
                                 onTap: () {
                                   returnShopProvider()
                                               .userShop()!
@@ -216,9 +212,10 @@ class _ReceiptPageDesktopState
                                                     .bold
                                                 : null,
                                       ),
-                                      kIsWeb
-                                          ? 'Printer Type -- 80mm'
-                                          : 'Select Bluetooth Printer',
+                                      // kIsWeb
+                                      //     ?
+                                      'Printer Type -- 80mm',
+                                      // : 'Select Bluetooth Printer',
                                     ),
                                     Visibility(
                                       visible:
@@ -284,9 +281,12 @@ class _ReceiptPageDesktopState
                                                       context,
                                                 ).userShop()!.printType ==
                                                 2
-                                        ? (kIsWeb
-                                            ? '80mm'
-                                            : '( Bluetooth )')
+                                        ? (
+                                        // kIsWeb
+                                        //   ?
+                                        '80mm'
+                                        // : '( Bluetooth )'
+                                        )
                                         : returnShopProvider(
                                                   context:
                                                       context,
@@ -297,9 +297,12 @@ class _ReceiptPageDesktopState
                                                       context,
                                                 ).userShop()!.printType ==
                                                 1
-                                        ? (kIsWeb
-                                            ? '58mm'
-                                            : '( USB )')
+                                        ? (
+                                        // kIsWeb
+                                        //   ?
+                                        '58mm'
+                                        // : '( USB )'
+                                        )
                                         // : sortIndex == 2
                                         // ? 'Price'
                                         : 'Settings',
@@ -1166,7 +1169,8 @@ class _ReceiptDetailsContainerState
                                                 formatMoneyMid(
                                                   amount:
                                                       productRecord
-                                                          .revenue,
+                                                          .originalCost ??
+                                                      0,
                                                   context:
                                                       context,
                                                 ),
@@ -1245,183 +1249,251 @@ class _ReceiptDetailsContainerState
                                       FontWeight.bold,
                                 ),
                                 formatMoneyMid(
-                                  amount: returnReceiptProvider(
-                                    context,
-                                    listen: false,
-                                  ).getSubTotalRevenueForReceipt(
-                                    context,
-                                    records,
-                                  ),
+                                  amount:
+                                      returnReceiptProvider(
+                                        context,
+                                      ).getOriginalCostReceipt(
+                                        widget.mainReceipt,
+                                      ),
                                   context: context,
                                 ),
                               ),
                             ),
                           ],
                         ),
-                        SizedBox(height: 0),
-                        // Row(
-                        //   mainAxisAlignment:
-                        //       MainAxisAlignment
-                        //           .spaceBetween,
-                        //   children: [
-                        //     Expanded(
-                        //       flex: 4,
-                        //       child: Row(
-                        //         children: [
-                        //           Text(
-                        //             style: TextStyle(
-                        //               fontSize:
-                        //                   widget
-                        //                       .theme
-                        //                       .mobileTexts
-                        //                       .b3
-                        //                       .fontSize,
-                        //             ),
-                        //             'Discount',
-                        //           ),
-                        //           Text(
-                        //             style: TextStyle(
-                        //               fontSize:
-                        //                   widget
-                        //                       .theme
-                        //                       .mobileTexts
-                        //                       .b3
-                        //                       .fontSize,
-                        //               fontWeight:
-                        //                   FontWeight.bold,
-                        //             ),
-                        //             widget
-                        //                         .mainReceipt
-                        //                         .generalDiscount !=
-                        //                     null
-                        //                 ? ' (${widget.mainReceipt.generalDiscount}%)'
-                        //                 : '',
-                        //           ),
-                        //         ],
-                        //       ),
-                        //     ),
+                        Visibility(
+                          visible:
+                              widget
+                                      .mainReceipt
+                                      .generalDiscount !=
+                                  null ||
+                              widget
+                                      .mainReceipt
+                                      .fixedDiscount !=
+                                  null,
+                          child: Column(
+                            children: [
+                              SizedBox(height: 0),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .spaceBetween,
+                                children: [
+                                  Expanded(
+                                    flex: 4,
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                widget
+                                                    .theme
+                                                    .mobileTexts
+                                                    .b4
+                                                    .fontSize,
+                                          ),
+                                          'Discount',
+                                        ),
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                widget
+                                                    .theme
+                                                    .mobileTexts
+                                                    .b4
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          widget.mainReceipt.generalDiscount !=
+                                                  null
+                                              ? ' (${widget.mainReceipt.generalDiscount}%)'
+                                              : '',
+                                        ),
+                                      ],
+                                    ),
+                                  ),
 
-                        //     Expanded(
-                        //       flex: 3,
-                        //       child: Text(
-                        //         style: TextStyle(
-                        //           fontSize:
-                        //               widget
-                        //                   .theme
-                        //                   .mobileTexts
-                        //                   .b2
-                        //                   .fontSize,
-                        //           fontWeight:
-                        //               FontWeight.bold,
-                        //         ),
-                        //         formatMoneyMid(
-                        //           amount:
-                        //               widget
-                        //                   .mainReceipt
-                        //                   .generalDiscount ??
-                        //               (widget
-                        //                           .mainReceipt
-                        //                           .fixedDiscount !=
-                        //                       null
-                        //                   ? (widget
-                        //                               .mainReceipt
-                        //                               .cashAlt +
-                        //                           widget
-                        //                               .mainReceipt
-                        //                               .bank) *
-                        //                       0.02
-                        //                   : 0),
-                        //           // returnReceiptProvider(
-                        //           //   context,
-                        //           //   listen: false,
-                        //           // ).getTotalMainRevenueReceipt(
-                        //           //   records,
-                        //           //   context,
-                        //           // ) -
-                        //           // returnReceiptProvider(
-                        //           //   context,
-                        //           //   listen: false,
-                        //           // ).getSubTotalRevenueForReceipt(
-                        //           //   context,
-                        //           //   records,
-                        //           // ),
-                        //           context: context,
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ],
-                        // ),
-                        // SizedBox(height: 0),
-                        Column(
-                          children: [
-                            SizedBox(height: 2),
-                            Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment
-                                      .spaceBetween,
-                              children: [
-                                Expanded(
-                                  flex: 4,
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              widget
-                                                  .theme
-                                                  .mobileTexts
-                                                  .b4
-                                                  .fontSize,
-                                          // fontWeight: FontWeight.bold,
-                                        ),
-                                        'VAT',
+                                  Expanded(
+                                    flex: 3,
+                                    child: Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            widget
+                                                .theme
+                                                .mobileTexts
+                                                .b4
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
                                       ),
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              widget
-                                                  .theme
-                                                  .mobileTexts
-                                                  .b4
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
-                                          // fontWeight: FontWeight.bold,
-                                        ),
-                                        ' (${returnReceiptProvider(context, listen: false).getVATForReceipt(context, records) != 0 ? vat : 0}%)',
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 3,
-                                  child: Text(
-                                    style: TextStyle(
-                                      fontWeight:
-                                          FontWeight.bold,
-                                      fontSize:
+                                      formatMoneyMid(
+                                        amount: returnReceiptProvider(
+                                          context,
+                                        ).getDiscountAmountForReceipt(
                                           widget
-                                              .theme
-                                              .mobileTexts
-                                              .b4
-                                              .fontSize,
-                                    ),
-                                    formatMoney(
-                                      returnReceiptProvider(
-                                        context,
-                                        listen: false,
-                                      ).getVATForReceipt(
-                                        context,
-                                        records,
+                                              .mainReceipt,
+                                        ),
+                                        // returnReceiptProvider(
+                                        //   context,
+                                        //   listen: false,
+                                        // ).getTotalMainRevenueReceipt(
+                                        //   records,
+                                        //   context,
+                                        // ) -
+                                        // returnReceiptProvider(
+                                        //   context,
+                                        //   listen: false,
+                                        // ).getSubTotalRevenueForReceipt(
+                                        //   context,
+                                        //   records,
+                                        // ),
+                                        context: context,
                                       ),
-                                      context,
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        // SizedBox(height: 0),
+                        Visibility(
+                          visible:
+                              widget.mainReceipt.vat !=
+                                  null &&
+                              widget.mainReceipt.vat != 0,
+                          child: Column(
+                            children: [
+                              SizedBox(height: 2),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .spaceBetween,
+                                children: [
+                                  Expanded(
+                                    flex: 4,
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                widget
+                                                    .theme
+                                                    .mobileTexts
+                                                    .b4
+                                                    .fontSize,
+                                            // fontWeight: FontWeight.bold,
+                                          ),
+                                          'VAT',
+                                        ),
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                widget
+                                                    .theme
+                                                    .mobileTexts
+                                                    .b4
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                            // fontWeight: FontWeight.bold,
+                                          ),
+                                          ' (${widget.mainReceipt.vat ?? 0}%)',
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 3,
+                                    child: Text(
+                                      style: TextStyle(
+                                        fontWeight:
+                                            FontWeight.bold,
+                                        fontSize:
+                                            widget
+                                                .theme
+                                                .mobileTexts
+                                                .b4
+                                                .fontSize,
+                                      ),
+                                      formatMoney(
+                                        returnReceiptProvider(
+                                          context,
+                                          listen: false,
+                                        ).getVATForReceipt(
+                                          widget
+                                              .mainReceipt,
+                                        ),
+                                        context,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        Visibility(
+                          visible:
+                              widget.mainReceipt.balance !=
+                              null,
+                          child: Column(
+                            children: [
+                              SizedBox(height: 2),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .spaceBetween,
+                                children: [
+                                  Expanded(
+                                    flex: 4,
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                widget
+                                                    .theme
+                                                    .mobileTexts
+                                                    .b4
+                                                    .fontSize,
+                                            // fontWeight: FontWeight.bold,
+                                          ),
+                                          'Balance',
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 3,
+                                    child: Text(
+                                      style: TextStyle(
+                                        fontWeight:
+                                            FontWeight.bold,
+                                        fontSize:
+                                            widget
+                                                .theme
+                                                .mobileTexts
+                                                .b4
+                                                .fontSize,
+                                      ),
+                                      formatMoney(
+                                        widget
+                                                .mainReceipt
+                                                .balance ??
+                                            0,
+
+                                        context,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                         Row(
                           mainAxisAlignment:
@@ -1462,8 +1534,7 @@ class _ReceiptDetailsContainerState
                                     context,
                                     listen: false,
                                   ).getTotalMainRevenueReceipt(
-                                    records,
-                                    context,
+                                    widget.mainReceipt,
                                   ),
                                   context: context,
                                 ),
@@ -1485,42 +1556,21 @@ class _ReceiptDetailsContainerState
                 spacing: 10,
                 children: [
                   Visibility(
-                    visible:
-                        authorization(
-                          authorized:
-                              Authorizations().deleteSale,
-                          context: context,
-                        ) ||
-                        widget.mainReceipt.isInvoice,
+                    visible: authorization(
+                      authorized:
+                          Authorizations().deleteSale,
+                    ),
                     child: BottomActionButton(
-                      textColor:
-                          widget.mainReceipt.isInvoice
-                              ? widget
-                                  .theme
-                                  .lightModeColor
-                                  .secColor100
-                              : Colors.red,
-                      text:
-                          widget.mainReceipt.isInvoice
-                              ? 'Pay'
-                              : 'Delete',
+                      textColor: Colors.red,
+                      text: 'Delete',
                       color:
-                          widget.mainReceipt.isInvoice
-                              ? widget
-                                  .theme
-                                  .lightModeColor
-                                  .secColor200
-                              : widget
-                                  .theme
-                                  .lightModeColor
-                                  .errorColor200,
+                          widget
+                              .theme
+                              .lightModeColor
+                              .errorColor200,
                       iconSize: 20,
                       theme: widget.theme,
-                      icon:
-                          widget.mainReceipt.isInvoice
-                              ? Icons.check
-                              : Icons
-                                  .delete_outline_rounded,
+                      icon: Icons.delete_outline_rounded,
                       action: () {
                         final receiptP =
                             returnReceiptProvider(
@@ -1557,14 +1607,12 @@ class _ReceiptDetailsContainerState
                                               rec.productName,
                                         )
                                         .toList(),
-                                    context,
                                   );
 
                                   if (safeContext.mounted) {
                                     await receiptP
                                         .loadReceipts(
                                           shopId,
-                                          context,
                                         );
                                   }
 
@@ -1575,7 +1623,7 @@ class _ReceiptDetailsContainerState
 
                                   await Future.delayed(
                                     Duration(
-                                      milliseconds: 1500,
+                                      milliseconds: 500,
                                     ),
                                   );
 
@@ -1600,31 +1648,31 @@ class _ReceiptDetailsContainerState
                         } else {
                           showDialog(
                             context: context,
-                            builder: (context) {
+                            builder: (confirmContext) {
                               return ConfirmationAlert(
                                 theme: widget.theme,
                                 message:
                                     'Are you sure you want to proceed with action? This action cannot be reverted.',
-                                title: 'Record as Paid?',
+                                title: 'Delete Receipt',
                                 action: () async {
                                   Navigator.of(
-                                    safeContext,
+                                    confirmContext,
                                   ).pop();
                                   setState(() {
                                     isLoading = true;
                                   });
 
-                                  await receiptP.payCredit(
-                                    widget
-                                        .mainReceipt
-                                        .uuid!,
-                                  );
+                                  await receiptP
+                                      .deleteReceiptWithoutUpdatingInventory(
+                                        widget
+                                            .mainReceipt
+                                            .uuid!,
+                                      );
 
                                   if (safeContext.mounted) {
                                     await receiptP
                                         .loadReceipts(
                                           shopId,
-                                          context,
                                         );
                                   }
 
@@ -1635,13 +1683,24 @@ class _ReceiptDetailsContainerState
 
                                   await Future.delayed(
                                     Duration(
-                                      milliseconds: 1500,
+                                      milliseconds: 500,
                                     ),
                                   );
 
-                                  setState(() {
-                                    showSuccess = false;
-                                  });
+                                  if (safeContext.mounted) {
+                                    Navigator.pushReplacement(
+                                      safeContext,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (safeContext) =>
+                                                Home(),
+                                      ),
+                                    );
+                                    returnNavProvider(
+                                      safeContext,
+                                      listen: false,
+                                    ).navigate(5);
+                                  }
                                 },
                               );
                             },
@@ -1651,11 +1710,12 @@ class _ReceiptDetailsContainerState
                     ),
                   ),
                   Visibility(
-                    visible: authorization(
-                      authorized:
-                          Authorizations().updateSale,
-                      context: context,
-                    ),
+                    visible:
+                        authorization(
+                          authorized:
+                              Authorizations().updateSale,
+                        ) &&
+                        !widget.mainReceipt.isInvoice,
                     child: BottomActionButton(
                       color: Colors.grey,
                       iconSize: 20,
@@ -1701,7 +1761,7 @@ class _ReceiptDetailsContainerState
                                               .mainReceipt
                                               .staffName,
                                       filename:
-                                          'Stockall_${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'}_${DateTime.now().millisecondsSinceEpoch}.pdf',
+                                          'Stockall_Receipt_${DateTime.now().millisecondsSinceEpoch}.pdf',
                                       context: safeContext,
                                       receipt:
                                           widget
@@ -1821,9 +1881,10 @@ class _ReceiptDetailsContainerState
                                                 FontWeight
                                                     .bold,
                                           ),
-                                          kIsWeb
-                                              ? 'Select Paper Size -- 58mm'
-                                              : 'Select Type - USB',
+                                          // kIsWeb
+                                          //     ?
+                                          'Select Paper Size -- 58mm',
+                                          // : 'Select Type - USB',
                                         ),
                                         trailing: Container(
                                           padding:
@@ -1879,18 +1940,18 @@ class _ReceiptDetailsContainerState
                                         height: 5,
                                       ),
                                       ListTile(
-                                        enabled:
-                                            kIsWeb ||
-                                            platforms(
-                                                  context,
-                                                ) ==
-                                                TargetPlatform
-                                                    .android ||
-                                            platforms(
-                                                  context,
-                                                ) ==
-                                                TargetPlatform
-                                                    .iOS,
+                                        // enabled:
+                                        //     kIsWeb ||
+                                        //     platforms(
+                                        //           context,
+                                        //         ) ==
+                                        //         TargetPlatform
+                                        //             .android ||
+                                        //     platforms(
+                                        //           context,
+                                        //         ) ==
+                                        //         TargetPlatform
+                                        //             .iOS,
                                         onTap: () async {
                                           Navigator.of(
                                             context,
@@ -1925,9 +1986,10 @@ class _ReceiptDetailsContainerState
                                                 FontWeight
                                                     .bold,
                                           ),
-                                          kIsWeb
-                                              ? 'Select Paper Size -- 80mm'
-                                              : 'Select Type - Bluetooth',
+                                          // kIsWeb
+                                          //     ?
+                                          'Select Paper Size -- 80mm',
+                                          // : 'Select Type - Bluetooth',
                                         ),
                                         trailing: Container(
                                           padding:
@@ -2005,7 +2067,7 @@ class _ReceiptDetailsContainerState
                                                 .mainReceipt
                                                 .staffName,
                                         filename:
-                                            'Stockall_${widget.mainReceipt.isInvoice ? 'Invoice' : 'Receipt'}_${DateTime.now().millisecondsSinceEpoch}.pdf',
+                                            'Stockall_Receipt_${DateTime.now().millisecondsSinceEpoch}.pdf',
                                         context:
                                             safeContext,
                                         receipt:

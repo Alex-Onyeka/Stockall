@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_departments_class/department_class.dart';
 import 'package:stockall/classes/temp_event_log/temp_event_log_class.dart';
 import 'package:stockall/classes/temp_event_log/unsynced/created_events_log_class.dart';
 import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
+import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -282,6 +283,37 @@ class EventsLogProvider with ChangeNotifier {
           event == 3
               ? (-1 * (receipt.bank + receipt.cashAlt))
               : (receipt.bank + receipt.cashAlt),
+    );
+  }
+
+  TempEventLogClass invoiceAdapter(
+    TempInvoice invoice,
+    List<String> productNames,
+    int event,
+  ) {
+    return TempEventLogClass(
+      shopId: shopId(),
+      tableName: 'invoices',
+      title:
+          '${productNames.last} and (${productNames.length - 1}) others.',
+      event:
+          event == 1
+              ? 'created'
+              : event == 2
+              ? 'updated'
+              : 'deleted',
+      message:
+          event == 1
+              ? 'New Invoice Created #${invoice.uuid!.split('-').first.substring(0, 5).toUpperCase()}'
+              : event == 2
+              ? 'Invoice Updated #${invoice.uuid!.split('-').first.substring(0, 5).toUpperCase()}'
+              : 'Invoice Deleted #${invoice.uuid!.split('-').first.substring(0, 5).toUpperCase()}',
+      staffName:
+          returnUserProviderSingle().currentUserMain!.name,
+      amount:
+          event == 3
+              ? (-1 * (invoice.bank + invoice.cashAlt))
+              : (invoice.bank + invoice.cashAlt),
     );
   }
 

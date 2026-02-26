@@ -769,7 +769,7 @@ Uint8List generateStyledReceipt({
       item.productName,
       '( ${item.quantity.toStringAsFixed(0)} )',
       formatMoneyMid(
-        amount: item.revenue,
+        amount: item.originalCost ?? 0,
         context: context,
         isR: true,
       ),
@@ -782,11 +782,11 @@ Uint8List generateStyledReceipt({
   final subtotal = returnReceiptProvider(
     context,
     listen: false,
-  ).getSubTotalRevenueForReceipt(context, records);
+  ).getOriginalCostReceipt(receipt);
   final total = returnReceiptProvider(
     context,
     listen: false,
-  ).getTotalMainRevenueReceipt(records, context);
+  ).getTotalMainRevenueReceipt(receipt);
   final discount = total - subtotal;
 
   builder.addLeftRight(

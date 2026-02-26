@@ -7,12 +7,12 @@ class TotalSalesPage extends StatelessWidget {
   final String? id;
   final bool? turnOff;
   final String? customerUuid;
-  final bool? isInvoice;
+  // final bool? isInvoice;
   const TotalSalesPage({
     super.key,
     this.id,
     this.customerUuid,
-    this.isInvoice,
+    // this.isInvoice,
     this.turnOff,
   });
 
@@ -24,14 +24,14 @@ class TotalSalesPage extends StatelessWidget {
           return TotalSalesMobile(
             id: id,
             customerUuid: customerUuid,
-            isInvoice: isInvoice,
+            // isInvoice: isInvoice,
           );
         } else {
           return TotalSalesDesktop(
             customerUuid: customerUuid,
             turnOff: turnOff,
             id: id,
-            isInvoice: isInvoice,
+            // isInvoice: isInvoice,
           );
         }
       },

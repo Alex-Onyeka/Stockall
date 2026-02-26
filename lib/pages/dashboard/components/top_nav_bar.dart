@@ -115,7 +115,6 @@ class _TopNavBarState extends State<TopNavBar> {
                               authorized:
                                   Authorizations()
                                       .switchStores,
-                              context: context,
                             ) &&
                             returnShopProvider()
                                     .userShops
@@ -365,7 +364,6 @@ class _TopNavBarState extends State<TopNavBar> {
                                   authorized:
                                       Authorizations()
                                           .switchStores,
-                                  context: context,
                                 ) ||
                                 returnShopProvider(
                                       context: context,
@@ -720,7 +718,6 @@ class _TopNavBarState extends State<TopNavBar> {
                       authorized:
                           Authorizations()
                               .notificationsPage,
-                      context: context,
                     ),
                     child: Stack(
                       alignment: Alignment(1.2, -1.8),
@@ -1039,7 +1036,6 @@ class PopoverMenu extends StatelessWidget {
                                 authorized:
                                     Authorizations()
                                         .manageShop,
-                                context: context,
                               )) {
                                 Navigator.of(context).pop();
                                 Navigator.push(
@@ -1061,7 +1057,6 @@ class PopoverMenu extends StatelessWidget {
             Visibility(
               visible: authorization(
                 authorized: Authorizations().createShop,
-                context: context,
               ),
               child: Material(
                 color: Colors.white,

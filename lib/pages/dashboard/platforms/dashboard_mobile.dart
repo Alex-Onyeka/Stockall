@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
+import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_notification/temp_notification.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
@@ -29,9 +30,9 @@ import 'package:stockall/pages/dashboard/components/top_nav_bar.dart';
 import 'package:stockall/pages/dashboard/components/total_sales_banner.dart';
 import 'package:stockall/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockall/pages/expenses/expenses_page.dart';
+import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
 import 'package:stockall/pages/report/report_page.dart';
-import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class DashboardMobile extends StatefulWidget {
@@ -82,9 +83,17 @@ class _DashboardMobileState extends State<DashboardMobile> {
     var tempReceipts = await returnReceiptProvider(
       context,
       listen: false,
-    ).loadReceipts(widget.shopId!, context);
+    ).loadReceipts(widget.shopId!);
 
     return tempReceipts;
+  }
+
+  late Future<List<TempInvoice>> invoicesFuture;
+  Future<List<TempInvoice>> getInvoices() async {
+    var invoices = await returnInvoicesProvider()
+        .loadInvoices(widget.shopId!);
+
+    return invoices;
   }
 
   bool isLoading = false;
@@ -183,6 +192,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
       productsFuture = getProducts();
       employeesFuture = getEmployees();
       customerFuture = getCustomers();
+      invoicesFuture = getInvoices();
       WidgetsBinding.instance.addPostFrameCallback((_) {
         returnReceiptProvider(
           context,
@@ -355,7 +365,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                   userValue: returnReceiptProvider(
                                     context,
                                   ).getTotalRevenueForSelectedDay(
-                                    context,
                                     returnReceiptProvider(
                                           context,
                                         ).receipts
@@ -367,14 +376,14 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                               ).name,
                                         )
                                         .toList(),
-                                    returnReceiptProvider(
-                                      context,
-                                    ).returnproductsRecordByDayOrWeek(
-                                      context,
-                                      returnReceiptProvider(
-                                        context,
-                                      ).produtRecordSalesMain,
-                                    ),
+                                    // returnReceiptProvider(
+                                    //   context,
+                                    // ).returnproductsRecordByDayOrWeek(
+                                    //   context,
+                                    //   returnReceiptProvider(
+                                    //     context,
+                                    //   ).produtRecordSalesMain,
+                                    // ),
                                   ),
                                   currentUser: userGeneral(
                                     context,
@@ -383,13 +392,12 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                   value: returnReceiptProvider(
                                     context,
                                   ).getTotalRevenueForSelectedDay(
-                                    context,
                                     returnReceiptProvider(
                                       context,
                                     ).receipts,
-                                    returnReceiptProvider(
-                                      context,
-                                    ).produtRecordSalesMain,
+                                    // returnReceiptProvider(
+                                    //   context,
+                                    // ).produtRecordSalesMain,
                                   ),
                                 ),
 
@@ -421,7 +429,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                         icon:
                                             productIconSvg,
                                         number:
-                                            '${returnReceiptProvider(context).returnOwnReceiptsByDayOrWeek(context, receiptsLocal).length}',
+                                            '${returnReceiptProvider(context).returnOwnReceiptsByDayOrWeek(receiptsLocal).length}',
                                         title:
                                             'Todays Sales',
                                         action: () {
@@ -451,7 +459,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                             icon:
                                                 productIconSvg,
                                             number:
-                                                '${returnReceiptProvider(context).receipts.where((rec) => rec.isInvoice).length}',
+                                                '${returnInvoicesProvider(context: context).returnInvoicesByDayOrWeekAll().length}',
                                             title:
                                                 'Total Invoices',
                                             action: () {
@@ -473,10 +481,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                       builder: (
                                                         context,
                                                       ) {
-                                                        return TotalSalesPage(
-                                                          isInvoice:
-                                                              true,
-                                                        );
+                                                        return InvoiceListPage();
                                                       },
                                                     ),
                                                   );
@@ -609,8 +614,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                       visible: authorization(
                                                         authorized:
                                                             Authorizations().employeePage,
-                                                        context:
-                                                            context,
                                                       ),
                                                       child: ButtonTab(
                                                         theme:
@@ -642,8 +645,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                       visible: authorization(
                                                         authorized:
                                                             Authorizations().employeePage,
-                                                        context:
-                                                            context,
                                                       ),
                                                       child: SizedBox(
                                                         width:
@@ -676,12 +677,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                 builder: (
                                                                   context,
                                                                 ) {
-                                                                  return TotalSalesPage(
-                                                                    turnOff:
-                                                                        true,
-                                                                    isInvoice:
-                                                                        true,
-                                                                  );
+                                                                  return InvoiceListPage();
                                                                 },
                                                               ),
                                                             );
@@ -799,12 +795,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                                 builder: (
                                                                   context,
                                                                 ) {
-                                                                  return TotalSalesPage(
-                                                                    turnOff:
-                                                                        true,
-                                                                    isInvoice:
-                                                                        true,
-                                                                  );
+                                                                  return InvoiceListPage();
                                                                 },
                                                               ),
                                                             );
@@ -855,8 +846,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                       visible: authorization(
                                                         authorized:
                                                             Authorizations().employeePage,
-                                                        context:
-                                                            context,
                                                       ),
                                                       child: ButtonTab(
                                                         theme:
@@ -888,8 +877,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                                       visible: authorization(
                                                         authorized:
                                                             Authorizations().employeePage,
-                                                        context:
-                                                            context,
                                                       ),
                                                       child: SizedBox(
                                                         width:
@@ -1315,7 +1302,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
                     visible: authorization(
                       authorized:
                           Authorizations().contactStockall,
-                      context: context,
                     ),
                     child: Align(
                       alignment: Alignment(

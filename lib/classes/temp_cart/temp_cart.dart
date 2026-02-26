@@ -9,7 +9,9 @@ class TempCart {
   int paymentMethod;
   double? discount;
   bool isReceiptEdit;
+  // bool isInvoiceEdit;
   String? receiptUuidEdit;
+  String? invoiceUuidEdit;
   DateTime? createdDate;
   bool setCustomPrice;
   double? fixedDiscount;
@@ -25,7 +27,9 @@ class TempCart {
     this.discount,
     this.isSettingDiscountOpen = false,
     this.isReceiptEdit = false,
+    // this.isInvoiceEdit = false,
     this.receiptUuidEdit,
+    this.invoiceUuidEdit,
     this.setCustomPrice = false,
     this.createdDate,
     this.fixedDiscount,

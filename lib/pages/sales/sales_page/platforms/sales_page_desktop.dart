@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/checkout_response.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_notification/temp_notification.dart';
-import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/calendar/calendar_widget.dart';
 import 'package:stockall/components/list_tiles/main_receipt_tile.dart';
@@ -60,21 +60,21 @@ class _SalesPageDesktopState
     return tempGet;
   }
 
-  List<TempProductSaleRecord> getProductSalesRecord() {
-    var tempRecords =
-        returnReceiptProvider(
-          context,
-          listen: false,
-        ).produtRecordSalesMain;
+  // List<TempProductSaleRecord> getProductSalesRecord() {
+  //   var tempRecords =
+  //       returnReceiptProvider(
+  //         context,
+  //         listen: false,
+  //       ).produtRecordSalesMain;
 
-    return tempRecords
-        .where(
-          (beans) =>
-              beans.shopId ==
-              returnShopProvider().userShop()!.shopId!,
-        )
-        .toList();
-  }
+  //   return tempRecords
+  //       .where(
+  //         (beans) =>
+  //             beans.shopId ==
+  //             returnShopProvider().userShop()!.shopId!,
+  //       )
+  //       .toList();
+  // }
 
   final GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>();
@@ -211,8 +211,6 @@ class _SalesPageDesktopState
                                               authorized:
                                                   Authorizations()
                                                       .viewDate,
-                                              context:
-                                                  context,
                                             ),
                                             isMoney1: true,
                                             mainTitle:
@@ -231,13 +229,9 @@ class _SalesPageDesktopState
                                             value1: returnReceiptProvider(
                                               context,
                                             ).getTotalRevenueForSelectedDay(
-                                              context,
                                               returnReceiptProvider(
                                                 context,
                                               ).receipts,
-                                              returnReceiptProvider(
-                                                context,
-                                              ).produtRecordSalesMain,
                                             ),
                                             color2:
                                                 Colors
@@ -249,7 +243,6 @@ class _SalesPageDesktopState
                                                       context,
                                                     )
                                                     .returnOwnReceiptsByDayOrWeek(
-                                                      context,
                                                       returnReceiptProvider(
                                                         context,
                                                       ).receipts,
@@ -408,7 +401,6 @@ class _SalesPageDesktopState
                                                       context,
                                                     )
                                                     .returnOwnReceiptsByDayOrWeek(
-                                                      context,
                                                       returnReceiptProvider(
                                                         context,
                                                       ).receipts,
@@ -464,7 +456,6 @@ class _SalesPageDesktopState
                                                                 context,
                                                               )
                                                               .returnOwnReceiptsByDayOrWeek(
-                                                                context,
                                                                 returnReceiptProvider(
                                                                   context,
                                                                 ).receipts,
@@ -481,7 +472,6 @@ class _SalesPageDesktopState
                                                                   context,
                                                                 )
                                                                 .returnOwnReceiptsByDayOrWeek(
-                                                                  context,
                                                                   returnReceiptProvider(
                                                                     context,
                                                                   ).receipts,
@@ -496,8 +486,12 @@ class _SalesPageDesktopState
                                                                   context,
                                                                 ) {
                                                                   return ReceiptPage(
-                                                                    receiptUuid:
-                                                                        mainReceipt.uuid!,
+                                                                    response: CheckoutResponse(
+                                                                      resUuid:
+                                                                          mainReceipt.uuid!,
+                                                                      isReceipt:
+                                                                          true,
+                                                                    ),
                                                                     isMain:
                                                                         false,
                                                                   );

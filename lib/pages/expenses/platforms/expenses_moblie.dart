@@ -109,7 +109,6 @@ class _ExpensesMoblieState extends State<ExpensesMoblie> {
                         authorization(
                               authorized:
                                   Authorizations().viewDate,
-                              context: context,
                             )
                             ? 250
                             : 235,
@@ -150,7 +149,6 @@ class _ExpensesMoblieState extends State<ExpensesMoblie> {
                                     authorized:
                                         Authorizations()
                                             .viewDate,
-                                    context: context,
                                   ),
                                   isMoney1: true,
                                   mainTitle:

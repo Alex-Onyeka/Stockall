@@ -101,7 +101,6 @@ class _SalesAndRevenueReportMobileState
         returnReceiptProvider(
           context,
         ).returnproductsRecordByDayOrWeek(
-          context,
           returnReceiptProvider(
             context,
           ).produtRecordSalesMain,
@@ -525,7 +524,6 @@ class _SalesAndRevenueReportMobileState
                           visible: authorization(
                             authorized:
                                 Authorizations().viewDate,
-                            context: context,
                           ),
                           child: Row(
                             mainAxisAlignment:

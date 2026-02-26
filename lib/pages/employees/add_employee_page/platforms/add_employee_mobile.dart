@@ -181,8 +181,6 @@ class _AddEmployeeMobileState
                                             authorized:
                                                 Authorizations()
                                                     .addEmployee,
-                                            context:
-                                                context,
                                           ),
                                           child: Row(
                                             spacing: 5,
@@ -235,7 +233,6 @@ class _AddEmployeeMobileState
                                       authorized:
                                           Authorizations()
                                               .addEmployee,
-                                      context: context,
                                     ),
 
                                     child: ListView.builder(

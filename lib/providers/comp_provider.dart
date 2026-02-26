@@ -69,7 +69,7 @@ class CompProvider extends ChangeNotifier {
                       ),
                     ),
                     Align(
-                      alignment: Alignment(0, 0.1),
+                      alignment: Alignment(0, 0.15),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 60.0,
@@ -135,6 +135,87 @@ class CompProvider extends ChangeNotifier {
                         ),
                         child: Text(
                           message ?? 'Success',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color:
+                                themeProvider
+                                    .lightModeColor
+                                    .prColor300,
+                            fontSize:
+                                themeProvider
+                                    .mobileTexts
+                                    .h2
+                                    .fontSize,
+                            fontWeight:
+                                themeProvider
+                                    .mobileTexts
+                                    .h2
+                                    .fontWeightBold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget showError(String? message) {
+    return Material(
+      child: Container(
+        color: const Color.fromARGB(251, 255, 255, 255),
+        child: Center(
+          child: Column(
+            children: [
+              Expanded(
+                child: Stack(
+                  children: [
+                    Align(
+                      alignment: Alignment(0, -0.25),
+                      child: Container(
+                        padding: EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: const Color.fromARGB(
+                              60,
+                              255,
+                              0,
+                              0,
+                            ),
+                          ),
+                          color: const Color.fromARGB(
+                            35,
+                            255,
+                            0,
+                            25,
+                          ),
+                        ),
+                        child: Icon(
+                          size: 50,
+                          color: const Color.fromARGB(
+                            255,
+                            255,
+                            54,
+                            40,
+                          ),
+                          Icons.clear,
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment(0, 0.25),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 60.0,
+                        ),
+                        child: Text(
+                          message ?? 'Error',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color:

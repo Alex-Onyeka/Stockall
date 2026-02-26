@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/checkout_response.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_notification/temp_notification.dart';
-import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/calendar/calendar_widget.dart';
 import 'package:stockall/components/list_tiles/main_receipt_tile.dart';
@@ -56,21 +56,21 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
     return tempGet;
   }
 
-  List<TempProductSaleRecord> getProductSalesRecord() {
-    var tempRecords =
-        returnReceiptProvider(
-          context,
-          listen: false,
-        ).produtRecordSalesMain;
+  // List<TempProductSaleRecord> getProductSalesRecord() {
+  //   var tempRecords =
+  //       returnReceiptProvider(
+  //         context,
+  //         listen: false,
+  //       ).produtRecordSalesMain;
 
-    return tempRecords
-        .where(
-          (beans) =>
-              beans.shopId ==
-              returnShopProvider().userShop()!.shopId!,
-        )
-        .toList();
-  }
+  //   return tempRecords
+  //       .where(
+  //         (beans) =>
+  //             beans.shopId ==
+  //             returnShopProvider().userShop()!.shopId!,
+  //       )
+  //       .toList();
+  // }
 
   final GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>();
@@ -182,7 +182,6 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                 authorized:
                                     Authorizations()
                                         .viewDate,
-                                context: context,
                               ),
                               isMoney1: true,
                               mainTitle: 'Sales Summary',
@@ -197,13 +196,12 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                               value1: returnReceiptProvider(
                                 context,
                               ).getTotalRevenueForSelectedDay(
-                                context,
                                 returnReceiptProvider(
                                   context,
                                 ).receipts,
-                                returnReceiptProvider(
-                                  context,
-                                ).produtRecordSalesMain,
+                                // returnReceiptProvider(
+                                //   context,
+                                // ).produtRecordSalesMain,
                               ),
                               color2: Colors.amber,
                               title2: 'Sales Number',
@@ -212,7 +210,6 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                         context,
                                       )
                                       .returnOwnReceiptsByDayOrWeek(
-                                        context,
                                         returnReceiptProvider(
                                           context,
                                         ).receipts,
@@ -360,7 +357,6 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                         context,
                                       )
                                       .returnOwnReceiptsByDayOrWeek(
-                                        context,
                                         returnReceiptProvider(
                                           context,
                                         ).receipts,
@@ -413,7 +409,6 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                                   context,
                                                 )
                                                 .returnOwnReceiptsByDayOrWeek(
-                                                  context,
                                                   returnReceiptProvider(
                                                     context,
                                                   ).receipts,
@@ -430,7 +425,6 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                                     context,
                                                   )
                                                   .returnOwnReceiptsByDayOrWeek(
-                                                    context,
                                                     returnReceiptProvider(
                                                       context,
                                                     ).receipts,
@@ -445,8 +439,12 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                                     context,
                                                   ) {
                                                     return ReceiptPage(
-                                                      receiptUuid:
-                                                          mainReceipt.uuid!,
+                                                      response: CheckoutResponse(
+                                                        resUuid:
+                                                            mainReceipt.uuid!,
+                                                        isReceipt:
+                                                            true,
+                                                      ),
                                                       isMain:
                                                           false,
                                                     );

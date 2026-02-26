@@ -310,8 +310,6 @@ class TotalExpensesDesktopState
                                                 authorized:
                                                     Authorizations()
                                                         .viewDate,
-                                                context:
-                                                    context,
                                               ),
                                               child:
                                                   SizedBox(
@@ -324,8 +322,6 @@ class TotalExpensesDesktopState
                                                 authorized:
                                                     Authorizations()
                                                         .viewDate,
-                                                context:
-                                                    context,
                                               ),
                                               child: Row(
                                                 mainAxisAlignment:

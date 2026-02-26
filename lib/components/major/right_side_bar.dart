@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:stockall/classes/checkout_response.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -278,7 +279,6 @@ class RightSideBar extends StatelessWidget {
                         builder: (context) {
                           if (returnReceiptProvider(context)
                                   .returnOwnReceiptsByDayOrWeek(
-                                    context,
                                     returnReceiptProvider(
                                       context,
                                     ).receipts,
@@ -286,7 +286,6 @@ class RightSideBar extends StatelessWidget {
                                   .isEmpty ||
                               returnReceiptProvider(context)
                                   .returnproductsRecordByDayOrWeek(
-                                    context,
                                     returnReceiptProvider(
                                       context,
                                     ).produtRecordSalesMain,
@@ -338,7 +337,6 @@ class RightSideBar extends StatelessWidget {
                                           context,
                                         )
                                         .returnOwnReceiptsByDayOrWeek(
-                                          context,
                                           returnReceiptProvider(
                                             context,
                                           ).receipts,
@@ -352,7 +350,6 @@ class RightSideBar extends StatelessWidget {
                                       returnReceiptProvider(
                                         context,
                                       ).returnOwnReceiptsByDayOrWeek(
-                                        context,
                                         returnReceiptProvider(
                                           context,
                                         ).receipts,
@@ -409,8 +406,12 @@ class RightSideBar extends StatelessWidget {
                                                 context,
                                               ) {
                                                 return ReceiptPage(
-                                                  receiptUuid:
-                                                      rec.uuid!,
+                                                  response: CheckoutResponse(
+                                                    resUuid:
+                                                        rec.uuid!,
+                                                    isReceipt:
+                                                        true,
+                                                  ),
                                                   isMain:
                                                       false,
                                                 );
@@ -469,9 +470,11 @@ class RightSideBar extends StatelessWidget {
                                                     ),
                                                     cutLongText(
                                                       formatMoneyMid(
-                                                        amount:
-                                                            rec.bank +
-                                                            rec.cashAlt,
+                                                        amount: returnReceiptProvider(
+                                                          context,
+                                                        ).getTotalMainRevenueReceipt(
+                                                          rec,
+                                                        ),
                                                         context:
                                                             context,
                                                       ),

@@ -33,7 +33,7 @@ class _MakeSalesPageState extends State<MakeSalesPage> {
           .isReceiptEdit) {
         if (returnSalesProvider().currentCart().discount !=
             null) {
-          returnSalesProvider().addGeneralDiscount(
+          returnSalesProvider().addPercentageDiscount(
             returnSalesProvider().currentCart().discount,
           );
         }
@@ -41,7 +41,7 @@ class _MakeSalesPageState extends State<MakeSalesPage> {
                 .currentCart()
                 .fixedDiscount !=
             null) {
-          returnSalesProvider().addGeneralFixedDiscount(
+          returnSalesProvider().addFixedDiscount(
             returnSalesProvider()
                 .currentCart()
                 .fixedDiscount,

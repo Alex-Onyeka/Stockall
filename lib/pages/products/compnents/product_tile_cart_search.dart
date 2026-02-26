@@ -213,13 +213,12 @@ class _ProductTileCartSearchState
                                               : 'Price Not Set')
                                           : formatMoneyMid(
                                             amount:
-                                                (widget
-                                                        .product
-                                                        .sellingPrice ??
-                                                    0.0 *
-                                                        (1 -
-                                                            (widget.product.discount! /
-                                                                100))),
+                                                ((widget.product.sellingPrice ??
+                                                        0.0) -
+                                                    ((widget.product.sellingPrice ??
+                                                            0.0) *
+                                                        (widget.product.discount! /
+                                                            100))),
                                             context:
                                                 context,
                                           ),

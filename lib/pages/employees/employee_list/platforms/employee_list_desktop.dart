@@ -153,7 +153,6 @@ class _EmployeeListDesktopState
                       visible: authorization(
                         authorized:
                             Authorizations().addEmployee,
-                        context: context,
                       ),
                       child: FloatingActionButtonMain(
                         theme: theme,

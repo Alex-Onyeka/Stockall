@@ -9,6 +9,7 @@ import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/small_button_main.dart';
 import 'package:stockall/components/buttons/toggle_total_price.dart';
 import 'package:stockall/components/cart_queue/cart_queue_desktop.dart';
+import 'package:stockall/components/discount_setter.dart/discount_setter_widget.dart';
 import 'package:stockall/components/major/desktop_page_container.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
@@ -1286,20 +1287,18 @@ class _MakeSalesDesktopState
         );
       }
       for (var cart in returnSalesProvider().cartQueue) {
-        // print(cart.id);
         await returnMultiDisplayProvider().updateWindow(
           cartClass: AltCartClass(
             cartId: cart.id!,
             currency:
                 returnShopProvider().userShop()!.currency,
             cartItems: cart.cartItems.reversed.toList(),
-            // subTotal: returnSalesProvider().calcTotalMain(),
-            // total:
-            //     returnSalesProvider().calcFinalTotalMain(),
             vat:
                 returnShopProvider().userShop()!.applyVAT!
                     ? vat
                     : 0,
+            fixedDiscount: cart.fixedDiscount,
+            percentDiscount: cart.discount,
           ),
         );
       }
@@ -1329,8 +1328,12 @@ class _MakeSalesDesktopState
                   .cartItems
                   .reversed
                   .toList(),
-          // subTotal: returnSalesProvider().calcTotalMain(),
-          // total: returnSalesProvider().calcFinalTotalMain(),
+          fixedDiscount:
+              returnSalesProvider()
+                  .currentCart()
+                  .fixedDiscount,
+          percentDiscount:
+              returnSalesProvider().currentCart().discount,
           vat:
               returnShopProvider().userShop()!.applyVAT!
                   ? vat
@@ -1640,7 +1643,6 @@ class _MakeSalesDesktopState
                                       authorized:
                                           Authorizations()
                                               .addProduct,
-                                      context: context,
                                     )) {
                                       return EmptyWidgetDisplayOnly(
                                         title:
@@ -2607,68 +2609,82 @@ class _MakeSalesDesktopState
                                             amount:
                                                 returnSalesProviderContext(
                                                   context,
-                                                ).calcTotalMain(),
+                                                ).calcSubTotal(),
                                             context:
                                                 context,
                                           ),
                                         ),
                                       ],
                                     ),
-                                    // SizedBox(height: 5),
-                                    // Row(
-                                    //   mainAxisAlignment:
-                                    //       MainAxisAlignment
-                                    //           .spaceBetween,
-                                    //   children: [
-                                    //     Row(
-                                    //       children: [
-                                    //         Text(
-                                    //           style: TextStyle(
-                                    //             fontSize:
-                                    //                 theme
-                                    //                     .mobileTexts
-                                    //                     .b4
-                                    //                     .fontSize,
-                                    //             // fontWeight: FontWeight.bold,
-                                    //           ),
-                                    //           'Discount',
-                                    //         ),
-                                    //         Visibility(
-                                    //           visible:
-                                    //               returnSalesProvider(
-                                    //                 context,
-                                    //               ).currentCart().discount !=
-                                    //               null,
-                                    //           child: Text(
-                                    //             style: TextStyle(
-                                    //               fontSize:
-                                    //                   theme
-                                    //                       .mobileTexts
-                                    //                       .b4
-                                    //                       .fontSize,
-                                    //               fontWeight:
-                                    //                   FontWeight
-                                    //                       .bold,
-                                    //               // fontWeight: FontWeight.bold,
-                                    //             ),
-                                    //             ' (${returnSalesProvider(context).currentCart().discount?.toStringAsFixed(0)}%)',
-                                    //           ),
-                                    //         ),
-                                    //       ],
-                                    //     ),
-                                    //     Text(
-                                    //       style: TextStyle(
-                                    //         fontSize:
-                                    //             theme
-                                    //                 .mobileTexts
-                                    //                 .b4
-                                    //                 .fontSize,
-                                    //         // fontWeight: FontWeight.bold,
-                                    //       ),
-                                    //       '- ${formatMoney(returnSalesProvider(context).calcDiscountMain(), context)}',
-                                    //     ),
-                                    //   ],
-                                    // ),
+                                    Visibility(
+                                      visible:
+                                          returnSalesProviderContext(
+                                                    context,
+                                                  )
+                                                  .currentCart()
+                                                  .discount !=
+                                              null ||
+                                          returnSalesProviderContext(
+                                                    context,
+                                                  )
+                                                  .currentCart()
+                                                  .fixedDiscount !=
+                                              null,
+                                      child: Column(
+                                        children: [
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .spaceBetween,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          theme.mobileTexts.b4.fontSize,
+                                                      // fontWeight: FontWeight.bold,
+                                                    ),
+                                                    'Discount',
+                                                  ),
+                                                  Visibility(
+                                                    visible:
+                                                        returnSalesProviderContext(
+                                                          context,
+                                                        ).currentCart().discount !=
+                                                        null,
+                                                    child: Text(
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            theme.mobileTexts.b4.fontSize,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        // fontWeight: FontWeight.bold,
+                                                      ),
+                                                      ' (${returnSalesProviderContext(context).currentCart().discount?.toStringAsFixed(0)}%)',
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      theme
+                                                          .mobileTexts
+                                                          .b4
+                                                          .fontSize,
+                                                  // fontWeight: FontWeight.bold,
+                                                ),
+                                                '- ${formatMoney(returnSalesProviderContext(context).calcDiscountMain(), context)}',
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                     Column(
                                       children: [
                                         SizedBox(height: 5),
@@ -2695,7 +2711,7 @@ class _MakeSalesDesktopState
                                                         FontWeight.bold,
                                                     // fontWeight: FontWeight.bold,
                                                   ),
-                                                  ' (${returnShopProvider().userShop()!.applyVAT! ? vat : 0}%)',
+                                                  ' (${returnShopProvider().getVat()}%)',
                                                 ),
                                               ],
                                             ),
@@ -2753,19 +2769,44 @@ class _MakeSalesDesktopState
                                             amount:
                                                 returnSalesProviderContext(
                                                   context,
-                                                ).calcFinalTotalMain(),
+                                                ).calcFinalTotal(),
                                             context:
                                                 context,
                                           ),
                                         ),
                                       ],
                                     ),
-                                    // SizedBox(height: 5),
+                                    SizedBox(height: 5),
 
-                                    // DiscountSetterWidgets(
-                                    //   discountPercentController:
-                                    //       discountPercentController,
-                                    // ),
+                                    DiscountSetterWidget(
+                                      discountPercentController:
+                                          discountPercentController,
+                                      addListener: () {
+                                        _node
+                                            .requestFocus();
+                                        _node.addListener(
+                                          keepBarcodeFocused,
+                                        );
+                                      },
+                                      removeListener: () {
+                                        var number = 2;
+                                        for (
+                                          var i = 0;
+                                          i < number;
+                                          i++
+                                        ) {
+                                          if (_node
+                                              .hasFocus) {
+                                            _node.removeListener(
+                                              keepBarcodeFocused,
+                                            );
+                                          }
+                                          print(
+                                            "${_node.hasFocus} Beans",
+                                          );
+                                        }
+                                      },
+                                    ),
                                     SizedBox(height: 10),
                                     MainButtonP(
                                       themeProvider: theme,
@@ -2783,7 +2824,7 @@ class _MakeSalesDesktopState
                                                 return MakeSalesTwo(
                                                   totalAmount:
                                                       returnSalesProvider()
-                                                          .calcFinalTotalMain(),
+                                                          .calcFinalTotal(),
                                                 );
                                               },
                                             ),

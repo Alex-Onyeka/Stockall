@@ -20,6 +20,9 @@ import 'package:stockall/local_database/events_log/unsync_funcs/created_events_l
 import 'package:stockall/local_database/expenses/unsync_funcs/created_expenses/created_expenses_func.dart';
 import 'package:stockall/local_database/expenses/unsync_funcs/deleted_expenses/deleted_expenses_func.dart';
 import 'package:stockall/local_database/expenses/unsync_funcs/updated_expenses/updated_expenses_func.dart';
+import 'package:stockall/local_database/invoices/unsync_funcs/created/created_invoices_func.dart';
+import 'package:stockall/local_database/invoices/unsync_funcs/deleted/deleted_invoices_func.dart';
+import 'package:stockall/local_database/invoices/unsync_funcs/updated/updated_invoices_func.dart';
 import 'package:stockall/local_database/main_receipt/unsync_funcs/created/created_receipts_func.dart';
 import 'package:stockall/local_database/main_receipt/unsync_funcs/deleted/deleted_receipts_func.dart';
 import 'package:stockall/local_database/main_receipt/unsync_funcs/updated/updated_receipts_func.dart';
@@ -34,6 +37,7 @@ import 'package:stockall/local_database/shop_logos/created_shop_logo/created_sho
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/providers/department_provider.dart';
+import 'package:stockall/providers/invoices_provider.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -661,6 +665,34 @@ class DataProvider extends ChangeNotifier {
               print('Finished Syncing Deleted Departments');
               setSyncProgress(21);
             }
+            if (CreatedInvoicesFunc()
+                    .getInvoices()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnInvoicesProvider()
+                  .createInvoicesSync();
+              print('Finished Syncing Created Invoices');
+              setSyncProgress(22);
+            }
+            if (UpdatedInvoicesFunc()
+                    .getInvoiceIds()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await InvoicesProvider().updateInvoicesSync();
+              print('Finished Syncing Updated Invoices');
+              setSyncProgress(23);
+            }
+            if (DeletedInvoicesFunc()
+                    .getInvoiceIds()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await InvoicesProvider().deleteInvoicesSync();
+              print('Finished Syncing Deleted Invoices');
+              setSyncProgress(24);
+            }
             await clearTotalCache();
             toggleSyncing(false);
           }
@@ -707,7 +739,7 @@ class DataProvider extends ChangeNotifier {
   bool isSyncing = false;
   double syncProgress = 0;
   void setSyncProgress(int value) {
-    syncProgress = (value / 21) * 100;
+    syncProgress = (value / 24) * 100;
     notifyListeners();
   }
 
@@ -753,7 +785,10 @@ class DataProvider extends ChangeNotifier {
               .isEmpty &&
           DeletedDepartmentsFunc()
               .getDepartmentIds()
-              .isEmpty
+              .isEmpty &&
+          CreatedInvoicesFunc().getInvoices().isEmpty &&
+          UpdatedInvoicesFunc().getInvoiceIds().isEmpty &&
+          DeletedInvoicesFunc().getInvoiceIds().isEmpty
       // && DeletedRecordsFunc().getRecordIds().isEmpty &&
       // IncrementedProductsFunc()
       //     .getIncrementedProducts()

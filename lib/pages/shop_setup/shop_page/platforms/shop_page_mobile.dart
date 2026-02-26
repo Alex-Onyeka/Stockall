@@ -495,7 +495,6 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                 authorized:
                                     Authorizations()
                                         .editReceiptTemplate,
-                                context: context,
                               ),
                               child: Expanded(
                                 child: MainButtonTransparent(

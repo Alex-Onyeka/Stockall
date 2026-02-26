@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
@@ -6,6 +5,7 @@ import 'package:stockall/main.dart';
 class TempCartItem {
   final TempProductClass item;
   double? discount;
+  double? fixedDiscount;
   double quantity;
   double? customPrice;
   bool setCustomPrice;
@@ -17,6 +17,7 @@ class TempCartItem {
     required this.item,
     required this.quantity,
     required this.discount,
+    this.fixedDiscount,
     this.customPrice,
     this.setCustomPrice = true,
     required this.addToStock,
@@ -27,6 +28,7 @@ class TempCartItem {
   Map<String, dynamic> toJson() => {
     'item': item.toJson(),
     'discount': discount,
+    'fixed_discount': fixedDiscount,
     'quantity': quantity,
     'customPrice': customPrice,
     'setCustomPrice': setCustomPrice,
@@ -45,17 +47,26 @@ class TempCartItem {
       addToStock: json['addToStock'],
       setTotalPrice: json['setTotalPrice'],
       salesRecordId: json['salesRecordId'],
+      fixedDiscount: json['fixed_discount'],
     );
   }
 
   double? returnDiscount() {
-    return discount ?? item.discount;
+    return discount;
+  }
+
+  double? returnFixedDiscount() {
+    return fixedDiscount;
   }
 
   double discountCost() {
-    if (returnDiscount() != null) {
+    if (item.discount != null) {
+      return (totalCost() * ((item.discount ?? 0) / 100));
+    } else if (returnDiscount() != null) {
       return (totalCost() *
           ((returnDiscount() ?? 0) / 100));
+    } else if (returnFixedDiscount() != null) {
+      return returnFixedDiscount() ?? 0;
     } else {
       return 0;
     }
@@ -75,7 +86,7 @@ class TempCartItem {
     }
   }
 
-  double revenue(BuildContext context) {
+  double revenue() {
     if (returnShopProvider().userShop()!.applyVAT!) {
       return (totalCost() - discountCost()) +
           (totalCost() * (vat / 100));
@@ -90,9 +101,9 @@ class TempCartItem {
         : item.costPrice * quantity;
   }
 
-  double profitOrLoss() {
-    return item.costPrice == 0
-        ? 0
-        : totalCost() - (costPrice() ?? 0);
-  }
+  // double profitOrLoss() {
+  //   return item.costPrice == 0
+  //       ? 0
+  //       : totalCost() - (costPrice() ?? 0);
+  // }
 }

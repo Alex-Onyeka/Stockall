@@ -6,9 +6,9 @@ import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/payment_type_button.dart';
 import 'package:stockall/components/cart_queue/cart_queue_mobile.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
+import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
-import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
@@ -23,6 +23,7 @@ class MakeSalesMobileTwo extends StatefulWidget {
   final TextEditingController cashController;
   final TextEditingController bankController;
   final TextEditingController customerController;
+  final TextEditingController partPaymentController;
   const MakeSalesMobileTwo({
     super.key,
     required this.searchController,
@@ -30,6 +31,7 @@ class MakeSalesMobileTwo extends StatefulWidget {
     required this.cashController,
     required this.customerController,
     required this.totalAmount,
+    required this.partPaymentController,
   });
 
   @override
@@ -160,7 +162,7 @@ class _MakeSalesMobileTwoState
                                                     FontWeight
                                                         .bold,
                                               ),
-                                              'Select Customer (Optional)',
+                                              'Select Customer ${returnSalesProviderContext(context).currentCart().isInvoice ? '' : '(Optional)'}',
                                             ),
                                             Icon(
                                               color:
@@ -247,18 +249,29 @@ class _MakeSalesMobileTwoState
                                         ),
                                       ],
                                     ),
-                                    IconButton(
-                                      onPressed: () {
-                                        returnCustomers(
-                                          context,
-                                          listen: false,
-                                        ).clearSelectedCustomer(
-                                          context,
-                                        );
-                                        setState(() {});
-                                      },
-                                      icon: Icon(
-                                        Icons.clear,
+                                    Visibility(
+                                      visible:
+                                          (returnSalesProvider()
+                                                          .currentCart()
+                                                          .isReceiptEdit &&
+                                                      returnSalesProvider().currentCart().invoiceUuidEdit !=
+                                                          null) ==
+                                                  true
+                                              ? false
+                                              : true,
+                                      child: IconButton(
+                                        onPressed: () {
+                                          returnCustomers(
+                                            context,
+                                            listen: false,
+                                          ).clearSelectedCustomer(
+                                            context,
+                                          );
+                                          setState(() {});
+                                        },
+                                        icon: Icon(
+                                          Icons.clear,
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -327,6 +340,8 @@ class _MakeSalesMobileTwoState
                                       context: context,
                                       index: 0,
                                     );
+                                widget.partPaymentController
+                                    .clear();
                               },
                               child: Container(
                                 width: 50,
@@ -407,6 +422,48 @@ class _MakeSalesMobileTwoState
                           color: Colors.grey.shade300,
                         ),
                         SizedBox(height: 10),
+                        Visibility(
+                          visible:
+                              returnSalesProviderContext(
+                                context,
+                              ).currentCart().isInvoice,
+                          child: Column(
+                            children: [
+                              MoneyTextfield(
+                                title:
+                                    'Make Part Payment (Optional)',
+                                hint:
+                                    'Enter Amount (Optional)',
+                                controller:
+                                    widget
+                                        .partPaymentController,
+                                theme: theme,
+                                onChanged: (value) {
+                                  if (value.isNotEmpty &&
+                                      (double.tryParse(
+                                                value
+                                                    .replaceAll(
+                                                      ',',
+                                                      '',
+                                                    ),
+                                              ) ??
+                                              0) >=
+                                          returnSalesProvider()
+                                              .calcFinalTotal()) {
+                                    widget
+                                        .partPaymentController
+                                        .text = '0';
+                                  }
+                                },
+                              ),
+                              SizedBox(height: 10),
+                              Divider(
+                                color: Colors.grey.shade300,
+                              ),
+                              SizedBox(height: 10),
+                            ],
+                          ),
+                        ),
                         Column(
                           children: [
                             Row(
@@ -646,69 +703,87 @@ class _MakeSalesMobileTwoState
                                       amount:
                                           returnSalesProviderContext(
                                             context,
-                                          ).calcTotalMain(),
+                                          ).calcSubTotal(),
                                       context: context,
                                     ),
                                   ),
                                 ],
                               ),
-                              // SizedBox(height: 0),
-                              // Row(
-                              //   mainAxisAlignment:
-                              //       MainAxisAlignment
-                              //           .spaceBetween,
-                              //   children: [
-                              //     Row(
-                              //       children: [
-                              //         Text(
-                              //           style: TextStyle(
-                              //             fontSize:
-                              //                 theme
-                              //                     .mobileTexts
-                              //                     .b2
-                              //                     .fontSize,
-                              //             // fontWeight: FontWeight.bold,
-                              //           ),
-                              //           'Discount',
-                              //         ),
-                              //         Visibility(
-                              //           visible:
-                              //               returnSalesProvider(
-                              //                     context,
-                              //                   )
-                              //                   .currentCart()
-                              //                   .discount !=
-                              //               null,
-                              //           child: Text(
-                              //             style: TextStyle(
-                              //               fontSize:
-                              //                   theme
-                              //                       .mobileTexts
-                              //                       .b2
-                              //                       .fontSize,
-                              //               fontWeight:
-                              //                   FontWeight
-                              //                       .bold,
-                              //               // fontWeight: FontWeight.bold,
-                              //             ),
-                              //             ' (${returnSalesProvider(context).currentCart().discount?.toStringAsFixed(0)}%)',
-                              //           ),
-                              //         ),
-                              //       ],
-                              //     ),
-                              //     Text(
-                              //       style: TextStyle(
-                              //         fontSize:
-                              //             theme
-                              //                 .mobileTexts
-                              //                 .b2
-                              //                 .fontSize,
-                              //         // fontWeight: FontWeight.bold,
-                              //       ),
-                              //       '- ${formatMoney(returnSalesProvider(context).calcDiscountMain(), context)}',
-                              //     ),
-                              //   ],
-                              // ),
+                              Visibility(
+                                visible:
+                                    returnSalesProviderContext(
+                                              context,
+                                            )
+                                            .currentCart()
+                                            .discount !=
+                                        null ||
+                                    returnSalesProviderContext(
+                                              context,
+                                            )
+                                            .currentCart()
+                                            .fixedDiscount !=
+                                        null,
+                                child: Column(
+                                  children: [
+                                    SizedBox(height: 5),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment
+                                              .spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b4
+                                                        .fontSize,
+                                                // fontWeight: FontWeight.bold,
+                                              ),
+                                              'Discount',
+                                            ),
+                                            Visibility(
+                                              visible:
+                                                  returnSalesProviderContext(
+                                                    context,
+                                                  ).currentCart().discount !=
+                                                  null,
+                                              child: Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      theme
+                                                          .mobileTexts
+                                                          .b4
+                                                          .fontSize,
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                  // fontWeight: FontWeight.bold,
+                                                ),
+                                                ' (${returnSalesProviderContext(context).currentCart().discount?.toStringAsFixed(0)}%)',
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b4
+                                                    .fontSize,
+                                            // fontWeight: FontWeight.bold,
+                                          ),
+                                          '- ${formatMoney(returnSalesProviderContext(context).calcDiscountMain(), context)}',
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+
                               Column(
                                 children: [
                                   SizedBox(height: 5),
@@ -742,7 +817,7 @@ class _MakeSalesMobileTwoState
                                                       .bold,
                                               // fontWeight: FontWeight.bold,
                                             ),
-                                            ' (${returnShopProvider().userShop()!.applyVAT! ? vat : 0}%)',
+                                            ' (${returnShopProvider().getVat()}%)',
                                           ),
                                         ],
                                       ),
@@ -753,7 +828,6 @@ class _MakeSalesMobileTwoState
                                                   .mobileTexts
                                                   .b4
                                                   .fontSize,
-                                          // fontWeight: FontWeight.bold,
                                         ),
                                         formatMoney(
                                           returnSalesProviderContext(
@@ -798,7 +872,7 @@ class _MakeSalesMobileTwoState
                                       amount:
                                           returnSalesProviderContext(
                                             context,
-                                          ).calcFinalTotalMain(),
+                                          ).calcFinalTotal(),
                                       context: context,
                                     ),
                                   ),
@@ -820,176 +894,200 @@ class _MakeSalesMobileTwoState
                         child: MainButtonP(
                           themeProvider: theme,
                           action: () {
-                            // var suggP =
-                            //     returnSuggestionProvider(
-                            //       context,
-                            //       listen: false,
-                            //     );
                             BuildContext safeContext =
                                 context;
-                            showDialog(
-                              context: safeContext,
-                              builder: (_) {
-                                return ConfirmationAlert(
-                                  theme: theme,
-                                  message:
-                                      returnSalesProvider()
-                                              .currentCart()
-                                              .isReceiptEdit
-                                          ? "You are about to update this sales Receipt, are you sure you want to Proceed?"
-                                          : returnSalesProvider()
-                                              .currentCart()
-                                              .isInvoice
-                                          ? 'You are about to record a Sale on Credit, are you sure you want to proceed?'
-                                          : 'You are about to record a Sale, are you sure you want to proceed?',
-                                  title:
-                                      returnSalesProvider()
-                                              .currentCart()
-                                              .isReceiptEdit
-                                          ? 'Update Receipt?'
-                                          : returnSalesProvider()
-                                              .currentCart()
-                                              .isInvoice
-                                          ? 'Sell on Credit?'
-                                          : 'Are you sure?',
-                                  action: () async {
-                                    setState(() {
-                                      isLoading = true;
-                                    });
-                                    if (safeContext
-                                        .mounted) {
-                                      Navigator.of(
-                                        safeContext,
-                                      ).pop();
-                                    }
-                                    var receipt = await returnSalesProvider().checkoutMain(
-                                      context: context,
-                                      salesCartItem:
-                                          returnSalesProvider()
-                                              .currentCart(),
-                                      staffId:
-                                          AuthService()
-                                              .currentUser!,
-                                      staffName:
-                                          returnUserProvider(
+                            if (returnSalesProvider()
+                                    .currentCart()
+                                    .isInvoice &&
+                                returnSalesProvider()
+                                        .currentCart()
+                                        .selectedCustomer ==
+                                    null) {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return InfoAlert(
+                                    theme: theme,
+                                    message:
+                                        'You need to select a Customer before you can create an invoice.',
+                                    title:
+                                        'Customer not Set',
+                                  );
+                                },
+                              );
+                            } else {
+                              showDialog(
+                                context: safeContext,
+                                builder: (_) {
+                                  return ConfirmationAlert(
+                                    theme: theme,
+                                    message:
+                                        returnSalesProvider()
+                                                .currentCart()
+                                                .isReceiptEdit
+                                            ? "You are about to update this sales Receipt, are you sure you want to Proceed?"
+                                            : returnSalesProvider()
+                                                .currentCart()
+                                                .isInvoice
+                                            ? 'You are about to record a Sale on Credit, are you sure you want to proceed?'
+                                            : 'You are about to record a Sale, are you sure you want to proceed?',
+                                    title:
+                                        returnSalesProvider()
+                                                .currentCart()
+                                                .isReceiptEdit
+                                            ? 'Update Receipt?'
+                                            : returnSalesProvider()
+                                                .currentCart()
+                                                .isInvoice
+                                            ? 'Sell on Credit?'
+                                            : 'Are you sure?',
+                                    action: () async {
+                                      setState(() {
+                                        isLoading = true;
+                                      });
+                                      if (safeContext
+                                          .mounted) {
+                                        Navigator.of(
+                                          safeContext,
+                                        ).pop();
+                                      }
+                                      var res = await returnSalesProvider().checkoutMain(
+                                        context: context,
+                                        salesCartItem:
+                                            returnSalesProvider()
+                                                .currentCart(),
+                                        staffId:
+                                            AuthService()
+                                                .currentUser!,
+                                        staffName:
+                                            returnUserProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                )
+                                                .currentUserMain!
+                                                .name,
+                                        shopId:
+                                            returnShopProvider()
+                                                .userShop()!
+                                                .shopId!,
+                                        bank:
+                                            returnSalesProvider()
+                                                        .returnPaymentMethod() ==
+                                                    'Split'
+                                                ? double.tryParse(
+                                                      widget
+                                                          .bankController
+                                                          .text,
+                                                    ) ??
+                                                    0
+                                                : returnSalesProvider()
+                                                        .returnPaymentMethod() ==
+                                                    'Bank'
+                                                ? returnSalesProvider()
+                                                    .calcFinalTotal()
+                                                : 0,
+                                        cashAlt:
+                                            returnSalesProvider()
+                                                        .returnPaymentMethod() ==
+                                                    'Split'
+                                                ? double.tryParse(
+                                                      widget
+                                                          .cashController
+                                                          .text,
+                                                    ) ??
+                                                    0
+                                                : returnSalesProvider()
+                                                        .returnPaymentMethod() ==
+                                                    'Bank'
+                                                ? 0
+                                                : returnSalesProvider()
+                                                    .calcFinalTotal(),
+                                        paymentMethod:
+                                            returnSalesProvider()
+                                                .returnPaymentMethod(),
+                                        customerUuid:
+                                            returnSalesProvider()
+                                                .currentCart()
+                                                .selectedCustomer,
+
+                                        customerName:
+                                            returnSalesProvider()
+                                                .currentCart()
+                                                .selectedCustomerName,
+                                        partPayment:
+                                            double.tryParse(
+                                              widget
+                                                  .partPaymentController
+                                                  .text
+                                                  .replaceAll(
+                                                    ',',
+                                                    '',
+                                                  ),
+                                            ),
+                                      );
+
+                                      // await suggP
+                                      //     .createSuggestions();
+                                      // suggP
+                                      //     .clearSuggestions();
+                                      setState(() {
+                                        isLoading = false;
+                                        showSuccess = true;
+                                      });
+
+                                      await Future.delayed(
+                                        Duration(
+                                          seconds: 3,
+                                        ),
+                                        () {},
+                                      );
+                                      if (context.mounted) {
+                                        if (res == null) {
+                                          showDialog(
+                                            context:
                                                 context,
-                                                listen:
-                                                    false,
-                                              )
-                                              .currentUserMain!
-                                              .name,
-                                      shopId:
-                                          returnShopProvider()
-                                              .userShop()!
-                                              .shopId!,
-                                      bank:
-                                          returnSalesProvider()
-                                                      .returnPaymentMethod() ==
-                                                  'Split'
-                                              ? double.tryParse(
-                                                    widget
-                                                        .bankController
-                                                        .text,
-                                                  ) ??
-                                                  0
-                                              : returnSalesProvider()
-                                                      .returnPaymentMethod() ==
-                                                  'Bank'
-                                              ? returnSalesProvider()
-                                                  .calcFinalTotalMain()
-                                              : 0,
-                                      cashAlt:
-                                          returnSalesProvider()
-                                                      .returnPaymentMethod() ==
-                                                  'Split'
-                                              ? double.tryParse(
-                                                    widget
-                                                        .cashController
-                                                        .text,
-                                                  ) ??
-                                                  0
-                                              : returnSalesProvider()
-                                                      .returnPaymentMethod() ==
-                                                  'Bank'
-                                              ? 0
-                                              : returnSalesProvider()
-                                                  .calcFinalTotalMain(),
-                                      paymentMethod:
-                                          returnSalesProvider()
-                                              .returnPaymentMethod(),
-                                      customerUuid:
-                                          returnSalesProvider()
-                                              .currentCart()
-                                              .selectedCustomer,
-
-                                      customerName:
-                                          returnSalesProvider()
-                                              .currentCart()
-                                              .selectedCustomerName,
-                                    );
-
-                                    if (context.mounted) {
-                                      if (receipt == null) {
-                                        setState(() {
-                                          isLoading = false;
-                                          showSuccess =
-                                              false;
-                                        });
-
-                                        showDialog(
-                                          context: context,
-                                          builder: (
-                                            context,
-                                          ) {
-                                            return InfoAlert(
-                                              theme: theme,
-                                              message:
-                                                  'An Error occoured while processing this sale. Please try again later.',
-                                              title:
-                                                  'Sale Unsuccessful',
-                                            );
-                                          },
-                                        );
-                                      } else {
-                                        setState(() {
-                                          isLoading = false;
-                                          showSuccess =
-                                              true;
-                                        });
-
-                                        await Future.delayed(
-                                          Duration(
-                                            seconds: 3,
-                                          ),
-                                          () {},
-                                        );
-                                        Navigator.pushAndRemoveUntil(
-                                          // ignore: use_build_context_synchronously
-                                          context,
-                                          MaterialPageRoute(
                                             builder: (
                                               context,
                                             ) {
-                                              return ReceiptPage(
-                                                receiptUuid:
-                                                    receipt
-                                                        .uuid!,
-                                                isMain:
-                                                    true,
+                                              return InfoAlert(
+                                                theme:
+                                                    theme,
+                                                message:
+                                                    'An Error occoured while processing this sale. Please try again later.',
+                                                title:
+                                                    'Failed Sale!',
                                               );
                                             },
-                                          ),
-                                          (route) => false,
-                                        );
+                                          );
+                                        } else {
+                                          Navigator.pushAndRemoveUntil(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (
+                                                context,
+                                              ) {
+                                                return ReceiptPage(
+                                                  response:
+                                                      res,
+                                                  isMain:
+                                                      true,
+                                                );
+                                              },
+                                            ),
+                                            (route) =>
+                                                false,
+                                          );
+                                        }
                                       }
-                                    }
-                                    setState(() {
-                                      showSuccess = false;
-                                    });
-                                  },
-                                );
-                              },
-                            );
+                                      setState(() {
+                                        showSuccess = false;
+                                      });
+                                    },
+                                  );
+                                },
+                              );
+                            }
                           },
                           text:
                               returnSalesProviderContext(

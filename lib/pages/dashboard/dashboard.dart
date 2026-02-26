@@ -39,7 +39,6 @@ class _DashboardState extends State<Dashboard> {
       listen: false,
     ).loadReceipts(
       returnShopProvider().userShop()!.shopId!,
-      context,
     );
     setState(() {});
   }

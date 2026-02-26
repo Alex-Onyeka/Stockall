@@ -286,7 +286,6 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                                           authorized:
                                               Authorizations()
                                                   .addProduct,
-                                          context: context,
                                         )
                                     ? true
                                     : false,
@@ -364,7 +363,6 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                               authorized:
                                   Authorizations()
                                       .manageInventoryStorage,
-                              context: context,
                             ) &&
                             shop(
                                   context,

@@ -13,6 +13,7 @@ import 'package:stockall/providers/app_version_provider.dart';
 import 'package:stockall/providers/data_provider.dart';
 import 'package:stockall/providers/events_log_provider.dart';
 import 'package:stockall/providers/expenses_provider.dart';
+import 'package:stockall/providers/invoices_provider.dart';
 import 'package:stockall/providers/notifications_provider.dart';
 import 'package:stockall/providers/receipts_provider.dart';
 import 'package:stockall/providers/shop_provider.dart';
@@ -22,6 +23,7 @@ class RefreshFunctions {
   late final ShopProvider shopProvider;
   // late final SuggestionsProvider suggestionProvider;
   late final ReceiptsProvider receiptsProvider;
+  late final InvoicesProvider invoicesProvider;
   late final NotificationProvider notificationProvider;
   late final ExpensesProvider expensesProvider;
   late final UserProvider userProvider;
@@ -39,6 +41,7 @@ class RefreshFunctions {
       context,
       listen: false,
     );
+    invoicesProvider = returnInvoicesProvider();
     notificationProvider = returnNotificationProvider(
       context,
       listen: false,
@@ -82,11 +85,10 @@ class RefreshFunctions {
   bool isUpdateLodaingWeb = false;
   bool isUpdateLodaingMobile = false;
 
-  Future<void> getMainReceipts(BuildContext context) async {
+  Future<void> getMainReceipts() async {
     print('Starting to get receipts');
     await receiptsProvider.loadReceipts(
       shopProvider.userShop()!.shopId!,
-      context,
     );
   }
 
@@ -106,13 +108,51 @@ class RefreshFunctions {
             action: () async {
               Navigator.of(context).pop();
               await returnData().syncData(safeContext);
-              await getMainReceipts(safeContext);
+              await getMainReceipts();
             },
           );
         },
       );
     } else {
-      await getMainReceipts(safeContext);
+      await getMainReceipts();
+    }
+  }
+  //
+  //
+  //
+  //
+  //
+
+  Future<void> getInvoices() async {
+    print('Starting to get receipts');
+    await invoicesProvider.loadInvoices(
+      shopProvider.userShop()!.shopId!,
+    );
+  }
+
+  Future<void> refreshInvoices(context) async {
+    var safeContext = context;
+    bool isOnline = await checkOnline();
+    await appVersionP.getAppVersion(context);
+    if (isOnline && isSynced() == 0) {
+      showDialog(
+        context: context,
+        builder: (confirmContext) {
+          return ConfirmationAlert(
+            theme: returnTheme(context, listen: false),
+            message:
+                'You have unsynced Records, are you sure you want to proceed?',
+            title: 'Unsynced Records Detected',
+            action: () async {
+              Navigator.of(confirmContext).pop();
+              await returnData().syncData(safeContext);
+              await getInvoices();
+            },
+          );
+        },
+      );
+    } else {
+      await getInvoices();
     }
   }
   //
@@ -539,8 +579,9 @@ class RefreshFunctions {
                   "Allowed Items RefreshAll: ${dataProvider.allowedRangeItems}",
                 );
                 if (safeContext.mounted) {
-                  await getMainReceipts(safeContext);
+                  await getMainReceipts();
                 }
+                // await getInvoices();
                 await getEventLogs();
                 await getExpenses();
                 await getEmployees();
@@ -568,9 +609,10 @@ class RefreshFunctions {
           "Allowed Items RefreshAll: ${dataProvider.allowedRangeItems}",
         );
         if (safeContext.mounted) {
-          await getMainReceipts(safeContext);
+          await getMainReceipts();
         }
         // await getProductSalesRecord();
+        // await getInvoices();
         await getEventLogs();
         await getExpenses();
         await getEmployees();

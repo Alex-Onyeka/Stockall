@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
+import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_notification/temp_notification.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
@@ -32,10 +33,10 @@ import 'package:stockall/pages/dashboard/components/top_nav_bar.dart';
 import 'package:stockall/pages/dashboard/components/total_sales_banner.dart';
 import 'package:stockall/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockall/pages/expenses/expenses_page.dart';
+import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
 import 'package:stockall/pages/report/report_page.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
-import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class DashboardDesktop extends StatefulWidget {
@@ -85,9 +86,17 @@ class _DashboardDesktopState
     var tempReceipts = await returnReceiptProvider(
       context,
       listen: false,
-    ).loadReceipts(widget.shopId!, context);
+    ).loadReceipts(widget.shopId!);
 
     return tempReceipts;
+  }
+
+  // late Future<List<TempInvoice>> invoicesFuture;
+  Future<List<TempInvoice>> getInvoices() async {
+    var invoices = await returnInvoicesProvider()
+        .loadInvoices(widget.shopId!);
+
+    return invoices;
   }
 
   bool isLoading = false;
@@ -399,7 +408,6 @@ class _DashboardDesktopState
                                                       userValue: returnReceiptProvider(
                                                         context,
                                                       ).getTotalRevenueForSelectedDay(
-                                                        context,
                                                         returnReceiptProvider(
                                                               context,
                                                             ).receipts
@@ -413,14 +421,14 @@ class _DashboardDesktopState
                                                                   ).name,
                                                             )
                                                             .toList(),
-                                                        returnReceiptProvider(
-                                                          context,
-                                                        ).returnproductsRecordByDayOrWeek(
-                                                          context,
-                                                          returnReceiptProvider(
-                                                            context,
-                                                          ).produtRecordSalesMain,
-                                                        ),
+                                                        // returnReceiptProvider(
+                                                        //   context,
+                                                        // ).returnproductsRecordByDayOrWeek(
+                                                        //   context,
+                                                        //   returnReceiptProvider(
+                                                        //     context,
+                                                        //   ).produtRecordSalesMain,
+                                                        // ),
                                                       ),
                                                       currentUser: userGeneral(
                                                         context,
@@ -430,13 +438,12 @@ class _DashboardDesktopState
                                                       value: returnReceiptProvider(
                                                         context,
                                                       ).getTotalRevenueForSelectedDay(
-                                                        context,
                                                         returnReceiptProvider(
                                                           context,
                                                         ).receipts,
-                                                        returnReceiptProvider(
-                                                          context,
-                                                        ).produtRecordSalesMain,
+                                                        // returnReceiptProvider(
+                                                        //   context,
+                                                        // ).produtRecordSalesMain,
                                                       ),
                                                     ),
                                                   ),
@@ -553,7 +560,7 @@ class _DashboardDesktopState
                                                       icon:
                                                           productIconSvg,
                                                       number:
-                                                          '${returnReceiptProvider(context).returnOwnReceiptsByDayOrWeek(context, receiptsLocal).length}',
+                                                          '${returnReceiptProvider(context).returnOwnReceiptsByDayOrWeek(receiptsLocal).length}',
                                                       title:
                                                           'Sales',
                                                       action: () {
@@ -631,7 +638,7 @@ class _DashboardDesktopState
                                                         icon:
                                                             productIconSvg,
                                                         number:
-                                                            '${returnReceiptProvider(context).receipts.where((rec) => rec.isInvoice).length}',
+                                                            '${returnInvoicesProvider(context: context).returnInvoicesByDayOrWeekAll().length}',
                                                         title:
                                                             'Invoices',
                                                         action: () {
@@ -653,10 +660,7 @@ class _DashboardDesktopState
                                                                   builder: (
                                                                     context,
                                                                   ) {
-                                                                    return TotalSalesPage(
-                                                                      isInvoice:
-                                                                          true,
-                                                                    );
+                                                                    return InvoiceListPage();
                                                                   },
                                                                 ),
                                                               );
@@ -787,8 +791,6 @@ class _DashboardDesktopState
                                                               visible: authorization(
                                                                 authorized:
                                                                     Authorizations().employeePage,
-                                                                context:
-                                                                    context,
                                                               ),
                                                               child: ButtonTab(
                                                                 theme:
@@ -827,8 +829,6 @@ class _DashboardDesktopState
                                                               visible: authorization(
                                                                 authorized:
                                                                     Authorizations().employeePage,
-                                                                context:
-                                                                    context,
                                                               ),
                                                               child: SizedBox(
                                                                 width:
@@ -861,12 +861,7 @@ class _DashboardDesktopState
                                                                         builder: (
                                                                           context,
                                                                         ) {
-                                                                          return TotalSalesPage(
-                                                                            turnOff:
-                                                                                true,
-                                                                            isInvoice:
-                                                                                true,
-                                                                          );
+                                                                          return InvoiceListPage();
                                                                         },
                                                                       ),
                                                                     );
@@ -940,7 +935,6 @@ class _DashboardDesktopState
                                     authorized:
                                         Authorizations()
                                             .contactStockall,
-                                    context: context,
                                   ),
                                   child: Align(
                                     alignment: Alignment(

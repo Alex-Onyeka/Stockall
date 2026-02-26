@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/checkout_response.dart';
 import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
+import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
@@ -201,34 +203,88 @@ class SalesProvider extends ChangeNotifier {
         .toList();
   }
 
-  void addGeneralFixedDiscount(double? discount) {
+  double
+  calcSalesRecalcFixedDiscountPercentageAmountcordRevenue({
+    // required double receiptOriginalCost,
+    required double fixedDiscountAmount,
+    required double itemCost,
+  }) {
+    double itemPercent =
+        ((fixedDiscountAmount * 100) / calcSubTotal());
+    print("Item Percent: $itemPercent");
+    double result =
+        ((itemPercent * itemCost) / 100).roundToDouble();
+    print("Result $result");
+    return result;
+  }
+
+  void addFixedDiscount(double? discount) {
     currentCart().fixedDiscount = discount;
     currentCart().discount = null;
-    var disc = (((discount ?? 0) / calcTotalMain()) * 100);
+    // var disc = (((discount ?? 0) / calcSubTotal()) * 100);
     for (var item in currentCart().cartItems) {
-      item.discount = disc;
-      print("${item.item.name}: ${item.discount}");
+      item.discount = null;
+      item.fixedDiscount =
+          calcSalesRecalcFixedDiscountPercentageAmountcordRevenue(
+            fixedDiscountAmount: (discount ?? 0),
+            itemCost: item.totalCost(),
+          );
+      print(
+        "General Fixed ${item.item.name}: ${item.fixedDiscount}  ${item.revenue()}",
+      );
     }
     print(currentCart().fixedDiscount);
+    print(currentCart().discount);
+    returnMultiDisplayProvider().updateWindow(
+      cartClass: AltCartClass(
+        cartId: currentCart().id!,
+        currency: returnShopProvider().userShop()!.currency,
+        cartItems:
+            currentCart().cartItems.reversed.toList(),
+        vat:
+            returnShopProvider().userShop()!.applyVAT!
+                ? vat
+                : 0,
+        fixedDiscount: currentCart().fixedDiscount,
+        percentDiscount: currentCart().discount,
+      ),
+    );
     notifyListeners();
   }
 
-  void addGeneralDiscount(double? discount) {
+  void addPercentageDiscount(double? discount) {
     currentCart().discount = discount;
     currentCart().fixedDiscount = null;
     for (var item in currentCart().cartItems) {
       item.discount = discount;
-      print("${item.item.name}: ${item.discount}");
+      item.fixedDiscount = null;
+      print(
+        "${item.item.name}: ${item.discount} ${item.revenue()}",
+      );
     }
+    returnMultiDisplayProvider().updateWindow(
+      cartClass: AltCartClass(
+        cartId: currentCart().id!,
+        currency: returnShopProvider().userShop()!.currency,
+        cartItems:
+            currentCart().cartItems.reversed.toList(),
+        vat:
+            returnShopProvider().userShop()!.applyVAT!
+                ? vat
+                : 0,
+        fixedDiscount: currentCart().fixedDiscount,
+        percentDiscount: currentCart().discount,
+      ),
+    );
     notifyListeners();
   }
 
   void addAnyDiscount() {
     if (currentCart().discount != null) {
-      addGeneralDiscount(currentCart().discount);
+      addPercentageDiscount(currentCart().discount);
     }
     if (currentCart().fixedDiscount != null) {
-      addGeneralFixedDiscount(currentCart().fixedDiscount);
+      addFixedDiscount(currentCart().fixedDiscount);
     }
   }
 
@@ -275,7 +331,31 @@ class SalesProvider extends ChangeNotifier {
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
 
-  Future<TempMainReceipt?> checkoutMain({
+  double calcSalesRecordRevenue({
+    required double invoceTotalAmount,
+    required double receiptPayment,
+    required double salesRecodRevenue,
+  }) {
+    double paymentPercent =
+        ((receiptPayment * 100) / invoceTotalAmount);
+    double result =
+        (paymentPercent * salesRecodRevenue) / 100;
+    return result;
+  }
+
+  double getTotalMainRevenueInvoice({
+    TempInvoice? invoice,
+  }) {
+    if (invoice != null) {
+      var total = ((invoice.bank + invoice.cashAlt));
+
+      return total;
+    } else {
+      return 0;
+    }
+  }
+
+  Future<CheckoutResponse?> checkoutMain({
     required BuildContext context,
     required TempCart salesCartItem,
     required String staffId,
@@ -284,6 +364,7 @@ class SalesProvider extends ChangeNotifier {
     required String paymentMethod,
     required double cashAlt,
     required double bank,
+    double? partPayment,
     // int? customerId,
     String? customerUuid,
     String? customerName,
@@ -292,332 +373,669 @@ class SalesProvider extends ChangeNotifier {
     final createdAt =
         currentCart().createdDate?.toUtc() ??
         DateTime.now().toUtc();
-    final uuid = currentCart().receiptUuidEdit ?? uuidGen();
-    TempMainReceipt receipt = TempMainReceipt(
-      createdAt: createdAt,
-      shopId: shopId,
-      staffId: staffId,
-      staffName: staffName,
-      paymentMethod: paymentMethod,
-      bank: bank,
-      cashAlt: cashAlt,
-      isInvoice: salesCartItem.isInvoice,
-      customerName: customerName,
-      customerUuid: customerUuid,
-      uuid: uuid,
-      generalDiscount: currentCart().discount,
-      fixedDiscount: currentCart().fixedDiscount,
-    );
-    if (currentCart().receiptUuidEdit != null) {
-      print(
-        'Receipt UUid is not null: ${currentCart().receiptUuidEdit}',
+
+    if (currentCart().isInvoice) {
+      print('Current Sale is Invoice');
+      TempInvoice invoice = TempInvoice(
+        createdAt: createdAt,
+        shopId: shopId,
+        staffId: staffId,
+        staffName: staffName,
+        paymentMethod: paymentMethod,
+        bank: bank,
+        cashAlt: cashAlt,
+        customerName: customerName,
+        customerUuid: customerUuid,
+        uuid:
+            returnSalesProvider()
+                .currentCart()
+                .invoiceUuidEdit ??
+            uuidGen(),
+        generalDiscount: currentCart().discount,
+        fixedDiscount: currentCart().fixedDiscount,
+        vat:
+            returnShopProvider().userShop()?.applyVAT ==
+                    true
+                ? vat
+                : null,
+        originalCost: calcSubTotal(),
       );
+      TempInvoice? invoiceRes;
       try {
-        await returnReceiptProvider(
-          // ignore: use_build_context_synchronously
-          context,
-          listen: false,
-        ).deleteReceipt(
-          receipt,
-          [],
-          // ignore: use_build_context_synchronously
-          context,
+        if (currentCart().invoiceUuidEdit != null) {
+          print(
+            'Invoice UUid is not null: ${currentCart().invoiceUuidEdit}',
+          );
+          try {
+            await returnInvoicesProvider().deleteInvoice(
+              invoice,
+              [],
+            );
+            await returnEventsLogProvider().createLog(
+              returnEventsLogProvider().invoiceAdapter(
+                invoice,
+                salesCartItem.cartItems
+                    .map((item) => item.item.name)
+                    .toList(),
+                2,
+              ),
+            );
+          } catch (e) {
+            print(
+              'Error Deleting Invoice: ${e.toString()}',
+            );
+            return null;
+          }
+        } else {
+          await returnEventsLogProvider().createLog(
+            returnEventsLogProvider().invoiceAdapter(
+              invoice,
+              salesCartItem.cartItems
+                  .map((item) => item.item.name)
+                  .toList(),
+              1,
+            ),
+          );
+          print('Invoice Uuid is null');
+        }
+        invoiceRes = await returnInvoicesProvider()
+            .createInvoices(invoice);
+        print('Invoice Created Success');
+      } catch (e) {
+        print('Error Creating Invoice: ${e.toString()}');
+        return null;
+      }
+
+      try {
+        String? receiptUuid;
+
+        double? partPaymentValue(String meth) {
+          if (paymentMethod == meth) {
+            return partPayment;
+          } else {
+            return null;
+          }
+        }
+
+        if (partPayment != null && partPayment != 0) {
+          receiptUuid = uuidGen();
+
+          TempMainReceipt receipt = TempMainReceipt(
+            createdAt: createdAt,
+            shopId: shopId,
+            staffId: staffId,
+            staffName: staffName,
+            paymentMethod: paymentMethod,
+            bank: partPaymentValue('Bank') ?? bank,
+            cashAlt: partPaymentValue('Cash') ?? cashAlt,
+            isInvoice: false, //salesCartItem.isInvoice,
+            customerName: customerName,
+            customerUuid: customerUuid,
+            invoiceUuid: invoiceRes?.uuid,
+            uuid: receiptUuid,
+            generalDiscount: currentCart().discount,
+            fixedDiscount: currentCart().fixedDiscount,
+            vat:
+                returnShopProvider().userShop()?.applyVAT ==
+                        true
+                    ? vat
+                    : null,
+            originalCost: calcSubTotal(),
+            balance: calcFinalTotal() - partPayment,
+          );
+
+          print('Checkout Started');
+          await returnReceiptProvider(
+            // ignore: use_build_context_synchronously
+            context,
+            listen: false,
+          ).createReceipt(receipt);
+          print('Receipt Created');
+
+          await returnEventsLogProvider().createLog(
+            returnEventsLogProvider().receiptAdapter(
+              receipt,
+              salesCartItem.cartItems
+                  .map((item) => item.item.name)
+                  .toList(),
+              1,
+            ),
+          );
+
+          final productSaleRecords =
+              salesCartItem.cartItems.map((cartItem) {
+                final product = cartItem.item;
+
+                print(
+                  'Sales Record For Receipt about to be Created',
+                );
+
+                return TempProductSaleRecord(
+                  customPriceSet: cartItem.setCustomPrice,
+                  createdAt: createdAt,
+                  productId: product.id ?? 0,
+                  productUuid: product.uuid,
+                  productName: product.name,
+                  shopId: product.shopId,
+                  staffId: staffId,
+                  // customerId: customerId,
+                  customerUuid: customerUuid,
+                  customerName: customerName,
+                  staffName: staffName,
+                  recepitId: 0,
+                  receiptUuid: receiptUuid,
+                  quantity: cartItem.quantity,
+                  revenue: calcSalesRecordRevenue(
+                    invoceTotalAmount:
+                        getTotalMainRevenueInvoice(
+                          invoice: invoiceRes,
+                        ),
+                    receiptPayment: partPayment,
+                    salesRecodRevenue: cartItem.revenue(),
+                  ),
+                  discountedAmount: cartItem.discountCost(),
+                  originalCost: cartItem.totalCost(),
+                  discount: cartItem.discount,
+                  fixedDiscount: cartItem.fixedDiscount,
+                  costPrice: cartItem.costPrice(),
+                  addToStock: cartItem.addToStock,
+                  departmentName:
+                      cartItem.item.departmentName,
+                  departmentUuid:
+                      cartItem.item.departmentUuid,
+                  uuid: cartItem.salesRecordId ?? uuidGen(),
+                  isProductManaged: cartItem.item.isManaged,
+                  setTotalPrice: cartItem.setTotalPrice,
+                  // invoiceUuid: invoiceRes?.uuid,
+                );
+              }).toList();
+
+          if (context.mounted) {
+            print('Creating Record Sales About to Start');
+            await returnReceiptProvider(
+              context,
+              listen: false,
+            ).createProductSaleRecord(productSaleRecords);
+          }
+          print('Sales Record Inserted');
+        }
+
+        try {
+          // Step 2: Create product sale records
+          final productSaleRecords =
+              salesCartItem.cartItems.map((cartItem) {
+                final product = cartItem.item;
+
+                print('Sales Record about to be Created');
+
+                return TempProductSaleRecord(
+                  customPriceSet: cartItem.setCustomPrice,
+                  createdAt: createdAt,
+                  productId: product.id ?? 0,
+                  productUuid: product.uuid,
+                  productName: product.name,
+                  shopId: product.shopId,
+                  staffId: staffId,
+                  // customerId: customerId,
+                  customerUuid: customerUuid,
+                  customerName: customerName,
+                  staffName: staffName,
+                  recepitId: 0,
+                  // receiptUuid: receiptUuid,
+                  quantity: cartItem.quantity,
+                  revenue: cartItem.revenue(),
+                  discountedAmount: cartItem.discountCost(),
+                  originalCost: cartItem.totalCost(),
+                  discount: cartItem.discount,
+                  fixedDiscount: cartItem.fixedDiscount,
+                  costPrice: cartItem.costPrice(),
+                  addToStock: cartItem.addToStock,
+                  departmentName:
+                      cartItem.item.departmentName,
+                  departmentUuid:
+                      cartItem.item.departmentUuid,
+                  uuid: cartItem.salesRecordId ?? uuidGen(),
+                  isProductManaged: cartItem.item.isManaged,
+                  setTotalPrice: cartItem.setTotalPrice,
+                  invoiceUuid: invoiceRes?.uuid,
+                );
+              }).toList();
+
+          if (context.mounted) {
+            print('Creating Record Sales About to Start');
+            await returnReceiptProvider(
+              context,
+              listen: false,
+            ).createProductSaleRecord(productSaleRecords);
+          }
+          print('Sales Record Inserted');
+
+          try {
+            // Step 3: Decrement quantity via RPC
+            for (final cartItem
+                in salesCartItem.cartItems) {
+              if (((cartItem.item.quantity ?? 0) > 0) &&
+                  cartItem.item.isManaged) {
+                if (isOnline) {
+                  await supabase.rpc(
+                    'decrement_product_quantity_new',
+                    params: {
+                      'p_product_uuid': cartItem.item.uuid,
+                      'p_quantity':
+                          cartItem.quantity.toInt(),
+                    },
+                  );
+                } else {
+                  await ProductsFunc().deductQuantity(
+                    isOnline: isOnline,
+                    quantity: cartItem.quantity,
+                    uuid: cartItem.item.uuid!,
+                  );
+                }
+              }
+            }
+
+            try {
+              print('Products Decrementation Done');
+
+              // Step 4: Create new product for items with addToStock == true
+              for (final record in productSaleRecords) {
+                // ignore: use_build_context_synchronously
+                if (record.addToStock == true &&
+                    // ignore: use_build_context_synchronously
+                    returnData().productList
+                        .where(
+                          (pro) =>
+                              pro.name ==
+                              record.productName,
+                        )
+                        .isEmpty) {
+                  final double costPrice =
+                      (record.costPrice == null ||
+                              record.costPrice == 0)
+                          ? 0
+                          : record.costPrice!;
+
+                  final double sellingPrice =
+                      record.discount == null
+                          ? record.revenue / record.quantity
+                          : (record.originalCost ?? 0) /
+                              record.quantity;
+
+                  TempProductClass
+                  product = TempProductClass(
+                    name: record.productName,
+                    unit: 'Others',
+                    isRefundable: false,
+                    costPrice: costPrice,
+                    shopId: record.shopId,
+                    setCustomPrice: true,
+                    isManaged: false,
+                    barcode: null,
+                    brand: null,
+                    category: null,
+                    color: null,
+                    createdAt: DateTime.now(),
+                    departmentUuid: record.departmentUuid,
+                    departmentName: record.departmentName,
+                    discount: null,
+                    endDate: null,
+                    expiryDate: null,
+                    lowQtty: 10,
+                    quantity: null,
+                    sellingPrice: sellingPrice,
+                    size: null,
+                    sizeType: null,
+                    startDate: null,
+                    updatedAt: DateTime.now(),
+                    uuid: uuidGen(),
+                  );
+                  if (context.mounted) {
+                    await returnData().createProduct(
+                      product,
+                      context,
+                    );
+                  } else {
+                    print(
+                      'Context Not Mounted to Created New Product',
+                    );
+                  }
+                }
+              }
+              // Step 5: Reset state
+              // resetPaymentMethod();
+              cartQueue.length > 1
+                  ? await deleteCart(cartIdCache)
+                  : await clearCart();
+
+              if (context.mounted) {
+                returnCustomers(
+                  context,
+                  listen: false,
+                ).clearSelectedCustomer(context);
+                await returnReceiptProvider(
+                  context,
+                  listen: false,
+                ).loadReceipts(shopId);
+                if (context.mounted) {
+                  returnNavProvider(
+                    context,
+                    listen: false,
+                  ).navigate(0);
+                }
+              }
+              notifyListeners();
+              return CheckoutResponse(
+                resUuid: invoiceRes!.uuid!,
+                isReceipt: false,
+              );
+            } catch (e) {
+              print('Error Step 4: ${e.toString()}');
+              return null;
+            }
+          } catch (e) {
+            print('Error Step 3: ${e.toString()}');
+            return null;
+          }
+        } catch (e) {
+          print('Error Step 2: ${e.toString()}');
+          return null;
+        }
+      } catch (e) {
+        print('Error Step 1: ${e.toString()}');
+        return null;
+      }
+    } else {
+      print('Current Sale is Receipt');
+      print("Percent Discount: ${currentCart().discount}");
+      print(
+        'Fixed Discount: ${currentCart().fixedDiscount}',
+      );
+      final uuid =
+          currentCart().receiptUuidEdit ?? uuidGen();
+      TempMainReceipt receipt = TempMainReceipt(
+        createdAt: createdAt,
+        shopId: shopId,
+        staffId: staffId,
+        staffName: staffName,
+        paymentMethod: paymentMethod,
+        bank: bank,
+        cashAlt: cashAlt,
+        isInvoice: salesCartItem.isInvoice,
+        customerName: customerName,
+        customerUuid: customerUuid,
+        uuid: uuid,
+        generalDiscount: currentCart().discount,
+        fixedDiscount: currentCart().fixedDiscount,
+        vat:
+            returnShopProvider().userShop()?.applyVAT ==
+                    true
+                ? vat
+                : null,
+        originalCost: calcSubTotal(),
+        balance: null,
+      );
+      if (currentCart().receiptUuidEdit != null) {
+        print(
+          'Receipt UUid is not null: ${currentCart().receiptUuidEdit}',
         );
+        try {
+          await returnReceiptProvider(
+            // ignore: use_build_context_synchronously
+            context,
+            listen: false,
+          ).deleteReceipt(receipt, []);
+          await returnEventsLogProvider().createLog(
+            returnEventsLogProvider().receiptAdapter(
+              receipt,
+              salesCartItem.cartItems
+                  .map((item) => item.item.name)
+                  .toList(),
+              2,
+            ),
+          );
+        } catch (e) {
+          print('Error Deleting Receipt: ${e.toString()}');
+          return null;
+        }
+      } else {
         await returnEventsLogProvider().createLog(
           returnEventsLogProvider().receiptAdapter(
             receipt,
             salesCartItem.cartItems
                 .map((item) => item.item.name)
                 .toList(),
-            2,
+            1,
           ),
-          // ignore: use_build_context_synchronously
         );
-      } catch (e) {
-        print('Error Deleting Receipt: ${e.toString()}');
-        return null;
+        print('Receipt Uuid is null');
       }
-    } else {
-      await returnEventsLogProvider().createLog(
-        returnEventsLogProvider(
-          // ignore: use_build_context_synchronously
-        ).receiptAdapter(
-          receipt,
-          salesCartItem.cartItems
-              .map((item) => item.item.name)
-              .toList(),
-          1,
-        ),
-        // ignore: use_build_context_synchronously
-      );
-      print('Receipt Uuid is null');
-    }
 
-    print('Checkout Started');
-
-    try {
-      final receiptRes = await returnReceiptProvider(
-        // ignore: use_build_context_synchronously
-        context,
-        listen: false,
-      ).createReceipt(
-        receipt,
-        // ignore: use_build_context_synchronously
-        context,
-      );
-      print('Receipt Created');
-
-      final receiptId = receiptRes!.id;
-      final receiptUuid = receiptRes.uuid;
-      print(receiptId);
-      print(receiptUuid);
+      print('Checkout Started');
 
       try {
-        // Step 2: Create product sale records
-        final productSaleRecords =
-            salesCartItem.cartItems.map((cartItem) {
-              final product = cartItem.item;
+        final receiptRes = await returnReceiptProvider(
+          // ignore: use_build_context_synchronously
+          context,
+          listen: false,
+        ).createReceipt(receipt);
+        print('Receipt Created');
 
-              print('Sales Record about to be Created');
-
-              return TempProductSaleRecord(
-                customPriceSet: cartItem.setCustomPrice,
-                createdAt: createdAt,
-                productId: product.id ?? 0,
-                productUuid: product.uuid,
-                productName: product.name,
-                shopId: product.shopId,
-                staffId: staffId,
-                // customerId: customerId,
-                customerUuid: customerUuid,
-                customerName: customerName,
-                staffName: staffName,
-                recepitId: receiptId ?? 0,
-                receiptUuid: receiptUuid,
-                quantity: cartItem.quantity,
-                revenue: cartItem.revenue(context),
-                discountedAmount: cartItem.discountCost(),
-                originalCost: cartItem.totalCost(),
-                discount: cartItem.discount,
-                costPrice: cartItem.costPrice(),
-                addToStock: cartItem.addToStock,
-                departmentName:
-                    cartItem.item.departmentName,
-                departmentUuid:
-                    cartItem.item.departmentUuid,
-                uuid: cartItem.salesRecordId ?? uuidGen(),
-                isProductManaged: cartItem.item.isManaged,
-                setTotalPrice: cartItem.setTotalPrice,
-              );
-            }).toList();
-
-        if (context.mounted) {
-          print('Creating Record Sales About to Start');
-          await returnReceiptProvider(
-            context,
-            listen: false,
-          ).createProductSaleRecord(
-            productSaleRecords,
-            context,
-          );
-        }
-        print('Sales Record Inserted');
+        final receiptId = receiptRes!.id;
+        final receiptUuid = receiptRes.uuid;
+        // print(receiptId);
+        // print(receiptUuid);
 
         try {
-          // Step 3: Decrement quantity via RPC
-          for (final cartItem in salesCartItem.cartItems) {
-            if (((cartItem.item.quantity ?? 0) > 0) &&
-                cartItem.item.isManaged) {
-              if (isOnline) {
-                await supabase.rpc(
-                  'decrement_product_quantity_new',
-                  params: {
-                    'p_product_uuid': cartItem.item.uuid,
-                    'p_quantity': cartItem.quantity.toInt(),
-                  },
-                );
-              } else {
-                await ProductsFunc().deductQuantity(
-                  isOnline: isOnline,
+          // Step 2: Create product sale records
+          final productSaleRecords =
+              salesCartItem.cartItems.map((cartItem) {
+                final product = cartItem.item;
+
+                print('Sales Record about to be Created');
+
+                return TempProductSaleRecord(
+                  customPriceSet: cartItem.setCustomPrice,
+                  createdAt: createdAt,
+                  productId: product.id ?? 0,
+                  productUuid: product.uuid,
+                  productName: product.name,
+                  shopId: product.shopId,
+                  staffId: staffId,
+                  // customerId: customerId,
+                  customerUuid: customerUuid,
+                  customerName: customerName,
+                  staffName: staffName,
+                  recepitId: receiptId ?? 0,
+                  receiptUuid: receiptUuid,
                   quantity: cartItem.quantity,
-                  uuid: cartItem.item.uuid!,
+                  revenue:
+                      cartItem
+                          .revenue(), //cartItem.revenue(context),
+                  discountedAmount: cartItem.discountCost(),
+                  originalCost: cartItem.totalCost(),
+                  discount: cartItem.discount,
+                  fixedDiscount: cartItem.fixedDiscount,
+                  costPrice:
+                      cartItem
+                          .costPrice(), // cartItem.costPrice(),
+                  addToStock: cartItem.addToStock,
+                  departmentName:
+                      cartItem.item.departmentName,
+                  departmentUuid:
+                      cartItem.item.departmentUuid,
+                  uuid: cartItem.salesRecordId ?? uuidGen(),
+                  isProductManaged: cartItem.item.isManaged,
+                  setTotalPrice: cartItem.setTotalPrice,
                 );
-              }
-            }
+              }).toList();
+
+          if (context.mounted) {
+            print('Creating Record Sales About to Start');
+            await returnReceiptProvider(
+              context,
+              listen: false,
+            ).createProductSaleRecord(productSaleRecords);
           }
+          print('Sales Record Inserted');
 
           try {
-            print('Products Decrementation Done');
-
-            // Step 4: Create new product for items with addToStock == true
-            for (final record in productSaleRecords) {
-              // ignore: use_build_context_synchronously
-              if (record.addToStock == true &&
-                  // ignore: use_build_context_synchronously
-                  returnData().productList
-                      .where(
-                        (pro) =>
-                            pro.name == record.productName,
-                      )
-                      .isEmpty) {
-                final double costPrice =
-                    (record.costPrice == null ||
-                            record.costPrice == 0)
-                        ? 0
-                        : record.costPrice!;
-
-                final double sellingPrice =
-                    record.discount == null
-                        ? record.revenue / record.quantity
-                        : (record.originalCost ?? 0) /
-                            record.quantity;
-
-                TempProductClass product = TempProductClass(
-                  name: record.productName,
-                  unit: 'Others',
-                  isRefundable: false,
-                  costPrice: costPrice,
-                  shopId: record.shopId,
-                  setCustomPrice: true,
-                  isManaged: false,
-                  barcode: null,
-                  brand: null,
-                  category: null,
-                  color: null,
-                  createdAt: DateTime.now(),
-                  departmentUuid: record.departmentUuid,
-                  departmentName: record.departmentName,
-                  discount: null,
-                  endDate: null,
-                  expiryDate: null,
-                  lowQtty: 10,
-                  quantity: null,
-                  sellingPrice: sellingPrice,
-                  size: null,
-                  sizeType: null,
-                  startDate: null,
-                  updatedAt: DateTime.now(),
-                  uuid: uuidGen(),
-                );
-                if (context.mounted) {
-                  await returnData().createProduct(
-                    product,
-                    context,
+            // Step 3: Decrement quantity via RPC
+            for (final cartItem
+                in salesCartItem.cartItems) {
+              if (((cartItem.item.quantity ?? 0) > 0) &&
+                  cartItem.item.isManaged) {
+                if (isOnline) {
+                  await supabase.rpc(
+                    'decrement_product_quantity_new',
+                    params: {
+                      'p_product_uuid': cartItem.item.uuid,
+                      'p_quantity':
+                          cartItem.quantity.toInt(),
+                    },
                   );
                 } else {
-                  print(
-                    'Context Not Mounted to Created New Product',
+                  await ProductsFunc().deductQuantity(
+                    isOnline: isOnline,
+                    quantity: cartItem.quantity,
+                    uuid: cartItem.item.uuid!,
                   );
                 }
               }
             }
-            // Step 5: Reset state
-            // resetPaymentMethod();
-            cartQueue.length > 1
-                ? await deleteCart(cartIdCache)
-                : await clearCart();
 
-            // if (currentCart().receiptUuidEdit != null) {
-            //   await returnEventsLogProvider(
-            //     // ignore: use_build_context_synchronously
-            //     context,
-            //     listen: false,
-            //   ).createLog(
-            //     returnEventsLogProvider(
-            //       // ignore: use_build_context_synchronously
-            //       context,
-            //       listen: false,
-            //       // ignore: use_build_context_synchronously
-            //     ).receiptAdapter(
-            //       receipt,
-            //       productSaleRecords.last.productName,
-            //       context,
-            //       3,
-            //     ),
-            //     // ignore: use_build_context_synchronously
-            //     context,
-            //   );
-            // } else {
-            //   // await returnEventsLogProvider(
-            //   //   // ignore: use_build_context_synchronously
-            //   //   context,
-            //   //   listen: false,
-            //   // ).createLog(
-            //   //   returnEventsLogProvider(
-            //   //     // ignore: use_build_context_synchronously
-            //   //     context,
-            //   //     listen: false,
-            //   //     // ignore: use_build_context_synchronously
-            //   //   ).receiptAdapter(
-            //   //     receipt,
-            //   //     productSaleRecords.last.productName,
-            //   //     context,
-            //   //     1,
-            //   //   ),
-            //   //   // ignore: use_build_context_synchronously
-            //   //   context,
-            //   // );
-            // }
-            if (context.mounted) {
-              returnCustomers(
-                context,
-                listen: false,
-              ).clearSelectedCustomer(context);
-              await returnReceiptProvider(
-                context,
-                listen: false,
-              ).loadReceipts(shopId, context);
+            try {
+              print('Products Decrementation Done');
+
+              // Step 4: Create new product for items with addToStock == true
+              for (final record in productSaleRecords) {
+                // ignore: use_build_context_synchronously
+                if (record.addToStock == true &&
+                    // ignore: use_build_context_synchronously
+                    returnData().productList
+                        .where(
+                          (pro) =>
+                              pro.name ==
+                              record.productName,
+                        )
+                        .isEmpty) {
+                  final double costPrice =
+                      (record.costPrice == null ||
+                              record.costPrice == 0)
+                          ? 0
+                          : record.costPrice!;
+
+                  final double sellingPrice =
+                      record.discount == null
+                          ? record.revenue / record.quantity
+                          : (record.originalCost ?? 0) /
+                              record.quantity;
+
+                  TempProductClass
+                  product = TempProductClass(
+                    name: record.productName,
+                    unit: 'Others',
+                    isRefundable: false,
+                    costPrice: costPrice,
+                    shopId: record.shopId,
+                    setCustomPrice: true,
+                    isManaged: false,
+                    barcode: null,
+                    brand: null,
+                    category: null,
+                    color: null,
+                    createdAt: DateTime.now(),
+                    departmentUuid: record.departmentUuid,
+                    departmentName: record.departmentName,
+                    discount: null,
+                    endDate: null,
+                    expiryDate: null,
+                    lowQtty: 10,
+                    quantity: null,
+                    sellingPrice: sellingPrice,
+                    size: null,
+                    sizeType: null,
+                    startDate: null,
+                    updatedAt: DateTime.now(),
+                    uuid: uuidGen(),
+                  );
+                  if (context.mounted) {
+                    await returnData().createProduct(
+                      product,
+                      context,
+                    );
+                  } else {
+                    print(
+                      'Context Not Mounted to Created New Product',
+                    );
+                  }
+                }
+              }
+              // Step 5: Reset state
+              // resetPaymentMethod();
+              cartQueue.length > 1
+                  ? await deleteCart(cartIdCache)
+                  : await clearCart();
+
               if (context.mounted) {
-                returnNavProvider(
+                returnCustomers(
                   context,
                   listen: false,
-                ).navigate(0);
+                ).clearSelectedCustomer(context);
+                await returnReceiptProvider(
+                  context,
+                  listen: false,
+                ).loadReceipts(shopId);
+                if (context.mounted) {
+                  returnNavProvider(
+                    context,
+                    listen: false,
+                  ).navigate(0);
+                }
               }
+              notifyListeners();
+              return CheckoutResponse(
+                resUuid: receipt.uuid!,
+                isReceipt: true,
+              );
+            } catch (e) {
+              print('Error Step 4: ${e.toString()}');
+              await returnReceiptProvider(
+                // ignore: use_build_context_synchronously
+                context,
+                listen: false,
+              ).deleteReceipt(
+                receipt,
+                productSaleRecords
+                    .map((rec) => rec.productName)
+                    .toList(),
+              );
+              return null;
             }
-            notifyListeners();
-            return receipt;
           } catch (e) {
-            print('Error Step 4: ${e.toString()}');
+            print('Error Step 3: ${e.toString()}');
             await returnReceiptProvider(
               // ignore: use_build_context_synchronously
               context,
               listen: false,
-              // ignore: use_build_context_synchronously
-            ).deleteReceipt(
-              receipt,
-              productSaleRecords
-                  .map((rec) => rec.productName)
-                  .toList(),
-              context,
+            ).deleteReceiptWithoutUpdatingInventory(
+              receiptUuid!,
             );
             return null;
           }
         } catch (e) {
-          print('Error Step 3: ${e.toString()}');
+          print('Error Step 2: ${e.toString()}');
           await returnReceiptProvider(
             // ignore: use_build_context_synchronously
             context,
             listen: false,
-            // ignore: use_build_context_synchronously
-          ).deleteReceiptWithoutUpdatingInventory(
-            receiptUuid!,
-            context,
-          );
+          ).deleteReceipt(receipt, []);
           return null;
         }
       } catch (e) {
-        print('Error Step 2: ${e.toString()}');
-        await returnReceiptProvider(
-          // ignore: use_build_context_synchronously
-          context,
-          listen: false,
-          // ignore: use_build_context_synchronously
-        ).deleteReceipt(receipt, [], context);
+        print('Error Step 1: ${e.toString()}');
         return null;
       }
-    } catch (e) {
-      print('Error Step 1: ${e.toString()}');
-      return null;
     }
   }
 
@@ -635,8 +1053,8 @@ class SalesProvider extends ChangeNotifier {
         currency: returnShopProvider().userShop()!.currency,
         cartItems:
             currentCart().cartItems.reversed.toList(),
-        // subTotal: calcTotalMain(),
-        // total: calcFinalTotalMain(),
+        fixedDiscount: currentCart().fixedDiscount,
+        percentDiscount: currentCart().fixedDiscount,
         vat:
             returnShopProvider().userShop()!.applyVAT!
                 ? vat
@@ -662,20 +1080,11 @@ class SalesProvider extends ChangeNotifier {
     return tempValue;
   }
 
-  double calcTotalMain() {
-    double tempTotal = 0;
-    for (var item in currentCart().cartItems) {
-      tempTotal += item.totalCost();
-    }
-    return tempTotal;
-  }
-
   double calcDiscountMain() {
     if (currentCart().fixedDiscount != null) {
       return currentCart().fixedDiscount ?? 0;
     } else if (currentCart().discount != null) {
-      // print(calcTotalMain(items));
-      return calcTotalMain() *
+      return calcSubTotal() *
           ((currentCart().discount ?? 0) / 100);
     } else {
       double tempTotalDiscount = 0;
@@ -694,17 +1103,41 @@ class SalesProvider extends ChangeNotifier {
   }
 
   double calcVatAmount() {
-    if (returnShopProvider().userShop()!.applyVAT!) {
-      return calcTotalMain() * (vat / 100);
-    } else {
-      return 0;
+    double tempTotal = 0;
+    for (var item in currentCart().cartItems) {
+      tempTotal +=
+          (item.totalCost() *
+              (returnShopProvider().getVat() / 100));
     }
+    return tempTotal;
   }
 
-  double calcFinalTotalMain() {
-    return (calcTotalMain() - calcDiscountMain()) +
-        calcVatAmount();
+  double calcSubTotal() {
+    double tempTotal = 0;
+    for (var item in currentCart().cartItems) {
+      tempTotal += item.totalCost();
+    }
+    return tempTotal.roundToDouble();
   }
+
+  double calcFinalTotal() {
+    return ((calcSubTotal() - calcDiscountMain()) +
+            calcVatAmount())
+        .roundToDouble();
+  }
+
+  // double calcVatAmount() {
+  //   if (returnShopProvider().userShop()!.applyVAT!) {
+  //     return calcTotalMain() * (vat / 100);
+  //   } else {
+  //     return 0;
+  //   }
+  // }
+
+  // double calcFinalTotalMain() {
+  //   return (calcTotalMain() - calcDiscountMain()) +
+  //       calcVatAmount();
+  // }
 
   bool isSetCustomPrice() {
     return currentCart().setCustomPrice;
@@ -793,8 +1226,8 @@ class SalesProvider extends ChangeNotifier {
                 returnShopProvider().userShop()!.currency,
             cartItems:
                 currentCart().cartItems.reversed.toList(),
-            // subTotal: calcTotalMain(),
-            // total: calcFinalTotalMain(),
+            fixedDiscount: currentCart().fixedDiscount,
+            percentDiscount: currentCart().discount,
             vat:
                 returnShopProvider().userShop()!.applyVAT!
                     ? vat
@@ -814,8 +1247,8 @@ class SalesProvider extends ChangeNotifier {
                   returnShopProvider().userShop()!.currency,
               cartItems:
                   currentCart().cartItems.reversed.toList(),
-              // subTotal: calcTotalMain(),
-              // total: calcFinalTotalMain(),
+              fixedDiscount: currentCart().fixedDiscount,
+              percentDiscount: currentCart().discount,
               vat:
                   returnShopProvider().userShop()!.applyVAT!
                       ? vat
@@ -833,8 +1266,8 @@ class SalesProvider extends ChangeNotifier {
                   returnShopProvider().userShop()!.currency,
               cartItems:
                   currentCart().cartItems.reversed.toList(),
-              // subTotal: calcTotalMain(),
-              // total: calcFinalTotalMain(),
+              fixedDiscount: currentCart().fixedDiscount,
+              percentDiscount: currentCart().discount,
               vat:
                   returnShopProvider().userShop()!.applyVAT!
                       ? vat
@@ -881,8 +1314,8 @@ class SalesProvider extends ChangeNotifier {
         currency: returnShopProvider().userShop()!.currency,
         cartItems:
             currentCart().cartItems.reversed.toList(),
-        // subTotal: calcTotalMain(),
-        // total: calcFinalTotalMain(),
+        fixedDiscount: currentCart().fixedDiscount,
+        percentDiscount: currentCart().discount,
         vat:
             returnShopProvider().userShop()!.applyVAT!
                 ? vat
@@ -907,8 +1340,8 @@ class SalesProvider extends ChangeNotifier {
         currency: returnShopProvider().userShop()!.currency,
         cartItems:
             currentCart().cartItems.reversed.toList(),
-        // subTotal: calcTotalMain(),
-        // total: calcFinalTotalMain(),
+        fixedDiscount: currentCart().fixedDiscount,
+        percentDiscount: currentCart().discount,
         vat:
             returnShopProvider().userShop()!.applyVAT!
                 ? vat
@@ -1142,12 +1575,9 @@ class SalesProvider extends ChangeNotifier {
               cartId: tempCart.id!,
               cartItems:
                   tempCart.cartItems.reversed.toList(),
-              // subTotal: calcTotalMain(),
-              // total: calcFinalTotalMain(),
-              vat:
-                  returnShopProvider().userShop()!.applyVAT!
-                      ? vat
-                      : 0,
+              fixedDiscount: currentCart().fixedDiscount,
+              percentDiscount: currentCart().discount,
+              vat: receipt.vat ?? 0,
               currency:
                   returnShopProvider().userShop()!.currency,
             ),

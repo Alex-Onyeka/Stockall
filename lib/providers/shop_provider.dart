@@ -15,6 +15,7 @@ import 'package:stockall/classes/temp_shop_owner/shop_owner.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/subscription/multiple_stores_auth.dart';
 import 'package:stockall/local_database/barcode_printer_func/barcode_printer_local_func.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';
@@ -942,6 +943,14 @@ class ShopProvider extends ChangeNotifier {
       } else {
         return null;
       }
+    }
+  }
+
+  double getVat() {
+    if (userShop()?.applyVAT == true) {
+      return vat;
+    } else {
+      return 0;
     }
   }
 

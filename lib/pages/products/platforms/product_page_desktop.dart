@@ -193,7 +193,6 @@ class _ProductPageDesktopState
                                       authorized:
                                           Authorizations()
                                               .addProduct,
-                                      context: context,
                                     )
                                     ? 280
                                     : 260,
@@ -370,7 +369,6 @@ class _ProductPageDesktopState
                                       authorized:
                                           Authorizations()
                                               .addProduct,
-                                      context: context,
                                     )) {
                                       return Center(
                                         child: SingleChildScrollView(

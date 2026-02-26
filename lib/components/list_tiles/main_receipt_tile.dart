@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-// import 'package:shimmer/shimmer.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
@@ -67,26 +66,26 @@ class _MainReceiptTileMobileState
     }
   }
 
-  late Future<TempCustomersClass?> customerFuture;
+  // late Future<TempCustomersClass?> customerFuture;
 
-  Future<TempCustomersClass?> getCustomer() async {
-    if (widget.mainReceipt.customerUuid != null) {
-      var tempCustomer = await returnCustomers(
-        context,
-        listen: false,
-      ).fetchCustomers(
-        returnShopProvider().userShop()!.shopId!,
-      );
-      return tempCustomer.firstWhere(
-        (customer) =>
-            customer.uuid != null &&
-            customer.uuid ==
-                widget.mainReceipt.customerUuid!,
-      );
-    } else {
-      return null;
-    }
-  }
+  // Future<TempCustomersClass?> getCustomer() async {
+  //   if (widget.mainReceipt.customerUuid != null) {
+  //     var tempCustomer = await returnCustomers(
+  //       context,
+  //       listen: false,
+  //     ).fetchCustomers(
+  //       returnShopProvider().userShop()!.shopId!,
+  //     );
+  //     return tempCustomer.firstWhere(
+  //       (customer) =>
+  //           customer.uuid != null &&
+  //           customer.uuid ==
+  //               widget.mainReceipt.customerUuid!,
+  //     );
+  //   } else {
+  //     return null;
+  //   }
+  // }
 
   List<TempProductSaleRecord> getProductRecord() {
     var tempRecords =
@@ -104,32 +103,51 @@ class _MainReceiptTileMobileState
         .toList();
   }
 
-  late Future<List<TempProductSaleRecord>> productFuture;
+  // late Future<List<TempProductSaleRecord>> productFuture;
   @override
   void initState() {
     super.initState();
-    // productFuture = getProductRecord();
-    customerFuture = getCustomer();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getCustomer();
+    });
+  }
+
+  TempCustomersClass? customer;
+  void getCustomer() {
+    List<TempCustomersClass> customers =
+        returnCustomers(context, listen: false)
+            .customersMain
+            .where(
+              (customer) =>
+                  customer.uuid != null &&
+                  customer.uuid ==
+                      widget.mainReceipt.customerUuid!,
+            )
+            .toList();
+    if (customers.isNotEmpty) {
+      setState(() {
+        customer = customers.first;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    double getTotal() {
-      double totalAmount = 0;
-      for (var element
-          in getProductRecord()
-              .where(
-                (test) =>
-                    test.receiptUuid ==
-                    widget.mainReceipt.uuid,
-              )
-              .toList()) {
-        totalAmount += element.revenue;
-      }
-      return totalAmount;
-    }
-
+    // double getTotal() {
+    //   double totalAmount = 0;
+    //   for (var element
+    //       in getProductRecord()
+    //           .where(
+    //             (test) =>
+    //                 test.receiptUuid ==
+    //                 widget.mainReceipt.uuid,
+    //           )
+    //           .toList()) {
+    //     totalAmount += element.revenue;
+    //   }
+    //   return totalAmount;
+    // }
     return Padding(
       padding: const EdgeInsets.only(bottom: 15.0),
       child: Ink(
@@ -291,7 +309,11 @@ class _MainReceiptTileMobileState
                                 fontWeight: FontWeight.bold,
                               ),
                               formatMoneyMid(
-                                amount: getTotal(),
+                                amount: returnReceiptProvider(
+                                  context,
+                                ).getTotalMainRevenueReceipt(
+                                  widget.mainReceipt,
+                                ),
                                 context: context,
                               ),
                             ),
@@ -306,63 +328,20 @@ class _MainReceiptTileMobileState
                   mainAxisAlignment:
                       MainAxisAlignment.spaceBetween,
                   children: [
-                    FutureBuilder<TempCustomersClass?>(
-                      future: customerFuture,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b2
-                                      .fontSize,
-                              fontWeight: FontWeight.bold,
-                              color:
-                                  theme
-                                      .lightModeColor
-                                      .secColor200,
-                            ),
-                            'Customer',
-                          );
-                        } else if (snapshot.hasError) {
-                          return Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b2
-                                      .fontSize,
-                              fontWeight: FontWeight.bold,
-                              color:
-                                  theme
-                                      .lightModeColor
-                                      .secColor200,
-                            ),
-                            'Customer: Not Set',
-                          );
-                        } else {
-                          TempCustomersClass? customer =
-                              snapshot.data;
-                          return Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b2
-                                      .fontSize,
-                              fontWeight: FontWeight.bold,
-                              color:
-                                  theme
-                                      .lightModeColor
-                                      .secColor200,
-                            ),
+                    // TempCustomersClass? customer =
+                    //           TempCustomersClass(name: name, email: email, phone: phone, address: address, city: city, state: state, dateAdded: dateAdded, shopId: shopId);
+                    Text(
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b2.fontSize,
+                        fontWeight: FontWeight.bold,
+                        color:
+                            theme
+                                .lightModeColor
+                                .secColor200,
+                      ),
 
-                            "Customer: ${cutLongText2(customer != null ? customer.name.split(' ').first : 'Not Set')}",
-                          );
-                        }
-                      },
+                      "Customer: ${cutLongText2(customer != null ? customer!.name.split(' ').first : 'Not Set')}",
                     ),
                     SizedBox(width: 10),
                     Text(
@@ -417,26 +396,26 @@ class _MainReceiptTileDesktopState
     }
   }
 
-  late Future<TempCustomersClass?> customerFuture;
+  // late Future<TempCustomersClass?> customerFuture;
 
-  Future<TempCustomersClass?> getCustomer() async {
-    if (widget.mainReceipt.customerUuid != null) {
-      var tempCustomer = await returnCustomers(
-        context,
-        listen: false,
-      ).fetchCustomers(
-        returnShopProvider().userShop()!.shopId!,
-      );
-      return tempCustomer.firstWhere(
-        (customer) =>
-            customer.uuid != null &&
-            customer.uuid ==
-                widget.mainReceipt.customerUuid!,
-      );
-    } else {
-      return null;
-    }
-  }
+  // Future<TempCustomersClass?> getCustomer() async {
+  //   if (widget.mainReceipt.customerUuid != null) {
+  //     var tempCustomer = await returnCustomers(
+  //       context,
+  //       listen: false,
+  //     ).fetchCustomers(
+  //       returnShopProvider().userShop()!.shopId!,
+  //     );
+  //     return tempCustomer.firstWhere(
+  //       (customer) =>
+  //           customer.uuid != null &&
+  //           customer.uuid ==
+  //               widget.mainReceipt.customerUuid!,
+  //     );
+  //   } else {
+  //     return null;
+  //   }
+  // }
 
   List<TempProductSaleRecord> getProductRecord() {
     var tempRecords =
@@ -454,31 +433,51 @@ class _MainReceiptTileDesktopState
         .toList();
   }
 
-  late Future<List<TempProductSaleRecord>> productFuture;
+  // late Future<List<TempProductSaleRecord>> productFuture;
   @override
   void initState() {
     super.initState();
-    // productFuture = getProductRecord();
-    customerFuture = getCustomer();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getCustomer();
+    });
+  }
+
+  TempCustomersClass? customer;
+  void getCustomer() {
+    List<TempCustomersClass> customers =
+        returnCustomers(context, listen: false)
+            .customersMain
+            .where(
+              (customer) =>
+                  customer.uuid ==
+                  widget.mainReceipt.customerUuid!,
+            )
+            .toList();
+    print(customers.length);
+    if (customers.isNotEmpty) {
+      setState(() {
+        customer = customers.first;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    double getTotal() {
-      double totalAmount = 0;
-      for (var element
-          in getProductRecord()
-              .where(
-                (test) =>
-                    test.receiptUuid ==
-                    widget.mainReceipt.uuid,
-              )
-              .toList()) {
-        totalAmount += element.revenue;
-      }
-      return totalAmount;
-    }
+    // double getTotal() {
+    //   double totalAmount = 0;
+    //   for (var element
+    //       in getProductRecord()
+    //           .where(
+    //             (test) =>
+    //                 test.receiptUuid ==
+    //                 widget.mainReceipt.uuid,
+    //           )
+    //           .toList()) {
+    //     totalAmount += element.revenue;
+    //   }
+    //   return totalAmount;
+    // }
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
@@ -567,7 +566,11 @@ class _MainReceiptTileDesktopState
                         flex: 4,
                         subTitle: 'Total',
                         title: formatMoneyMid(
-                          amount: getTotal(),
+                          amount: returnReceiptProvider(
+                            context,
+                          ).getTotalMainRevenueReceipt(
+                            widget.mainReceipt,
+                          ),
                           context: context,
                         ),
                         theme: theme,
@@ -588,37 +591,13 @@ class _MainReceiptTileDesktopState
                                 .paymentMethod,
                         theme: theme,
                       ),
-                      FutureBuilder<TempCustomersClass?>(
-                        future: customerFuture,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return ReceicptTileSectionDesktop(
-                              flex: 3,
-                              subTitle: 'Customer',
-                              title: 'Loading',
-                              theme: theme,
-                            );
-                          } else if (snapshot.hasError) {
-                            return ReceicptTileSectionDesktop(
-                              flex: 3,
-                              subTitle: 'Customer',
-                              title: 'Not Set',
-                              theme: theme,
-                            );
-                          } else {
-                            TempCustomersClass? customer =
-                                snapshot.data;
-                            return ReceicptTileSectionDesktop(
-                              flex: 3,
-                              subTitle: 'Customer',
-                              title: cutLongText(
-                                customer?.name ?? 'Not Set',
-                              ),
-                              theme: theme,
-                            );
-                          }
-                        },
+                      ReceicptTileSectionDesktop(
+                        flex: 3,
+                        subTitle: 'Customer',
+                        title: cutLongText(
+                          customer?.name ?? 'Not Set',
+                        ),
+                        theme: theme,
                       ),
 
                       ReceicptTileSectionDesktop(

@@ -193,7 +193,6 @@ class _ProductPageMobileState
                     authorization(
                           authorized:
                               Authorizations().addProduct,
-                          context: context,
                         )
                         ? 270
                         : 250,
@@ -329,7 +328,6 @@ class _ProductPageMobileState
                         if (!authorization(
                           authorized:
                               Authorizations().addProduct,
-                          context: context,
                         )) {
                           return Center(
                             child: SingleChildScrollView(

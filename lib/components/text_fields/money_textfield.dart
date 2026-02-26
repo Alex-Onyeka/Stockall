@@ -12,6 +12,7 @@ class MoneyTextfield extends StatefulWidget {
   final ThemeProvider theme;
   final FocusNode? focusNode;
   final Function(String)? onSubmitted;
+  final bool? showTitle;
 
   const MoneyTextfield({
     super.key,
@@ -22,6 +23,7 @@ class MoneyTextfield extends StatefulWidget {
     this.onChanged,
     this.focusNode,
     this.onSubmitted,
+    this.showTitle,
   });
 
   @override
@@ -84,11 +86,23 @@ class _MoneyTextfieldState extends State<MoneyTextfield> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          widget.title,
-          style: widget.theme.mobileTexts.b3.textStyleBold,
+        Visibility(
+          visible: widget.showTitle == null,
+          child: Column(
+            children: [
+              Text(
+                widget.title,
+                style:
+                    widget
+                        .theme
+                        .mobileTexts
+                        .b3
+                        .textStyleBold,
+              ),
+              SizedBox(height: 5),
+            ],
+          ),
         ),
-        SizedBox(height: 5),
         TextFormField(
           focusNode: widget.focusNode,
           onFieldSubmitted: widget.onSubmitted,

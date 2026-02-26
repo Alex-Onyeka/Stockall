@@ -113,7 +113,6 @@ class _TotalProductsMobileState
       floatingActionButton: Visibility(
         visible: authorization(
           authorized: Authorizations().addProduct,
-          context: context,
         ),
         child: FloatingActionButtonMain(
           action: () {

@@ -49,7 +49,6 @@ class _EmployeeListMobileState
       floatingActionButton: Visibility(
         visible: authorization(
           authorized: Authorizations().addEmployee,
-          context: context,
         ),
         child: FloatingActionButtonMain(
           theme: theme,

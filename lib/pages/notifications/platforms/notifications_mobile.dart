@@ -240,7 +240,6 @@ class _NotificationsMobileState
                                         authorized:
                                             Authorizations()
                                                 .deleteNotification,
-                                        context: context,
                                       )) {
                                         showDialog(
                                           context: context,
@@ -373,7 +372,6 @@ class _NotificationsMobileState
                                         authorized:
                                             Authorizations()
                                                 .deleteNotification,
-                                        context: context,
                                       )) {
                                         showDialog(
                                           context: context,
@@ -506,7 +504,6 @@ class _NotificationsMobileState
                                         authorized:
                                             Authorizations()
                                                 .deleteNotification,
-                                        context: context,
                                       )) {
                                         showDialog(
                                           context: context,

@@ -133,6 +133,7 @@ List<Map<String, dynamic>> employees = [
       'Generate Barcode',
       'Manage VAT',
       'View Items Summary',
+      'View All Transaction Records',
       'Others',
     ],
   },
@@ -165,6 +166,7 @@ List<Map<String, dynamic>> employees = [
       'Generate Barcode',
       'Manage VAT',
       'View Items Summary',
+      'View All Transaction Records',
     ],
   },
   {
@@ -245,16 +247,16 @@ class Authorizations {
   String generateBarcode = 'Generate Barcode';
   String manageInventoryStorage = 'Manage Invetory Storage';
   String viewItemsSummary = 'View Items Summary';
+  String viewAllTransactionRecords =
+      'View All Transaction Records';
 }
 
 bool authorization({
   required String authorized,
-  required BuildContext context,
+  // required BuildContext context,
 }) {
   Map<String, dynamic> emp = employees.firstWhere(
-    (emp) =>
-        emp['position'] ==
-        userGeneral(context, listen: false).role,
+    (emp) => emp['position'] == currentUser().role,
   );
   if (emp['auths'].contains(authorized)) {
     return true;
@@ -406,9 +408,7 @@ Future<void> generateAndPreviewPdf({
         5,
       );
       var name =
-          receipt.isInvoice
-              ? "Stockall_Invoice_$receiptId.${DateTime.now().millisecondsSinceEpoch}"
-              : "Stockall_Receipt_$receiptId.${DateTime.now().millisecondsSinceEpoch}";
+          "Stockall_Receipt_$receiptId.${DateTime.now().millisecondsSinceEpoch}";
 
       if (Platform.isAndroid || Platform.isIOS) {
         await savePdfMobile(bytes, name);
@@ -895,9 +895,7 @@ Future<Uint8List> _buildPdf(
                     children: [
                       pw.Text(
                         textAlign: pw.TextAlign.center,
-                        receipt.isInvoice
-                            ? 'Generated Invoice'
-                            : 'Receipt of Payment',
+                        'Receipt of Payment',
                         style: pw.TextStyle(
                           font: fontRegular,
                           fontSize: 10,
@@ -980,104 +978,90 @@ Future<Uint8List> _buildPdf(
                   pw.Builder(
                     builder: (pw.Context pdfContext) {
                       if (shop.showSecond!) {
-                        return pw.Builder(
-                          builder: (pw.Context pdfContext) {
-                            if (receipt.isInvoice) {
-                              return pw.Container();
-                            } else {
-                              return pw.Column(
-                                children: [
-                                  pw.SizedBox(height: 10),
-                                  pw.Row(
-                                    mainAxisAlignment:
+                        return pw.Column(
+                          children: [
+                            pw.SizedBox(height: 10),
+                            pw.Row(
+                              mainAxisAlignment:
+                                  pw
+                                      .MainAxisAlignment
+                                      .spaceEvenly,
+                              children: [
+                                pw.Expanded(
+                                  child: pw.Column(
+                                    crossAxisAlignment:
                                         pw
-                                            .MainAxisAlignment
-                                            .spaceEvenly,
+                                            .CrossAxisAlignment
+                                            .start,
                                     children: [
-                                      pw.Expanded(
-                                        child: pw.Column(
-                                          crossAxisAlignment:
-                                              pw
-                                                  .CrossAxisAlignment
-                                                  .start,
-                                          children: [
-                                            pw.Text(
-                                              style: pw.TextStyle(
-                                                font:
-                                                    fontRegular,
-                                                fontSize: 9,
-                                              ),
-                                              'Payment Method:',
-                                            ),
-                                            pw.SizedBox(
-                                              height: 5,
-                                            ),
-                                            pw.Text(
-                                              style: pw.TextStyle(
-                                                font:
-                                                    fontBold,
-                                                fontSize:
-                                                    10,
-                                              ),
-                                              receipt
-                                                  .paymentMethod,
-                                            ),
-                                          ],
+                                      pw.Text(
+                                        style: pw.TextStyle(
+                                          font: fontRegular,
+                                          fontSize: 9,
                                         ),
+                                        'Payment Method:',
                                       ),
-                                      pw.Expanded(
-                                        child: pw.Column(
-                                          crossAxisAlignment:
-                                              pw
-                                                  .CrossAxisAlignment
-                                                  .start,
-                                          children: [
-                                            pw.Text(
-                                              style: pw.TextStyle(
-                                                font:
-                                                    fontRegular,
-                                                fontSize: 9,
-                                              ),
-                                              'Amount(s):',
-                                            ),
-                                            pw.SizedBox(
-                                              height: 5,
-                                            ),
-                                            pw.Column(
-                                              crossAxisAlignment:
-                                                  pw
-                                                      .CrossAxisAlignment
-                                                      .start,
-                                              children: [
-                                                pw.Text(
-                                                  style: pw.TextStyle(
-                                                    font:
-                                                        fontRegular,
-                                                    fontSize:
-                                                        8,
-                                                  ),
-                                                  'Cash: ${formatMoneyMid(amount: receipt.cashAlt, context: context)}',
-                                                ),
-                                                pw.Text(
-                                                  style: pw.TextStyle(
-                                                    font:
-                                                        fontRegular,
-                                                    fontSize:
-                                                        8,
-                                                  ),
-                                                  'Bank: ${formatMoneyMid(amount: receipt.bank, context: context)}',
-                                                ),
-                                              ],
-                                            ),
-                                          ],
+                                      pw.SizedBox(
+                                        height: 5,
+                                      ),
+                                      pw.Text(
+                                        style: pw.TextStyle(
+                                          font: fontBold,
+                                          fontSize: 10,
                                         ),
+                                        receipt
+                                            .paymentMethod,
                                       ),
                                     ],
                                   ),
-                                ],
-                              );
-                            }
-                          },
+                                ),
+                                pw.Expanded(
+                                  child: pw.Column(
+                                    crossAxisAlignment:
+                                        pw
+                                            .CrossAxisAlignment
+                                            .start,
+                                    children: [
+                                      pw.Text(
+                                        style: pw.TextStyle(
+                                          font: fontRegular,
+                                          fontSize: 9,
+                                        ),
+                                        'Amount(s):',
+                                      ),
+                                      pw.SizedBox(
+                                        height: 5,
+                                      ),
+                                      pw.Column(
+                                        crossAxisAlignment:
+                                            pw
+                                                .CrossAxisAlignment
+                                                .start,
+                                        children: [
+                                          pw.Text(
+                                            style: pw.TextStyle(
+                                              font:
+                                                  fontRegular,
+                                              fontSize: 8,
+                                            ),
+                                            'Cash: ${formatMoneyMid(amount: receipt.cashAlt, context: context)}',
+                                          ),
+                                          pw.Text(
+                                            style: pw.TextStyle(
+                                              font:
+                                                  fontRegular,
+                                              fontSize: 8,
+                                            ),
+                                            'Bank: ${formatMoneyMid(amount: receipt.bank, context: context)}',
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         );
                       } else {
                         return pw.Container();
@@ -1207,7 +1191,9 @@ Future<Uint8List> _buildPdf(
                                 fontSize: 10,
                               ),
                               formatMoneyMid(
-                                amount: record.revenue,
+                                amount:
+                                    (record.originalCost ??
+                                        0),
                                 context: context,
                               ),
                             ),
@@ -1245,9 +1231,8 @@ Future<Uint8List> _buildPdf(
                             amount: returnReceiptProvider(
                               context,
                               listen: false,
-                            ).getSubTotalRevenueForReceipt(
-                              context,
-                              records,
+                            ).getOriginalCostReceipt(
+                              receipt,
                             ),
                             context: context,
                           ),
@@ -1255,65 +1240,72 @@ Future<Uint8List> _buildPdf(
                       ),
                     ],
                   ),
+
+                  pw.Builder(
+                    builder: (pdfContext) {
+                      if (receipt.fixedDiscount != null ||
+                          receipt.generalDiscount != null) {
+                        return pw.Column(
+                          children: [
+                            pw.SizedBox(height: 5),
+                            pw.Row(
+                              mainAxisAlignment:
+                                  pw
+                                      .MainAxisAlignment
+                                      .spaceEvenly,
+                              children: [
+                                pw.Expanded(
+                                  flex: 2,
+                                  child: pw.Row(
+                                    children: [
+                                      pw.Text(
+                                        style: pw.TextStyle(
+                                          font: fontRegular,
+                                          fontSize: 8,
+                                        ),
+                                        'Discount:',
+                                      ),
+                                      pw.Text(
+                                        style: pw.TextStyle(
+                                          font: fontRegular,
+                                          fontSize: 8,
+                                        ),
+                                        receipt.generalDiscount !=
+                                                null
+                                            ? " (${receipt.generalDiscount}%)"
+                                            : '',
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                pw.Expanded(
+                                  flex: 1,
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontRegular,
+                                      fontSize: 10,
+                                    ),
+                                    formatMoneyMid(
+                                      amount: returnReceiptProvider(
+                                        context,
+                                        listen: false,
+                                      ).getDiscountAmountForReceipt(
+                                        receipt,
+                                      ),
+                                      context: context,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      } else {
+                        return pw.Container();
+                      }
+                    },
+                  ),
                   pw.SizedBox(height: 5),
-                  // pw.Row(
-                  //   mainAxisAlignment:
-                  //       pw.MainAxisAlignment.spaceEvenly,
-                  //   children: [
-                  //     pw.Expanded(
-                  //       flex: 2,
-                  //       child: pw.Row(
-                  //         children: [
-                  //           pw.Text(
-                  //             style: pw.TextStyle(
-                  //               font: fontRegular,
-                  //               fontSize: 8,
-                  //             ),
-                  //             'Discount:',
-                  //           ),
-                  //           pw.Text(
-                  //             style: pw.TextStyle(
-                  //               font: fontRegular,
-                  //               fontSize: 8,
-                  //             ),
-                  //             receipt.generalDiscount !=
-                  //                     null
-                  //                 ? " (${receipt.generalDiscount}%)"
-                  //                 : '',
-                  //           ),
-                  //         ],
-                  //       ),
-                  //     ),
-                  //     pw.Expanded(
-                  //       flex: 1,
-                  //       child: pw.Text(
-                  //         style: pw.TextStyle(
-                  //           font: fontRegular,
-                  //           fontSize: 10,
-                  //         ),
-                  //         formatMoneyMid(
-                  //           amount:
-                  //               returnReceiptProvider(
-                  //                 context,
-                  //                 listen: false,
-                  //               ).getTotalMainRevenueReceipt(
-                  //                 records,
-                  //                 context,
-                  //               ) -
-                  //               returnReceiptProvider(
-                  //                 context,
-                  //                 listen: false,
-                  //               ).getSubTotalRevenueForReceipt(
-                  //                 context,
-                  //                 records,
-                  //               ),
-                  //           context: context,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
-                  // pw.SizedBox(height: 5),
                   pw.Row(
                     mainAxisAlignment:
                         pw.MainAxisAlignment.spaceEvenly,
@@ -1334,16 +1326,7 @@ Future<Uint8List> _buildPdf(
                                 font: fontRegular,
                                 fontSize: 8,
                               ),
-                              returnReceiptProvider(
-                                        context,
-                                        listen: false,
-                                      ).getVATForReceipt(
-                                        context,
-                                        records,
-                                      ) !=
-                                      0
-                                  ? " ($vat%)"
-                                  : ' (0%)',
+                              '(${receipt.vat ?? 0}%)',
                             ),
                           ],
                         ),
@@ -1359,10 +1342,7 @@ Future<Uint8List> _buildPdf(
                             amount: returnReceiptProvider(
                               context,
                               listen: false,
-                            ).getVATForReceipt(
-                              context,
-                              records,
-                            ),
+                            ).getVATForReceipt(receipt),
                             context: context,
                           ),
                         ),
@@ -1370,6 +1350,57 @@ Future<Uint8List> _buildPdf(
                     ],
                   ),
                   pw.SizedBox(height: 5),
+                  pw.Builder(
+                    builder: (pdfContext) {
+                      if (receipt.balance != null) {
+                        return pw.Column(
+                          children: [
+                            pw.Row(
+                              mainAxisAlignment:
+                                  pw
+                                      .MainAxisAlignment
+                                      .spaceEvenly,
+                              children: [
+                                pw.Expanded(
+                                  flex: 2,
+                                  child: pw.Row(
+                                    children: [
+                                      pw.Text(
+                                        style: pw.TextStyle(
+                                          font: fontRegular,
+                                          fontSize: 8,
+                                        ),
+                                        'Balance:',
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                pw.Expanded(
+                                  flex: 1,
+                                  child: pw.Text(
+                                    style: pw.TextStyle(
+                                      font: fontRegular,
+                                      fontSize: 10,
+                                    ),
+                                    formatMoneyMid(
+                                      amount:
+                                          (receipt.balance ??
+                                              0),
+                                      context: context,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            pw.SizedBox(height: 5),
+                          ],
+                        );
+                      } else {
+                        return pw.Container();
+                      }
+                    },
+                  ),
+
                   pw.Row(
                     mainAxisAlignment:
                         pw.MainAxisAlignment.spaceEvenly,
@@ -1396,8 +1427,7 @@ Future<Uint8List> _buildPdf(
                               context,
                               listen: false,
                             ).getTotalMainRevenueReceipt(
-                              records,
-                              context,
+                              receipt,
                             ),
                             context: context,
                           ),
@@ -1415,38 +1445,6 @@ Future<Uint8List> _buildPdf(
 
   return pdf.save();
 }
-
-// Future<void> printWithRawBT(
-// // Uint8List pdfBytes,
-// {
-//   required String fileName,
-//   required TempMainReceipt receipt,
-//   required String staffName,
-//   required List<TempProductSaleRecord> records,
-//   required TempShopClass shop,
-//   required BuildContext context,
-//   required int printerType,
-// }) async {
-//   final dir = await getTemporaryDirectory();
-//   final file = File('${dir.path}/$fileName.pdf');
-
-//   var pdfBytes = await _buildPdfRoll(
-//     receipt,
-//     records,
-//     staffName,
-//     shop,
-//     context,
-//     printerType,
-//   );
-
-//   await file.writeAsBytes(pdfBytes);
-
-//   // This will prompt Android to open the file with available apps (including RawBT)
-//   final result = await OpenFile.open(file.path);
-//   print(
-//     result.message,
-//   ); // Optional: See what app handled it
-// }
 
 Future<Uint8List> _buildPdfRoll(
   TempMainReceipt receipt,
@@ -1764,9 +1762,7 @@ Future<Uint8List> _buildPdfRoll(
                   children: [
                     pw.Text(
                       textAlign: pw.TextAlign.center,
-                      receipt.isInvoice
-                          ? 'Generated Invoice'
-                          : 'Payment Receipt',
+                      'Payment Receipt',
                       style: pw.TextStyle(
                         font: fontRegular,
                         fontSize: parText,
@@ -1855,106 +1851,87 @@ Future<Uint8List> _buildPdfRoll(
                 pw.Builder(
                   builder: (pw.Context pdfContext) {
                     if (shop.showSecond!) {
-                      return pw.Builder(
-                        builder: (pw.Context pdfContext) {
-                          if (receipt.isInvoice) {
-                            return pw.Container();
-                          } else {
-                            return pw.Column(
-                              children: [
-                                pw.SizedBox(height: 3),
-                                pw.Row(
-                                  mainAxisAlignment:
+                      return pw.Column(
+                        children: [
+                          pw.SizedBox(height: 3),
+                          pw.Row(
+                            mainAxisAlignment:
+                                pw
+                                    .MainAxisAlignment
+                                    .spaceEvenly,
+                            children: [
+                              pw.Expanded(
+                                child: pw.Column(
+                                  crossAxisAlignment:
                                       pw
-                                          .MainAxisAlignment
-                                          .spaceEvenly,
+                                          .CrossAxisAlignment
+                                          .start,
                                   children: [
-                                    pw.Expanded(
-                                      child: pw.Column(
-                                        crossAxisAlignment:
-                                            pw
-                                                .CrossAxisAlignment
-                                                .start,
-                                        children: [
-                                          pw.Text(
-                                            style: pw.TextStyle(
-                                              font:
-                                                  fontRegular,
-                                              fontSize:
-                                                  parText,
-                                            ),
-                                            'Payment Method:',
-                                          ),
-                                          pw.SizedBox(
-                                            height: 1,
-                                          ),
-                                          pw.Text(
-                                            style: pw.TextStyle(
-                                              font:
-                                                  fontBold,
-                                              fontSize:
-                                                  parText,
-                                            ),
-                                            receipt
-                                                .paymentMethod,
-                                          ),
-                                        ],
+                                    pw.Text(
+                                      style: pw.TextStyle(
+                                        font: fontRegular,
+                                        fontSize: parText,
                                       ),
+                                      'Payment Method:',
                                     ),
-                                    pw.Expanded(
-                                      child: pw.Column(
-                                        crossAxisAlignment:
-                                            pw
-                                                .CrossAxisAlignment
-                                                .start,
-                                        children: [
-                                          pw.Text(
-                                            style: pw.TextStyle(
-                                              font:
-                                                  fontRegular,
-                                              fontSize:
-                                                  parText,
-                                            ),
-                                            'Amount(s):',
-                                          ),
-                                          pw.SizedBox(
-                                            height: 1,
-                                          ),
-                                          pw.Column(
-                                            crossAxisAlignment:
-                                                pw
-                                                    .CrossAxisAlignment
-                                                    .start,
-                                            children: [
-                                              pw.Text(
-                                                style: pw.TextStyle(
-                                                  font:
-                                                      fontRegular,
-                                                  fontSize:
-                                                      parTextAlt,
-                                                ),
-                                                'Cash: ${formatMoneyMid(amount: receipt.cashAlt, context: context)}',
-                                              ),
-                                              pw.Text(
-                                                style: pw.TextStyle(
-                                                  font:
-                                                      fontRegular,
-                                                  fontSize:
-                                                      parTextAlt,
-                                                ),
-                                                'Bank: ${formatMoneyMid(amount: receipt.bank, context: context)}',
-                                              ),
-                                            ],
-                                          ),
-                                        ],
+                                    pw.SizedBox(height: 1),
+                                    pw.Text(
+                                      style: pw.TextStyle(
+                                        font: fontBold,
+                                        fontSize: parText,
                                       ),
+                                      receipt.paymentMethod,
                                     ),
                                   ],
                                 ),
-                              ],
-                            );
-                          }
-                        },
+                              ),
+                              pw.Expanded(
+                                child: pw.Column(
+                                  crossAxisAlignment:
+                                      pw
+                                          .CrossAxisAlignment
+                                          .start,
+                                  children: [
+                                    pw.Text(
+                                      style: pw.TextStyle(
+                                        font: fontRegular,
+                                        fontSize: parText,
+                                      ),
+                                      'Amount(s):',
+                                    ),
+                                    pw.SizedBox(height: 1),
+                                    pw.Column(
+                                      crossAxisAlignment:
+                                          pw
+                                              .CrossAxisAlignment
+                                              .start,
+                                      children: [
+                                        pw.Text(
+                                          style: pw.TextStyle(
+                                            font:
+                                                fontRegular,
+                                            fontSize:
+                                                parTextAlt,
+                                          ),
+                                          'Cash: ${formatMoneyMid(amount: receipt.cashAlt, context: context)}',
+                                        ),
+                                        pw.Text(
+                                          style: pw.TextStyle(
+                                            font:
+                                                fontRegular,
+                                            fontSize:
+                                                parTextAlt,
+                                          ),
+                                          'Bank: ${formatMoneyMid(amount: receipt.bank, context: context)}',
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       );
                     } else {
                       return pw.Container();
@@ -2086,7 +2063,9 @@ Future<Uint8List> _buildPdfRoll(
                               fontSize: parText,
                             ),
                             formatMoneyMid(
-                              amount: record.revenue,
+                              amount:
+                                  (record.originalCost ??
+                                      0),
                               context: context,
                             ),
                           ),
@@ -2124,79 +2103,87 @@ Future<Uint8List> _buildPdfRoll(
                           amount: returnReceiptProvider(
                             context,
                             listen: false,
-                          ).getSubTotalRevenueForReceipt(
-                            context,
-                            records,
-                          ),
+                          ).getOriginalCostReceipt(receipt),
                           context: context,
                         ),
                       ),
                     ),
                   ],
                 ),
+                pw.Builder(
+                  builder: (pdfContext) {
+                    if (receipt.fixedDiscount != null ||
+                        receipt.generalDiscount != null) {
+                      return pw.Column(
+                        children: [
+                          pw.SizedBox(height: 1),
+                          pw.Row(
+                            mainAxisAlignment:
+                                pw
+                                    .MainAxisAlignment
+                                    .spaceEvenly,
+                            children: [
+                              pw.Expanded(
+                                flex: 9,
+                                child: pw.Row(
+                                  children: [
+                                    pw.Text(
+                                      style: pw.TextStyle(
+                                        font: fontRegular,
+                                        fontSize:
+                                            parTextAlt,
+                                      ),
+                                      'Discount:',
+                                    ),
+                                    pw.Text(
+                                      style: pw.TextStyle(
+                                        font: fontRegular,
+                                        fontSize:
+                                            parTextAlt,
+                                      ),
+                                      receipt.generalDiscount !=
+                                              null
+                                          ? " (${receipt.generalDiscount}%)"
+                                          : '',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              pw.Expanded(
+                                flex: 7,
+                                child: pw.Text(
+                                  style: pw.TextStyle(
+                                    font: fontRegular,
+                                    fontSize: parTextAlt,
+                                  ),
+                                  formatMoneyMid(
+                                    amount: returnReceiptProvider(
+                                      context,
+                                      listen: false,
+                                    ).getDiscountAmountForReceipt(
+                                      receipt,
+                                    ),
+                                    context: context,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    } else {
+                      return pw.Container();
+                    }
+                  },
+                ),
                 pw.SizedBox(height: 1),
-                // pw.Row(
-                //   mainAxisAlignment:
-                //       pw.MainAxisAlignment.spaceEvenly,
-                //   children: [
-                //     pw.Expanded(
-                //       flex: 9,
-                //       child: pw.Row(
-                //         children: [
-                //           pw.Text(
-                //             style: pw.TextStyle(
-                //               font: fontRegular,
-                //               fontSize: parTextAlt,
-                //             ),
-                //             'Discount:',
-                //           ),
-                //           pw.Text(
-                //             style: pw.TextStyle(
-                //               font: fontRegular,
-                //               fontSize: parTextAlt,
-                //             ),
-                //             receipt.generalDiscount != null
-                //                 ? " (${receipt.generalDiscount}%)"
-                //                 : '',
-                //           ),
-                //         ],
-                //       ),
-                //     ),
-                //     pw.Expanded(
-                //       flex: 7,
-                //       child: pw.Text(
-                //         style: pw.TextStyle(
-                //           font: fontRegular,
-                //           fontSize: parText,
-                //         ),
-                //         formatMoneyMid(
-                //           amount:
-                //               returnReceiptProvider(
-                //                 context,
-                //                 listen: false,
-                //               ).getTotalMainRevenueReceipt(
-                //                 records,
-                //                 context,
-                //               ) -
-                //               returnReceiptProvider(
-                //                 context,
-                //                 listen: false,
-                //               ).getSubTotalRevenueForReceipt(
-                //                 context,
-                //                 records,
-                //               ),
-                //           context: context,
-                //         ),
-                //       ),
-                //     ),
-                //   ],
-                // ),
+
                 pw.Row(
                   mainAxisAlignment:
                       pw.MainAxisAlignment.spaceEvenly,
                   children: [
                     pw.Expanded(
-                      flex: 2,
+                      flex: 9,
                       child: pw.Row(
                         children: [
                           pw.Text(
@@ -2211,22 +2198,13 @@ Future<Uint8List> _buildPdfRoll(
                               font: fontRegular,
                               fontSize: parTextAlt,
                             ),
-                            returnReceiptProvider(
-                                      context,
-                                      listen: false,
-                                    ).getVATForReceipt(
-                                      context,
-                                      records,
-                                    ) !=
-                                    0
-                                ? " ($vat%)"
-                                : ' (0%)',
+                            '(${receipt.vat ?? 0}%)',
                           ),
                         ],
                       ),
                     ),
                     pw.Expanded(
-                      flex: 1,
+                      flex: 7,
                       child: pw.Text(
                         style: pw.TextStyle(
                           font: fontRegular,
@@ -2236,10 +2214,7 @@ Future<Uint8List> _buildPdfRoll(
                           amount: returnReceiptProvider(
                             context,
                             listen: false,
-                          ).getVATForReceipt(
-                            context,
-                            records,
-                          ),
+                          ).getVATForReceipt(receipt),
                           context: context,
                         ),
                       ),
@@ -2247,6 +2222,57 @@ Future<Uint8List> _buildPdfRoll(
                   ],
                 ),
                 pw.SizedBox(height: 1),
+                pw.Builder(
+                  builder: (pdfContext) {
+                    if (receipt.balance != null) {
+                      return pw.Column(
+                        children: [
+                          pw.Row(
+                            mainAxisAlignment:
+                                pw
+                                    .MainAxisAlignment
+                                    .spaceEvenly,
+                            children: [
+                              pw.Expanded(
+                                flex: 9,
+                                child: pw.Row(
+                                  children: [
+                                    pw.Text(
+                                      style: pw.TextStyle(
+                                        font: fontRegular,
+                                        fontSize:
+                                            parTextAlt,
+                                      ),
+                                      'Balance:',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              pw.Expanded(
+                                flex: 7,
+                                child: pw.Text(
+                                  style: pw.TextStyle(
+                                    font: fontRegular,
+                                    fontSize: parTextAlt,
+                                  ),
+                                  formatMoneyMid(
+                                    amount:
+                                        (receipt.balance ??
+                                            0),
+                                    context: context,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          pw.SizedBox(height: 1),
+                        ],
+                      );
+                    } else {
+                      return pw.Container();
+                    }
+                  },
+                ),
                 pw.Row(
                   mainAxisAlignment:
                       pw.MainAxisAlignment.spaceEvenly,
@@ -2273,8 +2299,7 @@ Future<Uint8List> _buildPdfRoll(
                             context,
                             listen: false,
                           ).getTotalMainRevenueReceipt(
-                            records,
-                            context,
+                            receipt,
                           ),
                           context: context,
                         ),

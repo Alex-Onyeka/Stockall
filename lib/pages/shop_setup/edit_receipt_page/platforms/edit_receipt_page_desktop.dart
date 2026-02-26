@@ -100,9 +100,10 @@ class _EditReceiptPageDesktopState
                                                     .bold
                                                 : null,
                                       ),
-                                      kIsWeb
-                                          ? 'Printer Type -- 58mm'
-                                          : 'Select USB Printer',
+                                      // kIsWeb
+                                      //     ?
+                                      'Printer Type -- 58mm',
+                                      // : 'Select USB Printer',
                                     ),
                                     Visibility(
                                       visible:
@@ -123,13 +124,13 @@ class _EditReceiptPageDesktopState
                                 ),
                               ),
                               PopupMenuItem(
-                                enabled:
-                                    kIsWeb ||
-                                    platforms(context) ==
-                                        TargetPlatform
-                                            .android ||
-                                    platforms(context) ==
-                                        TargetPlatform.iOS,
+                                // enabled:
+                                //     kIsWeb ||
+                                //     platforms(context) ==
+                                //         TargetPlatform
+                                //             .android ||
+                                //     platforms(context) ==
+                                //         TargetPlatform.iOS,
                                 onTap: () {
                                   returnShopProvider()
                                               .userShop()!
@@ -164,9 +165,10 @@ class _EditReceiptPageDesktopState
                                                     .bold
                                                 : null,
                                       ),
-                                      kIsWeb
-                                          ? 'Printer Type -- 80mm'
-                                          : 'Select Bluetooth Printer',
+                                      // kIsWeb
+                                      //     ?
+                                      'Printer Type -- 80mm',
+                                      // : 'Select Bluetooth Printer',
                                     ),
                                     Visibility(
                                       visible:
@@ -232,9 +234,12 @@ class _EditReceiptPageDesktopState
                                                       context,
                                                 ).userShop()!.printType ==
                                                 2
-                                        ? (kIsWeb
-                                            ? '80mm'
-                                            : '( Bluetooth )')
+                                        ? (
+                                        // kIsWeb
+                                        //   ?
+                                        '80mm'
+                                        // : '( Bluetooth )'
+                                        )
                                         : returnShopProvider(
                                                   context:
                                                       context,
@@ -245,9 +250,12 @@ class _EditReceiptPageDesktopState
                                                       context,
                                                 ).userShop()!.printType ==
                                                 1
-                                        ? (kIsWeb
-                                            ? '58mm'
-                                            : '( USB )')
+                                        ? (
+                                        // kIsWeb
+                                        //   ?
+                                        '58mm'
+                                        // : '( USB )'
+                                        )
                                         // : sortIndex == 2
                                         // ? 'Price'
                                         : 'Settings',
@@ -1480,7 +1488,6 @@ class _ReceiptEditContainerState
                           visible: authorization(
                             authorized:
                                 Authorizations().updateSale,
-                            context: context,
                           ),
                           child: ReceiptUpdateButton(
                             text: 'Save Template',

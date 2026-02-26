@@ -667,7 +667,7 @@ class _BarcodePrintingPageState
                                                               Expanded(
                                                                 child: GeneralTextField(
                                                                   title:
-                                                                      'Label Widgth',
+                                                                      'Label Width',
                                                                   hint:
                                                                       'Width (mm)',
                                                                   controller:

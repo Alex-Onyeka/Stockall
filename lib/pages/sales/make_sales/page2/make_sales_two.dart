@@ -24,6 +24,8 @@ class _MakeSalesPageState extends State<MakeSalesTwo> {
       TextEditingController();
   TextEditingController customerController =
       TextEditingController();
+  TextEditingController partPaymentController =
+      TextEditingController();
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -39,6 +41,7 @@ class _MakeSalesPageState extends State<MakeSalesTwo> {
               bankController: bankController,
               cashController: cashController,
               searchController: searchController,
+              partPaymentController: partPaymentController,
             );
           } else {
             return MakeSalesDesktopTwo(
@@ -47,6 +50,7 @@ class _MakeSalesPageState extends State<MakeSalesTwo> {
               bankController: bankController,
               cashController: cashController,
               searchController: searchController,
+              partPaymentController: partPaymentController,
             );
           }
         },

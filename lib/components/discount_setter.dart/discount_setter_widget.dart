@@ -11,9 +11,13 @@ import 'package:stockall/providers/theme_provider.dart';
 
 class DiscountSetterWidget extends StatefulWidget {
   final TextEditingController discountPercentController;
+  final Function()? addListener;
+  final Function()? removeListener;
   const DiscountSetterWidget({
     super.key,
     required this.discountPercentController,
+    required this.addListener,
+    required this.removeListener,
   });
 
   @override
@@ -44,6 +48,8 @@ class _DiscountSetterWidgetState
                     setDiscountAction(
                       context,
                       widget.discountPercentController,
+                      widget.addListener,
+                      widget.removeListener,
                     );
                   },
                   child: Padding(
@@ -173,6 +179,8 @@ class _DiscountSetterWidgetState
                     .currentCart()
                     .isSettingDiscountOpen,
             child: DiscountSetterBody(
+              addListener: widget.addListener,
+              removeListener: widget.removeListener,
               isGeneral: false,
               discountPercentController:
                   widget.discountPercentController,
@@ -187,10 +195,14 @@ class _DiscountSetterWidgetState
 class DiscountSetterBody extends StatefulWidget {
   final TextEditingController discountPercentController;
   final bool isGeneral;
+  final Function()? addListener;
+  final Function()? removeListener;
   const DiscountSetterBody({
     super.key,
     required this.discountPercentController,
     required this.isGeneral,
+    required this.addListener,
+    required this.removeListener,
   });
 
   @override
@@ -286,38 +298,39 @@ class _DiscountSetterBodyState
                                       2,
                                     ),
                                 onTap: () {
-                                  if (returnShopProvider()
-                                          .userShop()
-                                          ?.fixedDiscount !=
-                                      null) {
+                                  if ((returnShopProvider()
+                                              .currentDiscount() ??
+                                          0) >
+                                      returnSalesProvider()
+                                          .calcSubTotal()) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return InfoAlert(
+                                          theme:
+                                              returnTheme(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ),
+                                          message:
+                                              'You Cannot Add a discount amount that is more than the total cost of your cart.',
+                                          title:
+                                              'Action not Allowed',
+                                        );
+                                      },
+                                    );
+                                  } else {
                                     if (returnShopProvider()
-                                            .currentDiscount()! >
-                                        returnSalesProvider()
-                                            .calcTotalMain()) {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return InfoAlert(
-                                            theme:
-                                                returnTheme(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ),
-                                            message:
-                                                'You Cannot Add a discount amount that is more than the total cost of your cart.',
-                                            title:
-                                                'Action not Allowed',
-                                          );
-                                        },
-                                      );
-                                    } else {
+                                            .userShop()
+                                            ?.fixedDiscount !=
+                                        null) {
                                       if (screenWidth(
                                             context,
                                           ) >
                                           mobileScreen) {
                                         returnSalesProvider()
-                                            .addGeneralFixedDiscount(
+                                            .addFixedDiscount(
                                               returnShopProvider()
                                                       .currentDiscount() ??
                                                   0,
@@ -327,44 +340,56 @@ class _DiscountSetterBodyState
                                               false,
                                               context,
                                             );
+                                        widget
+                                            .addListener!();
                                       } else {
                                         returnSalesProvider()
-                                            .addGeneralFixedDiscount(
+                                            .addFixedDiscount(
                                               returnShopProvider()
                                                       .currentDiscount() ??
                                                   0,
                                             );
+                                        widget
+                                            .addListener!();
                                         Navigator.of(
                                           context,
                                         ).pop();
                                       }
                                     }
-                                  } else {
-                                    if (screenWidth(
-                                          context,
-                                        ) >
-                                        mobileScreen) {
-                                      returnSalesProvider()
-                                          .addGeneralDiscount(
-                                            returnShopProvider()
-                                                    .currentDiscount() ??
-                                                0,
-                                          );
-                                      returnSalesProvider()
-                                          .toggleSetDiscount(
-                                            false,
+                                    if (returnShopProvider()
+                                            .userShop()
+                                            ?.percentDiscount !=
+                                        null) {
+                                      if (screenWidth(
                                             context,
-                                          );
-                                    } else {
-                                      returnSalesProvider()
-                                          .addGeneralDiscount(
-                                            returnShopProvider()
-                                                    .currentDiscount() ??
-                                                0,
-                                          );
-                                      Navigator.of(
-                                        context,
-                                      ).pop();
+                                          ) >
+                                          mobileScreen) {
+                                        returnSalesProvider()
+                                            .addPercentageDiscount(
+                                              returnShopProvider()
+                                                      .currentDiscount() ??
+                                                  0,
+                                            );
+                                        returnSalesProvider()
+                                            .toggleSetDiscount(
+                                              false,
+                                              context,
+                                            );
+                                        widget
+                                            .addListener!();
+                                      } else {
+                                        returnSalesProvider()
+                                            .addPercentageDiscount(
+                                              returnShopProvider()
+                                                      .currentDiscount() ??
+                                                  0,
+                                            );
+                                        widget
+                                            .addListener!();
+                                        Navigator.of(
+                                          context,
+                                        ).pop();
+                                      }
                                     }
                                   }
                                 },
@@ -453,7 +478,9 @@ class _DiscountSetterBodyState
                                 );
                             widget.discountPercentController
                                 .clear();
+                            widget.addListener!();
                           } else {
+                            widget.addListener!();
                             Navigator.of(context).pop();
                           }
                         },
@@ -493,45 +520,75 @@ class _DiscountSetterBodyState
                                                 .transparent,
                                         child: InkWell(
                                           onTap: () {
-                                            if (!widget
-                                                .isGeneral) {
-                                              if (screenWidth(
+                                            if ((double.tryParse(
+                                                      dis,
+                                                    ) ??
+                                                    0) >
+                                                returnSalesProvider()
+                                                    .calcSubTotal()) {
+                                              showDialog(
+                                                context:
                                                     context,
-                                                  ) >
-                                                  mobileScreen) {
-                                                returnSalesProvider()
-                                                    .addGeneralDiscount(
-                                                      double.parse(
-                                                        dis,
-                                                      ),
-                                                    );
-                                                returnSalesProvider()
-                                                    .toggleSetDiscount(
-                                                      false,
-                                                      context,
-                                                    );
-                                              } else {
-                                                returnSalesProvider()
-                                                    .addGeneralDiscount(
-                                                      double.parse(
-                                                        dis,
-                                                      ),
-                                                    );
-                                                Navigator.of(
+                                                builder: (
                                                   context,
-                                                ).pop();
-                                              }
+                                                ) {
+                                                  return InfoAlert(
+                                                    theme: returnTheme(
+                                                      context,
+                                                      listen:
+                                                          false,
+                                                    ),
+                                                    message:
+                                                        'You Cannot Add a discount amount that is more than the total cost of your cart.',
+                                                    title:
+                                                        'Action not Allowed',
+                                                  );
+                                                },
+                                              );
                                             } else {
-                                              returnShopProvider()
-                                                  .setGeneralPercentageDiscountCache(
-                                                    double.tryParse(
+                                              if (!widget
+                                                  .isGeneral) {
+                                                if (screenWidth(
+                                                      context,
+                                                    ) >
+                                                    mobileScreen) {
+                                                  returnSalesProvider().addPercentageDiscount(
+                                                    double.parse(
                                                       dis,
                                                     ),
                                                   );
+                                                  returnSalesProvider().toggleSetDiscount(
+                                                    false,
+                                                    context,
+                                                  );
+                                                  widget
+                                                      .addListener!();
+                                                } else {
+                                                  returnSalesProvider().addPercentageDiscount(
+                                                    double.parse(
+                                                      dis,
+                                                    ),
+                                                  );
+                                                  widget
+                                                      .addListener!();
+                                                  Navigator.of(
+                                                    context,
+                                                  ).pop();
+                                                }
+                                              } else {
+                                                returnShopProvider()
+                                                    .setGeneralPercentageDiscountCache(
+                                                      double.tryParse(
+                                                        dis,
+                                                      ),
+                                                    );
+                                              }
+                                              widget
+                                                  .discountPercentController
+                                                  .clear();
+                                              widget
+                                                  .addListener!();
                                             }
-                                            widget
-                                                .discountPercentController
-                                                .clear();
                                           },
                                           child: Container(
                                             decoration: BoxDecoration(
@@ -600,45 +657,75 @@ class _DiscountSetterBodyState
                                                 .transparent,
                                         child: InkWell(
                                           onTap: () {
-                                            if (!widget
-                                                .isGeneral) {
-                                              if (screenWidth(
+                                            if ((double.tryParse(
+                                                      dis,
+                                                    ) ??
+                                                    0) >
+                                                returnSalesProvider()
+                                                    .calcSubTotal()) {
+                                              showDialog(
+                                                context:
                                                     context,
-                                                  ) >
-                                                  mobileScreen) {
-                                                returnSalesProvider()
-                                                    .addGeneralDiscount(
-                                                      double.parse(
-                                                        dis,
-                                                      ),
-                                                    );
-                                                returnSalesProvider()
-                                                    .toggleSetDiscount(
-                                                      false,
-                                                      context,
-                                                    );
-                                              } else {
-                                                returnSalesProvider()
-                                                    .addGeneralDiscount(
-                                                      double.parse(
-                                                        dis,
-                                                      ),
-                                                    );
-                                                Navigator.of(
+                                                builder: (
                                                   context,
-                                                ).pop();
-                                              }
+                                                ) {
+                                                  return InfoAlert(
+                                                    theme: returnTheme(
+                                                      context,
+                                                      listen:
+                                                          false,
+                                                    ),
+                                                    message:
+                                                        'You Cannot Add a discount amount that is more than the total cost of your cart.',
+                                                    title:
+                                                        'Action not Allowed',
+                                                  );
+                                                },
+                                              );
                                             } else {
-                                              returnShopProvider()
-                                                  .setGeneralPercentageDiscountCache(
-                                                    double.tryParse(
+                                              if (!widget
+                                                  .isGeneral) {
+                                                if (screenWidth(
+                                                      context,
+                                                    ) >
+                                                    mobileScreen) {
+                                                  returnSalesProvider().addPercentageDiscount(
+                                                    double.parse(
                                                       dis,
                                                     ),
                                                   );
+                                                  returnSalesProvider().toggleSetDiscount(
+                                                    false,
+                                                    context,
+                                                  );
+                                                  widget
+                                                      .addListener!();
+                                                } else {
+                                                  returnSalesProvider().addPercentageDiscount(
+                                                    double.parse(
+                                                      dis,
+                                                    ),
+                                                  );
+                                                  widget
+                                                      .addListener!();
+                                                  Navigator.of(
+                                                    context,
+                                                  ).pop();
+                                                }
+                                              } else {
+                                                returnShopProvider()
+                                                    .setGeneralPercentageDiscountCache(
+                                                      double.tryParse(
+                                                        dis,
+                                                      ),
+                                                    );
+                                              }
+                                              widget
+                                                  .discountPercentController
+                                                  .clear();
+                                              widget
+                                                  .addListener!();
                                             }
-                                            widget
-                                                .discountPercentController
-                                                .clear();
                                           },
                                           child: Container(
                                             decoration: BoxDecoration(
@@ -829,6 +916,9 @@ class _DiscountSetterBodyState
                                     controller:
                                         widget
                                             .discountPercentController,
+                                    onTap:
+                                        widget
+                                            .removeListener,
                                   ),
                                 ),
                               ),
@@ -863,34 +953,61 @@ class _DiscountSetterBodyState
                                               .discountPercentController
                                               .text
                                               .isNotEmpty) {
-                                            returnSalesProvider()
-                                                .addGeneralDiscount(
-                                                  double.parse(
-                                                    widget
-                                                        .discountPercentController
-                                                        .text,
-                                                  ),
-                                                );
-                                            if (screenWidth(
-                                                  context,
-                                                ) >
-                                                mobileScreen) {
-                                              returnSalesProvider()
-                                                  .toggleSetDiscount(
-                                                    false,
+                                            if ((double.tryParse(
+                                                      widget
+                                                          .discountPercentController
+                                                          .text,
+                                                    ) ??
+                                                    0) >
+                                                returnSalesProvider()
+                                                    .calcSubTotal()) {
+                                              showDialog(
+                                                context:
                                                     context,
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  return InfoAlert(
+                                                    theme: returnTheme(
+                                                      context,
+                                                      listen:
+                                                          false,
+                                                    ),
+                                                    message:
+                                                        'You Cannot Add a discount amount that is more than the total cost of your cart.',
+                                                    title:
+                                                        'Action not Allowed',
                                                   );
+                                                },
+                                              );
+                                            } else {
+                                              returnSalesProvider().addPercentageDiscount(
+                                                double.parse(
+                                                  widget
+                                                      .discountPercentController
+                                                      .text,
+                                                ),
+                                              );
+                                              if (screenWidth(
+                                                    context,
+                                                  ) >
+                                                  mobileScreen) {
+                                                returnSalesProvider()
+                                                    .toggleSetDiscount(
+                                                      false,
+                                                      context,
+                                                    );
+                                              } else {
+                                                Navigator.of(
+                                                  context,
+                                                ).pop();
+                                              }
+                                              widget
+                                                  .addListener!();
                                               widget
                                                   .discountPercentController
                                                   .clear();
-                                            } else {
-                                              Navigator.of(
-                                                context,
-                                              ).pop();
                                             }
-                                            widget
-                                                .discountPercentController
-                                                .clear();
                                           }
                                         },
                                         child: Container(
@@ -941,39 +1058,69 @@ class _DiscountSetterBodyState
                                                 .transparent,
                                         child: InkWell(
                                           onTap: () {
-                                            if (!widget
-                                                .isGeneral) {
-                                              if (screenWidth(
+                                            if (dis
+                                                    .toDouble() >
+                                                returnSalesProvider()
+                                                    .calcSubTotal()) {
+                                              showDialog(
+                                                context:
                                                     context,
-                                                  ) >
-                                                  mobileScreen) {
-                                                returnSalesProvider()
-                                                    .addGeneralFixedDiscount(
-                                                      dis.toDouble(),
-                                                    );
-                                                returnSalesProvider()
-                                                    .toggleSetDiscount(
-                                                      false,
-                                                      context,
-                                                    );
-                                              } else {
-                                                returnSalesProvider()
-                                                    .addGeneralFixedDiscount(
-                                                      dis.toDouble(),
-                                                    );
-                                                Navigator.of(
+                                                builder: (
                                                   context,
-                                                ).pop();
-                                              }
-                                            } else {
-                                              returnShopProvider()
-                                                  .setGeneralFixedDiscountCache(
-                                                    dis.toDouble(),
+                                                ) {
+                                                  return InfoAlert(
+                                                    theme: returnTheme(
+                                                      context,
+                                                      listen:
+                                                          false,
+                                                    ),
+                                                    message:
+                                                        'You Cannot Add a discount amount that is more than the total cost of your cart.',
+                                                    title:
+                                                        'Action not Allowed',
                                                   );
+                                                },
+                                              );
+                                            } else {
+                                              if (!widget
+                                                  .isGeneral) {
+                                                if (screenWidth(
+                                                      context,
+                                                    ) >
+                                                    mobileScreen) {
+                                                  returnSalesProvider()
+                                                      .addFixedDiscount(
+                                                        dis.toDouble(),
+                                                      );
+                                                  returnSalesProvider().toggleSetDiscount(
+                                                    false,
+                                                    context,
+                                                  );
+                                                  widget
+                                                      .addListener!();
+                                                } else {
+                                                  returnSalesProvider()
+                                                      .addFixedDiscount(
+                                                        dis.toDouble(),
+                                                      );
+                                                  widget
+                                                      .addListener!();
+                                                  Navigator.of(
+                                                    context,
+                                                  ).pop();
+                                                }
+                                              } else {
+                                                returnShopProvider()
+                                                    .setGeneralFixedDiscountCache(
+                                                      dis.toDouble(),
+                                                    );
+                                              }
+                                              widget
+                                                  .discountPercentController
+                                                  .clear();
+                                              widget
+                                                  .addListener!();
                                             }
-                                            widget
-                                                .discountPercentController
-                                                .clear();
                                           },
                                           child: Container(
                                             decoration: BoxDecoration(
@@ -1045,49 +1192,53 @@ class _DiscountSetterBodyState
                                                 .transparent,
                                         child: InkWell(
                                           onTap: () {
-                                            if (!widget
-                                                .isGeneral) {
-                                              if (dis
-                                                      .toDouble() >
-                                                  returnSalesProvider()
-                                                      .calcTotalMain()) {
-                                                showDialog(
-                                                  context:
-                                                      context,
-                                                  builder: (
+                                            if (dis
+                                                    .toDouble() >
+                                                returnSalesProvider()
+                                                    .calcSubTotal()) {
+                                              showDialog(
+                                                context:
                                                     context,
-                                                  ) {
-                                                    return InfoAlert(
-                                                      theme: returnTheme(
-                                                        context,
-                                                        listen:
-                                                            false,
-                                                      ),
-                                                      message:
-                                                          'You Cannot Add a discount amount that is more than the total cost of your cart.',
-                                                      title:
-                                                          'Action not Allowed',
-                                                    );
-                                                  },
-                                                );
-                                              } else {
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  return InfoAlert(
+                                                    theme: returnTheme(
+                                                      context,
+                                                      listen:
+                                                          false,
+                                                    ),
+                                                    message:
+                                                        'You Cannot Add a discount amount that is more than the total cost of your cart.',
+                                                    title:
+                                                        'Action not Allowed',
+                                                  );
+                                                },
+                                              );
+                                            } else {
+                                              if (!widget
+                                                  .isGeneral) {
                                                 if (screenWidth(
                                                       context,
                                                     ) >
                                                     mobileScreen) {
                                                   returnSalesProvider()
-                                                      .addGeneralFixedDiscount(
+                                                      .addFixedDiscount(
                                                         dis.toDouble(),
                                                       );
                                                   returnSalesProvider().toggleSetDiscount(
                                                     false,
                                                     context,
                                                   );
+                                                  widget
+                                                      .addListener!();
                                                 } else {
                                                   returnSalesProvider()
-                                                      .addGeneralFixedDiscount(
+                                                      .addFixedDiscount(
                                                         dis.toDouble(),
                                                       );
+                                                  widget
+                                                      .addListener!();
                                                   Navigator.of(
                                                     context,
                                                   ).pop();
@@ -1095,15 +1246,17 @@ class _DiscountSetterBodyState
                                                 widget
                                                     .discountPercentController
                                                     .clear();
+                                              } else {
+                                                returnShopProvider()
+                                                    .setGeneralFixedDiscountCache(
+                                                      dis.toDouble(),
+                                                    );
+                                                widget
+                                                    .discountPercentController
+                                                    .clear();
+                                                widget
+                                                    .addListener!();
                                               }
-                                            } else {
-                                              returnShopProvider()
-                                                  .setGeneralFixedDiscountCache(
-                                                    dis.toDouble(),
-                                                  );
-                                              widget
-                                                  .discountPercentController
-                                                  .clear();
                                             }
                                           },
                                           child: Container(
@@ -1180,14 +1333,14 @@ class _DiscountSetterBodyState
                                           .text
                                           .isNotEmpty) {
                                         returnShopProvider()
-                                            .setGeneralFixedDiscountCache(
+                                            .setGeneralPercentageDiscountCache(
                                               null,
                                             );
                                         if (!widget
                                             .isGeneral) {
                                           var cost =
                                               returnSalesProvider()
-                                                  .calcTotalMain();
+                                                  .calcSubTotal();
                                           if (cost <
                                               double.parse(
                                                 widget
@@ -1311,6 +1464,9 @@ class _DiscountSetterBodyState
                                     controller:
                                         widget
                                             .discountPercentController,
+                                    onTap:
+                                        widget
+                                            .removeListener,
                                   ),
                                 ),
                               ),
@@ -1351,7 +1507,7 @@ class _DiscountSetterBodyState
                                                       .text,
                                                 ) >
                                                 returnSalesProvider()
-                                                    .calcTotalMain()) {
+                                                    .calcSubTotal()) {
                                               showDialog(
                                                 context:
                                                     context,
@@ -1372,7 +1528,7 @@ class _DiscountSetterBodyState
                                                 },
                                               );
                                             } else {
-                                              returnSalesProvider().addGeneralFixedDiscount(
+                                              returnSalesProvider().addFixedDiscount(
                                                 double.parse(
                                                   widget
                                                       .discountPercentController
@@ -1497,8 +1653,11 @@ class DiscountSelectionTab extends StatelessWidget {
 void setDiscountAction(
   BuildContext context,
   TextEditingController discountPercentController,
+  Function()? addListener,
+  Function()? removeListener,
 ) {
   var salesPFalse = returnSalesProvider();
+  removeListener!();
   if (salesPFalse.currentCart().discount == null &&
       salesPFalse.currentCart().fixedDiscount == null) {
     if (salesPFalse.currentCart().isSettingDiscountOpen ==
@@ -1529,6 +1688,8 @@ void setDiscountAction(
                         bottom: 20.0,
                       ),
                       child: DiscountSetterBody(
+                        addListener: addListener,
+                        removeListener: removeListener,
                         isGeneral: false,
                         discountPercentController:
                             discountPercentController,
@@ -1539,6 +1700,7 @@ void setDiscountAction(
               },
             ).then((_) {
               discountPercentController.clear();
+              addListener!();
             });
           },
         );
@@ -1547,9 +1709,8 @@ void setDiscountAction(
       }
     }
   } else {
-    salesPFalse.addGeneralDiscount(null);
-    // salesPFalse.addGeneralFixedDiscount(
-    //   null,
-    // );
+    salesPFalse.addFixedDiscount(null);
+    salesPFalse.addPercentageDiscount(null);
+    addListener!();
   }
 }

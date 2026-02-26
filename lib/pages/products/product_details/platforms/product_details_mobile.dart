@@ -95,7 +95,6 @@ class _ProductDetailsMobileState
                 visible: authorization(
                   authorized:
                       Authorizations().updateProduct,
-                  context: context,
                 ),
                 child: InkWell(
                   onTap: () {
@@ -292,7 +291,6 @@ class _ProductDetailsMobileState
                                   authorized:
                                       Authorizations()
                                           .updateProduct,
-                                  context: context,
                                 ),
                                 child: SizedBox(height: 15),
                               ),
@@ -301,7 +299,6 @@ class _ProductDetailsMobileState
                                   authorized:
                                       Authorizations()
                                           .updateProduct,
-                                  context: context,
                                 ),
                                 child: EditButton(
                                   theme: widget.theme,
@@ -700,7 +697,6 @@ class _ProductDetailsMobileState
                                           authorized:
                                               Authorizations()
                                                   .updateProduct,
-                                          context: context,
                                         ),
                                         child: SizedBox(
                                           height: 15,
@@ -711,7 +707,6 @@ class _ProductDetailsMobileState
                                           authorized:
                                               Authorizations()
                                                   .updateProduct,
-                                          context: context,
                                         ),
                                         child: EditButton(
                                           theme:
@@ -1796,7 +1791,6 @@ class _ProductDetailsMobileState
                           authorized:
                               Authorizations()
                                   .deleteProduct,
-                          context: context,
                         ),
                         child: Expanded(
                           child: EditButton(
@@ -1871,7 +1865,6 @@ class _ProductDetailsMobileState
                           authorized:
                               Authorizations()
                                   .updateProduct,
-                          context: context,
                         ),
                         child: Expanded(
                           child: EditButton(

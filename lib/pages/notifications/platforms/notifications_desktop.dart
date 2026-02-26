@@ -352,8 +352,6 @@ class _NotificationsDesktopState
                                                   authorized:
                                                       Authorizations()
                                                           .deleteNotification,
-                                                  context:
-                                                      context,
                                                 )) {
                                                   showDialog(
                                                     context:
@@ -497,8 +495,6 @@ class _NotificationsDesktopState
                                                   authorized:
                                                       Authorizations()
                                                           .deleteNotification,
-                                                  context:
-                                                      context,
                                                 )) {
                                                   showDialog(
                                                     context:
@@ -642,8 +638,6 @@ class _NotificationsDesktopState
                                                   authorized:
                                                       Authorizations()
                                                           .deleteNotification,
-                                                  context:
-                                                      context,
                                                 )) {
                                                   showDialog(
                                                     context:
@@ -1169,7 +1163,6 @@ class _NotificatonTileMainState
                                     authorized:
                                         Authorizations()
                                             .deleteNotification,
-                                    context: context,
                                   ),
                                   child: Icon(
                                     size: 20,

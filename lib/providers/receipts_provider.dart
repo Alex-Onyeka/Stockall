@@ -5,6 +5,7 @@ import 'package:stockall/classes/temp_main_receipt/unsynced/deleted_customers/de
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/classes/temp_product_slaes_record/unsynced/created_records/created_records.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/main_receipt/main_receipt_func.dart';
 import 'package:stockall/local_database/main_receipt/unsync_funcs/created/created_receipts_func.dart';
 import 'package:stockall/local_database/main_receipt/unsync_funcs/deleted/deleted_receipts_func.dart';
@@ -24,6 +25,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 // ///////
 
 class ReceiptsProvider extends ChangeNotifier {
+  static final ReceiptsProvider _instance =
+      ReceiptsProvider._internal();
+  factory ReceiptsProvider() => _instance;
+  ReceiptsProvider._internal();
   bool isLoading = false;
   void toggleIsLoading(bool value) {
     isLoading = value;
@@ -70,7 +75,6 @@ class ReceiptsProvider extends ChangeNotifier {
   // CREATE a new receipt
   Future<TempMainReceipt?> createReceipt(
     TempMainReceipt receipt,
-    BuildContext context,
   ) async {
     print('Inner Receipt Creation Started');
     bool isOnline = await connectivity.isOnline();
@@ -111,7 +115,6 @@ class ReceiptsProvider extends ChangeNotifier {
   // READ all receipts for a shop
   Future<List<TempMainReceipt>> loadReceipts(
     int shopId,
-    BuildContext context,
   ) async {
     bool isOnline = await connectivity.isOnline();
     if (isOnline) {
@@ -123,7 +126,7 @@ class ReceiptsProvider extends ChangeNotifier {
             .eq('shop_id', shopId)
             .order('created_at', ascending: false);
         if (data.isNotEmpty) {
-          print('Receipts Gotten');
+          print('Receipts Gotten ${data.length}');
         }
 
         _receipts =
@@ -132,38 +135,37 @@ class ReceiptsProvider extends ChangeNotifier {
                   (json) => TempMainReceipt.fromJson(json),
                 )
                 .toList();
-        notifyListeners();
+
         await MainReceiptFunc().insertAllReceipts(
           _receipts,
         );
-        if (context.mounted) {
-          print('Loaded');
-          await returnData().getProducts(
-            returnShopProvider().userShop()!.shopId!,
-          );
-          if (context.mounted) {
-            await loadProductSalesRecord(
-              returnShopProvider().userShop()!.shopId!,
-            );
-          }
-        }
+        print('Loaded');
+        await returnInvoicesProvider().loadInvoices(shopId);
+        await returnData().getProducts(
+          returnShopProvider().userShop()!.shopId!,
+        );
+        await loadProductSalesRecord(
+          returnShopProvider().userShop()!.shopId!,
+        );
+        notifyListeners();
       } catch (e) {
+        print('Error Getting Receipts: ${e.toString()}');
         return [];
       }
     } else {
       _receipts = MainReceiptFunc().getReceipts();
+
+      print('Offline Receipts Gotten');
+      await returnInvoicesProvider().loadInvoices(
+        returnShopProvider().userShop()!.shopId!,
+      );
+      await returnData().getProducts(
+        returnShopProvider().userShop()!.shopId!,
+      );
+      await loadProductSalesRecord(
+        returnShopProvider().userShop()!.shopId!,
+      );
       notifyListeners();
-      if (context.mounted) {
-        print('Offline Receipts Gotten');
-        await returnData().getProducts(
-          returnShopProvider().userShop()!.shopId!,
-        );
-        if (context.mounted) {
-          await loadProductSalesRecord(
-            returnShopProvider().userShop()!.shopId!,
-          );
-        }
-      }
     }
     notifyListeners();
     return _receipts;
@@ -244,7 +246,7 @@ class ReceiptsProvider extends ChangeNotifier {
   Future<void> deleteReceipt(
     TempMainReceipt receipt,
     List<String> productNames,
-    BuildContext context,
+    // BuildContext context,
   ) async {
     print('Deleting Receipt');
     bool isOnline = await connectivity.isOnline();
@@ -308,12 +310,9 @@ class ReceiptsProvider extends ChangeNotifier {
       '✅ Receipt and inventory successfully Delete and Updated.',
     );
 
-    if (context.mounted) {
-      await loadReceipts(
-        returnShopProvider().userShop()!.shopId!,
-        context,
-      );
-    }
+    await loadReceipts(
+      returnShopProvider().userShop()!.shopId!,
+    );
 
     print('Totally Finished Deleting Receipt');
     notifyListeners();
@@ -322,7 +321,7 @@ class ReceiptsProvider extends ChangeNotifier {
   // DELETE a receipt
   Future<void> deleteReceiptWithoutUpdatingInventory(
     String uuid,
-    BuildContext context,
+    // BuildContext context,
   ) async {
     print('Deleting Receipt 2');
     bool isOnline = await connectivity.isOnline();
@@ -374,58 +373,55 @@ class ReceiptsProvider extends ChangeNotifier {
       '✅ Receipt and inventory successfully Delete and Updated.',
     );
 
-    if (context.mounted) {
-      await loadReceipts(
-        returnShopProvider().userShop()!.shopId!,
-        context,
-      );
-    }
+    await loadReceipts(
+      returnShopProvider().userShop()!.shopId!,
+    );
 
     print('Totally Finished Deleting Receipt');
     notifyListeners();
   }
 
   // UPDATE a receipt
-  Future<void> payCredit(String uuid) async {
-    try {
-      bool isOnline = await connectivity.isOnline();
-      if (isOnline) {
-        final updateData = {
-          'is_invoice': false,
-          'created_at':
-              DateTime.now()
-                  .subtract(Duration(hours: 1))
-                  .toIso8601String(),
-        };
+  // Future<void> payCredit(String uuid) async {
+  //   try {
+  //     bool isOnline = await connectivity.isOnline();
+  //     if (isOnline) {
+  //       final updateData = {
+  //         'is_invoice': false,
+  //         'created_at':
+  //             DateTime.now()
+  //                 .subtract(Duration(hours: 1))
+  //                 .toIso8601String(),
+  //       };
 
-        final response =
-            await supabase
-                .from('receipts')
-                .update(updateData)
-                .eq('uuid', uuid)
-                .select();
+  //       final response =
+  //           await supabase
+  //               .from('receipts')
+  //               .update(updateData)
+  //               .eq('uuid', uuid)
+  //               .select();
 
-        if (response.isEmpty) {
-          print('❌ No matching receipt to update.');
-          return;
-        }
-        await MainReceiptFunc().payCredit(uuid);
-      } else {
-        await MainReceiptFunc().payCredit(uuid);
-        await UpdatedReceiptsFunc().createUpdatedReceipt(
-          uuid,
-        );
-      }
-      final rec = receipts.firstWhere(
-        (recc) => recc.uuid! == uuid,
-      );
-      rec.isInvoice = false;
-      print('✅ Receipt updated successfully.');
-      notifyListeners();
-    } catch (e) {
-      print('❌ Error updating receipt: $e');
-    }
-  }
+  //       if (response.isEmpty) {
+  //         print('❌ No matching receipt to update.');
+  //         return;
+  //       }
+  //       await MainReceiptFunc().payCredit(uuid);
+  //     } else {
+  //       await MainReceiptFunc().payCredit(uuid);
+  //       await UpdatedReceiptsFunc().createUpdatedReceipt(
+  //         uuid,
+  //       );
+  //     }
+  //     final rec = receipts.firstWhere(
+  //       (recc) => recc.uuid! == uuid,
+  //     );
+  //     rec.isInvoice = false;
+  //     print('✅ Receipt updated successfully.');
+  //     notifyListeners();
+  //   } catch (e) {
+  //     print('❌ Error updating receipt: $e');
+  //   }
+  // }
 
   //
   //
@@ -467,7 +463,6 @@ class ReceiptsProvider extends ChangeNotifier {
           print('Mounted, refreshing Receipts ✅');
           await loadReceipts(
             returnShopProvider().userShop()!.shopId!,
-            context,
           );
         }
       }
@@ -521,7 +516,6 @@ class ReceiptsProvider extends ChangeNotifier {
           print('Mounted, refreshing Receipts ✅');
           await loadReceipts(
             returnShopProvider().userShop()!.shopId!,
-            context,
           );
         }
       }
@@ -567,7 +561,6 @@ class ReceiptsProvider extends ChangeNotifier {
           print('Mounted, refreshing Receipts ✅');
           await loadReceipts(
             returnShopProvider().userShop()!.shopId!,
-            context,
           );
         }
       }
@@ -595,7 +588,7 @@ class ReceiptsProvider extends ChangeNotifier {
   // CREATE a new product sale record
   Future<void> createProductSaleRecord(
     List<TempProductSaleRecord> records,
-    BuildContext context,
+    // BuildContext context,
   ) async {
     bool isOnline = await connectivity.isOnline();
     print('About to Start Mapping');
@@ -772,33 +765,20 @@ class ReceiptsProvider extends ChangeNotifier {
   //
   //
 
-  bool returnInvoice = false;
+  // bool returnInvoice = false;
 
-  void switchReturnInvoice(bool value) {
-    returnInvoice = value;
-    notifyListeners();
-  }
+  // void switchReturnInvoice(bool value) {
+  //   returnInvoice = value;
+  //   notifyListeners();
+  // }
 
-  List<TempMainReceipt> returnReceipts(
-    BuildContext context,
-  ) {
-    if (!returnInvoice) {
-      return returnOwnReceiptsByDayOrWeekInvoice(
-            context,
-            receipts,
-          )
-          .where((receipt) => receipt.isInvoice == false)
-          .toList();
-    } else {
-      return receipts
-          .where((receipt) => receipt.isInvoice == true)
-          .toList();
-    }
+  List<TempMainReceipt> returnReceipts() {
+    return returnOwnReceiptsByDayOrWeekInvoice(receipts);
   }
 
   List<TempMainReceipt> returnOwnReceiptsByDayOrWeek(
-    BuildContext context,
-    List<TempMainReceipt> receipts,
+    // BuildContext context,
+    List<TempMainReceipt> receiptss,
   ) {
     if (weekStartDate != null) {
       final weekStartLocal = weekStartDate!;
@@ -806,13 +786,27 @@ class ReceiptsProvider extends ChangeNotifier {
         const Duration(days: 7),
       );
 
-      return receipts.where((receipt) {
-        final created =
-            receipt.createdAt
-                .toLocal(); // convert UTC to local
-        return !created.isBefore(weekStartLocal) &&
-            created.isBefore(weekEndLocal);
-      }).toList();
+      if (authorization(
+        authorized:
+            Authorizations().viewAllTransactionRecords,
+      )) {
+        return receiptss.where((receipt) {
+          final created =
+              receipt.createdAt
+                  .toLocal(); // convert UTC to local
+          return !created.isBefore(weekStartLocal) &&
+              created.isBefore(weekEndLocal);
+        }).toList();
+      } else {
+        return receiptss.where((receipt) {
+          final created =
+              receipt.createdAt
+                  .toLocal(); // convert UTC to local
+          return !created.isBefore(weekStartLocal) &&
+              created.isBefore(weekEndLocal) &&
+              receipt.staffId == currentUser().userId;
+        }).toList();
+      }
     }
 
     // Force local date without UTC logic
@@ -828,25 +822,38 @@ class ReceiptsProvider extends ChangeNotifier {
       const Duration(days: 1),
     );
 
-    return receipts
-        .where((receipt) {
-          final created =
-              receipt.createdAt
-                  .toLocal(); // ALWAYS convert to local
-          final inRange =
-              !created.isBefore(startOfDay) &&
-              created.isBefore(endOfDay);
+    if (authorization(
+      authorized:
+          Authorizations().viewAllTransactionRecords,
+    )) {
+      return receiptss.where((receipt) {
+        final created =
+            receipt.createdAt
+                .toLocal(); // ALWAYS convert to local
+        final inRange =
+            !created.isBefore(startOfDay) &&
+            created.isBefore(endOfDay);
 
-          return inRange;
-        })
-        .toList()
-        .where((receipt) => receipt.isInvoice == false)
-        .toList();
+        return inRange;
+      }).toList();
+    } else {
+      return receiptss.where((receipt) {
+        final created =
+            receipt.createdAt
+                .toLocal(); // ALWAYS convert to local
+        final inRange =
+            !created.isBefore(startOfDay) &&
+            created.isBefore(endOfDay) &&
+            receipt.staffId == currentUser().userId;
+
+        return inRange;
+      }).toList();
+    }
   }
 
   List<TempMainReceipt> returnOwnReceiptsByDayOrWeekAll(
-    BuildContext context,
-    List<TempMainReceipt> receipts,
+    // BuildContext context,
+    List<TempMainReceipt> receiptss,
   ) {
     if (weekStartDate != null) {
       final weekStartLocal = weekStartDate!;
@@ -854,13 +861,27 @@ class ReceiptsProvider extends ChangeNotifier {
         const Duration(days: 7),
       );
 
-      return receipts.where((receipt) {
-        final created =
-            receipt.createdAt
-                .toLocal(); // convert UTC to local
-        return !created.isBefore(weekStartLocal) &&
-            created.isBefore(weekEndLocal);
-      }).toList();
+      if (authorization(
+        authorized:
+            Authorizations().viewAllTransactionRecords,
+      )) {
+        return receiptss.where((receipt) {
+          final created =
+              receipt.createdAt
+                  .toLocal(); // convert UTC to local
+          return !created.isBefore(weekStartLocal) &&
+              created.isBefore(weekEndLocal);
+        }).toList();
+      } else {
+        return receiptss.where((receipt) {
+          final created =
+              receipt.createdAt
+                  .toLocal(); // convert UTC to local
+          return !created.isBefore(weekStartLocal) &&
+              created.isBefore(weekEndLocal) &&
+              receipt.staffId == currentUser().userId;
+        }).toList();
+      }
     }
 
     // Force local date without UTC logic
@@ -876,21 +897,38 @@ class ReceiptsProvider extends ChangeNotifier {
       const Duration(days: 1),
     );
 
-    return receipts.where((receipt) {
-      final created =
-          receipt.createdAt
-              .toLocal(); // ALWAYS convert to local
-      final inRange =
-          !created.isBefore(startOfDay) &&
-          created.isBefore(endOfDay);
+    if (authorization(
+      authorized:
+          Authorizations().viewAllTransactionRecords,
+    )) {
+      return receiptss.where((receipt) {
+        final created =
+            receipt.createdAt
+                .toLocal(); // ALWAYS convert to local
+        final inRange =
+            !created.isBefore(startOfDay) &&
+            created.isBefore(endOfDay);
 
-      return inRange;
-    }).toList();
+        return inRange;
+      }).toList();
+    } else {
+      return receiptss.where((receipt) {
+        final created =
+            receipt.createdAt
+                .toLocal(); // ALWAYS convert to local
+        final inRange =
+            !created.isBefore(startOfDay) &&
+            created.isBefore(endOfDay) &&
+            receipt.staffId == currentUser().userId;
+
+        return inRange;
+      }).toList();
+    }
   }
 
   List<TempMainReceipt> returnOwnReceiptsByDayOrWeekInvoice(
-    BuildContext context,
-    List<TempMainReceipt> receipts,
+    // BuildContext context,
+    List<TempMainReceipt> receiptss,
   ) {
     if (weekStartDate != null) {
       final weekStartLocal = weekStartDate!;
@@ -898,13 +936,27 @@ class ReceiptsProvider extends ChangeNotifier {
         const Duration(days: 7),
       );
 
-      return receipts.where((receipt) {
-        final created =
-            receipt.createdAt
-                .toLocal(); // convert UTC to local
-        return !created.isBefore(weekStartLocal) &&
-            created.isBefore(weekEndLocal);
-      }).toList();
+      if (authorization(
+        authorized:
+            Authorizations().viewAllTransactionRecords,
+      )) {
+        return receiptss.where((receipt) {
+          final created =
+              receipt.createdAt
+                  .toLocal(); // convert UTC to local
+          return !created.isBefore(weekStartLocal) &&
+              created.isBefore(weekEndLocal);
+        }).toList();
+      } else {
+        return receiptss.where((receipt) {
+          final created =
+              receipt.createdAt
+                  .toLocal(); // convert UTC to local
+          return !created.isBefore(weekStartLocal) &&
+              created.isBefore(weekEndLocal) &&
+              receipt.staffId == currentUser().userId;
+        }).toList();
+      }
     }
 
     // Force local date without UTC logic
@@ -920,16 +972,33 @@ class ReceiptsProvider extends ChangeNotifier {
       const Duration(days: 1),
     );
 
-    return receipts.where((receipt) {
-      final created =
-          receipt.createdAt
-              .toLocal(); // ALWAYS convert to local
-      final inRange =
-          !created.isBefore(startOfDay) &&
-          created.isBefore(endOfDay);
+    if (authorization(
+      authorized:
+          Authorizations().viewAllTransactionRecords,
+    )) {
+      return receiptss.where((receipt) {
+        final created =
+            receipt.createdAt
+                .toLocal(); // ALWAYS convert to local
+        final inRange =
+            !created.isBefore(startOfDay) &&
+            created.isBefore(endOfDay);
 
-      return inRange;
-    }).toList();
+        return inRange;
+      }).toList();
+    } else {
+      return receiptss.where((receipt) {
+        final created =
+            receipt.createdAt
+                .toLocal(); // ALWAYS convert to local
+        final inRange =
+            !created.isBefore(startOfDay) &&
+            created.isBefore(endOfDay) &&
+            receipt.staffId == currentUser().userId;
+
+        return inRange;
+      }).toList();
+    }
   }
   //
   //
@@ -944,7 +1013,6 @@ class ReceiptsProvider extends ChangeNotifier {
 
   List<TempProductSaleRecord>
   returnproductsRecordByDayOrWeek(
-    BuildContext context,
     List<TempProductSaleRecord> records,
   ) {
     List<TempProductSaleRecord> recordss = [];
@@ -960,7 +1028,7 @@ class ReceiptsProvider extends ChangeNotifier {
         receipt = null; // receipt not found
       }
 
-      if (receipt != null && !receipt.isInvoice) {
+      if (receipt != null) {
         recordss.add(rec);
       }
     }
@@ -971,11 +1039,23 @@ class ReceiptsProvider extends ChangeNotifier {
         const Duration(days: 7),
       );
 
-      return recordss.where((record) {
-        final created = record.createdAt.toLocal();
-        return !created.isBefore(weekStartLocal) &&
-            created.isBefore(weekEndLocal);
-      }).toList();
+      if (authorization(
+        authorized:
+            Authorizations().viewAllTransactionRecords,
+      )) {
+        return recordss.where((record) {
+          final created = record.createdAt.toLocal();
+          return !created.isBefore(weekStartLocal) &&
+              created.isBefore(weekEndLocal);
+        }).toList();
+      } else {
+        return recordss.where((record) {
+          final created = record.createdAt.toLocal();
+          return !created.isBefore(weekStartLocal) &&
+              created.isBefore(weekEndLocal) &&
+              record.staffId == currentUser().userId;
+        }).toList();
+      }
     }
 
     final localNow = DateTime.now();
@@ -989,12 +1069,23 @@ class ReceiptsProvider extends ChangeNotifier {
     final endOfDay = startOfDay.add(
       const Duration(days: 1),
     );
-
-    return recordss.where((record) {
-      final created = record.createdAt.toLocal();
-      return !created.isBefore(startOfDay) &&
-          created.isBefore(endOfDay);
-    }).toList();
+    if (authorization(
+      authorized:
+          Authorizations().viewAllTransactionRecords,
+    )) {
+      return recordss.where((record) {
+        final created = record.createdAt.toLocal();
+        return !created.isBefore(startOfDay) &&
+            created.isBefore(endOfDay);
+      }).toList();
+    } else {
+      return recordss.where((record) {
+        final created = record.createdAt.toLocal();
+        return !created.isBefore(startOfDay) &&
+            created.isBefore(endOfDay) &&
+            record.staffId == currentUser().userId;
+      }).toList();
+    }
   }
 
   //
@@ -1002,51 +1093,41 @@ class ReceiptsProvider extends ChangeNotifier {
   //
 
   double getTotalRevenueForSelectedDay(
-    BuildContext context,
     List<TempMainReceipt> receiptss,
-    List<TempProductSaleRecord> productSalesRecords,
   ) {
     double tempTotalRevenue = 0;
 
     for (var receipt in returnOwnReceiptsByDayOrWeek(
-      context,
+      // context,
       receiptss,
     )) {
-      var productRecords =
-          productSalesRecords
-              .where(
-                (record) =>
-                    record.receiptUuid == receipt.uuid,
-              )
-              .toList();
-
-      for (var record in productRecords) {
-        tempTotalRevenue += record.revenue;
-      }
+      tempTotalRevenue += getTotalMainRevenueReceipt(
+        receipt,
+      );
     }
 
     return tempTotalRevenue;
   }
 
-  double getTotalRevenueForSelectedDayAll(
-    BuildContext context,
-    List<TempMainReceipt> receiptss,
-    List<TempProductSaleRecord> productSalesRecords,
-  ) {
+  double getTotalRevenueForSelectedDayAll({
+    String? staffId,
+    String? customerId,
+  }) {
     double tempTotalRevenue = 0;
 
-    for (var receipt in returnReceipts(context)) {
-      var productRecords =
-          productSalesRecords
-              .where(
-                (record) =>
-                    record.receiptUuid == receipt.uuid,
-              )
-              .toList();
-
-      for (var record in productRecords) {
-        tempTotalRevenue += record.revenue;
-      }
+    for (var receipt
+        in (staffId != null
+            ? returnReceipts().where(
+              (rec) => rec.staffId == staffId,
+            )
+            : customerId != null
+            ? returnReceipts().where(
+              (rec) => rec.customerUuid == customerId,
+            )
+            : returnReceipts())) {
+      tempTotalRevenue += getTotalMainRevenueReceipt(
+        receipt,
+      );
     }
 
     return tempTotalRevenue;
@@ -1064,7 +1145,7 @@ class ReceiptsProvider extends ChangeNotifier {
     double tempTotalCostPrice = 0;
 
     for (var receipt in returnOwnReceiptsByDayOrWeek(
-      context,
+      // context,
       receiptss,
     )) {
       var productRecords =
@@ -1091,7 +1172,7 @@ class ReceiptsProvider extends ChangeNotifier {
     double tempTotalCostPrice = 0;
 
     for (var receipt in returnOwnReceiptsByDayOrWeekAll(
-      context,
+      // context,
       receiptss,
     )) {
       var productRecords =
@@ -1110,40 +1191,35 @@ class ReceiptsProvider extends ChangeNotifier {
     return tempTotalCostPrice;
   }
 
-  double getSubTotalRevenueForReceipt(
-    BuildContext context,
-    List<TempProductSaleRecord> records,
-  ) {
-    double tempRev = 0;
-
-    for (var bean in records) {
-      tempRev += bean.originalCost!;
-    }
-    return tempRev;
+  double getVATForReceipt(TempMainReceipt receipt) {
+    var vat =
+        ((receipt.originalCost ?? 0) *
+            ((receipt.vat ?? 0) / 100));
+    return vat;
   }
 
-  double getVATForReceipt(
-    BuildContext context,
-    List<TempProductSaleRecord> records,
+  double getDiscountAmountForReceipt(
+    TempMainReceipt receipt,
   ) {
-    double tempRev = 0;
-
-    for (var bean in records) {
-      tempRev += (bean.revenue - bean.originalCost!);
+    if (receipt.fixedDiscount != null) {
+      return (receipt.fixedDiscount ?? 0);
+    } else if (receipt.generalDiscount != null) {
+      return (getOriginalCostReceipt(receipt) *
+          ((receipt.generalDiscount ?? 0) / 100));
+    } else {
+      return 0;
     }
-    return tempRev;
+  }
+
+  double getOriginalCostReceipt(TempMainReceipt receipt) {
+    return receipt.originalCost ?? 0;
   }
 
   double getTotalMainRevenueReceipt(
-    List<TempProductSaleRecord> records,
-    BuildContext context,
+    TempMainReceipt receipt,
   ) {
-    double tempTotal = 0;
+    var total = ((receipt.bank + receipt.cashAlt));
 
-    for (var productRecord in records) {
-      tempTotal += productRecord.revenue;
-    }
-
-    return tempTotal;
+    return total;
   }
 }

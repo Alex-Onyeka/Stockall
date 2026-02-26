@@ -174,7 +174,6 @@ class _TotalExpensesMobileState
                                   authorized:
                                       Authorizations()
                                           .viewDate,
-                                  context: context,
                                 ),
                                 child: SizedBox(height: 30),
                               ),
@@ -183,7 +182,6 @@ class _TotalExpensesMobileState
                                   authorized:
                                       Authorizations()
                                           .viewDate,
-                                  context: context,
                                 ),
                                 child: Row(
                                   mainAxisAlignment:

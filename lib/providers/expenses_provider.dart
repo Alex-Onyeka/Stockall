@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_expenses/unsynced/created_expenses/created
 import 'package:stockall/classes/temp_expenses/unsynced/deleted_expenses/deleted_expenses.dart';
 import 'package:stockall/classes/temp_expenses/unsynced/updated/updated_expenses.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/expenses/expenses_func.dart';
 import 'package:stockall/local_database/expenses/unsync_funcs/created_expenses/created_expenses_func.dart';
 import 'package:stockall/local_database/expenses/unsync_funcs/deleted_expenses/deleted_expenses_func.dart';
@@ -173,15 +174,31 @@ class ExpensesProvider extends ChangeNotifier {
         const Duration(days: 7),
       ); // end exclusive
 
-      return expenses.where((expenses) {
-        final created = expenses.createdDate!.toUtc();
-        return created.isAfter(
-              weekStartUtc.subtract(
-                const Duration(seconds: 1),
-              ),
-            ) &&
-            created.isBefore(weekEndUtc);
-      }).toList();
+      if (authorization(
+        authorized:
+            Authorizations().viewAllTransactionRecords,
+      )) {
+        return expenses.where((expenses) {
+          final created = expenses.createdDate!.toUtc();
+          return created.isAfter(
+                weekStartUtc.subtract(
+                  const Duration(seconds: 1),
+                ),
+              ) &&
+              created.isBefore(weekEndUtc);
+        }).toList();
+      } else {
+        return expenses.where((expense) {
+          final created = expense.createdDate!.toUtc();
+          return created.isAfter(
+                weekStartUtc.subtract(
+                  const Duration(seconds: 1),
+                ),
+              ) &&
+              created.isBefore(weekEndUtc) &&
+              expense.userId == currentUser().userId;
+        }).toList();
+      }
     }
 
     final targetDate =
@@ -194,14 +211,31 @@ class ExpensesProvider extends ChangeNotifier {
     final endOfDay = startOfDay.add(
       const Duration(days: 1),
     );
-
-    return expenses.where((receipt) {
-      final created = receipt.createdDate!.toUtc();
-      return created.isAfter(
-            startOfDay.subtract(const Duration(seconds: 1)),
-          ) &&
-          created.isBefore(endOfDay);
-    }).toList();
+    if (authorization(
+      authorized:
+          Authorizations().viewAllTransactionRecords,
+    )) {
+      return expenses.where((expense) {
+        final created = expense.createdDate!.toUtc();
+        return created.isAfter(
+              startOfDay.subtract(
+                const Duration(seconds: 1),
+              ),
+            ) &&
+            created.isBefore(endOfDay);
+      }).toList();
+    } else {
+      return expenses.where((expense) {
+        final created = expense.createdDate!.toUtc();
+        return created.isAfter(
+              startOfDay.subtract(
+                const Duration(seconds: 1),
+              ),
+            ) &&
+            created.isBefore(endOfDay) &&
+            expense.userId == currentUser().userId;
+      }).toList();
+    }
   }
 
   //
@@ -227,10 +261,10 @@ class ExpensesProvider extends ChangeNotifier {
           .update(expense.toJson())
           .eq('uuid', expense.uuid!);
       await returnEventsLogProvider().createLog(
-        returnEventsLogProvider(
-          // ignore: use_build_context_synchronously
-        ).expensesAdapter(expense, 2),
-        // ignore: use_build_context_synchronously
+        returnEventsLogProvider().expensesAdapter(
+          expense,
+          2,
+        ),
       );
     } else {
       await ExpensesFunc().updateExpenses(expense);

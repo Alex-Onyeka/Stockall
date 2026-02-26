@@ -187,8 +187,6 @@ class _AddEmployeeDesktopState
                                             authorized:
                                                 Authorizations()
                                                     .addEmployee,
-                                            context:
-                                                context,
                                           ),
                                           child: Row(
                                             spacing: 5,
@@ -241,7 +239,6 @@ class _AddEmployeeDesktopState
                                       authorized:
                                           Authorizations()
                                               .addEmployee,
-                                      context: context,
                                     ),
 
                                     child: ListView.builder(

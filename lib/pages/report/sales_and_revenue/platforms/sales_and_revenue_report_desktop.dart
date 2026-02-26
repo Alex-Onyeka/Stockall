@@ -103,7 +103,6 @@ class _SalesAndRevenueReportDesktopState
         returnReceiptProvider(
           context,
         ).returnproductsRecordByDayOrWeek(
-          context,
           returnReceiptProvider(
             context,
           ).produtRecordSalesMain,
@@ -559,7 +558,6 @@ class _SalesAndRevenueReportDesktopState
                             visible: authorization(
                               authorized:
                                   Authorizations().viewDate,
-                              context: context,
                             ),
                             child: Row(
                               mainAxisAlignment:

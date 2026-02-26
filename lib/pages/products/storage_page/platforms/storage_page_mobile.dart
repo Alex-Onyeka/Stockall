@@ -152,7 +152,6 @@ class _StoragePageMobileState
               visible: authorization(
                 authorized:
                     Authorizations().viewItemsSummary,
-                context: context,
               ),
               child: Padding(
                 padding: const EdgeInsets.only(right: 15.0),

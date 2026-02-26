@@ -199,7 +199,6 @@ class _ProductDetailsDesktopState
                             authorized:
                                 Authorizations()
                                     .updateProduct,
-                            context: context,
                           ),
                           child: InkWell(
                             onTap: () {
@@ -487,8 +486,6 @@ class _ProductDetailsDesktopState
                                             authorized:
                                                 Authorizations()
                                                     .updateProduct,
-                                            context:
-                                                context,
                                           ),
                                           child: SizedBox(
                                             height: 15,
@@ -504,8 +501,6 @@ class _ProductDetailsDesktopState
                                                   authorized:
                                                       Authorizations()
                                                           .updateProduct,
-                                                  context:
-                                                      context,
                                                 ),
                                                 child: EditButton(
                                                   theme:
@@ -856,8 +851,6 @@ class _ProductDetailsDesktopState
                                                   authorized:
                                                       Authorizations()
                                                           .updateProduct,
-                                                  context:
-                                                      context,
                                                 ),
                                                 child: EditButton(
                                                   theme:
@@ -1950,7 +1943,6 @@ class _ProductDetailsDesktopState
                                     authorized:
                                         Authorizations()
                                             .deleteProduct,
-                                    context: context,
                                   ),
                                   child: Expanded(
                                     child: EditButton(
@@ -2037,7 +2029,6 @@ class _ProductDetailsDesktopState
                                     authorized:
                                         Authorizations()
                                             .updateProduct,
-                                    context: context,
                                   ),
                                   child: Expanded(
                                     child: EditButton(

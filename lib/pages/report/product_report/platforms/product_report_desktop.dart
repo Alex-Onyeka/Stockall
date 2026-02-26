@@ -210,7 +210,6 @@ class ProductReportDesktopState
                     visible: authorization(
                       authorized:
                           Authorizations().viewItemsSummary,
-                      context: context,
                     ),
                     child: Padding(
                       padding: const EdgeInsets.only(

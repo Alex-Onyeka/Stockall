@@ -10,10 +10,10 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/customers_list/customer_list.dart';
 import 'package:stockall/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockall/pages/expenses/expenses_page.dart';
+import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
 import 'package:stockall/pages/report/report_page.dart';
-import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
 import 'package:stockall/pages/settings/settings_page.dart';
 import 'package:stockall/pages/shop_setup/shop_page/shop_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -128,7 +128,6 @@ class _MyDrawerWidgetMobileState
                                 authorized:
                                     Authorizations()
                                         .manageShop,
-                                context: context,
                               ),
                               child: NavListTileAlt(
                                 height: 17,
@@ -185,7 +184,6 @@ class _MyDrawerWidgetMobileState
                                 authorized:
                                     Authorizations()
                                         .employeePage,
-                                context: context,
                               ),
                               child: NavListTileAlt(
                                 height: 14,
@@ -233,9 +231,7 @@ class _MyDrawerWidgetMobileState
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) {
-                                      return TotalSalesPage(
-                                        isInvoice: true,
-                                      );
+                                      return InvoiceListPage();
                                     },
                                   ),
                                 ).then((_) {

@@ -57,7 +57,6 @@ class _CustomerReportDesktopState
     var salesRecords =
         returnReceiptProvider(context)
             .returnproductsRecordByDayOrWeek(
-              context,
               returnReceiptProvider(
                 context,
               ).produtRecordSalesMain,
@@ -199,7 +198,6 @@ class _CustomerReportDesktopState
                         visible: authorization(
                           authorized:
                               Authorizations().viewDate,
-                          context: context,
                         ),
                         child: Row(
                           mainAxisAlignment:

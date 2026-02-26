@@ -30,7 +30,6 @@ class _GeneralReportMobileState
       listen: false,
     ).loadReceipts(
       returnShopProvider().userShop()!.shopId!,
-      context,
     );
     return tempRece;
   }
@@ -216,7 +215,6 @@ class _GeneralReportMobileState
                         visible: authorization(
                           authorized:
                               Authorizations().viewDate,
-                          context: context,
                         ),
                         child: Row(
                           mainAxisAlignment:
@@ -458,7 +456,7 @@ class _GeneralReportMobileState
                                                                         FontWeight.w700,
                                                                   ),
 
-                                                                  '#${returnReceiptProvider(context).returnOwnReceiptsByDayOrWeek(context, receiptSnapshot.data!).length}',
+                                                                  '#${returnReceiptProvider(context).returnOwnReceiptsByDayOrWeek(receiptSnapshot.data!).length}',
                                                                 );
                                                               }
                                                             },
@@ -536,12 +534,11 @@ class _GeneralReportMobileState
                                                                       listen:
                                                                           false,
                                                                     ).getTotalRevenueForSelectedDay(
-                                                                      context,
                                                                       receiptSnapshot.data!,
-                                                                      productRecordSnapShot.connectionState ==
-                                                                              ConnectionState.waiting
-                                                                          ? []
-                                                                          : productRecordSnapShot.data!,
+                                                                      // productRecordSnapShot.connectionState ==
+                                                                      //         ConnectionState.waiting
+                                                                      //     ? []
+                                                                      //     : productRecordSnapShot.data!,
                                                                     );
                                                                     return Text(
                                                                       style: TextStyle(
@@ -848,7 +845,6 @@ class _GeneralReportMobileState
                                                                   listen:
                                                                       false,
                                                                 ).returnOwnReceiptsByDayOrWeek(
-                                                                  context,
                                                                   receiptSnapshot.data!,
                                                                 );
                                                                 var total = returnReceiptProvider(
@@ -856,12 +852,11 @@ class _GeneralReportMobileState
                                                                   listen:
                                                                       false,
                                                                 ).getTotalRevenueForSelectedDay(
-                                                                  context,
                                                                   receipts,
-                                                                  productRecordSnapShot.connectionState ==
-                                                                          ConnectionState.waiting
-                                                                      ? []
-                                                                      : productRecordSnapShot.data!,
+                                                                  // productRecordSnapShot.connectionState ==
+                                                                  //         ConnectionState.waiting
+                                                                  //     ? []
+                                                                  //     : productRecordSnapShot.data!,
                                                                 );
 
                                                                 double totalExpenses() {
@@ -959,7 +954,6 @@ class _GeneralReportMobileState
                                                                       listen:
                                                                           false,
                                                                     ).returnOwnReceiptsByDayOrWeek(
-                                                                      context,
                                                                       receiptSnapshot.data!,
                                                                     );
                                                                     var total = returnReceiptProvider(
@@ -967,12 +961,11 @@ class _GeneralReportMobileState
                                                                       listen:
                                                                           false,
                                                                     ).getTotalRevenueForSelectedDay(
-                                                                      context,
                                                                       receipts,
-                                                                      productRecordSnapShot.connectionState ==
-                                                                              ConnectionState.waiting
-                                                                          ? []
-                                                                          : productRecordSnapShot.data!,
+                                                                      // productRecordSnapShot.connectionState ==
+                                                                      //         ConnectionState.waiting
+                                                                      //     ? []
+                                                                      //     : productRecordSnapShot.data!,
                                                                     );
 
                                                                     double totalExpenses() {
@@ -1166,7 +1159,6 @@ class _GeneralReportMobileState
                                                                   listen:
                                                                       false,
                                                                 ).returnOwnReceiptsByDayOrWeek(
-                                                                  context,
                                                                   receiptSnapshot.data!,
                                                                 );
 
@@ -1201,20 +1193,19 @@ class _GeneralReportMobileState
                                                                     listen:
                                                                         false,
                                                                   ).getTotalRevenueForSelectedDay(
-                                                                    context,
                                                                     receipts,
-                                                                    productRecordSnapShot.connectionState ==
-                                                                            ConnectionState.waiting
-                                                                        ? []
-                                                                        : productRecordSnapShot.data!
-                                                                            .where(
-                                                                              (
-                                                                                record,
-                                                                              ) =>
-                                                                                  record.costPrice !=
-                                                                                  0,
-                                                                            )
-                                                                            .toList(),
+                                                                    // productRecordSnapShot.connectionState ==
+                                                                    //         ConnectionState.waiting
+                                                                    //     ? []
+                                                                    //     : productRecordSnapShot.data!
+                                                                    //         .where(
+                                                                    //           (
+                                                                    //             record,
+                                                                    //           ) =>
+                                                                    //               record.costPrice !=
+                                                                    //               0,
+                                                                    //         )
+                                                                    //         .toList(),
                                                                   );
 
                                                                   var totalCostPrice = returnReceiptProvider(
@@ -1321,7 +1312,6 @@ class _GeneralReportMobileState
                                                                       listen:
                                                                           false,
                                                                     ).returnOwnReceiptsByDayOrWeek(
-                                                                      context,
                                                                       receiptSnapshot.data!,
                                                                     );
                                                                     if (productRecordSnapShot.connectionState ==
@@ -1363,20 +1353,19 @@ class _GeneralReportMobileState
                                                                         listen:
                                                                             false,
                                                                       ).getTotalRevenueForSelectedDay(
-                                                                        context,
                                                                         receipts,
-                                                                        productRecordSnapShot.connectionState ==
-                                                                                ConnectionState.waiting
-                                                                            ? []
-                                                                            : productRecordSnapShot.data!
-                                                                                .where(
-                                                                                  (
-                                                                                    record,
-                                                                                  ) =>
-                                                                                      record.costPrice !=
-                                                                                      0,
-                                                                                )
-                                                                                .toList(),
+                                                                        // productRecordSnapShot.connectionState ==
+                                                                        //         ConnectionState.waiting
+                                                                        //     ? []
+                                                                        //     : productRecordSnapShot.data!
+                                                                        //         .where(
+                                                                        //           (
+                                                                        //             record,
+                                                                        //           ) =>
+                                                                        //               record.costPrice !=
+                                                                        //               0,
+                                                                        //         )
+                                                                        //         .toList(),
                                                                       );
 
                                                                       var totalCostPrice = returnReceiptProvider(
@@ -1543,7 +1532,6 @@ class _GeneralReportMobileState
                                                                   listen:
                                                                       false,
                                                                 ).returnOwnReceiptsByDayOrWeek(
-                                                                  context,
                                                                   receiptSnapshot.data!,
                                                                 );
 
@@ -1572,20 +1560,19 @@ class _GeneralReportMobileState
                                                                   listen:
                                                                       false,
                                                                 ).getTotalRevenueForSelectedDay(
-                                                                  context,
                                                                   receipts,
-                                                                  productRecordSnapShot.connectionState ==
-                                                                          ConnectionState.waiting
-                                                                      ? []
-                                                                      : productRecordSnapShot.data!
-                                                                          .where(
-                                                                            (
-                                                                              record,
-                                                                            ) =>
-                                                                                record.costPrice !=
-                                                                                0,
-                                                                          )
-                                                                          .toList(),
+                                                                  // productRecordSnapShot.connectionState ==
+                                                                  //         ConnectionState.waiting
+                                                                  //     ? []
+                                                                  //     : productRecordSnapShot.data!
+                                                                  //         .where(
+                                                                  //           (
+                                                                  //             record,
+                                                                  //           ) =>
+                                                                  //               record.costPrice !=
+                                                                  //               0,
+                                                                  //         )
+                                                                  //         .toList(),
                                                                 );
 
                                                                 var totalCostPrice = returnReceiptProvider(
@@ -1697,7 +1684,6 @@ class _GeneralReportMobileState
                                                                       listen:
                                                                           false,
                                                                     ).returnOwnReceiptsByDayOrWeek(
-                                                                      context,
                                                                       receiptSnapshot.data!,
                                                                     );
 
@@ -1726,20 +1712,19 @@ class _GeneralReportMobileState
                                                                       listen:
                                                                           false,
                                                                     ).getTotalRevenueForSelectedDay(
-                                                                      context,
                                                                       receipts,
-                                                                      productRecordSnapShot.connectionState ==
-                                                                              ConnectionState.waiting
-                                                                          ? []
-                                                                          : productRecordSnapShot.data!
-                                                                              .where(
-                                                                                (
-                                                                                  record,
-                                                                                ) =>
-                                                                                    record.costPrice !=
-                                                                                    0,
-                                                                              )
-                                                                              .toList(),
+                                                                      // productRecordSnapShot.connectionState ==
+                                                                      //         ConnectionState.waiting
+                                                                      //     ? []
+                                                                      //     : productRecordSnapShot.data!
+                                                                      //         .where(
+                                                                      //           (
+                                                                      //             record,
+                                                                      //           ) =>
+                                                                      //               record.costPrice !=
+                                                                      //               0,
+                                                                      //         )
+                                                                      //         .toList(),
                                                                     );
 
                                                                     var totalCostPrice = returnReceiptProvider(
@@ -1875,7 +1860,6 @@ class _GeneralReportMobileState
                                                   listen:
                                                       false,
                                                 ).returnproductsRecordByDayOrWeek(
-                                                  context,
                                                   productRecordSnapShot
                                                       .data!,
                                                 );

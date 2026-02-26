@@ -153,7 +153,6 @@ class MainBottomNav extends StatelessWidget {
                 1) {
               if (!authorization(
                 authorized: Authorizations().addProduct,
-                context: context,
               )) {
                 Navigator.push(
                   context,
@@ -197,7 +196,6 @@ class MainBottomNav extends StatelessWidget {
                     authorization(
                       authorized:
                           Authorizations().addProduct,
-                      context: context,
                     ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -251,7 +249,6 @@ class MainBottomNav extends StatelessWidget {
                     !authorization(
                       authorized:
                           Authorizations().addProduct,
-                      context: context,
                     ),
                 child: Column(
                   spacing: 3,

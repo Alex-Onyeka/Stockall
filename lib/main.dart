@@ -26,6 +26,7 @@ import 'package:stockall/providers/data_provider.dart';
 import 'package:stockall/providers/department_provider.dart';
 import 'package:stockall/providers/events_log_provider.dart';
 import 'package:stockall/providers/expenses_provider.dart';
+import 'package:stockall/providers/invoices_provider.dart';
 import 'package:stockall/providers/multi_display_provider.dart';
 import 'package:stockall/providers/nav_provider.dart';
 import 'package:stockall/providers/notifications_provider.dart';
@@ -118,6 +119,10 @@ void maxWindow() {
   }
 }
 
+TempUserClass currentUser() {
+  return UserProvider().currentUserMain!;
+}
+
 TempUserClass userGeneral(
   BuildContext context, {
   bool listen = true,
@@ -179,6 +184,10 @@ NotificationProvider returnNotificationProvider(
   );
 }
 
+ReceiptsProvider returnReceiptProviderSingle() {
+  return ReceiptsProvider();
+}
+
 ReceiptsProvider returnReceiptProvider(
   BuildContext context, {
   bool listen = true,
@@ -187,6 +196,16 @@ ReceiptsProvider returnReceiptProvider(
     context,
     listen: listen,
   );
+}
+
+InvoicesProvider returnInvoicesProvider({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return InvoicesProvider();
+  } else {
+    return Provider.of<InvoicesProvider>(context);
+  }
 }
 
 TempShopClass? shop(BuildContext context) {
@@ -422,6 +441,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => ReceiptsProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => InvoicesProvider(),
         ),
         ChangeNotifierProvider(
           create: (_) => VisibilityBox(),

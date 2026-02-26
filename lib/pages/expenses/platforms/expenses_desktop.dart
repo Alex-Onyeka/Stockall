@@ -220,8 +220,6 @@ class _ExpensesDesktopState extends State<ExpensesDesktop> {
                                             authorized:
                                                 Authorizations()
                                                     .viewDate,
-                                            context:
-                                                context,
                                           )
                                           ? 250
                                           : 235,
@@ -280,8 +278,6 @@ class _ExpensesDesktopState extends State<ExpensesDesktop> {
                                                   authorized:
                                                       Authorizations()
                                                           .viewDate,
-                                                  context:
-                                                      context,
                                                 ),
                                                 isMoney1:
                                                     true,

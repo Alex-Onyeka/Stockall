@@ -963,7 +963,6 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                                     authorized:
                                         Authorizations()
                                             .editReceiptTemplate,
-                                    context: context,
                                   ),
                                   child: Expanded(
                                     child: SubWrapper(

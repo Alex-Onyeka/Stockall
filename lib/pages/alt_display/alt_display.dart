@@ -177,15 +177,16 @@ class AltDisplayState extends State<AltDisplay> {
   }
 
   double calcFinalTotalMain() {
-    return calcTotalMain() + calcVatAmount();
+    return (calcTotalMain() - calcDiscountMain()) +
+        calcVatAmount();
   }
 
   void initCartClass() {
     cartClass = AltCartClass(
       cartId: widget.cartId,
       cartItems: [],
-      // subTotal: 0,
-      // total: 0,
+      fixedDiscount: 0,
+      percentDiscount: 0,
       vat: 0,
       currency: '#',
     );
@@ -193,6 +194,36 @@ class AltDisplayState extends State<AltDisplay> {
 
   MobileTexts mobileTexts = MobileTexts();
   TabletTexts tabletTexts = TabletTexts();
+
+  double calcDiscountMain() {
+    if (cartClass!.fixedDiscount != null) {
+      return cartClass!.fixedDiscount ?? 0;
+    } else if (cartClass!.percentDiscount != null) {
+      return calcSubTotal() *
+          ((cartClass!.percentDiscount ?? 0) / 100);
+    } else {
+      double tempTotalDiscount = 0;
+      for (var item in cartClass!.cartItems) {
+        if (item.item.discount != null &&
+            item.customPrice == null) {
+          double discountPerUnit =
+              (item.item.sellingPrice ?? 0) *
+              (item.item.discount! / 100);
+          tempTotalDiscount +=
+              discountPerUnit * item.quantity;
+        }
+      }
+      return tempTotalDiscount;
+    }
+  }
+
+  double calcSubTotal() {
+    double tempTotal = 0;
+    for (var item in cartClass!.cartItems) {
+      tempTotal += item.totalCost();
+    }
+    return tempTotal.roundToDouble();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -491,6 +522,64 @@ class AltDisplayState extends State<AltDisplay> {
                                           ),
                                         ],
                                       ),
+                                      Visibility(
+                                        visible:
+                                            cartClass!
+                                                    .percentDiscount !=
+                                                null ||
+                                            cartClass!
+                                                    .fixedDiscount !=
+                                                null,
+                                        child: Column(
+                                          children: [
+                                            SizedBox(
+                                              height: 5,
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            mobileTexts.b2.fontSize,
+                                                        // fontWeight: FontWeight.bold,
+                                                      ),
+                                                      'Discount',
+                                                    ),
+                                                    Visibility(
+                                                      visible:
+                                                          cartClass!.percentDiscount !=
+                                                          null,
+                                                      child: Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              mobileTexts.b2.fontSize,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          // fontWeight: FontWeight.bold,
+                                                        ),
+                                                        ' (${cartClass!.percentDiscount?.toStringAsFixed(0)}%)',
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Text(
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        mobileTexts.b2.fontSize,
+                                                    // fontWeight: FontWeight.bold,
+                                                  ),
+                                                  '- ${formatMoneyAlt(amount: calcDiscountMain(), context: context, currency: cartClass!.currency)}',
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                       Column(
                                         children: [
                                           SizedBox(
@@ -618,27 +707,27 @@ class AltDisplayState extends State<AltDisplay> {
 class AltCartClass {
   final String cartId;
   final List<TempCartItem> cartItems;
-  // final double subTotal;
-  // final double total;
   final double vat;
+  final double? fixedDiscount;
+  final double? percentDiscount;
   final String currency;
 
   AltCartClass({
     required this.cartId,
     required this.cartItems,
-    // required this.subTotal,
-    // required this.total,
     required this.vat,
     required this.currency,
+    this.fixedDiscount,
+    this.percentDiscount,
   });
 
   Map<String, dynamic> toJson() => {
     'cart_id': cartId,
     'cart_items': cartItems.map((c) => c.toJson()).toList(),
-    // 'sub_total': subTotal,
-    // 'total': total,
     'vat': vat,
     'currency': currency,
+    'fixed_discount': fixedDiscount,
+    'percent_discount': percentDiscount,
   };
 
   // Create from JSON
@@ -653,8 +742,10 @@ class AltCartClass {
                 ),
               )
               .toList(),
-      // subTotal: (json['sub_total'] as num).toDouble(),
-      // total: (json['total'] as num).toDouble(),
+      fixedDiscount:
+          (json['fixed_discount'] as num?)?.toDouble(),
+      percentDiscount:
+          (json['percent_discount'] as num?)?.toDouble(),
       vat: (json['vat'] as num).toDouble(),
       currency: json['currency'] as String,
     );

@@ -277,7 +277,6 @@ class _TotalProductsDesktopState
                       visible: authorization(
                         authorized:
                             Authorizations().addProduct,
-                        context: context,
                       ),
                       child: FloatingActionButtonMain(
                         action: () {
