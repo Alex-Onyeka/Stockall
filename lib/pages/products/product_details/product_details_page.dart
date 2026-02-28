@@ -7,10 +7,12 @@ import 'package:stockall/pages/products/product_details/platforms/product_detail
 class ProductDetailsPage extends StatefulWidget {
   final String productUuid;
   final String? notifId;
+  final bool? comingFromInventoryUpdatesPage;
   const ProductDetailsPage({
     super.key,
     required this.productUuid,
     this.notifId,
+    this.comingFromInventoryUpdatesPage,
   });
 
   @override
@@ -45,6 +47,8 @@ class _ProductDetailsPageState
           );
         } else {
           return ProductDetailsDesktop(
+            comingFromInventoryUpdatesPage:
+                widget.comingFromInventoryUpdatesPage,
             theme: theme,
             productUuid: widget.productUuid,
           );

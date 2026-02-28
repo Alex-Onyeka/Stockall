@@ -60,13 +60,13 @@ class TempCartItem {
   }
 
   double discountCost() {
-    if (item.discount != null) {
-      return (totalCost() * ((item.discount ?? 0) / 100));
-    } else if (returnDiscount() != null) {
+    if (returnDiscount() != null) {
       return (totalCost() *
           ((returnDiscount() ?? 0) / 100));
     } else if (returnFixedDiscount() != null) {
       return returnFixedDiscount() ?? 0;
+    } else if (item.discount != null) {
+      return (totalCost() * ((item.discount ?? 0) / 100));
     } else {
       return 0;
     }
@@ -99,6 +99,18 @@ class TempCartItem {
     return item.costPrice == 0
         ? null
         : item.costPrice * quantity;
+  }
+
+  double getItemDiscountedRemainingCost() {
+    if (item.discount != null) {
+      return (((item.sellingPrice ?? 0) -
+              ((item.sellingPrice ?? 0) *
+                  (item.discount ?? 0) /
+                  100)) *
+          quantity);
+    } else {
+      return totalCost();
+    }
   }
 
   // double profitOrLoss() {

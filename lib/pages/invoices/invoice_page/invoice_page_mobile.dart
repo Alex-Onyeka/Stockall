@@ -689,9 +689,11 @@ class _InvoicePageMobileState
                                 spacing: 15,
                                 children: [
                                   Container(
-                                    padding: EdgeInsets.all(
-                                      15,
-                                    ),
+                                    padding:
+                                        EdgeInsets.symmetric(
+                                          horizontal: 18,
+                                          vertical: 30,
+                                        ),
                                     decoration: BoxDecoration(
                                       border: Border.all(
                                         color:
@@ -707,7 +709,7 @@ class _InvoicePageMobileState
                                         BoxShadow(
                                           color:
                                               const Color.fromARGB(
-                                                10,
+                                                20,
                                                 0,
                                                 0,
                                                 0,
@@ -918,20 +920,62 @@ class _InvoicePageMobileState
                                                           Expanded(
                                                             flex:
                                                                 5,
-                                                            child: Text(
-                                                              style: TextStyle(
-                                                                fontSize:
-                                                                    theme.mobileTexts.b3.fontSize,
-                                                                fontWeight:
-                                                                    FontWeight.bold,
-                                                              ),
-                                                              formatMoneyBig(
-                                                                amount:
-                                                                    (record.originalCost ??
-                                                                        0),
-                                                                context:
-                                                                    context,
-                                                              ),
+                                                            child: Column(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment.start,
+                                                              children: [
+                                                                Text(
+                                                                  style: TextStyle(
+                                                                    fontSize:
+                                                                        theme.mobileTexts.b3.fontSize,
+                                                                    fontWeight:
+                                                                        FontWeight.bold,
+                                                                  ),
+                                                                  formatMoneyBig(
+                                                                    amount:
+                                                                        (invoice.fixedDiscount ==
+                                                                                        null &&
+                                                                                    invoice.generalDiscount ==
+                                                                                        null) &&
+                                                                                record.discount !=
+                                                                                    null
+                                                                            ? ((record.originalCost ??
+                                                                                    0) -
+                                                                                (record.discountedAmount ??
+                                                                                    0))
+                                                                            : (record.originalCost ??
+                                                                                0),
+                                                                    context:
+                                                                        context,
+                                                                  ),
+                                                                ),
+                                                                Visibility(
+                                                                  visible:
+                                                                      record.discount !=
+                                                                          null &&
+                                                                      !record.customPriceSet &&
+                                                                      (invoice.fixedDiscount ==
+                                                                              null &&
+                                                                          invoice.generalDiscount ==
+                                                                              null),
+                                                                  child: Text(
+                                                                    style: TextStyle(
+                                                                      decoration:
+                                                                          TextDecoration.lineThrough,
+                                                                      fontSize:
+                                                                          theme.mobileTexts.b4.fontSize,
+                                                                      fontWeight:
+                                                                          FontWeight.normal,
+                                                                    ),
+                                                                    formatMoneyMid(
+                                                                      amount:
+                                                                          record.originalCost!,
+                                                                      context:
+                                                                          context,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ],
                                                             ),
                                                           ),
                                                         ],

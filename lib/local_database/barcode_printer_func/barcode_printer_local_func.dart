@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
-import 'package:stockall/classes/temp_barcode_printer_class/barcode_printer_local.dart';
-import 'package:stockall/classes/temp_barcode_printer_class/printer_settings/printer_settings.dart';
-import 'package:stockall/classes/temp_barcode_printer_class/temp_barcode_printer_class/temp_barcode_printer_class.dart';
+import 'package:stockall/classes/temp_generated_prints/temp_barcode_printer_class/barcode_printer_local.dart';
+import 'package:stockall/classes/temp_generated_prints/temp_barcode_printer_class/printer_settings/printer_settings.dart';
+import 'package:stockall/classes/temp_generated_prints/temp_barcode_printer_class/temp_barcode_printer_class/temp_barcode_printer_class.dart';
 
 class BarcodePrinterLocalFunc {
   static final BarcodePrinterLocalFunc instance =
@@ -19,7 +19,7 @@ class BarcodePrinterLocalFunc {
     barcodePrinterLocalBox = await Hive.openBox(
       barcodePrinterLocalBoxName,
     );
-    print('✅App barcodePrinter Box Initialized');
+    print('✅ Barcode Printer Box Initialized');
   }
 
   BarcodePrinterLocal? getbarcodePrinterLocal() {

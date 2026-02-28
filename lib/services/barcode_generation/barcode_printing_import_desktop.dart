@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:ffi/ffi.dart';
-import 'package:stockall/classes/temp_barcode_printer_class/temp_barcode_printer_class/temp_barcode_printer_class.dart';
+import 'package:stockall/classes/temp_generated_prints/temp_barcode_printer_class/temp_barcode_printer_class/temp_barcode_printer_class.dart';
+import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/data_provider.dart';
@@ -12,9 +13,14 @@ Future<bool> printBarcodeDesktop(
   String printerName,
   List<ProductBarcode> productBarcodes,
 ) async {
-  final tsplCommand = generateTsplForBarcodes(
-    productBarcodes,
-  );
+  final tsplCommand =
+      returnData().barcodeGeneratingIndex == 0
+          ? generateTsplForBarcodes(productBarcodes)
+          : returnData().barcodeGeneratingIndex == 1
+          ? generateTsplForPriceTag(productBarcodes)
+          : generateTsplForBarcodesAndPriceTag(
+            productBarcodes,
+          );
   return await sendRawToUsbPrinter(
     printerName,
     tsplCommand,
@@ -90,6 +96,63 @@ Future<bool> sendRawToUsbPrinter(
   return success;
 }
 
+String generateTsplForPriceTag(
+  List<ProductBarcode> productBarcodes,
+) {
+  final buffer = StringBuffer();
+
+  for (var pb in productBarcodes) {
+    // final digits = returnOnlyDigits(pb.product.uuid!);
+    final productName = pb.product.name.toUpperCase();
+    String productPrice = formatPrice(
+      pb.product.sellingPrice,
+    );
+
+    final settings =
+        returnShopProvider().priceTagPrinterSettings!;
+
+    buffer.writeln(
+      'SIZE ${settings.labelWidth.toDouble()} mm,25 mm',
+    );
+    buffer.writeln('GAP ${settings.gapMm} mm,0');
+    buffer.writeln('DENSITY 8');
+    buffer.writeln('CLS');
+
+    /// 🆕 Product Name (Top)
+    buffer.writeln(
+      'TEXT ${calcTitleLeftMargin(productName.length, settings.labelWidth.toDouble())},${settings.startPriceY - 40},"3",0,1,1,"${formatName(productName)}"',
+    );
+
+    /// 🆕 Product Price
+    buffer.writeln(
+      'TEXT ${calcPriceLeftMargin(productPrice.length, settings.labelWidth.toDouble())},${settings.startPriceY},"5",0,1,1,"$productPrice"',
+    );
+
+    buffer.writeln('PRINT 1,1');
+  }
+
+  return buffer.toString();
+}
+
+String formatPrice(double? price) {
+  return price != null
+      ? formatMoneyAlt(
+        amount: (price),
+        currency: 'N',
+      ).split('.').first
+      : 'Not Set';
+}
+
+double calcPriceLeftMargin(int length, double labelWidth) {
+  double margin = -17.5 * length + 190;
+  return margin < 0 ? 0 : margin * (labelWidth / 58);
+}
+
+double calcTitleLeftMargin(int length, double labelWidth) {
+  double margin = -10 * length + 200;
+  return margin < 0 ? 0 : margin * (labelWidth / 58);
+}
+
 String generateTsplForBarcodes(
   List<ProductBarcode> productBarcodes,
 ) {
@@ -97,22 +160,83 @@ String generateTsplForBarcodes(
 
   for (var pb in productBarcodes) {
     final digits = returnOnlyDigits(pb.product.uuid!);
+    final productName = pb.product.name.toUpperCase();
+
+    final settings = returnShopProvider().printerSettings!;
 
     buffer.writeln(
-      'SIZE ${returnShopProvider().printerSettings!.widthMm} mm,${returnShopProvider().printerSettings!.heightMm} mm',
+      'SIZE ${settings.widthMm} mm,${settings.heightMm} mm',
     );
-    buffer.writeln(
-      'GAP ${returnShopProvider().printerSettings!.gapMm} mm,0',
-    );
+    buffer.writeln('GAP ${settings.gapMm} mm,0');
     buffer.writeln('DENSITY 8');
     buffer.writeln('CLS');
+
+    /// 🆕 Product Name (Top)
     buffer.writeln(
-      'BARCODE ${returnShopProvider().printerSettings!.startX},${returnShopProvider().printerSettings!.startY},"EAN13",${returnShopProvider().printerSettings!.barcodeHeight},1,0,${returnShopProvider().printerSettings!.barcodeScale},${returnShopProvider().printerSettings!.barcodeScale},"$digits"',
+      'TEXT ${calcTitleLeftMargin(productName.length, settings.widthMm)},${settings.startY - 40},"3",0,1,1,"${formatName(productName)}"',
     );
+
+    /// Barcode
+    buffer.writeln(
+      'BARCODE ${settings.startX},${settings.startY},"EAN13",'
+      '${settings.barcodeHeight},1,0,'
+      '${settings.barcodeScale},${settings.barcodeScale},"$digits"',
+    );
+
     buffer.writeln('PRINT 1,1');
   }
 
   return buffer.toString();
+}
+
+String generateTsplForBarcodesAndPriceTag(
+  List<ProductBarcode> productBarcodes,
+) {
+  final buffer = StringBuffer();
+
+  for (var pb in productBarcodes) {
+    final digits = returnOnlyDigits(pb.product.uuid!);
+    final productName = pb.product.name.toUpperCase();
+    final productPrice =
+        "PRICE: ${formatPrice(pb.product.sellingPrice)}";
+
+    final settings =
+        returnShopProvider()
+            .priceAndBarcodePrinterSettings!;
+
+    buffer.writeln(
+      'SIZE ${settings.widthMm} mm,${settings.heightMm} mm',
+    );
+    buffer.writeln('GAP ${settings.gapMm} mm,0');
+    buffer.writeln('DENSITY 8');
+    buffer.writeln('CLS');
+
+    /// 🆕 Product Name (Top)
+    buffer.writeln(
+      'TEXT ${calcTitleLeftMargin(productName.length, settings.widthMm)},${settings.startY - 35},"3",0,1,1,"${formatName(productName)}"',
+    );
+
+    /// Barcode
+    buffer.writeln(
+      'BARCODE ${settings.startX},${settings.startY},"EAN13",'
+      '${settings.barcodeHeight - 5},1,0,'
+      '${settings.barcodeScale},${settings.barcodeScale},"$digits"',
+    );
+
+    /// 🆕 Product Price (Bottom)
+    buffer.writeln(
+      'TEXT ${calcTitleLeftMargin(productPrice.length, settings.widthMm)},${settings.startY + 105},"3",0,1,1,"$productPrice"',
+    );
+
+    buffer.writeln('PRINT 1,1');
+  }
+
+  return buffer.toString();
+}
+
+String formatName(String name, {int maxChars = 20}) {
+  if (name.length <= maxChars) return name;
+  return name.substring(0, maxChars);
 }
 
 void listPrinters() {

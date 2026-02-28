@@ -16,6 +16,7 @@ class TempCart {
   bool setCustomPrice;
   double? fixedDiscount;
   bool isSettingDiscountOpen;
+  String? cartName;
 
   TempCart({
     required this.cartItems,
@@ -33,5 +34,6 @@ class TempCart {
     this.setCustomPrice = false,
     this.createdDate,
     this.fixedDiscount,
+    this.cartName,
   });
 }

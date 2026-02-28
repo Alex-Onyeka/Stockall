@@ -370,10 +370,10 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                         ).receipts
                                         .where(
                                           (emp) =>
-                                              emp.staffName ==
+                                              emp.staffId ==
                                               userGeneral(
                                                 context,
-                                              ).name,
+                                              ).userId,
                                         )
                                         .toList(),
                                     // returnReceiptProvider(

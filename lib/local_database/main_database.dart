@@ -5,10 +5,13 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:stockall/local_database/app_version/app_version_func.dart';
 import 'package:stockall/local_database/barcode_printer_func/barcode_printer_local_func.dart';
+import 'package:stockall/local_database/barcode_printer_func/price_and_barcode_local_func.dart';
+import 'package:stockall/local_database/barcode_printer_func/price_tag_printer_func.dart';
 import 'package:stockall/local_database/customers/customer_func.dart';
 import 'package:stockall/local_database/department_func/departments_func.dart';
 import 'package:stockall/local_database/events_log/events_log_func.dart';
 import 'package:stockall/local_database/expenses/expenses_func.dart';
+import 'package:stockall/local_database/inventory_updates/inventory_updates_func.dart';
 import 'package:stockall/local_database/invoices/invoices_func.dart';
 import 'package:stockall/local_database/logged_in_user/logged_in_user_func.dart';
 import 'package:stockall/local_database/main_receipt/main_receipt_func.dart';
@@ -56,14 +59,17 @@ class MainDatabase extends ChangeNotifier {
     await CurrentShopFunc().init();
     await SubscriptionFunc().init();
     await ShopOwnerFunc().init();
+    await InventoryUpdatesFunc().init();
     await EventsLogFunc().init();
     await InvoicesFunc().init();
     if (returnShopProvider().isDesktop()) {
       await BarcodePrinterLocalFunc().init();
+      await PriceTagPrinterFunc().init();
+      await PriceAndBarcodePrinterLocalFunc().init();
     }
     await DepartmentsFunc().init();
     print('init Complete');
   }
 }
 
-int highestHiveClassIndex = 46;
+int highestHiveClassIndex = 55;

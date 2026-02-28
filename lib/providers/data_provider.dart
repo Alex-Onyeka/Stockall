@@ -2,12 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:stockall/classes/temp_inventory_updates/temp_inventory_update_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/created_products/created_products.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/deleted_products/deleted_products.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/updated/updated_products.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/created/created_customers_func.dart';
@@ -995,6 +997,8 @@ class DataProvider extends ChangeNotifier {
         }
         notifyListeners();
       }
+      await returnInventoryUpdatesProvider()
+          .getInventoryUpdates();
 
       await ProductsFunc().insertAllProducts(productList);
     } else {
@@ -1016,6 +1020,8 @@ class DataProvider extends ChangeNotifier {
         "Offline Data Gotten: ${ProductsFunc().getProducts().length}",
       );
       productList = ProductsFunc().getProducts();
+      await returnInventoryUpdatesProvider()
+          .getInventoryUpdates();
       // productList.clear();
     }
 
@@ -1052,7 +1058,7 @@ class DataProvider extends ChangeNotifier {
 
   Future<TempProductClass?> updateProduct({
     required TempProductClass product,
-    required BuildContext context,
+    TempProductClass? oldProduct,
   }) async {
     bool isOnline = await connectivity.isOnline();
 
@@ -1075,14 +1081,63 @@ class DataProvider extends ChangeNotifier {
               2,
             ),
           );
-          if (context.mounted) {
-            print('Context Mounted');
-            await getProducts(
-              returnShopProvider().userShop()!.shopId!,
+          if (oldProduct != null) {
+            TempInventoryUpdateClass
+            inventoryUpdate = TempInventoryUpdateClass(
+              shopId: shopId(),
+              title: 'title',
+              createdAt: DateTime.now(),
+              staffId: currentUser().userId,
+              staffName:
+                  "${currentUser().name} ${currentUser().lastName ?? ''}",
+              uuid: uuidGen(),
+              itemName: product.name,
+              itemUuid: product.uuid,
             );
-          } else {
-            print('Context Not Mounted');
+            if ((oldProduct.quantity ?? 0) !=
+                (product.quantity ?? 0)) {
+              inventoryUpdate.title =
+                  'Item Sales Quantity Updated';
+              inventoryUpdate.oldValue =
+                  oldProduct.quantity?.toString();
+              inventoryUpdate.newValue =
+                  product.quantity?.toString();
+            } else if ((oldProduct.totalQttyInStorage ??
+                    0) !=
+                (product.totalQttyInStorage ?? 0)) {
+              inventoryUpdate.title =
+                  'Item Storage Quantity Updated';
+              inventoryUpdate.oldValue =
+                  oldProduct.totalQttyInStorage?.toString();
+              inventoryUpdate.newValue =
+                  product.totalQttyInStorage?.toString();
+            } else if (oldProduct.isManaged !=
+                product.isManaged) {
+              inventoryUpdate.title =
+                  'Item Is-Managed Updated';
+              if (product.isManaged) {
+                inventoryUpdate.oldValue = 'Un-Managed';
+                inventoryUpdate.newValue = 'Managed';
+              } else {
+                inventoryUpdate.newValue = 'Un-Managed';
+                inventoryUpdate.oldValue = 'Managed';
+              }
+            } else if ((oldProduct.sellingPrice ?? 0) !=
+                (product.sellingPrice ?? 0)) {
+              inventoryUpdate.title =
+                  'Item Selling Price Updated';
+              inventoryUpdate.oldValue =
+                  oldProduct.sellingPrice?.toString();
+              inventoryUpdate.newValue =
+                  product.sellingPrice?.toString();
+            }
+            await returnInventoryUpdatesProvider()
+                .createInventoryUpdate(inventoryUpdate);
           }
+          print('Context Mounted');
+          await getProducts(
+            returnShopProvider().userShop()!.shopId!,
+          );
           notifyListeners();
           return TempProductClass.fromJson(res);
         } else {
@@ -1121,14 +1176,10 @@ class DataProvider extends ChangeNotifier {
             ).productAdapter(product, 2),
             // ignore: use_build_context_synchronously
           );
-          if (context.mounted) {
-            print('Context Mounted');
-            await getProducts(
-              returnShopProvider().userShop()!.shopId!,
-            );
-          } else {
-            print('Context Not Mounted');
-          }
+          print('Context Mounted');
+          await getProducts(
+            returnShopProvider().userShop()!.shopId!,
+          );
           notifyListeners();
           return ProductsFunc().getSingleProduct(
             uuid: product.uuid!,
@@ -1675,6 +1726,12 @@ class DataProvider extends ChangeNotifier {
   }
 
   // List<ProductBarcode> productBarcode = [];
+  int barcodeGeneratingIndex = 0;
+
+  void selectBarcodeGeneratingINdex(int value) {
+    barcodeGeneratingIndex = value;
+    notifyListeners();
+  }
 
   List<ProductBarcode> barcodeGenerationList = [];
 

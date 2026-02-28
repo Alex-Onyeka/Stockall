@@ -413,12 +413,12 @@ class _DashboardDesktopState
                                                             ).receipts
                                                             .where(
                                                               (
-                                                                emp,
+                                                                rec,
                                                               ) =>
-                                                                  emp.staffName ==
+                                                                  rec.staffId ==
                                                                   userGeneral(
                                                                     context,
-                                                                  ).name,
+                                                                  ).userId,
                                                             )
                                                             .toList(),
                                                         // returnReceiptProvider(

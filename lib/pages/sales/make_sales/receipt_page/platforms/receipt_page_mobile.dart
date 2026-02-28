@@ -1113,36 +1113,49 @@ class _ReceiptDetailsContainerState
                                                 ),
                                                 formatMoneyMid(
                                                   amount:
-                                                      productRecord
-                                                          .originalCost ??
-                                                      0,
+                                                      (widget.mainReceipt.fixedDiscount ==
+                                                                      null &&
+                                                                  widget.mainReceipt.generalDiscount ==
+                                                                      null) &&
+                                                              productRecord.discount !=
+                                                                  null
+                                                          ? ((productRecord.originalCost ??
+                                                                  0) -
+                                                              (productRecord.discountedAmount ??
+                                                                  0))
+                                                          : (productRecord.originalCost ??
+                                                              0),
                                                   context:
                                                       context,
                                                 ),
                                               ),
-                                              // Visibility(
-                                              //   visible:
-                                              //       productRecord.discount !=
-                                              //           null &&
-                                              //       !productRecord
-                                              //           .customPriceSet,
-                                              //   child: Text(
-                                              //     style: TextStyle(
-                                              //       decoration:
-                                              //           TextDecoration.lineThrough,
-                                              //       fontSize:
-                                              //           widget.theme.mobileTexts.b2.fontSize,
-                                              //       fontWeight:
-                                              //           FontWeight.normal,
-                                              //     ),
-                                              //     formatMoneyMid(
-                                              //       amount:
-                                              //           productRecord.originalCost!,
-                                              //       context:
-                                              //           context,
-                                              //     ),
-                                              //   ),
-                                              // ),
+                                              Visibility(
+                                                visible:
+                                                    productRecord.discount !=
+                                                        null &&
+                                                    !productRecord
+                                                        .customPriceSet &&
+                                                    (widget.mainReceipt.fixedDiscount ==
+                                                            null &&
+                                                        widget.mainReceipt.generalDiscount ==
+                                                            null),
+                                                child: Text(
+                                                  style: TextStyle(
+                                                    decoration:
+                                                        TextDecoration.lineThrough,
+                                                    fontSize:
+                                                        widget.theme.mobileTexts.b3.fontSize,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                  ),
+                                                  formatMoneyMid(
+                                                    amount:
+                                                        productRecord.originalCost!,
+                                                    context:
+                                                        context,
+                                                  ),
+                                                ),
+                                              ),
                                             ],
                                           ),
                                         ),

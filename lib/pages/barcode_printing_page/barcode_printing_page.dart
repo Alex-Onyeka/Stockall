@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_barcode_printer_class/printer_settings/printer_settings.dart';
+import 'package:stockall/classes/temp_generated_prints/temp_barcode_printer_class/printer_settings/printer_settings.dart';
+import 'package:stockall/classes/temp_generated_prints/temp_price_and_barcode_printer_class%20copy/price_and_barcode_printer_settings/price_and_barcode_printer_settings.dart';
+import 'package:stockall/classes/temp_generated_prints/temp_price_tag_printer_class/price_tag_printer_settings/price_tag_printer_settings.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/major/desktop_page_container.dart';
-import 'package:stockall/components/text_fields/general_textfield.dart';
+import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -46,6 +48,36 @@ class _BarcodePrintingPageState
       TextEditingController();
   final TextEditingController verticalSpacingC =
       TextEditingController();
+  // final TextEditingController nameStartXC =
+  //     TextEditingController();
+
+  final TextEditingController gapPriceC =
+      TextEditingController();
+  // final TextEditingController startPricePriceX =
+  //     TextEditingController();
+  final TextEditingController startPricePriceY =
+      TextEditingController();
+  final TextEditingController labelWidthPrice =
+      TextEditingController();
+  final TextEditingController verticalSpacingPriceC =
+      TextEditingController();
+
+  final TextEditingController widthPriceAndBarcodeC =
+      TextEditingController();
+  final TextEditingController heightPriceAndBarcodeC =
+      TextEditingController();
+  final TextEditingController gapPriceAndBarcodeC =
+      TextEditingController();
+  final TextEditingController startXPriceAndBarcode =
+      TextEditingController();
+  final TextEditingController startYPriceAndBarcode =
+      TextEditingController();
+  final TextEditingController
+  barcodeHeightPriceAndBarcodeC = TextEditingController();
+  final TextEditingController barcodeScalePriceAndBarcodeC =
+      TextEditingController();
+  final TextEditingController
+  verticalSpacingPriceAndBarcodeC = TextEditingController();
 
   void initPrinterSetting() {
     var shopP = returnShopProvider();
@@ -61,6 +93,50 @@ class _BarcodePrintingPageState
         shopP.printerSettings!.barcodeScale.toString();
     verticalSpacingC.text =
         shopP.printerSettings!.verticalSpacing.toString();
+    // nameStartXC.text =
+    //     shopP.printerSettings!.nameStartX.toString();
+
+    gapPriceC.text =
+        shopP.priceTagPrinterSettings!.gapMm.toString();
+    labelWidthPrice.text =
+        shopP.priceTagPrinterSettings!.labelWidth
+            .toString();
+    // startPricePriceX.text =
+    //     shopP.priceTagPrinterSettings!.startPriceX
+    //         .toString();
+    startPricePriceY.text =
+        shopP.priceTagPrinterSettings!.startPriceY
+            .toString();
+    verticalSpacingPriceC.text =
+        shopP.priceTagPrinterSettings!.verticalSpacing
+            .toString();
+
+    //
+    //
+    //widthC.text = shopP.printerSettings!.widthMm.toString();
+    heightPriceAndBarcodeC.text =
+        shopP.priceAndBarcodePrinterSettings!.heightMm
+            .toString();
+    gapPriceAndBarcodeC.text =
+        shopP.priceAndBarcodePrinterSettings!.gapMm
+            .toString();
+    startXPriceAndBarcode.text =
+        shopP.priceAndBarcodePrinterSettings!.startX
+            .toString();
+    startYPriceAndBarcode.text =
+        shopP.priceAndBarcodePrinterSettings!.startY
+            .toString();
+    barcodeHeightPriceAndBarcodeC.text =
+        shopP.priceAndBarcodePrinterSettings!.barcodeHeight
+            .toString();
+    barcodeScalePriceAndBarcodeC.text =
+        shopP.priceAndBarcodePrinterSettings!.barcodeScale
+            .toString();
+    verticalSpacingPriceAndBarcodeC.text =
+        shopP
+            .priceAndBarcodePrinterSettings!
+            .verticalSpacing
+            .toString();
   }
 
   @override
@@ -137,6 +213,210 @@ class _BarcodePrintingPageState
                           () => Navigator.of(context).pop(),
                       context: context,
                       title: 'Generate Barcode',
+                      titleWidget: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          borderRadius:
+                              BorderRadius.circular(5),
+                        ),
+                        width: 350,
+                        child: Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Material(
+                                type:
+                                    MaterialType
+                                        .transparency,
+                                child: InkWell(
+                                  onTap: () {
+                                    returnData()
+                                        .selectBarcodeGeneratingINdex(
+                                          0,
+                                        );
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color:
+                                              returnData(
+                                                        context:
+                                                            context,
+                                                      ).barcodeGeneratingIndex ==
+                                                      0
+                                                  ? theme
+                                                      .lightModeColor
+                                                      .secColor200
+                                                  : Colors
+                                                      .grey
+                                                      .shade300,
+                                          width: 2,
+                                        ),
+                                      ),
+                                    ),
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.all(
+                                            8.0,
+                                          ),
+                                      child: Center(
+                                        child: Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b3
+                                                    .fontSize,
+                                            fontWeight:
+                                                returnData(
+                                                          context:
+                                                              context,
+                                                        ).barcodeGeneratingIndex ==
+                                                        0
+                                                    ? FontWeight
+                                                        .bold
+                                                    : null,
+                                          ),
+                                          'Barcode',
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Material(
+                                type:
+                                    MaterialType
+                                        .transparency,
+                                child: InkWell(
+                                  onTap: () {
+                                    returnData()
+                                        .selectBarcodeGeneratingINdex(
+                                          1,
+                                        );
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color:
+                                              returnData(
+                                                        context:
+                                                            context,
+                                                      ).barcodeGeneratingIndex ==
+                                                      1
+                                                  ? theme
+                                                      .lightModeColor
+                                                      .secColor200
+                                                  : Colors
+                                                      .grey
+                                                      .shade300,
+                                          width: 2,
+                                        ),
+                                      ),
+                                    ),
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.all(
+                                            8.0,
+                                          ),
+                                      child: Center(
+                                        child: Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b3
+                                                    .fontSize,
+                                            fontWeight:
+                                                returnData(
+                                                          context:
+                                                              context,
+                                                        ).barcodeGeneratingIndex ==
+                                                        1
+                                                    ? FontWeight
+                                                        .bold
+                                                    : null,
+                                          ),
+                                          'Price',
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Material(
+                                type:
+                                    MaterialType
+                                        .transparency,
+                                child: InkWell(
+                                  onTap: () {
+                                    returnData()
+                                        .selectBarcodeGeneratingINdex(
+                                          2,
+                                        );
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color:
+                                              returnData(
+                                                        context:
+                                                            context,
+                                                      ).barcodeGeneratingIndex ==
+                                                      2
+                                                  ? theme
+                                                      .lightModeColor
+                                                      .secColor200
+                                                  : Colors
+                                                      .grey
+                                                      .shade300,
+                                          width: 2,
+                                        ),
+                                      ),
+                                    ),
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.all(
+                                            8.0,
+                                          ),
+                                      child: Center(
+                                        child: Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b3
+                                                    .fontSize,
+                                            fontWeight:
+                                                returnData(
+                                                          context:
+                                                              context,
+                                                        ).barcodeGeneratingIndex ==
+                                                        2
+                                                    ? FontWeight
+                                                        .bold
+                                                    : null,
+                                          ),
+                                          'B.Code/Price',
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                       widget: SizedBox(
                         width: 300,
                         height: 35,
@@ -564,6 +844,8 @@ class _BarcodePrintingPageState
                                                           onTap: () {
                                                             returnShopProvider().updatePrinterSettings(
                                                               returnShopProvider().defaultPrinterSettings,
+                                                              returnShopProvider().defaultPriceTagPrinterSettings,
+                                                              returnShopProvider().defaultPriceAndBarcodePrinterSettings,
                                                             );
                                                             Navigator.of(
                                                               context,
@@ -640,169 +922,522 @@ class _BarcodePrintingPageState
                                                                 verticalSpacingC.text,
                                                               ) ??
                                                               shopP.printerSettings!.verticalSpacing,
+                                                          // nameStartX:
+                                                          //     int.tryParse(
+                                                          //       nameStartXC.text,
+                                                          //     ) ??
+                                                          //     shopP.printerSettings!.nameStartX,
+                                                        );
+                                                        var newPriceTagSettings = PriceTagPrinterSettings(
+                                                          gapMm:
+                                                              double.tryParse(
+                                                                gapPriceC.text,
+                                                              ) ??
+                                                              shopP.priceTagPrinterSettings!.gapMm,
+                                                          labelWidth:
+                                                              int.tryParse(
+                                                                labelWidthPrice.text,
+                                                              ) ??
+                                                              shopP.priceTagPrinterSettings!.labelWidth,
+                                                          startPriceY:
+                                                              int.tryParse(
+                                                                startPricePriceY.text,
+                                                              ) ??
+                                                              shopP.priceTagPrinterSettings!.startPriceY,
+                                                          verticalSpacing:
+                                                              int.tryParse(
+                                                                verticalSpacingPriceC.text,
+                                                              ) ??
+                                                              shopP.priceTagPrinterSettings!.verticalSpacing,
+                                                          // startTitleX:
+                                                          //     int.tryParse(
+                                                          //       startPriceTitleX.text,
+                                                          //     ) ??
+                                                          //     shopP.priceTagPrinterSettings!.startTitleX,
+                                                        );
+                                                        var newSettingsPriceAndBarcode = PriceAndBarcodePrinterSettings(
+                                                          widthMm:
+                                                              double.tryParse(
+                                                                widthPriceAndBarcodeC.text,
+                                                              ) ??
+                                                              shopP.priceAndBarcodePrinterSettings!.widthMm,
+                                                          heightMm:
+                                                              double.tryParse(
+                                                                heightPriceAndBarcodeC.text,
+                                                              ) ??
+                                                              shopP.priceAndBarcodePrinterSettings!.heightMm,
+                                                          gapMm:
+                                                              double.tryParse(
+                                                                gapPriceAndBarcodeC.text,
+                                                              ) ??
+                                                              shopP.priceAndBarcodePrinterSettings!.gapMm,
+                                                          startX:
+                                                              int.tryParse(
+                                                                startXPriceAndBarcode.text,
+                                                              ) ??
+                                                              shopP.priceAndBarcodePrinterSettings!.startX,
+                                                          startY:
+                                                              int.tryParse(
+                                                                startYPriceAndBarcode.text,
+                                                              ) ??
+                                                              shopP.priceAndBarcodePrinterSettings!.startY,
+                                                          barcodeHeight:
+                                                              int.tryParse(
+                                                                barcodeHeightPriceAndBarcodeC.text,
+                                                              ) ??
+                                                              shopP.priceAndBarcodePrinterSettings!.barcodeHeight,
+                                                          barcodeScale:
+                                                              int.tryParse(
+                                                                barcodeScalePriceAndBarcodeC.text,
+                                                              ) ??
+                                                              shopP.priceAndBarcodePrinterSettings!.barcodeScale,
+                                                          verticalSpacing:
+                                                              int.tryParse(
+                                                                verticalSpacingPriceAndBarcodeC.text,
+                                                              ) ??
+                                                              shopP.priceAndBarcodePrinterSettings!.verticalSpacing,
+                                                          // nameStartX:
+                                                          //     int.tryParse(
+                                                          //       nameStartXC.text,
+                                                          //     ) ??
+                                                          //     shopP.priceAndBarcodePrinterSettings!.nameStartX,
                                                         );
                                                         shopP.updatePrinterSettings(
                                                           newSettings,
+                                                          newPriceTagSettings,
+                                                          newSettingsPriceAndBarcode,
                                                         );
                                                         Navigator.of(
                                                           context,
                                                         ).pop();
                                                       },
-                                                      widget: Column(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        spacing:
-                                                            10,
-                                                        children: [
-                                                          SizedBox(
-                                                            height:
-                                                                20,
-                                                          ),
-                                                          Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment.spaceBetween,
-                                                            spacing:
-                                                                10,
-                                                            children: [
-                                                              Expanded(
-                                                                child: GeneralTextField(
-                                                                  title:
-                                                                      'Label Width',
-                                                                  hint:
-                                                                      'Width (mm)',
-                                                                  controller:
-                                                                      widthC,
-                                                                  lines:
-                                                                      1,
-                                                                  theme:
-                                                                      theme,
+                                                      widget: Builder(
+                                                        builder: (
+                                                          context,
+                                                        ) {
+                                                          if (returnData().barcodeGeneratingIndex ==
+                                                              0) {
+                                                            return Column(
+                                                              mainAxisSize:
+                                                                  MainAxisSize.min,
+                                                              spacing:
+                                                                  10,
+                                                              children: [
+                                                                SizedBox(
+                                                                  height:
+                                                                      20,
                                                                 ),
-                                                              ),
-                                                              Expanded(
-                                                                child: GeneralTextField(
-                                                                  title:
-                                                                      'Label Height',
-                                                                  hint:
-                                                                      'Height (mm)',
-                                                                  controller:
-                                                                      heightC,
-                                                                  lines:
-                                                                      1,
-                                                                  theme:
-                                                                      theme,
+                                                                // Row(
+                                                                //   mainAxisAlignment:
+                                                                //       MainAxisAlignment.spaceBetween,
+                                                                //   spacing:
+                                                                //       10,
+                                                                //   children: [
+                                                                //     Expanded(
+                                                                //       child: EditCartTextField(
+                                                                //         title:
+                                                                //             'Name Start X',
+                                                                //         hint:
+                                                                //             'Width (mm)',
+                                                                //         controller:
+                                                                //             nameStartXC,
+                                                                //         theme:
+                                                                //             theme,
+                                                                //       ),
+                                                                //     ),
+                                                                //   ],
+                                                                // ),
+                                                                Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment.spaceBetween,
+                                                                  spacing:
+                                                                      10,
+                                                                  children: [
+                                                                    Expanded(
+                                                                      child: EditCartTextField(
+                                                                        title:
+                                                                            'Label Width',
+                                                                        hint:
+                                                                            'Width (mm)',
+                                                                        controller:
+                                                                            widthC,
+                                                                        theme:
+                                                                            theme,
+                                                                      ),
+                                                                    ),
+                                                                    Expanded(
+                                                                      child: EditCartTextField(
+                                                                        title:
+                                                                            'Label Height',
+                                                                        hint:
+                                                                            'Height (mm)',
+                                                                        controller:
+                                                                            heightC,
+                                                                        theme:
+                                                                            theme,
+                                                                      ),
+                                                                    ),
+                                                                  ],
                                                                 ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment.spaceBetween,
-                                                            spacing:
-                                                                10,
-                                                            children: [
-                                                              Expanded(
-                                                                child: GeneralTextField(
-                                                                  title:
-                                                                      'Start X Position',
-                                                                  hint:
-                                                                      'Start X (mm)',
-                                                                  controller:
-                                                                      startX,
-                                                                  lines:
-                                                                      1,
-                                                                  theme:
-                                                                      theme,
+                                                                Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment.spaceBetween,
+                                                                  spacing:
+                                                                      10,
+                                                                  children: [
+                                                                    Expanded(
+                                                                      child: EditCartTextField(
+                                                                        title:
+                                                                            'Left Margin Position',
+                                                                        hint:
+                                                                            'Left Margin (mm)',
+                                                                        controller:
+                                                                            startX,
+                                                                        theme:
+                                                                            theme,
+                                                                      ),
+                                                                    ),
+                                                                    Expanded(
+                                                                      child: EditCartTextField(
+                                                                        title:
+                                                                            'Top Margin Position',
+                                                                        hint:
+                                                                            'Top Margin (mm)',
+                                                                        controller:
+                                                                            startY,
+                                                                        theme:
+                                                                            theme,
+                                                                      ),
+                                                                    ),
+                                                                  ],
                                                                 ),
-                                                              ),
-                                                              Expanded(
-                                                                child: GeneralTextField(
-                                                                  title:
-                                                                      'Start Y Position',
-                                                                  hint:
-                                                                      'Start Y (mm)',
-                                                                  controller:
-                                                                      startY,
-                                                                  lines:
-                                                                      1,
-                                                                  theme:
-                                                                      theme,
+                                                                Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment.spaceBetween,
+                                                                  spacing:
+                                                                      10,
+                                                                  children: [
+                                                                    Expanded(
+                                                                      child: EditCartTextField(
+                                                                        title:
+                                                                            'Sticker Gap',
+                                                                        hint:
+                                                                            'Gap (mm)',
+                                                                        controller:
+                                                                            gapC,
+                                                                        theme:
+                                                                            theme,
+                                                                      ),
+                                                                    ),
+                                                                    Expanded(
+                                                                      child: EditCartTextField(
+                                                                        title:
+                                                                            'Barcode height',
+                                                                        hint:
+                                                                            'Height (mm)',
+                                                                        controller:
+                                                                            barcodeHeightC,
+                                                                        theme:
+                                                                            theme,
+                                                                      ),
+                                                                    ),
+                                                                  ],
                                                                 ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment.spaceBetween,
-                                                            spacing:
-                                                                10,
-                                                            children: [
-                                                              Expanded(
-                                                                child: GeneralTextField(
-                                                                  title:
-                                                                      'Sticker Gap',
-                                                                  hint:
-                                                                      'Gap (mm)',
-                                                                  controller:
-                                                                      gapC,
-                                                                  lines:
-                                                                      1,
-                                                                  theme:
-                                                                      theme,
+                                                                Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment.spaceBetween,
+                                                                  spacing:
+                                                                      10,
+                                                                  children: [
+                                                                    Expanded(
+                                                                      child: EditCartTextField(
+                                                                        title:
+                                                                            'Barcode Scale',
+                                                                        hint:
+                                                                            'Scale (mm)',
+                                                                        controller:
+                                                                            barcodeScaleC,
+                                                                        theme:
+                                                                            theme,
+                                                                      ),
+                                                                    ),
+                                                                    Expanded(
+                                                                      child: EditCartTextField(
+                                                                        title:
+                                                                            'Vertical Spacing',
+                                                                        hint:
+                                                                            'spacing (mm)',
+                                                                        controller:
+                                                                            verticalSpacingC,
+                                                                        theme:
+                                                                            theme,
+                                                                      ),
+                                                                    ),
+                                                                  ],
                                                                 ),
-                                                              ),
-                                                              Expanded(
-                                                                child: GeneralTextField(
-                                                                  title:
-                                                                      'Barcode height',
-                                                                  hint:
-                                                                      'Height (mm)',
-                                                                  controller:
-                                                                      barcodeHeightC,
-                                                                  lines:
-                                                                      1,
-                                                                  theme:
-                                                                      theme,
+                                                              ],
+                                                            );
+                                                          } else if (returnData().barcodeGeneratingIndex ==
+                                                              1) {
+                                                            return Column(
+                                                              mainAxisSize:
+                                                                  MainAxisSize.min,
+                                                              spacing:
+                                                                  10,
+                                                              children: [
+                                                                SizedBox(
+                                                                  height:
+                                                                      20,
                                                                 ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment.spaceBetween,
-                                                            spacing:
-                                                                10,
-                                                            children: [
-                                                              Expanded(
-                                                                child: GeneralTextField(
-                                                                  title:
-                                                                      'Barcode Scale',
-                                                                  hint:
-                                                                      'Scale (mm)',
-                                                                  controller:
-                                                                      barcodeScaleC,
-                                                                  lines:
-                                                                      1,
-                                                                  theme:
-                                                                      theme,
+                                                                // Row(
+                                                                //   mainAxisAlignment:
+                                                                //       MainAxisAlignment.spaceBetween,
+                                                                //   spacing:
+                                                                //       10,
+                                                                //   children: [
+                                                                //     Expanded(
+                                                                //       child: EditCartTextField(
+                                                                //         title:
+                                                                //             'Label Width',
+                                                                //         hint:
+                                                                //             'Width (mm)',
+                                                                //         controller:
+                                                                //             labelWidthPrice,
+                                                                //         theme:
+                                                                //             theme,
+                                                                //       ),
+                                                                //     ),
+                                                                //   ],
+                                                                // ),
+                                                                Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment.spaceBetween,
+                                                                  spacing:
+                                                                      10,
+                                                                  children: [
+                                                                    Expanded(
+                                                                      child: EditCartTextField(
+                                                                        title:
+                                                                            'Label Width',
+                                                                        hint:
+                                                                            'Width (mm)',
+                                                                        controller:
+                                                                            labelWidthPrice,
+                                                                        theme:
+                                                                            theme,
+                                                                      ),
+                                                                    ),
+                                                                    Expanded(
+                                                                      child: EditCartTextField(
+                                                                        title:
+                                                                            'Top Margin Position',
+                                                                        hint:
+                                                                            'Top Margin (mm)',
+                                                                        controller:
+                                                                            startPricePriceY,
+                                                                        theme:
+                                                                            theme,
+                                                                      ),
+                                                                    ),
+                                                                  ],
                                                                 ),
-                                                              ),
-                                                              Expanded(
-                                                                child: GeneralTextField(
-                                                                  title:
-                                                                      'Vertical Spacing',
-                                                                  hint:
-                                                                      'spacing (mm)',
-                                                                  controller:
-                                                                      verticalSpacingC,
-                                                                  lines:
-                                                                      1,
-                                                                  theme:
-                                                                      theme,
+                                                                Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment.spaceBetween,
+                                                                  spacing:
+                                                                      10,
+                                                                  children: [
+                                                                    Expanded(
+                                                                      child: EditCartTextField(
+                                                                        title:
+                                                                            'Sticker Gap',
+                                                                        hint:
+                                                                            'Gap (mm)',
+                                                                        controller:
+                                                                            gapPriceC,
+                                                                        theme:
+                                                                            theme,
+                                                                      ),
+                                                                    ),
+                                                                    Expanded(
+                                                                      child: EditCartTextField(
+                                                                        title:
+                                                                            'Vertical Spacing',
+                                                                        hint:
+                                                                            'spacing (mm)',
+                                                                        controller:
+                                                                            verticalSpacingPriceC,
+                                                                        theme:
+                                                                            theme,
+                                                                      ),
+                                                                    ),
+                                                                  ],
                                                                 ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
+                                                              ],
+                                                            );
+                                                          } else {
+                                                            return Column(
+                                                              mainAxisSize:
+                                                                  MainAxisSize.min,
+                                                              spacing:
+                                                                  10,
+                                                              children: [
+                                                                SizedBox(
+                                                                  height:
+                                                                      20,
+                                                                ),
+                                                                // Row(
+                                                                //   mainAxisAlignment:
+                                                                //       MainAxisAlignment.spaceBetween,
+                                                                //   spacing:
+                                                                //       10,
+                                                                //   children: [
+                                                                //     Expanded(
+                                                                //       child: EditCartTextField(
+                                                                //         title:
+                                                                //             'Name Start X',
+                                                                //         hint:
+                                                                //             'Width (mm)',
+                                                                //         controller:
+                                                                //             nameStartXC,
+                                                                //         theme:
+                                                                //             theme,
+                                                                //       ),
+                                                                //     ),
+                                                                //   ],
+                                                                // ),
+                                                                Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment.spaceBetween,
+                                                                  spacing:
+                                                                      10,
+                                                                  children: [
+                                                                    Expanded(
+                                                                      child: EditCartTextField(
+                                                                        title:
+                                                                            'Label Width',
+                                                                        hint:
+                                                                            'Width (mm)',
+                                                                        controller:
+                                                                            widthPriceAndBarcodeC,
+                                                                        theme:
+                                                                            theme,
+                                                                      ),
+                                                                    ),
+                                                                    Expanded(
+                                                                      child: EditCartTextField(
+                                                                        title:
+                                                                            'Label Height',
+                                                                        hint:
+                                                                            'Height (mm)',
+                                                                        controller:
+                                                                            heightPriceAndBarcodeC,
+                                                                        theme:
+                                                                            theme,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                                Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment.spaceBetween,
+                                                                  spacing:
+                                                                      10,
+                                                                  children: [
+                                                                    Expanded(
+                                                                      child: EditCartTextField(
+                                                                        title:
+                                                                            'Left Margin Position',
+                                                                        hint:
+                                                                            'Left Margin (mm)',
+                                                                        controller:
+                                                                            startXPriceAndBarcode,
+                                                                        theme:
+                                                                            theme,
+                                                                      ),
+                                                                    ),
+                                                                    Expanded(
+                                                                      child: EditCartTextField(
+                                                                        title:
+                                                                            'Top Margin Position',
+                                                                        hint:
+                                                                            'Top Margin (mm)',
+                                                                        controller:
+                                                                            startYPriceAndBarcode,
+                                                                        theme:
+                                                                            theme,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                                Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment.spaceBetween,
+                                                                  spacing:
+                                                                      10,
+                                                                  children: [
+                                                                    Expanded(
+                                                                      child: EditCartTextField(
+                                                                        title:
+                                                                            'Sticker Gap',
+                                                                        hint:
+                                                                            'Gap (mm)',
+                                                                        controller:
+                                                                            gapPriceAndBarcodeC,
+                                                                        theme:
+                                                                            theme,
+                                                                      ),
+                                                                    ),
+                                                                    Expanded(
+                                                                      child: EditCartTextField(
+                                                                        title:
+                                                                            'Barcode height',
+                                                                        hint:
+                                                                            'Height (mm)',
+                                                                        controller:
+                                                                            barcodeHeightPriceAndBarcodeC,
+                                                                        theme:
+                                                                            theme,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                                Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment.spaceBetween,
+                                                                  spacing:
+                                                                      10,
+                                                                  children: [
+                                                                    Expanded(
+                                                                      child: EditCartTextField(
+                                                                        title:
+                                                                            'Barcode Scale',
+                                                                        hint:
+                                                                            'Scale (mm)',
+                                                                        controller:
+                                                                            barcodeScalePriceAndBarcodeC,
+                                                                        theme:
+                                                                            theme,
+                                                                      ),
+                                                                    ),
+                                                                    Expanded(
+                                                                      child: EditCartTextField(
+                                                                        title:
+                                                                            'Vertical Spacing',
+                                                                        hint:
+                                                                            'spacing (mm)',
+                                                                        controller:
+                                                                            verticalSpacingPriceAndBarcodeC,
+                                                                        theme:
+                                                                            theme,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ],
+                                                            );
+                                                          }
+                                                        },
                                                       ),
                                                       actionButtonText:
                                                           'Update Printer',

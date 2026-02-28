@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/checkout_response.dart';
 import 'package:stockall/classes/temp_cart/temp_cart.dart';
@@ -53,6 +55,12 @@ class SalesProvider extends ChangeNotifier {
     return cartQueue.firstWhere(
       (cart) => cart.id == cartIdCache,
     );
+  }
+
+  void updateCurrentCartName(String id, String name) {
+    var cart = cartQueue.firstWhere((car) => car.id == id);
+    cart.cartName = name.isNotEmpty ? name : null;
+    notifyListeners();
   }
 
   Future<void> addNewCart(
@@ -135,6 +143,49 @@ class SalesProvider extends ChangeNotifier {
       );
     } catch (e) {
       print('An Error Occured: ${e.toString()}');
+    }
+  }
+
+  final FocusNode scanBarcodeCartPageNode = FocusNode();
+
+  void addListenerScanBarcode() {
+    scanBarcodeCartPageNode.addListener(keepBarcodeFocused);
+  }
+
+  Timer? _timer;
+
+  void removeListenerScanBarcode() {
+    _timer?.cancel(); // prevent duplicates
+
+    _timer = Timer.periodic(
+      const Duration(milliseconds: 200),
+      (t) {
+        if (scanBarcodeCartPageNode.hasFocus) {
+          print('Cart Page Node Still Has Listener');
+          unfocusScanBarcodeCartPage();
+          scanBarcodeCartPageNode.removeListener(
+            keepBarcodeFocused,
+          );
+        } else {
+          print('Cart Page Node Listener Cancelled');
+          t.cancel(); // cancel this timer instance
+          _timer = null; // clear reference
+        }
+      },
+    );
+  }
+
+  void requestFocusScanBarcode() {
+    scanBarcodeCartPageNode.requestFocus();
+  }
+
+  void unfocusScanBarcodeCartPage() {
+    scanBarcodeCartPageNode.unfocus();
+  }
+
+  void keepBarcodeFocused() {
+    if (!scanBarcodeCartPageNode.hasFocus) {
+      scanBarcodeCartPageNode.requestFocus();
     }
   }
 
@@ -535,7 +586,9 @@ class SalesProvider extends ChangeNotifier {
                   ),
                   discountedAmount: cartItem.discountCost(),
                   originalCost: cartItem.totalCost(),
-                  discount: cartItem.discount,
+                  discount:
+                      cartItem.discount ??
+                      cartItem.item.discount,
                   fixedDiscount: cartItem.fixedDiscount,
                   costPrice: cartItem.costPrice(),
                   addToStock: cartItem.addToStock,
@@ -586,7 +639,9 @@ class SalesProvider extends ChangeNotifier {
                   revenue: cartItem.revenue(),
                   discountedAmount: cartItem.discountCost(),
                   originalCost: cartItem.totalCost(),
-                  discount: cartItem.discount,
+                  discount:
+                      cartItem.discount ??
+                      cartItem.item.discount,
                   fixedDiscount: cartItem.fixedDiscount,
                   costPrice: cartItem.costPrice(),
                   addToStock: cartItem.addToStock,
@@ -849,16 +904,14 @@ class SalesProvider extends ChangeNotifier {
                   recepitId: receiptId ?? 0,
                   receiptUuid: receiptUuid,
                   quantity: cartItem.quantity,
-                  revenue:
-                      cartItem
-                          .revenue(), //cartItem.revenue(context),
+                  revenue: cartItem.revenue(),
                   discountedAmount: cartItem.discountCost(),
                   originalCost: cartItem.totalCost(),
-                  discount: cartItem.discount,
+                  discount:
+                      cartItem.discount ??
+                      cartItem.item.discount,
                   fixedDiscount: cartItem.fixedDiscount,
-                  costPrice:
-                      cartItem
-                          .costPrice(), // cartItem.costPrice(),
+                  costPrice: cartItem.costPrice(),
                   addToStock: cartItem.addToStock,
                   departmentName:
                       cartItem.item.departmentName,
@@ -909,9 +962,7 @@ class SalesProvider extends ChangeNotifier {
 
               // Step 4: Create new product for items with addToStock == true
               for (final record in productSaleRecords) {
-                // ignore: use_build_context_synchronously
                 if (record.addToStock == true &&
-                    // ignore: use_build_context_synchronously
                     returnData().productList
                         .where(
                           (pro) =>

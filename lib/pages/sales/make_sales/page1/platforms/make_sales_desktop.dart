@@ -93,7 +93,7 @@ class _MakeSalesDesktopState
     required Function()? updateAction,
     required TempCartItem cartItem,
   }) {
-    _node.removeListener(keepBarcodeFocused);
+    returnSalesProvider().removeListenerScanBarcode();
     qttyNode.requestFocus();
     var theme = returnTheme(context, listen: false);
     quantityController.text = cartItem.quantity.toString();
@@ -565,7 +565,7 @@ class _MakeSalesDesktopState
     ).then((value) {
       qqty = 0;
       quantityController.text = '';
-      _node.addListener(keepBarcodeFocused);
+      returnSalesProvider().addListenerScanBarcode();
       // nameController.text = '';
       priceController.text = '';
       if (context.mounted) {
@@ -648,7 +648,7 @@ class _MakeSalesDesktopState
             cartItem.setTotalPrice,
           );
         }
-        _node.removeListener(keepBarcodeFocused);
+        returnSalesProvider().removeListenerScanBarcode();
         nameEditNode.requestFocus();
         showDialog(
           context: context,
@@ -1226,8 +1226,8 @@ class _MakeSalesDesktopState
           },
         ).then((value) {
           qqty = 0;
-          _node.addListener(keepBarcodeFocused);
-          _node.requestFocus();
+          returnSalesProvider().addListenerScanBarcode();
+          returnSalesProvider().requestFocusScanBarcode();
 
           nameC.clear();
           pQuantity.clear();
@@ -1254,14 +1254,12 @@ class _MakeSalesDesktopState
   String? searchResult;
   bool isFocus = false;
   bool listEmpty = true;
-  final FocusNode _node = FocusNode();
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      _node.requestFocus();
-      _node.addListener(keepBarcodeFocused);
+      returnSalesProvider().requestFocusScanBarcode();
       returnSalesProvider().toggleSetDiscount(
         false,
         context,
@@ -1306,12 +1304,6 @@ class _MakeSalesDesktopState
     });
   }
 
-  void keepBarcodeFocused() {
-    if (!_node.hasFocus) {
-      FocusScope.of(context).requestFocus(_node);
-    }
-  }
-
   @override
   void dispose() {
     super.dispose();
@@ -1341,7 +1333,7 @@ class _MakeSalesDesktopState
         ),
       );
     });
-    _node.dispose();
+    // _node.dispose();
     qttyNode.dispose();
     nameEditNode.dispose();
   }
@@ -1351,7 +1343,10 @@ class _MakeSalesDesktopState
     var theme = returnTheme(context);
     var products = returnData().productList;
     return GestureDetector(
-      onTap: () => _node.requestFocus(),
+      onTap:
+          () =>
+              returnSalesProvider()
+                  .requestFocusScanBarcode(),
       child: PopScope(
         canPop: false,
         child: Container(
@@ -1871,9 +1866,7 @@ class _MakeSalesDesktopState
                                                                     height:
                                                                         35,
                                                                     action: () {
-                                                                      _node.removeListener(
-                                                                        keepBarcodeFocused,
-                                                                      );
+                                                                      returnSalesProvider().removeListenerScanBarcode();
                                                                       showGeneralDialog(
                                                                         context:
                                                                             context,
@@ -1899,12 +1892,10 @@ class _MakeSalesDesktopState
                                                                         (
                                                                           _,
                                                                         ) {
-                                                                          _node.addListener(
-                                                                            keepBarcodeFocused,
-                                                                          );
+                                                                          returnSalesProvider().addListenerScanBarcode();
                                                                           setState(
                                                                             () {
-                                                                              _node.requestFocus();
+                                                                              returnSalesProvider().requestFocusScanBarcode();
                                                                             },
                                                                           );
                                                                         },
@@ -2294,8 +2285,8 @@ class _MakeSalesDesktopState
                                                               false,
                                                         ),
                                                       );
-                                                      _node
-                                                          .requestFocus();
+                                                      returnSalesProvider()
+                                                          .requestFocusScanBarcode();
                                                     },
                                                     child: Container(
                                                       padding:
@@ -2333,7 +2324,9 @@ class _MakeSalesDesktopState
                                                     context,
                                               ),
                                       mainWidget: TextFieldBarcode(
-                                        node: _node,
+                                        node:
+                                            returnSalesProvider()
+                                                .scanBarcodeCartPageNode,
                                         hintText:
                                             'Scan Barcode',
                                         clearTextField: () {
@@ -2388,8 +2381,8 @@ class _MakeSalesDesktopState
                                                   setState(
                                                     () {},
                                                   );
-                                                  _node
-                                                      .requestFocus();
+                                                  returnSalesProvider()
+                                                      .requestFocusScanBarcode();
                                                 }
                                               }
                                             },
@@ -2433,9 +2426,8 @@ class _MakeSalesDesktopState
                                               ),
                                               child: InkWell(
                                                 onTap: () {
-                                                  _node.removeListener(
-                                                    keepBarcodeFocused,
-                                                  );
+                                                  returnSalesProvider()
+                                                      .removeListenerScanBarcode();
                                                   showGeneralDialog(
                                                     context:
                                                         context,
@@ -2457,14 +2449,12 @@ class _MakeSalesDesktopState
                                                   ).then((
                                                     _,
                                                   ) {
-                                                    _node.addListener(
-                                                      keepBarcodeFocused,
-                                                    );
-                                                    setState(
-                                                      () {
-                                                        _node.requestFocus();
-                                                      },
-                                                    );
+                                                    returnSalesProvider()
+                                                        .addListenerScanBarcode();
+                                                    setState(() {
+                                                      returnSalesProvider()
+                                                          .requestFocusScanBarcode();
+                                                    });
                                                   });
                                                 },
                                                 child: Container(
@@ -2782,11 +2772,10 @@ class _MakeSalesDesktopState
                                       discountPercentController:
                                           discountPercentController,
                                       addListener: () {
-                                        _node
-                                            .requestFocus();
-                                        _node.addListener(
-                                          keepBarcodeFocused,
-                                        );
+                                        returnSalesProvider()
+                                            .requestFocusScanBarcode();
+                                        returnSalesProvider()
+                                            .addListenerScanBarcode();
                                       },
                                       removeListener: () {
                                         var number = 2;
@@ -2795,14 +2784,14 @@ class _MakeSalesDesktopState
                                           i < number;
                                           i++
                                         ) {
-                                          if (_node
+                                          if (returnSalesProvider()
+                                              .scanBarcodeCartPageNode
                                               .hasFocus) {
-                                            _node.removeListener(
-                                              keepBarcodeFocused,
-                                            );
+                                            returnSalesProvider()
+                                                .removeListenerScanBarcode();
                                           }
                                           print(
-                                            "${_node.hasFocus} Beans",
+                                            "${returnSalesProvider().scanBarcodeCartPageNode.hasFocus} Beans",
                                           );
                                         }
                                       },
@@ -2811,39 +2800,65 @@ class _MakeSalesDesktopState
                                     MainButtonP(
                                       themeProvider: theme,
                                       action: () {
-                                        if (returnSalesProvider()
-                                            .currentCart()
-                                            .cartItems
-                                            .isNotEmpty) {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (
-                                                context,
-                                              ) {
-                                                return MakeSalesTwo(
-                                                  totalAmount:
-                                                      returnSalesProvider()
-                                                          .calcFinalTotal(),
-                                                );
-                                              },
-                                            ),
-                                          ).then((_) {
-                                            if (context
-                                                .mounted) {
-                                              _node.addListener(
-                                                keepBarcodeFocused,
+                                        // Timer? timer;
+                                        // if (returnSalesProvider()
+                                        //     .currentCart()
+                                        //     .cartItems
+                                        //     .isNotEmpty) {
+                                        //   timer = Timer.periodic(
+                                        //     Duration(
+                                        //       milliseconds:
+                                        //           100,
+                                        //     ),
+                                        //     (timer) {
+                                        //       if (returnSalesProvider()
+                                        //           .scanBarcodeCartPageNode
+                                        //           .hasFocus) {
+                                        //         print(
+                                        //           'Node Still has Focus',
+                                        //         );
+                                        //         returnSalesProvider()
+                                        //             .unfocusScanBarcodeCartPage();
+                                        //         returnSalesProvider()
+                                        //             .removeListenerScanBarcode();
+                                        //       } else {
+                                        //         print(
+                                        //           'Node Focus Cancelled',
+                                        //         );
+                                        //         timer
+                                        //             .cancel();
+                                        //       }
+                                        //     },
+                                        //   );
+                                        //   print(
+                                        //     timer.isActive,
+                                        //   );
+                                        returnSalesProvider()
+                                            .removeListenerScanBarcode();
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (
+                                              context,
+                                            ) {
+                                              return MakeSalesTwo(
+                                                totalAmount:
+                                                    returnSalesProvider()
+                                                        .calcFinalTotal(),
                                               );
-                                              setState(() {
-                                                _node
-                                                    .requestFocus();
-                                              });
-                                            }
-                                          });
-                                          _node.removeListener(
-                                            keepBarcodeFocused,
-                                          );
-                                        }
+                                            },
+                                          ),
+                                        ).then((_) {
+                                          if (context
+                                              .mounted) {
+                                            returnSalesProvider()
+                                                .addListenerScanBarcode();
+                                            setState(() {
+                                              returnSalesProvider()
+                                                  .requestFocusScanBarcode();
+                                            });
+                                          }
+                                        });
                                       },
                                       text: 'Proceed',
                                     ),

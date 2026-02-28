@@ -1,13 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/dialog_template.dart';
+import 'package:stockall/components/text_fields/general_textfield_only.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 
-class CartQueueMobile extends StatelessWidget {
+class CartQueueMobile extends StatefulWidget {
   final bool isFirst;
   const CartQueueMobile({super.key, required this.isFirst});
+
+  @override
+  State<CartQueueMobile> createState() =>
+      _CartQueueMobileState();
+}
+
+class _CartQueueMobileState extends State<CartQueueMobile> {
+  final TextEditingController cartNameC =
+      TextEditingController();
+  String formatText(String text) {
+    var first = text.substring(0, 1).toUpperCase();
+    var rest = text.substring(1).toLowerCase();
+    return "$first$rest";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +38,9 @@ class CartQueueMobile extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         color:
-            isFirst ? Colors.white : Colors.grey.shade100,
+            widget.isFirst
+                ? Colors.white
+                : Colors.grey.shade100,
       ),
       child: Row(
         children: [
@@ -51,7 +69,7 @@ class CartQueueMobile extends StatelessWidget {
                     child: Ink(
                       decoration: BoxDecoration(
                         color:
-                            isFirst
+                            widget.isFirst
                                 ? cartItem.id ==
                                         salesP.cartIdCache
                                     ? Colors.grey.shade100
@@ -82,6 +100,53 @@ class CartQueueMobile extends StatelessWidget {
                           returnSalesProvider().selectCart(
                             cartItem.id!,
                           );
+                        },
+                        onLongPress: () {
+                          if (cartItem.id ==
+                                  salesP.cartIdCache &&
+                              !cartItem.isReceiptEdit) {
+                            returnSalesProvider()
+                                .removeListenerScanBarcode();
+                            cartNameC.text =
+                                cartItem.cartName ?? '';
+                            showDialog(
+                              context: context,
+                              builder: (setNameDialog) {
+                                return DialogTemplate(
+                                  theme: theme,
+                                  message:
+                                      'Enter the name of the Cart',
+                                  title: 'Enter Cart Name',
+                                  action: () {
+                                    returnSalesProvider()
+                                        .updateCurrentCartName(
+                                          cartItem.id!,
+                                          formatText(
+                                            cartNameC.text
+                                                .trim(),
+                                          ),
+                                        );
+                                    Navigator.of(
+                                      setNameDialog,
+                                    ).pop();
+                                  },
+                                  widget:
+                                      GeneralTextfieldOnly(
+                                        hint: 'Enter Name',
+                                        controller:
+                                            cartNameC,
+                                        lines: 1,
+                                        theme: theme,
+                                      ),
+                                );
+                              },
+                            ).then((_) {
+                              returnSalesProvider()
+                                  .requestFocusScanBarcode();
+                              returnSalesProvider()
+                                  .addListenerScanBarcode();
+                            });
+                          }
                         },
                         child: Container(
                           padding: EdgeInsets.symmetric(
@@ -129,7 +194,15 @@ class CartQueueMobile extends StatelessWidget {
                                         .cartQueue[index]
                                         .isReceiptEdit
                                     ? 'Edit ${index + 1}'
-                                    : 'Cart ${index + 1}',
+                                    : salesP
+                                            .cartQueue[index]
+                                            .cartName ==
+                                        null
+                                    ? 'Cart ${index + 1}'
+                                    : salesP
+                                            .cartQueue[index]
+                                            .cartName ??
+                                        '',
                               ),
                               Visibility(
                                 visible:

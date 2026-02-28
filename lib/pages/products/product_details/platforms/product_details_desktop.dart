@@ -30,10 +30,12 @@ import 'package:stockall/services/auth_service.dart';
 class ProductDetailsDesktop extends StatefulWidget {
   final ThemeProvider theme;
   final String productUuid;
+  final bool? comingFromInventoryUpdatesPage;
   const ProductDetailsDesktop({
     super.key,
     required this.theme,
     required this.productUuid,
+    this.comingFromInventoryUpdatesPage,
   });
 
   @override
@@ -132,7 +134,10 @@ class _ProductDetailsDesktopState
           spacing: 15,
           children: [
             Visibility(
-              visible: screenWidth(context) > mobileScreen,
+              visible:
+                  screenWidth(context) > mobileScreen &&
+                  widget.comingFromInventoryUpdatesPage ==
+                      null,
               child: MyDrawerWidget(
                 globalKey: _scaffoldKey,
                 action: () {
@@ -688,8 +693,6 @@ class _ProductDetailsDesktopState
                                                                                           },
                                                                                         );
                                                                                         await dataProvider.updateProduct(
-                                                                                          context:
-                                                                                              context,
                                                                                           product: TempProductClass(
                                                                                             updatedAt:
                                                                                                 DateTime.now(),
@@ -747,6 +750,8 @@ class _ProductDetailsDesktopState
                                                                                             uuid:
                                                                                                 product.uuid,
                                                                                           ),
+                                                                                          oldProduct:
+                                                                                              product,
                                                                                         );
 
                                                                                         if (safeContext.mounted) {
@@ -1269,8 +1274,6 @@ class _ProductDetailsDesktopState
                                                                                             }
 
                                                                                             await dataProvider.updateProduct(
-                                                                                              context:
-                                                                                                  context,
                                                                                               product: TempProductClass(
                                                                                                 updatedAt:
                                                                                                     DateTime.now(),
@@ -1337,6 +1340,8 @@ class _ProductDetailsDesktopState
                                                                                                 uuid:
                                                                                                     product.uuid,
                                                                                               ),
+                                                                                              oldProduct:
+                                                                                                  product,
                                                                                             );
 
                                                                                             setState(
@@ -1508,8 +1513,6 @@ class _ProductDetailsDesktopState
                                                       context:
                                                           context,
                                                       action: () async {
-                                                        var safeContext =
-                                                            context;
                                                         var dataProvider =
                                                             returnData();
                                                         showDialog(
@@ -1538,8 +1541,6 @@ class _ProductDetailsDesktopState
                                                                   },
                                                                 );
                                                                 await dataProvider.updateProduct(
-                                                                  context:
-                                                                      safeContext,
                                                                   product: TempProductClass(
                                                                     updatedAt:
                                                                         DateTime.now(),
@@ -1592,6 +1593,8 @@ class _ProductDetailsDesktopState
                                                                     uuid:
                                                                         product.uuid,
                                                                   ),
+                                                                  oldProduct:
+                                                                      product,
                                                                 );
                                                                 setState(
                                                                   () {
@@ -1829,34 +1832,36 @@ class _ProductDetailsDesktopState
                                                     : null,
                                           ),
 
+                                          BottomInfoSection(
+                                            theme:
+                                                widget
+                                                    .theme,
+                                            mainText:
+                                                product.discount !=
+                                                        null
+                                                    ? "${product.discount}%"
+                                                    : 'Not Set',
+                                            text:
+                                                'Discount',
+                                          ),
                                           // Visibility(
                                           //   visible:
-                                          //       product.startDate != null,
+                                          //       product
+                                          //           .endDate !=
+                                          //       null,
                                           //   child: BottomInfoSection(
-                                          //     theme: widget.theme,
+                                          //     theme:
+                                          //         widget
+                                          //             .theme,
                                           //     mainText:
-                                          //         product.startDate !=
+                                          //         product.endDate !=
                                           //                 null
-                                          //             ? formatDateTime(
-                                          //               product
-                                          //                   .startDate!,
-                                          //             )
-                                          //             : 'Not Set',
-                                          //     text: 'Discount Start',
-                                          //   ),
-                                          // ),
-                                          // Visibility(
-                                          //   visible:
-                                          //       product.endDate != null,
-                                          //   child: BottomInfoSection(
-                                          //     theme: widget.theme,
-                                          //     mainText:
-                                          //         product.endDate != null
                                           //             ? formatDateTime(
                                           //               product.endDate!,
                                           //             )
                                           //             : 'Not Set',
-                                          //     text: 'Discount End',
+                                          //     text:
+                                          //         'Discount End',
                                           //   ),
                                           // ),
                                           BottomInfoSection(
@@ -2074,7 +2079,12 @@ class _ProductDetailsDesktopState
                 ),
               ),
             ),
-            RightSideBar(theme: widget.theme),
+            Visibility(
+              visible:
+                  widget.comingFromInventoryUpdatesPage ==
+                  null,
+              child: RightSideBar(theme: widget.theme),
+            ),
           ],
         ),
       );

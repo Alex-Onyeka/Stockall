@@ -765,17 +765,67 @@ Future<Uint8List> _buildPdfInvoice({
                           ),
                           pw.Expanded(
                             flex: 3,
-                            child: pw.Text(
-                              style: pw.TextStyle(
-                                font: fontRegular,
-                                fontSize: 10,
-                              ),
-                              formatMoneyMid(
-                                amount:
-                                    (record.originalCost ??
-                                        0),
-                                context: context,
-                              ),
+                            child: pw.Column(
+                              crossAxisAlignment:
+                                  pw
+                                      .CrossAxisAlignment
+                                      .start,
+                              children: [
+                                pw.Text(
+                                  style: pw.TextStyle(
+                                    font: fontRegular,
+                                    fontSize: 10,
+                                  ),
+                                  formatMoneyMid(
+                                    amount:
+                                        (invoice.fixedDiscount ==
+                                                        null &&
+                                                    invoice.generalDiscount ==
+                                                        null) &&
+                                                record.discount !=
+                                                    null
+                                            ? ((record.originalCost ??
+                                                    0) -
+                                                (record.discountedAmount ??
+                                                    0))
+                                            : (record
+                                                    .originalCost ??
+                                                0),
+                                    context: context,
+                                  ),
+                                ),
+                                pw.Builder(
+                                  builder: (pdfContext) {
+                                    if (record.discount !=
+                                            null &&
+                                        !record
+                                            .customPriceSet &&
+                                        (invoice.fixedDiscount ==
+                                                null &&
+                                            invoice.generalDiscount ==
+                                                null)) {
+                                      return pw.Text(
+                                        style: pw.TextStyle(
+                                          font: fontRegular,
+                                          decoration:
+                                              pw
+                                                  .TextDecoration
+                                                  .lineThrough,
+                                          fontSize: 7,
+                                        ),
+                                        formatMoneyMid(
+                                          amount:
+                                              (record.originalCost ??
+                                                  0),
+                                          context: context,
+                                        ),
+                                      );
+                                    } else {
+                                      return pw.Container();
+                                    }
+                                  },
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -1806,16 +1856,65 @@ Future<Uint8List> _buildPdfRollInvoice({
                         ),
                         pw.Expanded(
                           flex: 3,
-                          child: pw.Text(
-                            style: pw.TextStyle(
-                              fontSize: parText,
-                            ),
-                            formatMoneyMid(
-                              amount:
-                                  (record.originalCost ??
-                                      0),
-                              context: context,
-                            ),
+                          child: pw.Column(
+                            crossAxisAlignment:
+                                pw.CrossAxisAlignment.start,
+                            children: [
+                              pw.Text(
+                                style: pw.TextStyle(
+                                  font: fontRegular,
+                                  fontSize: parText,
+                                ),
+                                formatMoneyMid(
+                                  amount:
+                                      (invoice.fixedDiscount ==
+                                                      null &&
+                                                  invoice.generalDiscount ==
+                                                      null) &&
+                                              record.discount !=
+                                                  null
+                                          ? ((record.originalCost ??
+                                                  0) -
+                                              (record.discountedAmount ??
+                                                  0))
+                                          : (record
+                                                  .originalCost ??
+                                              0),
+                                  context: context,
+                                ),
+                              ),
+                              pw.Builder(
+                                builder: (pdfContext) {
+                                  if (record.discount !=
+                                          null &&
+                                      !record
+                                          .customPriceSet &&
+                                      (invoice.fixedDiscount ==
+                                              null &&
+                                          invoice.generalDiscount ==
+                                              null)) {
+                                    return pw.Text(
+                                      style: pw.TextStyle(
+                                        font: fontRegular,
+                                        decoration:
+                                            pw
+                                                .TextDecoration
+                                                .lineThrough,
+                                        fontSize: 6,
+                                      ),
+                                      formatMoneyMid(
+                                        amount:
+                                            (record.originalCost ??
+                                                0),
+                                        context: context,
+                                      ),
+                                    );
+                                  } else {
+                                    return pw.Container();
+                                  }
+                                },
+                              ),
+                            ],
                           ),
                         ),
                       ],

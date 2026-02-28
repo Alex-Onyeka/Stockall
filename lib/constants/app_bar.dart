@@ -10,6 +10,7 @@ PreferredSizeWidget appBar({
   bool? turnOff,
   Widget? widget,
   bool? main,
+  Widget? titleWidget,
 }) {
   var theme = returnTheme(context);
   return AppBar(
@@ -64,18 +65,26 @@ PreferredSizeWidget appBar({
       ),
     ),
     centerTitle: true,
-    title: Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          style: TextStyle(
-            fontSize: theme.mobileTexts.h4.fontSize,
-            fontWeight: FontWeight.bold,
-          ),
-          title,
-        ),
-      ],
+    title: Builder(
+      builder: (context) {
+        if (titleWidget != null) {
+          return titleWidget;
+        } else {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                style: TextStyle(
+                  fontSize: theme.mobileTexts.h4.fontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+                title,
+              ),
+            ],
+          );
+        }
+      },
     ),
     actions: [widget ?? Container()],
   );

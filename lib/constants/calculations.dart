@@ -150,7 +150,6 @@ String formatMoneyMid({
 
 String formatMoneyAlt({
   required num amount,
-  required BuildContext context,
   required String currency,
   bool? isR,
 }) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:stockall/classes/temp_inventory_updates/temp_inventory_update_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
@@ -15,6 +16,8 @@ import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/platforms/product_details_desktop.dart';
+import 'package:stockall/pages/products/product_details/product_details_page.dart';
+import 'package:stockall/pages/report/events_log/platforms/events_log_desktop.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class StoragePageDesktop extends StatefulWidget {
@@ -170,7 +173,12 @@ class StoragePageDesktopState
           mainWidget: Scaffold(
             appBar: appBar(
               context: context,
-              title: sortIndex == 1 ? 'Items' : 'Summary',
+              title:
+                  sortIndex == 1
+                      ? 'Items'
+                      : sortIndex == 2
+                      ? 'Summary'
+                      : 'History',
               widget: Row(
                 spacing: 10,
                 mainAxisSize: MainAxisSize.min,
@@ -228,6 +236,10 @@ class StoragePageDesktopState
                                 setState(() {
                                   sortIndex = 1;
                                 });
+                                returnData()
+                                    .requestFocusSearchNode();
+                                returnData()
+                                    .addSearchNodeListener();
                               },
                               child: Text(
                                 style: TextStyle(
@@ -265,69 +277,27 @@ class StoragePageDesktopState
                                 'View Total Summary',
                               ),
                             ),
-                            // PopupMenuItem(
-                            //   onTap: () {
-                            //     setState(() {
-                            //       sortIndex = 1;
-                            //     });
-                            //   },
-                            //   child: Text(
-                            //     style: TextStyle(
-                            //       fontSize:
-                            //           theme
-                            //               .mobileTexts
-                            //               .b2
-                            //               .fontSize,
-                            //       fontWeight:
-                            //           sortIndex == 1
-                            //               ? FontWeight.bold
-                            //               : null,
-                            //     ),
-                            //     'Sort By Name',
-                            //   ),
-                            // ),
-                            // PopupMenuItem(
-                            //   onTap: () {
-                            //     setState(() {
-                            //       sortIndex = 2;
-                            //     });
-                            //   },
-                            //   child: Text(
-                            //     style: TextStyle(
-                            //       fontSize:
-                            //           theme
-                            //               .mobileTexts
-                            //               .b2
-                            //               .fontSize,
-                            //       fontWeight:
-                            //           sortIndex == 2
-                            //               ? FontWeight.bold
-                            //               : null,
-                            //     ),
-                            //     'Sort By Quantity',
-                            //   ),
-                            // ),
-                            // PopupMenuItem(
-                            //   onTap: () {
-                            //     setState(() {
-                            //       sortIndex = 3;
-                            //     });
-                            //   },
-                            //   child: Text(
-                            //     style: TextStyle(
-                            //       fontSize:
-                            //           theme
-                            //               .mobileTexts
-                            //               .b2
-                            //               .fontSize,
-                            //       fontWeight:
-                            //           sortIndex == 3
-                            //               ? FontWeight.bold
-                            //               : null,
-                            //     ),
-                            //     'Sort By Created Date',
-                            //   ),
-                            // ),
+                            PopupMenuItem(
+                              onTap: () {
+                                setState(() {
+                                  sortIndex = 3;
+                                });
+                              },
+                              child: Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .b2
+                                          .fontSize,
+                                  fontWeight:
+                                      sortIndex == 3
+                                          ? FontWeight.bold
+                                          : null,
+                                ),
+                                'View History',
+                              ),
+                            ),
                           ];
                         },
                         child: Row(
@@ -365,37 +335,8 @@ class StoragePageDesktopState
                                       ? 'Table'
                                       : sortIndex == 2
                                       ? 'Summary'
-                                      : 'Table',
+                                      : 'History',
                                 ),
-                                // Text(
-                                //   style: TextStyle(
-                                //     fontSize:
-                                //         theme
-                                //             .mobileTexts
-                                //             .b4
-                                //             .fontSize,
-                                //   ),
-                                //   'Sorted by:',
-                                // ),
-                                // Text(
-                                //   style: TextStyle(
-                                //     fontSize:
-                                //         theme
-                                //             .mobileTexts
-                                //             .b2
-                                //             .fontSize,
-                                //     fontWeight: FontWeight.bold,
-                                //   ),
-                                //   sortIndex == 1
-                                //       ? 'Name'
-                                //       : sortIndex == 2
-                                //       ? 'Quantity'
-                                //       // : sortIndex == 2
-                                //       // ? 'Price'
-                                //       : sortIndex == 3
-                                //       ? 'Date/Time'
-                                //       : 'Name',
-                                // ),
                               ],
                             ),
                             Icon(Icons.more_vert_rounded),
@@ -532,44 +473,6 @@ class StoragePageDesktopState
                                                           context,
                                                           index,
                                                         ) {
-                                                          // num
-                                                          // returnNum(
-                                                          //   num?
-                                                          //   number,
-                                                          // ) {
-                                                          //   if (number ==
-                                                          //       null) {
-                                                          //     return 0;
-                                                          //   } else {
-                                                          //     return number;
-                                                          //   }
-                                                          // }
-
-                                                          // products.sort(
-                                                          //   (
-                                                          //     a,
-                                                          //     b,
-                                                          //   ) {
-                                                          //     switch (sortIndex) {
-                                                          //       case 1:
-                                                          //         return a.name.compareTo(
-                                                          //           b.name,
-                                                          //         );
-                                                          //       case 2:
-                                                          //         return returnNum(
-                                                          //           b.quantity,
-                                                          //         ).compareTo(
-                                                          //           returnNum(
-                                                          //             a.quantity,
-                                                          //           ),
-                                                          //         );
-                                                          //       default:
-                                                          //         return b.createdAt!.compareTo(
-                                                          //           a.createdAt!,
-                                                          //         );
-                                                          //     }
-                                                          //   },
-                                                          // );
                                                           var product =
                                                               products[index];
                                                           return TableRowRecordWidget(
@@ -604,34 +507,7 @@ class StoragePageDesktopState
                                   ),
                                 ),
                               );
-                            } else {
-                              // double getCostPrice() {
-                              //   double temp = 0;
-                              //   for (var item
-                              //       in returnData(
-                              //         context: context,
-                              //       ).productList) {
-                              //     temp +=
-                              //         item.costPrice *
-                              //         (item.quantity ?? 1);
-                              //   }
-                              //   return temp;
-                              // }
-
-                              // double getAmountPrice() {
-                              //   double temp = 0;
-                              //   for (var item
-                              //       in returnData(
-                              //         context: context,
-                              //       ).productList) {
-                              //     temp +=
-                              //         (item.sellingPrice ??
-                              //             0) *
-                              //         (item.quantity ?? 1);
-                              //   }
-                              //   return temp;
-                              // }
-
+                            } else if (sortIndex == 2) {
                               return SizedBox(
                                 child: Column(
                                   children: [
@@ -950,14 +826,179 @@ class StoragePageDesktopState
                                   ],
                                 ),
                               );
+                            } else {
+                              return SizedBox(
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      width:
+                                          double.infinity,
+                                      height: 1.5,
+                                      color:
+                                          Colors
+                                              .grey
+                                              .shade200,
+                                    ),
+                                    SizedBox(height: 15),
+                                    Expanded(
+                                      child: Builder(
+                                        builder: (context) {
+                                          if (returnInventoryUpdatesProvider(
+                                                context:
+                                                    context,
+                                              )
+                                              .returnInventoryUpdates()
+                                              .isEmpty) {
+                                            return Padding(
+                                              padding:
+                                                  EdgeInsetsGeometry.only(
+                                                    top:
+                                                        100,
+                                                  ),
+                                              child: EmptyWidgetDisplayOnly(
+                                                title:
+                                                    'No History Recorded',
+                                                subText:
+                                                    'No History Has been recorded for this day.',
+                                                theme:
+                                                    theme,
+                                                height: 30,
+                                                altIcon:
+                                                    Icons
+                                                        .refresh,
+                                                altActionText:
+                                                    'Refresh History',
+                                                icon:
+                                                    Icons
+                                                        .clear,
+                                                altAction:
+                                                    () async {
+                                                      await getProducts();
+                                                    },
+                                              ),
+                                            );
+                                          }
+                                          return ListView(
+                                            shrinkWrap:
+                                                true,
+                                            children:
+                                                returnInventoryUpdatesProvider(
+                                                      context:
+                                                          context,
+                                                    )
+                                                    .returnInventoryUpdates()
+                                                    .map(
+                                                      (
+                                                        update,
+                                                      ) => InventoryUpdateWidget(
+                                                        update:
+                                                            update,
+                                                      ),
+                                                    )
+                                                    .toList(),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
                             }
                           },
                         ),
                       ),
                     ),
                     SizedBox(height: 10),
-                    Opacity(
-                      opacity: sortIndex == 2 ? 0 : 1,
+                    Visibility(
+                      visible: sortIndex == 3,
+                      child: Row(
+                        spacing: 3,
+                        mainAxisAlignment:
+                            MainAxisAlignment.end,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              returnInventoryUpdatesProvider()
+                                          .dateSet ==
+                                      null
+                                  ? showDatePicker(
+                                    context: context,
+                                    firstDate: DateTime(
+                                      2017,
+                                      9,
+                                      7,
+                                      17,
+                                      30,
+                                    ),
+                                    lastDate: DateTime(
+                                      2027,
+                                      9,
+                                      7,
+                                      17,
+                                      30,
+                                    ),
+                                  ).then((value) {
+                                    value != null
+                                        ? returnInventoryUpdatesProvider()
+                                            .setDate(value)
+                                        : {};
+                                  })
+                                  : returnInventoryUpdatesProvider()
+                                      .clearDate();
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(
+                                10.0,
+                              ),
+                              child: Row(
+                                spacing: 4,
+                                children: [
+                                  Icon(
+                                    size: 22,
+                                    color:
+                                        theme
+                                            .lightModeColor
+                                            .secColor200,
+                                    returnInventoryUpdatesProvider(
+                                              context:
+                                                  context,
+                                            ).dateSet ==
+                                            null
+                                        ? Icons
+                                            .calendar_month
+                                        : Icons.clear,
+                                  ),
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b2
+                                              .fontSize,
+                                    ),
+                                    returnInventoryUpdatesProvider(
+                                              context:
+                                                  context,
+                                            ).dateSet !=
+                                            null
+                                        ? formatDateTime(
+                                          returnInventoryUpdatesProvider(
+                                                context:
+                                                    context,
+                                              ).dateSet ??
+                                              DateTime.now(),
+                                        )
+                                        : 'Set Date',
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Visibility(
+                      visible: sortIndex == 1,
                       child: Row(
                         spacing: 5,
                         mainAxisAlignment:
@@ -1878,7 +1919,6 @@ class _IsManagedToggleWidgetState
         ItemsAuthAction().allowStockallToManageItemAction(
           context: context,
           action: () async {
-            var safeContext = context;
             var dataProvider = returnData();
             showDialog(
               context: context,
@@ -1896,7 +1936,6 @@ class _IsManagedToggleWidgetState
                       isLoading = true;
                     });
                     await dataProvider.updateProduct(
-                      context: safeContext,
                       product: TempProductClass(
                         updatedAt: DateTime.now(),
                         setCustomPrice:
@@ -1937,6 +1976,7 @@ class _IsManagedToggleWidgetState
                         startDate: widget.product.startDate,
                         uuid: widget.product.uuid,
                       ),
+                      oldProduct: widget.product,
                     );
                     setState(() {
                       isLoading = false;
@@ -2101,7 +2141,7 @@ class _QuantityEditWidgetState
               );
               var res = await returnData().updateProduct(
                 product: tempPro,
-                context: context,
+                oldProduct: widget.product,
               );
               setState(() {
                 isLoading = false;
@@ -2182,7 +2222,7 @@ class _QuantityEditWidgetState
               );
               var res = await returnData().updateProduct(
                 product: tempPro,
-                context: context,
+                oldProduct: widget.product,
               );
               setState(() {
                 isLoading = false;
@@ -2538,6 +2578,376 @@ class _QuantityEditWidgetState
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class InventoryUpdateWidget extends StatefulWidget {
+  final TempInventoryUpdateClass update;
+  const InventoryUpdateWidget({
+    super.key,
+    required this.update,
+  });
+
+  @override
+  State<InventoryUpdateWidget> createState() =>
+      _InventoryUpdateWidgetState();
+}
+
+class _InventoryUpdateWidgetState
+    extends State<InventoryUpdateWidget> {
+  String formatValue(String value) {
+    double? parsed = double.tryParse(value);
+    if (parsed == null) {
+      return value;
+    } else {
+      if (widget.update.title.split(' ')[1] == 'Selling') {
+        return formatMoneyMid(
+          amount: parsed,
+          context: context,
+        );
+      } else {
+        return value;
+      }
+    }
+  }
+
+  bool isOpen = false;
+  @override
+  Widget build(BuildContext context) {
+    var theme = returnTheme(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Ink(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+          border: Border.all(
+            color: Colors.grey.shade200,
+            width: 1,
+          ),
+          color: Colors.white,
+        ),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(2),
+          onTap: () {
+            setState(() {
+              isOpen = !isOpen;
+            });
+          },
+          child: Container(
+            padding: EdgeInsets.symmetric(
+              vertical: 10,
+              horizontal: 10,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Row(
+                  spacing: 10,
+                  children: [
+                    Icon(
+                      size: 20,
+                      color:
+                          theme.lightModeColor.secColor200,
+                      Icons.receipt,
+                    ),
+                    MyDivider(),
+                    Expanded(
+                      flex: 6,
+                      child: Column(
+                        spacing: 1,
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              fontSize: 8,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            'Update:',
+                          ),
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            widget.update.title,
+                          ),
+                        ],
+                      ),
+                    ),
+                    MyDivider(),
+                    Expanded(
+                      flex: 7,
+                      child: Column(
+                        spacing: 1,
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              fontSize: 8,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            'Item Name:',
+                          ),
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            widget.update.itemName ?? '',
+                          ),
+                        ],
+                      ),
+                    ),
+                    MyDivider(),
+                    Expanded(
+                      flex: 3,
+                      child: Column(
+                        spacing: 1,
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              fontSize: 8,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            'Old Value:',
+                          ),
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            formatValue(
+                              widget.update.oldValue ?? '',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    MyDivider(),
+                    Expanded(
+                      flex: 3,
+                      child: Column(
+                        spacing: 1,
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              fontSize: 8,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            'New Value:',
+                          ),
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            formatValue(
+                              widget.update.newValue ?? '',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    MyDivider(),
+                    Icon(
+                      size: 18,
+                      color: Colors.grey.shade500,
+                      isOpen
+                          ? Icons.keyboard_arrow_up_rounded
+                          : Icons
+                              .keyboard_arrow_down_rounded,
+                    ),
+                  ],
+                ),
+                Visibility(
+                  visible: isOpen,
+                  child: SizedBox(height: 3),
+                ),
+                Visibility(
+                  visible: isOpen,
+                  child: Divider(
+                    color: Colors.grey.shade300,
+                    height: 20,
+                    thickness: 0.8,
+                  ),
+                ),
+                Visibility(
+                  visible: isOpen,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 5,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment:
+                          MainAxisAlignment.end,
+                      spacing: 10,
+                      children: [
+                        Row(
+                          spacing: 5,
+                          children: [
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b4
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              'Creator:',
+                            ),
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b4
+                                        .fontSize,
+                              ),
+                              widget.update.staffName ?? '',
+                            ),
+                          ],
+                        ),
+                        MyDivider(),
+                        Row(
+                          spacing: 5,
+                          children: [
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b4
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              'Date:',
+                            ),
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b4
+                                        .fontSize,
+                              ),
+                              formatDateTimeTime(
+                                widget.update.createdAt ??
+                                    DateTime.now(),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Visibility(
+                          visible:
+                              widget.update.uuid != null &&
+                              returnData().productList
+                                  .where(
+                                    (pr) =>
+                                        pr.uuid ==
+                                        widget
+                                            .update
+                                            .itemUuid,
+                                  )
+                                  .isNotEmpty,
+                          child: Material(
+                            type: MaterialType.transparency,
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return ProductDetailsPage(
+                                        productUuid:
+                                            widget
+                                                .update
+                                                .itemUuid!,
+                                        comingFromInventoryUpdatesPage:
+                                            true,
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(
+                                      horizontal: 10.0,
+                                      vertical: 5,
+                                    ),
+                                child: Row(
+                                  spacing: 4,
+                                  children: [
+                                    MyDivider(),
+                                    SizedBox(width: 10),
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      'View Item',
+                                    ),
+                                    Icon(
+                                      size: 15,
+                                      color:
+                                          const Color.fromARGB(
+                                            255,
+                                            255,
+                                            176,
+                                            7,
+                                          ),
+                                      Icons
+                                          .arrow_forward_ios_rounded,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

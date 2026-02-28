@@ -4,10 +4,14 @@ import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_barcode_printer_class/barcode_printer_local.dart';
-import 'package:stockall/classes/temp_barcode_printer_class/printer_settings/printer_settings.dart';
-import 'package:stockall/classes/temp_barcode_printer_class/temp_barcode_printer_class/temp_barcode_printer_class.dart';
+import 'package:stockall/classes/temp_generated_prints/temp_barcode_printer_class/barcode_printer_local.dart';
+import 'package:stockall/classes/temp_generated_prints/temp_barcode_printer_class/printer_settings/printer_settings.dart';
+import 'package:stockall/classes/temp_generated_prints/temp_barcode_printer_class/temp_barcode_printer_class/temp_barcode_printer_class.dart';
 import 'package:stockall/classes/temp_current_shop/temp_current_shop.dart';
+import 'package:stockall/classes/temp_generated_prints/temp_price_and_barcode_printer_class%20copy/price_and_barcode_printer_local.dart';
+import 'package:stockall/classes/temp_generated_prints/temp_price_and_barcode_printer_class%20copy/price_and_barcode_printer_settings/price_and_barcode_printer_settings.dart';
+import 'package:stockall/classes/temp_generated_prints/temp_price_tag_printer_class/price_tag_printer_local.dart';
+import 'package:stockall/classes/temp_generated_prints/temp_price_tag_printer_class/price_tag_printer_settings/price_tag_printer_settings.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/classes/temp_shop/unsynced/updated_shop.dart';
 import 'package:stockall/classes/temp_shop_logos/temp_shop_logos.dart';
@@ -18,6 +22,8 @@ import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/subscription/multiple_stores_auth.dart';
 import 'package:stockall/local_database/barcode_printer_func/barcode_printer_local_func.dart';
+import 'package:stockall/local_database/barcode_printer_func/price_and_barcode_local_func.dart';
+import 'package:stockall/local_database/barcode_printer_func/price_tag_printer_func.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';
 import 'package:stockall/local_database/shop/updated_shop/updated_shop_func.dart';
 import 'package:stockall/local_database/shop_current/current_shop_func.dart';
@@ -1901,13 +1907,40 @@ class ShopProvider extends ChangeNotifier {
 
   PrinterSettings? printerSettings;
 
+  PriceTagPrinterSettings? priceTagPrinterSettings;
+
+  PriceAndBarcodePrinterSettings?
+  priceAndBarcodePrinterSettings;
+
   void setPrinterSettingsCache() {
     printerSettings =
         BarcodePrinterLocalFunc()
             .getbarcodePrinterLocal()
             ?.settings ??
-        defaultPrinterSettings;
-    // notifyListeners();
+        PrinterSettings(
+          widthMm: defaultPrinterSettings.widthMm,
+          heightMm: defaultPrinterSettings.heightMm,
+          startX: defaultPrinterSettings.startX,
+          startY: defaultPrinterSettings.startY,
+          gapMm: defaultPrinterSettings.gapMm,
+          barcodeHeight:
+              defaultPrinterSettings.barcodeHeight,
+          barcodeScale: defaultPrinterSettings.barcodeScale,
+          verticalSpacing:
+              defaultPrinterSettings.verticalSpacing,
+        );
+
+    priceTagPrinterSettings =
+        PriceTagPrinterFunc()
+            .getPriceTagPrinterLocal()
+            ?.settings ??
+        defaultPriceTagPrinterSettings;
+
+    priceAndBarcodePrinterSettings =
+        PriceAndBarcodePrinterLocalFunc()
+            .getpriceAndBarcodePrinterLocal()
+            ?.settings ??
+        defaultPriceAndBarcodePrinterSettings;
   }
 
   // void setPrinterSettingsCacheInit() {
@@ -1922,13 +1955,34 @@ class ShopProvider extends ChangeNotifier {
   PrinterSettings defaultPrinterSettings = PrinterSettings(
     widthMm: 58,
     heightMm: 25,
-    startX: 30,
-    startY: 20,
+    startX: 25,
+    startY: 65,
     gapMm: 2,
-    barcodeHeight: 80,
+    barcodeHeight: 70,
     barcodeScale: 3,
     verticalSpacing: 10,
   );
+
+  PriceAndBarcodePrinterSettings
+  defaultPriceAndBarcodePrinterSettings =
+      PriceAndBarcodePrinterSettings(
+        widthMm: 58,
+        heightMm: 25,
+        startX: 25,
+        startY: 55,
+        gapMm: 2,
+        barcodeHeight: 70,
+        barcodeScale: 3,
+        verticalSpacing: 10,
+      );
+
+  PriceTagPrinterSettings defaultPriceTagPrinterSettings =
+      PriceTagPrinterSettings(
+        startPriceY: 90,
+        labelWidth: 58,
+        gapMm: 2,
+        verticalSpacing: 20,
+      );
 
   bool isDesktop() {
     if (!kIsWeb) {
@@ -1946,6 +2000,9 @@ class ShopProvider extends ChangeNotifier {
 
   Future<void> updatePrinterSettings(
     PrinterSettings newSettings,
+    PriceTagPrinterSettings priceNewSettings,
+    PriceAndBarcodePrinterSettings
+    priceAndBarcodePrinterSettingsNew,
   ) async {
     if (isDesktop()) {
       await BarcodePrinterLocalFunc().insertbarcodePrinter(
@@ -1954,7 +2011,23 @@ class ShopProvider extends ChangeNotifier {
           settings: newSettings,
         ),
       );
+      await PriceTagPrinterFunc().insertPriceTagPrinter(
+        PriceTagPrinterLocal(
+          printer: printerCache!,
+          settings: priceNewSettings,
+        ),
+      );
+      await PriceAndBarcodePrinterLocalFunc()
+          .insertpriceBarcodeAndPrinter(
+            PriceAndBarcodePrinterLocal(
+              printer: printerCache!,
+              settings: priceAndBarcodePrinterSettingsNew,
+            ),
+          );
       printerSettings = newSettings;
+      priceTagPrinterSettings = priceNewSettings;
+      priceAndBarcodePrinterSettings =
+          priceAndBarcodePrinterSettingsNew;
       notifyListeners();
     }
   }

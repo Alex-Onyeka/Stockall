@@ -88,67 +88,135 @@ class _GenerateBarcodeScreenState
     return Builder(
       builder: (context) {
         if (widget.productBarcodes.length == 1) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            spacing: 5,
-            children: [
-              Flexible(
-                child: Text(
-                  widget
-                          .productBarcodes[0]
-                          .product
-                          .name
-                          .isEmpty
-                      ? 'Name Not Set'
-                      : widget
-                          .productBarcodes[0]
-                          .product
-                          .name,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+          return Container(
+            padding: const EdgeInsets.only(
+              top: 10.0,
+              bottom: 15,
+            ),
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(
+                43,
+                245,
+                245,
+                245,
               ),
-              const SizedBox(height: 5),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                spacing: 10,
-                children: [
-                  BarcodeWidget(
-                    barcode: Barcode.ean13(),
-                    data: widget.data,
-                    width: 220,
-                    height: 80,
-                    color: Colors.black,
-                    backgroundColor: Colors.white,
-                    drawText: true,
-                    errorBuilder: (context, error) {
-                      print(error.toString());
-                      return Text(
-                        'Error: $error',
-                        style: const TextStyle(
-                          color: Colors.red,
+              border: Border.all(
+                color: Colors.grey.shade200,
+              ),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              spacing: 10,
+              children: [
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
+                  // spacing: 5,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        widget
+                                .productBarcodes[0]
+                                .product
+                                .name
+                                .isEmpty
+                            ? 'Name Not Set'
+                            : widget
+                                .productBarcodes[0]
+                                .product
+                                .name,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
                         ),
-                      );
-                    },
+                      ),
+                    ),
+                    Visibility(
+                      visible:
+                          returnData()
+                              .barcodeGeneratingIndex !=
+                          1,
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 5),
+                          BarcodeWidget(
+                            barcode: Barcode.ean13(),
+                            data: widget.data,
+                            width: 220,
+                            height: 80,
+                            color: Colors.black,
+                            backgroundColor: Colors.white,
+                            drawText: true,
+                            errorBuilder: (context, error) {
+                              print(error.toString());
+                              return Text(
+                                'Error: $error',
+                                style: const TextStyle(
+                                  color: Colors.red,
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Row(
+                      children: [
+                        Text(
+                          'Price: ',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          widget
+                                          .productBarcodes[0]
+                                          .product
+                                          .sellingPrice ==
+                                      null ||
+                                  widget
+                                          .productBarcodes[0]
+                                          .product
+                                          .sellingPrice ==
+                                      0
+                              ? 'Not Set'
+                              : formatMoneyMid(
+                                amount:
+                                    widget
+                                        .productBarcodes[0]
+                                        .product
+                                        .sellingPrice ??
+                                    0,
+                                context: context,
+                              ),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: EdgeInsets.only(
+                    bottom:
+                        returnData().barcodeGeneratingIndex !=
+                                1
+                            ? 10
+                            : 0,
                   ),
-                  ProductBarcodeCounter(
+                  child: ProductBarcodeCounter(
                     pBarcode: widget.productBarcodes[0],
                   ),
-                ],
-              ),
-              const SizedBox(height: 5),
-              Text(
-                'Price: ${widget.productBarcodes[0].product.sellingPrice == null || widget.productBarcodes[0].product.sellingPrice == 0 ? 'Not Set' : formatMoneyMid(amount: widget.productBarcodes[0].product.sellingPrice ?? 0, context: context)}',
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         } else {
           return SizedBox(
@@ -161,11 +229,25 @@ class _GenerateBarcodeScreenState
                     var data2 = returnOnlyDigits(
                       pr.product.uuid!,
                     );
-                    // '${pr.uuid!.split('-').first.substring(0, 5).toUpperCase()}${pr.uuid!.split('-')[1].toUpperCase()}';
-
-                    return Padding(
+                    return Container(
+                      margin: EdgeInsets.only(bottom: 10),
                       padding: const EdgeInsets.only(
                         top: 10.0,
+                        bottom: 15,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(
+                          43,
+                          245,
+                          245,
+                          245,
+                        ),
+                        border: Border.all(
+                          color: Colors.grey.shade200,
+                        ),
+                        borderRadius: BorderRadius.circular(
+                          10,
+                        ),
                       ),
                       child: Row(
                         mainAxisAlignment:
@@ -176,7 +258,7 @@ class _GenerateBarcodeScreenState
                             mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment:
                                 MainAxisAlignment.center,
-                            spacing: 5,
+                            // spacing: 5,
                             children: [
                               Flexible(
                                 child: Text(
@@ -186,54 +268,107 @@ class _GenerateBarcodeScreenState
                                   textAlign:
                                       TextAlign.center,
                                   style: const TextStyle(
-                                    fontSize: 20,
+                                    fontSize: 14,
                                     fontWeight:
                                         FontWeight.bold,
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 5),
-                              BarcodeWidget(
-                                barcode: Barcode.ean13(),
-                                data: data2,
-                                width: 220,
-                                height: 80,
-                                color: Colors.black,
-                                backgroundColor:
-                                    Colors.white,
-                                drawText: true,
-                                errorBuilder: (
-                                  context,
-                                  error,
-                                ) {
-                                  print(error.toString());
-                                  return Text(
-                                    'Error: $error',
-                                    style: const TextStyle(
-                                      color: Colors.red,
+                              Visibility(
+                                visible:
+                                    returnData()
+                                        .barcodeGeneratingIndex !=
+                                    1,
+                                child: Column(
+                                  children: [
+                                    const SizedBox(
+                                      height: 5,
                                     ),
-                                  );
-                                },
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                'Price: ${pr.product.sellingPrice == null || pr.product.sellingPrice == 0 ? 'Not Set' : formatMoneyMid(amount: pr.product.sellingPrice ?? 0, context: context)}',
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight:
-                                      FontWeight.bold,
+                                    BarcodeWidget(
+                                      barcode:
+                                          Barcode.ean13(),
+                                      data: data2,
+                                      width: 220,
+                                      height: 80,
+                                      color: Colors.black,
+                                      backgroundColor:
+                                          Colors.white,
+                                      drawText: true,
+                                      errorBuilder: (
+                                        context,
+                                        error,
+                                      ) {
+                                        print(
+                                          error.toString(),
+                                        );
+                                        return Text(
+                                          'Error: $error',
+                                          style:
+                                              const TextStyle(
+                                                color:
+                                                    Colors
+                                                        .red,
+                                              ),
+                                        );
+                                      },
+                                    ),
+                                  ],
                                 ),
                               ),
-                              const SizedBox(height: 10),
-                              Divider(
-                                color: Colors.grey.shade600,
-                                thickness: 0.4,
-                                height: 5,
+                              const SizedBox(height: 5),
+                              Row(
+                                children: [
+                                  Text(
+                                    'Price: ',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    pr.product.sellingPrice ==
+                                                null ||
+                                            pr
+                                                    .product
+                                                    .sellingPrice ==
+                                                0
+                                        ? 'Not Set'
+                                        : formatMoneyMid(
+                                          amount:
+                                              pr
+                                                  .product
+                                                  .sellingPrice ??
+                                              0,
+                                          context: context,
+                                        ),
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
+                              // const SizedBox(height: 10),
+                              // Divider(
+                              //   color: Colors.grey.shade600,
+                              //   thickness: 0.4,
+                              //   height: 5,
+                              // ),
                             ],
                           ),
-                          ProductBarcodeCounter(
-                            pBarcode: pr,
+                          Padding(
+                            padding: EdgeInsets.only(
+                              bottom:
+                                  returnData().barcodeGeneratingIndex !=
+                                          1
+                                      ? 10
+                                      : 0,
+                            ),
+                            child: ProductBarcodeCounter(
+                              pBarcode: pr,
+                            ),
                           ),
                         ],
                       ),
@@ -396,11 +531,14 @@ Future<bool> generateBarcodeAndPrint(
         theme: returnTheme(safeContext, listen: false),
         message:
             'Generated Barcode for this Product(s). This action automatically sets the products\' barcode to the new generated barcode once you print or download it.',
-        title: 'Generated Barcode',
+        title:
+            returnData().barcodeGeneratingIndex == 0
+                ? 'Generated Barcode'
+                : returnData().barcodeGeneratingIndex == 1
+                ? 'Generated Price'
+                : 'B.Code & Price',
         action: () async {
           print('Starting Printing');
-
-          // Navigator.pop(confirmAlert);
 
           List<ProductBarcode> productBarcodesTemp() {
             List<ProductBarcode> temp = [];
@@ -451,23 +589,25 @@ Future<bool> generateBarcodeAndPrint(
 
           if (safeContext.mounted) {
             if (!isEdit) {
-              for (var pr
-                  in returnData().barcodeGenerationList) {
-                final newShit = returnOnlyDigits(
-                  pr.product.uuid!,
-                );
+              if (returnData().barcodeGeneratingIndex !=
+                  1) {
+                for (var pr
+                    in returnData().barcodeGenerationList) {
+                  final newShit = returnOnlyDigits(
+                    pr.product.uuid!,
+                  );
 
-                pr.product.barcode = newShit;
-                print("✅✅✅❌$newShit");
+                  pr.product.barcode = newShit;
+                  print("✅✅✅❌$newShit");
 
-                await returnData().updateProduct(
-                  product: pr.product,
-                  context: safeContext,
+                  await returnData().updateProduct(
+                    product: pr.product,
+                  );
+                }
+                print(
+                  'Finished Printing and Updating Product Barcode',
                 );
               }
-              print(
-                'Finished Printing and Updating Product Barcode',
-              );
             }
             if (!safeContext.mounted) {
               return;

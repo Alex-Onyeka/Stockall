@@ -461,8 +461,6 @@ class _ProductDetailsMobileState
                                                                     },
                                                                   );
                                                                   await dataProvider.updateProduct(
-                                                                    context:
-                                                                        context,
                                                                     product: TempProductClass(
                                                                       updatedAt:
                                                                           DateTime.now(),
@@ -520,6 +518,8 @@ class _ProductDetailsMobileState
                                                                       // uuid:
                                                                       //     product.uuid,
                                                                     ),
+                                                                    oldProduct:
+                                                                        product,
                                                                   );
                                                                   if (safeContext.mounted) {
                                                                     await dataProvider.getProducts(
@@ -1093,8 +1093,6 @@ class _ProductDetailsMobileState
                                                                               }
 
                                                                               await dataProvider.updateProduct(
-                                                                                context:
-                                                                                    context,
                                                                                 product: TempProductClass(
                                                                                   updatedAt:
                                                                                       DateTime.now(),
@@ -1161,6 +1159,8 @@ class _ProductDetailsMobileState
                                                                                   uuid:
                                                                                       product.uuid,
                                                                                 ),
+                                                                                oldProduct:
+                                                                                    product,
                                                                               );
 
                                                                               setState(
@@ -1411,8 +1411,6 @@ class _ProductDetailsMobileState
                                             context:
                                                 context,
                                             action: () {
-                                              var safeContext =
-                                                  context;
                                               var dataProvider =
                                                   returnData();
                                               showDialog(
@@ -1439,8 +1437,6 @@ class _ProductDetailsMobileState
                                                             true;
                                                       });
                                                       await dataProvider.updateProduct(
-                                                        context:
-                                                            safeContext,
                                                         product: TempProductClass(
                                                           updatedAt:
                                                               DateTime.now(),
@@ -1493,6 +1489,8 @@ class _ProductDetailsMobileState
                                                           uuid:
                                                               product.uuid,
                                                         ),
+                                                        oldProduct:
+                                                            product,
                                                       );
                                                       setState(() {
                                                         isLoading =
@@ -1693,22 +1691,15 @@ class _ProductDetailsMobileState
                                           : null,
                                 ),
 
-                                // Visibility(
-                                //   visible:
-                                //       product.startDate != null,
-                                //   child: BottomInfoSection(
-                                //     theme: widget.theme,
-                                //     mainText:
-                                //         product.startDate !=
-                                //                 null
-                                //             ? formatDateTime(
-                                //               product
-                                //                   .startDate!,
-                                //             )
-                                //             : 'Not Set',
-                                //     text: 'Discount Start',
-                                //   ),
-                                // ),
+                                BottomInfoSection(
+                                  theme: widget.theme,
+                                  mainText:
+                                      product.discount !=
+                                              null
+                                          ? "${product.discount}%"
+                                          : 'Not Set',
+                                  text: 'Discount',
+                                ),
                                 // Visibility(
                                 //   visible:
                                 //       product.endDate != null,

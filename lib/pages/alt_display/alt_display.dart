@@ -516,8 +516,6 @@ class AltDisplayState extends State<AltDisplay> {
                                                       .currency,
                                               amount:
                                                   calcTotalMain(),
-                                              context:
-                                                  context,
                                             ),
                                           ),
                                         ],
@@ -573,7 +571,7 @@ class AltDisplayState extends State<AltDisplay> {
                                                         mobileTexts.b2.fontSize,
                                                     // fontWeight: FontWeight.bold,
                                                   ),
-                                                  '- ${formatMoneyAlt(amount: calcDiscountMain(), context: context, currency: cartClass!.currency)}',
+                                                  '- ${formatMoneyAlt(amount: calcDiscountMain(), currency: cartClass!.currency)}',
                                                 ),
                                               ],
                                             ),
@@ -633,8 +631,6 @@ class AltDisplayState extends State<AltDisplay> {
                                                                   100) *
                                                               calcTotalMain())
                                                           : 0,
-                                                  context:
-                                                      context,
                                                 ),
                                               ),
                                             ],
@@ -675,8 +671,6 @@ class AltDisplayState extends State<AltDisplay> {
                                                       .currency,
                                               amount:
                                                   calcFinalTotalMain(),
-                                              context:
-                                                  context,
                                             ),
                                           ),
                                         ],
@@ -907,7 +901,6 @@ class _CartItemAltState extends State<CartItemAlt> {
                                       widget.cartItem
                                           .totalCost(),
                                   currency: widget.currency,
-                                  context: context,
                                 ),
                               ),
                             ],

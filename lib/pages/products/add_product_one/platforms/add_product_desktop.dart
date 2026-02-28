@@ -284,7 +284,6 @@ class _AddProductDesktopState
             }
 
             await provider.updateProduct(
-              context: context,
               product: TempProductClass(
                 setCustomPrice: provider.setCustomPrice,
                 isManaged:
@@ -344,6 +343,7 @@ class _AddProductDesktopState
                 startDate: provider.startDate,
                 // uuid: widget.product?.uuid,
               ),
+              oldProduct: widget.product!,
             );
             await provider.getProducts(
               shopProvider.userShop()!.shopId!,
@@ -426,8 +426,10 @@ class _AddProductDesktopState
       barCodeSet =
           widget.product!.barcode != null ? true : false;
       widget.nameController.text = widget.product!.name;
-      widget.lowQttyController.text =
-          widget.product!.lowQtty!.toString();
+      widget.lowQttyController.text = widget
+          .product!
+          .lowQtty!
+          .toStringAsFixed(0);
       widget.costController.text =
           widget.product!.costPrice.toString().split(
             '.',
@@ -445,7 +447,7 @@ class _AddProductDesktopState
 
       widget.discountController.text =
           widget.product!.discount != null
-              ? widget.product!.discount.toString()
+              ? widget.product!.discount!.toStringAsFixed(0)
               : '';
       returnData().isProductRefundable =
           widget.product!.isRefundable;
@@ -1384,6 +1386,34 @@ class _AddProductDesktopState
                                     visible: expand,
                                     child: Column(
                                       children: [
+                                        EditCartTextField(
+                                          theme: theme,
+                                          hint:
+                                              'Enter Discount (%)',
+                                          title:
+                                              'Discount Percent (%)',
+                                          controller:
+                                              widget
+                                                  .discountController,
+                                          onChanged: (
+                                            value,
+                                          ) {
+                                            if (value
+                                                .isNotEmpty) {
+                                              if (int.parse(
+                                                    value,
+                                                  ) >
+                                                  100) {
+                                                widget
+                                                    .discountController
+                                                    .text = '100';
+                                              }
+                                            }
+                                          },
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
                                         EditCartTextField(
                                           theme: theme,
                                           hint:
