@@ -6,6 +6,7 @@ import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/constants/subscription/multiple_stores_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
@@ -90,18 +91,6 @@ class _TopNavBarState extends State<TopNavBar> {
                         ),
                       ),
                     ),
-                    // Builder(
-                    //   builder: (context) {
-                    //     return ElevatedButton(
-                    //       onPressed: () {
-
-                    //       },
-                    //       child: const Text(
-                    //         'Show Popover Menu',
-                    //       ),
-                    //     );
-                    //   },
-                    // ),
                     SizedBox(
                       width:
                           screenWidth(context) <
@@ -385,191 +374,222 @@ class _TopNavBarState extends State<TopNavBar> {
               ),
             ],
           ),
-          Row(
-            spacing:
-                screenWidth(context) > tabletScreen ? 3 : 2,
+          Stack(
             children: [
               Visibility(
                 visible:
-                    screenWidth(context) > mobileScreen,
+                    screenWidth(context) <= mobileScreen &&
+                    isStoreKeeper(),
                 child: Material(
                   color: Colors.transparent,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(10),
-                    onTap: () async {
-                      // print(
-                      //   CreatedRecordsFunc()
-                      //       .getRecords()
-                      //       .length,
-                      // );
-                      // print(
-                      //   CreatedReceiptsFunc()
-                      //       .getReceipts()
-                      //       .length,
-                      // );
-                      // print(
-                      //   SalesProductFunc()
-                      //       .getProducts()
-                      //       .first
-                      //       .quantity,
-                      // );
-                      // await returnData(
-                      //   context,
-                      //   listen: false,
-                      // ).clearTotalCache();
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Row(
-                        // spacing: 5,
-                        children: [
-                          Visibility(
-                            visible:
-                                screenWidth(context) >
-                                tabletScreen,
-                            child: Row(
-                              children: [
-                                Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        widget
-                                            .theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
-                                  ),
-
+                  child: Ink(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(
+                        5,
+                      ),
+                      border: Border.all(
+                        color: Colors.grey.shade300,
+                      ),
+                      color: Colors.grey.shade100,
+                    ),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(
+                        5,
+                      ),
+                      onTap: () async {
+                        if (returnData().isSynced() == 0) {
+                          await returnData().syncData(
+                            context,
+                          );
+                        } else {
+                          print('Data is in sync');
+                          returnData().toggleRefreshing(
+                            true,
+                          );
+                          await RefreshFunctions(
+                            context,
+                          ).refreshAll(context);
+                          if (context.mounted) {
+                            returnData().toggleRefreshing(
+                              false,
+                            );
+                          }
+                        }
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 4,
+                          horizontal: 7,
+                        ),
+                        child: Row(
+                          spacing: 10,
+                          children: [
+                            Icon(
+                              size: 15,
+                              color:
                                   returnConnectivityProvider(
                                     context,
-                                  ).connectedText(),
-                                ),
-                                SizedBox(width: 5),
-                              ],
+                                  ).connectedColor(),
+                              returnConnectivityProvider(
+                                    context,
+                                  ).isConnected
+                                  ? Icons.wifi
+                                  : Icons.wifi_off_sharp,
                             ),
-                          ),
-                          Icon(
-                            size: 17,
-                            color:
-                                returnConnectivityProvider(
-                                  context,
-                                ).connectedColor(),
-                            returnConnectivityProvider(
-                                  context,
-                                ).isConnected
-                                ? Icons.wifi
-                                : Icons.wifi_off_sharp,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Visibility(
-                visible:
-                    screenWidth(context) > mobileScreen,
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(10),
-                    onTap: () async {
-                      if (returnData().isSynced() == 0) {
-                        await returnData().syncData(
-                          context,
-                        );
-                      }
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Row(
-                        // spacing: 5,
-                        children: [
-                          Visibility(
-                            visible:
-                                screenWidth(context) >
-                                tabletScreen,
-                            child: Row(
-                              children: [
-                                Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        widget
-                                            .theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
-                                  ),
-                                  returnData(
-                                            context:
-                                                context,
-                                          ).isSynced() ==
-                                          1
-                                      ? 'Synced'
-                                      : returnData(
-                                            context:
-                                                context,
-                                          ).isSynced() ==
-                                          0
-                                      ? 'Unsynced'
-                                      : 'Syncing',
-                                ),
-                                SizedBox(width: 5),
-                              ],
-                            ),
-                          ),
-                          Stack(
-                            children: [
-                              Visibility(
-                                visible:
-                                    returnData(
-                                      context: context,
-                                    ).isSynced() !=
+                            Padding(
+                              padding:
+                                  const EdgeInsets.fromLTRB(
                                     2,
-                                child: Icon(
-                                  color:
-                                      returnData(
-                                                context:
-                                                    context,
-                                              ).isSynced() ==
-                                              1
-                                          ? const Color.fromARGB(
-                                            255,
-                                            87,
-                                            160,
-                                            89,
-                                          )
-                                          : Colors.grey,
-                                  size: 18,
-                                  returnData(
-                                            context:
-                                                context,
-                                          ).isSynced() ==
-                                          1
-                                      ? Icons
-                                          .cloud_done_outlined
-                                      : Icons
-                                          .cloud_off_rounded,
-                                ),
-                              ),
-                              Visibility(
-                                visible:
-                                    returnData(
-                                      context: context,
-                                    ).isSynced() ==
                                     2,
-                                child: Stack(
-                                  alignment: Alignment(
-                                    0,
-                                    0,
+                                    2,
+                                    2,
                                   ),
-                                  children: [
-                                    SizedBox(
-                                      height: 18,
-                                      width: 18,
+                              child: Stack(
+                                children: [
+                                  Visibility(
+                                    visible:
+                                        !returnData(
+                                          context: context,
+                                        ).isRefreshing,
+                                    child: Row(
+                                      // spacing: 5,
+                                      children: [
+                                        Stack(
+                                          children: [
+                                            Visibility(
+                                              visible:
+                                                  returnData(
+                                                    context:
+                                                        context,
+                                                  ).isSynced() !=
+                                                  2,
+                                              child: Icon(
+                                                color:
+                                                    returnData(
+                                                              context:
+                                                                  context,
+                                                            ).isSynced() ==
+                                                            1
+                                                        ? const Color.fromARGB(
+                                                          255,
+                                                          87,
+                                                          160,
+                                                          89,
+                                                        )
+                                                        : Colors.grey,
+                                                size: 16,
+                                                returnData(
+                                                          context:
+                                                              context,
+                                                        ).isSynced() ==
+                                                        1
+                                                    ? Icons
+                                                        .cloud_done_outlined
+                                                    : Icons.cloud_off_rounded,
+                                              ),
+                                            ),
+                                            Visibility(
+                                              visible:
+                                                  returnData(
+                                                    context:
+                                                        context,
+                                                  ).isSynced() ==
+                                                  2,
+                                              child: Row(
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      Text(
+                                                        style: TextStyle(
+                                                          color:
+                                                              Colors.white,
+                                                          fontSize:
+                                                              8,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+
+                                                        'Syncing',
+                                                      ),
+                                                      SizedBox(
+                                                        width:
+                                                            5,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  Stack(
+                                                    alignment:
+                                                        Alignment(
+                                                          0,
+                                                          0,
+                                                        ),
+                                                    children: [
+                                                      SizedBox(
+                                                        height:
+                                                            17,
+                                                        width:
+                                                            17,
+                                                        child: CircularProgressIndicator(
+                                                          color:
+                                                              Colors.amber,
+                                                          strokeWidth:
+                                                              1.2,
+                                                        ),
+                                                      ),
+                                                      Center(
+                                                        child: Row(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            Text(
+                                                              style: TextStyle(
+                                                                color:
+                                                                    Colors.white,
+                                                                fontWeight:
+                                                                    FontWeight.bold,
+                                                                fontSize:
+                                                                    8,
+                                                              ),
+                                                              returnData(
+                                                                context:
+                                                                    context,
+                                                              ).syncProgress.toStringAsFixed(
+                                                                0,
+                                                              ),
+                                                              // '100',
+                                                            ),
+                                                            Text(
+                                                              style: TextStyle(
+                                                                color:
+                                                                    Colors.white,
+                                                                fontWeight:
+                                                                    FontWeight.bold,
+                                                                fontSize:
+                                                                    6,
+                                                              ),
+                                                              '%',
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible:
+                                        returnData(
+                                          context: context,
+                                        ).isRefreshing,
+                                    child: SizedBox(
+                                      height: 14,
+                                      width: 14,
                                       child:
                                           CircularProgressIndicator(
                                             color:
@@ -579,289 +599,433 @@ class _TopNavBarState extends State<TopNavBar> {
                                                 1.5,
                                           ),
                                     ),
-                                    Center(
-                                      child: Row(
-                                        mainAxisSize:
-                                            MainAxisSize
-                                                .min,
-                                        children: [
-                                          Text(
-                                            style: TextStyle(
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
-                                              fontSize: 8,
-                                            ),
-                                            returnData(
-                                                  context:
-                                                      context,
-                                                )
-                                                .syncProgress
-                                                .toStringAsFixed(
-                                                  0,
-                                                ),
-                                          ),
-                                          Text(
-                                            style: TextStyle(
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
-                                              fontSize: 7,
-                                            ),
-                                            '%',
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-              // SizedBox(height: 20),
-              Visibility(
-                visible:
-                    screenWidth(context) > mobileScreen,
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(10),
-                    onTap: widget.refreshAction,
-                    // onTap: () async {
-                    //   await MainReceiptFunc()
-                    //       .clearReceipts();
-                    // },
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Row(
-                        // spacing: 5,
-                        children: [
-                          Visibility(
-                            visible:
-                                screenWidth(context) >
-                                tabletScreenSmall,
-                            child: Row(
-                              children: [
-                                Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        widget
-                                            .theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
-                                  ),
-                                  'Refresh',
-                                ),
-                                SizedBox(width: 5),
-                              ],
-                            ),
-                          ),
-                          Stack(
+              Row(
+                spacing:
+                    screenWidth(context) > tabletScreen
+                        ? 3
+                        : 2,
+                children: [
+                  Visibility(
+                    visible:
+                        screenWidth(context) > mobileScreen,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(
+                          10,
+                        ),
+                        onTap: () async {
+                          // print(
+                          //   CreatedRecordsFunc()
+                          //       .getRecords()
+                          //       .length,
+                          // );
+                          // print(
+                          //   CreatedReceiptsFunc()
+                          //       .getReceipts()
+                          //       .length,
+                          // );
+                          // print(
+                          //   SalesProductFunc()
+                          //       .getProducts()
+                          //       .first
+                          //       .quantity,
+                          // );
+                          // await returnData(
+                          //   context,
+                          //   listen: false,
+                          // ).clearTotalCache();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Row(
+                            // spacing: 5,
                             children: [
                               Visibility(
                                 visible:
-                                    !returnData(
-                                      context: context,
-                                    ).isRefreshing,
-                                child: Icon(
-                                  size: 18,
-                                  Icons.refresh_rounded,
+                                    screenWidth(context) >
+                                    tabletScreen,
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            widget
+                                                .theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+
+                                      returnConnectivityProvider(
+                                        context,
+                                      ).connectedText(),
+                                    ),
+                                    SizedBox(width: 5),
+                                  ],
                                 ),
                               ),
-                              Visibility(
-                                visible:
-                                    returnData(
-                                      context: context,
-                                    ).isRefreshing,
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.only(
-                                        top: 2.0,
-                                        left: 2,
-                                      ),
-                                  child: SizedBox(
-                                    height: 14,
-                                    width: 14,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color:
-                                          widget
-                                              .theme
-                                              .lightModeColor
-                                              .secColor200,
-                                    ),
-                                  ),
-                                ),
+                              Icon(
+                                size: 17,
+                                color:
+                                    returnConnectivityProvider(
+                                      context,
+                                    ).connectedColor(),
+                                returnConnectivityProvider(
+                                      context,
+                                    ).isConnected
+                                    ? Icons.wifi
+                                    : Icons.wifi_off_sharp,
                               ),
                             ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ),
-              // SizedBox(height: 20),
-              Stack(
-                children: [
                   Visibility(
-                    visible: authorization(
-                      authorized:
-                          Authorizations()
-                              .notificationsPage,
-                    ),
-                    child: Stack(
-                      alignment: Alignment(1.2, -1.8),
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            widget.action!();
-                          },
-                          child: Container(
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(
-                                208,
-                                245,
-                                245,
-                                245,
-                              ),
-                              shape: BoxShape.circle,
-                            ),
-                            child: SvgPicture.asset(
-                              height: 25,
-                              width: 25,
-                              notifIconSvg,
-                            ),
-                          ),
+                    visible:
+                        screenWidth(context) > mobileScreen,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(
+                          10,
                         ),
-                        Visibility(
-                          visible:
-                              returnNotificationProvider(
-                                    context,
-                                  ).notifications
-                                  .where(
-                                    (notif) =>
-                                        !notif.isViewed,
-                                  )
-                                  .isNotEmpty,
-                          child: Container(
-                            padding: EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              gradient:
-                                  widget
-                                      .theme
-                                      .lightModeColor
-                                      .secGradient,
-                            ),
-                            child: Center(
-                              child: Text(
-                                style: TextStyle(
-                                  fontWeight:
-                                      FontWeight.bold,
-                                  fontSize:
-                                      returnNotificationProvider(
+                        onTap: () async {
+                          if (returnData().isSynced() ==
+                              0) {
+                            await returnData().syncData(
+                              context,
+                            );
+                          }
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Row(
+                            // spacing: 5,
+                            children: [
+                              Visibility(
+                                visible:
+                                    screenWidth(context) >
+                                    tabletScreen,
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            widget
+                                                .theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      returnData(
+                                                context:
                                                     context,
-                                                  )
-                                                  .notifications
-                                                  .where(
-                                                    (
-                                                      notif,
-                                                    ) =>
-                                                        !notif.isViewed,
-                                                  )
-                                                  .length ==
-                                              2
-                                          ? 9
-                                          : 11,
-                                  color: Colors.white,
+                                              ).isSynced() ==
+                                              1
+                                          ? 'Synced'
+                                          : returnData(
+                                                context:
+                                                    context,
+                                              ).isSynced() ==
+                                              0
+                                          ? 'Unsynced'
+                                          : 'Syncing',
+                                    ),
+                                    SizedBox(width: 5),
+                                  ],
                                 ),
-                                '${returnNotificationProvider(context).notifications.where((notif) => !notif.isViewed).length}',
                               ),
-                            ),
+                              Stack(
+                                children: [
+                                  Visibility(
+                                    visible:
+                                        returnData(
+                                          context: context,
+                                        ).isSynced() !=
+                                        2,
+                                    child: Icon(
+                                      color:
+                                          returnData(
+                                                    context:
+                                                        context,
+                                                  ).isSynced() ==
+                                                  1
+                                              ? const Color.fromARGB(
+                                                255,
+                                                87,
+                                                160,
+                                                89,
+                                              )
+                                              : Colors.grey,
+                                      size: 18,
+                                      returnData(
+                                                context:
+                                                    context,
+                                              ).isSynced() ==
+                                              1
+                                          ? Icons
+                                              .cloud_done_outlined
+                                          : Icons
+                                              .cloud_off_rounded,
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible:
+                                        returnData(
+                                          context: context,
+                                        ).isSynced() ==
+                                        2,
+                                    child: Stack(
+                                      alignment: Alignment(
+                                        0,
+                                        0,
+                                      ),
+                                      children: [
+                                        SizedBox(
+                                          height: 18,
+                                          width: 18,
+                                          child: CircularProgressIndicator(
+                                            color:
+                                                Colors
+                                                    .amber,
+                                            strokeWidth:
+                                                1.5,
+                                          ),
+                                        ),
+                                        Center(
+                                          child: Row(
+                                            mainAxisSize:
+                                                MainAxisSize
+                                                    .min,
+                                            children: [
+                                              Text(
+                                                style: TextStyle(
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                  fontSize:
+                                                      8,
+                                                ),
+                                                returnData(
+                                                  context:
+                                                      context,
+                                                ).syncProgress.toStringAsFixed(
+                                                  0,
+                                                ),
+                                              ),
+                                              Text(
+                                                style: TextStyle(
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                  fontSize:
+                                                      7,
+                                                ),
+                                                '%',
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
-                      ],
+                      ),
                     ),
                   ),
-                  // Visibility(
-                  //   visible:
-                  //       !authorization(
-                  //         authorized:
-                  //             Authorizations()
-                  //                 .notificationsPage,
-                  //         context: context,
-                  //       ),
-                  //   child: Stack(
-                  //     alignment: Alignment(1.2, -1.8),
-                  //     children: [
-                  //       InkWell(
-                  //         onTap: () {
-                  //           showDialog(
-                  //             context: context,
-                  //             builder: (dialogContext) {
-                  //               return ConfirmationAlert(
-                  //                 theme: widget.theme,
-                  //                 message:
-                  //                     'You are about to Logout',
-                  //                 title: 'Are you Sure?',
-                  //                 action: () async {
-                  //                   Navigator.of(
-                  //                     dialogContext,
-                  //                   ).pop();
-
-                  //                   await AuthService()
-                  //                       .signOut(context);
-                  //                   if (context.mounted) {
-                  //                     Navigator.pushReplacement(
-                  //                       context,
-                  //                       MaterialPageRoute(
-                  //                         builder: (
-                  //                           context,
-                  //                         ) {
-                  //                           return AuthScreensPage();
-                  //                         },
-                  //                       ),
-                  //                     );
-                  //                     returnNavProvider(
-                  //                       context,
-                  //                       listen: false,
-                  //                     ).navigate(0);
-                  //                   }
-                  //                 },
-                  //               );
-                  //             },
-                  //           );
-                  //         },
-                  //         child: Container(
-                  //           padding: EdgeInsets.all(10),
-                  //           decoration: BoxDecoration(
-                  //             color: const Color.fromARGB(
-                  //               208,
-                  //               245,
-                  //               245,
-                  //               245,
-                  //             ),
-                  //             shape: BoxShape.circle,
-                  //           ),
-                  //           child: Icon(
-                  //             Icons.logout_rounded,
-                  //           ),
-                  //         ),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
+                  // SizedBox(height: 20),
+                  Visibility(
+                    visible:
+                        screenWidth(context) > mobileScreen,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(
+                          10,
+                        ),
+                        onTap: widget.refreshAction,
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Row(
+                            // spacing: 5,
+                            children: [
+                              Visibility(
+                                visible:
+                                    screenWidth(context) >
+                                    tabletScreenSmall,
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            widget
+                                                .theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      'Refresh',
+                                    ),
+                                    SizedBox(width: 5),
+                                  ],
+                                ),
+                              ),
+                              Stack(
+                                children: [
+                                  Visibility(
+                                    visible:
+                                        !returnData(
+                                          context: context,
+                                        ).isRefreshing,
+                                    child: Icon(
+                                      size: 18,
+                                      Icons.refresh_rounded,
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible:
+                                        returnData(
+                                          context: context,
+                                        ).isRefreshing,
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.only(
+                                            top: 2.0,
+                                            left: 2,
+                                          ),
+                                      child: SizedBox(
+                                        height: 14,
+                                        width: 14,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color:
+                                              widget
+                                                  .theme
+                                                  .lightModeColor
+                                                  .secColor200,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  // SizedBox(height: 20),
+                  Stack(
+                    children: [
+                      Visibility(
+                        visible: authorization(
+                          authorized:
+                              Authorizations()
+                                  .notificationsPage,
+                        ),
+                        child: Stack(
+                          alignment: Alignment(1.2, -1.8),
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                widget.action!();
+                              },
+                              child: Container(
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color:
+                                      const Color.fromARGB(
+                                        208,
+                                        245,
+                                        245,
+                                        245,
+                                      ),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: SvgPicture.asset(
+                                  height: 25,
+                                  width: 25,
+                                  notifIconSvg,
+                                ),
+                              ),
+                            ),
+                            Visibility(
+                              visible:
+                                  returnNotificationProvider(
+                                        context,
+                                      ).notifications
+                                      .where(
+                                        (notif) =>
+                                            !notif.isViewed,
+                                      )
+                                      .isNotEmpty,
+                              child: Container(
+                                padding: EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  gradient:
+                                      widget
+                                          .theme
+                                          .lightModeColor
+                                          .secGradient,
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    style: TextStyle(
+                                      fontWeight:
+                                          FontWeight.bold,
+                                      fontSize:
+                                          returnNotificationProvider(
+                                                        context,
+                                                      )
+                                                      .notifications
+                                                      .where(
+                                                        (
+                                                          notif,
+                                                        ) =>
+                                                            !notif.isViewed,
+                                                      )
+                                                      .length ==
+                                                  2
+                                              ? 9
+                                              : 11,
+                                      color: Colors.white,
+                                    ),
+                                    '${returnNotificationProvider(context).notifications.where((notif) => !notif.isViewed).length}',
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ],

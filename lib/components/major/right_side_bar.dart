@@ -143,6 +143,7 @@ class RightSideBar extends StatelessWidget {
                           ),
                         ),
                         child: Text(
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             // color:
@@ -198,319 +199,338 @@ class RightSideBar extends StatelessWidget {
               color: Colors.grey.shade300,
               height: 50,
             ),
-            Expanded(
-              child: SizedBox(
-                child: Column(
-                  spacing: 10,
-                  children: [
-                    Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return TotalSalesPage(
-                                  turnOff: true,
-                                );
-                              },
-                            ),
-                          );
-                        },
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.fromLTRB(
-                                0,
-                                10,
-                                0,
-                                10,
-                              ),
-                          child: Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      screenWidth(context) >
-                                              tabletScreenSmall
-                                          ? theme
-                                              .mobileTexts
-                                              .b2
-                                              .fontSize
-                                          : theme
-                                              .mobileTexts
-                                              .b4
-                                              .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                ),
-                                screenWidth(context) <=
-                                        tabletScreenSmall
-                                    ? 'View Sales'
-                                    : returnReceiptProvider(
-                                          context,
-                                        ).dateSet ??
-                                        'Todays Sales',
-                              ),
-                              Icon(
-                                size:
-                                    screenWidth(context) <=
-                                            tabletScreenSmall
-                                        ? 13
-                                        : 15,
-                                color: Colors.grey,
-                                Icons
-                                    .arrow_forward_ios_rounded,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    // SizedBox(height: 10),
-                    Visibility(
-                      visible:
-                          screenWidth(context) >
-                          tabletScreenSmall,
-                      child: Builder(
-                        builder: (context) {
-                          if (returnReceiptProvider(context)
-                                  .returnOwnReceiptsByDayOrWeek(
-                                    returnReceiptProvider(
-                                      context,
-                                    ).receipts,
-                                  )
-                                  .isEmpty ||
-                              returnReceiptProvider(context)
-                                  .returnproductsRecordByDayOrWeek(
-                                    returnReceiptProvider(
-                                      context,
-                                    ).produtRecordSalesMain,
-                                  )
-                                  .isEmpty) {
-                            return Expanded(
-                              child: Material(
-                                color: Colors.transparent,
-                                child: Center(
-                                  child: Column(
-                                    spacing: 10,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .center,
-                                    children: [
-                                      SvgPicture.asset(
-                                        height: 18,
-                                        receiptIconSvg,
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment
-                                                .center,
-                                        children: [
-                                          Flexible(
-                                            child: Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    theme
-                                                        .mobileTexts
-                                                        .b3
-                                                        .fontSize,
-                                              ),
-                                              'No Sales Recorded for today',
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          } else {
-                            return Expanded(
-                              child: ListView.builder(
-                                itemCount:
-                                    returnReceiptProvider(
-                                          context,
-                                        )
-                                        .returnOwnReceiptsByDayOrWeek(
-                                          returnReceiptProvider(
-                                            context,
-                                          ).receipts,
-                                        )
-                                        .length,
-                                itemBuilder: (
-                                  context,
-                                  index,
-                                ) {
-                                  var receipts =
-                                      returnReceiptProvider(
-                                        context,
-                                      ).returnOwnReceiptsByDayOrWeek(
-                                        returnReceiptProvider(
-                                          context,
-                                        ).receipts,
-                                      );
-                                  receipts.sort(
-                                    (a, b) => b.createdAt
-                                        .compareTo(
-                                          a.createdAt,
-                                        ),
-                                  );
-                                  TempMainReceipt? rec =
-                                      receipts[index];
-                                  String itemName =
-                                      returnReceiptProvider(
-                                                context,
-                                              )
-                                              .produtRecordSalesMain
-                                              .where(
-                                                (record) =>
-                                                    record
-                                                        .receiptUuid ==
-                                                    rec.uuid,
-                                              )
-                                              .toList()
-                                              .isEmpty
-                                          ? 'Item name'
-                                          : returnReceiptProvider(
-                                                context,
-                                              )
-                                              .produtRecordSalesMain
-                                              .where(
-                                                (record) =>
-                                                    record
-                                                        .receiptUuid ==
-                                                    rec.uuid,
-                                              )
-                                              .first
-                                              .productName;
-                                  return Padding(
-                                    padding:
-                                        const EdgeInsets.only(
-                                          bottom: 2,
-                                        ),
-                                    child: Material(
-                                      color:
-                                          Colors
-                                              .transparent,
-                                      child: InkWell(
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (
-                                                context,
-                                              ) {
-                                                return ReceiptPage(
-                                                  response: CheckoutResponse(
-                                                    resUuid:
-                                                        rec.uuid!,
-                                                    isReceipt:
-                                                        true,
-                                                  ),
-                                                  isMain:
-                                                      false,
-                                                );
-                                              },
-                                            ),
-                                          ).then((_) {
-                                            // returnData()
-                                            //     .startBarcodeTimer();
-                                          });
-                                        },
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.symmetric(
-                                                horizontal:
-                                                    5,
-                                                vertical:
-                                                    11,
-                                              ),
-                                          child: Row(
-                                            spacing: 10,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .spaceBetween,
-                                            children: [
-                                              Row(
-                                                spacing: 10,
-                                                children: [
-                                                  SvgPicture.asset(
-                                                    salesIconSvg,
-                                                    height:
-                                                        13,
-                                                  ),
-                                                  Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          theme.mobileTexts.b4.fontSize,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                    cutLongText(
-                                                      itemName,
-                                                      12,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Row(
-                                                spacing: 5,
-                                                children: [
-                                                  Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          theme.mobileTexts.b4.fontSize,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                    cutLongText(
-                                                      formatMoneyMid(
-                                                        amount: returnReceiptProvider(
-                                                          context,
-                                                        ).getTotalMainRevenueReceipt(
-                                                          rec,
-                                                        ),
-                                                        context:
-                                                            context,
-                                                      ),
-                                                      10,
-                                                    ),
-                                                  ),
-                                                  Icon(
-                                                    size:
-                                                        15,
-                                                    color:
-                                                        Colors.grey,
-                                                    Icons
-                                                        .arrow_forward_ios_rounded,
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
+            Visibility(
+              visible: !isStoreKeeper(),
+              child: Expanded(
+                child: SizedBox(
+                  child: Column(
+                    spacing: 10,
+                    children: [
+                      Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return TotalSalesPage(
+                                    turnOff: true,
                                   );
                                 },
                               ),
                             );
-                          }
-                        },
+                          },
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.fromLTRB(
+                                  0,
+                                  10,
+                                  0,
+                                  10,
+                                ),
+                            child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment
+                                      .spaceBetween,
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        screenWidth(
+                                                  context,
+                                                ) >
+                                                tabletScreenSmall
+                                            ? theme
+                                                .mobileTexts
+                                                .b2
+                                                .fontSize
+                                            : theme
+                                                .mobileTexts
+                                                .b4
+                                                .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                  screenWidth(context) <=
+                                          tabletScreenSmall
+                                      ? 'View Sales'
+                                      : returnReceiptProvider(
+                                            context,
+                                          ).dateSet ??
+                                          'Todays Sales',
+                                ),
+                                Icon(
+                                  size:
+                                      screenWidth(
+                                                context,
+                                              ) <=
+                                              tabletScreenSmall
+                                          ? 13
+                                          : 15,
+                                  color: Colors.grey,
+                                  Icons
+                                      .arrow_forward_ios_rounded,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
+                      // SizedBox(height: 10),
+                      Visibility(
+                        visible:
+                            screenWidth(context) >
+                            tabletScreenSmall,
+                        child: Builder(
+                          builder: (context) {
+                            if (returnReceiptProvider(
+                                      context,
+                                    )
+                                    .returnOwnReceiptsByDayOrWeek(
+                                      returnReceiptProvider(
+                                        context,
+                                      ).receipts,
+                                    )
+                                    .isEmpty ||
+                                returnReceiptProvider(
+                                      context,
+                                    )
+                                    .returnproductsRecordByDayOrWeek(
+                                      returnReceiptProvider(
+                                        context,
+                                      ).produtRecordSalesMain,
+                                    )
+                                    .isEmpty) {
+                              return Expanded(
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: Center(
+                                    child: Column(
+                                      spacing: 10,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment
+                                              .center,
+                                      children: [
+                                        SvgPicture.asset(
+                                          height: 18,
+                                          receiptIconSvg,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment
+                                                  .center,
+                                          children: [
+                                            Flexible(
+                                              child: Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      theme
+                                                          .mobileTexts
+                                                          .b3
+                                                          .fontSize,
+                                                ),
+                                                'No Sales Recorded for today',
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            } else {
+                              return Expanded(
+                                child: ListView.builder(
+                                  itemCount:
+                                      returnReceiptProvider(
+                                            context,
+                                          )
+                                          .returnOwnReceiptsByDayOrWeek(
+                                            returnReceiptProvider(
+                                              context,
+                                            ).receipts,
+                                          )
+                                          .length,
+                                  itemBuilder: (
+                                    context,
+                                    index,
+                                  ) {
+                                    var receipts =
+                                        returnReceiptProvider(
+                                          context,
+                                        ).returnOwnReceiptsByDayOrWeek(
+                                          returnReceiptProvider(
+                                            context,
+                                          ).receipts,
+                                        );
+                                    receipts.sort(
+                                      (a, b) => b.createdAt
+                                          .compareTo(
+                                            a.createdAt,
+                                          ),
+                                    );
+                                    TempMainReceipt? rec =
+                                        receipts[index];
+                                    String itemName =
+                                        returnReceiptProvider(
+                                                  context,
+                                                )
+                                                .produtRecordSalesMain
+                                                .where(
+                                                  (
+                                                    record,
+                                                  ) =>
+                                                      record
+                                                          .receiptUuid ==
+                                                      rec.uuid,
+                                                )
+                                                .toList()
+                                                .isEmpty
+                                            ? 'Item name'
+                                            : returnReceiptProvider(
+                                                  context,
+                                                )
+                                                .produtRecordSalesMain
+                                                .where(
+                                                  (
+                                                    record,
+                                                  ) =>
+                                                      record
+                                                          .receiptUuid ==
+                                                      rec.uuid,
+                                                )
+                                                .first
+                                                .productName;
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.only(
+                                            bottom: 2,
+                                          ),
+                                      child: Material(
+                                        color:
+                                            Colors
+                                                .transparent,
+                                        child: InkWell(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  return ReceiptPage(
+                                                    response: CheckoutResponse(
+                                                      resUuid:
+                                                          rec.uuid!,
+                                                      isReceipt:
+                                                          true,
+                                                    ),
+                                                    isMain:
+                                                        false,
+                                                  );
+                                                },
+                                              ),
+                                            ).then((_) {
+                                              // returnData()
+                                              //     .startBarcodeTimer();
+                                            });
+                                          },
+                                          child: Padding(
+                                            padding:
+                                                const EdgeInsets.symmetric(
+                                                  horizontal:
+                                                      5,
+                                                  vertical:
+                                                      11,
+                                                ),
+                                            child: Row(
+                                              spacing: 10,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Row(
+                                                  spacing:
+                                                      10,
+                                                  children: [
+                                                    SvgPicture.asset(
+                                                      salesIconSvg,
+                                                      height:
+                                                          13,
+                                                    ),
+                                                    Text(
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            theme.mobileTexts.b4.fontSize,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                      cutLongText(
+                                                        itemName,
+                                                        12,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  spacing:
+                                                      5,
+                                                  children: [
+                                                    Text(
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            theme.mobileTexts.b4.fontSize,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                      cutLongText(
+                                                        formatMoneyMid(
+                                                          amount: returnReceiptProvider(
+                                                            context,
+                                                          ).getTotalMainRevenueReceipt(
+                                                            rec,
+                                                          ),
+                                                          context:
+                                                              context,
+                                                        ),
+                                                        10,
+                                                      ),
+                                                    ),
+                                                    Icon(
+                                                      size:
+                                                          15,
+                                                      color:
+                                                          Colors.grey,
+                                                      Icons
+                                                          .arrow_forward_ios_rounded,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
             Visibility(
               visible:
-                  screenWidth(context) > tabletScreenSmall,
+                  screenWidth(context) >
+                      tabletScreenSmall &&
+                  !isStoreKeeper(),
               child: MainButtonP(
                 themeProvider: theme,
                 action: () {
@@ -530,7 +550,9 @@ class RightSideBar extends StatelessWidget {
             ),
             Visibility(
               visible:
-                  screenWidth(context) <= tabletScreenSmall,
+                  screenWidth(context) <=
+                      tabletScreenSmall &&
+                  !isStoreKeeper(),
               child: Material(
                 color: Colors.transparent,
                 child: Ink(

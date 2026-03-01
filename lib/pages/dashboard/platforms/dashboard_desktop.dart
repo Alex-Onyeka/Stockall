@@ -398,129 +398,123 @@ class _DashboardDesktopState
                                               SizedBox(
                                                 height: 10,
                                               ),
-                                              Row(
-                                                spacing: 15,
-                                                children: [
-                                                  Expanded(
-                                                    child: DashboardTotalSalesBanner(
-                                                      expenses:
-                                                          expensesLocal,
-                                                      userValue: returnReceiptProvider(
-                                                        context,
-                                                      ).getTotalRevenueForSelectedDay(
-                                                        returnReceiptProvider(
-                                                              context,
-                                                            ).receipts
-                                                            .where(
-                                                              (
-                                                                rec,
-                                                              ) =>
-                                                                  rec.staffId ==
-                                                                  userGeneral(
-                                                                    context,
-                                                                  ).userId,
-                                                            )
-                                                            .toList(),
-                                                        // returnReceiptProvider(
-                                                        //   context,
-                                                        // ).returnproductsRecordByDayOrWeek(
-                                                        //   context,
-                                                        //   returnReceiptProvider(
-                                                        //     context,
-                                                        //   ).produtRecordSalesMain,
-                                                        // ),
-                                                      ),
-                                                      currentUser: userGeneral(
-                                                        context,
-                                                      ),
-                                                      theme:
-                                                          theme,
-                                                      value: returnReceiptProvider(
-                                                        context,
-                                                      ).getTotalRevenueForSelectedDay(
-                                                        returnReceiptProvider(
+                                              Visibility(
+                                                visible:
+                                                    !isStoreKeeper(),
+                                                child: Row(
+                                                  spacing:
+                                                      15,
+                                                  children: [
+                                                    Expanded(
+                                                      child: DashboardTotalSalesBanner(
+                                                        expenses:
+                                                            expensesLocal,
+                                                        userValue: returnReceiptProvider(
                                                           context,
-                                                        ).receipts,
-                                                        // returnReceiptProvider(
-                                                        //   context,
-                                                        // ).produtRecordSalesMain,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Material(
-                                                    elevation:
-                                                        2,
-                                                    child: Ink(
-                                                      decoration: BoxDecoration(
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                            color: const Color.fromARGB(
-                                                              24,
-                                                              0,
-                                                              0,
-                                                              0,
-                                                            ),
-                                                            blurRadius:
-                                                                10,
-                                                          ),
-                                                        ],
-                                                        color:
-                                                            theme.lightModeColor.prColor300,
-                                                        borderRadius: BorderRadius.circular(
-                                                          10,
-                                                        ),
-                                                      ),
-                                                      child: InkWell(
-                                                        onTap: () {
-                                                          Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                              builder: (
+                                                        ).getTotalRevenueForSelectedDay(
+                                                          returnReceiptProvider(
                                                                 context,
-                                                              ) {
-                                                                return MakeSalesPage();
-                                                              },
+                                                              ).receipts
+                                                              .where(
+                                                                (
+                                                                  rec,
+                                                                ) =>
+                                                                    rec.staffId ==
+                                                                    userGeneral(
+                                                                      context,
+                                                                    ).userId,
+                                                              )
+                                                              .toList(),
+                                                        ),
+                                                        currentUser: userGeneral(
+                                                          context,
+                                                        ),
+                                                        theme:
+                                                            theme,
+                                                        value: returnReceiptProvider(
+                                                          context,
+                                                        ).getTotalRevenueForSelectedDay(
+                                                          returnReceiptProvider(
+                                                            context,
+                                                          ).receipts,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Material(
+                                                      elevation:
+                                                          2,
+                                                      child: Ink(
+                                                        decoration: BoxDecoration(
+                                                          boxShadow: [
+                                                            BoxShadow(
+                                                              color: const Color.fromARGB(
+                                                                24,
+                                                                0,
+                                                                0,
+                                                                0,
+                                                              ),
+                                                              blurRadius:
+                                                                  10,
                                                             ),
-                                                          );
-                                                        },
-                                                        child: Container(
-                                                          padding: EdgeInsets.symmetric(
-                                                            horizontal:
-                                                                30,
-                                                            vertical:
-                                                                48,
+                                                          ],
+                                                          color:
+                                                              theme.lightModeColor.prColor300,
+                                                          borderRadius: BorderRadius.circular(
+                                                            10,
                                                           ),
-                                                          child: Column(
-                                                            spacing:
-                                                                5,
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment.center,
-                                                            children: [
-                                                              SvgPicture.asset(
-                                                                plusIconSvg,
-                                                                color:
-                                                                    theme.lightModeColor.secColor200,
-                                                                height:
-                                                                    20,
+                                                        ),
+                                                        child: InkWell(
+                                                          onTap: () {
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder: (
+                                                                  context,
+                                                                ) {
+                                                                  return MakeSalesPage();
+                                                                },
                                                               ),
-                                                              Text(
-                                                                style: TextStyle(
+                                                            );
+                                                          },
+                                                          child: Container(
+                                                            padding: EdgeInsets.symmetric(
+                                                              horizontal:
+                                                                  30,
+                                                              vertical:
+                                                                  48,
+                                                            ),
+                                                            child: Column(
+                                                              spacing:
+                                                                  5,
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment.center,
+                                                              children: [
+                                                                SvgPicture.asset(
+                                                                  plusIconSvg,
                                                                   color:
-                                                                      Colors.white,
-                                                                  fontWeight:
-                                                                      FontWeight.bold,
-                                                                  fontSize:
-                                                                      theme.mobileTexts.b3.fontSize,
+                                                                      theme.lightModeColor.secColor200,
+                                                                  height:
+                                                                      20,
                                                                 ),
-                                                                'Make Sale',
-                                                              ),
-                                                            ],
+                                                                Text(
+                                                                  style: TextStyle(
+                                                                    color:
+                                                                        Colors.white,
+                                                                    fontWeight:
+                                                                        FontWeight.bold,
+                                                                    fontSize:
+                                                                        theme.mobileTexts.b3.fontSize,
+                                                                  ),
+                                                                  'Make Sale',
+                                                                ),
+                                                              ],
+                                                            ),
                                                           ),
                                                         ),
                                                       ),
                                                     ),
-                                                  ),
-                                                ],
+                                                  ],
+                                                ),
                                               ),
 
                                               SizedBox(
@@ -553,33 +547,77 @@ class _DashboardDesktopState
                                                       },
                                                     ),
                                                   ),
-                                                  Expanded(
-                                                    child: MainInfoTab(
+                                                  Visibility(
+                                                    visible:
+                                                        !isStoreKeeper(),
+                                                    child: Expanded(
+                                                      child: MainInfoTab(
+                                                        theme:
+                                                            theme,
+                                                        icon:
+                                                            productIconSvg,
+                                                        number:
+                                                            '${returnReceiptProvider(context).returnOwnReceiptsByDayOrWeek(receiptsLocal).length}',
+                                                        title:
+                                                            'Sales',
+                                                        action: () {
+                                                          returnNavProvider(
+                                                            context,
+                                                            listen:
+                                                                false,
+                                                          ).navigate(
+                                                            2,
+                                                          );
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Visibility(
+                                                    visible:
+                                                        isStoreKeeper(),
+                                                    child: ButtonTab(
                                                       theme:
                                                           theme,
                                                       icon:
-                                                          productIconSvg,
-                                                      number:
-                                                          '${returnReceiptProvider(context).returnOwnReceiptsByDayOrWeek(receiptsLocal).length}',
+                                                          reportIconSvg,
                                                       title:
-                                                          'Sales',
+                                                          'Report',
                                                       action: () {
                                                         returnNavProvider(
                                                           context,
                                                           listen:
                                                               false,
                                                         ).navigate(
-                                                          2,
+                                                          6,
                                                         );
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (
+                                                              context,
+                                                            ) {
+                                                              return ReportPage();
+                                                            },
+                                                          ),
+                                                        ).then((
+                                                          context,
+                                                        ) {
+                                                          setState(
+                                                            () {
+                                                              clearDate();
+                                                            },
+                                                          );
+                                                        });
                                                       },
                                                     ),
                                                   ),
                                                   Visibility(
                                                     visible:
                                                         screenWidth(
-                                                          context,
-                                                        ) >
-                                                        tabletScreen,
+                                                              context,
+                                                            ) >
+                                                            tabletScreen &&
+                                                        !isStoreKeeper(),
                                                     child: Expanded(
                                                       child: MainInfoTab(
                                                         theme:
@@ -625,48 +663,52 @@ class _DashboardDesktopState
                                                       ),
                                                     ),
                                                   ),
-                                                  Expanded(
-                                                    child: SubWrapper(
-                                                      isVisible:
-                                                          !SalesAuthAction().invoiceManagementAction(
-                                                            context:
-                                                                context,
-                                                          ),
-                                                      mainWidget: MainInfoTab(
-                                                        theme:
-                                                            theme,
-                                                        icon:
-                                                            productIconSvg,
-                                                        number:
-                                                            '${returnInvoicesProvider(context: context).returnInvoicesByDayOrWeekAll().length}',
-                                                        title:
-                                                            'Invoices',
-                                                        action: () {
-                                                          SalesAuthAction().invoiceManagementAction(
-                                                            context:
-                                                                context,
-                                                            action: () {
-                                                              returnNavProvider(
-                                                                context,
-                                                                listen:
-                                                                    false,
-                                                              ).navigate(
-                                                                5,
-                                                              );
+                                                  Visibility(
+                                                    visible:
+                                                        !isStoreKeeper(),
+                                                    child: Expanded(
+                                                      child: SubWrapper(
+                                                        isVisible:
+                                                            !SalesAuthAction().invoiceManagementAction(
+                                                              context:
+                                                                  context,
+                                                            ),
+                                                        mainWidget: MainInfoTab(
+                                                          theme:
+                                                              theme,
+                                                          icon:
+                                                              productIconSvg,
+                                                          number:
+                                                              '${returnInvoicesProvider(context: context).returnInvoicesByDayOrWeekAll().length}',
+                                                          title:
+                                                              'Invoices',
+                                                          action: () {
+                                                            SalesAuthAction().invoiceManagementAction(
+                                                              context:
+                                                                  context,
+                                                              action: () {
+                                                                returnNavProvider(
+                                                                  context,
+                                                                  listen:
+                                                                      false,
+                                                                ).navigate(
+                                                                  5,
+                                                                );
 
-                                                              Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                  builder: (
-                                                                    context,
-                                                                  ) {
-                                                                    return InvoiceListPage();
-                                                                  },
-                                                                ),
-                                                              );
-                                                            },
-                                                          );
-                                                        },
+                                                                Navigator.push(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                    builder: (
+                                                                      context,
+                                                                    ) {
+                                                                      return InvoiceListPage();
+                                                                    },
+                                                                  ),
+                                                                );
+                                                              },
+                                                            );
+                                                          },
+                                                        ),
                                                       ),
                                                     ),
                                                   ),
@@ -675,137 +717,90 @@ class _DashboardDesktopState
                                               SizedBox(
                                                 height: 20,
                                               ),
-                                              Column(
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              theme.mobileTexts.b1.fontSize,
-                                                          fontWeight:
-                                                              theme.mobileTexts.b1.fontWeightBold,
-                                                        ),
-                                                        'Quick Actions',
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  SizedBox(
-                                                    height:
-                                                        15,
-                                                  ),
-
-                                                  SizedBox(
-                                                    width:
-                                                        double.infinity,
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment.center,
-                                                      spacing:
-                                                          15,
+                                              Visibility(
+                                                visible:
+                                                    !isStoreKeeper(),
+                                                child: Column(
+                                                  children: [
+                                                    Row(
                                                       children: [
-                                                        Row(
-                                                          spacing:
-                                                              15,
-                                                          children: [
-                                                            ButtonTab(
-                                                              theme:
-                                                                  theme,
-                                                              icon:
-                                                                  productIconSvg,
-                                                              title:
-                                                                  'Items',
-                                                              action: () {
-                                                                returnNavProvider(
-                                                                  context,
-                                                                  listen:
-                                                                      false,
-                                                                ).navigate(
-                                                                  1,
-                                                                );
-                                                              },
-                                                            ),
-                                                            ButtonTab(
-                                                              theme:
-                                                                  theme,
-                                                              icon:
-                                                                  salesIconSvg,
-                                                              title:
-                                                                  'Sales',
-                                                              action: () {
-                                                                returnNavProvider(
-                                                                  context,
-                                                                  listen:
-                                                                      false,
-                                                                ).navigate(
-                                                                  2,
-                                                                );
-                                                              },
-                                                            ),
-                                                            ButtonTab(
-                                                              theme:
-                                                                  theme,
-                                                              icon:
-                                                                  reportIconSvg,
-                                                              title:
-                                                                  'Report',
-                                                              action: () {
-                                                                returnNavProvider(
-                                                                  context,
-                                                                  listen:
-                                                                      false,
-                                                                ).navigate(
-                                                                  6,
-                                                                );
-                                                                Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                    builder: (
-                                                                      context,
-                                                                    ) {
-                                                                      return ReportPage();
-                                                                    },
-                                                                  ),
-                                                                ).then(
-                                                                  (
-                                                                    context,
-                                                                  ) {
-                                                                    setState(
-                                                                      () {
-                                                                        clearDate();
-                                                                      },
-                                                                    );
-                                                                  },
-                                                                );
-                                                              },
-                                                            ),
-                                                          ],
+                                                        Text(
+                                                          style: TextStyle(
+                                                            fontSize:
+                                                                theme.mobileTexts.b1.fontSize,
+                                                            fontWeight:
+                                                                theme.mobileTexts.b1.fontWeightBold,
+                                                          ),
+                                                          'Quick Actions',
                                                         ),
-                                                        Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment.start,
-                                                          // spacing:
-                                                          //     15,
-                                                          children: [
-                                                            Visibility(
-                                                              visible: authorization(
-                                                                authorized:
-                                                                    Authorizations().employeePage,
-                                                              ),
-                                                              child: ButtonTab(
+                                                      ],
+                                                    ),
+                                                    SizedBox(
+                                                      height:
+                                                          15,
+                                                    ),
+
+                                                    SizedBox(
+                                                      width:
+                                                          double.infinity,
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment.center,
+                                                        spacing:
+                                                            15,
+                                                        children: [
+                                                          Row(
+                                                            spacing:
+                                                                15,
+                                                            children: [
+                                                              ButtonTab(
                                                                 theme:
                                                                     theme,
                                                                 icon:
-                                                                    employeesIconSvg,
+                                                                    productIconSvg,
                                                                 title:
-                                                                    'Employees',
+                                                                    'Items',
                                                                 action: () {
                                                                   returnNavProvider(
                                                                     context,
                                                                     listen:
                                                                         false,
                                                                   ).navigate(
-                                                                    7,
+                                                                    1,
+                                                                  );
+                                                                },
+                                                              ),
+                                                              ButtonTab(
+                                                                theme:
+                                                                    theme,
+                                                                icon:
+                                                                    salesIconSvg,
+                                                                title:
+                                                                    'Sales',
+                                                                action: () {
+                                                                  returnNavProvider(
+                                                                    context,
+                                                                    listen:
+                                                                        false,
+                                                                  ).navigate(
+                                                                    2,
+                                                                  );
+                                                                },
+                                                              ),
+                                                              ButtonTab(
+                                                                theme:
+                                                                    theme,
+                                                                icon:
+                                                                    reportIconSvg,
+                                                                title:
+                                                                    'Report',
+                                                                action: () {
+                                                                  returnNavProvider(
+                                                                    context,
+                                                                    listen:
+                                                                        false,
+                                                                  ).navigate(
+                                                                    6,
                                                                   );
                                                                   Navigator.push(
                                                                     context,
@@ -813,47 +808,49 @@ class _DashboardDesktopState
                                                                       builder: (
                                                                         context,
                                                                       ) {
-                                                                        return EmployeeListPage(
-                                                                          empId:
-                                                                              userGeneral(
-                                                                                context,
-                                                                              ).userId!,
-                                                                        );
+                                                                        return ReportPage();
                                                                       },
                                                                     ),
+                                                                  ).then(
+                                                                    (
+                                                                      context,
+                                                                    ) {
+                                                                      setState(
+                                                                        () {
+                                                                          clearDate();
+                                                                        },
+                                                                      );
+                                                                    },
                                                                   );
                                                                 },
                                                               ),
-                                                            ),
-                                                            Visibility(
-                                                              visible: authorization(
-                                                                authorized:
-                                                                    Authorizations().employeePage,
-                                                              ),
-                                                              child: SizedBox(
-                                                                width:
-                                                                    15,
-                                                              ),
-                                                            ),
-
-                                                            ButtonTab(
-                                                              theme:
-                                                                  theme,
-                                                              icon:
-                                                                  custBookIconSvg,
-                                                              title:
-                                                                  'Invoices',
-                                                              action: () {
-                                                                SalesAuthAction().invoiceManagementAction(
-                                                                  context:
-                                                                      context,
+                                                            ],
+                                                          ),
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment.start,
+                                                            // spacing:
+                                                            //     15,
+                                                            children: [
+                                                              Visibility(
+                                                                visible: authorization(
+                                                                  authorized:
+                                                                      Authorizations().employeePage,
+                                                                ),
+                                                                child: ButtonTab(
+                                                                  theme:
+                                                                      theme,
+                                                                  icon:
+                                                                      employeesIconSvg,
+                                                                  title:
+                                                                      'Employees',
                                                                   action: () {
                                                                     returnNavProvider(
                                                                       context,
                                                                       listen:
                                                                           false,
                                                                     ).navigate(
-                                                                      5,
+                                                                      7,
                                                                     );
                                                                     Navigator.push(
                                                                       context,
@@ -861,64 +858,113 @@ class _DashboardDesktopState
                                                                         builder: (
                                                                           context,
                                                                         ) {
-                                                                          return InvoiceListPage();
+                                                                          return EmployeeListPage(
+                                                                            empId:
+                                                                                userGeneral(
+                                                                                  context,
+                                                                                ).userId!,
+                                                                          );
                                                                         },
                                                                       ),
                                                                     );
                                                                   },
-                                                                );
-                                                              },
-                                                            ),
-                                                            SizedBox(
-                                                              width:
-                                                                  15,
-                                                            ),
-                                                            ButtonTab(
-                                                              theme:
-                                                                  theme,
-                                                              icon:
-                                                                  expensesIconSvg,
-                                                              title:
-                                                                  'Expenses',
-                                                              action: () async {
-                                                                returnNavProvider(
-                                                                  context,
-                                                                  listen:
-                                                                      false,
-                                                                ).navigate(
-                                                                  4,
-                                                                );
-                                                                Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                    builder: (
-                                                                      context,
-                                                                    ) {
-                                                                      return ExpensesPage(
-                                                                        isMain:
-                                                                            true,
+                                                                ),
+                                                              ),
+                                                              Visibility(
+                                                                visible: authorization(
+                                                                  authorized:
+                                                                      Authorizations().employeePage,
+                                                                ),
+                                                                child: SizedBox(
+                                                                  width:
+                                                                      15,
+                                                                ),
+                                                              ),
+
+                                                              ButtonTab(
+                                                                theme:
+                                                                    theme,
+                                                                icon:
+                                                                    custBookIconSvg,
+                                                                title:
+                                                                    'Invoices',
+                                                                action: () {
+                                                                  SalesAuthAction().invoiceManagementAction(
+                                                                    context:
+                                                                        context,
+                                                                    action: () {
+                                                                      returnNavProvider(
+                                                                        context,
+                                                                        listen:
+                                                                            false,
+                                                                      ).navigate(
+                                                                        5,
+                                                                      );
+                                                                      Navigator.push(
+                                                                        context,
+                                                                        MaterialPageRoute(
+                                                                          builder: (
+                                                                            context,
+                                                                          ) {
+                                                                            return InvoiceListPage();
+                                                                          },
+                                                                        ),
                                                                       );
                                                                     },
-                                                                  ),
-                                                                ).then(
-                                                                  (
+                                                                  );
+                                                                },
+                                                              ),
+                                                              SizedBox(
+                                                                width:
+                                                                    15,
+                                                              ),
+                                                              ButtonTab(
+                                                                theme:
+                                                                    theme,
+                                                                icon:
+                                                                    expensesIconSvg,
+                                                                title:
+                                                                    'Expenses',
+                                                                action: () async {
+                                                                  returnNavProvider(
                                                                     context,
-                                                                  ) {
-                                                                    setState(
-                                                                      () {
-                                                                        clearDate();
+                                                                    listen:
+                                                                        false,
+                                                                  ).navigate(
+                                                                    4,
+                                                                  );
+                                                                  Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                      builder: (
+                                                                        context,
+                                                                      ) {
+                                                                        return ExpensesPage(
+                                                                          isMain:
+                                                                              true,
+                                                                        );
                                                                       },
-                                                                    );
-                                                                  },
-                                                                );
-                                                              },
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ],
+                                                                    ),
+                                                                  ).then(
+                                                                    (
+                                                                      context,
+                                                                    ) {
+                                                                      setState(
+                                                                        () {
+                                                                          clearDate();
+                                                                        },
+                                                                      );
+                                                                    },
+                                                                  );
+                                                                },
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
-                                                  ),
-                                                ],
+                                                  ],
+                                                ),
                                               ),
                                               SizedBox(
                                                 height: 30,

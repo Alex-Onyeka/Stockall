@@ -11,7 +11,8 @@ class MultiDisplayProvider extends ChangeNotifier {
   factory MultiDisplayProvider() => _instance;
   MultiDisplayProvider._internal();
   Future<bool> isAllowed() async {
-    if (returnShopProvider().isDesktop()) {
+    if (returnShopProvider().isDesktop() &&
+        currentUser().role != 'Store Keeper') {
       var screen = await getAltDisplay();
       if (screen == null) {
         return false;

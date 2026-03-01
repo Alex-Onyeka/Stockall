@@ -157,45 +157,53 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                   Column(
                                     spacing: 10,
                                     children: [
-                                      ReportListTile(
-                                        isActive: true,
-                                        theme: theme,
-                                        action: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (
-                                                context,
-                                              ) {
-                                                return GeneralReportPage();
-                                              },
-                                            ),
-                                          );
-                                        },
-                                        subText:
-                                            'View a Summary of your business Report',
-                                        title:
-                                            'General Overview',
+                                      Visibility(
+                                        visible:
+                                            !isStoreKeeper(),
+                                        child: ReportListTile(
+                                          isActive: true,
+                                          theme: theme,
+                                          action: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  return GeneralReportPage();
+                                                },
+                                              ),
+                                            );
+                                          },
+                                          subText:
+                                              'View a Summary of your business Report',
+                                          title:
+                                              'General Overview',
+                                        ),
                                       ),
-                                      ReportListTile(
-                                        isActive: true,
-                                        theme: theme,
-                                        action: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (
-                                                context,
-                                              ) {
-                                                return SalesAndRevenueReport();
-                                              },
-                                            ),
-                                          );
-                                        },
-                                        subText:
-                                            'View a breakdown of your Sales, revenue and Profit',
-                                        title:
-                                            'Sales and Revenue',
+                                      Visibility(
+                                        visible:
+                                            !isStoreKeeper(),
+                                        child: ReportListTile(
+                                          isActive: true,
+                                          theme: theme,
+                                          action: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  return SalesAndRevenueReport();
+                                                },
+                                              ),
+                                            );
+                                          },
+                                          subText:
+                                              'View a breakdown of your Sales, revenue and Profit',
+                                          title:
+                                              'Sales and Revenue',
+                                        ),
                                       ),
                                       ReportListTile(
                                         isActive: true,
@@ -217,44 +225,53 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                         title:
                                             'Items Report',
                                       ),
-                                      ReportListTile(
-                                        isActive: true,
-                                        theme: theme,
-                                        action: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (
-                                                context,
-                                              ) {
-                                                return CustomerReportPage();
-                                              },
-                                            ),
-                                          );
-                                        },
-                                        subText:
-                                            'View a detailed summary of your customers purchases.',
-                                        title:
-                                            'Customer Report',
+                                      Visibility(
+                                        visible:
+                                            !isStoreKeeper(),
+                                        child: ReportListTile(
+                                          isActive: true,
+                                          theme: theme,
+                                          action: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  return CustomerReportPage();
+                                                },
+                                              ),
+                                            );
+                                          },
+                                          subText:
+                                              'View a detailed summary of your customers purchases.',
+                                          title:
+                                              'Customer Report',
+                                        ),
                                       ),
-                                      ReportListTile(
-                                        isActive: true,
-                                        theme: theme,
-                                        action: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (
-                                                context,
-                                              ) {
-                                                return EventsLog();
-                                              },
-                                            ),
-                                          );
-                                        },
-                                        subText:
-                                            'View A List of all events.',
-                                        title: 'Events Log',
+                                      Visibility(
+                                        visible:
+                                            !isStoreKeeper(),
+                                        child: ReportListTile(
+                                          isActive: true,
+                                          theme: theme,
+                                          action: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  return EventsLog();
+                                                },
+                                              ),
+                                            );
+                                          },
+                                          subText:
+                                              'View A List of all events.',
+                                          title:
+                                              'Events Log',
+                                        ),
                                       ),
                                       ReportListTile(
                                         isActive: false,

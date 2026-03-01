@@ -200,11 +200,7 @@ class _ProductDetailsDesktopState
                         context: context,
                         title: 'Item Details',
                         widget: Visibility(
-                          visible: authorization(
-                            authorized:
-                                Authorizations()
-                                    .updateProduct,
-                          ),
+                          visible: !isStoreKeeper(),
                           child: InkWell(
                             onTap: () {
                               var safeContext = context;

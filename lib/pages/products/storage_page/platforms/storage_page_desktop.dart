@@ -257,6 +257,11 @@ class StoragePageDesktopState
                               ),
                             ),
                             PopupMenuItem(
+                              enabled: authorization(
+                                authorized:
+                                    Authorizations()
+                                        .viewAllTransactionRecords,
+                              ),
                               onTap: () {
                                 setState(() {
                                   sortIndex = 2;
@@ -511,118 +516,119 @@ class StoragePageDesktopState
                               return SizedBox(
                                 child: Column(
                                   children: [
-                                    Container(
-                                      width:
-                                          double.infinity,
-                                      height: 1.5,
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade200,
+                                    Visibility(
+                                      visible:
+                                          !isStoreKeeper(),
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                            width:
+                                                double
+                                                    .infinity,
+                                            height: 1.5,
+                                            color:
+                                                Colors
+                                                    .grey
+                                                    .shade200,
+                                          ),
+                                          SizedBox(
+                                            height: 15,
+                                          ),
+                                          Column(
+                                            children: [
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .center,
+                                                children: [
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          theme.mobileTexts.b2.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    'Finance',
+                                                  ),
+                                                ],
+                                              ),
+                                              SizedBox(
+                                                height: 8,
+                                              ),
+                                              Row(
+                                                spacing: 10,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .center,
+                                                children: [
+                                                  Expanded(
+                                                    child: TabContainer(
+                                                      priceTextSize:
+                                                          theme.mobileTexts.h3.fontSize,
+                                                      isMoney:
+                                                          true,
+                                                      text:
+                                                          'Total Cost Value',
+                                                      price:
+                                                          returnData(
+                                                            context:
+                                                                context,
+                                                          ).getTotalCostPrice(),
+                                                      theme:
+                                                          theme,
+                                                      backGround: const Color.fromARGB(
+                                                        11,
+                                                        15,
+                                                        4,
+                                                        114,
+                                                      ),
+                                                      border: const Color.fromARGB(
+                                                        32,
+                                                        45,
+                                                        3,
+                                                        255,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Expanded(
+                                                    child: TabContainer(
+                                                      priceTextSize:
+                                                          theme.mobileTexts.h3.fontSize,
+                                                      isMoney:
+                                                          true,
+                                                      text:
+                                                          'Total Selling Value',
+                                                      price:
+                                                          returnData(
+                                                            context:
+                                                                context,
+                                                          ).getTotalSellingPrice(),
+                                                      theme:
+                                                          theme,
+                                                      backGround: const Color.fromARGB(
+                                                        18,
+                                                        2,
+                                                        163,
+                                                        31,
+                                                      ),
+                                                      border: const Color.fromARGB(
+                                                        63,
+                                                        2,
+                                                        163,
+                                                        31,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: 20,
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                    SizedBox(height: 15),
-                                    Column(
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .center,
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    theme
-                                                        .mobileTexts
-                                                        .b2
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              'Finance',
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(height: 8),
-                                        Row(
-                                          spacing: 10,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .center,
-                                          children: [
-                                            Expanded(
-                                              child: TabContainer(
-                                                priceTextSize:
-                                                    theme
-                                                        .mobileTexts
-                                                        .h3
-                                                        .fontSize,
-                                                isMoney:
-                                                    true,
-                                                text:
-                                                    'Total Cost Value',
-                                                price:
-                                                    returnData(
-                                                      context:
-                                                          context,
-                                                    ).getTotalCostPrice(),
-                                                theme:
-                                                    theme,
-                                                backGround:
-                                                    const Color.fromARGB(
-                                                      11,
-                                                      15,
-                                                      4,
-                                                      114,
-                                                    ),
-                                                border:
-                                                    const Color.fromARGB(
-                                                      32,
-                                                      45,
-                                                      3,
-                                                      255,
-                                                    ),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: TabContainer(
-                                                priceTextSize:
-                                                    theme
-                                                        .mobileTexts
-                                                        .h3
-                                                        .fontSize,
-                                                isMoney:
-                                                    true,
-                                                text:
-                                                    'Total Selling Value',
-                                                price:
-                                                    returnData(
-                                                      context:
-                                                          context,
-                                                    ).getTotalSellingPrice(),
-                                                theme:
-                                                    theme,
-                                                backGround:
-                                                    const Color.fromARGB(
-                                                      18,
-                                                      2,
-                                                      163,
-                                                      31,
-                                                    ),
-                                                border:
-                                                    const Color.fromARGB(
-                                                      63,
-                                                      2,
-                                                      163,
-                                                      31,
-                                                    ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 20),
                                     Container(
                                       width:
                                           double.infinity,

@@ -185,6 +185,7 @@ List<Map<String, dynamic>> employees = [
       'Notifications Page',
       'Delete Expenses',
       'Generate Barcode',
+      'View Date',
     ],
   },
   {
@@ -211,6 +212,19 @@ List<Map<String, dynamic>> employees = [
       'Add Expenses',
       'Update Expenses',
       'Update Sales',
+    ],
+  },
+  {
+    'position': 'Store Keeper',
+    'auths': [
+      'Manage Invetory Storage',
+      'Add Items',
+      'Update Items',
+      'Delete Items',
+      'General Discount',
+      'Generate Barcode',
+      'View Items Summary',
+      'View All Transaction Records',
     ],
   },
 ];

@@ -264,165 +264,118 @@ class _MyDrawerWidgetDesktopMainState
                                 title: 'Items',
                                 icon: Icons.book,
                               ),
-                              NavListTileDesktopAlt(
-                                itemIndex: 2,
-                                height: 16,
-                                action: () {
-                                  var safeContext = context;
-                                  returnNavProvider(
-                                    safeContext,
-                                    listen: false,
-                                  ).navigate(2);
-                                  if (Navigator.of(
-                                    context,
-                                  ).canPop()) {
-                                    Navigator.pushAndRemoveUntil(
+                              Visibility(
+                                visible: !isStoreKeeper(),
+                                child: NavListTileDesktopAlt(
+                                  itemIndex: 2,
+                                  height: 16,
+                                  action: () {
+                                    var safeContext =
+                                        context;
+                                    returnNavProvider(
+                                      safeContext,
+                                      listen: false,
+                                    ).navigate(2);
+                                    if (Navigator.of(
+                                      context,
+                                    ).canPop()) {
+                                      Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return Home();
+                                          },
+                                        ),
+                                        (route) {
+                                          return false;
+                                        },
+                                      );
+                                    }
+                                    returnExpensesProvider(
+                                      safeContext,
+                                      listen: false,
+                                    ).clearExpenseDate();
+                                    returnReceiptProvider(
+                                      safeContext,
+                                      listen: false,
+                                    ).clearReceiptDate();
+                                    returnData()
+                                        .clearFields();
+                                  },
+                                  title: 'Sales',
+                                  icon:
+                                      Icons
+                                          .menu_book_rounded,
+                                ),
+                              ),
+                              Visibility(
+                                visible: !isStoreKeeper(),
+                                child: NavListTileDesktopAlt(
+                                  itemIndex: 3,
+                                  height: 14,
+                                  action: () {
+                                    Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) {
-                                          return Home();
+                                          return CustomerList();
                                         },
                                       ),
-                                      (route) {
-                                        return false;
-                                      },
                                     );
-                                  }
-                                  returnExpensesProvider(
-                                    safeContext,
-                                    listen: false,
-                                  ).clearExpenseDate();
-                                  returnReceiptProvider(
-                                    safeContext,
-                                    listen: false,
-                                  ).clearReceiptDate();
-                                  returnData()
-                                      .clearFields();
-                                },
-                                title: 'Sales',
-                                icon:
-                                    Icons.menu_book_rounded,
+                                  },
+                                  title: 'Customers',
+                                  svg: custBookIconSvg,
+                                ),
                               ),
-                              // NavListTileDesktopAlt(
-                              //   height: 18,
-                              //   action: () {
-                              //     returnNavProvider(
-                              //       context,
-                              //       listen: false,
-                              //     ).navigate(3);
-                              //     Navigator.push(
-                              //       context,
-                              //       MaterialPageRoute(
-                              //         builder: (context) {
-                              //           return ProfilePage();
-                              //         },
-                              //       ),
-                              //     );
-                              //   },
-                              //   title: 'Profile',
-                              //   icon: Icons.person,
-                              // ),
-                              // Visibility(
-                              //   visible: authorization(
-                              //     authorized:
-                              //         Authorizations()
-                              //             .manageShop,
-                              //     context: context,
-                              //   ),
-                              //   child: NavListTileDesktopAlt(
-                              //     height: 18,
-                              //     action: () {
-                              //       Navigator.push(
-                              //         context,
-                              //         MaterialPageRoute(
-                              //           builder: (
-                              //             context,
-                              //           ) {
-                              //             return ShopPage();
-                              //           },
-                              //         ),
-                              //       );
-                              //     },
-                              //     title: 'Manage Shop',
-                              //     icon: Icons.home_filled,
-                              //   ),
-                              // ),
-                              // NavListTileDesktop(
-                              //   thisIndex: 0,
-                              //   title: 'Home',
-                              //   icon: Icons.home_rounded,
-                              // ),
-                              // NavListTileDesktop(
-                              //   thisIndex: 1,
-                              //   title: 'Products',
-                              //   // icon: Icons.home_rounded,
-                              //   svg: productIconSvg,
-                              //   height: 16,
-                              // ),
-                              // NavListTileDesktop(
-                              //   thisIndex: 2,
-                              //   title: 'Sales',
-                              //   // icon: Icons.home_rounded,
-                              //   svg: salesIconSvg,
-                              //   height: 16,
-                              // ),
-                              NavListTileDesktopAlt(
-                                itemIndex: 3,
-                                height: 14,
-                                action: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return CustomerList();
-                                      },
-                                    ),
-                                  );
-                                },
-                                title: 'Customers',
-                                svg: custBookIconSvg,
+                              Visibility(
+                                visible: !isStoreKeeper(),
+                                child: NavListTileDesktopAlt(
+                                  itemIndex: 4,
+                                  height: 14,
+                                  action: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return ExpensesPage(
+                                            isMain: true,
+                                            turnOnBackNavButton:
+                                                false,
+                                          );
+                                        },
+                                      ),
+                                    ).then((_) {
+                                      setState(() {});
+                                    });
+                                  },
+                                  title: 'Expenses',
+                                  svg: expensesIconSvg,
+                                ),
                               ),
-                              NavListTileDesktopAlt(
-                                itemIndex: 4,
-                                height: 14,
-                                action: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return ExpensesPage(
-                                          isMain: true,
-                                          turnOnBackNavButton:
-                                              false,
-                                        );
-                                      },
-                                    ),
-                                  ).then((_) {
-                                    setState(() {});
-                                  });
-                                },
-                                title: 'Expenses',
-                                svg: expensesIconSvg,
-                              ),
-                              NavListTileDesktopAlt(
-                                itemIndex: 5,
-                                height: 14,
-                                action: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return InvoiceListPage();
-                                      },
-                                    ),
-                                  ).then((_) {
-                                    setState(() {});
-                                  });
-                                },
-                                title: 'Invoices',
-                                icon:
-                                    Icons
-                                        .all_inclusive_sharp,
+                              Visibility(
+                                visible: !isStoreKeeper(),
+                                child: NavListTileDesktopAlt(
+                                  itemIndex: 5,
+                                  height: 14,
+                                  action: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return InvoiceListPage();
+                                        },
+                                      ),
+                                    ).then((_) {
+                                      setState(() {});
+                                    });
+                                  },
+                                  title: 'Invoices',
+                                  icon:
+                                      Icons
+                                          .all_inclusive_sharp,
+                                ),
                               ),
                               NavListTileDesktopAlt(
                                 itemIndex: 6,
@@ -478,256 +431,242 @@ class _MyDrawerWidgetDesktopMainState
                                         : 20,
                                 color: Colors.grey.shade200,
                               ),
-                              InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return NotificationsPage(
-                                          turnOn: false,
-                                        );
-                                      },
-                                    ),
-                                  );
-                                },
-                                child: Visibility(
-                                  visible: true,
-                                  child: Container(
-                                    color:
-                                        returnNavProvider(
-                                                  context,
-                                                ).currentIndex ==
-                                                8
-                                            ? const Color.fromARGB(
-                                              36,
-                                              255,
-                                              153,
-                                              0,
-                                            )
-                                            : Colors
-                                                .transparent,
-                                    height: 40,
-                                    child: Padding(
-                                      padding:
-                                          const EdgeInsets.only(
-                                            left: 10.0,
-                                          ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment
-                                                .spaceBetween,
-                                        children: [
-                                          Row(
-                                            spacing: 10,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .start,
-                                            children: [
-                                              Stack(
-                                                children: [
-                                                  Icon(
+                              Visibility(
+                                visible: !isStoreKeeper(),
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return NotificationsPage(
+                                            turnOn: false,
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
+                                  child: Visibility(
+                                    visible: true,
+                                    child: Container(
+                                      color:
+                                          returnNavProvider(
+                                                    context,
+                                                  ).currentIndex ==
+                                                  8
+                                              ? const Color.fromARGB(
+                                                36,
+                                                255,
+                                                153,
+                                                0,
+                                              )
+                                              : Colors
+                                                  .transparent,
+                                      height: 40,
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(
+                                              left: 10.0,
+                                            ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment
+                                                  .spaceBetween,
+                                          children: [
+                                            Row(
+                                              spacing: 10,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .start,
+                                              children: [
+                                                Stack(
+                                                  children: [
+                                                    Icon(
+                                                      color:
+                                                          returnNavProvider(
+                                                                    context,
+                                                                  ).currentIndex ==
+                                                                  8
+                                                              ? Colors.grey.shade900
+                                                              : Colors.grey.shade400,
+                                                      size:
+                                                          20,
+                                                      Icons
+                                                          .notifications_on_outlined,
+                                                    ),
+                                                  ],
+                                                ),
+
+                                                Text(
+                                                  style: TextStyle(
                                                     color:
+                                                        Colors.grey.shade900,
+                                                    fontSize:
+                                                        returnTheme(
+                                                          context,
+                                                          listen:
+                                                              false,
+                                                        ).mobileTexts.b2.fontSize,
+                                                    fontWeight:
                                                         returnNavProvider(
                                                                   context,
                                                                 ).currentIndex ==
                                                                 8
-                                                            ? Colors.grey.shade900
-                                                            : Colors.grey.shade400,
-                                                    size:
-                                                        20,
-                                                    Icons
-                                                        .notifications_on_outlined,
+                                                            ? FontWeight.bold
+                                                            : FontWeight.normal,
                                                   ),
-                                                ],
-                                              ),
-
-                                              Text(
-                                                style: TextStyle(
-                                                  color:
-                                                      Colors
-                                                          .grey
-                                                          .shade900,
-                                                  fontSize:
-                                                      returnTheme(
-                                                        context,
-                                                        listen:
-                                                            false,
-                                                      ).mobileTexts.b2.fontSize,
-                                                  fontWeight:
-                                                      returnNavProvider(context).currentIndex ==
-                                                              8
-                                                          ? FontWeight.bold
-                                                          : FontWeight.normal,
+                                                  'Notifications',
                                                 ),
-                                                'Notifications',
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            // spacing: 15,
-                                            children: [
-                                              Stack(
-                                                clipBehavior:
-                                                    Clip.none,
-                                                children: [
-                                                  InkWell(
-                                                    onTap: () {
-                                                      Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                          builder: (
-                                                            context,
-                                                          ) {
-                                                            return NotificationsPage(
-                                                              turnOn:
-                                                                  false,
-                                                            );
-                                                          },
-                                                        ),
-                                                      );
-                                                    },
-                                                    child: Container(
-                                                      padding: EdgeInsets.all(
-                                                        10,
-                                                      ),
-                                                      decoration: BoxDecoration(
-                                                        color: const Color.fromARGB(
-                                                          208,
-                                                          245,
-                                                          245,
-                                                          245,
-                                                        ),
-                                                        shape:
-                                                            BoxShape.circle,
-                                                      ),
-                                                      child: SvgPicture.asset(
-                                                        height:
-                                                            23,
-                                                        width:
-                                                            23,
-                                                        notifIconSvg,
-                                                        color:
-                                                            widget.notifications
-                                                                    .where(
-                                                                      (
-                                                                        notif,
-                                                                      ) =>
-                                                                          !notif.isViewed,
-                                                                    )
-                                                                    .isNotEmpty
-                                                                ? null
-                                                                : Colors.grey.shade500,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Positioned(
-                                                    bottom:
-                                                        18,
-                                                    left:
-                                                        26,
-                                                    child: Visibility(
-                                                      visible:
-                                                          widget.notifications
-                                                              .where(
-                                                                (
-                                                                  notif,
-                                                                ) =>
-                                                                    !notif.isViewed,
-                                                              )
-                                                              .isNotEmpty,
+                                              ],
+                                            ),
+                                            Row(
+                                              // spacing: 15,
+                                              children: [
+                                                Stack(
+                                                  clipBehavior:
+                                                      Clip.none,
+                                                  children: [
+                                                    InkWell(
+                                                      onTap: () {
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (
+                                                              context,
+                                                            ) {
+                                                              return NotificationsPage(
+                                                                turnOn:
+                                                                    false,
+                                                              );
+                                                            },
+                                                          ),
+                                                        );
+                                                      },
                                                       child: Container(
                                                         padding: EdgeInsets.all(
-                                                          6,
+                                                          10,
                                                         ),
                                                         decoration: BoxDecoration(
+                                                          color: const Color.fromARGB(
+                                                            208,
+                                                            245,
+                                                            245,
+                                                            245,
+                                                          ),
                                                           shape:
                                                               BoxShape.circle,
-                                                          gradient:
-                                                              widget.theme.lightModeColor.secGradient,
                                                         ),
-                                                        child: Center(
-                                                          child: Text(
-                                                            style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight.bold,
-                                                              fontSize:
-                                                                  10,
-                                                              color:
-                                                                  Colors.white,
+                                                        child: SvgPicture.asset(
+                                                          height:
+                                                              23,
+                                                          width:
+                                                              23,
+                                                          notifIconSvg,
+                                                          color:
+                                                              widget.notifications
+                                                                      .where(
+                                                                        (
+                                                                          notif,
+                                                                        ) =>
+                                                                            !notif.isViewed,
+                                                                      )
+                                                                      .isNotEmpty
+                                                                  ? null
+                                                                  : Colors.grey.shade500,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Positioned(
+                                                      bottom:
+                                                          18,
+                                                      left:
+                                                          26,
+                                                      child: Visibility(
+                                                        visible:
+                                                            widget.notifications
+                                                                .where(
+                                                                  (
+                                                                    notif,
+                                                                  ) =>
+                                                                      !notif.isViewed,
+                                                                )
+                                                                .isNotEmpty,
+                                                        child: Container(
+                                                          padding: EdgeInsets.all(
+                                                            6,
+                                                          ),
+                                                          decoration: BoxDecoration(
+                                                            shape:
+                                                                BoxShape.circle,
+                                                            gradient:
+                                                                widget.theme.lightModeColor.secGradient,
+                                                          ),
+                                                          child: Center(
+                                                            child: Text(
+                                                              style: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight.bold,
+                                                                fontSize:
+                                                                    10,
+                                                                color:
+                                                                    Colors.white,
+                                                              ),
+                                                              '${widget.notifications.where((notif) => !notif.isViewed).length}',
                                                             ),
-                                                            '${widget.notifications.where((notif) => !notif.isViewed).length}',
                                                           ),
                                                         ),
                                                       ),
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Visibility(
-                                                visible:
-                                                    returnNavProvider(
-                                                      context,
-                                                    ).currentIndex ==
-                                                    8,
-                                                child:
-                                                    SizedBox(
-                                                      width:
-                                                          15,
-                                                    ),
-                                              ),
-                                              Visibility(
-                                                visible:
-                                                    returnNavProvider(
-                                                      context,
-                                                    ).currentIndex ==
-                                                    8,
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.fromLTRB(
-                                                        0,
-                                                        5,
-                                                        0,
-                                                        5,
-                                                      ),
-                                                  child: Container(
+                                                  ],
+                                                ),
+                                                Visibility(
+                                                  visible:
+                                                      returnNavProvider(
+                                                        context,
+                                                      ).currentIndex ==
+                                                      8,
+                                                  child: SizedBox(
                                                     width:
-                                                        4,
-                                                    decoration: BoxDecoration(
-                                                      color:
-                                                          widget.theme.lightModeColor.secColor200,
-                                                      borderRadius: BorderRadius.circular(
-                                                        20,
+                                                        15,
+                                                  ),
+                                                ),
+                                                Visibility(
+                                                  visible:
+                                                      returnNavProvider(
+                                                        context,
+                                                      ).currentIndex ==
+                                                      8,
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.fromLTRB(
+                                                          0,
+                                                          5,
+                                                          0,
+                                                          5,
+                                                        ),
+                                                    child: Container(
+                                                      width:
+                                                          4,
+                                                      decoration: BoxDecoration(
+                                                        color:
+                                                            widget.theme.lightModeColor.secColor200,
+                                                        borderRadius: BorderRadius.circular(
+                                                          20,
+                                                        ),
                                                       ),
                                                     ),
                                                   ),
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
                               ),
 
-                              Visibility(
-                                visible: false,
-                                child: NavListTileDesktopAlt(
-                                  height: 18,
-                                  action: () async {
-                                    await launchUrlMain(
-                                      "https://stockallsolution.com/privacy-policy",
-                                    );
-                                  },
-                                  title:
-                                      'Privacy P. & Terms/C.',
-                                  icon:
-                                      Icons
-                                          .menu_book_rounded,
-                                ),
-                              ),
                               NavListTileDesktopAlt(
                                 itemIndex: 9,
                                 height: 18,
@@ -757,16 +696,6 @@ class _MyDrawerWidgetDesktopMainState
                                       },
                                     ),
                                   );
-                                  // .then((_) {
-                                  //   if (screenWidth(
-                                  //         context,
-                                  //       ) <
-                                  //       2000) {
-                                  //     Navigator.of(
-                                  //       context,
-                                  //     ).pop();
-                                  //   }
-                                  // });
                                 },
                                 title: 'General Settings',
                                 icon: Icons.settings,
@@ -825,24 +754,6 @@ class _MyDrawerWidgetDesktopMainState
                                           .download_outlined,
                                 ),
                               ),
-
-                              // NavListTileDesktopAlt(
-                              //   height: 20,
-                              //   action: () {
-                              //     Navigator.push(
-                              //       context,
-                              //       MaterialPageRoute(
-                              //         builder: (context) {
-                              //           return Referrals();
-                              //         },
-                              //       ),
-                              //     );
-                              //   },
-                              //   title: 'Referrals',
-                              //   icon:
-                              //       Icons
-                              //           .card_giftcard_rounded,
-                              // ),
                               SizedBox(height: 20),
                             ],
                           ),

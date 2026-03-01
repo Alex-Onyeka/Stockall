@@ -53,16 +53,22 @@ class MainBottomNav extends StatelessWidget {
                   title: 'Items',
                 ),
               ),
-              SizedBox(width: 90),
-              Expanded(
-                child: NavButton(
-                  currentPage:
-                      Provider.of<NavProvider>(
-                        context,
-                      ).currentPage,
-                  index: 2,
-                  icon: Icons.menu_book_rounded,
-                  title: 'Sales',
+              Visibility(
+                visible: !isStoreKeeper(),
+                child: SizedBox(width: 90),
+              ),
+              Visibility(
+                visible: !isStoreKeeper(),
+                child: Expanded(
+                  child: NavButton(
+                    currentPage:
+                        Provider.of<NavProvider>(
+                          context,
+                        ).currentPage,
+                    index: 2,
+                    icon: Icons.menu_book_rounded,
+                    title: 'Sales',
+                  ),
                 ),
               ),
               Expanded(
@@ -144,16 +150,30 @@ class MainBottomNav extends StatelessWidget {
             ],
           ),
         ),
-        InkWell(
-          onTap: () {
-            if (returnNavProvider(
-                  context,
-                  listen: false,
-                ).currentPage ==
-                1) {
-              if (!authorization(
-                authorized: Authorizations().addProduct,
-              )) {
+        Visibility(
+          visible: !isStoreKeeper(),
+          child: InkWell(
+            onTap: () {
+              if (returnNavProvider(
+                    context,
+                    listen: false,
+                  ).currentPage ==
+                  1) {
+                if (!authorization(
+                  authorized: Authorizations().addProduct,
+                )) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return MakeSalesPage();
+                      },
+                    ),
+                  );
+                } else {
+                  action!();
+                }
+              } else {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -162,117 +182,106 @@ class MainBottomNav extends StatelessWidget {
                     },
                   ),
                 );
-              } else {
-                action!();
               }
-            } else {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return MakeSalesPage();
-                  },
-                ),
-              );
-            }
-            if (context.mounted) {
-              returnReceiptProvider(
-                context,
-                listen: false,
-              ).clearReceiptDate();
-            } else {
-              print("Context not Mounted");
-            }
-          },
-          child: Stack(
-            children: [
-              Visibility(
-                visible:
-                    returnNavProvider(
-                          context,
-                          listen: false,
-                        ).currentPage ==
-                        1 &&
-                    authorization(
-                      authorized:
-                          Authorizations().addProduct,
-                    ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [],
-                        border: Border.all(
+              if (context.mounted) {
+                returnReceiptProvider(
+                  context,
+                  listen: false,
+                ).clearReceiptDate();
+              } else {
+                print("Context not Mounted");
+              }
+            },
+            child: Stack(
+              children: [
+                Visibility(
+                  visible:
+                      returnNavProvider(
+                            context,
+                            listen: false,
+                          ).currentPage ==
+                          1 &&
+                      authorization(
+                        authorized:
+                            Authorizations().addProduct,
+                      ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          boxShadow: [],
+                          border: Border.all(
+                            color:
+                                returnTheme(
+                                  context,
+                                ).lightModeColor.prColor300,
+                          ),
+                        ),
+                        child: SvgPicture.asset(
+                          plusIconSvg,
+                          height: 23,
                           color:
                               returnTheme(
                                 context,
                               ).lightModeColor.prColor300,
                         ),
                       ),
-                      child: SvgPicture.asset(
-                        plusIconSvg,
-                        height: 23,
-                        color:
-                            returnTheme(
-                              context,
-                            ).lightModeColor.prColor300,
-                      ),
-                    ),
-                    SizedBox(height: 5),
-                    Text(
-                      style: TextStyle(
-                        color: const Color.fromARGB(
-                          255,
-                          4,
-                          49,
-                          199,
+                      SizedBox(height: 5),
+                      Text(
+                        style: TextStyle(
+                          color: const Color.fromARGB(
+                            255,
+                            4,
+                            49,
+                            199,
+                          ),
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
                         ),
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
+                        'Add Item',
                       ),
-                      'Add Item',
-                    ),
-                    SizedBox(height: 5),
-                  ],
+                      SizedBox(height: 5),
+                    ],
+                  ),
                 ),
-              ),
-              Visibility(
-                visible:
-                    returnNavProvider(
-                          context,
-                          listen: false,
-                        ).currentPage !=
-                        1 ||
-                    !authorization(
-                      authorized:
-                          Authorizations().addProduct,
-                    ),
-                child: Column(
-                  spacing: 3,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SvgPicture.asset(makeSalesIconSvg),
-                    Text(
-                      style: TextStyle(
-                        color: const Color.fromARGB(
-                          255,
-                          4,
-                          49,
-                          199,
+                Visibility(
+                  visible:
+                      returnNavProvider(
+                            context,
+                            listen: false,
+                          ).currentPage !=
+                          1 ||
+                      !authorization(
+                        authorized:
+                            Authorizations().addProduct,
+                      ),
+                  child: Column(
+                    spacing: 3,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SvgPicture.asset(makeSalesIconSvg),
+                      Text(
+                        style: TextStyle(
+                          color: const Color.fromARGB(
+                            255,
+                            4,
+                            49,
+                            199,
+                          ),
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
                         ),
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
+                        'Make Sale',
                       ),
-                      'Make Sale',
-                    ),
-                    SizedBox(height: 5),
-                  ],
+                      SizedBox(height: 5),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/authentication/translations/general.dart';
@@ -33,6 +34,15 @@ class _BasePageState extends State<BasePage> {
     });
   }
 
+  Future<TempUserClass?> getUser() async {
+    var user = await returnUserProvider(
+      context,
+      listen: false,
+    ).fetchCurrentUser(context);
+    print(user?.email);
+    return user;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -42,6 +52,10 @@ class _BasePageState extends State<BasePage> {
         context,
         listen: false,
       ).setVisible();
+      if (returnUserProviderSingle().currentUserMain ==
+          null) {
+        await getUser();
+      }
       getUserAuthId();
       if (returnSalesProvider().cartQueue.isEmpty) {
         var cartId = returnSalesProvider().initCart();

@@ -145,39 +145,23 @@ class _MyDrawerWidgetMobileState
                                 icon: Icons.home_filled,
                               ),
                             ),
-                            // NavListTile(
-                            //   thisIndex: 0,
-                            //   title: 'Home',
-                            //   icon: Icons.home_rounded,
-                            // ),
-                            // NavListTile(
-                            //   thisIndex: 1,
-                            //   title: 'Products',
-                            //   // icon: Icons.home_rounded,
-                            //   svg: productIconSvg,
-                            //   height: 16,
-                            // ),
-                            // NavListTile(
-                            //   thisIndex: 2,
-                            //   title: 'Sales',
-                            //   // icon: Icons.home_rounded,
-                            //   svg: salesIconSvg,
-                            //   height: 16,
-                            // ),
-                            NavListTileAlt(
-                              height: 14,
-                              action: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return CustomerList();
-                                    },
-                                  ),
-                                );
-                              },
-                              title: 'Customers',
-                              svg: custBookIconSvg,
+                            Visibility(
+                              visible: !isStoreKeeper(),
+                              child: NavListTileAlt(
+                                height: 14,
+                                action: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return CustomerList();
+                                      },
+                                    ),
+                                  );
+                                },
+                                title: 'Customers',
+                                svg: custBookIconSvg,
+                              ),
                             ),
                             Visibility(
                               visible: authorization(
@@ -205,42 +189,49 @@ class _MyDrawerWidgetMobileState
                                 svg: employeesIconSvg,
                               ),
                             ),
-                            NavListTileAlt(
-                              height: 14,
-                              action: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return ExpensesPage(
-                                        isMain: true,
-                                      );
-                                    },
-                                  ),
-                                ).then((_) {
-                                  setState(() {});
-                                });
-                              },
-                              title: 'Expenses',
-                              svg: expensesIconSvg,
+                            Visibility(
+                              visible: !isStoreKeeper(),
+                              child: NavListTileAlt(
+                                height: 14,
+                                action: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return ExpensesPage(
+                                          isMain: true,
+                                        );
+                                      },
+                                    ),
+                                  ).then((_) {
+                                    setState(() {});
+                                  });
+                                },
+                                title: 'Expenses',
+                                svg: expensesIconSvg,
+                              ),
                             ),
-                            NavListTileAlt(
-                              height: 16,
-                              action: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return InvoiceListPage();
-                                    },
-                                  ),
-                                ).then((_) {
-                                  setState(() {});
-                                });
-                              },
-                              title: 'Invoices',
-                              icon:
-                                  Icons.all_inclusive_sharp,
+                            Visibility(
+                              visible: !isStoreKeeper(),
+                              child: NavListTileAlt(
+                                height: 16,
+                                action: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return InvoiceListPage();
+                                      },
+                                    ),
+                                  ).then((_) {
+                                    setState(() {});
+                                  });
+                                },
+                                title: 'Invoices',
+                                icon:
+                                    Icons
+                                        .all_inclusive_sharp,
+                              ),
                             ),
                             NavListTileAlt(
                               height: 14,
@@ -268,20 +259,22 @@ class _MyDrawerWidgetMobileState
                                       : 20,
                               color: Colors.grey.shade200,
                             ),
-                            InkWell(
-                              onTap: () {
-                                Navigator.of(context).pop();
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return NotificationsPage();
-                                    },
-                                  ),
-                                );
-                              },
-                              child: Visibility(
-                                visible: true,
+                            Visibility(
+                              visible: !isStoreKeeper(),
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.of(
+                                    context,
+                                  ).pop();
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return NotificationsPage();
+                                      },
+                                    ),
+                                  );
+                                },
                                 child: SizedBox(
                                   height: 50,
                                   child: Padding(

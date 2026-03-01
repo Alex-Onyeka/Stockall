@@ -194,11 +194,13 @@ class _SettingsPageDesktopState
                               ),
                             ),
                             Visibility(
-                              visible: authorization(
-                                authorized:
-                                    Authorizations()
-                                        .manageInventoryStorage,
-                              ),
+                              visible:
+                                  authorization(
+                                    authorized:
+                                        Authorizations()
+                                            .manageInventoryStorage,
+                                  ) &&
+                                  !isStoreKeeper(),
                               child: SubWrapper(
                                 isVisible:
                                     !ItemsAuthAction()
@@ -1191,47 +1193,37 @@ class _SettingsPageDesktopState
                                         .workspace_premium_outlined,
                               ),
                             ),
-                            Visibility(
-                              visible: authorization(
-                                authorized:
-                                    Authorizations()
-                                        .contactStockall,
-                              ),
-                              child: NavListTileDesktopAlt(
-                                height: 18,
-                                action: () async {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return ConfirmationAlert(
-                                        theme: theme,
-                                        message:
-                                            'You are about to download and install our official Native application, for better experience.',
-                                        title:
-                                            screenWidth(
-                                                      context,
-                                                    ) >
-                                                    tabletScreenSmall
-                                                ? 'Proceed to Download Desktop App'
-                                                : 'Proceed to Download Mobile App',
-                                        action: () async {
-                                          Navigator.of(
-                                            context,
-                                          ).pop();
-                                          await downloadApkFromApp(
-                                            context:
-                                                context,
-                                          );
-                                        },
-                                      );
-                                    },
-                                  );
-                                },
-                                title:
-                                    'Download Desktop App',
-                                icon:
-                                    Icons.download_outlined,
-                              ),
+                            NavListTileDesktopAlt(
+                              height: 18,
+                              action: () async {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return ConfirmationAlert(
+                                      theme: theme,
+                                      message:
+                                          'You are about to download and install our official Native application, for better experience.',
+                                      title:
+                                          screenWidth(
+                                                    context,
+                                                  ) >
+                                                  tabletScreenSmall
+                                              ? 'Proceed to Download Desktop App'
+                                              : 'Proceed to Download Mobile App',
+                                      action: () async {
+                                        Navigator.of(
+                                          context,
+                                        ).pop();
+                                        await downloadApkFromApp(
+                                          context: context,
+                                        );
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                              title: 'Download Desktop App',
+                              icon: Icons.download_outlined,
                             ),
                             Visibility(
                               visible: authorization(

@@ -124,6 +124,12 @@ TempUserClass currentUser() {
   return UserProvider().currentUserMain!;
 }
 
+bool isStoreKeeper() {
+  return currentUser().role == 'Store Keeper'
+      ? true
+      : false;
+}
+
 TempUserClass userGeneral(
   BuildContext context, {
   bool listen = true,

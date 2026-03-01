@@ -92,10 +92,7 @@ class _ProductDetailsMobileState
               context: context,
               title: 'Details',
               widget: Visibility(
-                visible: authorization(
-                  authorized:
-                      Authorizations().updateProduct,
-                ),
+                visible: !isStoreKeeper(),
                 child: InkWell(
                   onTap: () {
                     var safeContext = context;
