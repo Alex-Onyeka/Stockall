@@ -13,6 +13,8 @@ import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/customers_list/customer_list.dart';
+import 'package:stockall/pages/sales/make_sales/page1/platforms/make_sales_desktop.dart';
+import 'package:stockall/pages/sales/make_sales/page1/platforms/make_sales_mobile.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -78,7 +80,31 @@ class _MakeSalesMobileTwoState
                     child: Column(
                       children: [
                         SizedBox(height: 10),
-                        CartQueueMobile(isFirst: false),
+                        Row(
+                          spacing: 5,
+                          children: [
+                            Expanded(
+                              child: CartQueueMobile(
+                                isFirst: false,
+                              ),
+                            ),
+                            SubStaffToggleButtonMobile(
+                              isFirst: false,
+                            ),
+                          ],
+                        ),
+                        Visibility(
+                          visible:
+                              returnSalesProviderContext(
+                                context,
+                              ).isSubStaffSelectionMobileOpen,
+                          child: Column(
+                            children: [
+                              SizedBox(height: 2),
+                              SubStaffSelectionWidget(),
+                            ],
+                          ),
+                        ),
                         SizedBox(height: 13),
                         Builder(
                           builder: (context) {

@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/buttons/small_button_main.dart';
@@ -32,6 +33,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/alt_display/alt_display.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/products/compnents/cart_item_main.dart';
+import 'package:stockall/pages/sales/make_sales/page1/platforms/components/select_sub_staff_list_widget.dart';
 import 'package:stockall/pages/sales/make_sales/page2/make_sales_two.dart';
 
 class MakeSalesDesktop extends StatefulWidget {
@@ -1284,7 +1286,10 @@ class _MakeSalesDesktopState
           context: context,
         );
       }
-      for (var cart in returnSalesProvider().cartQueue) {
+      for (var cart
+          in returnSalesProvider()
+              .currentMainCart()
+              .cartQueue) {
         await returnMultiDisplayProvider().updateWindow(
           cartClass: AltCartClass(
             cartId: cart.id!,
@@ -2314,6 +2319,7 @@ class _MakeSalesDesktopState
                                         ],
                                       ),
                                     ),
+                                    SubStaffSelectionWidget(),
                                     ProjectDisplayWidget(),
                                     SizedBox(height: 10),
                                     SubWrapper(
@@ -2800,39 +2806,6 @@ class _MakeSalesDesktopState
                                     MainButtonP(
                                       themeProvider: theme,
                                       action: () {
-                                        // Timer? timer;
-                                        // if (returnSalesProvider()
-                                        //     .currentCart()
-                                        //     .cartItems
-                                        //     .isNotEmpty) {
-                                        //   timer = Timer.periodic(
-                                        //     Duration(
-                                        //       milliseconds:
-                                        //           100,
-                                        //     ),
-                                        //     (timer) {
-                                        //       if (returnSalesProvider()
-                                        //           .scanBarcodeCartPageNode
-                                        //           .hasFocus) {
-                                        //         print(
-                                        //           'Node Still has Focus',
-                                        //         );
-                                        //         returnSalesProvider()
-                                        //             .unfocusScanBarcodeCartPage();
-                                        //         returnSalesProvider()
-                                        //             .removeListenerScanBarcode();
-                                        //       } else {
-                                        //         print(
-                                        //           'Node Focus Cancelled',
-                                        //         );
-                                        //         timer
-                                        //             .cancel();
-                                        //       }
-                                        //     },
-                                        //   );
-                                        //   print(
-                                        //     timer.isActive,
-                                        //   );
                                         returnSalesProvider()
                                             .removeListenerScanBarcode();
                                         Navigator.push(
@@ -2877,6 +2850,371 @@ class _MakeSalesDesktopState
             ],
           ),
         ),
+      ),
+    );
+    // return Scaffold(appBar: AppBar());
+  }
+}
+
+class SubStaffSelectionWidget extends StatefulWidget {
+  const SubStaffSelectionWidget({super.key});
+
+  @override
+  State<SubStaffSelectionWidget> createState() =>
+      _SubStaffSelectionWidgetState();
+}
+
+class _SubStaffSelectionWidgetState
+    extends State<SubStaffSelectionWidget> {
+  bool isOpen = false;
+  @override
+  Widget build(BuildContext context) {
+    var theme = returnTheme(context);
+    return Visibility(
+      visible:
+          returnShopProvider(
+            context: context,
+          ).userShop()?.bulkSale ==
+          true,
+      child: Column(
+        children: [
+          SizedBox(height: 10),
+          Material(
+            color: Colors.transparent,
+            child: Ink(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Column(
+                children: [
+                  InkWell(
+                    onTap: () {
+                      setState(() {
+                        isOpen = !isOpen;
+                      });
+                    },
+                    borderRadius: BorderRadius.circular(5),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        15,
+                        6,
+                        15,
+                        6,
+                      ),
+                      child: Row(
+                        mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                        spacing: 5,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b4
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                              // color: Colors.white,
+                            ),
+                            returnSalesProviderContext(
+                                      context,
+                                    )
+                                    .currentMainCart()
+                                    .cartName() ??
+                                'Default ${returnSalesProviderContext(context).mainCartQueue.indexOf(returnSalesProviderContext(context).currentMainCart()) + 1}',
+                          ),
+                          Row(
+                            spacing: 3,
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  returnSalesProvider()
+                                      .addNewMainCart(
+                                        context,
+                                      );
+                                },
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      5,
+                                    ),
+                                child: Padding(
+                                  padding:
+                                      EdgeInsetsGeometry.symmetric(
+                                        vertical: 8,
+                                        horizontal: 10,
+                                      ),
+                                  child: Icon(
+                                    size: 20,
+                                    Icons.add,
+                                  ),
+                                ),
+                              ),
+                              Visibility(
+                                visible:
+                                    screenWidth(context) >
+                                    mobileScreen,
+                                child: Icon(
+                                  (screenWidth(context) <
+                                              mobileScreen
+                                          ? returnSalesProviderContext(
+                                            context,
+                                          ).isSubStaffSelectionMobileOpen
+                                          : isOpen)
+                                      ? Icons
+                                          .keyboard_arrow_up_outlined
+                                      : Icons
+                                          .keyboard_arrow_down_outlined,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Visibility(
+                    visible:
+                        screenWidth(context) < mobileScreen
+                            ? returnSalesProviderContext(
+                              context,
+                            ).isSubStaffSelectionMobileOpen
+                            : isOpen,
+                    child: SizedBox(
+                      height: 300,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          15,
+                          0,
+                          15,
+                          10,
+                        ),
+                        child: Column(
+                          children: [
+                            Divider(),
+                            Expanded(
+                              child: ListView(
+                                shrinkWrap: true,
+                                children:
+                                    returnSalesProviderContext(
+                                          context,
+                                        ).mainCartQueue
+                                        .map(
+                                          (cart) => InkWell(
+                                            onTap: () {
+                                              returnSalesProvider()
+                                                  .selectMainCart(
+                                                    cart.mainCartId!,
+                                                  );
+                                            },
+                                            child: Padding(
+                                              padding:
+                                                  EdgeInsetsGeometry.fromLTRB(
+                                                    8,
+                                                    2,
+                                                    2,
+                                                    2,
+                                                  ),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Row(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment.center,
+                                                    spacing:
+                                                        5,
+                                                    children: [
+                                                      Icon(
+                                                        size:
+                                                            14,
+                                                        color:
+                                                            Colors.grey.shade400,
+                                                        Icons.book,
+                                                      ),
+                                                      Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              theme.mobileTexts.b4.fontSize,
+                                                          fontWeight:
+                                                              returnSalesProviderContext(
+                                                                        context,
+                                                                      ).currentMainCart().mainCartId ==
+                                                                      cart.mainCartId
+                                                                  ? FontWeight.bold
+                                                                  : null,
+                                                        ),
+                                                        cart.cartName() ??
+                                                            'Default  ${returnSalesProviderContext(context).mainCartQueue.indexOf(cart) + 1}',
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  SizedBox(
+                                                    height:
+                                                        40,
+                                                    child: Row(
+                                                      spacing:
+                                                          5,
+                                                      children: [
+                                                        Visibility(
+                                                          visible:
+                                                              returnSalesProviderContext(
+                                                                    context,
+                                                                  ).mainCartQueue.length >
+                                                                  1 ||
+                                                              cart.subStaff !=
+                                                                  null,
+                                                          child: IconButton(
+                                                            onPressed: () {
+                                                              if (cart.subStaff ==
+                                                                  null) {
+                                                                if (returnSalesProvider().mainCartQueue.length >
+                                                                    1) {
+                                                                  showDialog(
+                                                                    context:
+                                                                        context,
+                                                                    builder: (
+                                                                      context,
+                                                                    ) {
+                                                                      return ConfirmationAlert(
+                                                                        theme:
+                                                                            theme,
+                                                                        message:
+                                                                            'You are about to Delete Entire Bulk Sale Terminal, This action can not be reversed are you sure you want to proceed?',
+                                                                        title:
+                                                                            'Are you sure?',
+                                                                        action: () {
+                                                                          returnSalesProvider().deleteMainCart(
+                                                                            cart.mainCartId!,
+                                                                          );
+                                                                          Navigator.of(
+                                                                            context,
+                                                                          ).pop();
+                                                                        },
+                                                                      );
+                                                                    },
+                                                                  );
+                                                                }
+                                                              } else {
+                                                                showDialog(
+                                                                  context:
+                                                                      context,
+                                                                  builder: (
+                                                                    context,
+                                                                  ) {
+                                                                    return ConfirmationAlert(
+                                                                      theme:
+                                                                          theme,
+                                                                      message:
+                                                                          'You are about to Remove this Staff from this Bulk Sale Terminal, This action can not be reversed are you sure you want to proceed?',
+                                                                      title:
+                                                                          'Remove Staff',
+                                                                      action: () {
+                                                                        returnSalesProvider().removeStaffFromMainCart(
+                                                                          cart.mainCartId!,
+                                                                        );
+                                                                        print(
+                                                                          cart.subStaff?.staffName,
+                                                                        );
+                                                                        Navigator.of(
+                                                                          context,
+                                                                        ).pop();
+                                                                      },
+                                                                    );
+                                                                  },
+                                                                );
+                                                              }
+                                                            },
+                                                            icon: Icon(
+                                                              size:
+                                                                  18,
+                                                              color:
+                                                                  Colors.red,
+                                                              Icons.clear,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Visibility(
+                                                          visible:
+                                                              cart.subStaff ==
+                                                              null,
+                                                          child: InkWell(
+                                                            onTap: () {
+                                                              showDialog(
+                                                                context:
+                                                                    context,
+                                                                builder: (
+                                                                  templateDialog,
+                                                                ) {
+                                                                  return DialogTemplate(
+                                                                    theme:
+                                                                        theme,
+                                                                    message:
+                                                                        'Select a Sub Staff to add to this.',
+                                                                    title:
+                                                                        'Select Sub Staff',
+                                                                    action: () {
+                                                                      if (returnSalesProvider().selectedSubStaff !=
+                                                                          null) {
+                                                                        returnSalesProvider().addSubStaffToMainCart(
+                                                                          cart.mainCartId!,
+                                                                        );
+                                                                        Navigator.of(
+                                                                          templateDialog,
+                                                                        ).pop();
+                                                                      }
+                                                                    },
+                                                                    widget: SelectSubStaffListWidget(
+                                                                      staff:
+                                                                          cart.subStaff,
+                                                                    ),
+                                                                  );
+                                                                },
+                                                              ).then(
+                                                                (
+                                                                  _,
+                                                                ) {
+                                                                  returnSalesProvider().selectSubStaff();
+                                                                },
+                                                              );
+                                                            },
+                                                            child: Padding(
+                                                              padding: EdgeInsetsGeometry.all(
+                                                                8,
+                                                              ),
+                                                              child: Icon(
+                                                                size:
+                                                                    18,
+                                                                color:
+                                                                    Colors.grey,
+                                                                Icons.edit,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
+                              ),
+                            ),
+                            Divider(),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

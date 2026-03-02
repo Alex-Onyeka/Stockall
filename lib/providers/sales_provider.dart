@@ -5,9 +5,11 @@ import 'package:stockall/classes/checkout_response.dart';
 import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
+import 'package:stockall/classes/temp_main_cart/temp_main_cart.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
+import 'package:stockall/classes/temp_sub_staff/temp_sub_staff.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -37,28 +39,146 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<TempCart> cartQueue = [];
+  // List<TempCart> cartQueue = [];
+
+  List<TempMainCart> mainCartQueue = [];
 
   String initCart() {
-    var cartId = uuidGen();
-    cartQueue.add(
-      TempCart(cartItems: [], isInvoice: false, id: cartId),
-    );
-    cartIdCache = cartId;
+    try {
+      var mainCartId = uuidGen();
+
+      mainCartQueue.add(
+        TempMainCart(cartQueue: [], mainCartId: mainCartId),
+      );
+
+      mainCartIdCache = mainCartId;
+
+      var cartId = uuidGen();
+      mainCartQueue.first.cartQueue.add(
+        TempCart(
+          cartItems: [],
+          isInvoice: false,
+          id: cartId,
+        ),
+      );
+      cartIdCache = cartId;
+
+      notifyListeners();
+      return cartId;
+    } catch (e) {
+      print('Error Initializing Cart: ${e.toString()}');
+      return '';
+    }
+  }
+
+  bool isSubStaffSelectionMobileOpen = false;
+
+  void toggleSubStaffSelectionMobile(bool value) {
+    isSubStaffSelectionMobileOpen = value;
     notifyListeners();
-    return cartId;
+  }
+
+  void selectFistMainCart() {
+    selectMainCart(mainCartQueue.first.mainCartId!);
+    toggleSubStaffSelectionMobile(false);
+    notifyListeners();
   }
 
   String cartIdCache = '';
+  String mainCartIdCache = '';
+
+  TempMainCart currentMainCart() {
+    return mainCartQueue.firstWhere(
+      (cart) => cart.mainCartId == mainCartIdCache,
+    );
+  }
+
+  TempSubStaff? selectedSubStaff;
+  void selectSubStaff({TempSubStaff? staff}) {
+    selectedSubStaff = staff;
+    notifyListeners();
+  }
+
+  void addSubStaffToMainCart(String mainCartId) {
+    mainCartQueue
+        .firstWhere((c) => c.mainCartId == mainCartId)
+        .subStaff = selectedSubStaff;
+    print(
+      'Added: ${mainCartQueue.firstWhere((c) => c.mainCartId == mainCartId).subStaff?.staffName}',
+    );
+    notifyListeners();
+  }
+
+  void removeStaffFromMainCart(String mainCartId) {
+    mainCartQueue
+        .firstWhere((c) => c.mainCartId == mainCartId)
+        .subStaff = null;
+    print(
+      'Removed: ${mainCartQueue.firstWhere((c) => c.mainCartId == mainCartId).subStaff?.staffName}',
+    );
+    notifyListeners();
+  }
+
+  Future<void> addNewMainCart(BuildContext context) async {
+    SalesAuthAction().numberOfCartsAction(
+      context: context,
+      action: () async {
+        try {
+          var mainCartId = uuidGen();
+
+          mainCartQueue.add(
+            TempMainCart(
+              cartQueue: [],
+              mainCartId: mainCartId,
+            ),
+          );
+
+          mainCartIdCache = mainCartId;
+
+          var cartId = uuidGen();
+          mainCartQueue
+              .firstWhere((c) => c.mainCartId == mainCartId)
+              .cartQueue
+              .add(
+                TempCart(
+                  cartItems: [],
+                  isInvoice: false,
+                  id: cartId,
+                ),
+              );
+          cartIdCache = cartId;
+          await returnMultiDisplayProvider().createWindow(
+            cartId: cartId,
+          );
+
+          notifyListeners();
+          print(
+            "Main Cart Length: ${mainCartQueue.length}",
+          );
+          print(
+            'Cart Queue Length: ${mainCartQueue.firstWhere((c) => c.mainCartId == mainCartId).cartQueue.length}',
+          );
+        } catch (e) {
+          print(
+            'Error Creating New Main Cart: ${e.toString()}',
+          );
+        }
+
+        notifyListeners();
+      },
+    );
+  }
 
   TempCart currentCart() {
-    return cartQueue.firstWhere(
+    return currentMainCart().cartQueue.firstWhere(
       (cart) => cart.id == cartIdCache,
     );
   }
 
   void updateCurrentCartName(String id, String name) {
-    var cart = cartQueue.firstWhere((car) => car.id == id);
+    var cart = currentMainCart().cartQueue.firstWhere(
+      (car) => car.id == id,
+    );
     cart.cartName = name.isNotEmpty ? name : null;
     notifyListeners();
   }
@@ -72,12 +192,12 @@ class SalesProvider extends ChangeNotifier {
       action: () async {
         var newId = uuidGen();
         tempCart.id = newId;
-        cartQueue.add(tempCart);
+        currentMainCart().cartQueue.add(tempCart);
         cartIdCache = newId;
         await returnMultiDisplayProvider().createWindow(
           cartId: newId,
         );
-        print(cartQueue);
+        print(currentMainCart().cartQueue);
         notifyListeners();
       },
     );
@@ -85,20 +205,62 @@ class SalesProvider extends ChangeNotifier {
 
   TempCart getTempCartByCartId(String cartId) {
     var cartItem =
-        cartQueue.where((cart) => cart.id == cartId).first;
+        currentMainCart().cartQueue
+            .where((cart) => cart.id == cartId)
+            .first;
     return cartItem;
   }
 
   TempCart getTempCartByIndex(int index) {
-    var cartItem = cartQueue[index];
+    var cartItem = currentMainCart().cartQueue[index];
     return cartItem;
   }
 
+  TempMainCart getTempMainCartByIndex(int index) {
+    var mainCartItem = mainCartQueue[index];
+    return mainCartItem;
+  }
+
+  int getIndexOfMainCartItem(String cartId) {
+    var mainCartItem = mainCartQueue.indexWhere(
+      (cart) => cart.mainCartId == cartId,
+    );
+    return mainCartItem;
+  }
+
   int getIndexOfCartItem(String cartId) {
-    var cartItem = cartQueue.indexWhere(
+    var cartItem = currentMainCart().cartQueue.indexWhere(
       (cart) => cart.id == cartId,
     );
     return cartItem;
+  }
+
+  Future<void> deleteMainCart(String cartId) async {
+    if (getIndexOfMainCartItem(cartId) == 0) {
+      var newCartId = getTempMainCartByIndex(1).mainCartId!;
+      await selectMainCart(newCartId);
+    } else {
+      var newCartId =
+          getTempMainCartByIndex(
+            getIndexOfMainCartItem(cartId) - 1,
+          ).mainCartId!;
+      await selectMainCart(newCartId);
+    }
+    var id =
+        mainCartQueue
+            .firstWhere((c) => c.mainCartId == cartId)
+            .cartQueue
+            .first
+            .id;
+    mainCartQueue.removeWhere(
+      (cart) => cart.mainCartId == cartId,
+    );
+
+    await returnMultiDisplayProvider().closeWindow(
+      cartId: id!,
+    );
+
+    notifyListeners();
   }
 
   Future<void> deleteCart(String cartId) async {
@@ -112,12 +274,30 @@ class SalesProvider extends ChangeNotifier {
           ).id!;
       await selectCart(newCartId);
     }
-    cartQueue.removeWhere((cart) => cart.id == cartId);
+    currentMainCart().cartQueue.removeWhere(
+      (cart) => cart.id == cartId,
+    );
     await returnMultiDisplayProvider().closeWindow(
       cartId: cartId,
     );
 
     notifyListeners();
+  }
+
+  Future<void> selectMainCart(String cartId) async {
+    try {
+      mainCartIdCache = cartId;
+      var id =
+          mainCartQueue
+              .firstWhere((c) => c.mainCartId == cartId)
+              .cartQueue
+              .first
+              .id;
+      selectCart(id!);
+      notifyListeners();
+    } catch (e) {
+      print("Error Selecting main Cart: ${e.toString()}");
+    }
   }
 
   Future<void> selectCart(String cartId) async {
@@ -145,6 +325,8 @@ class SalesProvider extends ChangeNotifier {
       print('An Error Occured: ${e.toString()}');
     }
   }
+
+  List<TempSubStaff> createdStaffs = [];
 
   final FocusNode scanBarcodeCartPageNode = FocusNode();
 
@@ -437,11 +619,7 @@ class SalesProvider extends ChangeNotifier {
         cashAlt: cashAlt,
         customerName: customerName,
         customerUuid: customerUuid,
-        uuid:
-            returnSalesProvider()
-                .currentCart()
-                .invoiceUuidEdit ??
-            uuidGen(),
+        uuid: currentCart().invoiceUuidEdit ?? uuidGen(),
         generalDiscount: currentCart().discount,
         fixedDiscount: currentCart().fixedDiscount,
         vat:
@@ -450,6 +628,9 @@ class SalesProvider extends ChangeNotifier {
                 ? vat
                 : null,
         originalCost: calcSubTotal(),
+        subStaffUuid:
+            currentCart().subStaffUuid ??
+            currentMainCart().subStaff?.uuid,
       );
       TempInvoice? invoiceRes;
       try {
@@ -519,7 +700,7 @@ class SalesProvider extends ChangeNotifier {
             paymentMethod: paymentMethod,
             bank: partPaymentValue('Bank') ?? bank,
             cashAlt: partPaymentValue('Cash') ?? cashAlt,
-            isInvoice: false, //salesCartItem.isInvoice,
+            isInvoice: true, //salesCartItem.isInvoice,
             customerName: customerName,
             customerUuid: customerUuid,
             invoiceUuid: invoiceRes?.uuid,
@@ -533,6 +714,9 @@ class SalesProvider extends ChangeNotifier {
                     : null,
             originalCost: calcSubTotal(),
             balance: calcFinalTotal() - partPayment,
+            subStaffUuid:
+                currentCart().subStaffUuid ??
+                currentMainCart().subStaff?.uuid,
           );
 
           print('Checkout Started');
@@ -759,7 +943,7 @@ class SalesProvider extends ChangeNotifier {
               }
               // Step 5: Reset state
               // resetPaymentMethod();
-              cartQueue.length > 1
+              currentMainCart().cartQueue.length > 1
                   ? await deleteCart(cartIdCache)
                   : await clearCart();
 
@@ -829,6 +1013,7 @@ class SalesProvider extends ChangeNotifier {
                 : null,
         originalCost: calcSubTotal(),
         balance: null,
+        subStaffUuid: currentMainCart().subStaff?.uuid,
       );
       if (currentCart().receiptUuidEdit != null) {
         print(
@@ -1024,7 +1209,7 @@ class SalesProvider extends ChangeNotifier {
               }
               // Step 5: Reset state
               // resetPaymentMethod();
-              cartQueue.length > 1
+              currentMainCart().cartQueue.length > 1
                   ? await deleteCart(cartIdCache)
                   : await clearCart();
 
@@ -1215,7 +1400,7 @@ class SalesProvider extends ChangeNotifier {
     required double quantityToAdd,
   }) {
     double totalInAllCarts = 0;
-    for (final cart in cartQueue) {
+    for (final cart in currentMainCart().cartQueue) {
       for (final cartItem in cart.cartItems) {
         if (cartItem.item.uuid == product.uuid) {
           totalInAllCarts += cartItem.quantity;
@@ -1381,7 +1566,9 @@ class SalesProvider extends ChangeNotifier {
     BuildContext context,
   ) async {
     currentCart().cartItems.remove(item);
-    print("Main Carts Length: ${cartQueue.length}");
+    print(
+      "Main Carts Length: ${currentMainCart().cartQueue.length}",
+    );
     print(
       "Current Cart Length: ${currentCart().cartItems.length}",
     );
@@ -1594,7 +1781,7 @@ class SalesProvider extends ChangeNotifier {
           context: context,
         );
 
-        if (cartQueue
+        if (currentMainCart().cartQueue
             .where(
               (cart) =>
                   cart.receiptUuidEdit != null &&
@@ -1603,6 +1790,7 @@ class SalesProvider extends ChangeNotifier {
             .isEmpty) {
           var newId = uuidGen();
           var tempCart = TempCart(
+            subStaffUuid: receipt.subStaffUuid,
             id: newId,
             fixedDiscount: receipt.fixedDiscount,
             createdDate: receipt.createdAt,
@@ -1636,7 +1824,7 @@ class SalesProvider extends ChangeNotifier {
           notifyListeners();
         } else {
           await selectCart(
-            cartQueue
+            currentMainCart().cartQueue
                 .where(
                   (cart) =>
                       cart.receiptUuidEdit == receipt.uuid,
@@ -1668,7 +1856,7 @@ class SalesProvider extends ChangeNotifier {
           title: 'Cancel Edit?',
           action: () async {
             if (currentCart().isReceiptEdit) {
-              if (cartQueue.length == 1) {
+              if (currentMainCart().cartQueue.length == 1) {
                 await addNewCart(
                   context,
                   TempCart(cartItems: [], isInvoice: false),

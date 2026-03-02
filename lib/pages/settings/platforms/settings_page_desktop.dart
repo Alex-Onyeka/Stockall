@@ -21,9 +21,12 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
 import 'package:stockall/pages/barcode_printing_page/barcode_printing_page.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
+import 'package:stockall/pages/settings/components/manage_inventory_switch_toggle.dart';
+import 'package:stockall/pages/settings/components/toggle_bulk_sale.dart';
 import 'package:stockall/pages/settings/settings_page.dart';
 import 'package:stockall/pages/shop_setup/edit_receipt_page/edit_receipt.dart';
 import 'package:stockall/pages/shop_setup/shop_page/shop_page.dart';
+import 'package:stockall/pages/sub_staffs/sub_staffs_page.dart';
 import 'package:stockall/pages/subscription_page/subscription_page.dart';
 
 class SettingsPageDesktop extends StatefulWidget {
@@ -193,134 +196,7 @@ class _SettingsPageDesktopState
                                         .settings_suggest_outlined,
                               ),
                             ),
-                            Visibility(
-                              visible:
-                                  authorization(
-                                    authorized:
-                                        Authorizations()
-                                            .manageInventoryStorage,
-                                  ) &&
-                                  !isStoreKeeper(),
-                              child: SubWrapper(
-                                isVisible:
-                                    !ItemsAuthAction()
-                                        .manageInventoryStorageAction(
-                                          context: context,
-                                        ),
-                                mainWidget: NavListTileDesktopAlt(
-                                  height: 18,
-                                  action: () {
-                                    ItemsAuthAction().manageInventoryStorageAction(
-                                      context: context,
-                                      action: () {
-                                        var shopProvider =
-                                            returnShopProvider();
-                                        showDialog(
-                                          context: context,
-                                          builder: (
-                                            context,
-                                          ) {
-                                            return ConfirmationAlert(
-                                              theme: theme,
-                                              message:
-                                                  shopProvider
-                                                          .userShop()!
-                                                          .manageInventoryStorage!
-                                                      ? 'Your Inventory Storage will not be managed, are you sure you want to proceed?'
-                                                      : 'Your Inventory Storage will be managed, will, are you sure you want to proceed?',
-                                              title:
-                                                  shopProvider
-                                                          .userShop()!
-                                                          .manageInventoryStorage!
-                                                      ? 'Turn Off Inventory Storage'
-                                                      : 'Turn On Inventory Storage',
-                                              action: () async {
-                                                Navigator.of(
-                                                  context,
-                                                ).pop();
-                                                shopProvider
-                                                    .togglemanageInventoryStorage();
-                                              },
-                                            );
-                                          },
-                                        );
-                                      },
-                                    );
-                                  },
-                                  endWidget: Builder(
-                                    builder: (context) {
-                                      if (returnShopProvider(
-                                        context: context,
-                                      ).ismanageInventoryStorageLoading) {
-                                        return SizedBox(
-                                          height: 16,
-                                          width: 16,
-                                          child: CircularProgressIndicator(
-                                            color:
-                                                theme
-                                                    .lightModeColor
-                                                    .secColor200,
-                                            strokeWidth: 2,
-                                          ),
-                                        );
-                                      } else {
-                                        return MyToggleButton(
-                                          isSmall: true,
-                                          boolValue:
-                                              returnShopProvider(
-                                                    context:
-                                                        context,
-                                                  )
-                                                  .userShop()
-                                                  ?.manageInventoryStorage ??
-                                              true,
-                                          toggle: () {
-                                            GeneralSettingsAuthAction().manageVATAction(
-                                              context:
-                                                  context,
-                                              action: () {
-                                                var shopProvider =
-                                                    returnShopProvider();
-                                                showDialog(
-                                                  context:
-                                                      context,
-                                                  builder: (
-                                                    context,
-                                                  ) {
-                                                    return ConfirmationAlert(
-                                                      theme:
-                                                          theme,
-                                                      message:
-                                                          shopProvider.userShop()!.manageInventoryStorage!
-                                                              ? 'Your Inventory Storage will not be managed, are you sure you want to proceed?'
-                                                              : 'Your Inventory Storage will be managed, will, are you sure you want to proceed?',
-                                                      title:
-                                                          shopProvider.userShop()!.manageInventoryStorage!
-                                                              ? 'Turn Off Inventory Storage'
-                                                              : 'Turn On Inventory Storage',
-                                                      action: () async {
-                                                        Navigator.of(
-                                                          context,
-                                                        ).pop();
-                                                        shopProvider.togglemanageInventoryStorage();
-                                                      },
-                                                    );
-                                                  },
-                                                );
-                                              },
-                                            );
-                                          },
-                                          theme: theme,
-                                        );
-                                      }
-                                    },
-                                  ),
-                                  title:
-                                      'Manage Inventory Storage',
-                                  icon: Icons.manage_search,
-                                ),
-                              ),
-                            ),
+                            ManageInventoryToggleSwitch(),
                             Visibility(
                               visible: authorization(
                                 authorized:
@@ -358,6 +234,29 @@ class _SettingsPageDesktopState
                                       'Edit Receipt Template',
                                   icon: Icons.receipt,
                                 ),
+                              ),
+                            ),
+                            ToggleBulkSale(),
+                            Visibility(
+                              visible:
+                                  shop(context)!.bulkSale ==
+                                  true,
+                              child: NavListTileDesktopAlt(
+                                height: 18,
+                                action: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return SubStaffsPage();
+                                      },
+                                    ),
+                                  );
+                                },
+                                title: 'Manage Sub Staffs',
+                                icon:
+                                    Icons
+                                        .people_outline_outlined,
                               ),
                             ),
                             Visibility(

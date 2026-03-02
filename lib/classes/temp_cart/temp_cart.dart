@@ -17,6 +17,7 @@ class TempCart {
   double? fixedDiscount;
   bool isSettingDiscountOpen;
   String? cartName;
+  String? subStaffUuid;
 
   TempCart({
     required this.cartItems,
@@ -35,5 +36,11 @@ class TempCart {
     this.createdDate,
     this.fixedDiscount,
     this.cartName,
+    this.subStaffUuid,
   });
+
+  // String id() {
+  //   var uuid = uuidGen();
+  //   return uuid;
+  // }
 }

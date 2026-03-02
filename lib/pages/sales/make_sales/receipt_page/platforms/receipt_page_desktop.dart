@@ -21,10 +21,12 @@ import 'package:stockall/services/printing/import_helper.dart'
 class ReceiptPageDesktop extends StatefulWidget {
   final bool isMain;
   final CheckoutResponse response;
+  final bool? isComingFromInvoice;
   const ReceiptPageDesktop({
     super.key,
     required this.response,
     required this.isMain,
+    this.isComingFromInvoice,
   });
 
   @override
@@ -324,6 +326,8 @@ class _ReceiptPageDesktopState
                               10,
                           width: 500,
                           child: ReceiptDetailsContainer(
+                            isComingFromInvoice:
+                                widget.isComingFromInvoice,
                             isMain: widget.isMain,
                             shop: shop!,
                             mainReceipt: mainReceipt,
@@ -348,12 +352,14 @@ class ReceiptDetailsContainer extends StatefulWidget {
   final TempShopClass shop;
   final TempMainReceipt mainReceipt;
   final ThemeProvider theme;
+  final bool? isComingFromInvoice;
   const ReceiptDetailsContainer({
     super.key,
     required this.theme,
     required this.mainReceipt,
     required this.shop,
     required this.isMain,
+    this.isComingFromInvoice,
   });
 
   @override
@@ -1641,18 +1647,27 @@ class _ReceiptDetailsContainerState
                                   );
 
                                   if (safeContext.mounted) {
-                                    Navigator.pushReplacement(
-                                      safeContext,
-                                      MaterialPageRoute(
-                                        builder:
-                                            (safeContext) =>
-                                                Home(),
-                                      ),
-                                    );
-                                    returnNavProvider(
-                                      safeContext,
-                                      listen: false,
-                                    ).navigate(2);
+                                    if (widget
+                                            .isComingFromInvoice ==
+                                        null) {
+                                      Navigator.pushReplacement(
+                                        safeContext,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (
+                                                safeContext,
+                                              ) => Home(),
+                                        ),
+                                      );
+                                      returnNavProvider(
+                                        safeContext,
+                                        listen: false,
+                                      ).navigate(2);
+                                    } else {
+                                      Navigator.of(
+                                        safeContext,
+                                      ).pop();
+                                    }
                                   }
                                 },
                               );

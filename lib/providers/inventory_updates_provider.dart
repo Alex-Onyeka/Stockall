@@ -115,52 +115,62 @@ class InventoryUpdatesProvider with ChangeNotifier {
   Future<int> createInventoryUpdate(
     TempInventoryUpdateClass inventoryUpdate,
   ) async {
-    bool isOnline = await ConnectivityProvider().isOnline();
-    inventoryUpdate.uuid = uuidGen();
-    inventoryUpdate.createdAt ??= DateTime.now();
-    if (isOnline) {
-      try {
-        Map<String, dynamic>? res =
-            await client
-                .from(tableName)
-                .insert(inventoryUpdate.toJson())
-                .select()
-                .maybeSingle();
-        if (res == null) {
-          print('Inventory Updating Failed');
+    if (returnShopProvider()
+            .userShop()
+            ?.manageInventoryStorage ==
+        true) {
+      bool isOnline =
+          await ConnectivityProvider().isOnline();
+      inventoryUpdate.uuid = uuidGen();
+      inventoryUpdate.createdAt ??= DateTime.now();
+      if (isOnline) {
+        try {
+          Map<String, dynamic>? res =
+              await client
+                  .from(tableName)
+                  .insert(inventoryUpdate.toJson())
+                  .select()
+                  .maybeSingle();
+          if (res == null) {
+            print('Inventory Updating Failed');
+            return 0;
+          }
+          inventoryUpdates.add(
+            TempInventoryUpdateClass.fromJson(res),
+          );
+          await InventoryUpdatesFunc()
+              .createInventoryUpdates(
+                TempInventoryUpdateClass.fromJson(res),
+              );
+          notifyListeners();
+          // await getInventoryUpdates();
+          print(
+            '✅✅ Inventory Updating Successfully Online',
+          );
+          return 1;
+        } catch (e) {
+          print('Creating Online Failed: ${e.toString()}');
           return 0;
         }
-        inventoryUpdates.add(
-          TempInventoryUpdateClass.fromJson(res),
-        );
-        await InventoryUpdatesFunc().createInventoryUpdates(
-          TempInventoryUpdateClass.fromJson(res),
-        );
-        notifyListeners();
-        // await getInventoryUpdates();
-        print('✅✅ Inventory Updating Successfully Online');
-        return 1;
-      } catch (e) {
-        print('Creating Online Failed: ${e.toString()}');
-        return 0;
+      } else {
+        try {
+          await InventoryUpdatesFunc()
+              .createInventoryUpdates(inventoryUpdate);
+          await CreatedInventoryUpdatesFunc()
+              .createInventoryUpdate(
+                CreatedInventoryUpdatesClass(
+                  inventoryUpdate: inventoryUpdate,
+                ),
+              );
+          // await getInventoryUpdates();
+          return 1;
+        } catch (e) {
+          print('Offline Creating Failed: ${e.toString()}');
+          return 0;
+        }
       }
     } else {
-      try {
-        await InventoryUpdatesFunc().createInventoryUpdates(
-          inventoryUpdate,
-        );
-        await CreatedInventoryUpdatesFunc()
-            .createInventoryUpdate(
-              CreatedInventoryUpdatesClass(
-                inventoryUpdate: inventoryUpdate,
-              ),
-            );
-        // await getInventoryUpdates();
-        return 1;
-      } catch (e) {
-        print('Offline Creating Failed: ${e.toString()}');
-        return 0;
-      }
+      return 0;
     }
   }
 

@@ -1868,6 +1868,8 @@ class _InvoicePageMobileState
                                                                     invoice.originalCost,
                                                                 vat:
                                                                     invoice.vat,
+                                                                subStaffUuid:
+                                                                    invoice.subStaffUuid,
                                                               );
 
                                                               var res = await returnInvoicesProvider().makeInvoicePayment(
@@ -2123,6 +2125,8 @@ class _InvoicePageMobileState
                                                                     ),
                                                                     isMain:
                                                                         false,
+                                                                    isComingFromInvoice:
+                                                                        true,
                                                                   );
                                                                 },
                                                               ),

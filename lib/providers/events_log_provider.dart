@@ -7,6 +7,7 @@ import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
+import 'package:stockall/classes/temp_sub_staff/temp_sub_staff.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/local_database/events_log/events_log_func.dart';
 import 'package:stockall/local_database/events_log/unsync_funcs/created_events_log_func.dart';
@@ -200,6 +201,32 @@ class EventsLogProvider with ChangeNotifier {
       staffName:
           returnUserProviderSingle().currentUserMain!.name,
       amount: expenses.amount,
+    );
+  }
+
+  TempEventLogClass subStaffAdapter(
+    TempSubStaff subStaff,
+    int event,
+  ) {
+    return TempEventLogClass(
+      shopId: shopId(),
+      tableName: 'sub_staff',
+      title: subStaff.staffName!,
+      event:
+          event == 1
+              ? 'created'
+              : event == 2
+              ? 'updated'
+              : 'deleted',
+      message:
+          event == 1
+              ? 'SubStaff Created #${subStaff.uuid!.split('-').first.substring(0, 5).toUpperCase()}'
+              : event == 2
+              ? 'SubStaff Updated #${subStaff.uuid!.split('-').first.substring(0, 5).toUpperCase()}'
+              : 'SubStaff Deleted #${subStaff.uuid!.split('-').first.substring(0, 5).toUpperCase()}',
+      staffName:
+          returnUserProviderSingle().currentUserMain!.name,
+      // amount: subStaff.amount,
     );
   }
 

@@ -1818,6 +1818,10 @@ class _InvoicePageDesktopState
                                           ),
                                           child: InkWell(
                                             onTap: () {
+                                              print(
+                                                invoice
+                                                    .subStaffUuid,
+                                              );
                                               if (paymentController
                                                       .text
                                                       .isNotEmpty &&
@@ -1885,6 +1889,8 @@ class _InvoicePageDesktopState
                                                               invoice.originalCost,
                                                           vat:
                                                               invoice.vat,
+                                                          subStaffUuid:
+                                                              invoice.subStaffUuid,
                                                         );
 
                                                         var res = await returnInvoicesProvider().makeInvoicePayment(
@@ -2139,6 +2145,8 @@ class _InvoicePageDesktopState
                                                               ),
                                                               isMain:
                                                                   false,
+                                                              isComingFromInvoice:
+                                                                  true,
                                                             );
                                                           },
                                                         ),

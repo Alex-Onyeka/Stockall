@@ -582,6 +582,8 @@ class RefreshFunctions {
                   await getMainReceipts();
                 }
                 // await getInvoices();
+                await returnSubStaffProvider()
+                    .getSubStaffs();
                 await getEventLogs();
                 await getExpenses();
                 await getEmployees();
@@ -613,6 +615,7 @@ class RefreshFunctions {
         }
         // await getProductSalesRecord();
         // await getInvoices();
+        await returnSubStaffProvider().getSubStaffs();
         await getEventLogs();
         await getExpenses();
         await getEmployees();

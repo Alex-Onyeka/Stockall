@@ -17,6 +17,8 @@ class SalesAuth {
   final bool addItemToStockAfterCustomSale;
   final bool addCustomItemToCart;
   final bool addStockallNameOnReceipt;
+  final bool bulkSale;
+  final int numberOfMainCarts;
 
   SalesAuth({
     required this.useOfBarcode,
@@ -33,6 +35,8 @@ class SalesAuth {
     required this.addItemToStockAfterCustomSale,
     required this.addCustomItemToCart,
     required this.addStockallNameOnReceipt,
+    required this.bulkSale,
+    required this.numberOfMainCarts,
   });
 }
 
@@ -72,6 +76,41 @@ class SalesAuthAction {
     }
   }
 
+  bool allowBulkSaleAction({
+    required BuildContext context,
+    Function()? action,
+    Function()? failAction,
+  }) {
+    var plan =
+        returnSubcsription(
+          context,
+          listen: false,
+        ).subscription?.plan;
+    if (plan == null) {
+      return false;
+    }
+    if (plan == 3) {
+      action == null ? {} : action();
+      return true;
+    } else {
+      if (subPlans
+          .firstWhere((pl) => pl.plan == plan)
+          .salesAuth
+          .bulkSale) {
+        action == null ? {} : action();
+        return true;
+      } else {
+        if (action != null) {
+          showUnauthorizedDialog(context);
+          if (failAction != null) {
+            failAction();
+          }
+        }
+        return false;
+      }
+    }
+  }
+
   bool numberOfCartsAction({
     required BuildContext context,
     Function()? action,
@@ -88,7 +127,60 @@ class SalesAuthAction {
       action == null ? {} : action();
       return true;
     } else {
-      var cartsNum = returnSalesProvider().cartQueue.length;
+      var cartsNum =
+          returnSalesProvider()
+              .currentMainCart()
+              .cartQueue
+              .length;
+      if (cartsNum <
+          subPlans
+              .firstWhere((pl) => pl.plan == plan)
+              .salesAuth
+              .numberOfCarts) {
+        print(
+          subPlans
+              .firstWhere((pl) => pl.plan == plan)
+              .salesAuth
+              .numberOfCarts,
+        );
+        action == null ? {} : action();
+        return true;
+      } else {
+        if (action != null) {
+          print(
+            subPlans
+                .firstWhere((pl) => pl.plan == plan)
+                .salesAuth
+                .numberOfCarts,
+          );
+          showUnauthorizedDialog(context);
+        }
+        return false;
+      }
+    }
+  }
+
+  bool numberOfMainCartsAction({
+    required BuildContext context,
+    Function()? action,
+  }) {
+    var plan =
+        returnSubcsription(
+          context,
+          listen: false,
+        ).subscription?.plan;
+    if (plan == null) {
+      return false;
+    }
+    if (plan == 3) {
+      action == null ? {} : action();
+      return true;
+    } else {
+      var cartsNum =
+          returnSalesProvider()
+              .currentMainCart()
+              .cartQueue
+              .length;
       if (cartsNum <
           subPlans
               .firstWhere((pl) => pl.plan == plan)

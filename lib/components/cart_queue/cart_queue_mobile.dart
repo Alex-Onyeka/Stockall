@@ -51,7 +51,7 @@ class _CartQueueMobileState extends State<CartQueueMobile> {
               itemCount:
                   returnSalesProviderContext(
                     context,
-                  ).cartQueue.length,
+                  ).currentMainCart().cartQueue.length,
               itemBuilder: (context, index) {
                 var salesP = returnSalesProviderContext(
                   context,
@@ -59,7 +59,7 @@ class _CartQueueMobileState extends State<CartQueueMobile> {
                 var cartItem =
                     returnSalesProviderContext(
                       context,
-                    ).cartQueue[index];
+                    ).currentMainCart().cartQueue[index];
                 return Padding(
                   padding: const EdgeInsets.only(
                     right: 8.0,
@@ -155,6 +155,7 @@ class _CartQueueMobileState extends State<CartQueueMobile> {
                                             salesP
                                                 .cartIdCache &&
                                         salesP
+                                                .currentMainCart()
                                                 .cartQueue
                                                 .length >
                                             1
@@ -172,6 +173,7 @@ class _CartQueueMobileState extends State<CartQueueMobile> {
                                             salesP
                                                 .cartIdCache &&
                                         salesP
+                                                .currentMainCart()
                                                 .cartQueue
                                                 .length >
                                             1
@@ -191,15 +193,18 @@ class _CartQueueMobileState extends State<CartQueueMobile> {
                                       FontWeight.bold,
                                 ),
                                 salesP
+                                        .currentMainCart()
                                         .cartQueue[index]
                                         .isReceiptEdit
                                     ? 'Edit ${index + 1}'
                                     : salesP
+                                            .currentMainCart()
                                             .cartQueue[index]
                                             .cartName ==
                                         null
                                     ? 'Cart ${index + 1}'
                                     : salesP
+                                            .currentMainCart()
                                             .cartQueue[index]
                                             .cartName ??
                                         '',
@@ -210,6 +215,7 @@ class _CartQueueMobileState extends State<CartQueueMobile> {
                                         salesP
                                             .cartIdCache &&
                                     salesP
+                                            .currentMainCart()
                                             .cartQueue
                                             .length >
                                         1,
@@ -221,6 +227,7 @@ class _CartQueueMobileState extends State<CartQueueMobile> {
                                         salesP
                                             .cartIdCache &&
                                     salesP
+                                            .currentMainCart()
                                             .cartQueue
                                             .length >
                                         1,
@@ -318,7 +325,7 @@ class _CartQueueMobileState extends State<CartQueueMobile> {
             // visible:
             //     returnSalesProvider(
             //       context,
-            //     ).cartQueue.length <=
+            //     ).currentMainCart().cartQueue.length <=
             //     4,
             child: SubWrapper(
               isVisible:

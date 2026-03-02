@@ -421,6 +421,7 @@ class InvoicesProvider extends ChangeNotifier {
         originalCost: invoice.originalCost,
         balance:
             getBalance(invoice: invoice) - currentPayment,
+        subStaffUuid: invoice.subStaffUuid,
       );
 
       print('Checkout Started');
@@ -554,7 +555,9 @@ class InvoicesProvider extends ChangeNotifier {
           context: context,
         );
 
-        if (returnSalesProvider().cartQueue
+        if (returnSalesProvider()
+            .currentMainCart()
+            .cartQueue
             .where(
               (cart) =>
                   cart.invoiceUuidEdit != null &&
@@ -579,6 +582,7 @@ class InvoicesProvider extends ChangeNotifier {
             selectedCustomer: invoice.customerUuid,
             selectedCustomerName: invoice.customerName,
             isReceiptEdit: true,
+            subStaffUuid: invoice.subStaffUuid,
           );
           await returnSalesProvider().addNewCart(
             context,
@@ -599,7 +603,9 @@ class InvoicesProvider extends ChangeNotifier {
           notifyListeners();
         } else {
           await returnSalesProvider().selectCart(
-            returnSalesProvider().cartQueue
+            returnSalesProvider()
+                .currentMainCart()
+                .cartQueue
                 .where(
                   (cart) =>
                       cart.invoiceUuidEdit == invoice.uuid,
@@ -739,7 +745,10 @@ class InvoicesProvider extends ChangeNotifier {
             if (returnSalesProvider()
                 .currentCart()
                 .isReceiptEdit) {
-              if (returnSalesProvider().cartQueue.length ==
+              if (returnSalesProvider()
+                      .currentMainCart()
+                      .cartQueue
+                      .length ==
                   1) {
                 await returnSalesProvider().addNewCart(
                   context,

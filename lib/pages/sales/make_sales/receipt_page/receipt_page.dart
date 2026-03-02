@@ -9,10 +9,12 @@ import 'package:stockall/pages/sales/make_sales/receipt_page/platforms/receipt_p
 class ReceiptPage extends StatelessWidget {
   final CheckoutResponse response;
   final bool isMain;
+  final bool? isComingFromInvoice;
   const ReceiptPage({
     super.key,
     required this.response,
     required this.isMain,
+    this.isComingFromInvoice,
   });
 
   @override
@@ -24,6 +26,7 @@ class ReceiptPage extends StatelessWidget {
             return ReceiptPageMobile(
               isMain: isMain,
               response: response,
+              isComingFromInvoice: isComingFromInvoice,
             );
           } else {
             return InvoicePageMobile(
@@ -35,6 +38,7 @@ class ReceiptPage extends StatelessWidget {
             return ReceiptPageDesktop(
               isMain: isMain,
               response: response,
+              isComingFromInvoice: isComingFromInvoice,
             );
           } else {
             return InvoicePageDesktop(

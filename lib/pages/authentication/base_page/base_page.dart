@@ -52,18 +52,22 @@ class _BasePageState extends State<BasePage> {
         context,
         listen: false,
       ).setVisible();
+      getUserAuthId();
       if (returnUserProviderSingle().currentUserMain ==
           null) {
         await getUser();
       }
-      getUserAuthId();
-      if (returnSalesProvider().cartQueue.isEmpty) {
+      if (returnSalesProvider().mainCartQueue.isEmpty) {
         var cartId = returnSalesProvider().initCart();
-        await returnMultiDisplayProvider().createWindow(
-          cartId: cartId,
-        );
+        if (cartId.isEmpty) {
+          print('Cart Id is empty');
+        } else {
+          await returnMultiDisplayProvider().createWindow(
+            cartId: cartId,
+          );
+        }
         print(
-          'Cart Queue Length: ${returnSalesProvider().cartQueue}',
+          'Cart Queue Length: ${returnSalesProvider().currentMainCart().cartQueue}',
         );
       }
     });

@@ -142,6 +142,9 @@ class TempShopClass {
   @HiveField(45)
   bool? manageInventoryStorage;
 
+  @HiveField(46)
+  bool? bulkSale;
+
   TempShopClass({
     this.shopId,
     required this.createdAt,
@@ -189,6 +192,7 @@ class TempShopClass {
     this.isAllowedBySubscription,
     this.applyVAT,
     this.manageInventoryStorage,
+    this.bulkSale,
   });
 
   factory TempShopClass.fromJson(
@@ -257,6 +261,7 @@ class TempShopClass {
       applyVAT: json['apply_vat'] as bool?,
       manageInventoryStorage:
           json['manage_inventory_storage'] as bool?,
+      bulkSale: json['bulk_sale'] as bool?,
     );
   }
 
@@ -306,6 +311,7 @@ class TempShopClass {
       'fixed_discount': fixedDiscount?.toDouble(),
       'apply_vat': applyVAT,
       'manage_inventory_storage': manageInventoryStorage,
+      'bulk_sale': bulkSale,
     };
   }
 }

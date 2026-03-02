@@ -60,6 +60,7 @@ class ShopProvider extends ChangeNotifier {
             .eq('user_id', AuthService().currentUser!)
             .maybeSingle();
     shop.manageInventoryStorage = false;
+    shop.bulkSale = false;
 
     print('Subscription Result: $response');
     if (response == null) {
@@ -1102,6 +1103,70 @@ class ShopProvider extends ChangeNotifier {
         "❌ Failed to Update Manage Inventory Storage: ${e.toString()}",
       );
       ismanageInventoryStorageLoading = false;
+      notifyListeners();
+      return 0;
+    }
+  }
+
+  bool allowBulkSale = false;
+
+  Future<int> toggleAllowBulkSale() async {
+    bool isOnline = await connectivity.isOnline();
+    allowBulkSale = true;
+    notifyListeners();
+    try {
+      if (isOnline) {
+        Map<String, dynamic>? res =
+            await supabase
+                .from('shops')
+                .update({
+                  'bulk_sale': !userShop()!.bulkSale!,
+                })
+                .eq('shop_id', userShop()!.shopId!)
+                .select()
+                .maybeSingle();
+        if (res == null) {
+          print('Toggle Bulk Sale Update Failed');
+          allowBulkSale = false;
+          notifyListeners();
+          return 0;
+        }
+
+        var shops = await getUserShops();
+        setShops(shops);
+        allowBulkSale = false;
+        returnSalesProvider().selectFistMainCart();
+        notifyListeners();
+        return 1;
+      } else {
+        try {
+          userShop()!.updatedAt = DateTime.now();
+          userShop()!.bulkSale = !userShop()!.bulkSale!;
+          await ShopFunc().updateShop(userShop()!);
+          if (userShop() != null) {
+            await UpdatedShopFunc().createUpdatedShop(
+              UpdatedShop(shop: userShop()!),
+            );
+            // setShops(shop);
+            notifyListeners();
+          }
+          allowBulkSale = false;
+          notifyListeners();
+          return 1;
+        } catch (e) {
+          print(
+            "❌ Failed to Update Toggle Bulk Sale Offline: ${e.toString()}",
+          );
+          allowBulkSale = false;
+          notifyListeners();
+          return 0;
+        }
+      }
+    } catch (e) {
+      print(
+        "❌ Failed to Update Toggle Bulk Sale: ${e.toString()}",
+      );
+      allowBulkSale = false;
       notifyListeners();
       return 0;
     }

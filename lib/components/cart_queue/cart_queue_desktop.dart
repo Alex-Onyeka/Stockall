@@ -34,13 +34,13 @@ class _CartQueueDesktopState
         itemCount:
             returnSalesProviderContext(
               context,
-            ).cartQueue.length,
+            ).currentMainCart().cartQueue.length,
         itemBuilder: (context, index) {
           var salesP = returnSalesProviderContext(context);
           var cartItem =
               returnSalesProviderContext(
                 context,
-              ).cartQueue[index];
+              ).currentMainCart().cartQueue[index];
           return Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: Material(
@@ -49,7 +49,11 @@ class _CartQueueDesktopState
                 decoration: BoxDecoration(
                   color:
                       cartItem.id == salesP.cartIdCache &&
-                              salesP.cartQueue.length > 1
+                              salesP
+                                      .currentMainCart()
+                                      .cartQueue
+                                      .length >
+                                  1
                           ? Colors.grey.shade100
                           : const Color.fromARGB(
                             167,
@@ -114,7 +118,10 @@ class _CartQueueDesktopState
                       horizontal:
                           cartItem.id ==
                                       salesP.cartIdCache &&
-                                  salesP.cartQueue.length >
+                                  salesP
+                                          .currentMainCart()
+                                          .cartQueue
+                                          .length >
                                       1
                               ? 8
                               : 12,
@@ -128,7 +135,10 @@ class _CartQueueDesktopState
                       mainAxisAlignment:
                           cartItem.id ==
                                       salesP.cartIdCache &&
-                                  salesP.cartQueue.length >
+                                  salesP
+                                          .currentMainCart()
+                                          .cartQueue
+                                          .length >
                                       1
                               ? MainAxisAlignment
                                   .spaceBetween
@@ -145,15 +155,18 @@ class _CartQueueDesktopState
                             fontWeight: FontWeight.bold,
                           ),
                           salesP
+                                  .currentMainCart()
                                   .cartQueue[index]
                                   .isReceiptEdit
                               ? 'Edit ${index + 1}'
                               : salesP
+                                      .currentMainCart()
                                       .cartQueue[index]
                                       .cartName ==
                                   null
                               ? 'Cart ${index + 1}'
                               : salesP
+                                      .currentMainCart()
                                       .cartQueue[index]
                                       .cartName ??
                                   '',
@@ -162,14 +175,22 @@ class _CartQueueDesktopState
                           visible:
                               cartItem.id ==
                                   salesP.cartIdCache &&
-                              salesP.cartQueue.length > 1,
+                              salesP
+                                      .currentMainCart()
+                                      .cartQueue
+                                      .length >
+                                  1,
                           child: SizedBox(width: 10),
                         ),
                         Visibility(
                           visible:
                               cartItem.id ==
                                   salesP.cartIdCache &&
-                              salesP.cartQueue.length > 1,
+                              salesP
+                                      .currentMainCart()
+                                      .cartQueue
+                                      .length >
+                                  1,
                           child: Material(
                             color: Colors.transparent,
                             child: Ink(

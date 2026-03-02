@@ -134,6 +134,7 @@ List<Map<String, dynamic>> employees = [
       'Manage VAT',
       'View Items Summary',
       'View All Transaction Records',
+      'Toggle Bulk Sale',
       'Others',
     ],
   },
@@ -167,6 +168,7 @@ List<Map<String, dynamic>> employees = [
       'Manage VAT',
       'View Items Summary',
       'View All Transaction Records',
+      'Toggle Bulk Sale',
     ],
   },
   {
@@ -186,6 +188,7 @@ List<Map<String, dynamic>> employees = [
       'Delete Expenses',
       'Generate Barcode',
       'View Date',
+      'Toggle Bulk Sale',
     ],
   },
   {
@@ -263,6 +266,7 @@ class Authorizations {
   String viewItemsSummary = 'View Items Summary';
   String viewAllTransactionRecords =
       'View All Transaction Records';
+  String toggleBulkSale = 'Toggle Bulk Sale';
 }
 
 bool authorization({

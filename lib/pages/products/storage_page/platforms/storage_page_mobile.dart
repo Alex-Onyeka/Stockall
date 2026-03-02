@@ -149,6 +149,15 @@ class _StoragePageMobileState
       children: [
         Scaffold(
           appBar: appBar(
+            backAction: () {
+              if (sortIndex != 1) {
+                setState(() {
+                  sortIndex = 1;
+                });
+              } else {
+                Navigator.of(context).pop();
+              }
+            },
             context: context,
             title:
                 sortIndex == 1
@@ -1545,218 +1554,237 @@ class _TableRowRecordWidgetState
     extends State<TableRowRecordWidget> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: Colors.grey),
-          left: BorderSide(color: Colors.grey),
-          right: BorderSide(color: Colors.grey),
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return ProductDetailsPage(
+                productUuid: widget.product.uuid!,
+              );
+            },
+          ),
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: Colors.grey),
+            left: BorderSide(color: Colors.grey),
+            right: BorderSide(color: Colors.grey),
+          ),
         ),
-      ),
-      child: Row(
-        spacing: 0,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 2,
-            child: Container(
-              padding: EdgeInsets.all(5),
-              child: Center(
-                child: Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b3
-                                  .fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        (returnData(
-                                  context: context,
-                                ).productList.indexWhere(
-                                  (item) =>
-                                      item.uuid ==
-                                      widget.product.uuid,
-                                ) +
-                                1)
-                            .toString(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 9,
-            child: Container(
-              padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                border: Border(
-                  left: BorderSide(color: Colors.grey),
-                ),
-              ),
-              child: Center(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b3
-                                  .fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        widget.product.name,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 7,
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  right: BorderSide(color: Colors.grey),
-                  left: BorderSide(color: Colors.grey),
-                ),
-              ),
-              padding: EdgeInsets.all(5),
-              child: Center(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b3
-                                  .fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        ((widget.product.totalQttyInStorage ??
-                                    0) +
-                                (widget.product.quantity ??
-                                    0))
-                            .toString(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 7,
-            child: QuantityEditWidget(
-              isTotal: true,
-              product: widget.product,
-            ),
-          ),
-          Expanded(
-            flex: 7,
-            child: QuantityEditWidget(
-              isTotal: false,
-              product: widget.product,
-            ),
-          ),
-          Expanded(
-            flex: 7,
-            child: Container(
-              padding: EdgeInsets.all(5),
-              child: Center(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b3
-                                  .fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        formatMoneyBig(
-                          amount:
-                              widget.product.sellingPrice ??
-                              0,
-                          context: context,
+        child: Row(
+          spacing: 0,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 2,
+              child: Container(
+                padding: EdgeInsets.all(5),
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          style: TextStyle(
+                            fontSize:
+                                widget
+                                    .theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          (returnData(
+                                    context: context,
+                                  ).productList.indexWhere(
+                                    (item) =>
+                                        item.uuid ==
+                                        widget.product.uuid,
+                                  ) +
+                                  1)
+                              .toString(),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          Expanded(
-            flex: 7,
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  right: BorderSide(color: Colors.grey),
-                  left: BorderSide(color: Colors.grey),
+            Expanded(
+              flex: 9,
+              child: Container(
+                padding: EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  border: Border(
+                    left: BorderSide(color: Colors.grey),
+                  ),
                 ),
-              ),
-              padding: EdgeInsets.all(5),
-              child: Center(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b3
-                                  .fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        formatMoneyBig(
-                          amount: widget.product.costPrice,
-                          context: context,
+                child: Center(
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          style: TextStyle(
+                            fontSize:
+                                widget
+                                    .theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          widget.product.name,
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          Expanded(
-            flex: 5,
-            child: Container(
-              decoration: BoxDecoration(),
-              padding: EdgeInsets.all(5),
-              child: Center(
-                child: Row(
-                  children: [
-                    IsManagedToggleWidget(
-                      product: widget.product,
-                    ),
-                  ],
+            Expanded(
+              flex: 7,
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    right: BorderSide(color: Colors.grey),
+                    left: BorderSide(color: Colors.grey),
+                  ),
+                ),
+                padding: EdgeInsets.all(5),
+                child: Center(
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          style: TextStyle(
+                            fontSize:
+                                widget
+                                    .theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          ((widget.product.totalQttyInStorage ??
+                                      0) +
+                                  (widget
+                                          .product
+                                          .quantity ??
+                                      0))
+                              .toString(),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+            Expanded(
+              flex: 7,
+              child: QuantityEditWidget(
+                isTotal: true,
+                product: widget.product,
+              ),
+            ),
+            Expanded(
+              flex: 7,
+              child: QuantityEditWidget(
+                isTotal: false,
+                product: widget.product,
+              ),
+            ),
+            Expanded(
+              flex: 7,
+              child: Container(
+                padding: EdgeInsets.all(5),
+                child: Center(
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          style: TextStyle(
+                            fontSize:
+                                widget
+                                    .theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          formatMoneyBig(
+                            amount:
+                                widget
+                                    .product
+                                    .sellingPrice ??
+                                0,
+                            context: context,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 7,
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    right: BorderSide(color: Colors.grey),
+                    left: BorderSide(color: Colors.grey),
+                  ),
+                ),
+                padding: EdgeInsets.all(5),
+                child: Center(
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          style: TextStyle(
+                            fontSize:
+                                widget
+                                    .theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          formatMoneyBig(
+                            amount:
+                                widget.product.costPrice,
+                            context: context,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 5,
+              child: Container(
+                decoration: BoxDecoration(),
+                padding: EdgeInsets.all(5),
+                child: Center(
+                  child: Row(
+                    children: [
+                      IsManagedToggleWidget(
+                        product: widget.product,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

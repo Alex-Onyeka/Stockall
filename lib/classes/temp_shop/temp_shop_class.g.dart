@@ -61,13 +61,14 @@ class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
       isAllowedBySubscription: fields[43] as bool?,
       applyVAT: fields[44] as bool?,
       manageInventoryStorage: fields[45] as bool?,
+      bulkSale: fields[46] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempShopClass obj) {
     writer
-      ..writeByte(44)
+      ..writeByte(45)
       ..writeByte(0)
       ..write(obj.shopId)
       ..writeByte(1)
@@ -155,7 +156,9 @@ class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
       ..writeByte(44)
       ..write(obj.applyVAT)
       ..writeByte(45)
-      ..write(obj.manageInventoryStorage);
+      ..write(obj.manageInventoryStorage)
+      ..writeByte(46)
+      ..write(obj.bulkSale);
   }
 
   @override
