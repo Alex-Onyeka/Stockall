@@ -183794,27 +183794,30 @@ A.c7U.prototype={
 $1(a){return new A.dC(new A.c7S(this.a,this.b),null)},
 $S:56}
 A.c7S.prototype={
-$2(a,b){var s,r,q,p,o,n,m=null,l=this.b,k=A.S(15),j=A.a([new A.bv(0,B.ak,B.eD,B.N,10)],t.V),i=l.b,h=A.f(m,m,m,m,m,m,m,m,m,m,m,i.e.a,m,m,B.o,m,m,!0,m,m,m,m,m,m,m,m),g=this.a,f=t.p
-h=A.o(A.a([A.d("Edit "+(g.a.d?"Quantity in Storage":"Quantity In Sales"),m,m,m,m,h,m,m,m)],f),B.f,B.F,B.e,0)
-s=A.h(m,15,m)
-r=A.f(m,m,m,m,m,m,m,m,m,m,m,i.f.a,m,m,B.H,m,m,!0,m,m,m,m,m,m,m,m)
-q=g.a
+$2(a,b){var s,r,q,p,o,n,m,l=null,k=this.b,j=A.S(15),i=A.a([new A.bv(0,B.ak,B.eD,B.N,10)],t.V),h=k.b,g=A.f(l,l,l,l,l,l,l,l,l,l,l,h.e.a,l,l,B.o,l,l,!0,l,l,l,l,l,l,l,l),f=this.a,e=t.p
+g=A.o(A.a([A.d("Edit "+(f.a.d?"Quantity in Storage":"Quantity In Sales"),l,l,l,l,g,l,l,l)],e),B.f,B.F,B.e,0)
+s=A.h(l,15,l)
+r=A.f(l,l,l,l,l,l,l,l,l,l,l,h.r.a,l,l,B.H,l,l,!0,l,l,l,l,l,l,l,l)
+q=f.a
 p="Not Set"
 if(!q.d){q=q.c.CW
 if(q==null)q=p
 else q="Current Quantity In Sales: "+A.p(B.n.ac(q,0))}else{q=q.c.go
 if(q==null)q=p
-else q="Current Quantity In Storage: "+A.p(B.l.ac(q,0))}r=A.u(A.a([A.d(q,m,m,m,m,r,m,m,m),A.kk(g.f,m,"Enter Quantity Amount",new A.c7L(g,b),m,l,"Quantity")],f),B.f,B.h,B.e,20)
-q=A.h(m,20,m)
-p=g.d
+else q="Current Quantity In Storage: "+A.p(B.l.ac(q,0))}r=A.u(A.a([A.d(q,l,l,l,l,r,l,l,l),A.kk(f.f,l,"Enter Quantity Amount",new A.c7L(f,b),l,k,"Quantity")],e),B.f,B.h,B.e,20)
+q=A.h(l,20,l)
+p=f.d
 o=A.bd(!p?B.A:B.O,1)
-p=p?l.a.c:B.O
-i=i.r.a
-o=A.ax(!1,B.L,!0,m,A.a9(!1,m,!0,A.w(m,A.o(A.a([A.w(m,A.a3(B.bN,B.x,m,16),B.k,m,m,new A.E(p,m,o,m,m,m,B.ac),m,m,m,m,m,m,m,m),A.d("Add to Quantity",m,m,m,m,A.f(m,m,m,m,m,m,m,m,m,m,m,i,m,m,B.o,m,m,!0,m,m,m,m,m,m,m,m),m,m,m)],f),B.f,B.h,B.e,10),B.k,m,m,m,m,m,m,m,new A.y(10,10,10,10),m,m,m),m,!0,m,m,m,m,m,m,m,m,m,m,new A.c7M(g,b),m,m,m,m,m),B.k,B.O,0,m,m,m,m,m,B.X)
-p=g.d
+n=p?k.a.c:B.O
+o=A.w(l,A.a3(B.bN,B.x,l,14),B.k,l,l,new A.E(n,l,o,l,l,l,B.ac),l,l,l,l,l,l,l,l)
+h=h.w.a
+o=A.ax(!1,B.L,!0,l,A.a9(!1,l,!0,A.w(l,A.o(A.a([o,A.d("Add to Quantity",l,l,l,l,A.f(l,l,l,l,l,l,l,l,l,l,l,h,l,l,p?B.o:l,l,l,!0,l,l,l,l,l,l,l,l),l,l,l)],e),B.f,B.h,B.e,5),B.k,l,l,l,l,l,l,l,new A.y(10,10,10,10),l,l,l),l,!0,l,l,l,l,l,l,l,l,l,l,new A.c7M(f,b),l,l,l,l,l),B.k,B.O,0,l,l,l,l,l,B.X)
+p=f.d
 n=A.bd(p?B.A:B.O,1)
-p=!p?l.a.c:B.O
-return A.js(new A.c7N(),m,"",!1,!1,l,"",A.w(m,A.u(A.a([h,s,r,q,A.o(A.a([o,A.ax(!1,B.L,!0,m,A.a9(!1,m,!0,A.w(m,A.o(A.a([A.w(m,A.a3(B.bN,B.x,m,16),B.k,m,m,new A.E(p,m,n,m,m,m,B.ac),m,m,m,m,m,m,m,m),A.d("Replace Quantity",m,m,m,m,A.f(m,m,m,m,m,m,m,m,m,m,m,i,m,m,B.o,m,m,!0,m,m,m,m,m,m,m,m),m,m,m)],f),B.f,B.h,B.e,5),B.k,m,m,m,m,m,m,m,new A.y(10,10,10,10),m,m,m),m,!0,m,m,m,m,m,m,m,m,m,m,new A.c7O(g,b),m,m,m,m,m),B.k,B.O,0,m,m,m,m,m,B.X)],f),B.f,B.F,B.e,10),A.h(m,15,m),new A.d5("Update Quantity",new A.c7P(g),l,m),A.h(m,15,m),A.ax(!1,B.L,!0,m,new A.ty("Cancel",new A.c7Q(a),l,m,m,m),B.k,B.O,0,m,m,m,m,m,B.X)],f),B.f,B.F,B.e,0),B.k,m,m,new A.E(B.x,m,m,k,j,m,B.y),m,m,m,m,new A.y(40,40,40,40),m,m,500))},
+p=!p
+m=p?k.a.c:B.O
+n=A.w(l,A.a3(B.bN,B.x,l,14),B.k,l,l,new A.E(m,l,n,l,l,l,B.ac),l,l,l,l,l,l,l,l)
+return A.js(new A.c7N(),l,"",!1,!1,k,"",A.w(l,A.u(A.a([g,s,r,q,A.o(A.a([o,A.ax(!1,B.L,!0,l,A.a9(!1,l,!0,A.w(l,A.o(A.a([n,A.d("Replace Quantity",l,l,l,l,A.f(l,l,l,l,l,l,l,l,l,l,l,h,l,l,p?B.o:l,l,l,!0,l,l,l,l,l,l,l,l),l,l,l)],e),B.f,B.h,B.e,5),B.k,l,l,l,l,l,l,l,new A.y(10,10,10,10),l,l,l),l,!0,l,l,l,l,l,l,l,l,l,l,new A.c7O(f,b),l,l,l,l,l),B.k,B.O,0,l,l,l,l,l,B.X)],e),B.f,B.F,B.e,3),A.h(l,15,l),new A.d5("Update Quantity",new A.c7P(f),k,l),A.h(l,15,l),A.ax(!1,B.L,!0,l,new A.ty("Cancel",new A.c7Q(a),k,l,l,l),B.k,B.O,0,l,l,l,l,l,B.X)],e),B.f,B.F,B.e,0),B.k,l,l,new A.E(B.x,l,l,j,i,l,B.y),l,l,l,l,new A.y(15,15,15,15),l,l,500))},
 $S:110}
 A.c7N.prototype={
 $0(){},
@@ -183884,10 +183887,12 @@ A.c7V.prototype={
 $1(a){var s=this.a
 s.m(new A.c7R(s))
 s.f.aw(0,B.a6)
-s=A.a_(null)
+s=s.c
+s.toString
+if(A.W(s,null,t.l).w.a.a>650){s=A.a_(null)
 s.a.cY()
 s.C()
-A.a_(null).Hd()},
+A.a_(null).Hd()}},
 $S:6}
 A.c7R.prototype={
 $0(){this.a.d=!0},

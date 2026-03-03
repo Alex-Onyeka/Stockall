@@ -5,6 +5,8 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
+import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/platforms/product_details_desktop.dart';
 
@@ -88,7 +90,7 @@ class _QuantityEditWidgetState
                 showBottomActionButtons: false,
                 action: () {},
                 widget: Container(
-                  padding: EdgeInsets.all(40),
+                  padding: EdgeInsets.all(15),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(15),
@@ -113,13 +115,6 @@ class _QuantityEditWidgetState
                         mainAxisAlignment:
                             MainAxisAlignment.center,
                         children: [
-                          // Opacity(
-                          //   opacity: 0,
-                          //   child: IconButton(
-                          //     onPressed: () {},
-                          //     icon: Icon(Icons.clear),
-                          //   ),
-                          // ),
                           Text(
                             style: TextStyle(
                               fontSize:
@@ -131,12 +126,6 @@ class _QuantityEditWidgetState
                             ),
                             'Edit ${widget.isTotal ? 'Quantity in Storage' : "Quantity In Sales"}',
                           ),
-                          // IconButton(
-                          //   onPressed: () {
-                          //     Navigator.of(context).pop();
-                          //   },
-                          //   icon: Icon(Icons.clear),
-                          // ),
                         ],
                       ),
                       SizedBox(height: 15),
@@ -149,7 +138,7 @@ class _QuantityEditWidgetState
                               fontSize:
                                   theme
                                       .mobileTexts
-                                      .b2
+                                      .b3
                                       .fontSize,
                             ),
                             !widget.isTotal
@@ -257,7 +246,7 @@ class _QuantityEditWidgetState
                       Row(
                         mainAxisAlignment:
                             MainAxisAlignment.center,
-                        spacing: 10,
+                        spacing: 3,
                         children: [
                           Material(
                             color: Colors.transparent,
@@ -275,7 +264,7 @@ class _QuantityEditWidgetState
                                       vertical: 10,
                                     ),
                                 child: Row(
-                                  spacing: 10,
+                                  spacing: 5,
                                   children: [
                                     Container(
                                       decoration: BoxDecoration(
@@ -298,7 +287,7 @@ class _QuantityEditWidgetState
                                             BoxShape.circle,
                                       ),
                                       child: Icon(
-                                        size: 16,
+                                        size: 14,
                                         color: Colors.white,
                                         Icons.check,
                                       ),
@@ -308,10 +297,13 @@ class _QuantityEditWidgetState
                                         fontSize:
                                             theme
                                                 .mobileTexts
-                                                .b3
+                                                .b4
                                                 .fontSize,
                                         fontWeight:
-                                            FontWeight.bold,
+                                            isAddToQuantity
+                                                ? FontWeight
+                                                    .bold
+                                                : null,
                                       ),
                                       'Add to Quantity',
                                     ),
@@ -359,7 +351,7 @@ class _QuantityEditWidgetState
                                             BoxShape.circle,
                                       ),
                                       child: Icon(
-                                        size: 16,
+                                        size: 14,
                                         color: Colors.white,
                                         Icons.check,
                                       ),
@@ -369,10 +361,13 @@ class _QuantityEditWidgetState
                                         fontSize:
                                             theme
                                                 .mobileTexts
-                                                .b3
+                                                .b4
                                                 .fontSize,
                                         fontWeight:
-                                            FontWeight.bold,
+                                            !isAddToQuantity
+                                                ? FontWeight
+                                                    .bold
+                                                : null,
                                       ),
                                       'Replace Quantity',
                                     ),
@@ -413,8 +408,10 @@ class _QuantityEditWidgetState
         isAddToQuantity = true;
       });
       controller.clear();
-      returnData().requestFocusSearchNode();
-      returnData().addSearchNodeListener();
+      if (screenWidth(context) > mobileScreen) {
+        returnData().requestFocusSearchNode();
+        returnData().addSearchNodeListener();
+      }
     });
   }
 
