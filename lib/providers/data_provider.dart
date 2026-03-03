@@ -914,7 +914,7 @@ class DataProvider extends ChangeNotifier {
   ) async {
     bool isOnline = await connectivity.isOnline();
     // setAllowedRange(context: context)
-    productList.clear();
+    // productList.clear();
     print('✅✅ Products List Cleared');
     if (isOnline) {
       final data = await supabase
