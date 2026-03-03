@@ -174194,7 +174194,7 @@ l=a1.d
 a0=A.H(new A.bS(new A.b4(1,p),a2,a2,A.au(!1,B.K,!0,a2,A.cr(a2,A.w(a2,A.at(B.a1,A.a([b3,A.H(A.cr(a2,A.u(A.a([A.a2(B.cN,B.x,a2,16)],c),B.f,B.F,B.a4,0),B.ao,!1,a2,a2,a2,a2,a2,a2,a2,a2,a2,a2,a2,a2,a2,new A.bBi(a1),a2,a2,a2,a2,a2,a2),!l)],c),B.z,B.Q),B.k,a2,a2,new A.F(o,a2,a2,new A.e0(new A.be(5,5),B.as,new A.be(5,5),B.as),a2,a2,B.y),a2,a2,a2,a2,new A.y(10,15,m,15),a2,a2,a2),B.ao,!1,a2,a2,a2,a2,a2,a2,a2,a2,a2,a2,a2,a2,a2,new A.bBj(a1),a2,a2,a2,a2,a2,a2),B.k,B.O,2,a2,a2,a2,a2,a2,B.W),a2),a0)
 b3=t.Cx
 p=A.e(b6,!0,b3).c
-b3="1.1.15.0"!==(p==null?a2:p.f)&&!A.e(b6,!0,b3).d
+b3="1.1.16.0"!==(p==null?a2:p.f)&&!A.e(b6,!0,b3).d
 i=A.a([new A.bv(10,B.ak,B.u_,B.N,20)],i)
 p=A.S(5)
 m=A.o(A.a([A.ep(A.d_(a2,a2,a2,A.a2(B.aa,a2,a2,a2),a2,a2,new A.bBk(),a2,a2,a2,a2),0),A.d("NEW UPDATE AVAILABLE",a2,a2,a2,a2,A.f(a2,a2,a2,a2,a2,a2,a2,a2,a2,a2,a2,a2,a2,a2,B.o,a2,a2,!0,a2,a2,a2,a2,a2,a2,a2,a2),a2,a2,a2),A.d_(a2,a2,a2,A.a2(B.aa,a2,a2,a2),a2,a2,new A.bBl(b6),a2,a2,a2,a2)],c),B.f,B.G,B.e,10)
@@ -174719,7 +174719,7 @@ j=m.e
 b1=A.u(A.a([q,A.I(A.e8(B.x,new A.J(B.aV,A.h4(A.a([n,l,k,g,f,A.H(A.u(A.a([A.o(A.a([A.d("Quick Actions",a4,a4,a4,a4,A.f(a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,j.a,a4,a4,j.c,a4,a4,!0,a4,a4,a4,a4,a4,a4,a4,a4),a4,a4,a4)],e),B.f,B.h,B.e,0),A.h(a4,15,a4),A.h(A.d4(new A.bCK(a3,b0)),a4,1/0)],e),B.f,B.h,B.e,0),b1!=="Store Keeper"),A.h(a4,30,a4)],e),a4,B.U,!1),a4),o,10,new A.bCL(b5),2.5),1)],e),B.f,B.h,B.e,0)
 q=t.Cx
 n=A.e(b5,!0,q).c
-n="1.1.0+15"!==(n==null?a4:n.e)&&!A.e(b5,!0,q).d
+n="1.1.0+16"!==(n==null?a4:n.e)&&!A.e(b5,!0,q).d
 l=t.V
 k=A.a([new A.bv(10,B.ak,B.u_,B.N,20)],l)
 j=A.S(5)
@@ -174755,7 +174755,7 @@ j=A.H(A.o(A.a([A.u(A.a([A.a2(B.bo,B.x,a4,16)],e),B.f,B.F,B.a4,0),A.h(a4,a4,10),A
 f=a3.d
 k=A.H(new A.bS(new A.b4(1,i),a4,a4,A.au(!1,B.K,!0,a4,A.cr(a4,A.w(a4,A.at(B.a1,A.a([j,A.H(A.cr(a4,A.u(A.a([A.a2(B.cN,B.x,a4,16)],e),B.f,B.F,B.a4,0),B.ao,!1,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,new A.bCy(a3),a4,a4,a4,a4,a4,a4),!f)],e),B.z,B.Q),B.k,a4,a4,new A.F(p,a4,a4,new A.e0(new A.be(5,5),B.as,new A.be(5,5),B.as),a4,a4,B.y),a4,a4,a4,a4,new A.y(10,15,h,15),a4,a4,a4),B.ao,!1,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,new A.bCz(a3),a4,a4,a4,a4,a4,a4),B.k,B.O,2,a4,a4,a4,a4,a4,B.W),a4),k)
 j=A.e(b5,!0,q).c
-q="1.1.15.0"!==(j==null?a4:j.f)&&!A.e(b5,!0,q).d
+q="1.1.16.0"!==(j==null?a4:j.f)&&!A.e(b5,!0,q).d
 l=A.a([new A.bv(10,B.ak,B.u_,B.N,20)],l)
 j=A.S(5)
 i=A.o(A.a([A.ep(A.d_(a4,a4,a4,A.a2(B.aa,a4,a4,a4),a4,a4,new A.bCA(),a4,a4,a4,a4),0),A.d("APP UPDATE AVAILABLE",a4,a4,a4,a4,A.f(a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,a4,B.o,a4,a4,!0,a4,a4,a4,a4,a4,a4,a4,a4),a4,a4,a4),A.d_(a4,a4,a4,A.a2(B.aa,a4,a4,a4),a4,a4,new A.bCB(b5),a4,a4,a4,a4)],e),B.f,B.G,B.e,10)
@@ -194597,7 +194597,7 @@ f=A.ek(new A.cfE(),b,b,18,B.l3,b,b,"Privacy P. & Terms/C.")
 e=A.ek(new A.cfF(),b,b,18,B.Eq,b,b,"Go to Wesbite.")
 d=A.br(a2)
 a6=a6.w.a
-a6=A.u(A.a([A.I(A.bI(A.au(!1,B.K,!0,b,A.u(A.a([a4,a7,a5,A.u(A.a([s,r,q,new A.V6(b),p,new A.a_D(b),o,n,m,l,k,j,i,h,g,f,e,A.H(A.ek(new A.cfG(c,a9,a3),B.cg,b,18,B.d0,b,b,a2),d)],a8),B.f,B.h,B.e,0),A.h(b,A.W(a9,b,t.l).w.a.b*0.2,b)],a8),B.f,B.h,B.e,0),B.k,B.O,0,b,b,b,b,b,B.W),B.z,b,b,b,B.U),1),A.h(b,15,b),A.w(b,new A.J(B.aY,A.o(A.a([A.o(A.a([A.d("Current Version:",b,b,b,b,A.f(b,b,B.de,b,b,b,b,b,b,b,b,a6,B.i_,b,b,b,b,!0,b,b,b,b,b,b,b,b),b,b,b)],a8),B.f,B.h,B.e,10),A.d("1.1.15.0",b,b,b,b,A.f(b,b,B.bj,b,b,b,b,b,b,b,b,a6,B.i_,b,B.o,b,b,!0,b,b,b,b,b,b,b,b),b,b,b)],a8),B.f,B.F,B.e,10),b),B.k,B.O,b,b,b,20,b,b,b,b,b,b),A.h(b,10,b)],a8),B.f,B.h,B.e,0)
+a6=A.u(A.a([A.I(A.bI(A.au(!1,B.K,!0,b,A.u(A.a([a4,a7,a5,A.u(A.a([s,r,q,new A.V6(b),p,new A.a_D(b),o,n,m,l,k,j,i,h,g,f,e,A.H(A.ek(new A.cfG(c,a9,a3),B.cg,b,18,B.d0,b,b,a2),d)],a8),B.f,B.h,B.e,0),A.h(b,A.W(a9,b,t.l).w.a.b*0.2,b)],a8),B.f,B.h,B.e,0),B.k,B.O,0,b,b,b,b,b,B.W),B.z,b,b,b,B.U),1),A.h(b,15,b),A.w(b,new A.J(B.aY,A.o(A.a([A.o(A.a([A.d("Current Version:",b,b,b,b,A.f(b,b,B.de,b,b,b,b,b,b,b,b,a6,B.i_,b,b,b,b,!0,b,b,b,b,b,b,b,b),b,b,b)],a8),B.f,B.h,B.e,10),A.d("1.1.16.0",b,b,b,b,A.f(b,b,B.bj,b,b,b,b,b,b,b,b,a6,B.i_,b,B.o,b,b,!0,b,b,b,b,b,b,b,b),b,b,b)],a8),B.f,B.F,B.e,10),b),B.k,B.O,b,b,b,20,b,b,b,b,b,b),A.h(b,10,b)],a8),B.f,B.h,B.e,0)
 d=c.r
 return A.at(B.a1,A.a([new A.j6(b,a6,b),A.H(A.e(a9,!1,t.r).ba("Deleting Store"),d)],a8),B.z,B.Q)}}
 A.cfx.prototype={
@@ -195008,7 +195008,7 @@ e=t.p
 f=A.I(A.h4(A.a([a4,a5,s,r,q,p,new A.V6(c),o,new A.a_D(c),n,m,l,k,j,i,h,g,A.H(A.ek(new A.cgH(d,a6,a2),B.cg,c,18,B.d0,c,c,a1),f)],e),c,B.U,!1),1)
 g=A.h(c,15,c)
 a2=a2.b.w.a
-a2=A.aL(a3,c,A.hw(!0,new A.J(B.j9,A.u(A.a([f,g,A.w(c,new A.J(B.aY,A.o(A.a([A.o(A.a([A.d("Current Version:",c,c,c,c,A.f(c,c,B.de,c,c,c,c,c,c,c,c,a2,B.i_,c,c,c,c,!0,c,c,c,c,c,c,c,c),c,c,c)],e),B.f,B.h,B.e,10),A.d("1.1.0+15",c,c,c,c,A.f(c,c,B.bj,c,c,c,c,c,c,c,c,a2,B.i_,c,B.o,c,c,!0,c,c,c,c,c,c,c,c),c,c,c)],e),B.f,B.F,B.e,10),c),B.k,B.O,c,c,c,20,c,c,c,c,c,c),A.h(c,20,c)],e),B.f,B.h,B.e,0),c),B.ay,!0),c,c,c,c,c,c)
+a2=A.aL(a3,c,A.hw(!0,new A.J(B.j9,A.u(A.a([f,g,A.w(c,new A.J(B.aY,A.o(A.a([A.o(A.a([A.d("Current Version:",c,c,c,c,A.f(c,c,B.de,c,c,c,c,c,c,c,c,a2,B.i_,c,c,c,c,!0,c,c,c,c,c,c,c,c),c,c,c)],e),B.f,B.h,B.e,10),A.d("1.1.0+16",c,c,c,c,A.f(c,c,B.bj,c,c,c,c,c,c,c,c,a2,B.i_,c,B.o,c,c,!0,c,c,c,c,c,c,c,c),c,c,c)],e),B.f,B.F,B.e,10),c),B.k,B.O,c,c,c,20,c,c,c,c,c,c),A.h(c,20,c)],e),B.f,B.h,B.e,0),c),B.ay,!0),c,c,c,c,c,c)
 g=d.r
 return A.at(B.a1,A.a([a2,A.H(A.e(a6,!1,t.r).ba("Deleting Store"),g)],e),B.z,B.Q)}}
 A.cgy.prototype={
@@ -201101,10 +201101,10 @@ $.cFC().Se(A.cN3(m))
 n.C()
 A.t("App Version gotten Successfully")
 if(A.W(a,null,t.l).w.a.a<=650){k=n.c
-if((k==null?null:k.e)!=="1.1.0+15"){n.d=!1
+if((k==null?null:k.e)!=="1.1.0+16"){n.d=!1
 n.C()}else{n.d=!0
 n.C()}}else{k=n.c
-if((k==null?null:k.f)!=="1.1.15.0"){n.d=!1
+if((k==null?null:k.f)!=="1.1.16.0"){n.d=!1
 n.C()}else{n.d=!0
 n.C()}}k=n.c
 q=k
@@ -201140,10 +201140,10 @@ k=k.aG()
 k=k.b.$1(J.iJ(k.a))}else k=null
 n.c=k
 if(A.W(a,null,t.l).w.a.a<=650){k=n.c
-if((k==null?null:k.e)!=="1.1.0+15"){n.d=!1
+if((k==null?null:k.e)!=="1.1.0+16"){n.d=!1
 n.C()}else{n.d=!0
 n.C()}}else{k=n.c
-if((k==null?null:k.f)!=="1.1.15.0"){n.d=!1
+if((k==null?null:k.f)!=="1.1.16.0"){n.d=!1
 n.C()}else{n.d=!0
 n.C()}}A.t("App version gotten Offline")
 q=n.c
