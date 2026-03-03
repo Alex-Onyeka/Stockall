@@ -24,6 +24,7 @@ import 'package:stockall/services/auth_service.dart';
 class TotalSalesDesktop extends StatefulWidget {
   final String? id;
   final String? customerUuid;
+  final String? subStaffId;
   // final bool? isInvoice;
   final bool? turnOff;
   const TotalSalesDesktop({
@@ -32,6 +33,7 @@ class TotalSalesDesktop extends StatefulWidget {
     this.customerUuid,
     // this.isInvoice,
     this.turnOff,
+    this.subStaffId,
   });
 
   @override
@@ -127,7 +129,8 @@ class _TotalSalesDesktopState
               Visibility(
                 visible:
                     widget.id == null &&
-                    widget.customerUuid == null,
+                    widget.customerUuid == null &&
+                    widget.subStaffId == null,
                 child: MyDrawerWidget(
                   globalKey: _scaffoldKey,
                   action: () {
@@ -393,6 +396,9 @@ class _TotalSalesDesktopState
                                                   staffId:
                                                       widget
                                                           .id,
+                                                  subStaffId:
+                                                      widget
+                                                          .subStaffId,
                                                 ),
                                               ),
                                               ValueSummaryTabSmall(
@@ -411,6 +417,24 @@ class _TotalSalesDesktopState
                                                               ) =>
                                                                   receipt.staffId ==
                                                                   widget.id,
+                                                            )
+                                                            .toList()
+                                                            .length
+                                                            .toDouble()
+                                                        : widget.subStaffId !=
+                                                            null
+                                                        ? returnReceiptProvider(
+                                                              context,
+                                                            )
+                                                            .returnReceipts(
+                                                              // context,
+                                                            )
+                                                            .where(
+                                                              (
+                                                                receipt,
+                                                              ) =>
+                                                                  receipt.subStaffUuid ==
+                                                                  widget.subStaffId,
                                                             )
                                                             .toList()
                                                             .length
@@ -580,6 +604,22 @@ class _TotalSalesDesktopState
                                                   )
                                                   .toList()
                                                   .isEmpty
+                                              : widget.subStaffId !=
+                                                  null
+                                              ? returnReceiptProvider(
+                                                    context,
+                                                  )
+                                                  .returnReceipts(
+                                                    // context,
+                                                  )
+                                                  .toList()
+                                                  .where(
+                                                    (rec) =>
+                                                        rec.subStaffUuid ==
+                                                        widget.subStaffId,
+                                                  )
+                                                  .toList()
+                                                  .isEmpty
                                               : widget.customerUuid !=
                                                   null
                                               ? returnReceiptProvider(
@@ -658,6 +698,23 @@ class _TotalSalesDesktopState
                                                             )
                                                             .toList()
                                                             .length
+                                                        : widget.subStaffId !=
+                                                            null
+                                                        ? returnReceiptProvider(
+                                                              context,
+                                                            )
+                                                            .returnReceipts(
+                                                              // context,
+                                                            )
+                                                            .where(
+                                                              (
+                                                                rec,
+                                                              ) =>
+                                                                  rec.subStaffUuid ==
+                                                                  widget.subStaffId,
+                                                            )
+                                                            .toList()
+                                                            .length
                                                         : widget.customerUuid !=
                                                             null
                                                         ? returnReceiptProvider(
@@ -700,6 +757,22 @@ class _TotalSalesDesktopState
                                                                 ) =>
                                                                     rec.staffId ==
                                                                     widget.id,
+                                                              )
+                                                              .toList()[index]
+                                                          : widget.subStaffId !=
+                                                              null
+                                                          ? returnReceiptProvider(
+                                                                context,
+                                                              )
+                                                              .returnReceipts(
+                                                                // context,
+                                                              )
+                                                              .where(
+                                                                (
+                                                                  rec,
+                                                                ) =>
+                                                                    rec.subStaffUuid ==
+                                                                    widget.subStaffId,
                                                               )
                                                               .toList()[index]
                                                           : widget.customerUuid !=
@@ -867,6 +940,7 @@ class _TotalSalesDesktopState
                             agentUuid: widget.id,
                             customerUuid:
                                 widget.customerUuid,
+                            subStaffId: widget.subStaffId,
                           );
                         }
                       },
@@ -877,7 +951,8 @@ class _TotalSalesDesktopState
               Visibility(
                 visible:
                     widget.id == null &&
-                    widget.customerUuid == null,
+                    widget.customerUuid == null &&
+                    widget.subStaffId == null,
                 child: RightSideBar(theme: theme),
               ),
             ],

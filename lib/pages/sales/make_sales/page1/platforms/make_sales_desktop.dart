@@ -2993,84 +2993,125 @@ class _SubStaffSelectionWidgetState
                           children: [
                             Divider(),
                             Expanded(
-                              child: ListView(
-                                shrinkWrap: true,
-                                children:
-                                    returnSalesProviderContext(
-                                          context,
-                                        ).mainCartQueue
-                                        .map(
-                                          (cart) => InkWell(
-                                            onTap: () {
-                                              returnSalesProvider()
-                                                  .selectMainCart(
-                                                    cart.mainCartId!,
-                                                  );
-                                            },
-                                            child: Padding(
-                                              padding:
-                                                  EdgeInsetsGeometry.fromLTRB(
-                                                    8,
-                                                    2,
-                                                    2,
-                                                    2,
-                                                  ),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Row(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment.center,
-                                                    spacing:
-                                                        5,
-                                                    children: [
-                                                      Icon(
-                                                        size:
-                                                            14,
-                                                        color:
-                                                            Colors.grey.shade400,
-                                                        Icons.book,
-                                                      ),
-                                                      Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              theme.mobileTexts.b4.fontSize,
-                                                          fontWeight:
-                                                              returnSalesProviderContext(
-                                                                        context,
-                                                                      ).currentMainCart().mainCartId ==
-                                                                      cart.mainCartId
-                                                                  ? FontWeight.bold
-                                                                  : null,
-                                                        ),
-                                                        cart.cartName() ??
-                                                            'Default  ${returnSalesProviderContext(context).mainCartQueue.indexOf(cart) + 1}',
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  SizedBox(
-                                                    height:
-                                                        40,
-                                                    child: Row(
+                              child: RefreshIndicator(
+                                onRefresh: () {
+                                  return returnSubStaffProvider()
+                                      .getSubStaffs();
+                                },
+                                backgroundColor:
+                                    Colors.white,
+                                color:
+                                    theme
+                                        .lightModeColor
+                                        .prColor250,
+                                displacement: 10,
+                                strokeWidth: 2,
+                                child: ListView(
+                                  shrinkWrap: true,
+                                  children:
+                                      returnSalesProviderContext(
+                                            context,
+                                          ).mainCartQueue
+                                          .map(
+                                            (
+                                              cart,
+                                            ) => InkWell(
+                                              onTap: () {
+                                                returnSalesProvider()
+                                                    .selectMainCart(
+                                                      cart.mainCartId!,
+                                                    );
+                                              },
+                                              child: Padding(
+                                                padding:
+                                                    EdgeInsetsGeometry.fromLTRB(
+                                                      8,
+                                                      2,
+                                                      2,
+                                                      2,
+                                                    ),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Row(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment.center,
                                                       spacing:
                                                           5,
                                                       children: [
-                                                        Visibility(
-                                                          visible:
-                                                              returnSalesProviderContext(
-                                                                    context,
-                                                                  ).mainCartQueue.length >
-                                                                  1 ||
-                                                              cart.subStaff !=
-                                                                  null,
-                                                          child: IconButton(
-                                                            onPressed: () {
-                                                              if (cart.subStaff ==
-                                                                  null) {
-                                                                if (returnSalesProvider().mainCartQueue.length >
-                                                                    1) {
+                                                        Icon(
+                                                          size:
+                                                              14,
+                                                          color:
+                                                              Colors.grey.shade400,
+                                                          Icons.book,
+                                                        ),
+                                                        Text(
+                                                          style: TextStyle(
+                                                            fontSize:
+                                                                theme.mobileTexts.b4.fontSize,
+                                                            fontWeight:
+                                                                returnSalesProviderContext(
+                                                                          context,
+                                                                        ).currentMainCart().mainCartId ==
+                                                                        cart.mainCartId
+                                                                    ? FontWeight.bold
+                                                                    : null,
+                                                          ),
+                                                          cart.cartName() ??
+                                                              'Default  ${returnSalesProviderContext(context).mainCartQueue.indexOf(cart) + 1}',
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    SizedBox(
+                                                      height:
+                                                          40,
+                                                      child: Row(
+                                                        spacing:
+                                                            5,
+                                                        children: [
+                                                          Visibility(
+                                                            visible:
+                                                                returnSalesProviderContext(
+                                                                      context,
+                                                                    ).mainCartQueue.length >
+                                                                    1 ||
+                                                                cart.subStaff !=
+                                                                    null,
+                                                            child: IconButton(
+                                                              onPressed: () {
+                                                                if (cart.subStaff ==
+                                                                    null) {
+                                                                  if (returnSalesProvider().mainCartQueue.length >
+                                                                      1) {
+                                                                    showDialog(
+                                                                      context:
+                                                                          context,
+                                                                      builder: (
+                                                                        context,
+                                                                      ) {
+                                                                        return ConfirmationAlert(
+                                                                          theme:
+                                                                              theme,
+                                                                          message:
+                                                                              'You are about to Delete Entire Bulk Sale Terminal, This action can not be reversed are you sure you want to proceed?',
+                                                                          title:
+                                                                              'Are you sure?',
+                                                                          action: () {
+                                                                            returnSalesProvider().deleteMainCart(
+                                                                              cart.mainCartId!,
+                                                                            );
+                                                                            Navigator.of(
+                                                                              context,
+                                                                            ).pop();
+                                                                          },
+                                                                        );
+                                                                      },
+                                                                    );
+                                                                  }
+                                                                } else {
                                                                   showDialog(
                                                                     context:
                                                                         context,
@@ -3081,12 +3122,15 @@ class _SubStaffSelectionWidgetState
                                                                         theme:
                                                                             theme,
                                                                         message:
-                                                                            'You are about to Delete Entire Bulk Sale Terminal, This action can not be reversed are you sure you want to proceed?',
+                                                                            'You are about to Remove this Staff from this Bulk Sale Terminal, This action can not be reversed are you sure you want to proceed?',
                                                                         title:
-                                                                            'Are you sure?',
+                                                                            'Remove Staff',
                                                                         action: () {
-                                                                          returnSalesProvider().deleteMainCart(
+                                                                          returnSalesProvider().removeStaffFromMainCart(
                                                                             cart.mainCartId!,
+                                                                          );
+                                                                          print(
+                                                                            cart.subStaff?.staffName,
                                                                           );
                                                                           Navigator.of(
                                                                             context,
@@ -3096,112 +3140,84 @@ class _SubStaffSelectionWidgetState
                                                                     },
                                                                   );
                                                                 }
-                                                              } else {
+                                                              },
+                                                              icon: Icon(
+                                                                size:
+                                                                    18,
+                                                                color:
+                                                                    Colors.red,
+                                                                Icons.clear,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          Visibility(
+                                                            visible:
+                                                                cart.subStaff ==
+                                                                null,
+                                                            child: InkWell(
+                                                              onTap: () {
                                                                 showDialog(
                                                                   context:
                                                                       context,
                                                                   builder: (
-                                                                    context,
+                                                                    templateDialog,
                                                                   ) {
-                                                                    return ConfirmationAlert(
+                                                                    return DialogTemplate(
                                                                       theme:
                                                                           theme,
                                                                       message:
-                                                                          'You are about to Remove this Staff from this Bulk Sale Terminal, This action can not be reversed are you sure you want to proceed?',
+                                                                          'Select a Sub Staff to add to this.',
                                                                       title:
-                                                                          'Remove Staff',
+                                                                          'Select Sub Staff',
                                                                       action: () {
-                                                                        returnSalesProvider().removeStaffFromMainCart(
-                                                                          cart.mainCartId!,
-                                                                        );
-                                                                        print(
-                                                                          cart.subStaff?.staffName,
-                                                                        );
-                                                                        Navigator.of(
-                                                                          context,
-                                                                        ).pop();
+                                                                        if (returnSalesProvider().selectedSubStaff !=
+                                                                            null) {
+                                                                          returnSalesProvider().addSubStaffToMainCart(
+                                                                            cart.mainCartId!,
+                                                                          );
+                                                                          Navigator.of(
+                                                                            templateDialog,
+                                                                          ).pop();
+                                                                        }
                                                                       },
+                                                                      widget: SelectSubStaffListWidget(
+                                                                        staff:
+                                                                            cart.subStaff,
+                                                                      ),
                                                                     );
                                                                   },
+                                                                ).then(
+                                                                  (
+                                                                    _,
+                                                                  ) {
+                                                                    returnSalesProvider().selectSubStaff();
+                                                                  },
                                                                 );
-                                                              }
-                                                            },
-                                                            icon: Icon(
-                                                              size:
-                                                                  18,
-                                                              color:
-                                                                  Colors.red,
-                                                              Icons.clear,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        Visibility(
-                                                          visible:
-                                                              cart.subStaff ==
-                                                              null,
-                                                          child: InkWell(
-                                                            onTap: () {
-                                                              showDialog(
-                                                                context:
-                                                                    context,
-                                                                builder: (
-                                                                  templateDialog,
-                                                                ) {
-                                                                  return DialogTemplate(
-                                                                    theme:
-                                                                        theme,
-                                                                    message:
-                                                                        'Select a Sub Staff to add to this.',
-                                                                    title:
-                                                                        'Select Sub Staff',
-                                                                    action: () {
-                                                                      if (returnSalesProvider().selectedSubStaff !=
-                                                                          null) {
-                                                                        returnSalesProvider().addSubStaffToMainCart(
-                                                                          cart.mainCartId!,
-                                                                        );
-                                                                        Navigator.of(
-                                                                          templateDialog,
-                                                                        ).pop();
-                                                                      }
-                                                                    },
-                                                                    widget: SelectSubStaffListWidget(
-                                                                      staff:
-                                                                          cart.subStaff,
-                                                                    ),
-                                                                  );
-                                                                },
-                                                              ).then(
-                                                                (
-                                                                  _,
-                                                                ) {
-                                                                  returnSalesProvider().selectSubStaff();
-                                                                },
-                                                              );
-                                                            },
-                                                            child: Padding(
-                                                              padding: EdgeInsetsGeometry.all(
-                                                                8,
-                                                              ),
-                                                              child: Icon(
-                                                                size:
-                                                                    18,
-                                                                color:
-                                                                    Colors.grey,
-                                                                Icons.edit,
+                                                              },
+                                                              child: Padding(
+                                                                padding: EdgeInsetsGeometry.all(
+                                                                  8,
+                                                                ),
+                                                                child: Icon(
+                                                                  size:
+                                                                      18,
+                                                                  color:
+                                                                      Colors.grey,
+                                                                  Icons.edit,
+                                                                ),
                                                               ),
                                                             ),
                                                           ),
-                                                        ),
-                                                      ],
+                                                        ],
+                                                      ),
                                                     ),
-                                                  ),
-                                                ],
+                                                  ],
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        )
-                                        .toList(),
+                                          )
+                                          .toList(),
+                                ),
                               ),
                             ),
                             Divider(),

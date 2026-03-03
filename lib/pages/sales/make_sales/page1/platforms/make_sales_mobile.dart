@@ -1944,90 +1944,81 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                   const EdgeInsets.symmetric(
                                     horizontal: 10.0,
                                   ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .center,
-                                children: [
-                                  EmptyWidgetDisplay(
-                                    title: 'No items',
-                                    subText:
-                                        'You currently do not have have any item. Add items to start making sales.',
-                                    theme: theme,
-                                    height: 30,
-                                    svg: productIconSvg,
-                                    buttonText: 'Add Item',
-                                    action: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (
-                                            context,
-                                          ) {
-                                            return AddProduct();
-                                          },
-                                        ),
-                                      ).then((_) {
-                                        setState(() {});
-                                      });
-                                    },
-                                    altAction: () {
-                                      returnSalesProvider()
-                                          .toggleAddToStock(
-                                            false,
-                                            context,
-                                          );
-                                      makeCustomSale(
-                                        closeAction: () {
-                                          Navigator.of(
-                                            context,
-                                          ).pop();
+                              child: SingleChildScrollView(
+                                child: EmptyWidgetDisplay(
+                                  title: 'No items',
+                                  subText:
+                                      'You currently do not have have any item. Add items to start making sales.',
+                                  theme: theme,
+                                  height: 30,
+                                  svg: productIconSvg,
+                                  buttonText: 'Add Item',
+                                  action: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return AddProduct();
                                         },
-                                        cartItem: TempCartItem(
-                                          setTotalPrice:
-                                              returnSalesProvider()
-                                                  .setTotalPrice,
-                                          item: TempProductClass(
-                                            isManaged:
-                                                false,
-                                            uuid: uuidGen(),
-                                            name:
-                                                nameC.text,
-                                            unit: 'Others',
-                                            isRefundable:
-                                                false,
-                                            costPrice:
-                                                double.tryParse(
-                                                  costPriceC
-                                                      .text,
-                                                ) ??
-                                                0,
-                                            sellingPrice:
-                                                double.tryParse(
-                                                  sellingPriceC
-                                                      .text,
-                                                ),
-                                            quantity: 0,
-                                            shopId:
-                                                returnShopProvider()
-                                                    .userShop()!
-                                                    .shopId!,
-                                            setCustomPrice:
-                                                true,
-                                          ),
-                                          addToStock: true,
+                                      ),
+                                    ).then((_) {
+                                      setState(() {});
+                                    });
+                                  },
+                                  altAction: () {
+                                    returnSalesProvider()
+                                        .toggleAddToStock(
+                                          false,
+                                          context,
+                                        );
+                                    makeCustomSale(
+                                      closeAction: () {
+                                        Navigator.of(
+                                          context,
+                                        ).pop();
+                                      },
+                                      cartItem: TempCartItem(
+                                        setTotalPrice:
+                                            returnSalesProvider()
+                                                .setTotalPrice,
+                                        item: TempProductClass(
+                                          isManaged: false,
+                                          uuid: uuidGen(),
+                                          name: nameC.text,
+                                          unit: 'Others',
+                                          isRefundable:
+                                              false,
+                                          costPrice:
+                                              double.tryParse(
+                                                costPriceC
+                                                    .text,
+                                              ) ??
+                                              0,
+                                          sellingPrice:
+                                              double.tryParse(
+                                                sellingPriceC
+                                                    .text,
+                                              ),
                                           quantity: 0,
-                                          discount: null,
+                                          shopId:
+                                              returnShopProvider()
+                                                  .userShop()!
+                                                  .shopId!,
                                           setCustomPrice:
                                               true,
                                         ),
-                                      );
-                                    },
-                                    altActionText:
-                                        'Add Custom Item',
-                                    altIcon: Icons.add,
-                                  ),
-                                ],
+                                        addToStock: true,
+                                        quantity: 0,
+                                        discount: null,
+                                        setCustomPrice:
+                                            true,
+                                      ),
+                                    );
+                                  },
+                                  altActionText:
+                                      'Add Custom Item',
+                                  altIcon: Icons.add,
+                                ),
                               ),
                             ),
                           ),
@@ -3057,12 +3048,29 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
   }
 }
 
-class SubStaffToggleButtonMobile extends StatelessWidget {
+class SubStaffToggleButtonMobile extends StatefulWidget {
   final bool isFirst;
   const SubStaffToggleButtonMobile({
     super.key,
     required this.isFirst,
   });
+
+  @override
+  State<SubStaffToggleButtonMobile> createState() =>
+      _SubStaffToggleButtonMobileState();
+}
+
+class _SubStaffToggleButtonMobileState
+    extends State<SubStaffToggleButtonMobile> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      returnSalesProvider().toggleSubStaffSelectionMobile(
+        false,
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -3077,7 +3085,7 @@ class SubStaffToggleButtonMobile extends StatelessWidget {
         child: Ink(
           decoration: BoxDecoration(
             color:
-                isFirst
+                widget.isFirst
                     ? Colors.white
                     : Colors.grey.shade100,
             borderRadius: BorderRadius.circular(5),
@@ -3097,7 +3105,7 @@ class SubStaffToggleButtonMobile extends StatelessWidget {
               child: Icon(
                 size: 24,
                 color:
-                    isFirst
+                    widget.isFirst
                         ? Colors.grey
                         : Colors.grey.shade800,
                 returnSalesProvider()
@@ -3136,7 +3144,27 @@ class EmptyCartBottomWidget extends StatelessWidget {
         child: Column(
           children: [
             SizedBox(height: 10),
-            CartQueueMobile(isFirst: true),
+            Row(
+              spacing: 5,
+              children: [
+                Expanded(
+                  child: CartQueueMobile(isFirst: true),
+                ),
+                SubStaffToggleButtonMobile(isFirst: true),
+              ],
+            ),
+            Visibility(
+              visible:
+                  returnSalesProviderContext(
+                    context,
+                  ).isSubStaffSelectionMobileOpen,
+              child: Column(
+                children: [
+                  SizedBox(height: 2),
+                  SubStaffSelectionWidget(),
+                ],
+              ),
+            ),
             SizedBox(height: 20),
             Material(
               color: Colors.transparent,

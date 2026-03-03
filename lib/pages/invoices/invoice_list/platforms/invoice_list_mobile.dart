@@ -180,10 +180,12 @@ class ValueSummaryTabSmall extends StatelessWidget {
 class InvoiceListBodyMobile extends StatefulWidget {
   final String? customerUuid;
   final String? agentUuid;
+  final String? subStaffId;
   const InvoiceListBodyMobile({
     super.key,
     this.customerUuid,
     this.agentUuid,
+    this.subStaffId,
   });
 
   @override
@@ -227,6 +229,7 @@ class _InvoiceListBodyMobileState
                           ).getTotalRevenueForSelectedDayAll(
                             customerId: widget.customerUuid,
                             staffId: widget.agentUuid,
+                            subStaffId: widget.subStaffId,
                           ),
                         ),
                         ValueSummaryTabSmall(
@@ -244,6 +247,24 @@ class _InvoiceListBodyMobileState
                                                 .staffId ==
                                             widget
                                                 .agentUuid,
+                                      )
+                                      .toList()
+                                      .length
+                                      .toDouble()
+                                  : widget.subStaffId !=
+                                      null
+                                  ? returnInvoicesProvider(
+                                        context: context,
+                                      )
+                                      .returnInvoicesByDayOrWeekAll(
+                                        // context,
+                                      )
+                                      .where(
+                                        (receipt) =>
+                                            receipt
+                                                .subStaffUuid ==
+                                            widget
+                                                .subStaffId,
                                       )
                                       .toList()
                                       .length
@@ -397,6 +418,21 @@ class _InvoiceListBodyMobileState
                             )
                             .toList()
                             .isEmpty
+                        : widget.subStaffId != null
+                        ? returnInvoicesProvider(
+                              context: context,
+                            )
+                            .returnInvoicesByDayOrWeekAll(
+                              // context,
+                            )
+                            .toList()
+                            .where(
+                              (rec) =>
+                                  rec.subStaffUuid ==
+                                  widget.subStaffId,
+                            )
+                            .toList()
+                            .isEmpty
                         : widget.customerUuid != null
                         ? returnInvoicesProvider(
                               context: context,
@@ -449,6 +485,20 @@ class _InvoiceListBodyMobileState
                                       )
                                       .toList()
                                       .length
+                                  : widget.subStaffId !=
+                                      null
+                                  ? returnInvoicesProvider(
+                                        context: context,
+                                      )
+                                      .returnInvoicesByDayOrWeekAll()
+                                      .where(
+                                        (rec) =>
+                                            rec.subStaffUuid ==
+                                            widget
+                                                .subStaffId,
+                                      )
+                                      .toList()
+                                      .length
                                   : widget.customerUuid !=
                                       null
                                   ? returnInvoicesProvider(
@@ -487,6 +537,21 @@ class _InvoiceListBodyMobileState
                                               rec.staffId ==
                                               widget
                                                   .agentUuid,
+                                        )
+                                        .toList()[index]
+                                    : widget.subStaffId !=
+                                        null
+                                    ? returnInvoicesProvider(
+                                          context: context,
+                                        )
+                                        .returnInvoicesByDayOrWeekAll(
+                                          // context,
+                                        )
+                                        .where(
+                                          (rec) =>
+                                              rec.subStaffUuid ==
+                                              widget
+                                                  .subStaffId,
                                         )
                                         .toList()[index]
                                     : widget.customerUuid !=

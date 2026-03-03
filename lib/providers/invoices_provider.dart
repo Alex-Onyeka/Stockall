@@ -981,6 +981,7 @@ class InvoicesProvider extends ChangeNotifier {
   double getTotalRevenueForSelectedDayAll({
     String? staffId,
     String? customerId,
+    String? subStaffId,
   }) {
     double tempTotalRevenue = 0;
 
@@ -988,6 +989,10 @@ class InvoicesProvider extends ChangeNotifier {
         in (staffId != null
             ? returnInvoicesByDayOrWeekAll().where(
               (rec) => rec.staffId == staffId,
+            )
+            : subStaffId != null
+            ? returnInvoicesByDayOrWeekAll().where(
+              (rec) => rec.subStaffUuid == subStaffId,
             )
             : customerId != null
             ? returnInvoicesByDayOrWeekAll().where(

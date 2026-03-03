@@ -66,27 +66,6 @@ class _MainReceiptTileMobileState
     }
   }
 
-  // late Future<TempCustomersClass?> customerFuture;
-
-  // Future<TempCustomersClass?> getCustomer() async {
-  //   if (widget.mainReceipt.customerUuid != null) {
-  //     var tempCustomer = await returnCustomers(
-  //       context,
-  //       listen: false,
-  //     ).fetchCustomers(
-  //       returnShopProvider().userShop()!.shopId!,
-  //     );
-  //     return tempCustomer.firstWhere(
-  //       (customer) =>
-  //           customer.uuid != null &&
-  //           customer.uuid ==
-  //               widget.mainReceipt.customerUuid!,
-  //     );
-  //   } else {
-  //     return null;
-  //   }
-  // }
-
   List<TempProductSaleRecord> getProductRecord() {
     var tempRecords =
         returnReceiptProvider(
@@ -121,7 +100,7 @@ class _MainReceiptTileMobileState
               (customer) =>
                   customer.uuid != null &&
                   customer.uuid ==
-                      widget.mainReceipt.customerUuid!,
+                      widget.mainReceipt.customerUuid,
             )
             .toList();
     if (customers.isNotEmpty) {
@@ -134,20 +113,6 @@ class _MainReceiptTileMobileState
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    // double getTotal() {
-    //   double totalAmount = 0;
-    //   for (var element
-    //       in getProductRecord()
-    //           .where(
-    //             (test) =>
-    //                 test.receiptUuid ==
-    //                 widget.mainReceipt.uuid,
-    //           )
-    //           .toList()) {
-    //     totalAmount += element.revenue;
-    //   }
-    //   return totalAmount;
-    // }
     return Padding(
       padding: const EdgeInsets.only(bottom: 15.0),
       child: Ink(
@@ -341,7 +306,7 @@ class _MainReceiptTileMobileState
                                 .secColor200,
                       ),
 
-                      "Customer: ${cutLongText2(customer != null ? customer!.name.split(' ').first : 'Not Set')}",
+                      "Customer: ${cutLongText2(customer != null ? (customer?.name.split(' ').first ?? '') : 'Not Set')}",
                     ),
                     SizedBox(width: 10),
                     Text(
@@ -396,27 +361,6 @@ class _MainReceiptTileDesktopState
     }
   }
 
-  // late Future<TempCustomersClass?> customerFuture;
-
-  // Future<TempCustomersClass?> getCustomer() async {
-  //   if (widget.mainReceipt.customerUuid != null) {
-  //     var tempCustomer = await returnCustomers(
-  //       context,
-  //       listen: false,
-  //     ).fetchCustomers(
-  //       returnShopProvider().userShop()!.shopId!,
-  //     );
-  //     return tempCustomer.firstWhere(
-  //       (customer) =>
-  //           customer.uuid != null &&
-  //           customer.uuid ==
-  //               widget.mainReceipt.customerUuid!,
-  //     );
-  //   } else {
-  //     return null;
-  //   }
-  // }
-
   List<TempProductSaleRecord> getProductRecord() {
     var tempRecords =
         returnReceiptProvider(
@@ -450,7 +394,7 @@ class _MainReceiptTileDesktopState
             .where(
               (customer) =>
                   customer.uuid ==
-                  widget.mainReceipt.customerUuid!,
+                  widget.mainReceipt.customerUuid,
             )
             .toList();
     print(customers.length);

@@ -9,7 +9,7 @@ import 'package:stockall/components/text_fields/phone_number_text_field.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/sub_staffs/platforms/sub_staffs_page_desktop.dart';
+import 'package:stockall/pages/sub_staffs/components/sub_staff_list_tile_widget.dart';
 
 class SubStaffsPageMobile extends StatefulWidget {
   const SubStaffsPageMobile({super.key});
@@ -308,19 +308,30 @@ class _SubStaffsPageMobileState
                         ),
                       );
                     } else {
-                      return ListView(
-                        shrinkWrap: true,
-                        children:
-                            returnSubStaffProvider(
-                                  context: context,
-                                ).subStaffs
-                                .map(
-                                  (staff) =>
-                                      SubStaffListTileWidget(
-                                        staff: staff,
-                                      ),
-                                )
-                                .toList(),
+                      return RefreshIndicator(
+                        onRefresh: () {
+                          return returnSubStaffProvider()
+                              .getSubStaffs();
+                        },
+                        backgroundColor: Colors.white,
+                        color:
+                            theme.lightModeColor.prColor250,
+                        displacement: 10,
+                        strokeWidth: 2,
+                        child: ListView(
+                          shrinkWrap: true,
+                          children:
+                              returnSubStaffProvider(
+                                    context: context,
+                                  ).subStaffs
+                                  .map(
+                                    (staff) =>
+                                        SubStaffListTileWidget(
+                                          staff: staff,
+                                        ),
+                                  )
+                                  .toList(),
+                        ),
                       );
                     }
                   },

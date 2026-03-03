@@ -1112,6 +1112,7 @@ class ReceiptsProvider extends ChangeNotifier {
   double getTotalRevenueForSelectedDayAll({
     String? staffId,
     String? customerId,
+    String? subStaffId,
   }) {
     double tempTotalRevenue = 0;
 
@@ -1119,6 +1120,10 @@ class ReceiptsProvider extends ChangeNotifier {
         in (staffId != null
             ? returnReceipts().where(
               (rec) => rec.staffId == staffId,
+            )
+            : subStaffId != null
+            ? returnReceipts().where(
+              (rec) => rec.subStaffUuid == subStaffId,
             )
             : customerId != null
             ? returnReceipts().where(

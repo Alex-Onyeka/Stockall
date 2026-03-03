@@ -17,11 +17,13 @@ import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 class TotalSalesMobile extends StatefulWidget {
   final String? id;
   final String? customerUuid;
+  final String? subStaffId;
   // final bool? isInvoice;
   const TotalSalesMobile({
     super.key,
     this.id,
     this.customerUuid,
+    this.subStaffId,
     // this.isInvoice,
   });
 
@@ -202,6 +204,8 @@ class _TotalSalesMobileState
                                           widget
                                               .customerUuid,
                                       staffId: widget.id,
+                                      subStaffId:
+                                          widget.subStaffId,
                                     ),
                                   ),
                                   ValueSummaryTabSmall(
@@ -221,6 +225,26 @@ class _TotalSalesMobileState
                                                           .staffId ==
                                                       widget
                                                           .id,
+                                                )
+                                                .toList()
+                                                .length
+                                                .toDouble()
+                                            : widget.subStaffId !=
+                                                null
+                                            ? returnReceiptProvider(
+                                                  context,
+                                                )
+                                                .returnReceipts(
+                                                  // context,
+                                                )
+                                                .where(
+                                                  (
+                                                    receipt,
+                                                  ) =>
+                                                      receipt
+                                                          .subStaffUuid ==
+                                                      widget
+                                                          .subStaffId,
                                                 )
                                                 .toList()
                                                 .length
@@ -387,6 +411,23 @@ class _TotalSalesMobileState
                                       )
                                       .toList()
                                       .isEmpty
+                                  : widget.subStaffId !=
+                                      null
+                                  ? returnReceiptProvider(
+                                        context,
+                                      )
+                                      .returnReceipts(
+                                        // context,
+                                      )
+                                      .toList()
+                                      .where(
+                                        (rec) =>
+                                            rec.subStaffUuid ==
+                                            widget
+                                                .subStaffId,
+                                      )
+                                      .toList()
+                                      .isEmpty
                                   : widget.customerUuid !=
                                       null
                                   ? returnReceiptProvider(
@@ -456,6 +497,22 @@ class _TotalSalesMobileState
                                                 )
                                                 .toList()
                                                 .length
+                                            : widget.subStaffId !=
+                                                null
+                                            ? returnReceiptProvider(
+                                                  context,
+                                                )
+                                                .returnReceipts(
+                                                  // context,
+                                                )
+                                                .where(
+                                                  (rec) =>
+                                                      rec.subStaffUuid ==
+                                                      widget
+                                                          .subStaffId,
+                                                )
+                                                .toList()
+                                                .length
                                             : widget.customerUuid !=
                                                 null
                                             ? returnReceiptProvider(
@@ -496,6 +553,20 @@ class _TotalSalesMobileState
                                                     (rec) =>
                                                         rec.staffId ==
                                                         widget.id,
+                                                  )
+                                                  .toList()[index]
+                                              : widget.subStaffId !=
+                                                  null
+                                              ? returnReceiptProvider(
+                                                    context,
+                                                  )
+                                                  .returnReceipts(
+                                                    // context,
+                                                  )
+                                                  .where(
+                                                    (rec) =>
+                                                        rec.subStaffUuid ==
+                                                        widget.subStaffId,
                                                   )
                                                   .toList()[index]
                                               : widget.customerUuid !=
@@ -651,6 +722,7 @@ class _TotalSalesMobileState
             } else {
               return InvoiceListBodyMobile(
                 agentUuid: widget.id,
+                subStaffId: widget.subStaffId,
                 customerUuid: widget.customerUuid,
               );
             }
