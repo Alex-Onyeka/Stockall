@@ -49,18 +49,6 @@ class _DashboardState extends State<Dashboard> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       print(returnShopProvider().userShop()?.name);
       _handlePostFrameLogic();
-      if (appVersionDesktop !=
-          returnAppVersionProvider(
-            context,
-          ).appVersion?.desktopVersion) {
-        returnAppVersionProvider(
-          context,
-        ).toggleUpdated(false);
-      } else {
-        returnAppVersionProvider(
-          context,
-        ).toggleUpdated(true);
-      }
     });
     setState(() {});
   }

@@ -771,6 +771,13 @@ class _EmpAuthState extends State<EmpAuth> {
                                                       showSuccess =
                                                           true;
                                                     });
+                                                    await returnAppVersionProvider(
+                                                      context,
+                                                      listen:
+                                                          false,
+                                                    ).getAppVersion(
+                                                      context,
+                                                    );
                                                     await Future.delayed(
                                                       Duration(
                                                         seconds:
