@@ -13,7 +13,7 @@ class AppVersionProvider extends ChangeNotifier {
 
   AppVersion? appVersion;
 
-  bool isUpdated = false;
+  bool isUpdated = true;
 
   void toggleUpdated(bool value) {
     isUpdated = value;
