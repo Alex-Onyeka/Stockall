@@ -315,11 +315,13 @@ class _SubStaffsPageMobileState
                         },
                         backgroundColor: Colors.white,
                         color:
-                            theme.lightModeColor.prColor250,
+                            theme
+                                .lightModeColor
+                                .secColor200,
                         displacement: 10,
                         strokeWidth: 2,
                         child: ListView(
-                          shrinkWrap: true,
+                          // shrinkWrap: true,
                           children:
                               returnSubStaffProvider(
                                     context: context,

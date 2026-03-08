@@ -3,13 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 // import 'package:path/path.dart';
 import 'package:provider/provider.dart';
-import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
-import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
-import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
-import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_notification/temp_notification.dart';
-import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
-import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
@@ -45,18 +39,6 @@ class DashboardMobile extends StatefulWidget {
 }
 
 class _DashboardMobileState extends State<DashboardMobile> {
-  // Future<void> loadSuggestions() async {
-  //   await returnSuggestionProvider(
-  //     context,
-  //     listen: false,
-  //   ).loadSuggestions(
-  //     returnShopProvider(
-  //       context,
-  //       listen: false,
-  //     ). userShop()!.shopId!,
-  //   );
-  // }
-
   bool isFloatOpen = false;
   bool isUpdateLodaingWeb = false;
   bool isUpdateLodaingMobile = false;
@@ -79,23 +61,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
       GlobalKey<ScaffoldState>();
   late TempShopClass shop;
 
-  Future<List<TempMainReceipt>> getMainReceipts() async {
-    var tempReceipts = await returnReceiptProvider(
-      context,
-      listen: false,
-    ).loadReceipts(widget.shopId!);
-
-    return tempReceipts;
-  }
-
-  late Future<List<TempInvoice>> invoicesFuture;
-  Future<List<TempInvoice>> getInvoices() async {
-    var invoices = await returnInvoicesProvider()
-        .loadInvoices(widget.shopId!);
-
-    return invoices;
-  }
-
   bool isLoading = false;
   bool showSuccess = false;
 
@@ -111,16 +76,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
     ).clearDate(context);
   }
 
-  late Future<List<TempProductClass>> productsFuture;
-  Future<List<TempProductClass>> getProducts() async {
-    var tempP = await returnData().getProducts(
-      widget.shopId!,
-    );
-    return tempP;
-  }
-
-  late Future<List<TempMainReceipt>> mainReceiptFuture;
-
   late Future<List<TempNotification>> notificationsFuture;
 
   Future<List<TempNotification>>
@@ -133,67 +88,22 @@ class _DashboardMobileState extends State<DashboardMobile> {
     return tempGet;
   }
 
-  late Future<List<TempProductSaleRecord>>
-  getProdutRecordsFuture;
-  Future<List<TempProductSaleRecord>>
-  getProductSalesRecord() async {
-    var tempRecords = await returnReceiptProvider(
-      context,
-      listen: false,
-    ).loadProductSalesRecord(widget.shopId!);
-
-    return tempRecords
-        .where(
-          (beans) =>
-              beans.shopId ==
-              returnShopProvider().userShop()!.shopId!,
-        )
-        .toList();
-  }
-
-  late Future<List<TempExpensesClass>> expensesFuture;
-
-  Future<List<TempExpensesClass>> getExpenses() async {
-    var tempExp = await returnExpensesProvider(
-      context,
-      listen: false,
-    ).getExpenses(widget.shopId ?? 0);
-
-    return tempExp;
-  }
-
-  late Future<List<TempCustomersClass>> customerFuture;
-  Future<List<TempCustomersClass>> getCustomers() async {
-    var customers = await returnCustomers(
-      context,
-      listen: false,
-    ).fetchCustomers(
-      returnShopProvider().userShop()!.shopId!,
-    );
-
-    return customers;
-  }
-
   TextEditingController emailController =
       TextEditingController();
   TextEditingController passwordController =
       TextEditingController();
   @override
   void initState() {
-    super.initState(); // Always call this first
+    super.initState();
 
     if (!returnReceiptProvider(
       context,
       listen: false,
     ).isLoaded) {
-      mainReceiptFuture = getMainReceipts();
-      getProdutRecordsFuture = getProductSalesRecord();
-      expensesFuture = getExpenses();
-      productsFuture = getProducts();
-      employeesFuture = getEmployees();
-      customerFuture = getCustomers();
-      invoicesFuture = getInvoices();
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((
+        _,
+      ) async {
+        await RefreshFunctions(context).refreshAll(context);
         returnReceiptProvider(
           context,
           listen: false,

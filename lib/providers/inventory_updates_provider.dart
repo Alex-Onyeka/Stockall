@@ -174,15 +174,10 @@ class InventoryUpdatesProvider with ChangeNotifier {
     }
   }
 
-  Future<void> inventoryUpdatesSync(
-    BuildContext context,
-  ) async {
+  Future<void> inventoryUpdatesSync() async {
     try {
       bool isOnline =
-          await returnConnectivityProvider(
-            context,
-            listen: false,
-          ).isOnline();
+          await ConnectivityProvider().isOnline();
       if (CreatedInventoryUpdatesFunc()
               .getCreatedInventoryUpdatess()
               .isNotEmpty &&
@@ -216,10 +211,8 @@ class InventoryUpdatesProvider with ChangeNotifier {
         await CreatedInventoryUpdatesFunc()
             .clearInventoryUpdate();
         print('Unsynced Inventory Updates Cleared');
-        if (context.mounted) {
-          print('Mounted, refreshing Inventory Updates ✅');
-          await getInventoryUpdates();
-        }
+        print('Mounted, refreshing Inventory Updates ✅');
+        await getInventoryUpdates();
       }
     } catch (e) {
       print('Batch Inventory Updates insert failed ❌: $e');

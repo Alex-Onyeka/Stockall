@@ -59,108 +59,120 @@ class _SelectSubStaffListWidgetState
               ),
             );
           }
-          return ListView(
-            shrinkWrap: true,
-            children:
-                returnSubStaffProvider().subStaffs
-                    .where((st) {
-                      var beans =
-                          returnSalesProviderContext(
-                            context,
-                          ).mainCartQueue.where(
-                            (c) =>
-                                c.subStaff?.uuid == st.uuid,
-                          );
-                      if (beans.isEmpty) {
-                        return true;
-                      } else {
-                        return false;
-                      }
-                    })
-                    .map(
-                      (staff) => Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 2,
-                        ),
-                        child: InkWell(
-                          onTap: () {
-                            returnSalesProvider()
-                                .selectSubStaff(
-                                  staff: staff,
-                                );
-                          },
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 15,
-                              horizontal: 10,
-                            ),
-                            decoration: BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color:
-                                      Colors.grey.shade200,
-                                ),
+          return RefreshIndicator(
+            onRefresh: () {
+              return returnSubStaffProvider()
+                  .getSubStaffs();
+            },
+            backgroundColor: Colors.white,
+            color: theme.lightModeColor.secColor200,
+            displacement: 10,
+            child: ListView(
+              shrinkWrap: true,
+              children:
+                  returnSubStaffProvider().subStaffs
+                      .where((st) {
+                        var beans =
+                            returnSalesProviderContext(
+                              context,
+                            ).mainCartQueue.where(
+                              (c) =>
+                                  c.subStaff?.uuid ==
+                                  st.uuid,
+                            );
+                        if (beans.isEmpty) {
+                          return true;
+                        } else {
+                          return false;
+                        }
+                      })
+                      .map(
+                        (staff) => Padding(
+                          padding: EdgeInsets.symmetric(
+                            vertical: 2,
+                          ),
+                          child: InkWell(
+                            onTap: () {
+                              returnSalesProvider()
+                                  .selectSubStaff(
+                                    staff: staff,
+                                  );
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 15,
+                                horizontal: 10,
                               ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment
-                                      .spaceBetween,
-                              children: [
-                                Row(
-                                  spacing: 10,
-                                  children: [
-                                    Icon(
-                                      size: 18,
-                                      color: Colors.grey,
-                                      Icons.person,
-                                    ),
-                                    Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b3
-                                                .fontSize,
-                                        fontWeight:
-                                            returnSalesProviderContext(
-                                                      context,
-                                                    ).selectedSubStaff?.uuid ==
-                                                    staff
-                                                        .uuid
-                                                ? FontWeight
-                                                    .bold
-                                                : null,
-                                      ),
-                                      staff.staffName ??
-                                          "Name",
-                                    ),
-                                  ],
-                                ),
-                                Visibility(
-                                  visible:
-                                      returnSalesProviderContext(
-                                            context,
-                                          )
-                                          .selectedSubStaff
-                                          ?.uuid ==
-                                      staff.uuid,
-                                  child: Icon(
-                                    size: 20,
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
                                     color:
-                                        theme
-                                            .lightModeColor
-                                            .secColor200,
-                                    Icons.check,
+                                        Colors
+                                            .grey
+                                            .shade200,
                                   ),
                                 ),
-                              ],
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .spaceBetween,
+                                children: [
+                                  Row(
+                                    spacing: 10,
+                                    children: [
+                                      Icon(
+                                        size: 18,
+                                        color: Colors.grey,
+                                        Icons.person,
+                                      ),
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b3
+                                                  .fontSize,
+                                          fontWeight:
+                                              returnSalesProviderContext(
+                                                        context,
+                                                      ).selectedSubStaff?.uuid ==
+                                                      staff
+                                                          .uuid
+                                                  ? FontWeight
+                                                      .bold
+                                                  : null,
+                                        ),
+                                        staff.staffName ??
+                                            "Name",
+                                      ),
+                                    ],
+                                  ),
+                                  Visibility(
+                                    visible:
+                                        returnSalesProviderContext(
+                                              context,
+                                            )
+                                            .selectedSubStaff
+                                            ?.uuid ==
+                                        staff.uuid,
+                                    child: Icon(
+                                      size: 20,
+                                      color:
+                                          theme
+                                              .lightModeColor
+                                              .secColor200,
+                                      Icons.check,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    )
-                    .toList(),
+                      )
+                      .toList(),
+            ),
           );
         },
       ),

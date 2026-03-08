@@ -22,6 +22,7 @@ import 'package:stockall/local_database/events_log/unsync_funcs/created_events_l
 import 'package:stockall/local_database/expenses/unsync_funcs/created_expenses/created_expenses_func.dart';
 import 'package:stockall/local_database/expenses/unsync_funcs/deleted_expenses/deleted_expenses_func.dart';
 import 'package:stockall/local_database/expenses/unsync_funcs/updated_expenses/updated_expenses_func.dart';
+import 'package:stockall/local_database/inventory_updates/unsync_funcs/created_inventory_updates_func.dart';
 import 'package:stockall/local_database/invoices/unsync_funcs/created/created_invoices_func.dart';
 import 'package:stockall/local_database/invoices/unsync_funcs/deleted/deleted_invoices_func.dart';
 import 'package:stockall/local_database/invoices/unsync_funcs/updated/updated_invoices_func.dart';
@@ -36,6 +37,9 @@ import 'package:stockall/local_database/products/unsync_funcs/deleted_products/d
 import 'package:stockall/local_database/products/unsync_funcs/updated_products/updated_products_func.dart';
 import 'package:stockall/local_database/shop/updated_shop/updated_shop_func.dart';
 import 'package:stockall/local_database/shop_logos/created_shop_logo/created_shop_logos_func.dart';
+import 'package:stockall/local_database/sub_staff/unsync_funcs/created/created_sub_staff_func.dart';
+import 'package:stockall/local_database/sub_staff/unsync_funcs/deleted/deleted_sub_staff_func.dart';
+import 'package:stockall/local_database/sub_staff/unsync_funcs/updated/updated_sub_staff_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/providers/department_provider.dart';
@@ -695,6 +699,46 @@ class DataProvider extends ChangeNotifier {
               print('Finished Syncing Deleted Invoices');
               setSyncProgress(24);
             }
+            if (CreatedInventoryUpdatesFunc()
+                    .getCreatedInventoryUpdatess()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnInventoryUpdatesProvider()
+                  .inventoryUpdatesSync();
+              print('Finished Syncing Inventory Updates');
+              setSyncProgress(25);
+            }
+            if (CreatedSubStaffFunc()
+                    .getSubStaffs()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnSubStaffProvider()
+                  .createSubStaffSync();
+              print('Finished Syncing Created Sub Staffs');
+              setSyncProgress(26);
+            }
+            if (UpdatedSubStaffFunc()
+                    .getSubStaffs()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnSubStaffProvider()
+                  .updateSubStaffSync();
+              print('Finished Syncing Updated Sub Staffs');
+              setSyncProgress(27);
+            }
+            if (DeletedSubStaffFunc()
+                    .getSubStaffIds()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnSubStaffProvider()
+                  .deleteSubStaffSync();
+              print('Finished Syncing Deleted Sub Staffs');
+              setSyncProgress(28);
+            }
             await clearTotalCache();
             toggleSyncing(false);
           }
@@ -741,7 +785,7 @@ class DataProvider extends ChangeNotifier {
   bool isSyncing = false;
   double syncProgress = 0;
   void setSyncProgress(int value) {
-    syncProgress = (value / 24) * 100;
+    syncProgress = (value / 28) * 100;
     notifyListeners();
   }
 
@@ -763,6 +807,9 @@ class DataProvider extends ChangeNotifier {
       if (CreatedProductFunc().getProducts().isEmpty &&
           DeletedProductsFunc().getProductIds().isEmpty &&
           UpdatedProductsFunc().getProducts().isEmpty &&
+          CreatedInventoryUpdatesFunc()
+              .getCreatedInventoryUpdatess()
+              .isEmpty &&
           SalesProductFunc().getProducts().isEmpty &&
           CreatedExpensesFunc().getExpenses().isEmpty &&
           DeletedExpensesFunc().getExpenseIds().isEmpty &&
@@ -790,7 +837,10 @@ class DataProvider extends ChangeNotifier {
               .isEmpty &&
           CreatedInvoicesFunc().getInvoices().isEmpty &&
           UpdatedInvoicesFunc().getInvoiceIds().isEmpty &&
-          DeletedInvoicesFunc().getInvoiceIds().isEmpty
+          DeletedInvoicesFunc().getInvoiceIds().isEmpty &&
+          CreatedSubStaffFunc().getSubStaffs().isEmpty &&
+          UpdatedSubStaffFunc().getSubStaffs().isEmpty &&
+          DeletedSubStaffFunc().getSubStaffIds().isEmpty
       // && DeletedRecordsFunc().getRecordIds().isEmpty &&
       // IncrementedProductsFunc()
       //     .getIncrementedProducts()
@@ -815,6 +865,8 @@ class DataProvider extends ChangeNotifier {
     await CreatedProductFunc().clearProducts();
     await UpdatedProductsFunc().clearupdatedProducts();
     await DeletedProductsFunc().clearDeletedProducts();
+    await CreatedInventoryUpdatesFunc()
+        .clearInventoryUpdate();
     await DeletedReceiptsFunc().clearDeletedReceipts();
     await SalesProductFunc().clearProducts();
     await SalesProductFunc().clearProducts();
@@ -827,6 +879,9 @@ class DataProvider extends ChangeNotifier {
     await UpdatedDepartmentFunc().clearupdatedDepartments();
     await DeletedDepartmentsFunc()
         .clearDeletedDepartments();
+    await CreatedSubStaffFunc().clearSubStaffs();
+    await UpdatedSubStaffFunc().clearUpdatedSubStaff();
+    await DeletedSubStaffFunc().clearDeletedSubStaff();
   }
 
   DateTime? expiryDate;
@@ -913,8 +968,6 @@ class DataProvider extends ChangeNotifier {
     int shopId,
   ) async {
     bool isOnline = await connectivity.isOnline();
-    // setAllowedRange(context: context)
-    // productList.clear();
     print('✅✅ Products List Cleared');
     if (isOnline) {
       final data = await supabase

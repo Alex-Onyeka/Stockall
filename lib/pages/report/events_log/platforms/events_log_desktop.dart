@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_event_log/temp_event_log_class.dart';
 // import 'package:path/path.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/dialog_template.dart';
+import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/major/drawer_widget/my_drawer_widget.dart';
 import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widget_desktop.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
@@ -211,32 +213,113 @@ class _EventsLogDesktopState
                                     returnEventsLogProvider()
                                                 .dateSet ==
                                             null
-                                        ? showDatePicker(
+                                        ? showDialog(
                                           context: context,
-                                          firstDate:
-                                              DateTime(
-                                                2017,
-                                                9,
-                                                7,
-                                                17,
-                                                30,
+                                          builder: (
+                                            dateContext,
+                                          ) {
+                                            return DialogTemplate(
+                                              theme: theme,
+                                              showBottomActionButtons:
+                                                  false,
+                                              showTopSection:
+                                                  false,
+                                              message:
+                                                  'message',
+                                              title:
+                                                  'title',
+
+                                              action: () {},
+                                              widget: Column(
+                                                spacing: 10,
+                                                mainAxisSize:
+                                                    MainAxisSize
+                                                        .min,
+                                                children: [
+                                                  MainButtonP(
+                                                    themeProvider:
+                                                        theme,
+                                                    action: () {
+                                                      Navigator.of(
+                                                        dateContext,
+                                                      ).pop();
+                                                      showDatePicker(
+                                                        context:
+                                                            context,
+                                                        firstDate: DateTime(
+                                                          2017,
+                                                          9,
+                                                          7,
+                                                          17,
+                                                          30,
+                                                        ),
+                                                        lastDate: DateTime(
+                                                          2027,
+                                                          9,
+                                                          7,
+                                                          17,
+                                                          30,
+                                                        ),
+                                                      ).then((
+                                                        value,
+                                                      ) {
+                                                        value !=
+                                                                null
+                                                            ? returnEventsLogProvider().setDate(
+                                                              value,
+                                                            )
+                                                            : {};
+                                                      });
+                                                    },
+                                                    text:
+                                                        'Select Single Day',
+                                                  ),
+                                                  // MainButtonTransparent(
+                                                  //   themeProvider:
+                                                  //       theme,
+                                                  //   constraints:
+                                                  //       BoxConstraints(),
+                                                  //   text:
+                                                  //       'Select Range',
+                                                  //   action: () {
+                                                  //     Navigator.of(
+                                                  //       dateContext,
+                                                  //     ).pop();
+                                                  //     showDateRangePicker(
+                                                  //       keyboardType:
+                                                  //           TextInputType.number,
+                                                  //       context:
+                                                  //           context,
+                                                  //       firstDate: DateTime.now().subtract(
+                                                  //         Duration(
+                                                  //           days:
+                                                  //               10,
+                                                  //         ),
+                                                  //       ),
+                                                  //       lastDate: DateTime.now().add(
+                                                  //         Duration(
+                                                  //           days:
+                                                  //               10,
+                                                  //         ),
+                                                  //       ),
+                                                  //     ).then((
+                                                  //       value,
+                                                  //     ) {
+                                                  //       value !=
+                                                  //               null
+                                                  //           ? returnEventsLogProvider().setRange(
+                                                  //             value.start,
+                                                  //             value.end,
+                                                  //           )
+                                                  //           : {};
+                                                  //     });
+                                                  //   },
+                                                  // ),
+                                                ],
                                               ),
-                                          lastDate:
-                                              DateTime(
-                                                2027,
-                                                9,
-                                                7,
-                                                17,
-                                                30,
-                                              ),
-                                        ).then((value) {
-                                          value != null
-                                              ? returnEventsLogProvider()
-                                                  .setDate(
-                                                    value,
-                                                  )
-                                              : {};
-                                        })
+                                            );
+                                          },
+                                        )
                                         : returnEventsLogProvider()
                                             .clearDate();
                                   },

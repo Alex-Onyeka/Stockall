@@ -753,7 +753,7 @@ class _SettingsPageDesktopState
                                                           .userShop()!
                                                           .applyVAT!
                                                       ? 'VAT of 7% will not be applied to your subsequent sales, are you sure you want to proceed?'
-                                                      : 'VAT of 7% will be added to your subsequent sales, will, are you sure you want to proceed?',
+                                                      : 'VAT of 7% will be added to your subsequent sales, are you sure you want to proceed?',
                                               title:
                                                   shopProvider
                                                           .userShop()!
@@ -819,7 +819,7 @@ class _SettingsPageDesktopState
                                                       message:
                                                           shopProvider.userShop()!.applyVAT!
                                                               ? 'VAT of 7% will not be applied to your subsequent sales, are you sure you want to proceed?'
-                                                              : 'VAT of 7% will be added to your subsequent sales, will, are you sure you want to proceed?',
+                                                              : 'VAT of 7% will be added to your subsequent sales, are you sure you want to proceed?',
                                                       title:
                                                           shopProvider.userShop()!.applyVAT!
                                                               ? 'Remove VAT'

@@ -29,6 +29,8 @@ class EventsLogProvider with ChangeNotifier {
 
   void clearDate() {
     dateSet = null;
+    rangeStartDate = null;
+    rangeEndDate = null;
     notifyListeners();
   }
 
@@ -43,16 +45,30 @@ class EventsLogProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  DateTime? rangeStartDate;
+  DateTime? rangeEndDate;
+
+  void setRange(DateTime rangeStart, DateTime endOfrange) {
+    rangeStartDate = rangeStart;
+    rangeEndDate = rangeStart;
+    dateSet = null;
+    // dateSet =
+    //     '${formatDateWithoutYear(weekStart)} - ${formatDateWithoutYear(endOfWeek)}';
+    notifyListeners();
+  }
+
   List<TempEventLogClass> returnLogs() {
     logs.sort(
       (a, b) => b.createdAt!.compareTo(a.createdAt!),
     );
-    if (dateSet == null) {
+    if (dateSet == null &&
+        rangeEndDate == null &&
+        rangeStartDate == null) {
       logs.sort(
         (a, b) => b.createdAt!.compareTo(a.createdAt!),
       );
       return logs;
-    } else {
+    } else if (dateSet != null) {
       return logs
           .where(
             (log) =>
@@ -62,6 +78,20 @@ class EventsLogProvider with ChangeNotifier {
           )
           .toList();
       // return logs;
+    } else {
+      return logs
+          .where(
+            (log) =>
+                ((log.createdAt!.isAfter(
+                      rangeStartDate!.subtract(
+                        Duration(days: 1),
+                      ),
+                    )) &&
+                    (log.createdAt!.isBefore(
+                      rangeEndDate!.add(Duration(days: 1)),
+                    ))),
+          )
+          .toList();
     }
   }
 

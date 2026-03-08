@@ -428,11 +428,11 @@ class _SubStaffsPageDesktopState
                           .getSubStaffs();
                     },
                     backgroundColor: Colors.white,
-                    color: theme.lightModeColor.prColor250,
+                    color: theme.lightModeColor.secColor200,
                     displacement: 10,
                     strokeWidth: 2,
                     child: ListView(
-                      shrinkWrap: true,
+                      // shrinkWrap: true,
                       children:
                           returnSubStaffProvider(
                                 context: context,

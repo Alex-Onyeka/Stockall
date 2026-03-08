@@ -582,8 +582,11 @@ class RefreshFunctions {
                   await getMainReceipts();
                 }
                 // await getInvoices();
-                await returnSubStaffProvider()
-                    .getSubStaffs();
+                if (shopProvider.userShop()?.bulkSale ==
+                    true) {
+                  await returnSubStaffProvider()
+                      .getSubStaffs();
+                }
                 await getEventLogs();
                 await getExpenses();
                 await getEmployees();
@@ -613,9 +616,9 @@ class RefreshFunctions {
         if (safeContext.mounted) {
           await getMainReceipts();
         }
-        // await getProductSalesRecord();
-        // await getInvoices();
-        await returnSubStaffProvider().getSubStaffs();
+        if (shopProvider.userShop()?.bulkSale == true) {
+          await returnSubStaffProvider().getSubStaffs();
+        }
         await getEventLogs();
         await getExpenses();
         await getEmployees();

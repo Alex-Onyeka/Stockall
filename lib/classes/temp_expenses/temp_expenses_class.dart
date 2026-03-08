@@ -87,8 +87,8 @@ class TempExpensesClass extends HiveObject {
       unit: json['unit'],
       userId: json['user_id'],
       creator: json['creator'],
-      departmentUuid: json['department_uuid'],
-      departmentName: json['department_name'],
+      departmentUuid: json['department_uuid'] as String?,
+      departmentName: json['department_name'] as String?,
       uuid: json['uuid'] as String?,
       updatedAt:
           json['updated_at'] != null

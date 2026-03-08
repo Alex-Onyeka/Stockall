@@ -42,7 +42,7 @@ class ManageInventoryToggleSwitch extends StatelessWidget {
                                   .userShop()!
                                   .manageInventoryStorage!
                               ? 'Your Inventory Storage will not be managed, are you sure you want to proceed?'
-                              : 'Your Inventory Storage will be managed, will, are you sure you want to proceed?',
+                              : 'Your Inventory Storage will be managed, are you sure you want to proceed?',
                       title:
                           shopProvider
                                   .userShop()!
@@ -97,7 +97,7 @@ class ManageInventoryToggleSwitch extends StatelessWidget {
                                           .userShop()!
                                           .manageInventoryStorage!
                                       ? 'Your Inventory Storage will not be managed, are you sure you want to proceed?'
-                                      : 'Your Inventory Storage will be managed, will, are you sure you want to proceed?',
+                                      : 'Your Inventory Storage will be managed, are you sure you want to proceed?',
                               title:
                                   shopProvider
                                           .userShop()!

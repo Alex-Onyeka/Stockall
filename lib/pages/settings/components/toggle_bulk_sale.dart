@@ -39,7 +39,7 @@ class ToggleBulkSale extends StatelessWidget {
                       message:
                           shopProvider.userShop()!.bulkSale!
                               ? 'You can no longer perform bulk Sale, are you sure you want to proceed?'
-                              : 'You can now perform bulk Sale, will, are you sure you want to proceed?',
+                              : 'You can now perform bulk Sale, are you sure you want to proceed?',
                       title:
                           shopProvider.userShop()!.bulkSale!
                               ? 'Turn Off Bulk Sale'
@@ -91,7 +91,7 @@ class ToggleBulkSale extends StatelessWidget {
                                           .userShop()!
                                           .bulkSale!
                                       ? 'You can no longer perform bulk Sale, are you sure you want to proceed?'
-                                      : 'You can now perform bulk Sale, will, are you sure you want to proceed?',
+                                      : 'You can now perform bulk Sale, are you sure you want to proceed?',
                               title:
                                   shopProvider
                                           .userShop()!

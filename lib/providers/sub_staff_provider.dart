@@ -270,7 +270,7 @@ class SubStaffProvider extends ChangeNotifier {
   //
 
   Future<void> createSubStaffSync(
-    BuildContext context,
+    // BuildContext context,
   ) async {
     try {
       bool isOnline = await connectivity.isOnline();
@@ -304,10 +304,8 @@ class SubStaffProvider extends ChangeNotifier {
       print('Batch Sub Staffs insert failed ❌: $e');
     }
 
-    if (context.mounted) {
-      print('Mounted, refreshing Sub Staffs ✅');
-      await getSubStaffs();
-    }
+    print('Mounted, refreshing Sub Staffs ✅');
+    await getSubStaffs();
   }
 
   //
@@ -316,9 +314,7 @@ class SubStaffProvider extends ChangeNotifier {
   //
   //
 
-  Future<void> deleteSubStaffSync(
-    BuildContext context,
-  ) async {
+  Future<void> deleteSubStaffSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
 
@@ -353,19 +349,15 @@ class SubStaffProvider extends ChangeNotifier {
       print('Batch delete failed ❌: $e');
     }
 
-    if (context.mounted) {
-      print('Mounted, refreshing Sub Staffs ✅');
-      await getSubStaffs();
-    }
+    print('Mounted, refreshing Sub Staffs ✅');
+    await getSubStaffs();
   }
 
   //
   //
   //
 
-  Future<void> updateSubStaffSync(
-    BuildContext context,
-  ) async {
+  Future<void> updateSubStaffSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
       print(
@@ -455,10 +447,8 @@ class SubStaffProvider extends ChangeNotifier {
       print('Batch update failed ❌: $e');
     }
 
-    if (context.mounted) {
-      print('Mounted, refreshing Sub Staffs ✅');
-      await getSubStaffs();
-    }
+    print('Mounted, refreshing Sub Staffs ✅');
+    await getSubStaffs();
   }
 
   //
