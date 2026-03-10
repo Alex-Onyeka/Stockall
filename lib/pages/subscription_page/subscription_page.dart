@@ -37,7 +37,7 @@ class _SubscriptionPageState
       returnSubPaymentProvider(
         context,
         listen: false,
-      ).selectDuration(6);
+      ).selectDuration(1);
     });
   }
 

@@ -5,6 +5,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
+import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
@@ -445,9 +446,17 @@ class _QuantityEditWidgetState
                               .product
                               .totalQttyInStorage ??
                           0) +
-                      (int.tryParse(controller.text) ?? 0);
+                      (int.tryParse(
+                            controller.text.replaceAll(
+                              ',',
+                              '',
+                            ),
+                          ) ??
+                          0);
                 } else {
-                  return (int.tryParse(controller.text) ??
+                  return (int.tryParse(
+                        controller.text.replaceAll(',', ''),
+                      ) ??
                       0);
                 }
               } else {
@@ -456,14 +465,26 @@ class _QuantityEditWidgetState
                               .product
                               .totalQttyInStorage ??
                           0) -
-                      ((int.tryParse(controller.text) ?? 0))
+                      ((int.tryParse(
+                                controller.text.replaceAll(
+                                  ',',
+                                  '',
+                                ),
+                              ) ??
+                              0))
                           .toInt();
                 } else {
                   return (widget
                               .product
                               .totalQttyInStorage ??
                           0) -
-                      ((int.tryParse(controller.text) ??
+                      ((int.tryParse(
+                                    controller.text
+                                        .replaceAll(
+                                          ',',
+                                          '',
+                                        ),
+                                  ) ??
                                   0) -
                               (widget.product.quantity ??
                                   0))
@@ -478,13 +499,16 @@ class _QuantityEditWidgetState
               } else {
                 if (isAddToQuantity) {
                   return ((double.tryParse(
-                            controller.text,
+                            controller.text.replaceAll(
+                              ',',
+                              '',
+                            ),
                           ) ??
                           0) +
                       (widget.product.quantity ?? 0));
                 } else {
                   return ((double.tryParse(
-                        controller.text,
+                        controller.text.replaceAll(',', ''),
                       ) ??
                       0));
                 }
@@ -588,8 +612,10 @@ class _QuantityEditWidgetState
         );
       },
     ).then((_) {
-      returnData().requestFocusSearchNode();
-      returnData().addSearchNodeListener();
+      if (screenWidth(context) > mobileScreen) {
+        returnData().requestFocusSearchNode();
+        returnData().addSearchNodeListener();
+      }
     });
   }
 
@@ -622,7 +648,9 @@ class _QuantityEditWidgetState
                   fontWeight: FontWeight.bold,
                   color: Colors.grey.shade900,
                 ),
-                "${widget.isTotal ? widget.product.totalQttyInStorage ?? 0 : widget.product.quantity ?? 0}",
+                formatLargeNumber(
+                  "${widget.isTotal ? widget.product.totalQttyInStorage ?? 0 : widget.product.quantity ?? 0}",
+                ),
               ),
             ),
           ),

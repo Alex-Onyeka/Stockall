@@ -143,13 +143,15 @@ class _TableRowRecordWidgetState
                                     .fontSize,
                             fontWeight: FontWeight.bold,
                           ),
-                          ((widget.product.totalQttyInStorage ??
-                                      0) +
-                                  (widget
-                                          .product
-                                          .quantity ??
-                                      0))
-                              .toString(),
+                          formatLargeNumber(
+                            ((widget.product.totalQttyInStorage ??
+                                        0) +
+                                    (widget
+                                            .product
+                                            .quantity ??
+                                        0))
+                                .toStringAsFixed(0),
+                          ),
                         ),
                       ),
                     ],

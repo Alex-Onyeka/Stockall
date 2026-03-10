@@ -1114,7 +1114,6 @@ class DataProvider extends ChangeNotifier {
     TempProductClass? oldProduct,
   }) async {
     bool isOnline = await connectivity.isOnline();
-
     try {
       print(product.isManaged.toString());
       if (isOnline) {
