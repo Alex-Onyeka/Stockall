@@ -169,6 +169,8 @@ class _LoginMobileState extends State<LoginMobile> {
     }
   }
 
+  FocusNode passwordNode = FocusNode();
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -304,15 +306,22 @@ class _LoginMobileState extends State<LoginMobile> {
                         isEmail: true,
                         controller: widget.emailController,
                         theme: widget.theme,
+                        onSubmit: (value) {
+                          passwordNode.requestFocus();
+                        },
                       ),
                       SizedBox(height: 15),
                       EmailTextField(
+                        focusNode: passwordNode,
                         title: General().password,
                         hint: General().enterPassword,
                         isEmail: false,
                         controller:
                             widget.passwordController,
                         theme: widget.theme,
+                        onSubmit: (value) {
+                          checkInputs();
+                        },
                       ),
 
                       // SizedBox(height: 30),

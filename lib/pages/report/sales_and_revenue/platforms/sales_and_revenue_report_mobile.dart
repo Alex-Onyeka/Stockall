@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/product_report_summary/product_report_summary.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockall/components/calendar/calendar_widget.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
@@ -84,10 +84,10 @@ class _SalesAndRevenueReportMobileState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      returnReportProvider(
+      returnReceiptProvider(
         context,
         listen: false,
-      ).clearDate(context);
+      ).clearDate();
       returnSalesProvider().toggleIsLoading(false);
     });
     productRecordFuture = getProductRecord();
@@ -106,915 +106,807 @@ class _SalesAndRevenueReportMobileState
           ).produtRecordSalesMain,
         );
 
-    return Stack(
-      children: [
-        Scaffold(
-          appBar: appBar(
-            context: context,
-            title: 'Sales',
-            widget: Padding(
-              padding: const EdgeInsets.only(right: 15.0),
-              child: PopupMenuButton(
-                offset: Offset(-20, 30),
-                color: Colors.white,
-                itemBuilder: (context) {
-                  return [
-                    PopupMenuItem(
-                      onTap: () {
-                        setState(() {
-                          isSummary = false;
-                        });
-                      },
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b2.fontSize,
-                          fontWeight:
-                              !isSummary
-                                  ? FontWeight.bold
-                                  : null,
-                        ),
-                        'View Total Sales',
-                      ),
+    return Scaffold(
+      appBar: appBar(
+        context: context,
+        title: 'Sales',
+        widget: Padding(
+          padding: const EdgeInsets.only(right: 15.0),
+          child: PopupMenuButton(
+            offset: Offset(-20, 30),
+            color: Colors.white,
+            itemBuilder: (context) {
+              return [
+                PopupMenuItem(
+                  onTap: () {
+                    setState(() {
+                      isSummary = false;
+                    });
+                  },
+                  child: Text(
+                    style: TextStyle(
+                      fontSize:
+                          theme.mobileTexts.b2.fontSize,
+                      fontWeight:
+                          !isSummary
+                              ? FontWeight.bold
+                              : null,
                     ),
-                    PopupMenuItem(
-                      onTap: () {
-                        setState(() {
-                          isSummary = true;
-                        });
-                      },
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b2.fontSize,
-                          fontWeight:
-                              isSummary
-                                  ? FontWeight.bold
-                                  : null,
-                        ),
-                        'View Summary of Sales',
-                      ),
+                    'View Total Sales',
+                  ),
+                ),
+                PopupMenuItem(
+                  onTap: () {
+                    setState(() {
+                      isSummary = true;
+                    });
+                  },
+                  child: Text(
+                    style: TextStyle(
+                      fontSize:
+                          theme.mobileTexts.b2.fontSize,
+                      fontWeight:
+                          isSummary
+                              ? FontWeight.bold
+                              : null,
                     ),
-                    PopupMenuItem(
-                      onTap: () {
-                        setState(() {
-                          sortIndex = 1;
-                        });
-                      },
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b2.fontSize,
-                          fontWeight:
-                              sortIndex == 1
-                                  ? FontWeight.bold
-                                  : null,
-                        ),
-                        'Sort By Name',
-                      ),
+                    'View Summary of Sales',
+                  ),
+                ),
+                PopupMenuItem(
+                  onTap: () {
+                    setState(() {
+                      sortIndex = 1;
+                    });
+                  },
+                  child: Text(
+                    style: TextStyle(
+                      fontSize:
+                          theme.mobileTexts.b2.fontSize,
+                      fontWeight:
+                          sortIndex == 1
+                              ? FontWeight.bold
+                              : null,
                     ),
-                    PopupMenuItem(
-                      onTap: () {
-                        setState(() {
-                          sortIndex = 2;
-                        });
-                      },
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b2.fontSize,
-                          fontWeight:
-                              sortIndex == 2
-                                  ? FontWeight.bold
-                                  : null,
-                        ),
-                        'Sort By Quantity',
-                      ),
+                    'Sort By Name',
+                  ),
+                ),
+                PopupMenuItem(
+                  onTap: () {
+                    setState(() {
+                      sortIndex = 2;
+                    });
+                  },
+                  child: Text(
+                    style: TextStyle(
+                      fontSize:
+                          theme.mobileTexts.b2.fontSize,
+                      fontWeight:
+                          sortIndex == 2
+                              ? FontWeight.bold
+                              : null,
                     ),
-                    PopupMenuItem(
-                      onTap: () {
-                        setState(() {
-                          sortIndex = 3;
-                        });
-                      },
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b2.fontSize,
-                          fontWeight:
-                              sortIndex == 3
-                                  ? FontWeight.bold
-                                  : null,
-                        ),
-                        'Sort By Revenue',
-                      ),
+                    'Sort By Quantity',
+                  ),
+                ),
+                PopupMenuItem(
+                  onTap: () {
+                    setState(() {
+                      sortIndex = 3;
+                    });
+                  },
+                  child: Text(
+                    style: TextStyle(
+                      fontSize:
+                          theme.mobileTexts.b2.fontSize,
+                      fontWeight:
+                          sortIndex == 3
+                              ? FontWeight.bold
+                              : null,
                     ),
-                    PopupMenuItem(
-                      enabled: isSummary,
-                      onTap: () {
-                        setState(() {
-                          sortIndex = 4;
-                        });
-                      },
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b2.fontSize,
-                          fontWeight:
-                              sortIndex == 4
-                                  ? FontWeight.bold
-                                  : null,
-                        ),
-                        'Sort By Profit',
-                      ),
+                    'Sort By Revenue',
+                  ),
+                ),
+                PopupMenuItem(
+                  enabled: isSummary,
+                  onTap: () {
+                    setState(() {
+                      sortIndex = 4;
+                    });
+                  },
+                  child: Text(
+                    style: TextStyle(
+                      fontSize:
+                          theme.mobileTexts.b2.fontSize,
+                      fontWeight:
+                          sortIndex == 4
+                              ? FontWeight.bold
+                              : null,
                     ),
-                    PopupMenuItem(
-                      enabled: !isSummary,
-                      onTap: () {
-                        setState(() {
-                          sortIndex = 5;
-                        });
-                      },
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b2.fontSize,
-                          fontWeight:
-                              sortIndex == 5
-                                  ? FontWeight.bold
-                                  : null,
-                        ),
-                        'Sort By Created Date',
-                      ),
+                    'Sort By Profit',
+                  ),
+                ),
+                PopupMenuItem(
+                  enabled: !isSummary,
+                  onTap: () {
+                    setState(() {
+                      sortIndex = 5;
+                    });
+                  },
+                  child: Text(
+                    style: TextStyle(
+                      fontSize:
+                          theme.mobileTexts.b2.fontSize,
+                      fontWeight:
+                          sortIndex == 5
+                              ? FontWeight.bold
+                              : null,
                     ),
-                  ];
-                },
-                child: Row(
+                    'Sort By Created Date',
+                  ),
+                ),
+              ];
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Column(
                   mainAxisAlignment:
                       MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Column(
-                      mainAxisAlignment:
-                          MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
+                    Text(
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b2.fontSize,
+                      ),
+                      isSummary ? 'Summary' : 'Total',
+                    ),
+                    Text(
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b4.fontSize,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      "(${sortIndex == 1
+                          ? 'Name'
+                          : sortIndex == 2
+                          ? 'Quantity'
+                          : sortIndex == 3
+                          ? 'Revenue'
+                          : sortIndex == 4
+                          ? 'Profit'
+                          : sortIndex == 5
+                          ? 'Date/Time'
+                          : 'Name'})",
+                    ),
+                  ],
+                ),
+                Icon(Icons.more_vert_rounded),
+              ],
+            ),
+          ),
+        ),
+      ),
+      body: Stack(
+        children: [
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 5.0,
+                ),
+                child: Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
                       children: [
+                        SizedBox(width: 10),
                         Text(
                           style: TextStyle(
                             fontSize:
                                 theme
                                     .mobileTexts
-                                    .b2
+                                    .b1
                                     .fontSize,
                           ),
-                          isSummary ? 'Summary' : 'Total',
-                        ),
-                        Text(
-                          style: TextStyle(
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b4
-                                    .fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          "(${sortIndex == 1
-                              ? 'Name'
-                              : sortIndex == 2
-                              ? 'Quantity'
-                              : sortIndex == 3
-                              ? 'Revenue'
-                              : sortIndex == 4
-                              ? 'Profit'
-                              : sortIndex == 5
-                              ? 'Date/Time'
-                              : 'Name'})",
+                          returnReceiptProvider(
+                                        context,
+                                      ).dateSet !=
+                                      null ||
+                                  returnReceiptProvider(
+                                        context,
+                                      ).rangeStartDate !=
+                                      null
+                              ? 'All Sales'
+                              : 'For Today',
                         ),
                       ],
                     ),
-                    Icon(Icons.more_vert_rounded),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          body: Stack(
-            children: [
-              Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 5.0,
-                    ),
-                    child: Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            SizedBox(width: 10),
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b1
-                                        .fontSize,
-                              ),
-                              returnReportProvider(
-                                    context,
-                                  ).dateSet ??
-                                  'For Today',
-                            ),
-                          ],
-                        ),
-                        Visibility(
-                          visible: false,
-                          //  salesRecords.isNotEmpty,
-                          child: Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment.end,
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  List<ProductReportSummary>
-                                  summary =
-                                      generateProductReportSummary(
-                                        salesRecords,
-                                      );
-                                  summary.sort((a, b) {
-                                    switch (sortIndex) {
-                                      case 1:
-                                        return a.productName
-                                            .compareTo(
-                                              b.productName,
-                                            );
-                                      case 2:
-                                        return b.quantity
-                                            .compareTo(
-                                              a.quantity,
-                                            );
-                                      case 3:
-                                        return b.total
-                                            .compareTo(
-                                              a.total,
-                                            );
-                                      case 4:
-                                        return b.profit
-                                            .compareTo(
-                                              a.profit,
-                                            );
-                                      default:
-                                        return a.productName
-                                            .compareTo(
-                                              b.productName,
-                                            );
-                                    }
-                                  });
+                    Visibility(
+                      visible: false,
+                      //  salesRecords.isNotEmpty,
+                      child: Row(
+                        mainAxisAlignment:
+                            MainAxisAlignment.end,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              List<ProductReportSummary>
+                              summary =
+                                  generateProductReportSummary(
+                                    salesRecords,
+                                  );
+                              summary.sort((a, b) {
+                                switch (sortIndex) {
+                                  case 1:
+                                    return a.productName
+                                        .compareTo(
+                                          b.productName,
+                                        );
+                                  case 2:
+                                    return b.quantity
+                                        .compareTo(
+                                          a.quantity,
+                                        );
+                                  case 3:
+                                    return b.total
+                                        .compareTo(a.total);
+                                  case 4:
+                                    return b.profit
+                                        .compareTo(
+                                          a.profit,
+                                        );
+                                  default:
+                                    return a.productName
+                                        .compareTo(
+                                          b.productName,
+                                        );
+                                }
+                              });
 
-                                  // List<TempProductSaleRecord> records =
-                                  //     salesRecords;
+                              // List<TempProductSaleRecord> records =
+                              //     salesRecords;
 
-                                  salesRecords.sort((a, b) {
-                                    switch (sortIndex) {
-                                      case 1:
-                                        return a.productName
-                                            .compareTo(
-                                              b.productName,
-                                            );
-                                      case 2:
-                                        return b.quantity
-                                            .compareTo(
-                                              a.quantity,
-                                            );
-                                      case 3:
-                                        return b.revenue
-                                            .compareTo(
-                                              a.revenue,
-                                            );
-                                      case 4:
-                                        return a.productName
-                                            .compareTo(
-                                              b.productName,
-                                            );
-                                      default:
-                                        return b.createdAt
-                                            .compareTo(
-                                              a.createdAt,
-                                            );
-                                    }
-                                  });
+                              salesRecords.sort((a, b) {
+                                switch (sortIndex) {
+                                  case 1:
+                                    return a.productName
+                                        .compareTo(
+                                          b.productName,
+                                        );
+                                  case 2:
+                                    return b.quantity
+                                        .compareTo(
+                                          a.quantity,
+                                        );
+                                  case 3:
+                                    return b.revenue
+                                        .compareTo(
+                                          a.revenue,
+                                        );
+                                  case 4:
+                                    return a.productName
+                                        .compareTo(
+                                          b.productName,
+                                        );
+                                  default:
+                                    return b.createdAt
+                                        .compareTo(
+                                          a.createdAt,
+                                        );
+                                }
+                              });
 
-                                  var safeContext = context;
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return ConfirmationAlert(
-                                        theme: theme,
-                                        message:
-                                            'You are about to convert all your product records to pdf, are you sure you want to proceed?',
-                                        title:
-                                            'Are you sure?',
-                                        action: () async {
-                                          Navigator.of(
-                                            context,
-                                          ).pop();
-                                          if (kIsWeb) {
-                                            if (safeContext
-                                                .mounted) {
-                                              if (isSummary) {
-                                                downloadPdfWebSalesSummary(
-                                                  summary:
-                                                      summary,
-                                                  shop:
-                                                      returnShopProvider()
-                                                          .userShop()!,
-                                                  context:
-                                                      safeContext,
-                                                  filename:
-                                                      'Stockall_Sales Record ${DateTime.now().month}-${DateTime.now().day}-${DateTime.now().hour}-${DateTime.now().minute}.pdf',
-                                                );
-                                              } else {
-                                                downloadPdfWebSales(
-                                                  records:
-                                                      salesRecords,
-                                                  shop:
-                                                      returnShopProvider()
-                                                          .userShop()!,
-                                                  context:
-                                                      safeContext,
-                                                  filename:
-                                                      'Stockall_Sales Record ${DateTime.now().month}-${DateTime.now().day}-${DateTime.now().hour}-${DateTime.now().minute}.pdf',
-                                                );
-                                              }
-                                            }
-                                          }
+                              var safeContext = context;
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return ConfirmationAlert(
+                                    theme: theme,
+                                    message:
+                                        'You are about to convert all your product records to pdf, are you sure you want to proceed?',
+                                    title: 'Are you sure?',
+                                    action: () async {
+                                      Navigator.of(
+                                        context,
+                                      ).pop();
+                                      if (kIsWeb) {
+                                        if (safeContext
+                                            .mounted) {
                                           if (isSummary) {
-                                            await generateAndPreviewPdfSalesSummary(
-                                              context:
-                                                  safeContext,
+                                            downloadPdfWebSalesSummary(
+                                              summary:
+                                                  summary,
                                               shop:
                                                   returnShopProvider()
                                                       .userShop()!,
-                                              summary:
-                                                  summary,
-                                            );
-                                          } else {
-                                            await generateAndPreviewPdfSales(
                                               context:
                                                   safeContext,
+                                              filename:
+                                                  'Stockall_Sales Record ${DateTime.now().month}-${DateTime.now().day}-${DateTime.now().hour}-${DateTime.now().minute}.pdf',
+                                            );
+                                          } else {
+                                            downloadPdfWebSales(
                                               records:
                                                   salesRecords,
                                               shop:
                                                   returnShopProvider()
                                                       .userShop()!,
+                                              context:
+                                                  safeContext,
+                                              filename:
+                                                  'Stockall_Sales Record ${DateTime.now().month}-${DateTime.now().day}-${DateTime.now().hour}-${DateTime.now().minute}.pdf',
                                             );
                                           }
+                                        }
+                                      }
+                                      if (isSummary) {
+                                        await generateAndPreviewPdfSalesSummary(
+                                          context:
+                                              safeContext,
+                                          shop:
+                                              returnShopProvider()
+                                                  .userShop()!,
+                                          summary: summary,
+                                        );
+                                      } else {
+                                        await generateAndPreviewPdfSales(
+                                          context:
+                                              safeContext,
+                                          records:
+                                              salesRecords,
+                                          shop:
+                                              returnShopProvider()
+                                                  .userShop()!,
+                                        );
+                                      }
 
-                                          if (safeContext
-                                              .mounted) {
-                                            returnSalesProvider()
-                                                .toggleIsLoading(
-                                                  false,
-                                                );
-                                          }
-                                        },
-                                      );
+                                      if (safeContext
+                                          .mounted) {
+                                        returnSalesProvider()
+                                            .toggleIsLoading(
+                                              false,
+                                            );
+                                      }
                                     },
                                   );
                                 },
-                                child: Container(
-                                  padding:
-                                      EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                      ),
-                                  child: Row(
-                                    spacing: 5,
-                                    children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b3
-                                                  .fontSize,
-                                          color:
-                                              Colors
-                                                  .grey
-                                                  .shade700,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
-                                        ),
-                                        'Pdf',
-                                      ),
-                                      Icon(
-                                        color: Colors.grey,
-                                        Icons.print,
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              );
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 10,
                               ),
-                            ],
-                          ),
-                        ),
-
-                        Visibility(
-                          visible: authorization(
-                            authorized:
-                                Authorizations().viewDate,
-                          ),
-                          child: Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment.end,
-                            children: [
-                              MaterialButton(
-                                onPressed: () {
-                                  if (returnReportProvider(
-                                        context,
-                                        listen: false,
-                                      ).isDateSet ||
-                                      returnReportProvider(
-                                        context,
-                                        listen: false,
-                                      ).setDate) {
-                                    returnReportProvider(
-                                      context,
-                                      listen: false,
-                                    ).clearDate(context);
-                                  } else {
-                                    returnReportProvider(
-                                      context,
-                                      listen: false,
-                                    ).openDatePicker();
-                                  }
-                                },
-                                child: Row(
-                                  spacing: 3,
-                                  children: [
-                                    Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b2
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
-                                        color:
-                                            Colors
-                                                .grey
-                                                .shade700,
-                                      ),
-                                      returnReportProvider(
-                                                context,
-                                              ).isDateSet ||
-                                              returnReportProvider(
-                                                context,
-                                              ).setDate
-                                          ? 'Clear'
-                                          : 'Set Date',
-                                    ),
-                                    Icon(
-                                      size: 20,
-                                      color:
-                                          theme
-                                              .lightModeColor
-                                              .secColor100,
-                                      returnReportProvider(
-                                                context,
-                                              ).isDateSet ||
-                                              returnReportProvider(
-                                                context,
-                                              ).setDate
-                                          ? Icons.clear
-                                          : Icons
-                                              .date_range_outlined,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10.0,
-                      ),
-                      child: SingleChildScrollView(
-                        primary: false,
-                        scrollDirection: Axis.horizontal,
-                        child: SizedBox(
-                          width:
-                              salesRecords.isEmpty
-                                  ? MediaQuery.of(
-                                    context,
-                                  ).size.width
-                                  : MediaQuery.of(
-                                        context,
-                                      ).size.width <
-                                      555
-                                  ? MediaQuery.of(
-                                        context,
-                                      ).size.width +
-                                      200
-                                  : MediaQuery.of(
-                                            context,
-                                          ).size.width >
-                                          555 &&
-                                      MediaQuery.of(
-                                            context,
-                                          ).size.width <
-                                          755
-                                  ? MediaQuery.of(
-                                        context,
-                                      ).size.width +
-                                      130
-                                  : MediaQuery.of(
-                                    context,
-                                  ).size.width,
-                          child: Column(
-                            children: [
-                              SummaryTableHeadingBar(
-                                isHeading: true,
-                                theme: theme,
-                                salesRecords: salesRecords,
-                              ),
-                              Expanded(
-                                child: Builder(
-                                  builder: (context) {
-                                    if (salesRecords
-                                        .isEmpty) {
-                                      return EmptyWidgetDisplayOnly(
-                                        title: 'Empty List',
-                                        subText:
-                                            'No Sales Recorded Yet',
-                                        theme: theme,
-                                        height: 35,
-                                        icon: Icons.clear,
-                                      );
-                                    } else {
-                                      if (isSummary) {
-                                        var summary =
-                                            generateProductReportSummary(
-                                              salesRecords,
-                                            );
-                                        summary.sort((
-                                          a,
-                                          b,
-                                        ) {
-                                          switch (sortIndex) {
-                                            case 1:
-                                              return a
-                                                  .productName
-                                                  .compareTo(
-                                                    b.productName,
-                                                  );
-                                            case 2:
-                                              return b
-                                                  .quantity
-                                                  .compareTo(
-                                                    a.quantity,
-                                                  );
-                                            case 3:
-                                              return b.total
-                                                  .compareTo(
-                                                    a.total,
-                                                  );
-                                            case 4:
-                                              return b
-                                                  .profit
-                                                  .compareTo(
-                                                    a.profit,
-                                                  );
-                                            default:
-                                              return a
-                                                  .productName
-                                                  .compareTo(
-                                                    b.productName,
-                                                  );
-                                          }
-                                        });
-                                        return RefreshIndicator(
-                                          onRefresh: () {
-                                            return RefreshFunctions(
-                                              context,
-                                            ).refreshReceipts(
-                                              context,
-                                            );
-                                          },
-                                          backgroundColor:
-                                              Colors.white,
-                                          color:
-                                              theme
-                                                  .lightModeColor
-                                                  .prColor300,
-                                          displacement: 10,
-                                          child: ListView(
-                                            children: [
-                                              ListView.builder(
-                                                physics:
-                                                    NeverScrollableScrollPhysics(),
-                                                shrinkWrap:
-                                                    true,
-                                                itemCount:
-                                                    summary
-                                                        .length,
-                                                itemBuilder: (
-                                                  context,
-                                                  index,
-                                                ) {
-                                                  var record =
-                                                      summary[index];
-                                                  var recordIndex =
-                                                      summary.indexOf(
-                                                        record,
-                                                      ) +
-                                                      1;
-
-                                                  return TableRowRecordWidgetSummary(
-                                                    theme:
-                                                        theme,
-                                                    recordIndex:
-                                                        recordIndex,
-                                                    record:
-                                                        record,
-                                                  );
-                                                },
-                                              ),
-                                              SummaryTableHeadingBar(
-                                                isHeading:
-                                                    false,
-                                                theme:
-                                                    theme,
-                                                salesRecords:
-                                                    salesRecords,
-                                              ),
-                                              SizedBox(
-                                                height: 20,
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      } else {
-                                        return RefreshIndicator(
-                                          onRefresh: () {
-                                            return RefreshFunctions(
-                                              context,
-                                            ).refreshReceipts(
-                                              context,
-                                            );
-                                          },
-                                          backgroundColor:
-                                              Colors.white,
-                                          color:
-                                              theme
-                                                  .lightModeColor
-                                                  .prColor300,
-                                          displacement: 10,
-                                          child: ListView(
-                                            children: [
-                                              ListView.builder(
-                                                shrinkWrap:
-                                                    true,
-                                                itemCount:
-                                                    salesRecords
-                                                        .length,
-                                                physics:
-                                                    NeverScrollableScrollPhysics(),
-
-                                                itemBuilder: (
-                                                  context,
-                                                  index,
-                                                ) {
-                                                  salesRecords.sort((
-                                                    a,
-                                                    b,
-                                                  ) {
-                                                    switch (sortIndex) {
-                                                      case 1:
-                                                        return a.productName.compareTo(
-                                                          b.productName,
-                                                        );
-                                                      case 2:
-                                                        return b.quantity.compareTo(
-                                                          a.quantity,
-                                                        );
-                                                      case 3:
-                                                        return b.revenue.compareTo(
-                                                          a.revenue,
-                                                        );
-                                                      case 4:
-                                                        return a.productName.compareTo(
-                                                          b.productName,
-                                                        );
-                                                      default:
-                                                        return b.createdAt.compareTo(
-                                                          a.createdAt,
-                                                        );
-                                                    }
-                                                  });
-                                                  var record =
-                                                      salesRecords[index];
-                                                  var recordIndex =
-                                                      salesRecords.indexOf(
-                                                        record,
-                                                      ) +
-                                                      1;
-
-                                                  // return Container(
-                                                  //   margin:
-                                                  //       EdgeInsets.symmetric(
-                                                  //         vertical:
-                                                  //             5,
-                                                  //       ),
-                                                  //   padding:
-                                                  //       EdgeInsets.symmetric(
-                                                  //         vertical:
-                                                  //             20,
-                                                  //       ),
-                                                  //   color:
-                                                  //       Colors
-                                                  //           .teal,
-                                                  // );
-
-                                                  return TableRowRecordWidget(
-                                                    theme:
-                                                        theme,
-                                                    recordIndex:
-                                                        recordIndex,
-                                                    record:
-                                                        record,
-                                                  );
-                                                },
-                                              ),
-                                              SummaryTableHeadingBar(
-                                                isHeading:
-                                                    false,
-                                                theme:
-                                                    theme,
-                                                salesRecords:
-                                                    salesRecords,
-                                              ),
-                                              SizedBox(
-                                                height: 20,
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      }
-                                    }
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Visibility(
-                visible:
-                    returnSalesProviderContext(
-                      context,
-                    ).isLoading,
-                child: returnCompProvider(
-                  context,
-                  listen: false,
-                ).showLoader(message: 'Generating Pdf'),
-              ),
-            ],
-          ),
-        ),
-        if (returnReportProvider(context).setDate)
-          Material(
-            color: const Color.fromARGB(75, 0, 0, 0),
-            child: GestureDetector(
-              onTap: () {
-                returnReportProvider(
-                  context,
-                  listen: false,
-                ).clearDate(context);
-              },
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10.0,
-                  ),
-                  child: Column(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height:
-                            MediaQuery.of(
-                              context,
-                            ).size.height *
-                            0.15,
-                      ),
-                      Ink(
-                        color: Colors.white,
-                        child: Container(
-                          padding: EdgeInsets.only(
-                            top: 20,
-                            bottom: 20,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.circular(10),
-                            color: Colors.white,
-                          ),
-                          child: Center(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(
-                                    horizontal: 5.0,
-                                  ),
-                              child: Column(
+                              child: Row(
+                                spacing: 5,
                                 children: [
-                                  Container(
-                                    width: 100,
-                                    height: 4,
-                                    decoration: BoxDecoration(
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
                                       color:
                                           Colors
                                               .grey
-                                              .shade400,
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            5,
-                                          ),
+                                              .shade700,
+                                      fontWeight:
+                                          FontWeight.bold,
                                     ),
+                                    'Pdf',
                                   ),
-                                  SizedBox(height: 20),
-                                  Container(
-                                    height: 480,
-                                    width: 380,
-                                    padding: EdgeInsets.all(
-                                      15,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            10,
-                                          ),
-                                      color: Colors.white,
-                                    ),
-                                    child: CalendarWidget(
-                                      onDaySelected: (
-                                        selectedDay,
-                                        focusedDay,
-                                      ) {
-                                        returnReportProvider(
-                                          context,
-                                          listen: false,
-                                        ).setDay(
-                                          context,
-                                          selectedDay,
-                                        );
-                                      },
-                                      actionWeek: (
-                                        startOfWeek,
-                                        endOfWeek,
-                                      ) {
-                                        returnReportProvider(
-                                          context,
-                                          listen: false,
-                                        ).setWeek(
-                                          context,
-                                          startOfWeek,
-                                          endOfWeek,
-                                        );
-                                      },
-                                    ),
+                                  Icon(
+                                    color: Colors.grey,
+                                    Icons.print,
                                   ),
                                 ],
                               ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                      SizedBox(
-                        height:
-                            MediaQuery.of(
-                              context,
-                            ).size.height *
-                            0.4,
+                    ),
+
+                    Visibility(
+                      visible: authorization(
+                        authorized:
+                            Authorizations().viewDate,
                       ),
-                    ],
+                      child: Row(
+                        mainAxisAlignment:
+                            MainAxisAlignment.end,
+                        children: [
+                          MaterialButton(
+                            onPressed: () {
+                              if (returnReceiptProvider(
+                                        context,
+                                        listen: false,
+                                      ).dateSet !=
+                                      null ||
+                                  returnReceiptProvider(
+                                        context,
+                                        listen: false,
+                                      ).rangeStartDate !=
+                                      null) {
+                                returnReceiptProvider(
+                                  context,
+                                  listen: false,
+                                ).clearDate();
+                              } else {
+                                mainDatePicker(
+                                  context: context,
+                                  theme: theme,
+                                  singleDate: (date) {
+                                    returnReceiptProviderSingle()
+                                        .setDate(date!);
+                                  },
+                                  rangeDate: (
+                                    firstDate,
+                                    lastDate,
+                                  ) {
+                                    returnReceiptProviderSingle()
+                                        .setRange(
+                                          firstDate!,
+                                          lastDate ??
+                                              DateTime.now(),
+                                        );
+                                  },
+                                );
+                              }
+                            },
+                            child: Row(
+                              spacing: 3,
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b2
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                    color:
+                                        Colors
+                                            .grey
+                                            .shade700,
+                                  ),
+                                  returnReceiptProvider(
+                                                context,
+                                              ).dateSet !=
+                                              null ||
+                                          returnReceiptProvider(
+                                                context,
+                                              ).rangeStartDate !=
+                                              null
+                                      ? 'Clear'
+                                      : 'Set Date',
+                                ),
+                                Icon(
+                                  size: 20,
+                                  color:
+                                      theme
+                                          .lightModeColor
+                                          .secColor100,
+                                  returnReceiptProvider(
+                                                context,
+                                              ).dateSet !=
+                                              null ||
+                                          returnReceiptProvider(
+                                                context,
+                                              ).rangeStartDate !=
+                                              null
+                                      ? Icons.clear
+                                      : Icons
+                                          .date_range_outlined,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10.0,
+                  ),
+                  child: SingleChildScrollView(
+                    primary: false,
+                    scrollDirection: Axis.horizontal,
+                    child: SizedBox(
+                      width:
+                          salesRecords.isEmpty
+                              ? MediaQuery.of(
+                                context,
+                              ).size.width
+                              : MediaQuery.of(
+                                    context,
+                                  ).size.width <
+                                  555
+                              ? MediaQuery.of(
+                                    context,
+                                  ).size.width +
+                                  200
+                              : MediaQuery.of(
+                                        context,
+                                      ).size.width >
+                                      555 &&
+                                  MediaQuery.of(
+                                        context,
+                                      ).size.width <
+                                      755
+                              ? MediaQuery.of(
+                                    context,
+                                  ).size.width +
+                                  130
+                              : MediaQuery.of(
+                                context,
+                              ).size.width,
+                      child: Column(
+                        children: [
+                          SummaryTableHeadingBar(
+                            isHeading: true,
+                            theme: theme,
+                            salesRecords: salesRecords,
+                          ),
+                          Expanded(
+                            child: Builder(
+                              builder: (context) {
+                                if (salesRecords.isEmpty) {
+                                  return EmptyWidgetDisplayOnly(
+                                    title: 'Empty List',
+                                    subText:
+                                        'No Sales Recorded Yet',
+                                    theme: theme,
+                                    height: 35,
+                                    icon: Icons.clear,
+                                  );
+                                } else {
+                                  if (isSummary) {
+                                    var summary =
+                                        generateProductReportSummary(
+                                          salesRecords,
+                                        );
+                                    summary.sort((a, b) {
+                                      switch (sortIndex) {
+                                        case 1:
+                                          return a
+                                              .productName
+                                              .compareTo(
+                                                b.productName,
+                                              );
+                                        case 2:
+                                          return b.quantity
+                                              .compareTo(
+                                                a.quantity,
+                                              );
+                                        case 3:
+                                          return b.total
+                                              .compareTo(
+                                                a.total,
+                                              );
+                                        case 4:
+                                          return b.profit
+                                              .compareTo(
+                                                a.profit,
+                                              );
+                                        default:
+                                          return a
+                                              .productName
+                                              .compareTo(
+                                                b.productName,
+                                              );
+                                      }
+                                    });
+                                    return RefreshIndicator(
+                                      onRefresh: () {
+                                        return RefreshFunctions(
+                                          context,
+                                        ).refreshReceipts(
+                                          context,
+                                        );
+                                      },
+                                      backgroundColor:
+                                          Colors.white,
+                                      color:
+                                          theme
+                                              .lightModeColor
+                                              .prColor300,
+                                      displacement: 10,
+                                      child: ListView(
+                                        children: [
+                                          ListView.builder(
+                                            physics:
+                                                NeverScrollableScrollPhysics(),
+                                            shrinkWrap:
+                                                true,
+                                            itemCount:
+                                                summary
+                                                    .length,
+                                            itemBuilder: (
+                                              context,
+                                              index,
+                                            ) {
+                                              var record =
+                                                  summary[index];
+                                              var recordIndex =
+                                                  summary.indexOf(
+                                                    record,
+                                                  ) +
+                                                  1;
+
+                                              return TableRowRecordWidgetSummary(
+                                                theme:
+                                                    theme,
+                                                recordIndex:
+                                                    recordIndex,
+                                                record:
+                                                    record,
+                                              );
+                                            },
+                                          ),
+                                          SummaryTableHeadingBar(
+                                            isHeading:
+                                                false,
+                                            theme: theme,
+                                            salesRecords:
+                                                salesRecords,
+                                          ),
+                                          SizedBox(
+                                            height: 20,
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  } else {
+                                    return RefreshIndicator(
+                                      onRefresh: () {
+                                        return RefreshFunctions(
+                                          context,
+                                        ).refreshReceipts(
+                                          context,
+                                        );
+                                      },
+                                      backgroundColor:
+                                          Colors.white,
+                                      color:
+                                          theme
+                                              .lightModeColor
+                                              .prColor300,
+                                      displacement: 10,
+                                      child: ListView(
+                                        children: [
+                                          ListView.builder(
+                                            shrinkWrap:
+                                                true,
+                                            itemCount:
+                                                salesRecords
+                                                    .length,
+                                            physics:
+                                                NeverScrollableScrollPhysics(),
+
+                                            itemBuilder: (
+                                              context,
+                                              index,
+                                            ) {
+                                              salesRecords.sort((
+                                                a,
+                                                b,
+                                              ) {
+                                                switch (sortIndex) {
+                                                  case 1:
+                                                    return a
+                                                        .productName
+                                                        .compareTo(
+                                                          b.productName,
+                                                        );
+                                                  case 2:
+                                                    return b
+                                                        .quantity
+                                                        .compareTo(
+                                                          a.quantity,
+                                                        );
+                                                  case 3:
+                                                    return b
+                                                        .revenue
+                                                        .compareTo(
+                                                          a.revenue,
+                                                        );
+                                                  case 4:
+                                                    return a
+                                                        .productName
+                                                        .compareTo(
+                                                          b.productName,
+                                                        );
+                                                  default:
+                                                    return b
+                                                        .createdAt
+                                                        .compareTo(
+                                                          a.createdAt,
+                                                        );
+                                                }
+                                              });
+                                              var record =
+                                                  salesRecords[index];
+                                              var recordIndex =
+                                                  salesRecords
+                                                      .indexOf(
+                                                        record,
+                                                      ) +
+                                                  1;
+
+                                              // return Container(
+                                              //   margin:
+                                              //       EdgeInsets.symmetric(
+                                              //         vertical:
+                                              //             5,
+                                              //       ),
+                                              //   padding:
+                                              //       EdgeInsets.symmetric(
+                                              //         vertical:
+                                              //             20,
+                                              //       ),
+                                              //   color:
+                                              //       Colors
+                                              //           .teal,
+                                              // );
+
+                                              return TableRowRecordWidget(
+                                                theme:
+                                                    theme,
+                                                recordIndex:
+                                                    recordIndex,
+                                                record:
+                                                    record,
+                                              );
+                                            },
+                                          ),
+                                          SummaryTableHeadingBar(
+                                            isHeading:
+                                                false,
+                                            theme: theme,
+                                            salesRecords:
+                                                salesRecords,
+                                          ),
+                                          SizedBox(
+                                            height: 20,
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
+            ],
           ),
-      ],
+          Visibility(
+            visible:
+                returnSalesProviderContext(
+                  context,
+                ).isLoading,
+            child: returnCompProvider(
+              context,
+              listen: false,
+            ).showLoader(message: 'Generating Pdf'),
+          ),
+        ],
+      ),
     );
   }
 }

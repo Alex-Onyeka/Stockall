@@ -2873,9 +2873,19 @@ class _SubStaffSelectionWidgetState
     return Visibility(
       visible:
           returnShopProvider(
-            context: context,
-          ).userShop()?.bulkSale ==
-          true,
+                context: context,
+              ).userShop()?.bulkSale ==
+              true &&
+          subPlans
+              .firstWhere(
+                (pl) =>
+                    pl.plan ==
+                    returnSubcsription(
+                      context,
+                    ).subscription?.plan,
+              )
+              .salesAuth
+              .bulkSale,
       child: Column(
         children: [
           SizedBox(height: 10),

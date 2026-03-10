@@ -29,23 +29,23 @@ class GeneralSettingsAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .generalSettingsAuth
+        .addSocials) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .generalSettingsAuth
-          .addSocials) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 
   bool customizeReceiptTemplateAction({
@@ -60,23 +60,23 @@ class GeneralSettingsAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .generalSettingsAuth
+        .customizeReceiptTemplate) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .generalSettingsAuth
-          .customizeReceiptTemplate) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 
   bool allowOfflineUseAction({
@@ -91,23 +91,23 @@ class GeneralSettingsAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .generalSettingsAuth
+        .allowOfflineUse) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .generalSettingsAuth
-          .allowOfflineUse) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 
   bool manageVATAction({
@@ -122,22 +122,22 @@ class GeneralSettingsAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .generalSettingsAuth
+        .manageVAT) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .generalSettingsAuth
-          .manageVAT) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 }

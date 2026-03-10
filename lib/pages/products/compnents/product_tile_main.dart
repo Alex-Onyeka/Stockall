@@ -144,7 +144,7 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                     widget
                                                         .theme
                                                         .mobileTexts
-                                                        .b3
+                                                        .b4
                                                         .fontSize,
                                                 fontWeight:
                                                     FontWeight
@@ -187,7 +187,7 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                               widget
                                                   .theme
                                                   .mobileTexts
-                                                  .b2
+                                                  .b3
                                                   .fontSize,
                                           fontWeight:
                                               FontWeight
@@ -235,7 +235,17 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                               .product
                                               .discount !=
                                           null,
-                                      child: Text('/'),
+                                      child: Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              widget
+                                                  .theme
+                                                  .mobileTexts
+                                                  .b3
+                                                  .fontSize,
+                                        ),
+                                        '/',
+                                      ),
                                     ),
                                     Visibility(
                                       visible:
@@ -252,7 +262,7 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                               widget
                                                   .theme
                                                   .mobileTexts
-                                                  .b2
+                                                  .b3
                                                   .fontSize,
                                           fontWeight:
                                               FontWeight
@@ -384,7 +394,7 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                               widget
                                                   .theme
                                                   .mobileTexts
-                                                  .b2
+                                                  .b4
                                                   .fontSize,
                                           fontWeight:
                                               FontWeight
@@ -502,7 +512,7 @@ class _ProductTileMainState extends State<ProductTileMain> {
                         widget
                             .theme
                             .mobileTexts
-                            .b3
+                            .b4
                             .fontSize,
                   ),
                   '${widget.product.discount ?? '0'}%',

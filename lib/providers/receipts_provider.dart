@@ -4,7 +4,6 @@ import 'package:stockall/classes/temp_main_receipt/unsynced/created_receipts/cre
 import 'package:stockall/classes/temp_main_receipt/unsynced/deleted_customers/deleted_receipts.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/classes/temp_product_slaes_record/unsynced/created_records/created_records.dart';
-import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/main_receipt/main_receipt_func.dart';
 import 'package:stockall/local_database/main_receipt/unsync_funcs/created/created_receipts_func.dart';
@@ -171,76 +170,40 @@ class ReceiptsProvider extends ChangeNotifier {
     return _receipts;
   }
 
-  DateTime? singleDay;
-  DateTime? weekStartDate;
+  DateTime? dateSet;
 
-  bool setDate = false;
-  bool isDateSet = false;
-  String? dateSet;
-
-  void openDatePicker() {
-    setDate = true;
+  void clearDate() {
+    dateSet = null;
+    rangeStartDate = null;
+    rangeEndDate = null;
     notifyListeners();
   }
 
-  void setReceiptDay(DateTime day) {
-    singleDay = day;
-    weekStartDate = null;
-    isDateSet = true;
-    setDate = false;
-    dateSet = 'For ${formatDateTime(day)}';
+  void setDate(DateTime date) {
+    if (dateSet == null) {
+      dateSet = date;
+      rangeStartDate = null;
+      rangeEndDate = null;
+      print('Date set: $date');
+    } else {
+      dateSet = null;
+      print('Date Cleared');
+    }
     notifyListeners();
   }
 
-  void setReceiptWeek(
-    DateTime weekStart,
-    DateTime endOfWeek,
-  ) {
-    weekStartDate = weekStart;
-    singleDay = null;
-    isDateSet = true;
-    setDate = false;
-    dateSet =
-        '${formatDateWithoutYear(weekStart)} - ${formatDateWithoutYear(endOfWeek)}';
-    notifyListeners();
-  }
+  DateTime? rangeStartDate;
+  DateTime? rangeEndDate;
 
-  void clearReceiptDate() {
-    singleDay = null;
-    weekStartDate = null;
-    setDate = false;
-    isDateSet = false;
+  void setRange(DateTime rangeStart, DateTime endOfrange) {
+    rangeStartDate = rangeStart;
+    rangeEndDate = endOfrange;
+    print(
+      'Date Range set: Start: $rangeStart End: $endOfrange ',
+    );
     dateSet = null;
     notifyListeners();
   }
-
-  // // UPDATE a receipt
-  // Future<void> updateReceipt(
-  //   TempMainReceipt updated,
-  // ) async {
-  //   // Use only the updatable fields
-  //   final updateData = {
-  //     'barcode': updated.barcode,
-  //     'payment_method': updated.paymentMethod,
-  //     'cash_alt': updated.cashAlt,
-  //     'bank': updated.bank,
-  //     'customer_id': updated.customerId,
-  //     'customer_uuid': updated.customerUuid,
-  //   };
-
-  //   await supabase
-  //       .from('receipts')
-  //       .update(updateData)
-  //       .eq('uuid', updated.uuid!);
-
-  //   final index = _receipts.indexWhere(
-  //     (r) => r.uuid == updated.uuid,
-  //   );
-  //   if (index != -1) {
-  //     _receipts[index] = updated;
-  //     notifyListeners();
-  //   }
-  // }
 
   // DELETE a receipt
   Future<void> deleteReceipt(
@@ -759,19 +722,6 @@ class ReceiptsProvider extends ChangeNotifier {
     }
   }
 
-  //
-  //
-  //
-  //
-  //
-
-  // bool returnInvoice = false;
-
-  // void switchReturnInvoice(bool value) {
-  //   returnInvoice = value;
-  //   notifyListeners();
-  // }
-
   List<TempMainReceipt> returnReceipts() {
     return returnOwnReceiptsByDayOrWeekInvoice(receipts);
   }
@@ -780,74 +730,62 @@ class ReceiptsProvider extends ChangeNotifier {
     // BuildContext context,
     List<TempMainReceipt> receiptss,
   ) {
-    if (weekStartDate != null) {
-      final weekStartLocal = weekStartDate!;
-      final weekEndLocal = weekStartLocal.add(
-        const Duration(days: 7),
-      );
-
+    if (rangeStartDate != null) {
       if (authorization(
         authorized:
             Authorizations().viewAllTransactionRecords,
       )) {
         return receiptss.where((receipt) {
-          final created =
-              receipt.createdAt
-                  .toLocal(); // convert UTC to local
-          return !created.isBefore(weekStartLocal) &&
-              created.isBefore(weekEndLocal);
+          final created = receipt.createdAt.toLocal();
+          return !created.isBefore(rangeStartDate!) &&
+              created.isBefore(
+                rangeEndDate ?? DateTime.now(),
+              );
         }).toList();
       } else {
         return receiptss.where((receipt) {
           final created =
               receipt.createdAt
                   .toLocal(); // convert UTC to local
-          return !created.isBefore(weekStartLocal) &&
-              created.isBefore(weekEndLocal) &&
+          return !created.isBefore(rangeStartDate!) &&
+              created.isBefore(
+                rangeEndDate ?? DateTime.now(),
+              ) &&
               receipt.staffId == currentUser().userId;
         }).toList();
       }
     }
 
-    // Force local date without UTC logic
-    final localNow = DateTime.now();
-    final localTarget = singleDay?.toLocal() ?? localNow;
-
-    final startOfDay = DateTime(
-      localTarget.year,
-      localTarget.month,
-      localTarget.day,
-    );
-    final endOfDay = startOfDay.add(
-      const Duration(days: 1),
-    );
+    final currentDate = dateSet ?? DateTime.now();
 
     if (authorization(
       authorized:
           Authorizations().viewAllTransactionRecords,
     )) {
-      return receiptss.where((receipt) {
-        final created =
-            receipt.createdAt
-                .toLocal(); // ALWAYS convert to local
-        final inRange =
-            !created.isBefore(startOfDay) &&
-            created.isBefore(endOfDay);
-
-        return inRange;
-      }).toList();
+      return receiptss
+          .where(
+            (receipt) =>
+                (receipt.createdAt.day ==
+                    currentDate.day) &&
+                (receipt.createdAt.month ==
+                    currentDate.month) &&
+                (receipt.createdAt.year ==
+                    currentDate.year),
+          )
+          .toList();
     } else {
-      return receiptss.where((receipt) {
-        final created =
-            receipt.createdAt
-                .toLocal(); // ALWAYS convert to local
-        final inRange =
-            !created.isBefore(startOfDay) &&
-            created.isBefore(endOfDay) &&
-            receipt.staffId == currentUser().userId;
-
-        return inRange;
-      }).toList();
+      return receiptss
+          .where(
+            (receipt) =>
+                (receipt.createdAt.day ==
+                    currentDate.day) &&
+                (receipt.createdAt.month ==
+                    currentDate.month) &&
+                (receipt.createdAt.year ==
+                    currentDate.year) &&
+                receipt.staffId == currentUser().userId,
+          )
+          .toList();
     }
   }
 
@@ -855,12 +793,7 @@ class ReceiptsProvider extends ChangeNotifier {
     // BuildContext context,
     List<TempMainReceipt> receiptss,
   ) {
-    if (weekStartDate != null) {
-      final weekStartLocal = weekStartDate!;
-      final weekEndLocal = weekStartLocal.add(
-        const Duration(days: 7),
-      );
-
+    if (rangeStartDate != null) {
       if (authorization(
         authorized:
             Authorizations().viewAllTransactionRecords,
@@ -869,60 +802,53 @@ class ReceiptsProvider extends ChangeNotifier {
           final created =
               receipt.createdAt
                   .toLocal(); // convert UTC to local
-          return !created.isBefore(weekStartLocal) &&
-              created.isBefore(weekEndLocal);
+          return !created.isBefore(rangeStartDate!) &&
+              created.isBefore(
+                rangeEndDate ?? DateTime.now(),
+              );
         }).toList();
       } else {
         return receiptss.where((receipt) {
-          final created =
-              receipt.createdAt
-                  .toLocal(); // convert UTC to local
-          return !created.isBefore(weekStartLocal) &&
-              created.isBefore(weekEndLocal) &&
+          final created = receipt.createdAt.toLocal();
+          return !created.isBefore(rangeStartDate!) &&
+              created.isBefore(
+                rangeEndDate ?? DateTime.now(),
+              ) &&
               receipt.staffId == currentUser().userId;
         }).toList();
       }
     }
 
-    // Force local date without UTC logic
-    final localNow = DateTime.now();
-    final localTarget = singleDay?.toLocal() ?? localNow;
-
-    final startOfDay = DateTime(
-      localTarget.year,
-      localTarget.month,
-      localTarget.day,
-    );
-    final endOfDay = startOfDay.add(
-      const Duration(days: 1),
-    );
+    final currentDate = dateSet ?? DateTime.now();
 
     if (authorization(
       authorized:
           Authorizations().viewAllTransactionRecords,
     )) {
-      return receiptss.where((receipt) {
-        final created =
-            receipt.createdAt
-                .toLocal(); // ALWAYS convert to local
-        final inRange =
-            !created.isBefore(startOfDay) &&
-            created.isBefore(endOfDay);
-
-        return inRange;
-      }).toList();
+      return receiptss
+          .where(
+            (receipt) =>
+                (receipt.createdAt.day ==
+                    currentDate.day) &&
+                (receipt.createdAt.month ==
+                    currentDate.month) &&
+                (receipt.createdAt.year ==
+                    currentDate.year),
+          )
+          .toList();
     } else {
-      return receiptss.where((receipt) {
-        final created =
-            receipt.createdAt
-                .toLocal(); // ALWAYS convert to local
-        final inRange =
-            !created.isBefore(startOfDay) &&
-            created.isBefore(endOfDay) &&
-            receipt.staffId == currentUser().userId;
-
-        return inRange;
-      }).toList();
+      return receiptss
+          .where(
+            (receipt) =>
+                (receipt.createdAt.day ==
+                    currentDate.day) &&
+                (receipt.createdAt.month ==
+                    currentDate.month) &&
+                (receipt.createdAt.year ==
+                    currentDate.year) &&
+                receipt.staffId == currentUser().userId,
+          )
+          .toList();
     }
   }
 
@@ -930,12 +856,7 @@ class ReceiptsProvider extends ChangeNotifier {
     // BuildContext context,
     List<TempMainReceipt> receiptss,
   ) {
-    if (weekStartDate != null) {
-      final weekStartLocal = weekStartDate!;
-      final weekEndLocal = weekStartLocal.add(
-        const Duration(days: 7),
-      );
-
+    if (rangeStartDate != null) {
       if (authorization(
         authorized:
             Authorizations().viewAllTransactionRecords,
@@ -944,60 +865,55 @@ class ReceiptsProvider extends ChangeNotifier {
           final created =
               receipt.createdAt
                   .toLocal(); // convert UTC to local
-          return !created.isBefore(weekStartLocal) &&
-              created.isBefore(weekEndLocal);
+          return !created.isBefore(rangeStartDate!) &&
+              created.isBefore(
+                rangeEndDate ?? DateTime.now(),
+              );
         }).toList();
       } else {
         return receiptss.where((receipt) {
           final created =
               receipt.createdAt
                   .toLocal(); // convert UTC to local
-          return !created.isBefore(weekStartLocal) &&
-              created.isBefore(weekEndLocal) &&
+          return !created.isBefore(rangeStartDate!) &&
+              created.isBefore(
+                rangeEndDate ?? DateTime.now(),
+              ) &&
               receipt.staffId == currentUser().userId;
         }).toList();
       }
     }
 
-    // Force local date without UTC logic
-    final localNow = DateTime.now();
-    final localTarget = singleDay?.toLocal() ?? localNow;
-
-    final startOfDay = DateTime(
-      localTarget.year,
-      localTarget.month,
-      localTarget.day,
-    );
-    final endOfDay = startOfDay.add(
-      const Duration(days: 1),
-    );
+    final currentDate = dateSet ?? DateTime.now();
 
     if (authorization(
       authorized:
           Authorizations().viewAllTransactionRecords,
     )) {
-      return receiptss.where((receipt) {
-        final created =
-            receipt.createdAt
-                .toLocal(); // ALWAYS convert to local
-        final inRange =
-            !created.isBefore(startOfDay) &&
-            created.isBefore(endOfDay);
-
-        return inRange;
-      }).toList();
+      return receiptss
+          .where(
+            (receipt) =>
+                (receipt.createdAt.day ==
+                    currentDate.day) &&
+                (receipt.createdAt.month ==
+                    currentDate.month) &&
+                (receipt.createdAt.year ==
+                    currentDate.year),
+          )
+          .toList();
     } else {
-      return receiptss.where((receipt) {
-        final created =
-            receipt.createdAt
-                .toLocal(); // ALWAYS convert to local
-        final inRange =
-            !created.isBefore(startOfDay) &&
-            created.isBefore(endOfDay) &&
-            receipt.staffId == currentUser().userId;
-
-        return inRange;
-      }).toList();
+      return receiptss
+          .where(
+            (receipt) =>
+                (receipt.createdAt.day ==
+                    currentDate.day) &&
+                (receipt.createdAt.month ==
+                    currentDate.month) &&
+                (receipt.createdAt.year ==
+                    currentDate.year) &&
+                receipt.staffId == currentUser().userId,
+          )
+          .toList();
     }
   }
   //
@@ -1033,58 +949,56 @@ class ReceiptsProvider extends ChangeNotifier {
       }
     }
 
-    if (weekStartDate != null) {
-      final weekStartLocal = weekStartDate!;
-      final weekEndLocal = weekStartLocal.add(
-        const Duration(days: 7),
-      );
-
+    if (rangeStartDate != null) {
       if (authorization(
         authorized:
             Authorizations().viewAllTransactionRecords,
       )) {
         return recordss.where((record) {
           final created = record.createdAt.toLocal();
-          return !created.isBefore(weekStartLocal) &&
-              created.isBefore(weekEndLocal);
+          return !created.isBefore(rangeStartDate!) &&
+              created.isBefore(
+                rangeEndDate ?? DateTime.now(),
+              );
         }).toList();
       } else {
         return recordss.where((record) {
           final created = record.createdAt.toLocal();
-          return !created.isBefore(weekStartLocal) &&
-              created.isBefore(weekEndLocal) &&
+          return !created.isBefore(rangeStartDate!) &&
+              created.isBefore(
+                rangeEndDate ?? DateTime.now(),
+              ) &&
               record.staffId == currentUser().userId;
         }).toList();
       }
     }
 
-    final localNow = DateTime.now();
-    final localTarget = singleDay?.toLocal() ?? localNow;
-
-    final startOfDay = DateTime(
-      localTarget.year,
-      localTarget.month,
-      localTarget.day,
-    );
-    final endOfDay = startOfDay.add(
-      const Duration(days: 1),
-    );
+    var currentDate = dateSet ?? DateTime.now();
     if (authorization(
       authorized:
           Authorizations().viewAllTransactionRecords,
     )) {
-      return recordss.where((record) {
-        final created = record.createdAt.toLocal();
-        return !created.isBefore(startOfDay) &&
-            created.isBefore(endOfDay);
-      }).toList();
+      return recordss
+          .where(
+            (record) =>
+                (record.createdAt.day == currentDate.day) &&
+                (record.createdAt.month ==
+                    currentDate.month) &&
+                (record.createdAt.year == currentDate.year),
+          )
+          .toList();
     } else {
-      return recordss.where((record) {
-        final created = record.createdAt.toLocal();
-        return !created.isBefore(startOfDay) &&
-            created.isBefore(endOfDay) &&
-            record.staffId == currentUser().userId;
-      }).toList();
+      return recordss
+          .where(
+            (record) =>
+                (record.createdAt.day == currentDate.day) &&
+                (record.createdAt.month ==
+                    currentDate.month) &&
+                (record.createdAt.year ==
+                    currentDate.year) &&
+                record.staffId == currentUser().userId,
+          )
+          .toList();
     }
   }
 

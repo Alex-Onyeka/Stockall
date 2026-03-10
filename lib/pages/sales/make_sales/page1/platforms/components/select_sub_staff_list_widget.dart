@@ -68,7 +68,7 @@ class _SelectSubStaffListWidgetState
             color: theme.lightModeColor.secColor200,
             displacement: 10,
             child: ListView(
-              shrinkWrap: true,
+              // shrinkWrap: true,
               children:
                   returnSubStaffProvider().subStaffs
                       .where((st) {

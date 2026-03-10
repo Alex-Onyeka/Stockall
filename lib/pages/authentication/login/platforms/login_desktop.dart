@@ -176,6 +176,8 @@ class _LoginDesktopState extends State<LoginDesktop> {
     }
   }
 
+  FocusNode passwordNode = FocusNode();
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -260,14 +262,22 @@ class _LoginDesktopState extends State<LoginDesktop> {
                   isEmail: true,
                   controller: widget.emailController,
                   theme: widget.theme,
+                  onSubmit: (value) {
+                    print('Clicked');
+                    passwordNode.requestFocus();
+                  },
                 ),
                 SizedBox(height: 15),
                 EmailTextField(
+                  focusNode: passwordNode,
                   title: General().password,
                   hint: General().enterPassword,
                   isEmail: false,
                   controller: widget.passwordController,
                   theme: widget.theme,
+                  onSubmit: (value) {
+                    checkInputs();
+                  },
                 ),
 
                 SizedBox(height: 20),

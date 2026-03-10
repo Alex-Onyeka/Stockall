@@ -31,11 +31,11 @@ class NavButton extends StatelessWidget {
             returnExpensesProvider(
               context,
               listen: false,
-            ).clearExpenseDate();
+            ).clearDate();
             returnReceiptProvider(
               context,
               listen: false,
-            ).clearReceiptDate();
+            ).clearDate();
             returnData().clearFields();
           },
           child: SizedBox(

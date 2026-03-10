@@ -17,7 +17,7 @@ class _DashboardState extends State<Dashboard> {
     returnReceiptProvider(
       context,
       listen: false,
-    ).clearReceiptDate();
+    ).clearDate();
 
     returnData().clearFields();
   }

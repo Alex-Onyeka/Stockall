@@ -21,22 +21,23 @@ class CalculatorAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .calculatorAuth
+        .useCalculator) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .calculatorAuth
-          .useCalculator) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
   }
+
+  // }
 }

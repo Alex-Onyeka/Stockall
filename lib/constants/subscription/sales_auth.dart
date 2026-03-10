@@ -54,25 +54,25 @@ class SalesAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .salesAuth
+        .useOfBarcode) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .salesAuth
-          .useOfBarcode) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-          if (failAction != null) {
-            failAction();
-          }
+      if (action != null) {
+        showUnauthorizedDialog(context);
+        if (failAction != null) {
+          failAction();
         }
-        return false;
       }
+      return false;
+      // }
     }
   }
 
@@ -89,26 +89,26 @@ class SalesAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .salesAuth
+        .bulkSale) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .salesAuth
-          .bulkSale) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-          if (failAction != null) {
-            failAction();
-          }
+      if (action != null) {
+        showUnauthorizedDialog(context);
+        if (failAction != null) {
+          failAction();
         }
-        return false;
       }
+      return false;
     }
+    // }
   }
 
   bool numberOfCartsAction({
@@ -123,41 +123,41 @@ class SalesAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    var cartsNum =
+        returnSalesProvider()
+            .currentMainCart()
+            .cartQueue
+            .length;
+    if (cartsNum <
+        subPlans
+            .firstWhere((pl) => pl.plan == plan)
+            .salesAuth
+            .numberOfCarts) {
+      print(
+        subPlans
+            .firstWhere((pl) => pl.plan == plan)
+            .salesAuth
+            .numberOfCarts,
+      );
       action == null ? {} : action();
       return true;
     } else {
-      var cartsNum =
-          returnSalesProvider()
-              .currentMainCart()
-              .cartQueue
-              .length;
-      if (cartsNum <
-          subPlans
-              .firstWhere((pl) => pl.plan == plan)
-              .salesAuth
-              .numberOfCarts) {
+      if (action != null) {
         print(
           subPlans
               .firstWhere((pl) => pl.plan == plan)
               .salesAuth
               .numberOfCarts,
         );
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          print(
-            subPlans
-                .firstWhere((pl) => pl.plan == plan)
-                .salesAuth
-                .numberOfCarts,
-          );
-          showUnauthorizedDialog(context);
-        }
-        return false;
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 
   bool numberOfMainCartsAction({
@@ -172,41 +172,38 @@ class SalesAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    var mainCartsNum =
+        returnSalesProvider().mainCartQueue.length;
+    if (mainCartsNum <
+        subPlans
+            .firstWhere((pl) => pl.plan == plan)
+            .salesAuth
+            .numberOfCarts) {
+      print(
+        subPlans
+            .firstWhere((pl) => pl.plan == plan)
+            .salesAuth
+            .numberOfCarts,
+      );
       action == null ? {} : action();
       return true;
     } else {
-      var cartsNum =
-          returnSalesProvider()
-              .currentMainCart()
-              .cartQueue
-              .length;
-      if (cartsNum <
-          subPlans
-              .firstWhere((pl) => pl.plan == plan)
-              .salesAuth
-              .numberOfCarts) {
+      if (action != null) {
         print(
           subPlans
               .firstWhere((pl) => pl.plan == plan)
               .salesAuth
               .numberOfCarts,
         );
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          print(
-            subPlans
-                .firstWhere((pl) => pl.plan == plan)
-                .salesAuth
-                .numberOfCarts,
-          );
-          showUnauthorizedDialog(context);
-        }
-        return false;
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 
   bool applyDiscountAction({
@@ -221,23 +218,23 @@ class SalesAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .salesAuth
+        .applyDiscount) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .salesAuth
-          .applyDiscount) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 
   bool invoiceManagementAction({
@@ -252,23 +249,23 @@ class SalesAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .salesAuth
+        .invoiceManagement) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .salesAuth
-          .invoiceManagement) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 
   bool paymentMethodSelectionAction({
@@ -283,23 +280,23 @@ class SalesAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .salesAuth
+        .paymentMethodSelection) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .salesAuth
-          .paymentMethodSelection) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 
   bool addCustomerToSaleAction({
@@ -314,23 +311,23 @@ class SalesAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .salesAuth
+        .addCustomerToSell) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .salesAuth
-          .addCustomerToSell) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 
   bool downloadReceiptAction({
@@ -345,23 +342,23 @@ class SalesAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .salesAuth
+        .downloadReceipt) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .salesAuth
-          .downloadReceipt) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 
   bool editReceiptAction({
@@ -376,23 +373,23 @@ class SalesAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .salesAuth
+        .editReceipt) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .salesAuth
-          .editReceipt) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 
   bool printReceiptAction({
@@ -407,23 +404,23 @@ class SalesAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .salesAuth
+        .printReceipt) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .salesAuth
-          .printReceipt) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 
   bool addItemToStockAfterSaleAction({
@@ -438,23 +435,23 @@ class SalesAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .salesAuth
+        .addItemToStockAfterCustomSale) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .salesAuth
-          .addItemToStockAfterCustomSale) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 
   bool addCustomItemToCartAction({
@@ -469,23 +466,23 @@ class SalesAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .salesAuth
+        .addCustomItemToCart) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .salesAuth
-          .addCustomItemToCart) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 
   bool addStockallNameOnReceiptAction({
@@ -500,22 +497,23 @@ class SalesAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .salesAuth
+        .addStockallNameOnReceipt) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .salesAuth
-          .addStockallNameOnReceipt) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
   }
+
+  // }
 }

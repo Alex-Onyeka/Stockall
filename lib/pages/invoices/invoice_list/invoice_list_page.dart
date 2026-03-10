@@ -32,7 +32,7 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
   void dispose() {
     super.dispose();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      returnInvoicesProvider().clearInvoiceDate();
+      returnInvoicesProvider().clearDate();
     });
   }
 

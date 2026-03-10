@@ -25,23 +25,23 @@ class MultipleStoresAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .multipleStoresAuth
+        .createMultipleStores) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .multipleStoresAuth
-          .createMultipleStores) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 
   bool numberOfStoresAction({
@@ -56,25 +56,25 @@ class MultipleStoresAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    var currentNumberofStores =
+        returnShopProvider().userShops.length;
+    if (currentNumberofStores <
+        subPlans
+            .firstWhere((pl) => pl.plan == plan)
+            .multipleStoresAuth
+            .numberOfStores) {
       action == null ? {} : action();
       return true;
     } else {
-      var currentNumberofStores =
-          returnShopProvider().userShops.length;
-      if (currentNumberofStores <
-          subPlans
-              .firstWhere((pl) => pl.plan == plan)
-              .multipleStoresAuth
-              .numberOfStores) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 }

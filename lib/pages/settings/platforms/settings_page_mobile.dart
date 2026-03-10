@@ -745,7 +745,24 @@ class _SettingsPageMobileState
                         Visibility(
                           visible:
                               shop(context)!.bulkSale ==
-                              true,
+                                  true &&
+                              authorization(
+                                authorized:
+                                    Authorizations()
+                                        .manageSubStaff,
+                              ) &&
+                              subPlans
+                                  .firstWhere(
+                                    (plan) =>
+                                        plan.plan ==
+                                        returnSubcsription(
+                                              context,
+                                            )
+                                            .subscription
+                                            ?.plan,
+                                  )
+                                  .salesAuth
+                                  .bulkSale,
                           child: NavListTileDesktopAlt(
                             height: 18,
                             action: () {

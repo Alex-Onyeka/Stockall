@@ -225,17 +225,6 @@ class _HomeState extends State<Home> {
                       }
                     },
                   ),
-                  // Visibility(
-                  //   visible:
-                  //       returnNavProvider(
-                  //         context,
-                  //       ).isNotVerified,
-                  //   child: EmpAuth(
-                  //     action: () {
-                  //       _handleNoShop();
-                  //     },
-                  //   ),
-                  // ),
                 ],
               );
             }
@@ -275,15 +264,6 @@ class _HomeState extends State<Home> {
               },
             ),
           ),
-          // Visibility(
-          //   visible:
-          //       returnNavProvider(context).isNotVerified,
-          //   child: EmpAuth(
-          //     action: () {
-          //       _handleNoShop();
-          //     },
-          //   ),
-          // ),
         ],
       );
     }

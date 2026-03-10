@@ -79,7 +79,7 @@ class TopBanner extends StatelessWidget {
                                 returnExpensesProvider(
                                   context,
                                   listen: false,
-                                ).clearExpenseDate();
+                                ).clearDate();
                                 Navigator.of(context).pop();
                               }
                             }
@@ -112,7 +112,7 @@ class TopBanner extends StatelessWidget {
                                       returnExpensesProvider(
                                         context,
                                         listen: false,
-                                      ).clearExpenseDate();
+                                      ).clearDate();
                                       Navigator.of(
                                         context,
                                       ).pop();

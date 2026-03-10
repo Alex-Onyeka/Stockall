@@ -10,7 +10,6 @@ import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/constants/calculations.dart';
-import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/local_database/invoices/invoices_func.dart';
 import 'package:stockall/local_database/invoices/unsync_funcs/created/created_invoices_func.dart';
@@ -464,11 +463,12 @@ class InvoicesProvider extends ChangeNotifier {
                 productUuid: record.productUuid,
                 productName: record.productName,
                 shopId: invoice.shopId,
-                staffId: invoice.staffId,
+                staffId: AuthService().currentUser!,
+                staffName:
+                    "${returnUserProviderSingle().currentUserMain!.name} ${returnUserProviderSingle().currentUserMain!.lastName}",
                 // customerId: customerId,
                 customerUuid: invoice.customerUuid,
                 customerName: invoice.customerName,
-                staffName: invoice.staffName,
                 recepitId: 0,
                 receiptUuid: res.uuid,
                 quantity: record.quantity,
@@ -774,45 +774,37 @@ class InvoicesProvider extends ChangeNotifier {
     );
   }
 
-  DateTime? singleDay;
-  DateTime? weekStartDate;
+  DateTime? dateSet;
 
-  bool setDate = false;
-  bool isDateSet = false;
-  String? dateSet;
-
-  void openDatePicker() {
-    setDate = true;
+  void clearDate() {
+    dateSet = null;
+    rangeStartDate = null;
+    rangeEndDate = null;
     notifyListeners();
   }
 
-  void setInvoiceDay(DateTime day) {
-    singleDay = day;
-    weekStartDate = null;
-    isDateSet = true;
-    setDate = false;
-    dateSet = 'For ${formatDateTime(day)}';
+  void setDate(DateTime date) {
+    if (dateSet == null) {
+      dateSet = date;
+      rangeStartDate = null;
+      rangeEndDate = null;
+      print('Date set: $date');
+    } else {
+      dateSet = null;
+      print('Date Cleared');
+    }
     notifyListeners();
   }
 
-  void setInvoiceWeek(
-    DateTime weekStart,
-    DateTime endOfWeek,
-  ) {
-    weekStartDate = weekStart;
-    singleDay = null;
-    isDateSet = true;
-    setDate = false;
-    dateSet =
-        '${formatDateWithoutYear(weekStart)} - ${formatDateWithoutYear(endOfWeek)}';
-    notifyListeners();
-  }
+  DateTime? rangeStartDate;
+  DateTime? rangeEndDate;
 
-  void clearInvoiceDate() {
-    singleDay = null;
-    weekStartDate = null;
-    setDate = false;
-    isDateSet = false;
+  void setRange(DateTime rangeStart, DateTime endOfrange) {
+    rangeStartDate = rangeStart;
+    rangeEndDate = endOfrange;
+    print(
+      'Date Range set: Start: $rangeStart End: $endOfrange ',
+    );
     dateSet = null;
     notifyListeners();
   }
@@ -820,123 +812,73 @@ class InvoicesProvider extends ChangeNotifier {
   List<TempInvoice> returnUserInvoicesByDayOrWeek(
     List<TempInvoice> invoices,
   ) {
-    if (weekStartDate != null) {
-      final weekStartLocal = weekStartDate!;
-      final weekEndLocal = weekStartLocal.add(
-        const Duration(days: 7),
-      );
+    if (rangeStartDate != null) {
+      // final weekStartLocal = weekStartDate!;
+      // final weekEndLocal = weekStartLocal.add(
+      //   const Duration(days: 7),
+      // );
 
-      if (authorization(
-        authorized:
-            Authorizations().viewAllTransactionRecords,
-      )) {
-        return invoices.where((invoice) {
-          final created =
-              invoice.createdAt
-                  .toLocal(); // convert UTC to local
-          return !created.isBefore(weekStartLocal) &&
-              created.isBefore(weekEndLocal);
-        }).toList();
-      } else {
-        return invoices.where((invoice) {
-          final created =
-              invoice.createdAt
-                  .toLocal(); // convert UTC to local
-          return !created.isBefore(weekStartLocal) &&
-              created.isBefore(weekEndLocal) &&
-              invoice.staffId == currentUser().userId;
-        }).toList();
-      }
-    }
-
-    // Force local date without UTC logic
-    final localNow = DateTime.now();
-    final localTarget = singleDay?.toLocal() ?? localNow;
-
-    final startOfDay = DateTime(
-      localTarget.year,
-      localTarget.month,
-      localTarget.day,
-    );
-    final endOfDay = startOfDay.add(
-      const Duration(days: 1),
-    );
-    if (authorization(
-      authorized:
-          Authorizations().viewAllTransactionRecords,
-    )) {
       return invoices.where((invoice) {
         final created =
             invoice.createdAt
-                .toLocal(); // ALWAYS convert to local
+                .toLocal(); // convert UTC to local
+        return !created.isBefore(rangeStartDate!) &&
+            created.isBefore(
+              rangeEndDate ?? DateTime.now(),
+            );
+      }).toList();
+    }
+
+    if (dateSet != null) {
+      // Force local date without UTC logic
+      final localNow = DateTime.now();
+      final localTarget = dateSet?.toLocal() ?? localNow;
+
+      final startOfDay = DateTime(
+        localTarget.year,
+        localTarget.month,
+        localTarget.day,
+      );
+      final endOfDay = startOfDay.add(
+        const Duration(days: 1),
+      );
+      return invoices.where((invoice) {
+        final created = invoice.createdAt.toLocal();
         final inRange =
             !created.isBefore(startOfDay) &&
             created.isBefore(endOfDay);
 
         return inRange;
       }).toList();
-    } else {
-      return invoices.where((invoice) {
-        final created =
-            invoice.createdAt
-                .toLocal(); // ALWAYS convert to local
-        final inRange =
-            !created.isBefore(startOfDay) &&
-            created.isBefore(endOfDay) &&
-            invoice.staffId == currentUser().userId;
-
-        return inRange;
-      }).toList();
     }
+
+    return invoices;
   }
 
   List<TempInvoice> returnInvoicesByDayOrWeekAll() {
-    if (weekStartDate != null) {
-      final weekStartLocal = weekStartDate!;
-      final weekEndLocal = weekStartLocal.add(
-        const Duration(days: 7),
-      );
-
-      if (authorization(
-        authorized:
-            Authorizations().viewAllTransactionRecords,
-      )) {
-        return invoicesMain.where((invoice) {
-          final created =
-              invoice.createdAt
-                  .toLocal(); // convert UTC to local
-          return !created.isBefore(weekStartLocal) &&
-              created.isBefore(weekEndLocal);
-        }).toList();
-      } else {
-        return invoicesMain.where((invoice) {
-          final created =
-              invoice.createdAt
-                  .toLocal(); // convert UTC to local
-          return !created.isBefore(weekStartLocal) &&
-              created.isBefore(weekEndLocal) &&
-              invoice.staffId == currentUser().userId;
-        }).toList();
-      }
+    if (rangeStartDate != null) {
+      return invoicesMain.where((invoice) {
+        final created = invoice.createdAt.toLocal();
+        return !created.isBefore(rangeStartDate!) &&
+            created.isBefore(
+              rangeEndDate ?? DateTime.now(),
+            );
+      }).toList();
     }
 
-    // Force local date without UTC logic
-    final localNow = DateTime.now();
-    final localTarget = singleDay?.toLocal() ?? localNow;
+    if (dateSet != null) {
+      final localNow = DateTime.now();
+      final localTarget = dateSet?.toLocal() ?? localNow;
 
-    final startOfDay = DateTime(
-      localTarget.year,
-      localTarget.month,
-      localTarget.day,
-    );
-    final endOfDay = startOfDay.add(
-      const Duration(days: 1),
-    );
+      final startOfDay = DateTime(
+        localTarget.year,
+        localTarget.month,
+        localTarget.day,
+      );
+      final endOfDay = startOfDay.add(
+        const Duration(days: 1),
+      );
 
-    if (authorization(
-      authorized:
-          Authorizations().viewAllTransactionRecords,
-    )) {
       return invoicesMain.where((invoice) {
         final created =
             invoice.createdAt
@@ -947,36 +889,9 @@ class InvoicesProvider extends ChangeNotifier {
 
         return inRange;
       }).toList();
-    } else {
-      return invoicesMain.where((invoice) {
-        final created =
-            invoice.createdAt
-                .toLocal(); // ALWAYS convert to local
-        final inRange =
-            !created.isBefore(startOfDay) &&
-            created.isBefore(endOfDay) &&
-            invoice.staffId == currentUser().userId;
-
-        return inRange;
-      }).toList();
     }
+    return invoicesMain;
   }
-
-  // double getUserTotalRevenueForSelectedDay(
-  //   List<TempInvoice> invoices,
-  // ) {
-  //   double tempTotalRevenue = 0;
-
-  //   for (var invoice in returnUserInvoicesByDayOrWeek(
-  //     invoices,
-  //   )) {
-  //     tempTotalRevenue += getTotalMainRevenueInvoice(
-  //       invoice: invoice,
-  //     );
-  //   }
-
-  //   return tempTotalRevenue;
-  // }
 
   double getTotalRevenueForSelectedDayAll({
     String? staffId,
@@ -999,9 +914,7 @@ class InvoicesProvider extends ChangeNotifier {
               (rec) => rec.customerUuid == customerId,
             )
             : returnInvoicesByDayOrWeekAll())) {
-      tempTotalRevenue += getTotalMainRevenueInvoice(
-        invoice: invoice,
-      );
+      tempTotalRevenue += getBalance(invoice: invoice);
     }
 
     return tempTotalRevenue;

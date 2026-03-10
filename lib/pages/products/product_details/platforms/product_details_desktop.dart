@@ -1509,99 +1509,104 @@ class _ProductDetailsDesktopState
                                                       context:
                                                           context,
                                                       action: () async {
-                                                        var dataProvider =
-                                                            returnData();
-                                                        showDialog(
-                                                          context:
-                                                              context,
-                                                          builder: (
-                                                            confirmDialog,
-                                                          ) {
-                                                            return ConfirmationAlert(
-                                                              theme:
-                                                                  widget.theme,
-                                                              message:
-                                                                  product.isManaged
-                                                                      ? 'This item quantity will no longer be automatically managed by Stockall, are you sure you want to proceed?'
-                                                                      : 'This item quantity will now be automatically managed by Stockall, are you sure you want to proceed?',
-                                                              title:
-                                                                  'Proceed with Action?',
-                                                              action: () async {
-                                                                Navigator.of(
-                                                                  confirmDialog,
-                                                                ).pop();
-                                                                setState(
-                                                                  () {
-                                                                    isLoading =
-                                                                        true;
-                                                                  },
-                                                                );
-                                                                await dataProvider.updateProduct(
-                                                                  product: TempProductClass(
-                                                                    updatedAt:
-                                                                        DateTime.now(),
-                                                                    totalQttyInStorage:
-                                                                        product.totalQttyInStorage,
-                                                                    setCustomPrice:
-                                                                        product.setCustomPrice,
-                                                                    isManaged:
-                                                                        product.isManaged
-                                                                            ? false
-                                                                            : true,
-                                                                    // id:
-                                                                    //     product.id,
-                                                                    name:
-                                                                        product.name,
-                                                                    unit:
-                                                                        product.unit,
-                                                                    isRefundable:
-                                                                        product.isRefundable,
-                                                                    costPrice:
-                                                                        product.costPrice,
-                                                                    sellingPrice:
-                                                                        product.sellingPrice,
-                                                                    quantity:
-                                                                        !product.isManaged &&
-                                                                                product.quantity ==
-                                                                                    null
-                                                                            ? 0
-                                                                            : product.quantity,
-                                                                    shopId:
-                                                                        product.shopId,
-                                                                    barcode:
-                                                                        product.barcode,
-                                                                    category:
-                                                                        product.category,
-                                                                    createdAt:
-                                                                        product.createdAt,
-                                                                    discount:
-                                                                        product.discount,
-                                                                    endDate:
-                                                                        product.endDate,
-                                                                    expiryDate:
-                                                                        product.expiryDate,
-                                                                    lowQtty:
-                                                                        product.lowQtty,
-                                                                    sizeType:
-                                                                        product.sizeType,
-                                                                    startDate:
-                                                                        product.startDate,
-                                                                    uuid:
-                                                                        product.uuid,
-                                                                  ),
-                                                                  oldProduct:
-                                                                      product,
-                                                                );
-                                                                setState(
-                                                                  () {
-                                                                    isLoading =
-                                                                        false;
-                                                                  },
-                                                                );
-                                                              },
-                                                            );
-                                                          },
-                                                        );
+                                                        if (authorization(
+                                                          authorized:
+                                                              Authorizations().updateProduct,
+                                                        )) {
+                                                          var dataProvider =
+                                                              returnData();
+                                                          showDialog(
+                                                            context:
+                                                                context,
+                                                            builder: (
+                                                              confirmDialog,
+                                                            ) {
+                                                              return ConfirmationAlert(
+                                                                theme:
+                                                                    widget.theme,
+                                                                message:
+                                                                    product.isManaged
+                                                                        ? 'This item quantity will no longer be automatically managed by Stockall, are you sure you want to proceed?'
+                                                                        : 'This item quantity will now be automatically managed by Stockall, are you sure you want to proceed?',
+                                                                title:
+                                                                    'Proceed with Action?',
+                                                                action: () async {
+                                                                  Navigator.of(
+                                                                    confirmDialog,
+                                                                  ).pop();
+                                                                  setState(
+                                                                    () {
+                                                                      isLoading =
+                                                                          true;
+                                                                    },
+                                                                  );
+                                                                  await dataProvider.updateProduct(
+                                                                    product: TempProductClass(
+                                                                      updatedAt:
+                                                                          DateTime.now(),
+                                                                      totalQttyInStorage:
+                                                                          product.totalQttyInStorage,
+                                                                      setCustomPrice:
+                                                                          product.setCustomPrice,
+                                                                      isManaged:
+                                                                          product.isManaged
+                                                                              ? false
+                                                                              : true,
+                                                                      // id:
+                                                                      //     product.id,
+                                                                      name:
+                                                                          product.name,
+                                                                      unit:
+                                                                          product.unit,
+                                                                      isRefundable:
+                                                                          product.isRefundable,
+                                                                      costPrice:
+                                                                          product.costPrice,
+                                                                      sellingPrice:
+                                                                          product.sellingPrice,
+                                                                      quantity:
+                                                                          !product.isManaged &&
+                                                                                  product.quantity ==
+                                                                                      null
+                                                                              ? 0
+                                                                              : product.quantity,
+                                                                      shopId:
+                                                                          product.shopId,
+                                                                      barcode:
+                                                                          product.barcode,
+                                                                      category:
+                                                                          product.category,
+                                                                      createdAt:
+                                                                          product.createdAt,
+                                                                      discount:
+                                                                          product.discount,
+                                                                      endDate:
+                                                                          product.endDate,
+                                                                      expiryDate:
+                                                                          product.expiryDate,
+                                                                      lowQtty:
+                                                                          product.lowQtty,
+                                                                      sizeType:
+                                                                          product.sizeType,
+                                                                      startDate:
+                                                                          product.startDate,
+                                                                      uuid:
+                                                                          product.uuid,
+                                                                    ),
+                                                                    oldProduct:
+                                                                        product,
+                                                                  );
+                                                                  setState(
+                                                                    () {
+                                                                      isLoading =
+                                                                          false;
+                                                                    },
+                                                                  );
+                                                                },
+                                                              );
+                                                            },
+                                                          );
+                                                        }
                                                       },
                                                     );
                                                   },
@@ -1699,126 +1704,137 @@ class _ProductDetailsDesktopState
                                                 'Not Set',
                                             text: 'Barcode',
                                             onClick: () {
-                                              ItemsAuthAction().generateBarcodeAction(
-                                                context:
-                                                    context,
-                                                action: () {
-                                                  if (kIsWeb) {
-                                                    showDialog(
-                                                      context:
-                                                          context,
-                                                      builder: (
-                                                        firstContext,
-                                                      ) {
-                                                        return ConfirmationAlert(
-                                                          theme:
-                                                              widget.theme,
-                                                          message:
-                                                              'You are about to regenrate and print the barcode of this item, are you sure you want to proceed?',
-                                                          actionButtonText:
-                                                              'Generate',
-                                                          title:
-                                                              'Regenerate and Print Barcode?',
-                                                          action: () async {
-                                                            Navigator.of(
-                                                              firstContext,
-                                                            ).pop();
-                                                            setState(
-                                                              () {
-                                                                isLoading =
-                                                                    true;
-                                                              },
-                                                            );
-                                                            returnData().addToBarcodeGenerationList(
-                                                              ProductBarcode(
-                                                                product:
-                                                                    product,
-                                                                number:
-                                                                    1,
-                                                              ),
-                                                            );
-                                                            generateBarcodeAndPrint(
-                                                              context,
-                                                              returnData().barcodeGenerationList,
-                                                              false,
-                                                            ).then(
-                                                              (
-                                                                _,
-                                                              ) {
-                                                                returnData().clearBarcodeGenerationList();
-                                                                setState(
-                                                                  () {
-                                                                    isLoading =
-                                                                        false;
-                                                                  },
-                                                                );
-                                                              },
-                                                            );
-
-                                                            print(
-                                                              'Generate Clicked',
-                                                            );
-                                                          },
-                                                        );
-                                                      },
-                                                    );
-                                                  } else {
-                                                    Navigator.push(
+                                              if (authorization(
+                                                authorized:
+                                                    Authorizations()
+                                                        .updateProduct,
+                                              )) {
+                                                ItemsAuthAction().generateBarcodeAction(
+                                                  context:
                                                       context,
-                                                      MaterialPageRoute(
+                                                  action: () {
+                                                    if (kIsWeb) {
+                                                      showDialog(
+                                                        context:
+                                                            context,
                                                         builder: (
-                                                          context,
+                                                          firstContext,
                                                         ) {
-                                                          return BarcodePrintingPage(
-                                                            product:
-                                                                product,
+                                                          return ConfirmationAlert(
+                                                            theme:
+                                                                widget.theme,
+                                                            message:
+                                                                'You are about to regenrate and print the barcode of this item, are you sure you want to proceed?',
+                                                            actionButtonText:
+                                                                'Generate',
+                                                            title:
+                                                                'Regenerate and Print Barcode?',
+                                                            action: () async {
+                                                              Navigator.of(
+                                                                firstContext,
+                                                              ).pop();
+                                                              setState(
+                                                                () {
+                                                                  isLoading =
+                                                                      true;
+                                                                },
+                                                              );
+                                                              returnData().addToBarcodeGenerationList(
+                                                                ProductBarcode(
+                                                                  product:
+                                                                      product,
+                                                                  number:
+                                                                      1,
+                                                                ),
+                                                              );
+                                                              generateBarcodeAndPrint(
+                                                                context,
+                                                                returnData().barcodeGenerationList,
+                                                                false,
+                                                              ).then(
+                                                                (
+                                                                  _,
+                                                                ) {
+                                                                  returnData().clearBarcodeGenerationList();
+                                                                  setState(
+                                                                    () {
+                                                                      isLoading =
+                                                                          false;
+                                                                    },
+                                                                  );
+                                                                },
+                                                              );
+
+                                                              print(
+                                                                'Generate Clicked',
+                                                              );
+                                                            },
                                                           );
                                                         },
-                                                      ),
-                                                    );
-                                                  }
-                                                },
-                                              );
+                                                      );
+                                                    } else {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (
+                                                            context,
+                                                          ) {
+                                                            return BarcodePrintingPage(
+                                                              product:
+                                                                  product,
+                                                            );
+                                                          },
+                                                        ),
+                                                      );
+                                                    }
+                                                  },
+                                                );
+                                              }
                                             },
                                             setBarcodeAction:
                                                 product.barcode ==
                                                         null
                                                     ? () {
-                                                      ItemsAuthAction().generateBarcodeAction(
-                                                        context:
-                                                            context,
-                                                        action: () {
-                                                          if (kIsWeb) {
-                                                            returnData().addToBarcodeGenerationList(
-                                                              ProductBarcode(
-                                                                product:
-                                                                    product,
-                                                                number:
-                                                                    1,
-                                                              ),
-                                                            );
-                                                            generateBarcodeAndPrint(
+                                                      if (authorization(
+                                                        authorized:
+                                                            Authorizations().updateProduct,
+                                                      )) {
+                                                        ItemsAuthAction().generateBarcodeAction(
+                                                          context:
                                                               context,
-                                                              returnData().barcodeGenerationList,
-                                                              false,
-                                                            );
-                                                          } else {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                builder: (
-                                                                  context,
-                                                                ) {
-                                                                  return BarcodePrintingPage(
-                                                                    product:
-                                                                        product,
-                                                                  );
-                                                                },
-                                                              ),
-                                                            );
-                                                          }
-                                                        },
-                                                      );
+                                                          action: () {
+                                                            if (kIsWeb) {
+                                                              returnData().addToBarcodeGenerationList(
+                                                                ProductBarcode(
+                                                                  product:
+                                                                      product,
+                                                                  number:
+                                                                      1,
+                                                                ),
+                                                              );
+                                                              generateBarcodeAndPrint(
+                                                                context,
+                                                                returnData().barcodeGenerationList,
+                                                                false,
+                                                              );
+                                                            } else {
+                                                              Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                  builder: (
+                                                                    context,
+                                                                  ) {
+                                                                    return BarcodePrintingPage(
+                                                                      product:
+                                                                          product,
+                                                                    );
+                                                                  },
+                                                                ),
+                                                              );
+                                                            }
+                                                          },
+                                                        );
+                                                      }
                                                     }
                                                     : null,
                                             actionText:

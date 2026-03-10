@@ -82,7 +82,7 @@ class MainBottomNav extends StatelessWidget {
                       returnReceiptProvider(
                         context,
                         listen: false,
-                      ).clearReceiptDate();
+                      ).clearDate();
                       globalKey.currentState?.openDrawer();
                     } else {
                       print('Context not mounted');
@@ -187,7 +187,7 @@ class MainBottomNav extends StatelessWidget {
                 returnReceiptProvider(
                   context,
                   listen: false,
-                ).clearReceiptDate();
+                ).clearDate();
               } else {
                 print("Context not Mounted");
               }

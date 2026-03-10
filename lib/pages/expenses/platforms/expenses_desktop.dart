@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/buttons/floating_action_butto.dart';
-import 'package:stockall/components/calendar/calendar_widget.dart';
 import 'package:stockall/components/major/desktop_page_container.dart';
 import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widget_desktop.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
@@ -11,6 +10,7 @@ import 'package:stockall/components/major/drawer_widget/my_drawer_widget.dart';
 import 'package:stockall/components/major/right_side_bar.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/constants/subscription/expenses_auth.dart';
@@ -52,7 +52,7 @@ class _ExpensesDesktopState extends State<ExpensesDesktop> {
     returnExpensesProvider(
       context,
       listen: false,
-    ).clearExpenseDate();
+    ).clearDate();
   }
 
   Future<void> getExpenses() async {
@@ -205,520 +205,376 @@ class _ExpensesDesktopState extends State<ExpensesDesktop> {
                           MediaQuery.of(
                             context,
                           ).size.height,
-                      child: Stack(
+                      child: Column(
                         children: [
-                          Column(
-                            children: [
-                              Material(
-                                color: Colors.transparent,
-                                child: SizedBox(
-                                  height:
-                                      screenWidth(context) >
-                                              tabletScreen
-                                          ? 220
-                                          : authorization(
-                                            authorized:
-                                                Authorizations()
-                                                    .viewDate,
-                                          )
-                                          ? 250
-                                          : 235,
-                                  child: Stack(
-                                    children: [
-                                      TopBanner(
-                                        turnOnBackNavButton:
-                                            widget
-                                                .turnOnBackNavButton,
-                                        subTitle:
-                                            'Data of All Expenses Records',
-                                        title: 'Expenses',
-                                        theme: theme,
-                                        bottomSpace: 80,
-                                        topSpace: 20,
-                                        iconSvg:
-                                            salesIconSvg,
-                                        isMain:
-                                            widget.isMain,
-                                      ),
+                          Material(
+                            color: Colors.transparent,
+                            child: SizedBox(
+                              height:
+                                  screenWidth(context) >
+                                          tabletScreen
+                                      ? 220
+                                      : authorization(
+                                        authorized:
+                                            Authorizations()
+                                                .viewDate,
+                                      )
+                                      ? 250
+                                      : 235,
+                              child: Stack(
+                                children: [
+                                  TopBanner(
+                                    turnOnBackNavButton:
+                                        widget
+                                            .turnOnBackNavButton,
+                                    subTitle:
+                                        'Data of All Expenses Records',
+                                    title: 'Expenses',
+                                    theme: theme,
+                                    bottomSpace: 80,
+                                    topSpace: 20,
+                                    iconSvg: salesIconSvg,
+                                    isMain: widget.isMain,
+                                  ),
 
-                                      Builder(
-                                        builder: (context) {
-                                          double
-                                          getTotalAmount() {
-                                            double
-                                            tempAmount = 0;
-                                            for (var item
-                                                in expenses) {
-                                              tempAmount +=
-                                                  item.amount;
-                                            }
-                                            return tempAmount;
-                                          }
+                                  Builder(
+                                    builder: (context) {
+                                      double
+                                      getTotalAmount() {
+                                        double tempAmount =
+                                            0;
+                                        for (var item
+                                            in expenses) {
+                                          tempAmount +=
+                                              item.amount;
+                                        }
+                                        return tempAmount;
+                                      }
 
-                                          return Align(
-                                            alignment:
-                                                Alignment(
-                                                  0,
-                                                  1,
-                                                ),
-                                            child: InkWell(
-                                              onTap: () {
+                                      return Align(
+                                        alignment:
+                                            Alignment(0, 1),
+                                        child: InkWell(
+                                          onTap: () {
+                                            returnExpensesProvider(
+                                              context,
+                                              listen: false,
+                                            ).clearDate();
+                                          },
+                                          child: ItemsSummary(
+                                            refreshAction:
+                                                () async {
+                                                  await getExpenses();
+                                                },
+                                            isFilter: authorization(
+                                              authorized:
+                                                  Authorizations()
+                                                      .viewDate,
+                                            ),
+                                            isMoney1: true,
+                                            mainTitle:
+                                                'Expenses Summary',
+                                            subTitle:
+                                                'All Expenses',
+                                            firsRow: true,
+                                            color1:
+                                                Colors
+                                                    .green,
+                                            title1:
+                                                'Expenses Revenue',
+                                            value1:
+                                                getTotalAmount(),
+                                            color2:
+                                                Colors
+                                                    .amber,
+                                            title2:
+                                                'Expenses Number',
+                                            value2:
+                                                expenses
+                                                    .length
+                                                    .toDouble(),
+                                            secondRow:
+                                                false,
+                                            onSearch: false,
+                                            isDateSet:
+                                                expenseProvider
+                                                        .dateSet !=
+                                                    null ||
+                                                expenseProvider
+                                                        .rangeStartDate !=
+                                                    null,
+                                            setDate:
+                                                expenseProvider
+                                                        .dateSet !=
+                                                    null ||
+                                                expenseProvider
+                                                        .rangeStartDate !=
+                                                    null,
+                                            filterAction: () {
+                                              if (expenseProvider
+                                                          .dateSet !=
+                                                      null ||
+                                                  expenseProvider
+                                                          .rangeStartDate !=
+                                                      null) {
                                                 returnExpensesProvider(
                                                   context,
                                                   listen:
                                                       false,
-                                                ).clearExpenseDate();
-                                              },
-                                              child: ItemsSummary(
-                                                refreshAction:
-                                                    () async {
-                                                      await getExpenses();
-                                                    },
-                                                isFilter: authorization(
-                                                  authorized:
-                                                      Authorizations()
-                                                          .viewDate,
-                                                ),
-                                                isMoney1:
-                                                    true,
-                                                mainTitle:
-                                                    'Expenses Summary',
-                                                subTitle:
-                                                    returnExpensesProvider(
+                                                ).clearDate();
+                                              } else {
+                                                mainDatePicker(
+                                                  context:
                                                       context,
-                                                    ).dateSet ??
-                                                    'For Today',
-                                                firsRow:
-                                                    true,
-                                                color1:
-                                                    Colors
-                                                        .green,
-                                                title1:
-                                                    'Expenses Revenue',
-                                                value1:
-                                                    getTotalAmount(),
-                                                color2:
-                                                    Colors
-                                                        .amber,
-                                                title2:
-                                                    'Expenses Number',
-                                                value2:
-                                                    expenses
-                                                        .length
-                                                        .toDouble(),
-                                                secondRow:
-                                                    false,
-                                                onSearch:
-                                                    false,
-                                                isDateSet:
-                                                    expenseProvider
-                                                        .isDateSet,
-                                                setDate:
-                                                    expenseProvider
-                                                        .setDate,
-                                                filterAction: () {
-                                                  if (returnExpensesProvider(
-                                                        context,
-                                                        listen:
-                                                            false,
-                                                      ).isDateSet ||
-                                                      returnExpensesProvider(
-                                                        context,
-                                                        listen:
-                                                            false,
-                                                      ).setDate) {
+                                                  theme:
+                                                      theme,
+                                                  singleDate: (
+                                                    date,
+                                                  ) {
                                                     returnExpensesProvider(
                                                       context,
                                                       listen:
                                                           false,
-                                                    ).clearExpenseDate();
-                                                  } else {
+                                                    ).setDate(
+                                                      date!,
+                                                    );
+                                                  },
+                                                  rangeDate: (
+                                                    firstDate,
+                                                    lastDate,
+                                                  ) {
                                                     returnExpensesProvider(
                                                       context,
                                                       listen:
                                                           false,
-                                                    ).openExpenseDatePicker();
-                                                  }
-                                                },
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                      //
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: SizedBox(
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(
-                                          10.0,
-                                          10,
-                                          10,
-                                          10,
+                                                    ).setRange(
+                                                      firstDate!,
+                                                      lastDate ??
+                                                          DateTime.now(),
+                                                    );
+                                                  },
+                                                );
+                                              }
+                                            },
+                                          ),
                                         ),
-                                    child: Column(
-                                      children: [
-                                        Padding(
+                                      );
+                                    },
+                                  ),
+                                  //
+                                ],
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: SizedBox(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(
+                                      10.0,
+                                      10,
+                                      10,
+                                      10,
+                                    ),
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal:
+                                                10.0,
+                                          ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .spaceBetween,
+                                        children: [
+                                          Text(
+                                            style: TextStyle(
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                              fontSize: 16,
+                                            ),
+                                            'All Expenses',
+                                          ),
+                                          MaterialButton(
+                                            onPressed: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (
+                                                    context,
+                                                  ) {
+                                                    return TotalExpenses();
+                                                  },
+                                                ),
+                                              ).then((_) {
+                                                setState(
+                                                  () {},
+                                                );
+                                              });
+                                            },
+                                            child: Row(
+                                              spacing: 5,
+                                              children: [
+                                                Text(
+                                                  style: TextStyle(
+                                                    color:
+                                                        theme.lightModeColor.secColor100,
+                                                  ),
+                                                  'See All',
+                                                ),
+                                                Icon(
+                                                  size: 16,
+                                                  color:
+                                                      theme
+                                                          .lightModeColor
+                                                          .secColor100,
+                                                  Icons
+                                                      .arrow_forward_ios_rounded,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Builder(
+                                      builder: (context) {
+                                        return Padding(
                                           padding:
                                               const EdgeInsets.symmetric(
                                                 horizontal:
                                                     10.0,
                                               ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .spaceBetween,
-                                            children: [
-                                              Text(
-                                                style: TextStyle(
-                                                  fontWeight:
-                                                      FontWeight
-                                                          .bold,
-                                                  fontSize:
-                                                      16,
-                                                ),
-                                                returnExpensesProvider(
-                                                      context,
-                                                    ).dateSet ??
-                                                    'Expenses For Today',
-                                              ),
-                                              MaterialButton(
-                                                onPressed: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (
+                                          child: Builder(
+                                            builder: (
+                                              context,
+                                            ) {
+                                              if (expenses
+                                                  .isEmpty) {
+                                                return SizedBox(
+                                                  height:
+                                                      MediaQuery.of(
                                                         context,
-                                                      ) {
-                                                        return TotalExpenses();
-                                                      },
-                                                    ),
-                                                  ).then((
-                                                    _,
-                                                  ) {
-                                                    setState(
-                                                      () {},
-                                                    );
-                                                  });
-                                                },
-                                                child: Row(
-                                                  spacing:
-                                                      5,
-                                                  children: [
-                                                    Text(
-                                                      style: TextStyle(
-                                                        color:
-                                                            theme.lightModeColor.secColor100,
-                                                      ),
-                                                      'See All',
-                                                    ),
-                                                    Icon(
-                                                      size:
-                                                          16,
-                                                      color:
-                                                          theme.lightModeColor.secColor100,
-                                                      Icons
-                                                          .arrow_forward_ios_rounded,
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Builder(
-                                          builder: (
-                                            context,
-                                          ) {
-                                            return Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal:
-                                                        10.0,
-                                                  ),
-                                              child: Builder(
-                                                builder: (
-                                                  context,
-                                                ) {
-                                                  if (expenses
-                                                      .isEmpty) {
-                                                    return SizedBox(
+                                                      ).size.height -
+                                                      400,
+                                                  child: Center(
+                                                    child: EmptyWidgetDisplay(
+                                                      buttonText:
+                                                          'Create Expenses',
+                                                      subText:
+                                                          'Click on the button below to Record an Expense.',
+                                                      title:
+                                                          'No Expenses Recorded Yet',
+                                                      svg:
+                                                          expensesIconSvg,
                                                       height:
-                                                          MediaQuery.of(
-                                                            context,
-                                                          ).size.height -
-                                                          400,
-                                                      child: Center(
-                                                        child: EmptyWidgetDisplay(
-                                                          buttonText:
-                                                              'Create Expenses',
-                                                          subText:
-                                                              'Click on the button below to Record an Expense.',
-                                                          title:
-                                                              'No Expenses Recorded Yet',
-                                                          svg:
-                                                              expensesIconSvg,
-                                                          height:
-                                                              35,
+                                                          35,
+                                                      action: () {
+                                                        ExpensesAuthAction().numberOfDailyExpensesAction(
+                                                          context:
+                                                              context,
                                                           action: () {
-                                                            ExpensesAuthAction().numberOfDailyExpensesAction(
-                                                              context:
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder: (
                                                                   context,
-                                                              action: () {
-                                                                Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                    builder: (
-                                                                      context,
-                                                                    ) {
-                                                                      return AddExpenses();
-                                                                    },
-                                                                  ),
-                                                                ).then(
-                                                                  (
-                                                                    _,
-                                                                  ) {
-                                                                    setState(
-                                                                      () {},
-                                                                    );
-                                                                  },
+                                                                ) {
+                                                                  return AddExpenses();
+                                                                },
+                                                              ),
+                                                            ).then(
+                                                              (
+                                                                _,
+                                                              ) {
+                                                                setState(
+                                                                  () {},
                                                                 );
                                                               },
                                                             );
                                                           },
-                                                          theme:
-                                                              theme,
-                                                          altAction: () async {
-                                                            await getExpenses();
-                                                            setState(
-                                                              () {},
-                                                            );
-                                                          },
-                                                          altActionText:
-                                                              'Refresh Expenses',
-                                                        ),
-                                                      ),
-                                                    );
-                                                  } else {
-                                                    return SizedBox(
-                                                      height:
-                                                          MediaQuery.of(
+                                                        );
+                                                      },
+                                                      theme:
+                                                          theme,
+                                                      altAction: () async {
+                                                        await getExpenses();
+                                                        setState(
+                                                          () {},
+                                                        );
+                                                      },
+                                                      altActionText:
+                                                          'Refresh Expenses',
+                                                    ),
+                                                  ),
+                                                );
+                                              } else {
+                                                return SizedBox(
+                                                  height:
+                                                      MediaQuery.of(
+                                                        context,
+                                                      ).size.height -
+                                                      350,
+                                                  child: ListView.builder(
+                                                    itemCount:
+                                                        expenses.length,
+                                                    itemBuilder: (
+                                                      context,
+                                                      index,
+                                                    ) {
+                                                      TempExpensesClass
+                                                      expense =
+                                                          expenses[index];
+                                                      return ExpensesTile(
+                                                        action: () {
+                                                          Navigator.push(
                                                             context,
-                                                          ).size.height -
-                                                          350,
-                                                      child: ListView.builder(
-                                                        itemCount:
-                                                            expenses.length,
-                                                        itemBuilder: (
-                                                          context,
-                                                          index,
-                                                        ) {
-                                                          TempExpensesClass
-                                                          expense =
-                                                              expenses[index];
-                                                          return ExpensesTile(
-                                                            action: () {
-                                                              Navigator.push(
+                                                            MaterialPageRoute(
+                                                              builder: (
                                                                 context,
-                                                                MaterialPageRoute(
-                                                                  builder: (
-                                                                    context,
-                                                                  ) {
-                                                                    return ExpenseDetails(
-                                                                      expenseUuid:
-                                                                          expense.uuid!,
-                                                                    );
-                                                                  },
-                                                                ),
-                                                              ).then(
-                                                                (
-                                                                  context,
-                                                                ) {
-                                                                  setState(
-                                                                    () {
-                                                                      // expensesFuture =
-                                                                      //     getExpenses();
-                                                                    },
-                                                                  );
+                                                              ) {
+                                                                return ExpenseDetails(
+                                                                  expenseUuid:
+                                                                      expense.uuid!,
+                                                                );
+                                                              },
+                                                            ),
+                                                          ).then(
+                                                            (
+                                                              context,
+                                                            ) {
+                                                              setState(
+                                                                () {
+                                                                  // expensesFuture =
+                                                                  //     getExpenses();
                                                                 },
                                                               );
                                                             },
-                                                            expense:
-                                                                expense,
-                                                            key: ValueKey(
-                                                              expense.uuid!,
-                                                            ),
                                                           );
                                                         },
-                                                      ),
-                                                    );
-                                                  }
-                                                },
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          if (returnExpensesProvider(
-                            context,
-                          ).setDate)
-                            Material(
-                              color: const Color.fromARGB(
-                                75,
-                                0,
-                                0,
-                                0,
-                              ),
-                              child: GestureDetector(
-                                onTap: () {
-                                  returnExpensesProvider(
-                                    context,
-                                    listen: false,
-                                  ).clearExpenseDate();
-                                },
-                                child: SingleChildScrollView(
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsets.symmetric(
-                                          horizontal: 10.0,
-                                        ),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment
-                                              .center,
-                                      children: [
-                                        SizedBox(
-                                          height:
-                                              MediaQuery.of(
-                                                    context,
-                                                  )
-                                                  .size
-                                                  .height *
-                                              0.2,
-                                        ),
-                                        Ink(
-                                          color:
-                                              Colors.white,
-                                          child: Container(
-                                            padding:
-                                                EdgeInsets.only(
-                                                  top: 20,
-                                                  bottom:
-                                                      20,
-                                                ),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    10,
+                                                        expense:
+                                                            expense,
+                                                        key: ValueKey(
+                                                          expense.uuid!,
+                                                        ),
+                                                      );
+                                                    },
                                                   ),
-                                              color:
-                                                  Colors
-                                                      .white,
-                                            ),
-                                            child: Center(
-                                              child: Padding(
-                                                padding: const EdgeInsets.symmetric(
-                                                  horizontal:
-                                                      5.0,
-                                                ),
-                                                child: Column(
-                                                  children: [
-                                                    Container(
-                                                      width:
-                                                          100,
-                                                      height:
-                                                          4,
-                                                      decoration: BoxDecoration(
-                                                        color:
-                                                            Colors.grey.shade400,
-                                                        borderRadius: BorderRadius.circular(
-                                                          5,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      height:
-                                                          20,
-                                                    ),
-                                                    Container(
-                                                      height:
-                                                          480,
-                                                      width:
-                                                          380,
-                                                      padding: EdgeInsets.all(
-                                                        15,
-                                                      ),
-                                                      decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(
-                                                          10,
-                                                        ),
-                                                        color:
-                                                            Colors.white,
-                                                        // border: Border.all(
-                                                        //   color:
-                                                        //       Colors
-                                                        //           .grey,
-                                                        // ),
-                                                      ),
-                                                      child: CalendarWidget(
-                                                        onDaySelected: (
-                                                          selectedDay,
-                                                          focusedDay,
-                                                        ) {
-                                                          returnExpensesProvider(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).setExpenseDay(
-                                                            selectedDay,
-                                                          );
-                                                        },
-                                                        actionWeek: (
-                                                          startOfWeek,
-                                                          endOfWeek,
-                                                        ) {
-                                                          returnExpensesProvider(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).setExpenseWeek(
-                                                            startOfWeek,
-                                                            endOfWeek,
-                                                          );
-                                                        },
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
+                                                );
+                                              }
+                                            },
                                           ),
-                                        ),
-                                        SizedBox(
-                                          height:
-                                              MediaQuery.of(
-                                                    context,
-                                                  )
-                                                  .size
-                                                  .height *
-                                              0.4,
-                                        ),
-                                      ],
+                                        );
+                                      },
                                     ),
-                                  ),
+                                  ],
                                 ),
                               ),
                             ),
+                          ),
                         ],
                       ),
                     ),

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
-import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/play_sounds.dart';
 import 'package:stockall/constants/refresh_functions.dart';
@@ -929,32 +929,30 @@ class StoragePageDesktopState
                             InkWell(
                               onTap: () {
                                 returnInventoryUpdatesProvider()
-                                            .dateSet ==
-                                        null
-                                    ? showDatePicker(
+                                                .dateSet ==
+                                            null &&
+                                        returnInventoryUpdatesProvider()
+                                                .rangeStartDate ==
+                                            null
+                                    ? mainDatePicker(
                                       context: context,
-                                      firstDate: DateTime(
-                                        2017,
-                                        9,
-                                        7,
-                                        17,
-                                        30,
-                                      ),
-                                      lastDate: DateTime(
-                                        2027,
-                                        9,
-                                        7,
-                                        17,
-                                        30,
-                                      ),
-                                    ).then((value) {
-                                      value != null
-                                          ? returnInventoryUpdatesProvider()
-                                              .setDate(
-                                                value,
-                                              )
-                                          : {};
-                                    })
+                                      theme: theme,
+                                      singleDate: (date) {
+                                        returnInventoryUpdatesProvider()
+                                            .setDate(date!);
+                                      },
+                                      rangeDate: (
+                                        firstDate,
+                                        lastDate,
+                                      ) {
+                                        returnInventoryUpdatesProvider()
+                                            .setRange(
+                                              firstDate!,
+                                              lastDate ??
+                                                  DateTime.now(),
+                                            );
+                                      },
+                                    )
                                     : returnInventoryUpdatesProvider()
                                         .clearDate();
                               },
@@ -973,10 +971,15 @@ class StoragePageDesktopState
                                               .lightModeColor
                                               .secColor200,
                                       returnInventoryUpdatesProvider(
-                                                context:
-                                                    context,
-                                              ).dateSet ==
-                                              null
+                                                    context:
+                                                        context,
+                                                  ).dateSet ==
+                                                  null &&
+                                              returnInventoryUpdatesProvider(
+                                                    context:
+                                                        context,
+                                                  ).rangeStartDate ==
+                                                  null
                                           ? Icons
                                               .calendar_month
                                           : Icons.clear,
@@ -990,17 +993,16 @@ class StoragePageDesktopState
                                                 .fontSize,
                                       ),
                                       returnInventoryUpdatesProvider(
-                                                context:
-                                                    context,
-                                              ).dateSet !=
-                                              null
-                                          ? formatDateTime(
-                                            returnInventoryUpdatesProvider(
-                                                  context:
-                                                      context,
-                                                ).dateSet ??
-                                                DateTime.now(),
-                                          )
+                                                    context:
+                                                        context,
+                                                  ).dateSet !=
+                                                  null ||
+                                              returnInventoryUpdatesProvider(
+                                                    context:
+                                                        context,
+                                                  ).rangeStartDate !=
+                                                  null
+                                          ? 'Clear'
                                           : 'Set Date',
                                     ),
                                   ],

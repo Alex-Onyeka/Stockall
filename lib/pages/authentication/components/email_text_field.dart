@@ -8,7 +8,9 @@ class EmailTextField extends StatefulWidget {
   final String hint;
   final String title;
   final bool? isEnabled;
+  final Function(String?)? onSubmit;
   final TextEditingController controller;
+  final FocusNode? focusNode;
   const EmailTextField({
     super.key,
     required this.controller,
@@ -18,6 +20,8 @@ class EmailTextField extends StatefulWidget {
     required this.title,
     this.validatorAction,
     this.isEnabled,
+    this.onSubmit,
+    this.focusNode,
   });
 
   @override
@@ -38,6 +42,8 @@ class _EmailTextFieldState extends State<EmailTextField> {
           widget.title,
         ),
         TextFormField(
+          focusNode: widget.focusNode,
+          onFieldSubmitted: widget.onSubmit,
           enabled: widget.isEnabled ?? true,
           validator: widget.validatorAction,
           autocorrect: widget.isEmail,

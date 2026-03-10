@@ -256,9 +256,15 @@ class RightSideBar extends StatelessWidget {
                                           tabletScreenSmall
                                       ? 'View Sales'
                                       : returnReceiptProvider(
-                                            context,
-                                          ).dateSet ??
-                                          'Todays Sales',
+                                                context,
+                                              ).dateSet !=
+                                              null ||
+                                          returnReceiptProvider(
+                                                context,
+                                              ).rangeStartDate !=
+                                              null
+                                      ? 'All Sales'
+                                      : 'Todays Sales',
                                 ),
                                 Icon(
                                   size:

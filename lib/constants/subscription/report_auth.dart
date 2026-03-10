@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/providers/subscription_provider.dart';
 
 class ReportAuth {
   final bool printGeneralReport;
@@ -15,6 +16,7 @@ class ReportAuth {
   final bool printEmployeesReport;
   final bool viewExpensesReport;
   final bool printExpensesReport;
+  final bool viewEventLogs;
 
   ReportAuth({
     required this.printGeneralReport,
@@ -29,6 +31,7 @@ class ReportAuth {
     required this.printEmployeesReport,
     required this.viewExpensesReport,
     required this.printExpensesReport,
+    required this.viewEventLogs,
   });
 }
 
@@ -45,22 +48,44 @@ class ReportAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .reportAuth
+        .printGeneralReport) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .reportAuth
-          .printGeneralReport) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
+    }
+    // }
+  }
+
+  bool viewEventsLogAction({
+    BuildContext? context,
+    Function()? action,
+  }) {
+    var plan = SubscriptionProvider().subscription?.plan;
+    if (plan == null) {
+      return false;
+    }
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .reportAuth
+        .viewEventLogs) {
+      action == null ? {} : action();
+      return true;
+    } else {
+      if (action != null && context != null) {
+        showUnauthorizedDialog(context);
+      }
+      return false;
     }
   }
 
@@ -76,23 +101,23 @@ class ReportAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .reportAuth
+        .viewSalesReport) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .reportAuth
-          .viewSalesReport) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 
   bool printSalesReportAction({
@@ -107,23 +132,23 @@ class ReportAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .reportAuth
+        .printSalesReport) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .reportAuth
-          .printSalesReport) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 
   bool viewItemsGeneralReportAction({
@@ -138,23 +163,23 @@ class ReportAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .reportAuth
+        .viewItemsGeneralReport) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .reportAuth
-          .viewItemsGeneralReport) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 
   bool viewItemsAnalysisReportAction({
@@ -169,23 +194,23 @@ class ReportAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .reportAuth
+        .viewItemsAnalysisReport) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .reportAuth
-          .viewItemsAnalysisReport) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 
   bool printItemsReportAction({
@@ -200,23 +225,23 @@ class ReportAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .reportAuth
+        .printItemsReport) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .reportAuth
-          .printItemsReport) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 
   bool viewCustomerReportAction({
@@ -231,23 +256,23 @@ class ReportAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .reportAuth
+        .viewCustomersReport) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .reportAuth
-          .viewCustomersReport) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 
   bool printCustomerReportAction({
@@ -262,23 +287,23 @@ class ReportAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .reportAuth
+        .printCustomersReport) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .reportAuth
-          .printCustomersReport) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 
   bool viewEmployeesReportAction({
@@ -293,23 +318,23 @@ class ReportAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .reportAuth
+        .viewEmployeesReport) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .reportAuth
-          .viewEmployeesReport) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 
   bool printEmployeesReportAction({
@@ -324,23 +349,23 @@ class ReportAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .reportAuth
+        .printEmployeesReport) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .reportAuth
-          .printEmployeesReport) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 
   bool viewExpensesReportAction({
@@ -355,23 +380,23 @@ class ReportAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .reportAuth
+        .viewExpensesReport) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .reportAuth
-          .viewExpensesReport) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 
   bool printExpensesReportAction({
@@ -386,22 +411,22 @@ class ReportAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .reportAuth
+        .printExpensesReport) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .reportAuth
-          .printExpensesReport) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 }

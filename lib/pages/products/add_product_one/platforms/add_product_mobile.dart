@@ -5,8 +5,6 @@ import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
-import 'package:stockall/components/buttons/main_button_transparent.dart';
-import 'package:stockall/components/calendar/calendar_widget.dart';
 import 'package:stockall/components/text_fields/barcode_scanner.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
@@ -14,6 +12,7 @@ import 'package:stockall/components/text_fields/main_dropdown.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/bottom_sheet_widgets.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/generate_barcode.dart';
 // import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/scan_barcode.dart';
@@ -55,8 +54,6 @@ class _AddProductMobileState
   bool isLoading = false;
   bool showSuccess = false;
   bool expand = false;
-  bool isExp = false;
-
   String? barcode;
   //
   //
@@ -73,8 +70,6 @@ class _AddProductMobileState
   //
   bool isOpen = false;
 
-  bool setDate = false;
-
   void checkFields() async {
     if (widget.nameController.text.isEmpty) {
       showDialog(
@@ -89,8 +84,10 @@ class _AddProductMobileState
           );
         },
       );
-    } else if (widget.discountController.text.isNotEmpty &&
-        returnData().endDate == null) {
+    } else if (widget.discountController.text.isNotEmpty
+    // &&
+    //     returnData().endDate == null
+    ) {
       showDialog(
         context: context,
         builder: (context) {
@@ -201,12 +198,12 @@ class _AddProductMobileState
                     widget.discountController.text
                         .replaceAll(',', ''),
                   ),
-                  startDate:
-                      widget.discountController.text.isEmpty
-                          ? null
-                          : (dataProvider.startDate ??
-                              DateTime.now()),
-                  endDate: dataProvider.endDate,
+                  // startDate:
+                  //     widget.discountController.text.isEmpty
+                  //         ? null
+                  //         : (dataProvider.startDate ??
+                  //             DateTime.now()),
+                  // endDate: dataProvider.endDate,
                   expiryDate: dataProvider.expiryDate,
                   category: dataProvider.selectedCategory,
                   uuid: createdProductUuid,
@@ -328,7 +325,7 @@ class _AddProductMobileState
                     '',
                   ),
                 ),
-                endDate: provider.endDate,
+                // endDate: provider.endDate,
                 expiryDate: provider.expiryDate,
                 lowQtty:
                     widget.lowQttyController.text.isEmpty
@@ -338,7 +335,7 @@ class _AddProductMobileState
                               .replaceAll(',', ''),
                         ),
                 sizeType: provider.selectedSize,
-                startDate: provider.startDate,
+                // startDate: provider.startDate,
               ),
               oldProduct: widget.product!,
             );
@@ -448,11 +445,11 @@ class _AddProductMobileState
             widget.product!.category!,
           )
           : null;
-      returnData().setBothDates(
-        start: widget.product!.startDate,
-        end: widget.product!.endDate,
-        expDate: widget.product!.expiryDate,
-      );
+      // returnData().setBothDates(
+      //   start: widget.product!.startDate,
+      //   end: widget.product!.endDate,
+      //   expDate: widget.product!.expiryDate,
+      // );
       setState(() {
         costDiscount =
             widget.product!.discount != null &&
@@ -1183,19 +1180,22 @@ class _AddProductMobileState
                                     SizedBox(height: 10),
                                     InkWell(
                                       onTap: () {
-                                        ItemsAuthAction()
-                                            .setExpiryDateAction(
-                                              context:
-                                                  context,
-                                              action: () {
-                                                setState(() {
-                                                  isExp =
-                                                      true;
-                                                  setDate =
-                                                      true;
-                                                });
-                                              },
-                                            );
+                                        ItemsAuthAction().setExpiryDateAction(
+                                          context: context,
+                                          action: () {
+                                            myDatePickerAction(
+                                              theme,
+                                              context,
+                                            ).then((value) {
+                                              value != null
+                                                  ? returnData()
+                                                      .setExpDate(
+                                                        value,
+                                                      )
+                                                  : {};
+                                            });
+                                          },
+                                        );
                                       },
                                       child: Column(
                                         mainAxisSize:
@@ -1499,138 +1499,6 @@ class _AddProductMobileState
                     ),
                   ),
                 ],
-              ),
-              Visibility(
-                visible: setDate,
-                child: InkWell(
-                  onTap: () {
-                    setState(() {
-                      setDate = false;
-                    });
-                  },
-                  child: Container(
-                    color: const Color.fromARGB(
-                      100,
-                      0,
-                      0,
-                      0,
-                    ),
-                    height:
-                        MediaQuery.of(context).size.height,
-                    width:
-                        MediaQuery.of(context).size.width,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisAlignment:
-                            MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            height:
-                                MediaQuery.of(
-                                  context,
-                                ).size.height *
-                                0.02,
-                          ),
-                          Center(
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                vertical: 10,
-                                horizontal: 10,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color:
-                                        const Color.fromARGB(
-                                          30,
-                                          0,
-                                          0,
-                                          0,
-                                        ),
-                                    blurRadius: 5,
-                                  ),
-                                ],
-                              ),
-                              height: 480,
-                              width:
-                                  (MediaQuery.of(
-                                        context,
-                                      ).size.width /
-                                      10) *
-                                  9.2,
-                              child: CalendarWidget(
-                                isMain: false,
-                                onDaySelected: (
-                                  selectedDay,
-                                  focusedDay,
-                                ) {
-                                  if (isExp) {
-                                    returnData().setExpDate(
-                                      selectedDay,
-                                    );
-                                    returnData().expiryDate !=
-                                            null
-                                        ? expiryDateC
-                                            .text = formatDateWithDay(
-                                          returnData()
-                                                  .expiryDate ??
-                                              DateTime.now(),
-                                        )
-                                        : '';
-                                  } else {
-                                    returnData().setDate(
-                                      selectedDay,
-                                    );
-                                  }
-                                  setState(() {
-                                    setDate = false;
-                                  });
-                                },
-                                actionWeek: (
-                                  startOfWeek,
-                                  endOfWeek,
-                                ) {
-                                  returnReceiptProvider(
-                                    context,
-                                    listen: false,
-                                  ).setReceiptWeek(
-                                    startOfWeek,
-                                    endOfWeek,
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              top: 15,
-                              left: 30,
-                              right: 30,
-                            ),
-                            child: MainButtonTransparent(
-                              constraints: BoxConstraints(),
-                              themeProvider: theme,
-                              action: () {
-                                setState(() {
-                                  setDate = false;
-                                });
-                              },
-                              text: 'Cancel',
-                            ),
-                          ),
-                          SizedBox(
-                            height:
-                                MediaQuery.of(
-                                  context,
-                                ).size.height *
-                                0.4,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
               ),
             ],
           ),

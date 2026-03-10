@@ -580,6 +580,14 @@ class MyAppAlt extends StatelessWidget {
         home: home,
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
+          datePickerTheme: DatePickerThemeData(
+            backgroundColor: Colors.white,
+            cancelButtonStyle: ButtonStyle(
+              padding: WidgetStateProperty.all(
+                EdgeInsets.all(50),
+              ),
+            ),
+          ),
           appBarTheme: AppBarTheme(
             systemOverlayStyle: SystemUiOverlayStyle(
               systemStatusBarContrastEnforced: true,

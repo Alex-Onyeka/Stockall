@@ -164,42 +164,48 @@ class _GenerateBarcodeScreenState
                       ),
                     ),
                     const SizedBox(height: 5),
-                    Row(
-                      children: [
-                        Text(
-                          'Price: ',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
+                    Visibility(
+                      visible:
+                          returnData()
+                              .barcodeGeneratingIndex !=
+                          0,
+                      child: Row(
+                        children: [
+                          Text(
+                            'Price: ',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        Text(
-                          widget
-                                          .productBarcodes[0]
-                                          .product
-                                          .sellingPrice ==
-                                      null ||
-                                  widget
-                                          .productBarcodes[0]
-                                          .product
-                                          .sellingPrice ==
-                                      0
-                              ? 'Not Set'
-                              : formatMoneyMid(
-                                amount:
+                          Text(
+                            widget
+                                            .productBarcodes[0]
+                                            .product
+                                            .sellingPrice ==
+                                        null ||
                                     widget
-                                        .productBarcodes[0]
-                                        .product
-                                        .sellingPrice ??
-                                    0,
-                                context: context,
-                              ),
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                                            .productBarcodes[0]
+                                            .product
+                                            .sellingPrice ==
+                                        0
+                                ? 'Not Set'
+                                : formatMoneyMid(
+                                  amount:
+                                      widget
+                                          .productBarcodes[0]
+                                          .product
+                                          .sellingPrice ??
+                                      0,
+                                  context: context,
+                                ),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -316,46 +322,49 @@ class _GenerateBarcodeScreenState
                                 ),
                               ),
                               const SizedBox(height: 5),
-                              Row(
-                                children: [
-                                  Text(
-                                    'Price: ',
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight:
-                                          FontWeight.bold,
+                              Visibility(
+                                visible:
+                                    returnData()
+                                        .barcodeGeneratingIndex !=
+                                    0,
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      'Price: ',
+                                      style:
+                                          const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
                                     ),
-                                  ),
-                                  Text(
-                                    pr.product.sellingPrice ==
-                                                null ||
-                                            pr
+                                    Text(
+                                      pr.product.sellingPrice ==
+                                                  null ||
+                                              pr.product.sellingPrice ==
+                                                  0
+                                          ? 'Not Set'
+                                          : formatMoneyMid(
+                                            amount:
+                                                pr
                                                     .product
-                                                    .sellingPrice ==
-                                                0
-                                        ? 'Not Set'
-                                        : formatMoneyMid(
-                                          amount:
-                                              pr
-                                                  .product
-                                                  .sellingPrice ??
-                                              0,
-                                          context: context,
-                                        ),
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight:
-                                          FontWeight.bold,
+                                                    .sellingPrice ??
+                                                0,
+                                            context:
+                                                context,
+                                          ),
+                                      style:
+                                          const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                              // const SizedBox(height: 10),
-                              // Divider(
-                              //   color: Colors.grey.shade600,
-                              //   thickness: 0.4,
-                              //   height: 5,
-                              // ),
                             ],
                           ),
                           Padding(

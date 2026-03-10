@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/subscription/report_auth.dart';
+import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/customer_report/customer_report_page.dart';
 import 'package:stockall/pages/report/events_log/events_log.dart';
@@ -133,25 +135,38 @@ class ReportMobile extends StatelessWidget {
                             title: 'Customer Report',
                           ),
                         ),
-                        Visibility(
-                          visible: !isStoreKeeper(),
-                          child: ReportListTile(
-                            isActive: true,
-                            theme: theme,
-                            action: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return EventsLog();
-                                  },
-                                ),
-                              );
-                            },
-                            subText:
-                                'View a List of all Event Logs',
-                            title: 'Events Log',
+                        SubWrapper(
+                          mainWidget: Visibility(
+                            visible: !isStoreKeeper(),
+                            child: ReportListTile(
+                              isActive: true,
+                              theme: theme,
+                              action: () {
+                                ReportAuthAction()
+                                    .viewEventsLogAction(
+                                      context: context,
+                                      action: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (
+                                              context,
+                                            ) {
+                                              return EventsLog();
+                                            },
+                                          ),
+                                        );
+                                      },
+                                    );
+                              },
+                              subText:
+                                  'View a List of all Event Logs',
+                              title: 'Events Log',
+                            ),
                           ),
+                          isVisible:
+                              !ReportAuthAction()
+                                  .viewEventsLogAction(),
                         ),
                         ReportListTile(
                           isActive: false,

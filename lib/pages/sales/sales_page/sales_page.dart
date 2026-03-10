@@ -16,7 +16,7 @@ class _SalesPageState extends State<SalesPage> {
     returnReceiptProvider(
       context,
       listen: false,
-    ).clearReceiptDate();
+    ).clearDate();
   }
 
   @override

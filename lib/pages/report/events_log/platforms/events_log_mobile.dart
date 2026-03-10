@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_event_log/temp_event_log_class.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/main.dart';
 
 class EventsLogMobile extends StatefulWidget {
@@ -93,29 +94,29 @@ class _EventsLogMobileState extends State<EventsLogMobile> {
                     InkWell(
                       onTap: () {
                         returnEventsLogProvider().dateSet ==
-                                null
-                            ? showDatePicker(
+                                    null &&
+                                returnEventsLogProvider()
+                                        .rangeStartDate ==
+                                    null
+                            ? mainDatePicker(
                               context: context,
-                              firstDate: DateTime(
-                                2017,
-                                9,
-                                7,
-                                17,
-                                30,
-                              ),
-                              lastDate: DateTime(
-                                2027,
-                                9,
-                                7,
-                                17,
-                                30,
-                              ),
-                            ).then((value) {
-                              value != null
-                                  ? returnEventsLogProvider()
-                                      .setDate(value)
-                                  : {};
-                            })
+                              theme: theme,
+                              singleDate: (value) {
+                                returnEventsLogProvider()
+                                    .setDate(value!);
+                              },
+                              rangeDate: (
+                                firstDate,
+                                lastDate,
+                              ) {
+                                returnEventsLogProvider()
+                                    .setRange(
+                                      firstDate!,
+                                      lastDate ??
+                                          DateTime.now(),
+                                    );
+                              },
+                            )
                             : returnEventsLogProvider()
                                 .clearDate();
                       },
@@ -131,9 +132,15 @@ class _EventsLogMobileState extends State<EventsLogMobile> {
                                       .lightModeColor
                                       .prColor300,
                               returnEventsLogProvider(
-                                        context: context,
-                                      ).dateSet ==
-                                      null
+                                            context:
+                                                context,
+                                          ).dateSet ==
+                                          null &&
+                                      returnEventsLogProvider(
+                                            context:
+                                                context,
+                                          ).rangeStartDate ==
+                                          null
                                   ? Icons.calendar_month
                                   : Icons.clear,
                             ),
@@ -146,16 +153,17 @@ class _EventsLogMobileState extends State<EventsLogMobile> {
                                         .fontSize,
                               ),
                               returnEventsLogProvider(
-                                        context: context,
-                                      ).dateSet !=
-                                      null
-                                  ? formatDateTime(
-                                    returnEventsLogProvider(
-                                          context: context,
-                                        ).dateSet ??
-                                        DateTime.now(),
-                                  )
-                                  : 'Set Date',
+                                            context:
+                                                context,
+                                          ).dateSet ==
+                                          null &&
+                                      returnEventsLogProvider(
+                                            context:
+                                                context,
+                                          ).rangeStartDate ==
+                                          null
+                                  ? 'Set Date'
+                                  : 'Clear',
                             ),
                           ],
                         ),

@@ -2,31 +2,28 @@ import 'package:flutter/cupertino.dart';
 import 'package:stockall/classes/product_quantity_summary/product_quantity_summary.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
-import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/main.dart';
 
 class ReportProvider extends ChangeNotifier {
-  bool setDate = false;
-  bool isDateSet = false;
-  String? dateSet;
+  // bool setDate = false;
+  // bool isDateSet = false;
+  // String? dateSet;
 
-  void openDatePicker() {
-    setDate = true;
-    notifyListeners();
-  }
+  // void openDatePicker() {
+  //   setDate = true;
+  //   notifyListeners();
+  // }
 
   void setDay(BuildContext context, DateTime day) {
     returnExpensesProvider(
       context,
       listen: false,
-    ).setExpenseDay(day);
+    ).setDate(day);
     returnReceiptProvider(
       context,
       listen: false,
-    ).setReceiptDay(day);
-    setDate = false;
-    isDateSet = true;
-    dateSet = 'For ${formatDateTime(day)}';
+    ).setDate(day);
+    // dateSet = 'For ${formatDateTime(day)}';
     notifyListeners();
   }
 
@@ -38,15 +35,11 @@ class ReportProvider extends ChangeNotifier {
     returnExpensesProvider(
       context,
       listen: false,
-    ).setExpenseWeek(weekStart, endOfWeek);
+    ).setRange(weekStart, endOfWeek);
     returnReceiptProvider(
       context,
       listen: false,
-    ).setReceiptWeek(weekStart, endOfWeek);
-    setDate = false;
-    isDateSet = true;
-    dateSet =
-        '${formatDateWithoutYear(weekStart)} - ${formatDateWithoutYear(endOfWeek)}';
+    ).setRange(weekStart, endOfWeek);
     notifyListeners();
   }
 
@@ -54,14 +47,11 @@ class ReportProvider extends ChangeNotifier {
     returnExpensesProvider(
       context,
       listen: false,
-    ).clearExpenseDate();
+    ).clearDate();
     returnReceiptProvider(
       context,
       listen: false,
-    ).clearReceiptDate();
-    setDate = false;
-    isDateSet = false;
-    dateSet = null;
+    ).clearDate();
     notifyListeners();
   }
 

@@ -22,12 +22,16 @@ class InventoryUpdatesProvider with ChangeNotifier {
 
   void clearDate() {
     dateSet = null;
+    rangeStartDate = null;
+    rangeEndDate = null;
     notifyListeners();
   }
 
   void setDate(DateTime date) {
     if (dateSet == null) {
       dateSet = date;
+      rangeStartDate = null;
+      rangeEndDate = null;
       print('Date set: $date');
     } else {
       dateSet = null;
@@ -36,16 +40,31 @@ class InventoryUpdatesProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  DateTime? rangeStartDate;
+  DateTime? rangeEndDate;
+
+  void setRange(DateTime rangeStart, DateTime endOfrange) {
+    rangeStartDate = rangeStart;
+    rangeEndDate = endOfrange;
+    print(
+      'Date Range set: Start: $rangeStart End: $endOfrange ',
+    );
+    dateSet = null;
+    notifyListeners();
+  }
+
   List<TempInventoryUpdateClass> returnInventoryUpdates() {
     inventoryUpdates.sort(
       (a, b) => b.createdAt!.compareTo(a.createdAt!),
     );
-    if (dateSet == null) {
+    if (dateSet == null &&
+        rangeEndDate == null &&
+        rangeStartDate == null) {
       inventoryUpdates.sort(
         (a, b) => b.createdAt!.compareTo(a.createdAt!),
       );
       return inventoryUpdates;
-    } else {
+    } else if (dateSet != null) {
       return inventoryUpdates
           .where(
             (inventoryUpdate) =>
@@ -55,6 +74,20 @@ class InventoryUpdatesProvider with ChangeNotifier {
                     dateSet!.month) &&
                 (inventoryUpdate.createdAt!.year ==
                     dateSet!.year),
+          )
+          .toList();
+    } else {
+      return inventoryUpdates
+          .where(
+            (update) =>
+                ((update.createdAt!.isAfter(
+                      rangeStartDate!.subtract(
+                        Duration(days: 1),
+                      ),
+                    )) &&
+                    (update.createdAt!.isBefore(
+                      rangeEndDate!.add(Duration(days: 1)),
+                    ))),
           )
           .toList();
       // return inventoryUpdates;

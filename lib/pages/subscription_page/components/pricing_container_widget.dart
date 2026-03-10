@@ -6,6 +6,7 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/plan_pricing_class.dart';
+import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_landing/auth_landing.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -14,11 +15,13 @@ import 'package:stockall/services/sub_payment_serice.dart/sub_payment_service.da
 
 class PricingContainerWidget extends StatefulWidget {
   final GlobalKey fullComparisonSection;
-  final PlanPricingClass pricingClass;
+  // final PlanPricingClass pricingClass;
+  final int plan;
   const PricingContainerWidget({
     super.key,
     required this.fullComparisonSection,
-    required this.pricingClass,
+    // required this.pricingClass,
+    required this.plan,
   });
 
   @override
@@ -36,16 +39,6 @@ class _PricingContainerWidgetState
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeInOut,
       );
-    }
-  }
-
-  String duration() {
-    if (widget.pricingClass.duration == 1) {
-      return '1 Month';
-    } else if (widget.pricingClass.duration == 6) {
-      return '6 Months';
-    } else {
-      return '1 Year';
     }
   }
 
@@ -78,6 +71,7 @@ class _PricingContainerWidgetState
           );
 
       if (authorizationUrl == null) {
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Failed to start payment'),
@@ -105,6 +99,7 @@ class _PricingContainerWidgetState
         context,
         listen: false,
       ).subscribe(plan: 0, context: context);
+      // ignore: use_build_context_synchronously
       Navigator.of(context).pop();
     }
   }
@@ -119,11 +114,83 @@ class _PricingContainerWidgetState
 
   @override
   Widget build(BuildContext context) {
+    PlanPricingClass pricingClass = PlanPricingClass(
+      dataStorageDuration:
+          subPlans
+              .firstWhere((pl) => pl.plan == widget.plan)
+              .onlineDataBackupDuration,
+      plan: widget.plan,
+      planName:
+          subPlans
+              .firstWhere((pl) => pl.plan == widget.plan)
+              .planName,
+      planDesc:
+          subPlans
+              .firstWhere((pl) => pl.plan == widget.plan)
+              .planDesc,
+      discount: returnSubPaymentProvider(context).discount,
+      price:
+          subPlans
+              .firstWhere((pl) => pl.plan == widget.plan)
+              .price,
+      duration:
+          returnSubPaymentProvider(context).currentDuration,
+      numberOfItems:
+          subPlans
+              .firstWhere((pl) => pl.plan == widget.plan)
+              .itemsAuth
+              .numberOfItems,
+      barcode:
+          subPlans
+              .firstWhere((pl) => pl.plan == widget.plan)
+              .itemsAuth
+              .useOfBarcode,
+      invoiceManagement:
+          subPlans
+              .firstWhere((pl) => pl.plan == widget.plan)
+              .salesAuth
+              .invoiceManagement,
+      receiptManagement:
+          subPlans
+              .firstWhere((pl) => pl.plan == widget.plan)
+              .salesAuth
+              .printReceipt,
+      useCalculator:
+          subPlans
+              .firstWhere((pl) => pl.plan == widget.plan)
+              .calculatorAuth
+              .useCalculator,
+      numberOfStaffs:
+          subPlans
+              .firstWhere((pl) => pl.plan == widget.plan)
+              .employeesAuth
+              .numberOfEmployees,
+      useOffline:
+          subPlans
+              .firstWhere((pl) => pl.plan == widget.plan)
+              .generalSettingsAuth
+              .allowOfflineUse,
+      numberOfBranches:
+          subPlans
+              .firstWhere((pl) => pl.plan == widget.plan)
+              .multipleStoresAuth
+              .numberOfStores,
+    );
+    String duration() {
+      if (pricingClass.duration == 1) {
+        return '1 Month';
+      } else if (pricingClass.duration == 6) {
+        return '6 Months';
+      } else {
+        return '1 Year';
+      }
+    }
+
     var theme = returnTheme(context);
     return Container(
       width:
           screenWidth(context) > 570
-              ? 260
+              ? 300
               : double.infinity,
       height: 520,
       padding: EdgeInsets.fromLTRB(15, 15, 15, 5),
@@ -139,14 +206,14 @@ class _PricingContainerWidgetState
               fontSize: theme.mobileTexts.h4.fontSize,
               fontWeight: FontWeight.bold,
             ),
-            "${widget.pricingClass.planName} Plan",
+            "${pricingClass.planName} Plan",
           ),
           Text(
             style: TextStyle(
               fontSize: theme.mobileTexts.b4.fontSize,
               fontWeight: FontWeight.bold,
             ),
-            widget.pricingClass.planDesc,
+            pricingClass.planDesc,
           ),
           SizedBox(height: 20),
           Divider(color: Colors.grey.shade200, height: 1),
@@ -159,7 +226,7 @@ class _PricingContainerWidgetState
                   fontWeight: FontWeight.bold,
                 ),
                 formatMoney(
-                  widget.pricingClass.totalPrice(),
+                  pricingClass.totalPrice(),
                   context,
                 ),
               ),
@@ -199,7 +266,7 @@ class _PricingContainerWidgetState
                           ).discount !=
                           null
                       ? formatMoney(
-                        widget.pricingClass.originalPrice(),
+                        pricingClass.originalPrice(),
                         context,
                       )
                       : '',
@@ -226,8 +293,8 @@ class _PricingContainerWidgetState
             child: Ink(
               decoration: BoxDecoration(
                 border:
-                    widget.pricingClass.plan == 1 ||
-                            widget.pricingClass.plan == 2
+                    pricingClass.plan == 3 ||
+                            pricingClass.plan == 4
                         ? null
                         : Border.all(
                           color:
@@ -236,8 +303,8 @@ class _PricingContainerWidgetState
                                   .prColor250,
                         ),
                 gradient:
-                    widget.pricingClass.plan == 1 ||
-                            widget.pricingClass.plan == 2
+                    pricingClass.plan == 3 ||
+                            pricingClass.plan == 4
                         ? theme.lightModeColor.prGradient
                         : null,
                 borderRadius: BorderRadius.circular(2),
@@ -295,12 +362,9 @@ class _PricingContainerWidgetState
                                     .userId,
                                 AuthService()
                                     .currentUserEmail!,
-                                widget.pricingClass.plan,
-                                widget.pricingClass
-                                    .totalPrice(),
-                                widget
-                                    .pricingClass
-                                    .duration,
+                                pricingClass.plan,
+                                pricingClass.totalPrice(),
+                                pricingClass.duration,
                               );
                               if (context.mounted) {
                                 toggleLoading(false);
@@ -336,12 +400,10 @@ class _PricingContainerWidgetState
                           return Text(
                             style: TextStyle(
                               color:
-                                  widget.pricingClass.plan ==
-                                              1 ||
-                                          widget
-                                                  .pricingClass
+                                  pricingClass.plan == 3 ||
+                                          pricingClass
                                                   .plan ==
-                                              2
+                                              4
                                       ? Colors.white
                                       : theme
                                           .lightModeColor
@@ -358,12 +420,10 @@ class _PricingContainerWidgetState
                             child: CircularProgressIndicator(
                               strokeWidth: 1.8,
                               color:
-                                  widget.pricingClass.plan ==
-                                              1 ||
-                                          widget
-                                                  .pricingClass
+                                  pricingClass.plan == 3 ||
+                                          pricingClass
                                                   .plan ==
-                                              2
+                                              4
                                       ? Colors.white
                                       : theme
                                           .lightModeColor
@@ -388,70 +448,64 @@ class _PricingContainerWidgetState
               children: [
                 PricingFeatureRow(
                   title:
-                      'Online Storage Limit: ${widget.pricingClass.dataStorageDuration > 1 ? 'Unlimited' : widget.pricingClass.dataStorageDuration}',
+                      'Online Storage Limit: ${pricingClass.dataStorageDuration > 1 ? 'Unlimited' : pricingClass.dataStorageDuration}',
                   numberOfItems:
-                      widget
-                          .pricingClass
-                          .dataStorageDuration,
+                      pricingClass.dataStorageDuration,
                   toolTipMessage:
                       'The duration of Month(s) your business data is securely stored online before it is automatically deleted from the cloud. For free plan, data is deleted from the cloud after a duration of 1 month.',
                 ),
                 PricingFeatureRow(
                   title:
-                      'Numbers of Store Branches: ${widget.pricingClass.numberOfBranches}',
+                      'Numbers of Store Branches: ${pricingClass.numberOfBranches}',
                   numberOfItems:
-                      widget.pricingClass.numberOfBranches,
+                      pricingClass.numberOfBranches,
                   toolTipMessage:
                       'The number of store locations you can create and manage independently within your account.',
                 ),
                 PricingFeatureRow(
                   title:
-                      'Numbers of Staffs Per Branch: ${widget.pricingClass.numberOfStaffs}',
+                      'Numbers of Staffs Per Branch: ${pricingClass.numberOfStaffs}',
                   numberOfItems:
-                      widget.pricingClass.numberOfStaffs,
+                      pricingClass.numberOfStaffs,
                   toolTipMessage:
                       'The number of employees per store branch you can add to help manage your store operations.',
                 ),
                 PricingFeatureRow(
                   title:
-                      'Numbers of Items Per Branch: ${widget.pricingClass.numberOfItems > 1000000 ? 'Infinity' : widget.pricingClass.numberOfItems}',
-                  numberOfItems:
-                      widget.pricingClass.numberOfItems,
+                      'Numbers of Items Per Branch: ${pricingClass.numberOfItems > 1000000 ? 'Infinity' : formatLargeNumber(pricingClass.numberOfItems.toStringAsFixed(0))}',
+                  numberOfItems: pricingClass.numberOfItems,
                   toolTipMessage:
                       'The number of products or inventory items you can add and manage per store branch, each tracked separately by store account.',
                 ),
                 PricingFeatureRow(
                   title: 'Run Bussiness Offline',
-                  boolean: widget.pricingClass.useOffline,
+                  boolean: pricingClass.useOffline,
                   toolTipMessage:
                       'Allows you to run your business without an internet connection, with data syncing automatically when you\'re back online.',
                 ),
                 PricingFeatureRow(
                   title: 'Create and Manage Invoices',
-                  boolean:
-                      widget.pricingClass.invoiceManagement,
+                  boolean: pricingClass.invoiceManagement,
                   toolTipMessage:
                       'Ability to to create, send, and manage professional invoices for your customers directly from the app.',
                 ),
                 PricingFeatureRow(
                   title: 'Generate, Print and Edit Receipt',
-                  boolean:
-                      widget.pricingClass.receiptManagement,
+                  boolean: pricingClass.receiptManagement,
                   toolTipMessage:
                       'The ability to generate, edit, and print receipts for sales, making it easy to share transaction details with customers.',
                 ),
                 PricingFeatureRow(
                   title:
                       'Generate, Print, and Scan Barcode',
-                  boolean: widget.pricingClass.barcode,
+                  boolean: pricingClass.barcode,
                   toolTipMessage:
                       'The ability to generate and print barcodes for products, and scan barcodes to quickly add items during sales.',
                 ),
                 PricingFeatureRow(
                   title:
                       'Use In-App Professional Calculator',
-                  boolean:
-                      widget.pricingClass.useCalculator,
+                  boolean: pricingClass.useCalculator,
                   toolTipMessage:
                       'The ability to access and use a built-in calculator within the app for quick calculations while managing your store.',
                 ),

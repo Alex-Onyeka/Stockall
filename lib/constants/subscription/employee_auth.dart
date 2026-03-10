@@ -25,23 +25,23 @@ class EmployeesAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .employeesAuth
+        .addAndManageEmployees) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .employeesAuth
-          .addAndManageEmployees) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 
   bool numberOfEmployeesAction({
@@ -56,28 +56,28 @@ class EmployeesAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    var currentNumberOfEmployees =
+        returnUserProvider(
+          context,
+          listen: false,
+        ).usersMain.length;
+    if (subPlans
+            .firstWhere((pl) => pl.plan == plan)
+            .employeesAuth
+            .numberOfEmployees >
+        currentNumberOfEmployees) {
       action == null ? {} : action();
       return true;
     } else {
-      var currentNumberOfEmployees =
-          returnUserProvider(
-            context,
-            listen: false,
-          ).usersMain.length;
-      if (subPlans
-              .firstWhere((pl) => pl.plan == plan)
-              .employeesAuth
-              .numberOfEmployees >
-          currentNumberOfEmployees) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 }

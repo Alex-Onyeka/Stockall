@@ -13,6 +13,10 @@ class ComparisonRow extends StatelessWidget {
   final String? standardPlanString;
   final bool? premiumPlanBool;
   final String? premiumPlanString;
+  final bool? silverPlanBool;
+  final String? silverPlanString;
+  final bool? goldPlanBool;
+  final String? goldPlanString;
 
   const ComparisonRow({
     super.key,
@@ -25,6 +29,10 @@ class ComparisonRow extends StatelessWidget {
     this.standardPlanString,
     this.premiumPlanBool,
     this.premiumPlanString,
+    this.silverPlanBool,
+    this.silverPlanString,
+    this.goldPlanBool,
+    this.goldPlanString,
   });
 
   @override
@@ -175,6 +183,72 @@ class ComparisonRow extends StatelessWidget {
                               ? Colors.green
                               : Colors.red,
                       premiumPlanBool!
+                          ? Icons.check
+                          : Icons.clear,
+                    );
+                  }
+                },
+              ),
+            ),
+          ),
+          Expanded(
+            flex:
+                screenWidth(context) > mobileScreenSmall
+                    ? 2
+                    : 1,
+            child: Center(
+              child: Builder(
+                builder: (context) {
+                  if (silverPlanBool == null) {
+                    return Text(
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b3.fontSize,
+                        fontWeight: FontWeight.normal,
+                      ),
+                      silverPlanString ?? '',
+                    );
+                  } else {
+                    return Icon(
+                      size: 17,
+                      color:
+                          silverPlanBool!
+                              ? Colors.green
+                              : Colors.red,
+                      silverPlanBool!
+                          ? Icons.check
+                          : Icons.clear,
+                    );
+                  }
+                },
+              ),
+            ),
+          ),
+          Expanded(
+            flex:
+                screenWidth(context) > mobileScreenSmall
+                    ? 2
+                    : 1,
+            child: Center(
+              child: Builder(
+                builder: (context) {
+                  if (goldPlanBool == null) {
+                    return Text(
+                      style: TextStyle(
+                        fontSize:
+                            theme.mobileTexts.b3.fontSize,
+                        fontWeight: FontWeight.normal,
+                      ),
+                      goldPlanString ?? '',
+                    );
+                  } else {
+                    return Icon(
+                      size: 17,
+                      color:
+                          goldPlanBool!
+                              ? Colors.green
+                              : Colors.red,
+                      goldPlanBool!
                           ? Icons.check
                           : Icons.clear,
                     );

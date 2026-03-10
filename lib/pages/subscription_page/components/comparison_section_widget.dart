@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
@@ -20,10 +21,10 @@ class ComparisonSectionWidget extends StatelessWidget {
     return SizedBox(
       height:
           screenWidth(context) < mobileScreenSmall
-              ? 1620
+              ? 1550
               : screenWidth(context) > mobileScreenSmall &&
                   screenWidth(context) < tabletScreen
-              ? 1520
+              ? 1600
               : 1420,
       child: ListView(
         scrollDirection: Axis.horizontal,
@@ -35,13 +36,13 @@ class ComparisonSectionWidget extends StatelessWidget {
               padding: EdgeInsets.all(15),
               width:
                   screenWidth(context) <= mobileScreenSmall
-                      ? 550
+                      ? 800
                       : screenWidth(context) >
                               mobileScreenSmall &&
                           screenWidth(context) <
                               tabletScreen
-                      ? 900
-                      : 1300,
+                      ? 1150
+                      : 1350,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),
                 color: Colors.grey.shade100,
@@ -150,6 +151,44 @@ class ComparisonSectionWidget extends StatelessWidget {
                               'Premium',
                             ),
                           ),
+                          Expanded(
+                            flex:
+                                screenWidth(context) >
+                                        mobileScreenSmall
+                                    ? 2
+                                    : 1,
+                            child: Text(
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b2
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              'Silver',
+                            ),
+                          ),
+                          Expanded(
+                            flex:
+                                screenWidth(context) >
+                                        mobileScreenSmall
+                                    ? 2
+                                    : 1,
+                            child: Text(
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b2
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              'Gold',
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -158,31 +197,61 @@ class ComparisonSectionWidget extends StatelessWidget {
                     SizedBox(height: 15),
                     ComparisonRow(
                       title: 'Maximum Number of Inventory',
-                      freePlanString:
-                          subPlans
-                              .firstWhere(
-                                (pl) => pl.plan == 0,
-                              )
-                              .itemsAuth
-                              .numberOfItems
-                              .toString(),
-                      basicPlanString:
-                          subPlans
-                              .firstWhere(
-                                (pl) => pl.plan == 1,
-                              )
-                              .itemsAuth
-                              .numberOfItems
-                              .toString(),
-                      standardPlanString:
-                          subPlans
-                              .firstWhere(
-                                (pl) => pl.plan == 2,
-                              )
-                              .itemsAuth
-                              .numberOfItems
-                              .toString(),
-                      premiumPlanString: 'Unlimited',
+                      freePlanString: formatLargeNumber(
+                        subPlans
+                            .firstWhere(
+                              (pl) => pl.plan == 0,
+                            )
+                            .itemsAuth
+                            .numberOfItems
+                            .toString(),
+                      ),
+                      basicPlanString: formatLargeNumber(
+                        subPlans
+                            .firstWhere(
+                              (pl) => pl.plan == 1,
+                            )
+                            .itemsAuth
+                            .numberOfItems
+                            .toString(),
+                      ),
+                      standardPlanString: formatLargeNumber(
+                        subPlans
+                            .firstWhere(
+                              (pl) => pl.plan == 2,
+                            )
+                            .itemsAuth
+                            .numberOfItems
+                            .toString(),
+                      ),
+
+                      premiumPlanString: formatLargeNumber(
+                        subPlans
+                            .firstWhere(
+                              (pl) => pl.plan == 3,
+                            )
+                            .itemsAuth
+                            .numberOfItems
+                            .toString(),
+                      ),
+                      silverPlanString: formatLargeNumber(
+                        subPlans
+                            .firstWhere(
+                              (pl) => pl.plan == 4,
+                            )
+                            .itemsAuth
+                            .numberOfItems
+                            .toString(),
+                      ),
+                      goldPlanString: formatLargeNumber(
+                        subPlans
+                            .firstWhere(
+                              (pl) => pl.plan == 5,
+                            )
+                            .itemsAuth
+                            .numberOfItems
+                            .toString(),
+                      ),
                     ),
                     ComparisonRow(
                       title:
@@ -191,6 +260,8 @@ class ComparisonSectionWidget extends StatelessWidget {
                       basicPlanString: 'Unlimited',
                       standardPlanString: 'Unlimited',
                       premiumPlanString: 'Unlimited',
+                      silverPlanString: 'Unlimited',
+                      goldPlanString: 'Unlimited',
                     ),
                     ComparisonRow(
                       title: 'Generate And Print Barcode',
@@ -215,7 +286,27 @@ class ComparisonSectionWidget extends StatelessWidget {
                               )
                               .itemsAuth
                               .generateItemBarcode,
-                      premiumPlanBool: true,
+                      premiumPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .itemsAuth
+                              .generateItemBarcode,
+                      silverPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .itemsAuth
+                              .generateItemBarcode,
+                      goldPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .itemsAuth
+                              .generateItemBarcode,
                     ),
                     ComparisonRow(
                       title:
@@ -241,7 +332,27 @@ class ComparisonSectionWidget extends StatelessWidget {
                               )
                               .itemsAuth
                               .applyVariationToItems,
-                      premiumPlanBool: true,
+                      premiumPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .itemsAuth
+                              .applyVariationToItems,
+                      silverPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .itemsAuth
+                              .applyVariationToItems,
+                      goldPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .itemsAuth
+                              .applyVariationToItems,
                     ),
                     ComparisonRow(
                       title:
@@ -267,7 +378,27 @@ class ComparisonSectionWidget extends StatelessWidget {
                               )
                               .itemsAuth
                               .setexpiryDate,
-                      premiumPlanBool: true,
+                      premiumPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .itemsAuth
+                              .setexpiryDate,
+                      silverPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .itemsAuth
+                              .setexpiryDate,
+                      goldPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .itemsAuth
+                              .setexpiryDate,
                     ),
                     ComparisonRow(
                       title:
@@ -293,7 +424,27 @@ class ComparisonSectionWidget extends StatelessWidget {
                               )
                               .itemsAuth
                               .allowStockallToManageInventory,
-                      premiumPlanBool: true,
+                      premiumPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .itemsAuth
+                              .allowStockallToManageInventory,
+                      silverPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .itemsAuth
+                              .allowStockallToManageInventory,
+                      goldPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .itemsAuth
+                              .allowStockallToManageInventory,
                     ),
                     ComparisonRow(
                       title:
@@ -319,7 +470,27 @@ class ComparisonSectionWidget extends StatelessWidget {
                               )
                               .salesAuth
                               .useOfBarcode,
-                      premiumPlanBool: true,
+                      premiumPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .salesAuth
+                              .useOfBarcode,
+                      silverPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .salesAuth
+                              .useOfBarcode,
+                      goldPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .salesAuth
+                              .useOfBarcode,
                     ),
                     ComparisonRow(
                       title:
@@ -348,7 +519,30 @@ class ComparisonSectionWidget extends StatelessWidget {
                               .salesAuth
                               .numberOfCarts
                               .toString(),
-                      premiumPlanString: 'Unlimited',
+                      premiumPlanString:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .salesAuth
+                              .numberOfCarts
+                              .toString(),
+                      silverPlanString:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .salesAuth
+                              .numberOfCarts
+                              .toString(),
+                      goldPlanString:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .salesAuth
+                              .numberOfCarts
+                              .toString(),
                     ),
                     ComparisonRow(
                       title:
@@ -374,7 +568,27 @@ class ComparisonSectionWidget extends StatelessWidget {
                               )
                               .salesAuth
                               .applyDiscount,
-                      premiumPlanBool: true,
+                      premiumPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .salesAuth
+                              .applyDiscount,
+                      silverPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .salesAuth
+                              .applyDiscount,
+                      goldPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .salesAuth
+                              .applyDiscount,
                     ),
                     ComparisonRow(
                       title: 'Create and Manage Invoices',
@@ -399,7 +613,27 @@ class ComparisonSectionWidget extends StatelessWidget {
                               )
                               .salesAuth
                               .invoiceManagement,
-                      premiumPlanBool: true,
+                      premiumPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .salesAuth
+                              .invoiceManagement,
+                      silverPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .salesAuth
+                              .invoiceManagement,
+                      goldPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .salesAuth
+                              .invoiceManagement,
                     ),
                     ComparisonRow(
                       title:
@@ -425,7 +659,27 @@ class ComparisonSectionWidget extends StatelessWidget {
                               )
                               .salesAuth
                               .paymentMethodSelection,
-                      premiumPlanBool: true,
+                      premiumPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .salesAuth
+                              .paymentMethodSelection,
+                      silverPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .salesAuth
+                              .paymentMethodSelection,
+                      goldPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .salesAuth
+                              .paymentMethodSelection,
                     ),
                     ComparisonRow(
                       title:
@@ -451,7 +705,27 @@ class ComparisonSectionWidget extends StatelessWidget {
                               )
                               .salesAuth
                               .addCustomerToSell,
-                      premiumPlanBool: true,
+                      premiumPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .salesAuth
+                              .addCustomerToSell,
+                      silverPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .salesAuth
+                              .addCustomerToSell,
+                      goldPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .salesAuth
+                              .addCustomerToSell,
                     ),
                     ComparisonRow(
                       title: 'Download Sales Receipt',
@@ -476,7 +750,27 @@ class ComparisonSectionWidget extends StatelessWidget {
                               )
                               .salesAuth
                               .downloadReceipt,
-                      premiumPlanBool: true,
+                      premiumPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .salesAuth
+                              .downloadReceipt,
+                      silverPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .salesAuth
+                              .downloadReceipt,
+                      goldPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .salesAuth
+                              .downloadReceipt,
                     ),
                     ComparisonRow(
                       title:
@@ -502,7 +796,27 @@ class ComparisonSectionWidget extends StatelessWidget {
                               )
                               .salesAuth
                               .editReceipt,
-                      premiumPlanBool: true,
+                      premiumPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .salesAuth
+                              .editReceipt,
+                      silverPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .salesAuth
+                              .editReceipt,
+                      goldPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .salesAuth
+                              .editReceipt,
                     ),
                     ComparisonRow(
                       title: 'Print Receipts',
@@ -527,7 +841,27 @@ class ComparisonSectionWidget extends StatelessWidget {
                               )
                               .salesAuth
                               .printReceipt,
-                      premiumPlanBool: true,
+                      premiumPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .salesAuth
+                              .printReceipt,
+                      silverPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .salesAuth
+                              .printReceipt,
+                      goldPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .salesAuth
+                              .printReceipt,
                     ),
                     ComparisonRow(
                       title:
@@ -553,7 +887,27 @@ class ComparisonSectionWidget extends StatelessWidget {
                               )
                               .salesAuth
                               .addItemToStockAfterCustomSale,
-                      premiumPlanBool: true,
+                      premiumPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .salesAuth
+                              .addItemToStockAfterCustomSale,
+                      silverPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .salesAuth
+                              .addItemToStockAfterCustomSale,
+                      goldPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .salesAuth
+                              .addItemToStockAfterCustomSale,
                     ),
                     ComparisonRow(
                       title: 'Add Custom Item to Cart',
@@ -578,7 +932,27 @@ class ComparisonSectionWidget extends StatelessWidget {
                               )
                               .salesAuth
                               .addCustomItemToCart,
-                      premiumPlanBool: true,
+                      premiumPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .salesAuth
+                              .addCustomItemToCart,
+                      silverPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .salesAuth
+                              .addCustomItemToCart,
+                      goldPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .salesAuth
+                              .addCustomItemToCart,
                     ),
                     ComparisonRow(
                       title:
@@ -604,7 +978,27 @@ class ComparisonSectionWidget extends StatelessWidget {
                               )
                               .calculatorAuth
                               .useCalculator,
-                      premiumPlanBool: true,
+                      premiumPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .calculatorAuth
+                              .useCalculator,
+                      silverPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .calculatorAuth
+                              .useCalculator,
+                      goldPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .calculatorAuth
+                              .useCalculator,
                     ),
                     ComparisonRow(
                       title: 'Create and Manage Customers',
@@ -629,7 +1023,27 @@ class ComparisonSectionWidget extends StatelessWidget {
                               )
                               .customerAuth
                               .createCustomer,
-                      premiumPlanBool: true,
+                      premiumPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .customerAuth
+                              .createCustomer,
+                      silverPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .customerAuth
+                              .createCustomer,
+                      goldPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .customerAuth
+                              .createCustomer,
                     ),
                     ComparisonRow(
                       title: 'Create and Manage Staffs',
@@ -654,7 +1068,27 @@ class ComparisonSectionWidget extends StatelessWidget {
                               )
                               .employeesAuth
                               .addAndManageEmployees,
-                      premiumPlanBool: true,
+                      premiumPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .employeesAuth
+                              .addAndManageEmployees,
+                      silverPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .employeesAuth
+                              .addAndManageEmployees,
+                      goldPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .employeesAuth
+                              .addAndManageEmployees,
                     ),
                     ComparisonRow(
                       title: 'Maximum Number of Staffs',
@@ -682,7 +1116,30 @@ class ComparisonSectionWidget extends StatelessWidget {
                               .employeesAuth
                               .numberOfEmployees
                               .toString(),
-                      premiumPlanString: 'Unlimited',
+                      premiumPlanString:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .employeesAuth
+                              .numberOfEmployees
+                              .toString(),
+                      silverPlanString:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .employeesAuth
+                              .numberOfEmployees
+                              .toString(),
+                      goldPlanString:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .employeesAuth
+                              .numberOfEmployees
+                              .toString(),
                     ),
                     ComparisonRow(
                       title:
@@ -708,7 +1165,27 @@ class ComparisonSectionWidget extends StatelessWidget {
                               )
                               .expensesAuth
                               .deleteAndEditExpenses,
-                      premiumPlanBool: true,
+                      premiumPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .expensesAuth
+                              .deleteAndEditExpenses,
+                      silverPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .expensesAuth
+                              .deleteAndEditExpenses,
+                      goldPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .expensesAuth
+                              .deleteAndEditExpenses,
                     ),
                     ComparisonRow(
                       title:
@@ -737,7 +1214,30 @@ class ComparisonSectionWidget extends StatelessWidget {
                               .expensesAuth
                               .numberOfDailyExpenses
                               .toString(),
-                      premiumPlanString: 'Unlimited',
+                      premiumPlanString:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .expensesAuth
+                              .numberOfDailyExpenses
+                              .toString(),
+                      silverPlanString:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .expensesAuth
+                              .numberOfDailyExpenses
+                              .toString(),
+                      goldPlanString:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .expensesAuth
+                              .numberOfDailyExpenses
+                              .toString(),
                     ),
                     ComparisonRow(
                       title:
@@ -763,7 +1263,27 @@ class ComparisonSectionWidget extends StatelessWidget {
                               )
                               .generalSettingsAuth
                               .addSocials,
-                      premiumPlanBool: true,
+                      premiumPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .generalSettingsAuth
+                              .addSocials,
+                      silverPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .generalSettingsAuth
+                              .addSocials,
+                      goldPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .generalSettingsAuth
+                              .addSocials,
                     ),
                     ComparisonRow(
                       title: 'Customize Receipt Template',
@@ -788,7 +1308,27 @@ class ComparisonSectionWidget extends StatelessWidget {
                               )
                               .generalSettingsAuth
                               .customizeReceiptTemplate,
-                      premiumPlanBool: true,
+                      premiumPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .generalSettingsAuth
+                              .customizeReceiptTemplate,
+                      silverPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .generalSettingsAuth
+                              .customizeReceiptTemplate,
+                      goldPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .generalSettingsAuth
+                              .customizeReceiptTemplate,
                     ),
                     ComparisonRow(
                       title: 'Use Application Offline',
@@ -813,7 +1353,27 @@ class ComparisonSectionWidget extends StatelessWidget {
                               )
                               .generalSettingsAuth
                               .allowOfflineUse,
-                      premiumPlanBool: true,
+                      premiumPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .generalSettingsAuth
+                              .allowOfflineUse,
+                      silverPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .generalSettingsAuth
+                              .allowOfflineUse,
+                      goldPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .generalSettingsAuth
+                              .allowOfflineUse,
                     ),
                     ComparisonRow(
                       title:
@@ -839,7 +1399,27 @@ class ComparisonSectionWidget extends StatelessWidget {
                               )
                               .multipleStoresAuth
                               .createMultipleStores,
-                      premiumPlanBool: true,
+                      premiumPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .multipleStoresAuth
+                              .createMultipleStores,
+                      silverPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .multipleStoresAuth
+                              .createMultipleStores,
+                      goldPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .multipleStoresAuth
+                              .createMultipleStores,
                     ),
                     ComparisonRow(
                       title: 'Number of Stores',
@@ -867,7 +1447,30 @@ class ComparisonSectionWidget extends StatelessWidget {
                               .multipleStoresAuth
                               .numberOfStores
                               .toString(),
-                      premiumPlanString: 'Unlimited',
+                      premiumPlanString:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .multipleStoresAuth
+                              .numberOfStores
+                              .toString(),
+                      silverPlanString:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .multipleStoresAuth
+                              .numberOfStores
+                              .toString(),
+                      goldPlanString:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .multipleStoresAuth
+                              .numberOfStores
+                              .toString(),
                     ),
                     ComparisonRow(
                       title:
@@ -893,7 +1496,27 @@ class ComparisonSectionWidget extends StatelessWidget {
                               )
                               .reportAuth
                               .viewItemsGeneralReport,
-                      premiumPlanBool: true,
+                      premiumPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .reportAuth
+                              .viewItemsGeneralReport,
+                      silverPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .reportAuth
+                              .viewItemsGeneralReport,
+                      goldPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .reportAuth
+                              .viewItemsGeneralReport,
                     ),
                     ComparisonRow(
                       title:
@@ -919,7 +1542,27 @@ class ComparisonSectionWidget extends StatelessWidget {
                               )
                               .reportAuth
                               .printGeneralReport,
-                      premiumPlanBool: true,
+                      premiumPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .reportAuth
+                              .printGeneralReport,
+                      silverPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .reportAuth
+                              .printGeneralReport,
+                      goldPlanBool:
+                          subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .reportAuth
+                              .printGeneralReport,
                     ),
                   ],
                 ),

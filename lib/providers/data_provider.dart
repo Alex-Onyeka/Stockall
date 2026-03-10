@@ -895,50 +895,50 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool isStartDate = true;
+  // bool isStartDate = true;
 
-  DateTime? startDate;
-  DateTime? endDate;
+  // DateTime? startDate;
+  // DateTime? endDate;
 
-  void changeDateBoolToTrue() {
-    isStartDate = true;
-    notifyListeners();
-  }
+  // void changeDateBoolToTrue() {
+  //   isStartDate = true;
+  //   notifyListeners();
+  // }
 
-  void clearStartDate() {
-    startDate = null;
-    notifyListeners();
-  }
+  // void clearStartDate() {
+  //   startDate = null;
+  //   notifyListeners();
+  // }
 
-  void changeDateBoolToFalse() {
-    isStartDate = false;
-    notifyListeners();
-  }
+  // void changeDateBoolToFalse() {
+  //   isStartDate = false;
+  //   notifyListeners();
+  // }
 
-  void clearEndDate() {
-    endDate = null;
-    notifyListeners();
-  }
+  // void clearEndDate() {
+  //   endDate = null;
+  //   notifyListeners();
+  // }
 
-  void setBothDates({
-    DateTime? start,
-    DateTime? end,
-    DateTime? expDate,
-  }) {
-    startDate = start;
-    endDate = end;
-    expiryDate = expDate;
-    notifyListeners();
-  }
+  // void setBothDates({
+  //   DateTime? start,
+  //   DateTime? end,
+  //   DateTime? expDate,
+  // }) {
+  //   startDate = start;
+  //   endDate = end;
+  //   expiryDate = expDate;
+  //   notifyListeners();
+  // }
 
-  void setDate(DateTime date) {
-    if (isStartDate) {
-      startDate = date;
-    } else {
-      endDate = date;
-    }
-    notifyListeners();
-  }
+  // void setDate(DateTime date) {
+  //   if (isStartDate) {
+  //     startDate = date;
+  //   } else {
+  //     endDate = date;
+  //   }
+  //   notifyListeners();
+  // }
 
   List<TempProductClass> productList = [];
 
@@ -1275,47 +1275,47 @@ class DataProvider extends ChangeNotifier {
   //   return response != null;
   // }
 
-  Future<bool> updateDiscount({
-    required TempProductClass product,
-    required double? newDiscount,
-    DateTime? statDate,
-    DateTime? endDate,
-    required BuildContext context,
-  }) async {
-    final response =
-        await supabase
-            .from('products')
-            .update({
-              'discount': newDiscount,
-              'starting_date':
-                  startDate
-                      ?.toIso8601String()
-                      .split('T')
-                      .first,
-              'ending_date':
-                  endDate
-                      ?.toIso8601String()
-                      .split('T')
-                      .first,
-              'updated_at': DateTime.now(),
-            })
-            .eq('uuid', product.uuid!)
-            .maybeSingle();
-    await returnEventsLogProvider().createLog(
-      returnEventsLogProvider(
-        // ignore: use_build_context_synchronously
-      ).productAdapter(product, 2),
-      // ignore: use_build_context_synchronously
-    );
+  // Future<bool> updateDiscount({
+  //   required TempProductClass product,
+  //   required double? newDiscount,
+  //   DateTime? statDate,
+  //   DateTime? endDate,
+  //   required BuildContext context,
+  // }) async {
+  //   final response =
+  //       await supabase
+  //           .from('products')
+  //           .update({
+  //             'discount': newDiscount,
+  //             'starting_date':
+  //                 startDate
+  //                     ?.toIso8601String()
+  //                     .split('T')
+  //                     .first,
+  //             'ending_date':
+  //                 endDate
+  //                     ?.toIso8601String()
+  //                     .split('T')
+  //                     .first,
+  //             'updated_at': DateTime.now(),
+  //           })
+  //           .eq('uuid', product.uuid!)
+  //           .maybeSingle();
+  //   await returnEventsLogProvider().createLog(
+  //     returnEventsLogProvider(
+  //       // ignore: use_build_context_synchronously
+  //     ).productAdapter(product, 2),
+  //     // ignore: use_build_context_synchronously
+  //   );
 
-    if (context.mounted) {
-      await getProducts(
-        returnShopProvider().userShop()!.shopId!,
-      );
-    }
-    notifyListeners();
-    return response != null;
-  }
+  //   if (context.mounted) {
+  //     await getProducts(
+  //       returnShopProvider().userShop()!.shopId!,
+  //     );
+  //   }
+  //   notifyListeners();
+  //   return response != null;
+  // }
 
   // Future<bool> updateIsManaged({
   //   required int productId,
@@ -1454,8 +1454,8 @@ class DataProvider extends ChangeNotifier {
     unitValueSet = false;
     colorValueSet = false;
     sizeValueSet = false;
-    clearEndDate();
-    clearStartDate();
+    // clearEndDate();
+    // clearStartDate();
     clearExpDate();
     clearExpenseUnit();
     notifyListeners();

@@ -117,50 +117,38 @@ class ExpensesProvider extends ChangeNotifier {
   //
   //
 
-  DateTime? singleDay;
-  DateTime? weekStartDate;
+  DateTime? dateSet;
 
-  bool setDate = false;
-  bool isDateSet = false;
-  String? dateSet;
-
-  void openExpenseDatePicker() {
-    setDate = true;
-    print('Opened Date Picker');
-    notifyListeners();
-  }
-
-  void setExpenseDay(DateTime day) {
-    singleDay = day;
-    weekStartDate = null;
-    isDateSet = true;
-    setDate = false;
-    dateSet = 'For ${formatDateTime(day)}';
-    print('Date Set');
-    notifyListeners();
-  }
-
-  void setExpenseWeek(
-    DateTime weekStart,
-    DateTime endOfWeek,
-  ) {
-    weekStartDate = weekStart;
-    singleDay = null;
-    isDateSet = true;
-    setDate = false;
-    dateSet =
-        '${formatDateWithoutYear(weekStart)} - ${formatDateWithoutYear(endOfWeek)}';
-    print('Week Set');
-    notifyListeners();
-  }
-
-  void clearExpenseDate() {
-    singleDay = null;
-    weekStartDate = null;
-    setDate = false;
-    isDateSet = false;
+  void clearDate() {
     dateSet = null;
-    print('Date Closed');
+    rangeStartDate = null;
+    rangeEndDate = null;
+    notifyListeners();
+  }
+
+  void setDate(DateTime date) {
+    if (dateSet == null) {
+      dateSet = date;
+      rangeStartDate = null;
+      rangeEndDate = null;
+      print('Date set: $date');
+    } else {
+      dateSet = null;
+      print('Date Cleared');
+    }
+    notifyListeners();
+  }
+
+  DateTime? rangeStartDate;
+  DateTime? rangeEndDate;
+
+  void setRange(DateTime rangeStart, DateTime endOfrange) {
+    rangeStartDate = rangeStart;
+    rangeEndDate = endOfrange;
+    print(
+      'Date Range set: Start: $rangeStart End: $endOfrange ',
+    );
+    dateSet = null;
     notifyListeners();
   }
 
@@ -168,12 +156,7 @@ class ExpensesProvider extends ChangeNotifier {
     BuildContext context,
     List<TempExpensesClass> expenses,
   ) {
-    if (weekStartDate != null) {
-      final weekStartUtc = weekStartDate!.toUtc();
-      final weekEndUtc = weekStartUtc.add(
-        const Duration(days: 7),
-      ); // end exclusive
-
+    if (rangeStartDate != null) {
       if (authorization(
         authorized:
             Authorizations().viewAllTransactionRecords,
@@ -181,60 +164,61 @@ class ExpensesProvider extends ChangeNotifier {
         return expenses.where((expenses) {
           final created = expenses.createdDate!.toUtc();
           return created.isAfter(
-                weekStartUtc.subtract(
+                rangeStartDate!.subtract(
                   const Duration(seconds: 1),
                 ),
               ) &&
-              created.isBefore(weekEndUtc);
+              created.isBefore(
+                rangeEndDate ?? DateTime.now(),
+              );
         }).toList();
       } else {
         return expenses.where((expense) {
           final created = expense.createdDate!.toUtc();
           return created.isAfter(
-                weekStartUtc.subtract(
+                rangeStartDate!.subtract(
                   const Duration(seconds: 1),
                 ),
               ) &&
-              created.isBefore(weekEndUtc) &&
+              created.isBefore(
+                rangeEndDate ?? DateTime.now(),
+              ) &&
               expense.userId == currentUser().userId;
         }).toList();
       }
     }
 
-    final targetDate =
-        (singleDay ?? DateTime.now()).toUtc();
-    final startOfDay = DateTime.utc(
-      targetDate.year,
-      targetDate.month,
-      targetDate.day,
-    );
-    final endOfDay = startOfDay.add(
-      const Duration(days: 1),
-    );
+    var currentDate = dateSet ?? DateTime.now();
+
     if (authorization(
       authorized:
           Authorizations().viewAllTransactionRecords,
     )) {
-      return expenses.where((expense) {
-        final created = expense.createdDate!.toUtc();
-        return created.isAfter(
-              startOfDay.subtract(
-                const Duration(seconds: 1),
-              ),
-            ) &&
-            created.isBefore(endOfDay);
-      }).toList();
+      return expenses
+          .where(
+            (expense) =>
+                (expense.createdDate!.day ==
+                    currentDate.day) &&
+                (expense.createdDate!.month ==
+                    currentDate.month) &&
+                (expense.createdDate!.year ==
+                    currentDate.year) &&
+                expense.userId == currentUser().userId,
+          )
+          .toList();
     } else {
-      return expenses.where((expense) {
-        final created = expense.createdDate!.toUtc();
-        return created.isAfter(
-              startOfDay.subtract(
-                const Duration(seconds: 1),
-              ),
-            ) &&
-            created.isBefore(endOfDay) &&
-            expense.userId == currentUser().userId;
-      }).toList();
+      return expenses
+          .where(
+            (expense) =>
+                (expense.createdDate!.day ==
+                    currentDate.day) &&
+                (expense.createdDate!.month ==
+                    currentDate.month) &&
+                (expense.createdDate!.year ==
+                    currentDate.year) &&
+                expense.userId == currentUser().userId,
+          )
+          .toList();
     }
   }
 

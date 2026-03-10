@@ -5,12 +5,10 @@ import 'package:stockall/main.dart';
 
 class ExpensesAuth {
   final int numberOfDailyExpenses;
-  // final int expensesRecordLimit;
   final bool deleteAndEditExpenses;
 
   ExpensesAuth({
     required this.numberOfDailyExpenses,
-    // required this.expensesRecordLimit,
     required this.deleteAndEditExpenses,
   });
 }
@@ -28,36 +26,36 @@ class ExpensesAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    var todaysExpenses =
+        returnExpensesProvider(context, listen: false)
+            .expenses
+            .where(
+              (exp) => exp.createdDate!.isAfter(
+                startOfDay(
+                  DateTime.now(),
+                ).add(Duration(hours: 1)),
+              ),
+            )
+            .length;
+
+    if (subPlans
+            .firstWhere((pl) => pl.plan == plan)
+            .expensesAuth
+            .numberOfDailyExpenses >
+        todaysExpenses) {
       action == null ? {} : action();
       return true;
     } else {
-      var todaysExpenses =
-          returnExpensesProvider(context, listen: false)
-              .expenses
-              .where(
-                (exp) => exp.createdDate!.isAfter(
-                  startOfDay(
-                    DateTime.now(),
-                  ).add(Duration(hours: 1)),
-                ),
-              )
-              .length;
-
-      if (subPlans
-              .firstWhere((pl) => pl.plan == plan)
-              .expensesAuth
-              .numberOfDailyExpenses >
-          todaysExpenses) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
+    // }
   }
 
   bool deleteAndEditExpensesAction({
@@ -72,22 +70,23 @@ class ExpensesAuthAction {
     if (plan == null) {
       return false;
     }
-    if (plan == 3) {
+    // if (plan == 3) {
+    //   action == null ? {} : action();
+    //   return true;
+    // } else {
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .expensesAuth
+        .deleteAndEditExpenses) {
       action == null ? {} : action();
       return true;
     } else {
-      if (subPlans
-          .firstWhere((pl) => pl.plan == plan)
-          .expensesAuth
-          .deleteAndEditExpenses) {
-        action == null ? {} : action();
-        return true;
-      } else {
-        if (action != null) {
-          showUnauthorizedDialog(context);
-        }
-        return false;
+      if (action != null) {
+        showUnauthorizedDialog(context);
       }
+      return false;
     }
   }
+
+  // }
 }

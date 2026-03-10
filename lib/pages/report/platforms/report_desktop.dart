@@ -7,6 +7,8 @@ import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widg
 import 'package:stockall/components/major/right_side_bar.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/subscription/report_auth.dart';
+import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/customer_report/customer_report_page.dart';
 import 'package:stockall/pages/report/events_log/events_log.dart';
@@ -249,29 +251,40 @@ class _ReportDesktopState extends State<ReportDesktop> {
                                               'Customer Report',
                                         ),
                                       ),
-                                      Visibility(
-                                        visible:
-                                            !isStoreKeeper(),
-                                        child: ReportListTile(
-                                          isActive: true,
-                                          theme: theme,
-                                          action: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (
-                                                  context,
-                                                ) {
-                                                  return EventsLog();
+                                      SubWrapper(
+                                        mainWidget: Visibility(
+                                          visible:
+                                              !isStoreKeeper(),
+                                          child: ReportListTile(
+                                            isActive: true,
+                                            theme: theme,
+                                            action: () {
+                                              ReportAuthAction().viewEventsLogAction(
+                                                context:
+                                                    context,
+                                                action: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (
+                                                        context,
+                                                      ) {
+                                                        return EventsLog();
+                                                      },
+                                                    ),
+                                                  );
                                                 },
-                                              ),
-                                            );
-                                          },
-                                          subText:
-                                              'View A List of all events.',
-                                          title:
-                                              'Events Log',
+                                              );
+                                            },
+                                            subText:
+                                                'View A List of all events.',
+                                            title:
+                                                'Events Log',
+                                          ),
                                         ),
+                                        isVisible:
+                                            !ReportAuthAction()
+                                                .viewEventsLogAction(),
                                       ),
                                       ReportListTile(
                                         isActive: false,

@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/product_report_summary/product_report_summary.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockall/components/calendar/calendar_widget.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
@@ -86,10 +86,7 @@ class _SalesAndRevenueReportDesktopState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      returnReportProvider(
-        context,
-        listen: false,
-      ).clearDate(context);
+      returnReceiptProviderSingle().clearDate();
       returnSalesProvider().toggleIsLoading(false);
     });
     productRecordFuture = getProductRecord();
@@ -346,10 +343,16 @@ class _SalesAndRevenueReportDesktopState
                                           .b1
                                           .fontSize,
                                 ),
-                                returnReportProvider(
-                                      context,
-                                    ).dateSet ??
-                                    'For Today',
+                                returnReceiptProvider(
+                                              context,
+                                            ).dateSet !=
+                                            null ||
+                                        returnReceiptProvider(
+                                              context,
+                                            ).rangeStartDate !=
+                                            null
+                                    ? 'All Sales'
+                                    : 'For Today',
                               ),
                             ],
                           ),
@@ -565,23 +568,42 @@ class _SalesAndRevenueReportDesktopState
                               children: [
                                 MaterialButton(
                                   onPressed: () {
-                                    if (returnReportProvider(
-                                          context,
-                                          listen: false,
-                                        ).isDateSet ||
-                                        returnReportProvider(
-                                          context,
-                                          listen: false,
-                                        ).setDate) {
-                                      returnReportProvider(
+                                    if (returnReceiptProvider(
+                                              context,
+                                              listen: false,
+                                            ).dateSet !=
+                                            null ||
+                                        returnReceiptProvider(
+                                              context,
+                                              listen: false,
+                                            ).rangeStartDate !=
+                                            null) {
+                                      returnReceiptProvider(
                                         context,
                                         listen: false,
-                                      ).clearDate(context);
+                                      ).clearDate();
                                     } else {
-                                      returnReportProvider(
-                                        context,
-                                        listen: false,
-                                      ).openDatePicker();
+                                      mainDatePicker(
+                                        context: context,
+                                        theme: theme,
+                                        singleDate: (date) {
+                                          returnReceiptProviderSingle()
+                                              .setDate(
+                                                date!,
+                                              );
+                                        },
+                                        rangeDate: (
+                                          firstDate,
+                                          lastDate,
+                                        ) {
+                                          returnReceiptProviderSingle()
+                                              .setRange(
+                                                firstDate!,
+                                                lastDate ??
+                                                    DateTime.now(),
+                                              );
+                                        },
+                                      );
                                     }
                                   },
                                   child: Row(
@@ -602,12 +624,14 @@ class _SalesAndRevenueReportDesktopState
                                                   .grey
                                                   .shade700,
                                         ),
-                                        returnReportProvider(
-                                                  context,
-                                                ).isDateSet ||
-                                                returnReportProvider(
-                                                  context,
-                                                ).setDate
+                                        returnReceiptProvider(
+                                                      context,
+                                                    ).dateSet !=
+                                                    null ||
+                                                returnReceiptProvider(
+                                                      context,
+                                                    ).rangeStartDate !=
+                                                    null
                                             ? 'Clear'
                                             : 'Set Date',
                                       ),
@@ -617,12 +641,14 @@ class _SalesAndRevenueReportDesktopState
                                             theme
                                                 .lightModeColor
                                                 .secColor100,
-                                        returnReportProvider(
-                                                  context,
-                                                ).isDateSet ||
-                                                returnReportProvider(
-                                                  context,
-                                                ).setDate
+                                        returnReceiptProvider(
+                                                      context,
+                                                    ).dateSet !=
+                                                    null ||
+                                                returnReceiptProvider(
+                                                      context,
+                                                    ).rangeStartDate !=
+                                                    null
                                             ? Icons.clear
                                             : Icons
                                                 .date_range_outlined,
@@ -948,127 +974,6 @@ class _SalesAndRevenueReportDesktopState
             ),
           ),
         ),
-        if (returnReportProvider(context).setDate)
-          Material(
-            color: const Color.fromARGB(75, 0, 0, 0),
-            child: GestureDetector(
-              onTap: () {
-                returnReportProvider(
-                  context,
-                  listen: false,
-                ).clearDate(context);
-              },
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10.0,
-                  ),
-                  child: Column(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height:
-                            MediaQuery.of(
-                              context,
-                            ).size.height *
-                            0.15,
-                      ),
-                      Ink(
-                        color: Colors.white,
-                        child: Container(
-                          padding: EdgeInsets.only(
-                            top: 20,
-                            bottom: 20,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.circular(10),
-                            color: Colors.white,
-                          ),
-                          child: Center(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(
-                                    horizontal: 5.0,
-                                  ),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    width: 100,
-                                    height: 4,
-                                    decoration: BoxDecoration(
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade400,
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            5,
-                                          ),
-                                    ),
-                                  ),
-                                  SizedBox(height: 20),
-                                  Container(
-                                    height: 480,
-                                    width: 380,
-                                    padding: EdgeInsets.all(
-                                      15,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            10,
-                                          ),
-                                      color: Colors.white,
-                                    ),
-                                    child: CalendarWidget(
-                                      onDaySelected: (
-                                        selectedDay,
-                                        focusedDay,
-                                      ) {
-                                        returnReportProvider(
-                                          context,
-                                          listen: false,
-                                        ).setDay(
-                                          context,
-                                          selectedDay,
-                                        );
-                                      },
-                                      actionWeek: (
-                                        startOfWeek,
-                                        endOfWeek,
-                                      ) {
-                                        returnReportProvider(
-                                          context,
-                                          listen: false,
-                                        ).setWeek(
-                                          context,
-                                          startOfWeek,
-                                          endOfWeek,
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height:
-                            MediaQuery.of(
-                              context,
-                            ).size.height *
-                            0.4,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
       ],
     );
   }

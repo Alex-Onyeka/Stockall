@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/checkout_response.dart';
 import 'package:stockall/components/buttons/floating_action_butto.dart';
-import 'package:stockall/components/calendar/calendar_widget.dart';
 import 'package:stockall/components/list_tiles/main_receipt_tile.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
@@ -53,7 +53,7 @@ class _TotalSalesMobileState
     returnReceiptProvider(
       context,
       listen: false,
-    ).clearReceiptDate();
+    ).clearDate();
   }
 
   bool returnInvoice = false;
@@ -72,7 +72,7 @@ class _TotalSalesMobileState
         returnReceiptProvider(
           context,
           listen: false,
-        ).clearReceiptDate();
+        ).clearDate();
       },
       child: Scaffold(
         appBar: appBar(
@@ -177,547 +177,469 @@ class _TotalSalesMobileState
         body: Builder(
           builder: (context) {
             if (!returnInvoice) {
-              return Stack(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20.0,
-                    ),
-                    child: Column(
-                      children: [
-                        Material(
-                          color: Colors.white,
-                          child: Column(
+              return Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20.0,
+                ),
+                child: Column(
+                  children: [
+                    Material(
+                      color: Colors.white,
+                      child: Column(
+                        children: [
+                          Row(
+                            spacing: 10,
                             children: [
-                              Row(
-                                spacing: 10,
-                                children: [
-                                  ValueSummaryTabSmall(
-                                    color: Colors.amber,
-                                    isMoney: true,
-                                    title: 'Total Revenue',
-                                    value: returnReceiptProvider(
-                                      context,
-                                      listen: false,
-                                    ).getTotalRevenueForSelectedDayAll(
-                                      customerId:
-                                          widget
-                                              .customerUuid,
-                                      staffId: widget.id,
-                                      subStaffId:
-                                          widget.subStaffId,
-                                    ),
-                                  ),
-                                  ValueSummaryTabSmall(
-                                    value:
-                                        widget.id != null
-                                            ? returnReceiptProvider(
-                                                  context,
-                                                )
-                                                .returnReceipts(
-                                                  // context,
-                                                )
-                                                .where(
-                                                  (
-                                                    receipt,
-                                                  ) =>
-                                                      receipt
-                                                          .staffId ==
-                                                      widget
-                                                          .id,
-                                                )
-                                                .toList()
-                                                .length
-                                                .toDouble()
-                                            : widget.subStaffId !=
-                                                null
-                                            ? returnReceiptProvider(
-                                                  context,
-                                                )
-                                                .returnReceipts(
-                                                  // context,
-                                                )
-                                                .where(
-                                                  (
-                                                    receipt,
-                                                  ) =>
-                                                      receipt
-                                                          .subStaffUuid ==
-                                                      widget
-                                                          .subStaffId,
-                                                )
-                                                .toList()
-                                                .length
-                                                .toDouble()
-                                            : widget.customerUuid !=
-                                                null
-                                            ? returnReceiptProvider(
-                                                  context,
-                                                )
-                                                .returnReceipts(
-                                                  // context,
-                                                )
-                                                .where(
-                                                  (
-                                                    receipt,
-                                                  ) =>
-                                                      receipt
-                                                          .customerUuid ==
-                                                      widget
-                                                          .customerUuid,
-                                                )
-                                                .toList()
-                                                .length
-                                                .toDouble()
-                                            : returnReceiptProvider(
-                                                  context,
-                                                )
-                                                .returnReceipts(
-                                                  // context,
-                                                )
-                                                .toList()
-                                                .length
-                                                .toDouble(),
-                                    title: 'Sales Number',
-                                    color: Colors.green,
-                                    isMoney: false,
-                                  ),
-                                ],
+                              ValueSummaryTabSmall(
+                                color: Colors.amber,
+                                isMoney: true,
+                                title: 'Total Revenue',
+                                value: returnReceiptProvider(
+                                  context,
+                                  listen: false,
+                                ).getTotalRevenueForSelectedDayAll(
+                                  customerId:
+                                      widget.customerUuid,
+                                  staffId: widget.id,
+                                  subStaffId:
+                                      widget.subStaffId,
+                                ),
                               ),
-                              Visibility(
-                                visible:
-                                    !authorization(
-                                      authorized:
-                                          Authorizations()
-                                              .viewDate,
-                                    ),
-                                child: SizedBox(height: 20),
+                              ValueSummaryTabSmall(
+                                value:
+                                    widget.id != null
+                                        ? returnReceiptProvider(
+                                              context,
+                                            )
+                                            .returnReceipts(
+                                              // context,
+                                            )
+                                            .where(
+                                              (receipt) =>
+                                                  receipt
+                                                      .staffId ==
+                                                  widget.id,
+                                            )
+                                            .toList()
+                                            .length
+                                            .toDouble()
+                                        : widget.subStaffId !=
+                                            null
+                                        ? returnReceiptProvider(
+                                              context,
+                                            )
+                                            .returnReceipts(
+                                              // context,
+                                            )
+                                            .where(
+                                              (receipt) =>
+                                                  receipt
+                                                      .subStaffUuid ==
+                                                  widget
+                                                      .subStaffId,
+                                            )
+                                            .toList()
+                                            .length
+                                            .toDouble()
+                                        : widget.customerUuid !=
+                                            null
+                                        ? returnReceiptProvider(
+                                              context,
+                                            )
+                                            .returnReceipts(
+                                              // context,
+                                            )
+                                            .where(
+                                              (receipt) =>
+                                                  receipt
+                                                      .customerUuid ==
+                                                  widget
+                                                      .customerUuid,
+                                            )
+                                            .toList()
+                                            .length
+                                            .toDouble()
+                                        : returnReceiptProvider(
+                                              context,
+                                            )
+                                            .returnReceipts(
+                                              // context,
+                                            )
+                                            .toList()
+                                            .length
+                                            .toDouble(),
+                                title: 'Sales Number',
+                                color: Colors.green,
+                                isMoney: false,
                               ),
-                              Visibility(
-                                visible: authorization(
+                            ],
+                          ),
+                          Visibility(
+                            visible:
+                                !authorization(
                                   authorized:
                                       Authorizations()
                                           .viewDate,
                                 ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment
-                                          .spaceBetween,
-                                  children: [
-                                    Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b1
-                                                .fontSize,
-                                      ),
-                                      returnReceiptProvider(
-                                                context,
-                                              ).dateSet ==
-                                              null
-                                          ? 'For Today'
-                                          : '${returnReceiptProvider(context).dateSet}',
-                                    ),
-                                    MaterialButton(
-                                      onPressed: () {
-                                        if (returnReceiptProvider(
-                                              context,
-                                              listen: false,
-                                            ).isDateSet ||
-                                            returnReceiptProvider(
-                                              context,
-                                              listen: false,
-                                            ).setDate) {
-                                          returnReceiptProvider(
-                                            context,
-                                            listen: false,
-                                          ).clearReceiptDate();
-                                        } else {
-                                          returnReceiptProvider(
-                                            context,
-                                            listen: false,
-                                          ).openDatePicker();
-                                        }
-                                      },
-                                      child: Row(
-                                        spacing: 3,
-                                        children: [
-                                          Text(
-                                            style: TextStyle(
-                                              fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .b2
-                                                      .fontSize,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
-                                              color:
-                                                  Colors
-                                                      .grey
-                                                      .shade700,
-                                            ),
-                                            returnReceiptProvider(
-                                                      context,
-                                                    ).isDateSet ||
-                                                    returnReceiptProvider(
-                                                      context,
-                                                    ).setDate
-                                                ? 'Clear Date'
-                                                : 'Set Date',
-                                          ),
-                                          Icon(
-                                            size: 20,
-                                            color:
-                                                theme
-                                                    .lightModeColor
-                                                    .secColor100,
-                                            returnReceiptProvider(
-                                                      context,
-                                                    ).isDateSet ||
-                                                    returnReceiptProvider(
-                                                      context,
-                                                    ).setDate
-                                                ? Icons
-                                                    .clear
-                                                : Icons
-                                                    .date_range_outlined,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+                            child: SizedBox(height: 20),
                           ),
-                        ),
-                        Expanded(
-                          child: Builder(
-                            builder: (context) {
-                              if (widget.id != null
-                                  ? returnReceiptProvider(
-                                        context,
-                                      )
-                                      .returnReceipts(
-                                        // context,
-                                      )
-                                      .toList()
-                                      .where(
-                                        (rec) =>
-                                            rec.staffId ==
-                                            widget.id,
-                                      )
-                                      .toList()
-                                      .isEmpty
-                                  : widget.subStaffId !=
-                                      null
-                                  ? returnReceiptProvider(
-                                        context,
-                                      )
-                                      .returnReceipts(
-                                        // context,
-                                      )
-                                      .toList()
-                                      .where(
-                                        (rec) =>
-                                            rec.subStaffUuid ==
-                                            widget
-                                                .subStaffId,
-                                      )
-                                      .toList()
-                                      .isEmpty
-                                  : widget.customerUuid !=
-                                      null
-                                  ? returnReceiptProvider(
-                                        context,
-                                      )
-                                      .returnOwnReceiptsByDayOrWeek(
-                                        // context,
+                          Visibility(
+                            visible: authorization(
+                              authorized:
+                                  Authorizations().viewDate,
+                            ),
+                            child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment
+                                      .spaceBetween,
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b1
+                                            .fontSize,
+                                  ),
+                                  returnReceiptProvider(
+                                                context,
+                                              ).dateSet !=
+                                              null ||
+                                          returnReceiptProvider(
+                                                context,
+                                              ).rangeStartDate !=
+                                              null
+                                      ? 'All Sales'
+                                      : 'For Today',
+                                ),
+                                MaterialButton(
+                                  onPressed: () {
+                                    if (returnReceiptProvider(
+                                              context,
+                                              listen: false,
+                                            ).dateSet !=
+                                            null ||
                                         returnReceiptProvider(
                                               context,
-                                            ).receipts
+                                              listen: false,
+                                            ).rangeStartDate !=
+                                            null) {
+                                      returnReceiptProvider(
+                                        context,
+                                        listen: false,
+                                      ).clearDate();
+                                    } else {
+                                      mainDatePicker(
+                                        context: context,
+                                        theme: theme,
+                                        singleDate: (date) {
+                                          returnReceiptProvider(
+                                            context,
+                                            listen: false,
+                                          ).setDate(date!);
+                                        },
+                                        rangeDate: (
+                                          firstDate,
+                                          lastDate,
+                                        ) {
+                                          returnReceiptProvider(
+                                            context,
+                                            listen: false,
+                                          ).setRange(
+                                            firstDate!,
+                                            lastDate ??
+                                                DateTime.now(),
+                                          );
+                                        },
+                                      );
+                                    }
+                                  },
+                                  child: Row(
+                                    spacing: 3,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b2
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                          color:
+                                              Colors
+                                                  .grey
+                                                  .shade700,
+                                        ),
+                                        returnReceiptProvider(
+                                                      context,
+                                                    ).dateSet !=
+                                                    null ||
+                                                returnReceiptProvider(
+                                                      context,
+                                                    ).rangeStartDate !=
+                                                    null
+                                            ? 'Clear'
+                                            : 'Set Date',
+                                      ),
+                                      Icon(
+                                        size: 20,
+                                        color:
+                                            theme
+                                                .lightModeColor
+                                                .secColor100,
+                                        returnReceiptProvider(
+                                                      context,
+                                                    ).dateSet !=
+                                                    null ||
+                                                returnReceiptProvider(
+                                                      context,
+                                                    ).rangeStartDate !=
+                                                    null
+                                            ? Icons.clear
+                                            : Icons
+                                                .date_range_outlined,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Builder(
+                        builder: (context) {
+                          if (widget.id != null
+                              ? returnReceiptProvider(
+                                    context,
+                                  )
+                                  .returnReceipts(
+                                    // context,
+                                  )
+                                  .toList()
+                                  .where(
+                                    (rec) =>
+                                        rec.staffId ==
+                                        widget.id,
+                                  )
+                                  .toList()
+                                  .isEmpty
+                              : widget.subStaffId != null
+                              ? returnReceiptProvider(
+                                    context,
+                                  )
+                                  .returnReceipts(
+                                    // context,
+                                  )
+                                  .toList()
+                                  .where(
+                                    (rec) =>
+                                        rec.subStaffUuid ==
+                                        widget.subStaffId,
+                                  )
+                                  .toList()
+                                  .isEmpty
+                              : widget.customerUuid != null
+                              ? returnReceiptProvider(
+                                    context,
+                                  )
+                                  .returnOwnReceiptsByDayOrWeek(
+                                    // context,
+                                    returnReceiptProvider(
+                                          context,
+                                        ).receipts
+                                        .where(
+                                          (rec) =>
+                                              rec.customerUuid ==
+                                              widget
+                                                  .customerUuid,
+                                        )
+                                        .toList(),
+                                  )
+                                  .toList()
+                                  .isEmpty
+                              : returnReceiptProvider(
+                                    context,
+                                  )
+                                  .returnReceipts(
+                                    // context,
+                                  )
+                                  .toList()
+                                  .isEmpty) {
+                            return EmptyWidgetDisplayOnly(
+                              title: 'Empty List',
+                              subText:
+                                  'You don\'t have any Sales under this category',
+                              icon: Icons.clear,
+                              theme: theme,
+                              height: 35,
+                              altAction: () {
+                                getMainReceipts();
+                              },
+                              altActionText: 'Refresh List',
+                            );
+                          } else {
+                            return RefreshIndicator(
+                              onRefresh: getMainReceipts,
+                              backgroundColor: Colors.white,
+                              color:
+                                  theme
+                                      .lightModeColor
+                                      .prColor300,
+                              displacement: 10,
+                              child: ListView.builder(
+                                itemCount:
+                                    widget.id != null
+                                        ? returnReceiptProvider(
+                                              context,
+                                            )
+                                            .returnReceipts(
+                                              // context,
+                                            )
+                                            .where(
+                                              (rec) =>
+                                                  rec.staffId ==
+                                                  widget.id,
+                                            )
+                                            .toList()
+                                            .length
+                                        : widget.subStaffId !=
+                                            null
+                                        ? returnReceiptProvider(
+                                              context,
+                                            )
+                                            .returnReceipts(
+                                              // context,
+                                            )
+                                            .where(
+                                              (rec) =>
+                                                  rec.subStaffUuid ==
+                                                  widget
+                                                      .subStaffId,
+                                            )
+                                            .toList()
+                                            .length
+                                        : widget.customerUuid !=
+                                            null
+                                        ? returnReceiptProvider(
+                                              context,
+                                            )
+                                            .returnReceipts(
+                                              // context,
+                                            )
                                             .where(
                                               (rec) =>
                                                   rec.customerUuid ==
                                                   widget
                                                       .customerUuid,
                                             )
-                                            .toList(),
-                                      )
-                                      .toList()
-                                      .isEmpty
-                                  : returnReceiptProvider(
-                                        context,
-                                      )
-                                      .returnReceipts(
-                                        // context,
-                                      )
-                                      .toList()
-                                      .isEmpty) {
-                                return EmptyWidgetDisplayOnly(
-                                  title: 'Empty List',
-                                  subText:
-                                      'You don\'t have any Sales under this category',
-                                  icon: Icons.clear,
-                                  theme: theme,
-                                  height: 35,
-                                  altAction: () {
-                                    getMainReceipts();
-                                  },
-                                  altActionText:
-                                      'Refresh List',
-                                );
-                              } else {
-                                return RefreshIndicator(
-                                  onRefresh:
-                                      getMainReceipts,
-                                  backgroundColor:
-                                      Colors.white,
-                                  color:
-                                      theme
-                                          .lightModeColor
-                                          .prColor300,
-                                  displacement: 10,
-                                  child: ListView.builder(
-                                    itemCount:
-                                        widget.id != null
-                                            ? returnReceiptProvider(
-                                                  context,
-                                                )
-                                                .returnReceipts(
-                                                  // context,
-                                                )
-                                                .where(
-                                                  (rec) =>
-                                                      rec.staffId ==
-                                                      widget
-                                                          .id,
-                                                )
-                                                .toList()
-                                                .length
-                                            : widget.subStaffId !=
-                                                null
-                                            ? returnReceiptProvider(
-                                                  context,
-                                                )
-                                                .returnReceipts(
-                                                  // context,
-                                                )
-                                                .where(
-                                                  (rec) =>
-                                                      rec.subStaffUuid ==
-                                                      widget
-                                                          .subStaffId,
-                                                )
-                                                .toList()
-                                                .length
-                                            : widget.customerUuid !=
-                                                null
-                                            ? returnReceiptProvider(
-                                                  context,
-                                                )
-                                                .returnReceipts(
-                                                  // context,
-                                                )
-                                                .where(
-                                                  (rec) =>
-                                                      rec.customerUuid ==
-                                                      widget
-                                                          .customerUuid,
-                                                )
-                                                .toList()
-                                                .length
-                                            : returnReceiptProvider(
-                                                  context,
-                                                )
-                                                .returnReceipts(
-                                                  // context,
-                                                )
-                                                .toList()
-                                                .length,
-                                    itemBuilder: (
-                                      context,
-                                      index,
-                                    ) {
-                                      var receipt =
-                                          widget.id != null
-                                              ? returnReceiptProvider(
-                                                    context,
-                                                  )
-                                                  .returnReceipts(
-                                                    // context,
-                                                  )
-                                                  .where(
-                                                    (rec) =>
-                                                        rec.staffId ==
-                                                        widget.id,
-                                                  )
-                                                  .toList()[index]
-                                              : widget.subStaffId !=
-                                                  null
-                                              ? returnReceiptProvider(
-                                                    context,
-                                                  )
-                                                  .returnReceipts(
-                                                    // context,
-                                                  )
-                                                  .where(
-                                                    (rec) =>
-                                                        rec.subStaffUuid ==
-                                                        widget.subStaffId,
-                                                  )
-                                                  .toList()[index]
-                                              : widget.customerUuid !=
-                                                  null
-                                              ? returnReceiptProvider(
-                                                    context,
-                                                  )
-                                                  .returnReceipts(
-                                                    // context,
-                                                  )
-                                                  .where(
-                                                    (rec) =>
-                                                        rec.customerUuid ==
-                                                        widget.customerUuid,
-                                                  )
-                                                  .toList()[index]
-                                              : returnReceiptProvider(
-                                                    context,
-                                                  )
-                                                  .returnReceipts()
-                                                  .toList()[index];
-                                      return MainReceiptTile(
-                                        action: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (
+                                            .toList()
+                                            .length
+                                        : returnReceiptProvider(
+                                              context,
+                                            )
+                                            .returnReceipts(
+                                              // context,
+                                            )
+                                            .toList()
+                                            .length,
+                                itemBuilder: (
+                                  context,
+                                  index,
+                                ) {
+                                  var receipt =
+                                      widget.id != null
+                                          ? returnReceiptProvider(
                                                 context,
-                                              ) {
-                                                return ReceiptPage(
-                                                  response: CheckoutResponse(
-                                                    resUuid:
-                                                        receipt.uuid!,
-                                                    isReceipt:
-                                                        true,
-                                                  ),
-                                                  isMain:
-                                                      false,
-                                                );
-                                              },
-                                            ),
-                                          ).then((_) {
-                                            // mainReceiptFuture =
-                                            //     getMainReceipts();
-                                          });
-                                        },
-                                        key: ValueKey(
-                                          receipt.uuid,
+                                              )
+                                              .returnReceipts(
+                                                // context,
+                                              )
+                                              .where(
+                                                (rec) =>
+                                                    rec.staffId ==
+                                                    widget
+                                                        .id,
+                                              )
+                                              .toList()[index]
+                                          : widget.subStaffId !=
+                                              null
+                                          ? returnReceiptProvider(
+                                                context,
+                                              )
+                                              .returnReceipts(
+                                                // context,
+                                              )
+                                              .where(
+                                                (rec) =>
+                                                    rec.subStaffUuid ==
+                                                    widget
+                                                        .subStaffId,
+                                              )
+                                              .toList()[index]
+                                          : widget.customerUuid !=
+                                              null
+                                          ? returnReceiptProvider(
+                                                context,
+                                              )
+                                              .returnReceipts(
+                                                // context,
+                                              )
+                                              .where(
+                                                (rec) =>
+                                                    rec.customerUuid ==
+                                                    widget
+                                                        .customerUuid,
+                                              )
+                                              .toList()[index]
+                                          : returnReceiptProvider(
+                                                context,
+                                              )
+                                              .returnReceipts()
+                                              .toList()[index];
+                                  return MainReceiptTile(
+                                    action: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return ReceiptPage(
+                                              response: CheckoutResponse(
+                                                resUuid:
+                                                    receipt
+                                                        .uuid!,
+                                                isReceipt:
+                                                    true,
+                                              ),
+                                              isMain: false,
+                                            );
+                                          },
                                         ),
-                                        mainReceipt:
-                                            receipt,
-                                      );
+                                      ).then((_) {
+                                        // mainReceiptFuture =
+                                        //     getMainReceipts();
+                                      });
                                     },
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  if (returnReceiptProvider(
-                    context,
-                  ).setDate)
-                    GestureDetector(
-                      onTap: () {
-                        returnReceiptProvider(
-                          context,
-                          listen: false,
-                        ).clearReceiptDate();
-                      },
-                      child: Material(
-                        color: const Color.fromARGB(
-                          100,
-                          0,
-                          0,
-                          0,
-                        ),
-                        child: SizedBox(
-                          height:
-                              MediaQuery.of(
-                                context,
-                              ).size.height,
-                          child: SingleChildScrollView(
-                            child: Column(
-                              children: [
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(
-                                        context,
-                                      ).size.height *
-                                      0.02,
-                                ),
-                                Center(
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsets.symmetric(
-                                          horizontal: 15.0,
-                                        ),
-                                    child: Container(
-                                      height: 500,
-                                      width: 400,
-                                      padding:
-                                          EdgeInsets.all(
-                                            20,
-                                          ),
-                                      color: Colors.white,
-
-                                      child: CalendarWidget(
-                                        onDaySelected: (
-                                          selectedDay,
-                                          focusedDay,
-                                        ) {
-                                          returnReceiptProvider(
-                                            context,
-                                            listen: false,
-                                          ).setReceiptDay(
-                                            selectedDay,
-                                          );
-                                        },
-                                        actionWeek: (
-                                          startOfWeek,
-                                          endOfWeek,
-                                        ) {
-                                          returnReceiptProvider(
-                                            context,
-                                            listen: false,
-                                          ).setReceiptWeek(
-                                            startOfWeek,
-                                            endOfWeek,
-                                          );
-                                        },
-                                      ),
+                                    key: ValueKey(
+                                      receipt.uuid,
                                     ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(
-                                        context,
-                                      ).size.height *
-                                      0.3,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                                    mainReceipt: receipt,
+                                  );
+                                },
+                              ),
+                            );
+                          }
+                        },
                       ),
                     ),
-                ],
+                  ],
+                ),
               );
             } else {
               return InvoiceListBodyMobile(

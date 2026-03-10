@@ -215,11 +215,11 @@ class _MyDrawerWidgetDesktopMainState
                                   returnExpensesProvider(
                                     safeContext,
                                     listen: false,
-                                  ).clearExpenseDate();
+                                  ).clearDate();
                                   returnReceiptProvider(
                                     safeContext,
                                     listen: false,
-                                  ).clearReceiptDate();
+                                  ).clearDate();
                                   returnData()
                                       .clearFields();
                                 },
@@ -253,11 +253,11 @@ class _MyDrawerWidgetDesktopMainState
                                   returnExpensesProvider(
                                     safeContext,
                                     listen: false,
-                                  ).clearExpenseDate();
+                                  ).clearDate();
                                   returnReceiptProvider(
                                     safeContext,
                                     listen: false,
-                                  ).clearReceiptDate();
+                                  ).clearDate();
                                   returnData()
                                       .clearFields();
                                 },
@@ -296,11 +296,11 @@ class _MyDrawerWidgetDesktopMainState
                                     returnExpensesProvider(
                                       safeContext,
                                       listen: false,
-                                    ).clearExpenseDate();
+                                    ).clearDate();
                                     returnReceiptProvider(
                                       safeContext,
                                       listen: false,
-                                    ).clearReceiptDate();
+                                    ).clearDate();
                                     returnData()
                                         .clearFields();
                                   },

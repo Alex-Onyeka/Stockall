@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:stockall/classes/subplan_class.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/subscription_page/components/comparison_section_widget.dart';
 import 'package:stockall/pages/subscription_page/components/faq_section.dart';
@@ -41,6 +43,17 @@ class _SubscriptionPageState
 
   @override
   Widget build(BuildContext context) {
+    SubplanClass? plan =
+        subPlans
+            .where(
+              (pl) =>
+                  pl.plan ==
+                  returnSubcsription(
+                    context,
+                  ).subscription?.plan,
+            )
+            .firstOrNull;
+
     var theme = returnTheme(context);
     return SafeArea(
       child: Scaffold(
@@ -109,48 +122,17 @@ class _SubscriptionPageState
                                   fontWeight:
                                       FontWeight.bold,
                                 ),
-                                returnSubcsription(context)
-                                            .subscription
-                                            ?.plan ==
-                                        1
-                                    ? 'Basic'
-                                    : returnSubcsription(
-                                              context,
-                                            )
-                                            .subscription
-                                            ?.plan ==
-                                        2
-                                    ? 'Standard'
-                                    : returnSubcsription(
-                                              context,
-                                            )
-                                            .subscription
-                                            ?.plan ==
-                                        3
-                                    ? 'Premium'
-                                    : 'Free',
+
+                                plan?.planName ??
+                                    'Sub Plan',
                               ),
                               Visibility(
-                                visible:
-                                    returnSubcsription(
-                                      context,
-                                    ).subscription?.plan !=
-                                    0,
+                                visible: plan?.plan != 0,
                                 child: SvgPicture.asset(
                                   color:
-                                      returnSubcsription(
-                                                    context,
-                                                  )
-                                                  .subscription
-                                                  ?.plan ==
-                                              1
+                                      plan?.plan == 1
                                           ? Colors.grey
-                                          : returnSubcsription(
-                                                    context,
-                                                  )
-                                                  .subscription
-                                                  ?.plan ==
-                                              2
+                                          : plan?.plan == 2
                                           ? Colors.blue
                                           : null,
                                   checkIconSvg,

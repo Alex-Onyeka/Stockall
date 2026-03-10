@@ -12,7 +12,11 @@ import 'package:stockall/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SubscriptionProvider extends ChangeNotifier {
-  // final ShopProvider shopProvider = ShopProvider();
+  static final SubscriptionProvider _instance =
+      SubscriptionProvider._internal();
+  factory SubscriptionProvider() => _instance;
+  SubscriptionProvider._internal();
+
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
   final SupabaseClient supabase = Supabase.instance.client;
