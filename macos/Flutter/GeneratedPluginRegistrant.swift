@@ -7,6 +7,7 @@ import Foundation
 
 import app_links
 import audioplayers_darwin
+import bluetooth_print_plus
 import connectivity_plus
 import desktop_multi_window
 import file_saver
@@ -25,6 +26,7 @@ import window_manager
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   AppLinksMacosPlugin.register(with: registry.registrar(forPlugin: "AppLinksMacosPlugin"))
   AudioplayersDarwinPlugin.register(with: registry.registrar(forPlugin: "AudioplayersDarwinPlugin"))
+  BluetoothPrintPlusPlugin.register(with: registry.registrar(forPlugin: "BluetoothPrintPlusPlugin"))
   ConnectivityPlusPlugin.register(with: registry.registrar(forPlugin: "ConnectivityPlusPlugin"))
   FlutterMultiWindowPlugin.register(with: registry.registrar(forPlugin: "FlutterMultiWindowPlugin"))
   FileSaverPlugin.register(with: registry.registrar(forPlugin: "FileSaverPlugin"))

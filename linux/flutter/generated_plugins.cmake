@@ -4,6 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   audioplayers_linux
+  bluetooth_print_plus
   desktop_multi_window
   file_saver
   file_selector_linux

@@ -592,9 +592,9 @@ Future<bool> generateBarcodeAndPrint(
             return;
           }
 
-          for (var pr in productBarcodes) {
-            print("✅✅✅✅ ${pr.product.barcode}");
-          }
+          // for (var pr in productBarcodes) {
+          //   print("✅✅✅✅ ${pr.product.barcode}");
+          // }
 
           if (safeContext.mounted) {
             if (!isEdit) {

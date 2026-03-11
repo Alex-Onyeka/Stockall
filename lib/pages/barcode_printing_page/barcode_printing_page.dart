@@ -1641,7 +1641,8 @@ class _BarcodePrintingPageState
                                     );
                                   }
                                 },
-                                text: 'Generate Barcode(s)',
+                                text:
+                                    'Generate ${returnData(context: context).barcodeGeneratingIndex == 1 ? 'Price' : 'Barcode(s)'}',
                               ),
                             ],
                           ),

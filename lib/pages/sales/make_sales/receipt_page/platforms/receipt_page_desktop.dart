@@ -16,7 +16,7 @@ import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:stockall/services/printing/import_helper.dart'
-    show connectToUsbDevice, scanBluetoothPrinters;
+    show scanBluetoothPrinters;
 
 class ReceiptPageDesktop extends StatefulWidget {
   final bool isMain;
@@ -2122,34 +2122,34 @@ class _ReceiptDetailsContainerState
                                                 ) ==
                                                 TargetPlatform
                                                     .iOS)) {
-                                      if (returnShopProvider()
-                                              .userShop()!
-                                              .printType! ==
-                                          1) {
-                                        await connectToUsbDevice(
-                                          receipt:
-                                              widget
-                                                  .mainReceipt,
-                                          context:
-                                              safeContext,
-                                          records: records,
-                                          shop:
-                                              returnShopProvider()
-                                                  .userShop()!,
-                                        );
-                                      } else {
-                                        scanBluetoothPrinters(
-                                          receipt:
-                                              widget
-                                                  .mainReceipt,
-                                          context:
-                                              safeContext,
-                                          records: records,
-                                          shop:
-                                              returnShopProvider()
-                                                  .userShop()!,
-                                        );
-                                      }
+                                      // if (returnShopProvider()
+                                      //         .userShop()!
+                                      //         .printType! ==
+                                      //     1) {
+                                      //   await connectToUsbDevice(
+                                      //     receipt:
+                                      //         widget
+                                      //             .mainReceipt,
+                                      //     context:
+                                      //         safeContext,
+                                      //     records: records,
+                                      //     shop:
+                                      //         returnShopProvider()
+                                      //             .userShop()!,
+                                      //   );
+                                      // } else {
+                                      scanBluetoothPrinters(
+                                        receipt:
+                                            widget
+                                                .mainReceipt,
+                                        context:
+                                            safeContext,
+                                        records: records,
+                                        shop:
+                                            returnShopProvider()
+                                                .userShop()!,
+                                      );
+                                      // }
                                     } else {
                                       await generateAndPreviewPdfRoll(
                                         printerType:
