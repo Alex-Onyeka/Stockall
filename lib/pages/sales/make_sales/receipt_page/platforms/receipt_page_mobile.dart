@@ -1780,7 +1780,7 @@ class _ReceiptDetailsContainerState
                     text: kIsWeb ? 'Download' : 'Share',
                   ),
                   Visibility(
-                    // visible: !kIsWeb,
+                    visible: !kIsWeb,
                     child: BottomActionButton(
                       action: () {
                         SalesAuthAction().printReceiptAction(
