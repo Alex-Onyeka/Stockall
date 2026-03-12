@@ -14,6 +14,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
 import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
+import 'package:stockall/services/printing/printer_service_mobile.dart';
 
 class InvoicePageMobile extends StatefulWidget {
   final String invoiceUuid;
@@ -61,6 +62,7 @@ class _InvoicePageMobileState
   bool isDeleteLoading = false;
   bool isPrintLoading = false;
   bool isDownloadLoading = false;
+  bool isPrintingInvoice = false;
 
   @override
   Widget build(BuildContext context) {
@@ -476,6 +478,72 @@ class _InvoicePageMobileState
                                           FontWeight.bold,
                                     ),
                                     'Edit',
+                                  ),
+                                ),
+                                PopupMenuItem(
+                                  enabled: !kIsWeb,
+                                  height: 35,
+                                  onTap: () {
+                                    SalesAuthAction().printReceiptAction(
+                                      context: context,
+                                      action: () async {
+                                        var safeContext =
+                                            context;
+                                        showDialog(
+                                          context: context,
+                                          builder: (
+                                            confirmDialog,
+                                          ) {
+                                            return ConfirmationAlert(
+                                              theme: theme,
+                                              message:
+                                                  'You are about to Print This Invoice. Are you sure you want to Proceed?',
+                                              title:
+                                                  'Print Invoice',
+                                              action: () async {
+                                                setState(() {
+                                                  isPrintingInvoice =
+                                                      true;
+                                                });
+                                                scanBluetoothPrintersinvoice(
+                                                  invoice:
+                                                      invoice,
+                                                  records:
+                                                      saleRecords,
+                                                  shop:
+                                                      shopSingle()!,
+                                                  context:
+                                                      context,
+                                                );
+                                                Navigator.of(
+                                                  confirmDialog,
+                                                ).pop();
+                                              },
+                                            );
+                                          },
+                                        ).then((_) {
+                                          if (safeContext
+                                              .mounted) {
+                                            setState(() {
+                                              isPrintingInvoice =
+                                                  false;
+                                            });
+                                          }
+                                        });
+                                      },
+                                    );
+                                  },
+                                  child: Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    'Print',
                                   ),
                                 ),
                                 PopupMenuItem(

@@ -3,22 +3,16 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:bluetooth_print_plus/bluetooth_print_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 
 class BluetoothDevicesPage extends StatefulWidget {
-  final TempMainReceipt receipt;
-  final List<TempProductSaleRecord> records;
-  final TempShopClass shop;
-  const BluetoothDevicesPage({
-    super.key,
-    required this.receipt,
-    required this.records,
-    required this.shop,
-  });
+  const BluetoothDevicesPage({super.key});
 
   @override
   State<BluetoothDevicesPage> createState() =>
@@ -56,13 +50,13 @@ class _BluetoothDevicesPageState
     if (BluetoothPrintPlus.isScanningNow) {
       return FloatingActionButton(
         onPressed: onStopPressed,
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.grey.shade300,
         child: Icon(Icons.stop),
       );
     } else {
       return FloatingActionButton(
         onPressed: onScanPressed,
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.grey,
         child: Text("SCAN"),
       );
     }
@@ -90,6 +84,7 @@ class _BluetoothDevicesPageState
   void initState() {
     super.initState();
     initBluetoothPrintPlusListen();
+    print(BluetoothPrintPlus.isBlueOn);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (_scanResults.isEmpty) {
         onScanPressed();
@@ -184,213 +179,343 @@ class _BluetoothDevicesPageState
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return Material(
-      color: const Color.fromARGB(63, 0, 0, 0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(
-              vertical: 30,
-              horizontal: 20,
-            ),
-            height:
-                MediaQuery.of(context).size.height - 200,
-            width: 300,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.white,
-            ),
-            child: Column(
+      color: Colors.transparent,
+      child: Builder(
+        builder: (context) {
+          if (BluetoothPrintPlus.isBlueOn) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
-                  children: [
-                    Opacity(
-                      opacity: 0,
-                      child: Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(size: 18, Icons.clear),
-                      ),
-                    ),
-                    Text(
-                      style: TextStyle(
-                        fontSize:
-                            theme.mobileTexts.h4.fontSize,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      'Available Devices',
-                    ),
-                    Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(
-                          30,
-                        ),
-                        onTap: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            size: 18,
-                            Icons.clear,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                Divider(
-                  color: Colors.grey.shade400,
-                  height: 30,
-                ),
-                Builder(
-                  builder: (context) {
-                    if (_scanResults.isEmpty) {
-                      return Expanded(
-                        child: Center(
-                          child: Column(
-                            spacing: 10,
-                            mainAxisSize: MainAxisSize.max,
+                Container(
+                  padding: EdgeInsets.fromLTRB(
+                    20,
+                    20,
+                    20,
+                    15,
+                  ),
+                  height:
+                      MediaQuery.of(context).size.height -
+                      200,
+                  width: 300,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                  ),
+                  child: Stack(
+                    children: [
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Row(
                             mainAxisAlignment:
-                                MainAxisAlignment.center,
+                                MainAxisAlignment
+                                    .spaceBetween,
                             children: [
-                              Icon(
-                                size: 25,
-                                Icons
-                                    .print_disabled_rounded,
-                              ),
-                              InkWell(
-                                onTap: onScanPressed,
-                                child: Text(
-                                  style: TextStyle(
-                                    fontWeight:
-                                        FontWeight.bold,
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .h4
-                                            .fontSize,
+                              Opacity(
+                                opacity: 0,
+                                child: Container(
+                                  padding: EdgeInsets.all(
+                                    10,
                                   ),
-                                  'No Printer Found',
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    size: 18,
+                                    Icons.clear,
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      theme
+                                          .mobileTexts
+                                          .h4
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+                                'Available Devices',
+                              ),
+                              Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        30,
+                                      ),
+                                  onTap: () {
+                                    Navigator.of(
+                                      context,
+                                    ).pop();
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.all(
+                                      15,
+                                    ),
+                                    decoration:
+                                        BoxDecoration(
+                                          shape:
+                                              BoxShape
+                                                  .circle,
+                                        ),
+                                    child: Icon(
+                                      size: 18,
+                                      Icons.clear,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ],
                           ),
-                        ),
-                      );
-                    } else {
-                      return Expanded(
-                        child: ListView(
-                          children:
-                              _scanResults
-                                  .map(
-                                    (device) => Material(
-                                      color:
-                                          Colors
-                                              .transparent,
-                                      child: ListTile(
-                                        contentPadding:
-                                            EdgeInsets.symmetric(
-                                              vertical: 5,
-                                              horizontal:
-                                                  10,
+
+                          Divider(
+                            color: Colors.grey.shade400,
+                            height: 30,
+                          ),
+                          Builder(
+                            builder: (context) {
+                              if (_scanResults.isEmpty) {
+                                return Expanded(
+                                  child: Center(
+                                    child: Column(
+                                      spacing: 10,
+                                      mainAxisSize:
+                                          MainAxisSize.max,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment
+                                              .center,
+                                      children: [
+                                        Icon(
+                                          size: 25,
+                                          Icons
+                                              .print_disabled_rounded,
+                                        ),
+                                        InkWell(
+                                          onTap:
+                                              onScanPressed,
+                                          child: Text(
+                                            style: TextStyle(
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .h4
+                                                      .fontSize,
                                             ),
-                                        shape: Border(
-                                          top: BorderSide(
+                                            'No Printer Found',
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                return Expanded(
+                                  child: ListView(
+                                    children:
+                                        _scanResults
+                                            .map(
+                                              (
+                                                device,
+                                              ) => Padding(
+                                                padding:
+                                                    const EdgeInsets.only(
+                                                      top:
+                                                          5.0,
+                                                    ),
+                                                child: Material(
+                                                  color:
+                                                      Colors
+                                                          .transparent,
+                                                  child: ListTile(
+                                                    tileColor:
+                                                        Colors.grey.shade100,
+                                                    contentPadding: EdgeInsets.symmetric(
+                                                      vertical:
+                                                          5,
+                                                      horizontal:
+                                                          10,
+                                                    ),
+                                                    shape: Border(
+                                                      top: BorderSide(
+                                                        color:
+                                                            Colors.grey.shade200,
+                                                      ),
+                                                    ),
+                                                    title: Row(
+                                                      spacing:
+                                                          10,
+                                                      children: [
+                                                        Builder(
+                                                          builder: (
+                                                            context,
+                                                          ) {
+                                                            if (device.type ==
+                                                                3) {
+                                                              return Icon(
+                                                                size:
+                                                                    17,
+                                                                Icons.print_rounded,
+                                                              );
+                                                            } else {
+                                                              return Icon(
+                                                                size:
+                                                                    17,
+                                                                Icons.device_hub_outlined,
+                                                              );
+                                                            }
+                                                          },
+                                                        ),
+                                                        Flexible(
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment.start,
+                                                            spacing:
+                                                                2,
+                                                            children: [
+                                                              Text(
+                                                                style: TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight.bold,
+                                                                  fontSize:
+                                                                      returnTheme(
+                                                                        context,
+                                                                        listen:
+                                                                            false,
+                                                                      ).mobileTexts.b1.fontSize,
+                                                                ),
+                                                                device.name,
+                                                              ),
+                                                              Text(
+                                                                style: TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight.bold,
+                                                                  fontSize:
+                                                                      theme.mobileTexts.b4.fontSize,
+                                                                ),
+                                                                device.address,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    onTap: () async {
+                                                      await BluetoothPrintPlus.connect(
+                                                        device,
+                                                      );
+                                                      Navigator.pop(
+                                                        context,
+                                                      );
+                                                    },
+                                                  ),
+                                                ),
+                                              ),
+                                            )
+                                            .toList(),
+                                  ),
+                                );
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                      Align(
+                        alignment: AlignmentGeometry.xy(
+                          1,
+                          1,
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: Ink(
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.circular(5),
+                              color: Colors.grey.shade200,
+                            ),
+                            child: InkWell(
+                              borderRadius:
+                                  BorderRadius.circular(5),
+                              onTap: () {
+                                if (BluetoothPrintPlus
+                                    .isScanningNow) {
+                                  onStopPressed();
+                                } else {
+                                  onScanPressed();
+                                }
+                              },
+                              child: Container(
+                                height: 50,
+                                width: 50,
+                                padding: EdgeInsets.all(10),
+                                child: Center(
+                                  child: Builder(
+                                    builder: (context) {
+                                      if (BluetoothPrintPlus
+                                          .isScanningNow) {
+                                        return SizedBox(
+                                          height: 18,
+                                          width: 18,
+                                          child: CircularProgressIndicator(
                                             color:
                                                 Colors
                                                     .grey
-                                                    .shade200,
+                                                    .shade600,
+                                            strokeWidth: 3,
                                           ),
-                                        ),
-                                        title: Row(
-                                          spacing: 10,
-                                          children: [
-                                            Icon(
-                                              size: 17,
-                                              Icons
-                                                  .bluetooth,
-                                            ),
-                                            Flexible(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment
-                                                        .start,
-                                                spacing: 5,
-                                                children: [
-                                                  Text(
-                                                    style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize:
-                                                          returnTheme(
-                                                            context,
-                                                            listen:
-                                                                false,
-                                                          ).mobileTexts.b1.fontSize,
-                                                    ),
-                                                    device
-                                                        .name,
-                                                  ),
-                                                  Text(
-                                                    style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize:
-                                                          theme.mobileTexts.b4.fontSize,
-                                                    ),
-                                                    device
-                                                        .address,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        onTap: () async {
-                                          await BluetoothPrintPlus.connect(
-                                            device,
-                                          );
-                                          connectToPrinter(
-                                            safeContext:
-                                                context,
-                                            receipt:
-                                                widget
-                                                    .receipt,
-                                            records:
-                                                widget
-                                                    .records,
-                                            shop:
-                                                widget.shop,
-                                          );
-                                          // Navigator.pop(
-                                          //   context,
-                                          // );
-                                        },
-                                      ),
-                                    ),
-                                  )
-                                  .toList(),
+                                        );
+                                      } else {
+                                        return Icon(
+                                          size: 22,
+                                          color:
+                                              Colors
+                                                  .grey
+                                                  .shade800,
+                                          Icons.refresh,
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
-                      );
-                    }
-                  },
+                      ),
+                    ],
+                  ),
                 ),
               ],
-            ),
-          ),
-        ],
+            );
+          } else {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    size: 20,
+                    color: Colors.grey,
+                    Icons.bluetooth_disabled,
+                  ),
+                  Text(
+                    style: TextStyle(
+                      fontSize:
+                          theme.mobileTexts.b2.fontSize,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    'Bluetooth Is Not Turned On',
+                  ),
+                ],
+              ),
+            );
+          }
+        },
       ),
     );
   }
@@ -414,11 +539,7 @@ void scanBluetoothPrinters({
     showDialog(
       context: context,
       builder: (dialogContext) {
-        return BluetoothDevicesPage(
-          receipt: receipt,
-          records: records,
-          shop: shop,
-        );
+        return BluetoothDevicesPage();
       },
     ).then((_) {
       if (context.mounted) {
@@ -432,7 +553,6 @@ void scanBluetoothPrinters({
 }
 
 void connectToPrinter({
-  // UsbDevice? device,
   required BuildContext safeContext,
   required TempMainReceipt receipt,
   required List<TempProductSaleRecord> records,
@@ -445,11 +565,7 @@ void connectToPrinter({
       shop: shop,
       context: safeContext,
     );
-    // final data = Uint8List.fromList(
-    //   "Hello StockAll App!\n".codeUnits,
-    // );
     await BluetoothPrintPlus.write(data);
-    // await sendReceiptInChunks(data: data);
   }
 
   if (safeContext.mounted) {
@@ -460,29 +576,6 @@ void connectToPrinter({
   }
 }
 
-// Future<void> sendReceiptInChunks({
-//   required Uint8List data,
-//   int chunkSize = 240,
-// }) async {
-//   int offset = 0;
-
-//   while (offset < data.length) {
-//     final end =
-//         (offset + chunkSize < data.length)
-//             ? offset + chunkSize
-//             : data.length;
-
-//     final chunk = data.sublist(offset, end);
-
-//     await BluetoothPrintPlus.write(chunk);
-
-//     offset = end;
-//     await Future.delayed(Duration(milliseconds: 50));
-//   }
-
-//   print('✅ Finished sending receipt in chunks.');
-// }
-
 Uint8List generateStyledReceipt({
   required TempMainReceipt receipt,
   required List<TempProductSaleRecord> records,
@@ -491,36 +584,77 @@ Uint8List generateStyledReceipt({
 }) {
   final builder = ReceiptBuilder();
   builder.addBlank();
-  builder.addTitle(shop.name);
-  builder.addTextMiddle(shop.email ?? 'Email Not Set');
-  if (shop.phoneNumber != null) {
+
+  if (shop.showShopName!) {
+    builder.addTitle(shop.name);
+  }
+
+  if (shop.showEmail!) {
+    builder.addTextMiddle(shop.email ?? 'Email Not Set');
+  }
+
+  if (shop.showPhone!) {
     builder.addTextMiddle(shop.phoneNumber!);
+  }
+
+  if (shop.showAddress!) {
+    builder.addTextMiddle(
+      shop.shopAddress ?? 'Address Not Set',
+    );
+  }
+
+  if (shop.showFacebookTop!) {
+    builder.addTextMiddle(
+      shop.faceBookHandle ?? 'Facebook Not Set',
+    );
+  }
+
+  if (shop.showInstaTop!) {
+    builder.addTextMiddle(
+      shop.instaHandle ?? 'Instagram Not Set',
+    );
+  }
+
+  builder.addSeparator();
+
+  if (shop.showFirst!) {
+    builder.addTextMiddle("Staff: ${receipt.staffName}");
+  }
+
+  if (shop.showSecond!) {
+    builder.addTextMiddle(
+      "Customer: ${receipt.customerName ?? 'Customer Not Set'}",
+    );
   }
   builder.addTextMiddle(
     'Date: ${formatDateTime(receipt.createdAt)} | ${formatTime(receipt.createdAt)}',
   );
 
   builder.addSeparator();
-  builder.addTextMiddle(
-    receipt.isInvoice
-        ? 'Generated Invoice'
-        : 'Payment Receipt',
-  );
+  builder.addTextMiddle('Payment Receipt');
   builder.addSeparator();
   builder.addBlank();
   builder.addTextBold('Items:'.toUpperCase());
+  builder.addSmallSpace(10);
 
   for (final item in records) {
     builder.addRowStyled(
       item.productName,
-      '( ${item.quantity.toStringAsFixed(0)} )',
+      item.quantity.toStringAsFixed(0),
       formatMoneyMid(
-        amount: item.originalCost ?? 0,
+        amount:
+            (receipt.fixedDiscount == null &&
+                        receipt.generalDiscount == null) &&
+                    item.discount != null
+                ? ((item.originalCost ?? 0) -
+                    (item.discountedAmount ?? 0))
+                : (item.originalCost ?? 0),
         context: context,
         isR: true,
-      ),
+      ).split('.').first,
       rightBold: false,
     );
+    builder.addSmallSpace(5);
   }
   builder.addBlank();
   builder.addSeparator();
@@ -533,7 +667,10 @@ Uint8List generateStyledReceipt({
     context,
     listen: false,
   ).getTotalMainRevenueReceipt(receipt);
-  final discount = total - subtotal;
+  final discount = returnReceiptProvider(
+    context,
+    listen: false,
+  ).getDiscountAmountForReceipt(receipt);
 
   builder.addLeftRight(
     'Subtotal:',
@@ -543,16 +680,45 @@ Uint8List generateStyledReceipt({
       isR: true,
     ),
   );
-  builder.addLeftRight(
-    receipt.generalDiscount != null
-        ? "Discount: (${receipt.generalDiscount}%)"
-        : 'Discount:',
-    formatMoneyMid(
-      amount: discount,
-      context: context,
-      isR: true,
-    ),
-  );
+  if (receipt.fixedDiscount != null ||
+      receipt.generalDiscount != null) {
+    builder.addLeftRight(
+      receipt.generalDiscount != null
+          ? "Discount: [${receipt.generalDiscount}%]"
+          : 'Discount:',
+      formatMoneyMid(
+        amount: discount,
+        context: context,
+        isR: true,
+      ),
+    );
+  }
+
+  if (receipt.vat != null) {
+    builder.addLeftRight(
+      "VAT: [${receipt.vat ?? 0}%]",
+      formatMoneyMid(
+        amount: returnReceiptProvider(
+          context,
+          listen: false,
+        ).getVATForReceipt(receipt),
+        context: context,
+        isR: true,
+      ),
+    );
+  }
+
+  if (receipt.balance != null) {
+    builder.addLeftRight(
+      "Balance:",
+      formatMoneyMid(
+        amount: (receipt.balance ?? 0),
+        context: context,
+        isR: true,
+      ),
+    );
+  }
+
   builder.addLeftRight(
     'TOTAL:',
     formatMoneyMid(
@@ -564,7 +730,9 @@ Uint8List generateStyledReceipt({
   );
 
   builder.addBlank();
-  builder.addTextMiddle('Thanks for shopping with us!');
+  builder.addTextMiddle(
+    'Created by $appName Solutions - ( www.stockallapp.com )',
+  );
   builder.addBlank();
   builder.addBlank();
 
@@ -578,14 +746,24 @@ class ReceiptBuilder {
   ReceiptBuilder({this.lineWidth = 32});
 
   void addTitle(String text) {
-    _buffer.write(
-      String.fromCharCodes([0x1B, 0x21, 0x08]),
-    ); // bold + big
+    // Center align
     _buffer.write(String.fromCharCodes([0x1B, 0x61, 0x01]));
+
+    // Bold ON
+    _buffer.write(String.fromCharCodes([0x1B, 0x45, 0x01]));
+
+    // Double width (not height)
+    _buffer.write(String.fromCharCodes([0x1D, 0x21, 0x30]));
+
     _buffer.writeln(text.toUpperCase());
-    _buffer.write(
-      String.fromCharCodes([0x1B, 0x21, 0x00]),
-    ); // reset
+
+    // Reset size
+    _buffer.write(String.fromCharCodes([0x1D, 0x21, 0x00]));
+
+    // Bold OFF
+    _buffer.write(String.fromCharCodes([0x1B, 0x45, 0x00]));
+
+    _buffer.writeln(""); // spacing
   }
 
   void addTextMiddle(String text) {
@@ -616,8 +794,8 @@ class ReceiptBuilder {
   }) {
     final spaceBetween =
         4; // padding around center quantity
-    final leftMax = 12;
-    final middleMax = 6;
+    final leftMax = 15;
+    final middleMax = 4;
     final rightMax =
         lineWidth - leftMax - middleMax - spaceBetween;
 
@@ -672,7 +850,245 @@ class ReceiptBuilder {
   }
 
   void addBlank() => _buffer.writeln();
+  void addSmallSpace([int dots = 10]) {
+    _buffer.write(String.fromCharCodes([0x1B, 0x4A, dots]));
+  }
 
   Uint8List build() =>
       Uint8List.fromList(utf8.encode(_buffer.toString()));
+}
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+////////////////////////////////////////////////////////////////////////////////////
+// INVOICE PRINTING
+
+void scanBluetoothPrintersinvoice({
+  required TempInvoice invoice,
+  required List<TempProductSaleRecord> records,
+  // required TempMainReceipt receipt,
+  required TempShopClass shop,
+  required BuildContext context,
+}) async {
+  print('Main Bluetooth Scanning Started');
+  if (BluetoothPrintPlus.isConnected) {
+    connectToPrinterInvoice(
+      safeContext: context,
+      // receipt: receipt,
+      invoice: invoice,
+      records: records,
+      shop: shop,
+    );
+  } else {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return BluetoothDevicesPage();
+      },
+    );
+  }
+}
+
+void connectToPrinterInvoice({
+  required BuildContext safeContext,
+  required TempInvoice invoice,
+  required List<TempProductSaleRecord> records,
+  required TempShopClass shop,
+}) async {
+  if (safeContext.mounted) {
+    final data = generateStyledInvoice(
+      invoice: invoice,
+      records: records,
+      shop: shop,
+      context: safeContext,
+    );
+    await BluetoothPrintPlus.write(data);
+  }
+}
+
+Uint8List generateStyledInvoice({
+  // required TempMainReceipt receipt,
+  required TempInvoice invoice,
+  required List<TempProductSaleRecord> records,
+  required TempShopClass shop,
+  required BuildContext context,
+}) {
+  final builder = ReceiptBuilder();
+  builder.addBlank();
+
+  if (shop.showShopName!) {
+    builder.addTitle(shop.name);
+  }
+
+  if (shop.showEmail!) {
+    builder.addTextMiddle(shop.email ?? 'Email Not Set');
+  }
+
+  if (shop.showPhone!) {
+    builder.addTextMiddle(shop.phoneNumber!);
+  }
+
+  if (shop.showAddress!) {
+    builder.addTextMiddle(
+      shop.shopAddress ?? 'Address Not Set',
+    );
+  }
+
+  if (shop.showFacebookTop!) {
+    builder.addTextMiddle(
+      shop.faceBookHandle ?? 'Facebook Not Set',
+    );
+  }
+
+  if (shop.showInstaTop!) {
+    builder.addTextMiddle(
+      shop.instaHandle ?? 'Instagram Not Set',
+    );
+  }
+
+  builder.addSeparator();
+
+  if (shop.showFirst!) {
+    builder.addTextMiddle("Staff: ${invoice.staffName}");
+  }
+
+  if (shop.showSecond!) {
+    builder.addTextMiddle(
+      "Customer: ${invoice.customerName ?? 'Customer Not Set'}",
+    );
+  }
+  builder.addTextMiddle(
+    'Date: ${formatDateTime(invoice.createdAt)} | ${formatTime(invoice.createdAt)}',
+  );
+
+  builder.addSeparator();
+  builder.addTextMiddle('Invoice Receipt');
+  builder.addSeparator();
+  builder.addBlank();
+  builder.addTextBold('Items:'.toUpperCase());
+  builder.addSmallSpace(10);
+
+  for (final item in records) {
+    builder.addRowStyled(
+      item.productName,
+      item.quantity.toStringAsFixed(0),
+      formatMoneyMid(
+        amount:
+            (invoice.fixedDiscount == null &&
+                        invoice.generalDiscount == null) &&
+                    item.discount != null
+                ? ((item.originalCost ?? 0) -
+                    (item.discountedAmount ?? 0))
+                : (item.originalCost ?? 0),
+        context: context,
+        isR: true,
+      ).split('.').first,
+      rightBold: false,
+    );
+    builder.addSmallSpace(5);
+  }
+  builder.addBlank();
+  builder.addSeparator();
+  builder.addBlank();
+  final subtotal = returnInvoicesProvider()
+      .getOriginalCostInvoice(invoice);
+  final total = returnInvoicesProvider()
+      .getTotalMainRevenueInvoice(invoice: invoice);
+  final discount = returnInvoicesProvider()
+      .getDiscountAmountForInvoice(invoice);
+
+  builder.addLeftRight(
+    'Subtotal:',
+    formatMoneyMid(
+      amount: subtotal,
+      context: context,
+      isR: true,
+    ),
+  );
+  if (invoice.fixedDiscount != null ||
+      invoice.generalDiscount != null) {
+    builder.addLeftRight(
+      invoice.generalDiscount != null
+          ? "Discount: [${invoice.generalDiscount}%]"
+          : 'Discount:',
+      formatMoneyMid(
+        amount: discount,
+        context: context,
+        isR: true,
+      ),
+    );
+  }
+
+  if (invoice.vat != null) {
+    builder.addLeftRight(
+      "VAT: [${invoice.vat ?? 0}%]",
+      formatMoneyMid(
+        amount: returnInvoicesProvider().getVATInvoice(
+          invoice: invoice,
+        ),
+        context: context,
+        isR: true,
+      ),
+    );
+  }
+  if (returnInvoicesProvider().getBalance(
+        invoice: invoice,
+      ) !=
+      0) {
+    builder.addLeftRight(
+      "Paid:",
+      formatMoneyMid(
+        amount: (returnInvoicesProvider().getAmountPaid(
+          invoice: invoice,
+        )),
+        context: context,
+        isR: true,
+      ),
+    );
+  }
+
+  if (returnInvoicesProvider().getBalance(
+        invoice: invoice,
+      ) !=
+      0) {
+    builder.addLeftRight(
+      "Balance:",
+      formatMoneyMid(
+        amount: (returnInvoicesProvider().getBalance(
+          invoice: invoice,
+        )),
+        context: context,
+        isR: true,
+      ),
+    );
+  }
+
+  builder.addLeftRight(
+    'TOTAL:',
+    formatMoneyMid(
+      amount: total,
+      context: context,
+      isR: true,
+    ),
+    bold: true,
+  );
+
+  builder.addBlank();
+  builder.addTextMiddle(
+    'Created by $appName Solutions - ( www.stockallapp.com )',
+  );
+  builder.addBlank();
+  builder.addBlank();
+
+  return builder.build();
 }

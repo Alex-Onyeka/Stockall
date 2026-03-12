@@ -1780,7 +1780,7 @@ class _ReceiptDetailsContainerState
                     text: kIsWeb ? 'Download' : 'Share',
                   ),
                   Visibility(
-                    visible: !kIsWeb,
+                    // visible: !kIsWeb,
                     child: BottomActionButton(
                       action: () {
                         SalesAuthAction().printReceiptAction(
@@ -1814,24 +1814,6 @@ class _ReceiptDetailsContainerState
                                       Navigator.of(
                                         context,
                                       ).pop();
-                                      // if (!kIsWeb) {
-                                      //   if (returnShopProvider()
-                                      //           .userShop()!
-                                      //           .printType! ==
-                                      //       1) {
-                                      //     await connectToUsbDevice(
-                                      //       receipt:
-                                      //           widget
-                                      //               .mainReceipt,
-                                      //       context:
-                                      //           safeContext,
-                                      //       records:
-                                      //           records,
-                                      //       shop:
-                                      //           returnShopProvider()
-                                      //               .userShop()!,
-                                      //     );
-                                      //   } else {
                                       print(
                                         'Bluetooth Scanning Started',
                                       );

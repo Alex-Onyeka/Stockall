@@ -240,6 +240,10 @@ TempShopClass? shop(BuildContext context) {
   return returnShopProvider(context: context).userShop();
 }
 
+TempShopClass? shopSingle() {
+  return returnShopProvider().userShop();
+}
+
 UserProvider returnUserProviderSingle() {
   return UserProvider();
 }

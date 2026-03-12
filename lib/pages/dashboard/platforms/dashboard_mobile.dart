@@ -26,7 +26,6 @@ import 'package:stockall/pages/employees/employee_list/employee_list_page.dart';
 import 'package:stockall/pages/expenses/expenses_page.dart';
 import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
-import 'package:stockall/pages/printer_page.dart';
 import 'package:stockall/pages/report/report_page.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -356,20 +355,10 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                           title:
                                               'Todays Sales',
                                           action: () {
-                                            // returnNavProvider(
-                                            //   context,
-                                            //   listen: false,
-                                            // ).navigate(2);
-                                            Navigator.push(
+                                            returnNavProvider(
                                               context,
-                                              MaterialPageRoute(
-                                                builder: (
-                                                  context,
-                                                ) {
-                                                  return PrinterPage();
-                                                },
-                                              ),
-                                            );
+                                              listen: false,
+                                            ).navigate(2);
                                           },
                                         ),
                                       ),
