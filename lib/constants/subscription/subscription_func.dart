@@ -66,6 +66,7 @@ List<SubplanClass> subPlans = [
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
       numberOfStores: 10,
+      manageShopDashboard: true,
     ),
     reportAuth: ReportAuth(
       printGeneralReport: true,
@@ -134,6 +135,7 @@ List<SubplanClass> subPlans = [
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
       numberOfStores: 7,
+      manageShopDashboard: true,
     ),
     reportAuth: ReportAuth(
       printGeneralReport: true,
@@ -203,6 +205,7 @@ List<SubplanClass> subPlans = [
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
       numberOfStores: 3,
+      manageShopDashboard: false,
     ),
     reportAuth: ReportAuth(
       printGeneralReport: true,
@@ -272,6 +275,7 @@ List<SubplanClass> subPlans = [
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
       numberOfStores: 1,
+      manageShopDashboard: false,
     ),
     reportAuth: ReportAuth(
       printGeneralReport: true,
@@ -341,6 +345,7 @@ List<SubplanClass> subPlans = [
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
       numberOfStores: 1,
+      manageShopDashboard: false,
     ),
     reportAuth: ReportAuth(
       printGeneralReport: true,
@@ -410,6 +415,7 @@ List<SubplanClass> subPlans = [
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: false,
       numberOfStores: 1,
+      manageShopDashboard: false,
     ),
     reportAuth: ReportAuth(
       printGeneralReport: false,

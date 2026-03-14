@@ -35,6 +35,7 @@ import 'package:stockall/providers/notifications_provider.dart';
 import 'package:stockall/providers/receipts_provider.dart';
 import 'package:stockall/providers/report_provider.dart';
 import 'package:stockall/providers/sales_provider.dart';
+import 'package:stockall/providers/shop_dashboard_provider.dart';
 import 'package:stockall/providers/shop_provider.dart';
 import 'package:stockall/providers/sub_payment_provider.dart';
 import 'package:stockall/providers/sub_staff_provider.dart';
@@ -213,6 +214,16 @@ InvoicesProvider returnInvoicesProvider({
     return InvoicesProvider();
   } else {
     return Provider.of<InvoicesProvider>(context);
+  }
+}
+
+ShopDashboardProvider returnShopDashboardProvider({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return ShopDashboardProvider();
+  } else {
+    return Provider.of<ShopDashboardProvider>(context);
   }
 }
 
@@ -521,6 +532,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => SubStaffProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ShopDashboardProvider(),
         ),
       ],
       child: MaterialApp(

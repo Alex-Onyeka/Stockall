@@ -225,17 +225,30 @@ class _ShopSetupTwoDesktopState
                   success = true;
                 });
 
-                await Future.delayed(Duration(seconds: 3));
-
                 if (safeContext.mounted) {
-                  Navigator.pushReplacement(
-                    safeContext,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return BasePage();
-                      },
-                    ),
-                  );
+                  if (returnShopProvider()
+                      .userShops
+                      .isEmpty) {
+                    await Future.delayed(
+                      Duration(seconds: 2),
+                    );
+                    Navigator.pushReplacement(
+                      // ignore: use_build_context_synchronously
+                      safeContext,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return BasePage();
+                        },
+                      ),
+                    );
+                  } else {
+                    await returnShopProvider()
+                        .getUserShops();
+                    // ignore: use_build_context_synchronously
+                    Navigator.of(safeContext).pop();
+                    // ignore: use_build_context_synchronously
+                    Navigator.of(context).pop();
+                  }
                 }
               },
             );

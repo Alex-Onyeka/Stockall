@@ -43,8 +43,6 @@ class ReceiptsProvider extends ChangeNotifier {
   final SupabaseClient supabase = Supabase.instance.client;
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
-  // final ShopProvider shopProvider = ShopProvider();
-
   List<TempMainReceipt> _receipts = [];
   List<TempMainReceipt> get receipts => _receipts;
 
@@ -639,11 +637,6 @@ class ReceiptsProvider extends ChangeNotifier {
         .update(updateData)
         .eq('uuid', record.uuid!);
 
-    // final index = _sales.indexWhere(
-    //   (r) => r.productRecordId == record.productRecordId,
-    // );
-    // if (index != -1) {
-    //   _sales[index] = record;
     if (context.mounted) {
       await loadProductSalesRecord(
         returnShopProvider().userShop()!.shopId!,
@@ -723,7 +716,7 @@ class ReceiptsProvider extends ChangeNotifier {
   }
 
   List<TempMainReceipt> returnReceipts() {
-    return returnOwnReceiptsByDayOrWeekInvoice(receipts);
+    return returnOwnReceiptsByDayOrWeek(receipts);
   }
 
   List<TempMainReceipt> returnOwnReceiptsByDayOrWeek(
@@ -738,7 +731,7 @@ class ReceiptsProvider extends ChangeNotifier {
         return receiptss.where((receipt) {
           final created = receipt.createdAt.toLocal();
           return !created.isBefore(rangeStartDate!) &&
-              created.isBefore(
+              !created.isAfter(
                 rangeEndDate ?? DateTime.now(),
               );
         }).toList();
@@ -748,7 +741,7 @@ class ReceiptsProvider extends ChangeNotifier {
               receipt.createdAt
                   .toLocal(); // convert UTC to local
           return !created.isBefore(rangeStartDate!) &&
-              created.isBefore(
+              !created.isAfter(
                 rangeEndDate ?? DateTime.now(),
               ) &&
               receipt.staffId == currentUser().userId;
@@ -789,142 +782,6 @@ class ReceiptsProvider extends ChangeNotifier {
     }
   }
 
-  List<TempMainReceipt> returnOwnReceiptsByDayOrWeekAll(
-    // BuildContext context,
-    List<TempMainReceipt> receiptss,
-  ) {
-    if (rangeStartDate != null) {
-      if (authorization(
-        authorized:
-            Authorizations().viewAllTransactionRecords,
-      )) {
-        return receiptss.where((receipt) {
-          final created =
-              receipt.createdAt
-                  .toLocal(); // convert UTC to local
-          return !created.isBefore(rangeStartDate!) &&
-              created.isBefore(
-                rangeEndDate ?? DateTime.now(),
-              );
-        }).toList();
-      } else {
-        return receiptss.where((receipt) {
-          final created = receipt.createdAt.toLocal();
-          return !created.isBefore(rangeStartDate!) &&
-              created.isBefore(
-                rangeEndDate ?? DateTime.now(),
-              ) &&
-              receipt.staffId == currentUser().userId;
-        }).toList();
-      }
-    }
-
-    final currentDate = dateSet ?? DateTime.now();
-
-    if (authorization(
-      authorized:
-          Authorizations().viewAllTransactionRecords,
-    )) {
-      return receiptss
-          .where(
-            (receipt) =>
-                (receipt.createdAt.day ==
-                    currentDate.day) &&
-                (receipt.createdAt.month ==
-                    currentDate.month) &&
-                (receipt.createdAt.year ==
-                    currentDate.year),
-          )
-          .toList();
-    } else {
-      return receiptss
-          .where(
-            (receipt) =>
-                (receipt.createdAt.day ==
-                    currentDate.day) &&
-                (receipt.createdAt.month ==
-                    currentDate.month) &&
-                (receipt.createdAt.year ==
-                    currentDate.year) &&
-                receipt.staffId == currentUser().userId,
-          )
-          .toList();
-    }
-  }
-
-  List<TempMainReceipt> returnOwnReceiptsByDayOrWeekInvoice(
-    // BuildContext context,
-    List<TempMainReceipt> receiptss,
-  ) {
-    if (rangeStartDate != null) {
-      if (authorization(
-        authorized:
-            Authorizations().viewAllTransactionRecords,
-      )) {
-        return receiptss.where((receipt) {
-          final created =
-              receipt.createdAt
-                  .toLocal(); // convert UTC to local
-          return !created.isBefore(rangeStartDate!) &&
-              created.isBefore(
-                rangeEndDate ?? DateTime.now(),
-              );
-        }).toList();
-      } else {
-        return receiptss.where((receipt) {
-          final created =
-              receipt.createdAt
-                  .toLocal(); // convert UTC to local
-          return !created.isBefore(rangeStartDate!) &&
-              created.isBefore(
-                rangeEndDate ?? DateTime.now(),
-              ) &&
-              receipt.staffId == currentUser().userId;
-        }).toList();
-      }
-    }
-
-    final currentDate = dateSet ?? DateTime.now();
-
-    if (authorization(
-      authorized:
-          Authorizations().viewAllTransactionRecords,
-    )) {
-      return receiptss
-          .where(
-            (receipt) =>
-                (receipt.createdAt.day ==
-                    currentDate.day) &&
-                (receipt.createdAt.month ==
-                    currentDate.month) &&
-                (receipt.createdAt.year ==
-                    currentDate.year),
-          )
-          .toList();
-    } else {
-      return receiptss
-          .where(
-            (receipt) =>
-                (receipt.createdAt.day ==
-                    currentDate.day) &&
-                (receipt.createdAt.month ==
-                    currentDate.month) &&
-                (receipt.createdAt.year ==
-                    currentDate.year) &&
-                receipt.staffId == currentUser().userId,
-          )
-          .toList();
-    }
-  }
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-
-  //
   //
 
   List<TempProductSaleRecord>
@@ -957,7 +814,7 @@ class ReceiptsProvider extends ChangeNotifier {
         return recordss.where((record) {
           final created = record.createdAt.toLocal();
           return !created.isBefore(rangeStartDate!) &&
-              created.isBefore(
+              !created.isAfter(
                 rangeEndDate ?? DateTime.now(),
               );
         }).toList();
@@ -965,7 +822,7 @@ class ReceiptsProvider extends ChangeNotifier {
         return recordss.where((record) {
           final created = record.createdAt.toLocal();
           return !created.isBefore(rangeStartDate!) &&
-              created.isBefore(
+              !created.isAfter(
                 rangeEndDate ?? DateTime.now(),
               ) &&
               record.staffId == currentUser().userId;
@@ -1064,33 +921,6 @@ class ReceiptsProvider extends ChangeNotifier {
     double tempTotalCostPrice = 0;
 
     for (var receipt in returnOwnReceiptsByDayOrWeek(
-      // context,
-      receiptss,
-    )) {
-      var productRecords =
-          productSalesRecords
-              .where(
-                (record) =>
-                    record.receiptUuid == receipt.uuid,
-              )
-              .toList();
-
-      for (var record in productRecords) {
-        tempTotalCostPrice += record.costPrice ?? 0;
-      }
-    }
-
-    return tempTotalCostPrice;
-  }
-
-  double getTotalCostPriceForSelectedDayAll(
-    BuildContext context,
-    List<TempMainReceipt> receiptss,
-    List<TempProductSaleRecord> productSalesRecords,
-  ) {
-    double tempTotalCostPrice = 0;
-
-    for (var receipt in returnOwnReceiptsByDayOrWeekAll(
       // context,
       receiptss,
     )) {

@@ -15,6 +15,7 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
+import 'package:stockall/constants/subscription/multiple_stores_auth.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
@@ -25,9 +26,11 @@ import 'package:stockall/pages/settings/components/manage_inventory_switch_toggl
 import 'package:stockall/pages/settings/components/toggle_bulk_sale.dart';
 import 'package:stockall/pages/settings/settings_page.dart';
 import 'package:stockall/pages/shop_setup/edit_receipt_page/edit_receipt.dart';
+import 'package:stockall/pages/shop_setup/shop_dashboard/shop_dashboard.dart';
 import 'package:stockall/pages/shop_setup/shop_page/shop_page.dart';
 import 'package:stockall/pages/sub_staffs/sub_staffs_page.dart';
 import 'package:stockall/pages/subscription_page/subscription_page.dart';
+import 'package:stockall/providers/connectivity_provider.dart';
 
 class SettingsPageDesktop extends StatefulWidget {
   const SettingsPageDesktop({super.key});
@@ -174,6 +177,66 @@ class _SettingsPageDesktopState
                                 },
                                 title: 'Manage Shop',
                                 icon: Icons.home_filled,
+                              ),
+                            ),
+                            Visibility(
+                              visible: authorization(
+                                authorized:
+                                    Authorizations()
+                                        .manageShopDashboard,
+                              ),
+                              child: SubWrapper(
+                                isVisible:
+                                    !MultipleStoresAuthAction()
+                                        .manageShopDashboardAction(
+                                          context: context,
+                                        ),
+                                mainWidget: NavListTileDesktopAlt(
+                                  height: 18,
+                                  action: () async {
+                                    bool isOnline =
+                                        await ConnectivityProvider()
+                                            .isOnline();
+                                    if (isOnline) {
+                                      MultipleStoresAuthAction()
+                                          .manageShopDashboardAction(
+                                            // ignore: use_build_context_synchronously
+                                            context:
+                                                context,
+                                            action: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (
+                                                    context,
+                                                  ) {
+                                                    return ShopDashboard();
+                                                  },
+                                                ),
+                                              );
+                                            },
+                                          );
+                                    } else {
+                                      showDialog(
+                                        // ignore: use_build_context_synchronously
+                                        context: context,
+                                        builder: (context) {
+                                          return InfoAlert(
+                                            theme: theme,
+                                            message:
+                                                'You need to turn on your internet connecting to access this page.',
+                                            title:
+                                                'Internet Required',
+                                          );
+                                        },
+                                      );
+                                    }
+                                  },
+                                  title: 'Stores Dashboard',
+                                  icon:
+                                      Icons
+                                          .space_dashboard_outlined,
+                                ),
                               ),
                             ),
                             Visibility(

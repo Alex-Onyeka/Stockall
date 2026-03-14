@@ -71,7 +71,13 @@ Future<dynamic> mainDatePicker({
                               rangeDate != null
                                   ? rangeDate(
                                     firstDate,
-                                    lastDate,
+                                    lastDate?.add(
+                                      Duration(
+                                        hours: 23,
+                                        minutes: 59,
+                                        seconds: 59,
+                                      ),
+                                    ),
                                   )
                                   : {};
                               Navigator.of(
