@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -31,6 +30,7 @@ import 'package:stockall/providers/invoices_provider.dart';
 import 'package:stockall/providers/multi_display_provider.dart';
 import 'package:stockall/providers/nav_provider.dart';
 import 'package:stockall/providers/notifications_provider.dart';
+import 'package:stockall/providers/pos_printer/device_service.dart';
 // import 'package:stockall/providers/product_suggestions_provider.dart';
 import 'package:stockall/providers/receipts_provider.dart';
 import 'package:stockall/providers/report_provider.dart';
@@ -49,8 +49,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:window_manager/window_manager.dart';
 
 // Stopwatch stopwatch = Stopwatch();
-
 void main(List<String> args) async {
+  WidgetsFlutterBinding.ensureInitialized();
   if (args.length >= 3) {
     final windowId = int.tryParse(args[1]);
     final argument = args[2];
@@ -73,7 +73,6 @@ void main(List<String> args) async {
       print('An Error Occoured: $e');
     }
   } else {
-    WidgetsFlutterBinding.ensureInitialized();
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
         statusBarColor: Colors.white,
@@ -98,7 +97,7 @@ void main(List<String> args) async {
       maxWindow();
       print("Maximize In Main Dot Dart");
     }
-    // print('Main started with args: $args');
+    await DeviceService.init();
     runApp(MyApp(home: BasePage()));
   }
 }

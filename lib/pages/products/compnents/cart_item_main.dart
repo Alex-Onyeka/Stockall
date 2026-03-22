@@ -292,12 +292,11 @@ class _CartItemMainState extends State<CartItemMain> {
                                                   FontWeight
                                                       .bold,
                                             ),
-                                            widget
-                                                .cartItem
-                                                .quantity
-                                                .toStringAsFixed(
-                                                  1,
-                                                ),
+                                            formatLargeNumberDouble(
+                                              widget
+                                                  .cartItem
+                                                  .quantity,
+                                            ),
                                           ),
                                         ),
                                         SvgPicture.asset(

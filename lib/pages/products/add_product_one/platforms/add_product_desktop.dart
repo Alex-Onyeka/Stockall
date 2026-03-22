@@ -146,12 +146,12 @@ class _AddProductDesktopState
                           ? false
                           : dataProvider.isManaged,
                   name: widget.nameController.text.trim(),
-                  totalQttyInStorage:
+                  totalQttyInStorageDouble:
                       widget
                               .storageQuantityController
                               .text
                               .isNotEmpty
-                          ? int.parse(
+                          ? double.parse(
                             widget
                                 .storageQuantityController
                                 .text
@@ -266,19 +266,23 @@ class _AddProductDesktopState
               isLoading = true;
             });
 
-            int totalQttyInStorageCalc() {
+            double totalQttyInStorageCalc() {
               final total =
-                  widget.product?.totalQttyInStorage ?? 0;
+                  widget
+                      .product
+                      ?.totalQttyInStorageDouble ??
+                  0;
               final qty =
-                  int.tryParse(
-                    widget.quantityController.text,
+                  double.tryParse(
+                    widget.quantityController.text
+                        .replaceAll(',', ''),
                   ) ??
                   0;
               final currentQty =
                   widget.product?.quantity ?? 0;
 
-              int result =
-                  (total - (qty - currentQty)).toInt();
+              double result =
+                  (total - (qty - currentQty)).toDouble();
 
               return result < 0 ? 0 : result;
             }
@@ -290,7 +294,7 @@ class _AddProductDesktopState
                     widget.quantityController.text.isEmpty
                         ? false
                         : provider.isManaged,
-                totalQttyInStorage:
+                totalQttyInStorageDouble:
                     totalQttyInStorageCalc(),
                 uuid: widget.product?.uuid,
                 name: widget.nameController.text,
@@ -425,14 +429,10 @@ class _AddProductDesktopState
           .lowQtty!
           .toStringAsFixed(0);
       widget.costController.text =
-          widget.product!.costPrice.toString().split(
-            '.',
-          )[0];
+          widget.product!.costPrice.toString();
       widget.sellingController.text =
           widget.product!.sellingPrice != null
-              ? widget.product!.sellingPrice
-                  .toString()
-                  .split('.')[0]
+              ? widget.product!.sellingPrice.toString()
               : '';
       widget.quantityController.text =
           widget.product!.quantity == null
@@ -441,7 +441,7 @@ class _AddProductDesktopState
 
       widget.discountController.text =
           widget.product!.discount != null
-              ? widget.product!.discount!.toStringAsFixed(0)
+              ? widget.product!.discount!.toString()
               : '';
       returnData().isProductRefundable =
           widget.product!.isRefundable;
@@ -634,15 +634,14 @@ class _AddProductDesktopState
                                               cost = 0;
                                             } else {
                                               setState(() {
-                                                cost = double.parse(
-                                                  widget
-                                                      .costController
-                                                      .text
-                                                      .replaceAll(
+                                                cost =
+                                                    double.tryParse(
+                                                      widget.costController.text.replaceAll(
                                                         ',',
                                                         '',
                                                       ),
-                                                );
+                                                    ) ??
+                                                    0;
                                               });
                                             }
                                           },
@@ -677,15 +676,14 @@ class _AddProductDesktopState
                                               selling = 0;
                                             } else {
                                               setState(() {
-                                                selling = double.parse(
-                                                  widget
-                                                      .sellingController
-                                                      .text
-                                                      .replaceAll(
+                                                selling =
+                                                    double.tryParse(
+                                                      widget.sellingController.text.replaceAll(
                                                         ',',
                                                         '',
                                                       ),
-                                                );
+                                                    ) ??
+                                                    0;
                                               });
                                             }
                                           },
@@ -715,7 +713,12 @@ class _AddProductDesktopState
                                                     ?.manageInventoryStorage ==
                                                 true &&
                                             widget.product ==
-                                                null,
+                                                null &&
+                                            ItemsAuthAction()
+                                                .manageInventoryStorageAction(
+                                                  context:
+                                                      context,
+                                                ),
                                         child: Expanded(
                                           child: EditCartTextField(
                                             focusNode:
@@ -747,7 +750,12 @@ class _AddProductDesktopState
                                                     ?.manageInventoryStorage ==
                                                 true &&
                                             widget.product ==
-                                                null,
+                                                null &&
+                                            ItemsAuthAction()
+                                                .manageInventoryStorageAction(
+                                                  context:
+                                                      context,
+                                                ),
                                         child: SizedBox(
                                           width: 10,
                                         ),
@@ -786,26 +794,25 @@ class _AddProductDesktopState
                                                           .userShop()
                                                           ?.manageInventoryStorage ==
                                                       true) {
-                                                if (((int.tryParse(
-                                                          value,
+                                                if (((double.tryParse(
+                                                          value.replaceAll(
+                                                            ',',
+                                                            '',
+                                                          ),
                                                         ) ??
                                                         0)) >
-                                                    ((widget.product?.totalQttyInStorage ??
+                                                    ((widget.product?.totalQttyInStorageDouble ??
                                                             0) +
-                                                        (int.tryParse(
-                                                              widget.product?.quantity?.toStringAsFixed(
-                                                                    0,
-                                                                  ) ??
+                                                        (double.tryParse(
+                                                              widget.product?.quantity?.toString() ??
                                                                   '0',
                                                             ) ??
                                                             0))) {
                                                   widget
                                                       .quantityController
                                                       .text = (widget.product?.quantity ??
-                                                          0)
-                                                      .toStringAsFixed(
-                                                        0,
-                                                      );
+                                                              0)
+                                                          .toString();
                                                 }
                                               }
                                             }

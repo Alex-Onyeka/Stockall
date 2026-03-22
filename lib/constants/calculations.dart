@@ -20,18 +20,18 @@ DateTime startOfDay(DateTime date) {
 }
 
 String formatLargeNumber(String numberString) {
-  final number = int.tryParse(
+  final number = double.tryParse(
     numberString.replaceAll(',', ''),
   );
   if (number == null) return numberString;
 
   // Format with commas
-  final formatter = NumberFormat('#,###');
+  final formatter = NumberFormat('#,###.###');
   return formatter.format(number);
 }
 
 String formatLargeNumberDouble(num number) {
-  final formatter = NumberFormat('#,###');
+  final formatter = NumberFormat('#,###.###');
   return formatter.format(number);
 }
 
@@ -71,29 +71,14 @@ String cutLongText(String text, int length) {
   return text;
 }
 
-// String formatMoney(num amount) {
-//   if (amount < 1000000) {
-//     return NumberFormat.currency(
-//       locale: 'en_NG', // Nigerian locale
-//       symbol: '₦',
-//       decimalDigits: 1,
-//     ).format(amount);
-//   } else {
-//     return NumberFormat.compactCurrency(
-//       locale: 'en_NG',
-//       symbol: '₦',
-//       decimalDigits: 1,
-//     ).format(amount);
-//   }
-// }
-
 String formatMoney(num amount, BuildContext context) {
   if (amount < 1000000) {
-    return NumberFormat.currency(
-      locale: 'en_NG',
-      symbol: currencySymbol(context: context),
-      decimalDigits: 1,
-    ).format(amount);
+    // return NumberFormat.currency(
+    //   locale: 'en_NG',
+    //   symbol: currencySymbol(context: context),
+    //   decimalDigits: 1,
+    // ).format(amount);
+    return "${currencySymbol(context: context)}${formatLargeNumberDouble(amount)}";
   } else {
     String symbol = currencySymbol(context: context);
     String suffix = '';
@@ -107,9 +92,7 @@ String formatMoney(num amount, BuildContext context) {
       suffix = 'M';
     }
 
-    String formatted = value.toStringAsFixed(
-      1,
-    ); // Ensures .0 is included
+    String formatted = formatLargeNumberDouble(value);
     return '$symbol$formatted $suffix';
   }
 }
@@ -120,11 +103,12 @@ String formatMoneyMid({
   bool? isR,
 }) {
   if (amount < 100000000) {
-    return NumberFormat.currency(
-      locale: 'en_NG',
-      symbol: currencySymbol(context: context, isR: isR),
-      decimalDigits: 1,
-    ).format(amount);
+    // return NumberFormat.currency(
+    //   locale: 'en_NG',
+    //   symbol: currencySymbol(context: context, isR: isR),
+    //   decimalDigits: 2,
+    // ).format(amount);
+    return "${currencySymbol(context: context, isR: isR)}${formatLargeNumberDouble(amount)}";
   } else {
     String symbol = currencySymbol(
       context: context,
@@ -141,9 +125,7 @@ String formatMoneyMid({
       suffix = 'M';
     }
 
-    String formatted = value.toStringAsFixed(
-      1,
-    ); // Ensures .0 is included
+    String formatted = formatLargeNumberDouble(value);
     return '$symbol$formatted $suffix';
   }
 }
@@ -154,11 +136,12 @@ String formatMoneyAlt({
   bool? isR,
 }) {
   if (amount < 100000000) {
-    return NumberFormat.currency(
-      locale: 'en_NG',
-      symbol: currency,
-      decimalDigits: 1,
-    ).format(amount);
+    // return NumberFormat.currency(
+    //   locale: 'en_NG',
+    //   symbol: currency,
+    //   decimalDigits: 1,
+    // ).format(amount);
+    return "$currency${formatLargeNumberDouble(amount)}";
   } else {
     // String symbol = currencySymbol(
     //   context: context,
@@ -175,9 +158,7 @@ String formatMoneyAlt({
       suffix = 'M';
     }
 
-    String formatted = value.toStringAsFixed(
-      1,
-    ); // Ensures .0 is included
+    String formatted = formatLargeNumberDouble(value);
     return '$currency$formatted $suffix';
   }
 }
@@ -188,11 +169,12 @@ String formatMoneyBig({
   bool? isR,
 }) {
   if (amount < 1000000000) {
-    return NumberFormat.currency(
-      locale: 'en_NG',
-      symbol: currencySymbol(context: context, isR: isR),
-      decimalDigits: 1,
-    ).format(amount);
+    // return NumberFormat.currency(
+    //   locale: 'en_NG',
+    //   symbol: currencySymbol(context: context, isR: isR),
+    //   decimalDigits: 1,
+    // ).format(amount);
+    return "${currencySymbol(context: context, isR: isR)}${formatLargeNumberDouble(amount)}";
   } else {
     String symbol = currencySymbol(
       context: context,
@@ -209,9 +191,7 @@ String formatMoneyBig({
       suffix = 'M';
     }
 
-    String formatted = value.toStringAsFixed(
-      1,
-    ); // Ensures .0 is included
+    String formatted = formatLargeNumberDouble(value);
     return '$symbol$formatted $suffix';
   }
 }

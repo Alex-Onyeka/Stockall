@@ -85,24 +85,42 @@ class ExpensesProvider extends ChangeNotifier {
   ) async {
     bool isOnline = await connectivity.isOnline();
     if (isOnline) {
-      final response = await supabase
-          .from('expenses')
-          .select()
-          .eq('shop_id', shopId)
-          .order('created_date', ascending: false);
-      print('Expenses Gotten: Get Expenses');
+      try {
+        final response = await supabase
+            .from('expenses')
+            .select()
+            .eq('shop_id', shopId)
+            .order('created_date', ascending: false);
+        print('Expenses Gotten: $response');
 
-      expenses =
-          (response as List)
-              .map((e) => TempExpensesClass.fromJson(e))
-              .toList();
+        expenses =
+            (response as List)
+                .map((e) => TempExpensesClass.fromJson(e))
+                .toList();
 
-      await ExpensesFunc().insertAllExpenses(expenses);
+        await ExpensesFunc().insertAllExpenses(expenses);
+        notifyListeners();
+        return expenses;
+      } catch (e) {
+        print(
+          'Error Getting Expenses Online: ${e.toString()}',
+        );
+        notifyListeners();
+        return [];
+      }
     } else {
-      expenses = ExpensesFunc().getExpenses();
+      try {
+        expenses = ExpensesFunc().getExpenses();
+        notifyListeners();
+        return expenses;
+      } catch (e) {
+        print(
+          'Error Getting Expenses Offline: ${e.toString()}',
+        );
+        notifyListeners();
+        return [];
+      }
     }
-    notifyListeners();
-    return expenses;
   }
 
   //
@@ -202,8 +220,7 @@ class ExpensesProvider extends ChangeNotifier {
                 (expense.createdDate!.month ==
                     currentDate.month) &&
                 (expense.createdDate!.year ==
-                    currentDate.year) &&
-                expense.userId == currentUser().userId,
+                    currentDate.year),
           )
           .toList();
     } else {

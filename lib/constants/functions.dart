@@ -968,31 +968,46 @@ Future<Uint8List> _buildPdf(
                                 ],
                               ),
                             ),
-                            pw.Expanded(
-                              child: pw.Column(
-                                crossAxisAlignment:
-                                    pw
-                                        .CrossAxisAlignment
-                                        .start,
-                                children: [
-                                  pw.Text(
-                                    style: pw.TextStyle(
-                                      font: fontRegular,
-                                      fontSize: 9,
+                            pw.Builder(
+                              builder: (context) {
+                                if (receipt.customerUuid !=
+                                    null) {
+                                  return pw.Expanded(
+                                    child: pw.Column(
+                                      crossAxisAlignment:
+                                          pw
+                                              .CrossAxisAlignment
+                                              .start,
+                                      children: [
+                                        pw.Text(
+                                          style: pw.TextStyle(
+                                            font:
+                                                fontRegular,
+                                            fontSize: 9,
+                                          ),
+                                          'Customer Name:',
+                                        ),
+                                        pw.SizedBox(
+                                          height: 5,
+                                        ),
+                                        pw.Text(
+                                          style:
+                                              pw.TextStyle(
+                                                font:
+                                                    fontBold,
+                                                fontSize:
+                                                    10,
+                                              ),
+                                          receipt.customerName ??
+                                              'Not Set',
+                                        ),
+                                      ],
                                     ),
-                                    'Customer Name:',
-                                  ),
-                                  pw.SizedBox(height: 5),
-                                  pw.Text(
-                                    style: pw.TextStyle(
-                                      font: fontBold,
-                                      fontSize: 10,
-                                    ),
-                                    receipt.customerName ??
-                                        'Not Set',
-                                  ),
-                                ],
-                              ),
+                                  );
+                                } else {
+                                  return pw.Container();
+                                }
+                              },
                             ),
                           ],
                         );
@@ -1176,9 +1191,41 @@ Future<Uint8List> _buildPdf(
                   pw.SizedBox(height: 5),
                   pw.Divider(),
 
-                  pw.Text(
-                    'Items:',
-                    style: pw.TextStyle(font: fontBold),
+                  pw.Row(
+                    mainAxisAlignment:
+                        pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Expanded(
+                        flex: 5,
+                        child: pw.Text(
+                          'Items:',
+                          style: pw.TextStyle(
+                            font: fontBold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                      pw.Expanded(
+                        flex: 1,
+                        child: pw.Text(
+                          'Qty:',
+                          style: pw.TextStyle(
+                            font: fontRegular,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ),
+                      pw.Expanded(
+                        flex: 3,
+                        child: pw.Text(
+                          'Price:',
+                          style: pw.TextStyle(
+                            font: fontRegular,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   pw.SizedBox(height: 5),
 
@@ -1206,7 +1253,7 @@ Future<Uint8List> _buildPdf(
                               style: pw.TextStyle(
                                 fontSize: 8,
                               ),
-                              '( ${record.quantity.toStringAsFixed(0)} ) ',
+                              '[ ${formatLargeNumberDouble(record.quantity)} ] ',
                             ),
                           ),
                           pw.Expanded(
@@ -1889,31 +1936,47 @@ Future<Uint8List> _buildPdfRoll(
                                   ],
                                 ),
                               ),
-                              pw.Expanded(
-                                child: pw.Column(
-                                  crossAxisAlignment:
-                                      pw
-                                          .CrossAxisAlignment
-                                          .start,
-                                  children: [
-                                    pw.Text(
-                                      style: pw.TextStyle(
-                                        font: fontRegular,
-                                        fontSize: parText,
+                              pw.Builder(
+                                builder: (pdfContext) {
+                                  if (receipt
+                                          .customerUuid !=
+                                      null) {
+                                    return pw.Expanded(
+                                      child: pw.Column(
+                                        crossAxisAlignment:
+                                            pw
+                                                .CrossAxisAlignment
+                                                .start,
+                                        children: [
+                                          pw.Text(
+                                            style: pw.TextStyle(
+                                              font:
+                                                  fontRegular,
+                                              fontSize:
+                                                  parText,
+                                            ),
+                                            'Customer Name:',
+                                          ),
+                                          pw.SizedBox(
+                                            height: 1,
+                                          ),
+                                          pw.Text(
+                                            style: pw.TextStyle(
+                                              font:
+                                                  fontBold,
+                                              fontSize:
+                                                  parText,
+                                            ),
+                                            receipt.customerName ??
+                                                'Not Set',
+                                          ),
+                                        ],
                                       ),
-                                      'Customer Name:',
-                                    ),
-                                    pw.SizedBox(height: 1),
-                                    pw.Text(
-                                      style: pw.TextStyle(
-                                        font: fontBold,
-                                        fontSize: parText,
-                                      ),
-                                      receipt.customerName ??
-                                          'Not Set',
-                                    ),
-                                  ],
-                                ),
+                                    );
+                                  } else {
+                                    return pw.Container();
+                                  }
+                                },
                               ),
                             ],
                           ),
@@ -2094,11 +2157,34 @@ Future<Uint8List> _buildPdfRoll(
 
                 pw.Row(
                   children: [
-                    pw.Text(
-                      'Items:',
-                      style: pw.TextStyle(
-                        fontSize: parText,
-                        font: fontBold,
+                    pw.Expanded(
+                      flex: 4,
+                      child: pw.Text(
+                        'Items:',
+                        style: pw.TextStyle(
+                          fontSize: parText,
+                          font: fontBold,
+                        ),
+                      ),
+                    ),
+                    pw.Expanded(
+                      flex: 2,
+                      child: pw.Text(
+                        'Qty:',
+                        style: pw.TextStyle(
+                          fontSize: parText,
+                          font: fontBold,
+                        ),
+                      ),
+                    ),
+                    pw.Expanded(
+                      flex: 3,
+                      child: pw.Text(
+                        'Price:',
+                        style: pw.TextStyle(
+                          fontSize: parText,
+                          font: fontBold,
+                        ),
                       ),
                     ),
                   ],
@@ -2115,7 +2201,7 @@ Future<Uint8List> _buildPdfRoll(
                           pw.MainAxisAlignment.spaceBetween,
                       children: [
                         pw.Expanded(
-                          flex: 5,
+                          flex: 4,
                           child: pw.Text(
                             style: pw.TextStyle(
                               fontSize: parText,
@@ -2124,12 +2210,12 @@ Future<Uint8List> _buildPdfRoll(
                           ),
                         ),
                         pw.Expanded(
-                          flex: 1,
+                          flex: 2,
                           child: pw.Text(
                             style: pw.TextStyle(
                               fontSize: parTextAlt,
                             ),
-                            '( ${record.quantity.toStringAsFixed(0)} ) ',
+                            '[ ${formatLargeNumberDouble(record.quantity)} ] ',
                           ),
                         ),
                         pw.Expanded(

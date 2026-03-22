@@ -82,7 +82,6 @@ class _MainReceiptTileMobileState
         .toList();
   }
 
-  // late Future<List<TempProductSaleRecord>> productFuture;
   @override
   void initState() {
     super.initState();
@@ -293,8 +292,6 @@ class _MainReceiptTileMobileState
                   mainAxisAlignment:
                       MainAxisAlignment.spaceBetween,
                   children: [
-                    // TempCustomersClass? customer =
-                    //           TempCustomersClass(name: name, email: email, phone: phone, address: address, city: city, state: state, dateAdded: dateAdded, shopId: shopId);
                     Text(
                       style: TextStyle(
                         fontSize:
@@ -408,21 +405,6 @@ class _MainReceiptTileDesktopState
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    // double getTotal() {
-    //   double totalAmount = 0;
-    //   for (var element
-    //       in getProductRecord()
-    //           .where(
-    //             (test) =>
-    //                 test.receiptUuid ==
-    //                 widget.mainReceipt.uuid,
-    //           )
-    //           .toList()) {
-    //     totalAmount += element.revenue;
-    //   }
-    //   return totalAmount;
-    // }
-
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: Ink(

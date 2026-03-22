@@ -626,7 +626,10 @@ class _MakeSalesDesktopTwoState
                                                       double
                                                       cash =
                                                           double.tryParse(
-                                                            value,
+                                                            value.replaceAll(
+                                                              ',',
+                                                              '',
+                                                            ),
                                                           ) ??
                                                           0;
                                                       if (cash >
@@ -695,7 +698,10 @@ class _MakeSalesDesktopTwoState
                                                       double
                                                       bank =
                                                           double.tryParse(
-                                                            value,
+                                                            value.replaceAll(
+                                                              ',',
+                                                              '',
+                                                            ),
                                                           ) ??
                                                           0;
                                                       if (bank >
@@ -1071,12 +1077,6 @@ class _MakeSalesDesktopTwoState
                                     ),
                                   ],
                                 ),
-                                // SizedBox(height: 5),
-
-                                // DiscountSetterWidget(
-                                //   discountPercentController:
-                                //       discountPercentController,
-                                // ),
                                 SizedBox(height: 10),
                                 Visibility(
                                   visible:
@@ -1173,7 +1173,10 @@ class _MakeSalesDesktopTwoState
                                                       returnSalesProvider().returnPaymentMethod() ==
                                                               'Split'
                                                           ? double.tryParse(
-                                                                widget.bankController.text,
+                                                                widget.bankController.text.replaceAll(
+                                                                  ',',
+                                                                  '',
+                                                                ),
                                                               ) ??
                                                               0
                                                           : returnSalesProvider().returnPaymentMethod() ==
@@ -1184,7 +1187,10 @@ class _MakeSalesDesktopTwoState
                                                       returnSalesProvider().returnPaymentMethod() ==
                                                               'Split'
                                                           ? double.tryParse(
-                                                                widget.cashController.text,
+                                                                widget.cashController.text.replaceAll(
+                                                                  ',',
+                                                                  '',
+                                                                ),
                                                               ) ??
                                                               0
                                                           : returnSalesProvider().returnPaymentMethod() ==
@@ -1213,11 +1219,6 @@ class _MakeSalesDesktopTwoState
                                                         ),
                                                   ),
                                                 );
-
-                                                // await suggP
-                                                //     .createSuggestions();
-                                                // suggP
-                                                //     .clearSuggestions();
                                                 setState(() {
                                                   isLoading =
                                                       false;

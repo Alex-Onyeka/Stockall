@@ -22,7 +22,7 @@ class _InventoryUpdateWidgetState
   String formatValue(String value) {
     double? parsed = double.tryParse(value);
     if (parsed == null) {
-      return value;
+      return value.isNotEmpty ? value : 'Null';
     } else {
       if (widget.update.title.split(' ')[1] == 'Selling') {
         return formatMoneyMid(
@@ -30,7 +30,7 @@ class _InventoryUpdateWidgetState
           context: context,
         );
       } else {
-        return value;
+        return value.isNotEmpty ? value : 'Null';
       }
     }
   }
@@ -46,9 +46,9 @@ class _InventoryUpdateWidgetState
     } else {
       var res = (parsedOld - parsed);
       if (res.isNegative) {
-        return res.toStringAsFixed(0);
+        return formatLargeNumberDouble(res);
       } else {
-        return '+${res.toStringAsFixed(0)}';
+        return '+${formatLargeNumberDouble(res)}';
       }
     }
   }

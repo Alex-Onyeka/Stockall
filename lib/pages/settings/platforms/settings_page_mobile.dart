@@ -25,6 +25,7 @@ import 'package:stockall/pages/settings/components/toggle_bulk_sale.dart';
 import 'package:stockall/pages/settings/settings_page.dart';
 import 'package:stockall/pages/shop_setup/edit_receipt_page/edit_receipt.dart';
 import 'package:stockall/pages/shop_setup/shop_dashboard/shop_dashboard.dart';
+import 'package:stockall/pages/shop_setup/shop_page/shop_page.dart';
 import 'package:stockall/pages/sub_staffs/sub_staffs_page.dart';
 import 'package:stockall/pages/subscription_page/subscription_page.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
@@ -95,7 +96,7 @@ class _SettingsPageMobileState
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) {
-                                    return ShopDashboard();
+                                    return ShopPage();
                                   },
                                 ),
                               );

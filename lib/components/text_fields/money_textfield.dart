@@ -44,39 +44,58 @@ class _MoneyTextfieldState extends State<MoneyTextfield> {
 
     widget.controller.addListener(() {
       if (_isEditing) return;
+      final input = widget.controller.text;
+      print('Input: $input');
+      String normalized = input
+          .replaceAll(',', '')
+          .replaceAll(RegExp(r'[^0-9.]'), '');
+      print('Normalized: $normalized');
 
-      // Keep only digits
-      final rawText = widget.controller.text.replaceAll(
-        RegExp(r'[^0-9]'),
-        '',
-      );
-
-      // Remove leading zeros (but leave a single zero if the field is empty)
-      final cleaned = rawText.replaceFirst(
-        RegExp(r'^0+'),
-        '',
-      );
-
-      if (cleaned != _rawValue) {
-        _rawValue = cleaned;
-
-        final int amount =
-            int.tryParse(
-              _rawValue.isEmpty ? '0' : _rawValue,
-            ) ??
-            0;
-        final formatted =
-            amount == 0 ? '' : _formatter.format(amount);
-
-        _isEditing = true;
-        widget.controller.value = TextEditingValue(
-          text: formatted,
-          selection: TextSelection.collapsed(
-            offset: formatted.length,
-          ),
-        );
-        _isEditing = false;
+      // prevent multiple dots
+      final parts = normalized.split('.');
+      if (parts.length > 2) {
+        normalized =
+            '${parts[0]}.${parts.sublist(1).join('')}';
       }
+      print('Raw: $_rawValue');
+      // if (normalized != _rawValue) {
+      _rawValue = normalized;
+
+      final String amount =
+          _rawValue.isEmpty ? '0' : _rawValue;
+      print('Amount: $amount');
+      String formatted = '';
+      if (amount == '0') {
+        formatted = '';
+      } else {
+        if (amount.contains('.')) {
+          final part = amount.split('.');
+          if (part[1].isNotEmpty && part[1].length > 3) {
+            formatted =
+                "${_formatter.format((double.tryParse(part[0].replaceAll(',', '')) ?? 0))}.${part[1].substring(0, (part[1].length - 1))}";
+          } else {
+            formatted =
+                "${_formatter.format((double.tryParse(part[0].replaceAll(',', '')) ?? 0))}.${part[1]}";
+          }
+        } else {
+          formatted = _formatter.format(
+            (double.tryParse(amount.replaceAll(',', '')) ??
+                0),
+          );
+        }
+      }
+
+      print('Formatted: $formatted');
+
+      _isEditing = true;
+      widget.controller.value = TextEditingValue(
+        text: formatted,
+        selection: TextSelection.collapsed(
+          offset: formatted.length,
+        ),
+      );
+      _isEditing = false;
+      // }
     });
   }
 
@@ -106,11 +125,24 @@ class _MoneyTextfieldState extends State<MoneyTextfield> {
         TextFormField(
           focusNode: widget.focusNode,
           onFieldSubmitted: widget.onSubmitted,
-          inputFormatters: [
-            FilteringTextInputFormatter.digitsOnly,
-          ],
-          onChanged: widget.onChanged,
-          keyboardType: TextInputType.number,
+          onChanged: (value) {
+            if (widget.controller.text == '.') {
+              widget.controller.text = '';
+            } else {
+              widget.onChanged != null
+                  ? widget.onChanged!(value)
+                  : {};
+              setState(() {});
+            }
+          },
+          keyboardType: TextInputType.numberWithOptions(
+            decimal: true,
+          ),
+          // inputFormatters: [
+          //   FilteringTextInputFormatter.allow(
+          //     RegExp(r'^\d*\.?\d*'),
+          //   ),
+          // ],
           autocorrect: false,
           enableSuggestions: false,
           style: TextStyle(

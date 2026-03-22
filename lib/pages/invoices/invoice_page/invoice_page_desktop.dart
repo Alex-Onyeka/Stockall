@@ -44,9 +44,10 @@ class _InvoicePageDesktopState
               .firstWhere(
                 (inv) => inv.uuid == widget.invoiceUuid,
               );
-          paymentController.text = returnInvoicesProvider()
-              .getBalance(invoice: invoice)
-              .toStringAsFixed(0);
+          paymentController.text =
+              returnInvoicesProvider()
+                  .getBalance(invoice: invoice)
+                  .toString();
         }
         paymentNode.requestFocus();
       }
@@ -891,7 +892,7 @@ class _InvoicePageDesktopState
                                                                     fontWeight:
                                                                         FontWeight.bold,
                                                                   ),
-                                                                  '[ ${record.quantity.toStringAsFixed(0)} ]',
+                                                                  '[ ${formatLargeNumberDouble(record.quantity)} ]',
                                                                 ),
                                                               ],
                                                             ),
@@ -1762,14 +1763,13 @@ class _InvoicePageDesktopState
                                                         invoice,
                                                   )) {
                                                 paymentController
-                                                    .text = returnInvoicesProvider()
-                                                    .getBalance(
-                                                      invoice:
-                                                          invoice,
-                                                    )
-                                                    .toStringAsFixed(
-                                                      0,
-                                                    );
+                                                        .text =
+                                                    returnInvoicesProvider()
+                                                        .getBalance(
+                                                          invoice:
+                                                              invoice,
+                                                        )
+                                                        .toString();
                                                 setState(() {
                                                   paymentSelected =
                                                       2;

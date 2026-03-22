@@ -142,11 +142,14 @@ class _SummaryTableHeadingBarState
                         ),
                         widget.isHeading
                             ? 'Total Qtty'
-                            : returnData(context: context)
-                                .getTotalOverallQuantity(
-                                  products: widget.product,
-                                )
-                                .toString(),
+                            : formatLargeNumber(
+                              returnData(context: context)
+                                  .getTotalOverallQuantity(
+                                    products:
+                                        widget.product,
+                                  )
+                                  .toString(),
+                            ),
                       ),
                     ),
                   ],
@@ -178,11 +181,14 @@ class _SummaryTableHeadingBarState
                         ),
                         widget.isHeading
                             ? 'Qtty In Storage'
-                            : returnData(context: context)
-                                .getTotalQuantityInStorage(
-                                  products: widget.product,
-                                )
-                                .toString(),
+                            : formatLargeNumber(
+                              returnData(context: context)
+                                  .getTotalQuantityInStorage(
+                                    products:
+                                        widget.product,
+                                  )
+                                  .toString(),
+                            ),
                       ),
                     ),
                   ],
@@ -219,11 +225,14 @@ class _SummaryTableHeadingBarState
                         ),
                         widget.isHeading
                             ? 'Qtty'
-                            : returnData(context: context)
-                                .getTotalQuantity(
-                                  products: widget.product,
-                                )
-                                .toString(),
+                            : formatLargeNumber(
+                              returnData(context: context)
+                                  .getTotalQuantity(
+                                    products:
+                                        widget.product,
+                                  )
+                                  .toString(),
+                            ),
                       ),
                     ),
                   ],

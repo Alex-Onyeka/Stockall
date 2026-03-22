@@ -179,55 +179,51 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                 Row(
                                   spacing: 5,
                                   children: [
-                                    Visibility(
-                                      visible: true,
-                                      child: Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              widget
-                                                  .theme
-                                                  .mobileTexts
-                                                  .b3
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
-                                          color:
-                                              widget
-                                                  .theme
-                                                  .lightModeColor
-                                                  .prColor300,
-                                        ),
-                                        widget
-                                                    .product
-                                                    .discount ==
-                                                null
-                                            ? (widget
-                                                        .product
-                                                        .sellingPrice !=
-                                                    null
-                                                ? formatMoneyMid(
-                                                  amount:
-                                                      widget
-                                                          .product
-                                                          .sellingPrice ??
-                                                      0,
-                                                  context:
-                                                      context,
-                                                )
-                                                : 'Price Not Set')
-                                            : formatMoneyMid(
-                                              amount:
-                                                  ((widget.product.sellingPrice ??
-                                                          0.0) -
-                                                      ((widget.product.sellingPrice ??
-                                                              0.0) *
-                                                          (widget.product.discount! /
-                                                              100))),
-                                              context:
-                                                  context,
-                                            ),
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            widget
+                                                .theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                        color:
+                                            widget
+                                                .theme
+                                                .lightModeColor
+                                                .prColor300,
                                       ),
+                                      widget
+                                                  .product
+                                                  .discount ==
+                                              null
+                                          ? (widget
+                                                      .product
+                                                      .sellingPrice !=
+                                                  null
+                                              ? formatMoneyMid(
+                                                amount:
+                                                    widget
+                                                        .product
+                                                        .sellingPrice ??
+                                                    0,
+                                                context:
+                                                    context,
+                                              )
+                                              : 'Price Not Set')
+                                          : formatMoneyMid(
+                                            amount:
+                                                ((widget.product.sellingPrice ??
+                                                        0.0) -
+                                                    ((widget.product.sellingPrice ??
+                                                            0.0) *
+                                                        (widget.product.discount! /
+                                                            100))),
+                                            context:
+                                                context,
+                                          ),
                                     ),
                                     Visibility(
                                       visible:
@@ -458,7 +454,7 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                     : widget.product.quantity ==
                                                         null
                                                     ? 'Qtty Not Set'
-                                                    : '${widget.product.quantity?.toStringAsFixed(0)} in Stock'
+                                                    : '${formatLargeNumberDouble((widget.product.quantity ?? 0))} in Stock'
                                                 : 'Item Expired'
                                             : widget
                                                     .product
@@ -470,7 +466,7 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                     .quantity ==
                                                 null
                                             ? 'Qtty Not Set'
-                                            : '${widget.product.quantity?.toStringAsFixed(0)} in Stock',
+                                            : '${formatLargeNumberDouble((widget.product.quantity ?? 0))} in Stock',
                                       ),
                                     ),
                                   ),

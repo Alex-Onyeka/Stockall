@@ -34,218 +34,205 @@ class _ShopBannerScreenMobileState
                 padding: const EdgeInsets.symmetric(
                   horizontal: 60.0,
                 ),
-                child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.center,
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
-                  children: [
-                    Opacity(
-                      opacity: 0,
-                      child: Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.center,
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.center,
+                    mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
                         children: [
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 13,
+                          SizedBox(height: 15),
+                          LottieBuilder.asset(
+                            shopSetup,
+                            height: 100,
+                          ),
+                          SizedBox(height: 15),
+                          Text(
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b2
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                              color:
+                                  theme
+                                      .lightModeColor
+                                      .secColor200,
                             ),
-                            child: Center(
-                              child: Text('Log Out'),
+                            'Your account has been Created Successfully',
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .h3
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            'Set Up Your Store To Start Selling',
+                          ),
+                          SizedBox(height: 30),
+                          MainButtonP(
+                            themeProvider: theme,
+                            action: () {
+                              setRole(context, theme);
+                            },
+                            text: 'Create Shop',
+                          ),
+                          SizedBox(height: 20),
+                          Text(
+                            textAlign: TextAlign.center,
+                            style: TextStyle(),
+                            'Or, don\'t you have a Store?',
+                          ),
+                          SizedBox(height: 10),
+                          MainButtonTransparent(
+                            themeProvider: theme,
+                            constraints: BoxConstraints(),
+                            text: 'Sign Up as a Staff',
+                            action: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return CopyStaffId();
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                          SizedBox(height: 30),
+                          InkWell(
+                            onTap: () {
+                              performRestart();
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      10,
+                                    ),
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                vertical: 15,
+                              ),
+                              child: Center(
+                                child: Row(
+                                  spacing: 5,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .center,
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b1
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                        color:
+                                            theme
+                                                .lightModeColor
+                                                .secColor200,
+                                      ),
+                                      'Refresh Page to Verify',
+                                    ),
+                                    Icon(
+                                      size: 22,
+                                      color: Colors.grey,
+                                      Icons.refresh_sharp,
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    Column(
-                      children: [
-                        SizedBox(height: 30),
-                        LottieBuilder.asset(
-                          shopSetup,
-                          height: 140,
-                        ),
-                        SizedBox(height: 15),
-                        Text(
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .b2
-                                    .fontSize,
-                            fontWeight: FontWeight.bold,
-                            color:
-                                theme
-                                    .lightModeColor
-                                    .secColor200,
-                          ),
-                          'Your account has been Created Successfully',
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize:
-                                theme
-                                    .mobileTexts
-                                    .h3
-                                    .fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          'Set Up Your Store To Start Selling',
-                        ),
-                        SizedBox(height: 30),
-                        MainButtonP(
-                          themeProvider: theme,
-                          action: () {
-                            setRole(context, theme);
-                          },
-                          text: 'Create Shop',
-                        ),
-                        SizedBox(height: 20),
-                        Text(
-                          textAlign: TextAlign.center,
-                          style: TextStyle(),
-                          'Or, don\'t you have a Store?',
-                        ),
-                        SizedBox(height: 10),
-                        MainButtonTransparent(
-                          themeProvider: theme,
-                          constraints: BoxConstraints(),
-                          text: 'Sign Up as a Staff',
-                          action: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return CopyStaffId();
+                      Row(
+                        mainAxisAlignment:
+                            MainAxisAlignment.center,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (dialogContext) {
+                                  return ConfirmationAlert(
+                                    theme: theme,
+                                    message:
+                                        'Are you sure you want to Log out?',
+                                    title: 'Log Out',
+                                    action: () async {
+                                      Navigator.of(
+                                        dialogContext,
+                                      ).pop();
+                                      setState(() {
+                                        isLoading = true;
+                                      });
+                                      await AuthService()
+                                          .signOut(context);
+                                      if (context.mounted) {
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (
+                                              context,
+                                            ) {
+                                              return AuthLanding();
+                                            },
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  );
                                 },
+                              );
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 6,
+                                horizontal: 50,
                               ),
-                            );
-                          },
-                        ),
-                        SizedBox(height: 30),
-                        InkWell(
-                          onTap: () {
-                            performRestart();
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.circular(10),
-                            ),
-                            padding: EdgeInsets.symmetric(
-                              vertical: 15,
-                            ),
-                            child: Center(
-                              child: Row(
-                                spacing: 5,
-                                mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .center,
-                                children: [
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b1
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                      color:
-                                          theme
-                                              .lightModeColor
-                                              .secColor200,
-                                    ),
-                                    'Refresh Page to Verify',
-                                  ),
-                                  Icon(
-                                    size: 22,
-                                    color: Colors.grey,
-                                    Icons.refresh_sharp,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.center,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (dialogContext) {
-                                return ConfirmationAlert(
-                                  theme: theme,
-                                  message:
-                                      'Are you sure you want to Log out?',
-                                  title: 'Log Out',
-                                  action: () async {
-                                    Navigator.of(
-                                      dialogContext,
-                                    ).pop();
-                                    setState(() {
-                                      isLoading = true;
-                                    });
-                                    await AuthService()
-                                        .signOut(context);
-                                    if (context.mounted) {
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (
-                                            context,
-                                          ) {
-                                            return AuthLanding();
-                                          },
-                                        ),
-                                      );
-                                    }
-                                  },
-                                );
-                              },
-                            );
-                          },
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 6,
-                              horizontal: 50,
-                            ),
-                            child: Center(
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .center,
-                                spacing: 5,
-                                children: [
-                                  Icon(
-                                    color: Colors.grey,
-                                    size: 20,
-                                    Icons.logout_rounded,
-                                  ),
-                                  Text(
-                                    style: TextStyle(
-                                      fontWeight:
-                                          FontWeight.bold,
+                              child: Center(
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .center,
+                                  spacing: 5,
+                                  children: [
+                                    Icon(
                                       color: Colors.grey,
+                                      size: 20,
+                                      Icons.logout_rounded,
                                     ),
-                                    'Log Out',
-                                  ),
-                                ],
+                                    Text(
+                                      style: TextStyle(
+                                        fontWeight:
+                                            FontWeight.bold,
+                                        color: Colors.grey,
+                                      ),
+                                      'Log Out',
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 5),
-                  ],
+                        ],
+                      ),
+                      SizedBox(height: 15),
+                    ],
+                  ),
                 ),
               ),
             ),

@@ -3,9 +3,10 @@ import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
+import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/components/text_fields/main_dropdown.dart';
-import 'package:stockall/components/text_fields/number_textfield.dart';
+import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/bottom_sheet_widgets.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -123,9 +124,8 @@ class _AddExpensesMobileState
                             unit: returnData().selectedUnit,
 
                             quantity: double.tryParse(
-                              widget
-                                  .quantityController
-                                  .text,
+                              widget.quantityController.text
+                                  .replaceAll(',', ''),
                             ),
                             amount: double.parse(
                               widget.amountController.text
@@ -183,7 +183,8 @@ class _AddExpensesMobileState
                     unit: returnData().selectedUnit,
 
                     quantity: double.tryParse(
-                      widget.quantityController.text,
+                      widget.quantityController.text
+                          .replaceAll(',', ''),
                     ),
                     amount: double.parse(
                       widget.amountController.text
@@ -240,12 +241,10 @@ class _AddExpensesMobileState
           widget.expenses!.description ?? '';
       widget.quantityController.text =
           widget.expenses!.quantity != null
-              ? widget.expenses!.quantity!.toStringAsFixed(
-                0,
-              )
+              ? widget.expenses!.quantity!.toString()
               : '';
-      widget.amountController.text = widget.expenses!.amount
-          .toStringAsFixed(0);
+      widget.amountController.text =
+          widget.expenses!.amount.toString();
       returnData().selectedUnit = widget.expenses!.unit;
     } else {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -262,20 +261,6 @@ class _AddExpensesMobileState
         Scaffold(
           appBar: AppBar(
             toolbarHeight: 60,
-            // leading: IconButton(
-            //   onPressed: () {
-            //     Navigator.of(context).pop();
-            //   },
-            //   icon: Padding(
-            //     padding: const EdgeInsets.only(
-            //       left: 20.0,
-            //       right: 10,
-            //     ),
-            //     child: Icon(
-            //       Icons.arrow_back_ios_new_rounded,
-            //     ),
-            //   ),
-            // ),
             centerTitle: true,
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -319,7 +304,7 @@ class _AddExpensesMobileState
                         theme: theme,
                       ),
                       SizedBox(height: 15),
-                      NumberTextfield(
+                      MoneyTextfield(
                         title:
                             'Amount (${currencySymbol(context: context)})',
                         hint: 'Enter Expense Amount',
@@ -327,7 +312,7 @@ class _AddExpensesMobileState
                         theme: theme,
                       ),
                       SizedBox(height: 15),
-                      NumberTextfield(
+                      EditCartTextField(
                         title: 'Quantity (Optional)',
                         hint: 'Enter Expense Quantity',
                         controller:

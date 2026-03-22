@@ -54,10 +54,10 @@ class _IsManagedToggleWidgetState
                                 ? false
                                 : true,
                         name: widget.product.name,
-                        totalQttyInStorage:
+                        totalQttyInStorageDouble:
                             widget
                                 .product
-                                .totalQttyInStorage,
+                                .totalQttyInStorageDouble,
                         unit: widget.product.unit,
                         isRefundable:
                             widget.product.isRefundable,

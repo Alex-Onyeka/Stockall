@@ -491,6 +491,7 @@ class InvoicesProvider extends ChangeNotifier {
                 uuid: uuidGen(),
                 isProductManaged: record.isProductManaged,
                 setTotalPrice: record.setTotalPrice,
+                unit: record.unit,
                 // invoiceUuid: invoice.uuid,
               );
             }).toList();
@@ -696,7 +697,7 @@ class InvoicesProvider extends ChangeNotifier {
 
         TempProductClass productNew = TempProductClass(
           name: record.productName,
-          unit: 'Others',
+          unit: record.unit ?? 'Others',
           isRefundable: false,
           costPrice: costPrice,
           shopId: record.shopId,

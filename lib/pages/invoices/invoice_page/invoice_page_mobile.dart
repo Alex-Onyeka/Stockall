@@ -996,7 +996,7 @@ class _InvoicePageMobileState
                                                                           fontWeight:
                                                                               FontWeight.bold,
                                                                         ),
-                                                                        '[ ${record.quantity.toStringAsFixed(0)} ]',
+                                                                        '[ ${formatLargeNumberDouble(record.quantity)} ]',
                                                                       ),
                                                                     ],
                                                                   ),

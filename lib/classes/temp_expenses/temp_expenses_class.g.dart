@@ -6,8 +6,7 @@ part of 'temp_expenses_class.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class TempExpensesClassAdapter
-    extends TypeAdapter<TempExpensesClass> {
+class TempExpensesClassAdapter extends TypeAdapter<TempExpensesClass> {
   @override
   final int typeId = 2;
 
@@ -15,8 +14,7 @@ class TempExpensesClassAdapter
   TempExpensesClass read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++)
-        reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return TempExpensesClass(
       name: fields[3] as String,

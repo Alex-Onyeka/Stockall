@@ -1148,7 +1148,7 @@ class _ReceiptDetailsContainerState
                                                           .b3
                                                           .fontSize,
                                                 ),
-                                                'Qty: ${productRecord.quantity.toStringAsFixed(0)} Item(s)',
+                                                'Qty: ${productRecord.quantity.toString()} ${productRecord.unit == 'Others' || productRecord.unit == null ? 'Item(s)' : productRecord.unit}',
                                               ),
                                             ],
                                           ),
@@ -1968,18 +1968,6 @@ class _ReceiptDetailsContainerState
                                         height: 5,
                                       ),
                                       ListTile(
-                                        // enabled:
-                                        //     kIsWeb ||
-                                        //     platforms(
-                                        //           context,
-                                        //         ) ==
-                                        //         TargetPlatform
-                                        //             .android ||
-                                        //     platforms(
-                                        //           context,
-                                        //         ) ==
-                                        //         TargetPlatform
-                                        //             .iOS,
                                         onTap: () async {
                                           Navigator.of(
                                             context,
@@ -2122,22 +2110,6 @@ class _ReceiptDetailsContainerState
                                                 ) ==
                                                 TargetPlatform
                                                     .iOS)) {
-                                      // if (returnShopProvider()
-                                      //         .userShop()!
-                                      //         .printType! ==
-                                      //     1) {
-                                      //   await connectToUsbDevice(
-                                      //     receipt:
-                                      //         widget
-                                      //             .mainReceipt,
-                                      //     context:
-                                      //         safeContext,
-                                      //     records: records,
-                                      //     shop:
-                                      //         returnShopProvider()
-                                      //             .userShop()!,
-                                      //   );
-                                      // } else {
                                       scanBluetoothPrinters(
                                         receipt:
                                             widget

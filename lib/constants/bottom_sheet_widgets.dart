@@ -1265,7 +1265,10 @@ class _CustomBottomPanelState
                           },
                           onChanged: (value) {
                             double entered =
-                                double.tryParse(value) ?? 0;
+                                double.tryParse(
+                                  value.replaceAll(',', ''),
+                                ) ??
+                                0;
                             if (cartItem.item.isManaged) {
                               if (!returnSalesProvider()
                                   .canAddProductToCart(
@@ -1287,7 +1290,6 @@ class _CustomBottomPanelState
                                 ).then((_) {
                                   qttyNode.requestFocus();
                                 });
-                                ;
 
                                 Future.delayed(
                                   Duration(
@@ -1295,9 +1297,9 @@ class _CustomBottomPanelState
                                   ),
                                   () {
                                     setState(() {
-                                      qqty = 1;
+                                      qqty = 0;
                                       quantityController
-                                          .text = '1';
+                                          .text = '0';
                                     });
                                   },
                                 );
@@ -1488,7 +1490,7 @@ class _CustomBottomPanelState
                               ),
                             ),
                             Text(
-                              qqty.toString(),
+                              formatLargeNumberDouble(qqty),
                               style: TextStyle(
                                 fontSize:
                                     theme
@@ -1703,7 +1705,7 @@ class _CustomBottomPanelState
       if (returnSalesProvider().setTotalPrice) {
         return priceController.text.replaceAll(',', '');
       } else {
-        return (int.parse(
+        return (double.parse(
                   priceController.text.isNotEmpty
                       ? priceController.text.replaceAll(
                         ',',
@@ -1711,7 +1713,7 @@ class _CustomBottomPanelState
                       )
                       : '0',
                 ) *
-                qqty.toInt())
+                qqty.toDouble())
             .toString();
       }
     } else {

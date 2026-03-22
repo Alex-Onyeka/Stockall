@@ -760,7 +760,7 @@ Future<Uint8List> _buildPdfInvoice({
                               style: pw.TextStyle(
                                 fontSize: 8,
                               ),
-                              '( ${record.quantity.toStringAsFixed(0)} ) ',
+                              '( ${formatLargeNumberDouble(record.quantity)} ) ',
                             ),
                           ),
                           pw.Expanded(
@@ -1851,7 +1851,7 @@ Future<Uint8List> _buildPdfRollInvoice({
                             style: pw.TextStyle(
                               fontSize: parTextAlt,
                             ),
-                            '( ${record.quantity.toStringAsFixed(0)} ) ',
+                            '( ${formatLargeNumberDouble(record.quantity)} ) ',
                           ),
                         ),
                         pw.Expanded(

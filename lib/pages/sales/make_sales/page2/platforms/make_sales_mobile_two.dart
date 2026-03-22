@@ -547,7 +547,11 @@ class _MakeSalesMobileTwoState
 
                                       double cash =
                                           double.tryParse(
-                                            value,
+                                            value
+                                                .replaceAll(
+                                                  ',',
+                                                  '',
+                                                ),
                                           ) ??
                                           0;
                                       if (cash >
@@ -615,7 +619,11 @@ class _MakeSalesMobileTwoState
 
                                       double bank =
                                           double.tryParse(
-                                            value,
+                                            value
+                                                .replaceAll(
+                                                  ',',
+                                                  '',
+                                                ),
                                           ) ??
                                           0;
                                       if (bank >
@@ -695,11 +703,6 @@ class _MakeSalesMobileTwoState
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               SizedBox(height: 15),
-                              // DiscountSetterWidget(
-                              //   discountPercentController:
-                              //       discountPercentController,
-                              // ),
-                              // SizedBox(height: 5),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment
@@ -788,7 +791,7 @@ class _MakeSalesMobileTwoState
                                                           .bold,
                                                   // fontWeight: FontWeight.bold,
                                                 ),
-                                                ' (${returnSalesProviderContext(context).currentCart().discount?.toStringAsFixed(0)}%)',
+                                                ' (${returnSalesProviderContext(context).currentCart().discount?.toString()}%)',
                                               ),
                                             ),
                                           ],
@@ -1002,9 +1005,10 @@ class _MakeSalesMobileTwoState
                                                         .returnPaymentMethod() ==
                                                     'Split'
                                                 ? double.tryParse(
-                                                      widget
-                                                          .bankController
-                                                          .text,
+                                                      widget.bankController.text.replaceAll(
+                                                        ',',
+                                                        '',
+                                                      ),
                                                     ) ??
                                                     0
                                                 : returnSalesProvider()
@@ -1018,9 +1022,10 @@ class _MakeSalesMobileTwoState
                                                         .returnPaymentMethod() ==
                                                     'Split'
                                                 ? double.tryParse(
-                                                      widget
-                                                          .cashController
-                                                          .text,
+                                                      widget.cashController.text.replaceAll(
+                                                        ',',
+                                                        '',
+                                                      ),
                                                     ) ??
                                                     0
                                                 : returnSalesProvider()
@@ -1053,10 +1058,6 @@ class _MakeSalesMobileTwoState
                                             ),
                                       );
 
-                                      // await suggP
-                                      //     .createSuggestions();
-                                      // suggP
-                                      //     .clearSuggestions();
                                       setState(() {
                                         isLoading = false;
                                         showSuccess = true;

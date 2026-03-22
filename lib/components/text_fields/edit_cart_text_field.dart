@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class EditCartTextField extends StatefulWidget {
@@ -31,9 +32,71 @@ class EditCartTextField extends StatefulWidget {
 
 class _EditCartTextFieldState
     extends State<EditCartTextField> {
+  final NumberFormat _formatter =
+      NumberFormat.decimalPattern('en_NG');
+
+  String _rawValue = '';
+  bool _isEditing = false;
+
   @override
   void initState() {
     super.initState();
+
+    widget.controller.addListener(() {
+      if (_isEditing) return;
+      final input = widget.controller.text;
+      print('Input: $input');
+      String normalized = input
+          .replaceAll(',', '')
+          .replaceAll(RegExp(r'[^0-9.]'), '');
+      print('Normalized: $normalized');
+
+      // prevent multiple dots
+      final parts = normalized.split('.');
+      if (parts.length > 2) {
+        normalized =
+            '${parts[0]}.${parts.sublist(1).join('')}';
+      }
+      print('Raw: $_rawValue');
+      // if (normalized != _rawValue) {
+      _rawValue = normalized;
+
+      final String amount =
+          _rawValue.isEmpty ? '0' : _rawValue;
+      print('Amount: $amount');
+      String formatted = '';
+      if (amount == '0') {
+        formatted = '';
+      } else {
+        if (amount.contains('.')) {
+          final part = amount.split('.');
+          if (part[1].isNotEmpty && part[1].length > 3) {
+            formatted =
+                "${_formatter.format((double.tryParse(part[0].replaceAll(',', '')) ?? 0))}.${part[1].substring(0, (part[1].length - 1))}";
+          } else {
+            formatted =
+                "${_formatter.format((double.tryParse(part[0].replaceAll(',', '')) ?? 0))}.${part[1]}";
+          }
+        } else {
+          formatted = _formatter.format(
+            (double.tryParse(amount.replaceAll(',', '')) ??
+                0),
+          );
+        }
+      }
+
+      print('Formatted: $formatted');
+
+      _isEditing = true;
+      widget.controller.value = TextEditingValue(
+        text: formatted,
+        selection: TextSelection.collapsed(
+          offset: formatted.length,
+        ),
+      );
+      _isEditing = false;
+      // }
+    });
   }
 
   @override
@@ -50,11 +113,59 @@ class _EditCartTextFieldState
         TextFormField(
           focusNode: widget.focusNode,
           onFieldSubmitted: widget.onSubmitted,
-          onChanged: widget.onChanged,
-          inputFormatters: [
-            FilteringTextInputFormatter.digitsOnly,
-          ],
-          keyboardType: TextInputType.number,
+          // onChanged: (value) {
+          //   if (widget.controller.text == '.') {
+          //     widget.controller.text = '';
+          //   } else {
+          //     if (widget.controller.text.contains('.')) {
+          //       var parts = widget.controller.text.split(
+          //         '.',
+          //       );
+          //       if (parts[1].isNotEmpty) {
+          //         if (parts[1].length > 3) {
+          //           widget.controller.text = widget
+          //               .controller
+          //               .text
+          //               .substring(
+          //                 0,
+          //                 (widget.controller.text.length -
+          //                     1),
+          //               );
+          //         } else {
+          //           widget.onChanged != null
+          //               ? widget.onChanged!(value)
+          //               : {};
+          //         }
+          //       } else {
+          //         widget.onChanged != null
+          //             ? widget.onChanged!(value)
+          //             : {};
+          //       }
+          //     } else {
+          //       widget.onChanged != null
+          //           ? widget.onChanged!(value)
+          //           : {};
+          //     }
+          //   }
+          // },
+          onChanged: (value) {
+            if (widget.controller.text == '.') {
+              widget.controller.text = '';
+            } else {
+              widget.onChanged != null
+                  ? widget.onChanged!(value)
+                  : {};
+              setState(() {});
+            }
+          },
+          keyboardType: TextInputType.numberWithOptions(
+            decimal: true,
+          ),
+          // inputFormatters: [
+          //   FilteringTextInputFormatter.allow(
+          //     RegExp(r'^\d*\.?\d*'),
+          //   ),
+          // ],
           autocorrect: false,
           enableSuggestions: false,
           style: TextStyle(

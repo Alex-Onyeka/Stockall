@@ -85,6 +85,9 @@ class TempProductClass {
   @HiveField(26)
   int? totalQttyInStorage;
 
+  @HiveField(27)
+  double? totalQttyInStorageDouble;
+
   TempProductClass({
     this.id,
     required this.name,
@@ -113,6 +116,7 @@ class TempProductClass {
     this.updatedAt,
     this.uuid,
     this.totalQttyInStorage,
+    this.totalQttyInStorageDouble,
   });
 
   factory TempProductClass.fromJson(
@@ -169,6 +173,9 @@ class TempProductClass {
       uuid: json['uuid'] as String?,
       totalQttyInStorage:
           (json['total_qtty_in_storage'] as num?)?.toInt(),
+      totalQttyInStorageDouble:
+          (json['total_qtty_in_storage_double'] as num?)
+              ?.toDouble(),
     );
   }
 
@@ -202,6 +209,8 @@ class TempProductClass {
       'updated_at': updatedAt?.toIso8601String(),
       'uuid': uuid,
       'total_qtty_in_storage': totalQttyInStorage,
+      'total_qtty_in_storage_double':
+          totalQttyInStorageDouble,
     };
   }
 }

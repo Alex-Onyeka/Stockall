@@ -431,10 +431,6 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                   ),
                 ],
               ),
-              // Visibility(
-              //   visible: widget.onSearch ?? true,
-              //   child: SizedBox(height: 10),
-              // ),
               Visibility(
                 visible: widget.onSearch ?? true,
                 child: SizedBox(

@@ -445,8 +445,7 @@ class SalesProvider extends ChangeNotifier {
     double itemPercent =
         ((fixedDiscountAmount * 100) / calcSubTotal());
     print("Item Percent: $itemPercent");
-    double result =
-        ((itemPercent * itemCost) / 100).roundToDouble();
+    double result = ((itemPercent * itemCost) / 100);
     print("Result $result");
     return result;
   }
@@ -783,6 +782,7 @@ class SalesProvider extends ChangeNotifier {
                   uuid: cartItem.salesRecordId ?? uuidGen(),
                   isProductManaged: cartItem.item.isManaged,
                   setTotalPrice: cartItem.setTotalPrice,
+                  unit: cartItem.item.unit,
                   // invoiceUuid: invoiceRes?.uuid,
                 );
               }).toList();
@@ -837,6 +837,7 @@ class SalesProvider extends ChangeNotifier {
                   isProductManaged: cartItem.item.isManaged,
                   setTotalPrice: cartItem.setTotalPrice,
                   invoiceUuid: invoiceRes?.uuid,
+                  unit: cartItem.item.unit,
                 );
               }).toList();
 
@@ -1105,6 +1106,7 @@ class SalesProvider extends ChangeNotifier {
                   uuid: cartItem.salesRecordId ?? uuidGen(),
                   isProductManaged: cartItem.item.isManaged,
                   setTotalPrice: cartItem.setTotalPrice,
+                  unit: cartItem.item.unit,
                 );
               }).toList();
 
@@ -1353,13 +1355,12 @@ class SalesProvider extends ChangeNotifier {
     for (var item in currentCart().cartItems) {
       tempTotal += item.totalCost();
     }
-    return tempTotal.roundToDouble();
+    return tempTotal;
   }
 
   double calcFinalTotal() {
     return ((calcSubTotal() - calcDiscountMain()) +
-            calcVatAmount())
-        .roundToDouble();
+        calcVatAmount());
   }
 
   // double calcVatAmount() {
@@ -1455,6 +1456,7 @@ class SalesProvider extends ChangeNotifier {
         item.quantity = newItem.quantity;
         item.setCustomPrice = newItem.setCustomPrice;
         item.setTotalPrice = newItem.setTotalPrice;
+        item.item.unit = newItem.item.unit;
         await returnMultiDisplayProvider().updateWindow(
           cartClass: AltCartClass(
             cartId: currentCart().id!,
@@ -1724,7 +1726,7 @@ class SalesProvider extends ChangeNotifier {
 
         TempProductClass productNew = TempProductClass(
           name: record.productName,
-          unit: 'Others',
+          unit: record.unit ?? 'Others',
           isRefundable: false,
           costPrice: costPrice,
           shopId: record.shopId,

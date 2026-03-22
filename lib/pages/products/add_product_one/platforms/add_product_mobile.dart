@@ -134,12 +134,12 @@ class _AddProductMobileState
 
               await dataProvider.createProduct(
                 TempProductClass(
-                  totalQttyInStorage:
+                  totalQttyInStorageDouble:
                       widget
                               .storageQuantityController
                               .text
                               .isNotEmpty
-                          ? int.parse(
+                          ? double.parse(
                             widget
                                 .storageQuantityController
                                 .text
@@ -260,19 +260,23 @@ class _AddProductMobileState
             setState(() {
               isLoading = true;
             });
-            int totalQttyInStorageCalc() {
+            double totalQttyInStorageCalc() {
               final total =
-                  widget.product?.totalQttyInStorage ?? 0;
+                  widget
+                      .product
+                      ?.totalQttyInStorageDouble ??
+                  0;
               final qty =
-                  int.tryParse(
-                    widget.quantityController.text,
+                  double.tryParse(
+                    widget.quantityController.text
+                        .replaceAll(',', ''),
                   ) ??
                   0;
               final currentQty =
                   widget.product?.quantity ?? 0;
 
-              int result =
-                  (total - (qty - currentQty)).toInt();
+              double result =
+                  (total - (qty - currentQty)).toDouble();
 
               return result < 0 ? 0 : result;
             }
@@ -285,7 +289,7 @@ class _AddProductMobileState
                         ? false
                         : provider.isManaged,
                 // id: widget.product!.id,
-                totalQttyInStorage:
+                totalQttyInStorageDouble:
                     totalQttyInStorageCalc(),
                 uuid: widget.product!.uuid,
                 name: widget.nameController.text,
@@ -402,19 +406,13 @@ class _AddProductMobileState
           widget.product!.barcode != null ? true : false;
 
       widget.nameController.text = widget.product!.name;
-      widget.lowQttyController.text = widget
-          .product!
-          .lowQtty!
-          .toStringAsFixed(0);
+      widget.lowQttyController.text =
+          widget.product!.lowQtty!.toString();
       widget.costController.text =
-          widget.product!.costPrice.toString().split(
-            '.',
-          )[0];
+          widget.product!.costPrice.toString();
       widget.sellingController.text =
           widget.product!.sellingPrice != null
-              ? widget.product!.sellingPrice
-                  .toString()
-                  .split('.')[0]
+              ? widget.product!.sellingPrice.toString()
               : '';
       widget.quantityController.text =
           widget.product!.quantity == null
@@ -423,7 +421,7 @@ class _AddProductMobileState
 
       widget.discountController.text =
           widget.product!.discount != null
-              ? widget.product!.discount!.toStringAsFixed(0)
+              ? widget.product!.discount!.toString()
               : '';
       returnData().isProductRefundable =
           widget.product!.isRefundable;
@@ -653,7 +651,12 @@ class _AddProductMobileState
                                             .userShop()
                                             ?.manageInventoryStorage ==
                                         true &&
-                                    widget.product == null,
+                                    widget.product ==
+                                        null &&
+                                    ItemsAuthAction()
+                                        .manageInventoryStorageAction(
+                                          context: context,
+                                        ),
                                 child: Column(
                                   children: [
                                     SizedBox(height: 10),
@@ -691,30 +694,30 @@ class _AddProductMobileState
                                                 .userShop()
                                                 ?.manageInventoryStorage ==
                                             true) {
-                                      if (((int.tryParse(
-                                                value,
+                                      if (((double.tryParse(
+                                                value
+                                                    .replaceAll(
+                                                      ',',
+                                                      '',
+                                                    ),
                                               ) ??
                                               0)) >
                                           ((widget
                                                       .product
-                                                      ?.totalQttyInStorage ??
+                                                      ?.totalQttyInStorageDouble ??
                                                   0) +
-                                              (int.tryParse(
-                                                    widget.product?.quantity?.toStringAsFixed(
-                                                          0,
-                                                        ) ??
+                                              (double.tryParse(
+                                                    widget.product?.quantity?.toString() ??
                                                         '0',
                                                   ) ??
                                                   0))) {
                                         widget
                                             .quantityController
                                             .text = (widget
-                                                    .product
-                                                    ?.quantity ??
-                                                0)
-                                            .toStringAsFixed(
-                                              0,
-                                            );
+                                                        .product
+                                                        ?.quantity ??
+                                                    0)
+                                                .toString();
                                       }
                                     }
                                   }

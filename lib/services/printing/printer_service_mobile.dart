@@ -10,6 +10,7 @@ import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/providers/pos_printer/device_service.dart';
 
 class BluetoothDevicesPage extends StatefulWidget {
   const BluetoothDevicesPage({super.key});
@@ -493,26 +494,93 @@ class _BluetoothDevicesPageState
               ],
             );
           } else {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    size: 20,
-                    color: Colors.grey,
-                    Icons.bluetooth_disabled,
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Container(
+                  padding: EdgeInsets.fromLTRB(
+                    20,
+                    20,
+                    20,
+                    15,
                   ),
-                  Text(
-                    style: TextStyle(
-                      fontSize:
-                          theme.mobileTexts.b2.fontSize,
-                      fontWeight: FontWeight.bold,
+                  height:
+                      MediaQuery.of(context).size.height -
+                      200,
+                  width: 300,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                  ),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
+                      spacing: 12,
+                      children: [
+                        Icon(
+                          size: 35,
+                          color: Colors.grey,
+                          Icons.bluetooth_disabled,
+                        ),
+                        Text(
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b2
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          'Bluetooth Is Not Turned On',
+                        ),
+                        Material(
+                          color: Colors.transparent,
+                          child: Ink(
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade200,
+                            ),
+                            child: InkWell(
+                              borderRadius:
+                                  BorderRadius.circular(4),
+                              onTap: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Container(
+                                width: 150,
+                                padding:
+                                    EdgeInsetsGeometry.all(
+                                      10,
+                                    ),
+                                child: Center(
+                                  child: Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b4
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                      color:
+                                          theme
+                                              .lightModeColor
+                                              .secColor200,
+                                    ),
+                                    'Cancel',
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    'Bluetooth Is Not Turned On',
                   ),
-                ],
-              ),
+                ),
+              ],
             );
           }
         },
@@ -583,7 +651,9 @@ Uint8List generateStyledReceipt({
   required BuildContext context,
 }) {
   final builder = ReceiptBuilder();
-  builder.addBlank();
+  if (!DeviceService.isPos) {
+    builder.addBlank();
+  }
 
   if (shop.showShopName!) {
     builder.addTitle(shop.name);
@@ -621,7 +691,7 @@ Uint8List generateStyledReceipt({
     builder.addTextMiddle("Staff: ${receipt.staffName}");
   }
 
-  if (shop.showSecond!) {
+  if (shop.showSecond! && receipt.customerUuid != null) {
     builder.addTextMiddle(
       "Customer: ${receipt.customerName ?? 'Customer Not Set'}",
     );
@@ -634,13 +704,22 @@ Uint8List generateStyledReceipt({
   builder.addTextMiddle('Payment Receipt');
   builder.addSeparator();
   builder.addBlank();
-  builder.addTextBold('Items:'.toUpperCase());
-  builder.addSmallSpace(10);
+  // builder.addTextBold('Items:'.toUpperCase());
+  builder.addRowStyled(
+    'Items:'.toUpperCase(),
+    'Qty',
+    'Price',
+    rightBold: true,
+  );
+
+  if (!DeviceService.isPos) {
+    builder.addSmallSpace(10);
+  }
 
   for (final item in records) {
     builder.addRowStyled(
       item.productName,
-      item.quantity.toStringAsFixed(0),
+      formatLargeNumberDouble(item.quantity),
       formatMoneyMid(
         amount:
             (receipt.fixedDiscount == null &&
@@ -654,7 +733,9 @@ Uint8List generateStyledReceipt({
       ).split('.').first,
       rightBold: false,
     );
-    builder.addSmallSpace(5);
+    if (!DeviceService.isPos) {
+      builder.addSmallSpace(5);
+    }
   }
   builder.addBlank();
   builder.addSeparator();
@@ -735,6 +816,9 @@ Uint8List generateStyledReceipt({
   );
   builder.addBlank();
   builder.addBlank();
+  if (DeviceService.isPos) {
+    builder.addBlank();
+  }
 
   return builder.build();
 }
@@ -924,8 +1008,10 @@ Uint8List generateStyledInvoice({
   required BuildContext context,
 }) {
   final builder = ReceiptBuilder();
-  builder.addBlank();
 
+  if (!DeviceService.isPos) {
+    builder.addBlank();
+  }
   if (shop.showShopName!) {
     builder.addTitle(shop.name);
   }
@@ -962,7 +1048,7 @@ Uint8List generateStyledInvoice({
     builder.addTextMiddle("Staff: ${invoice.staffName}");
   }
 
-  if (shop.showSecond!) {
+  if (shop.showSecond! && invoice.customerUuid != null) {
     builder.addTextMiddle(
       "Customer: ${invoice.customerName ?? 'Customer Not Set'}",
     );
@@ -972,16 +1058,27 @@ Uint8List generateStyledInvoice({
   );
 
   builder.addSeparator();
-  builder.addTextMiddle('Invoice Receipt');
+
+  if (returnInvoicesProvider().getBalance(
+        invoice: invoice,
+      ) !=
+      0) {
+    builder.addTextMiddle('Invoice Receipt');
+  } else {
+    builder.addTextMiddle('PAID INVOICE');
+  }
   builder.addSeparator();
   builder.addBlank();
   builder.addTextBold('Items:'.toUpperCase());
-  builder.addSmallSpace(10);
+
+  if (!DeviceService.isPos) {
+    builder.addSmallSpace(10);
+  }
 
   for (final item in records) {
     builder.addRowStyled(
       item.productName,
-      item.quantity.toStringAsFixed(0),
+      formatLargeNumberDouble(item.quantity),
       formatMoneyMid(
         amount:
             (invoice.fixedDiscount == null &&
@@ -995,7 +1092,10 @@ Uint8List generateStyledInvoice({
       ).split('.').first,
       rightBold: false,
     );
-    builder.addSmallSpace(5);
+
+    if (!DeviceService.isPos) {
+      builder.addSmallSpace(5);
+    }
   }
   builder.addBlank();
   builder.addSeparator();
@@ -1041,37 +1141,27 @@ Uint8List generateStyledInvoice({
       ),
     );
   }
-  if (returnInvoicesProvider().getBalance(
+  builder.addLeftRight(
+    "Paid:",
+    formatMoneyMid(
+      amount: (returnInvoicesProvider().getAmountPaid(
         invoice: invoice,
-      ) !=
-      0) {
-    builder.addLeftRight(
-      "Paid:",
-      formatMoneyMid(
-        amount: (returnInvoicesProvider().getAmountPaid(
-          invoice: invoice,
-        )),
-        context: context,
-        isR: true,
-      ),
-    );
-  }
+      )),
+      context: context,
+      isR: true,
+    ),
+  );
 
-  if (returnInvoicesProvider().getBalance(
+  builder.addLeftRight(
+    "Balance:",
+    formatMoneyMid(
+      amount: (returnInvoicesProvider().getBalance(
         invoice: invoice,
-      ) !=
-      0) {
-    builder.addLeftRight(
-      "Balance:",
-      formatMoneyMid(
-        amount: (returnInvoicesProvider().getBalance(
-          invoice: invoice,
-        )),
-        context: context,
-        isR: true,
-      ),
-    );
-  }
+      )),
+      context: context,
+      isR: true,
+    ),
+  );
 
   builder.addLeftRight(
     'TOTAL:',
@@ -1089,6 +1179,9 @@ Uint8List generateStyledInvoice({
   );
   builder.addBlank();
   builder.addBlank();
+  if (DeviceService.isPos) {
+    builder.addBlank();
+  }
 
   return builder.build();
 }

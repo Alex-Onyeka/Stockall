@@ -1154,15 +1154,18 @@ class DataProvider extends ChangeNotifier {
                   oldProduct.quantity?.toString();
               inventoryUpdate.newValue =
                   product.quantity?.toString();
-            } else if ((oldProduct.totalQttyInStorage ??
+            } else if ((oldProduct
+                        .totalQttyInStorageDouble ??
                     0) !=
-                (product.totalQttyInStorage ?? 0)) {
+                (product.totalQttyInStorageDouble ?? 0)) {
               inventoryUpdate.title =
                   'Item Storage Quantity Updated';
               inventoryUpdate.oldValue =
-                  oldProduct.totalQttyInStorage?.toString();
+                  oldProduct.totalQttyInStorageDouble
+                      ?.toString();
               inventoryUpdate.newValue =
-                  product.totalQttyInStorage?.toString();
+                  product.totalQttyInStorageDouble
+                      ?.toString();
             } else if (oldProduct.isManaged !=
                 product.isManaged) {
               inventoryUpdate.title =
@@ -1593,35 +1596,36 @@ class DataProvider extends ChangeNotifier {
   bool unitValueSet = false;
 
   List<String> units = [
-    'bags',
-    'barrels',
-    'bottles',
-    'boxes',
-    'bundles',
-    'cans',
-    'cartons',
-    'dozens',
-    'gallons',
-    'items',
-    'jars',
-    'kg',
-    'lb',
-    'liters',
-    'mg',
-    'ml',
-    'packs',
-    'pairs',
-    'pieces',
-    'reams',
-    'rolls',
-    'sachets',
-    'sheets',
-    'sets',
-    'sticks',
-    'tins',
-    'trays',
-    'tubes',
-    'units',
+    'Ags',
+    'Barrels',
+    'Bottles',
+    'Boxes',
+    'Bundles',
+    'Cans',
+    'Cartons',
+    'Dozens',
+    'Gallons',
+    'Items',
+    'Jars',
+    'Kg',
+    'Lb',
+    'Liters',
+    'Mg',
+    'Ml',
+    'Packs',
+    'Pairs',
+    'Pieces',
+    'Reams',
+    'Rolls',
+    'Sachets',
+    'Sheets',
+    'Sets',
+    'Slates',
+    'Sticks',
+    'Tins',
+    'Trays',
+    'Tubes',
+    'Units',
     'Others',
   ];
 
@@ -1882,7 +1886,7 @@ class DataProvider extends ChangeNotifier {
         tempTotal +=
             ((item.sellingPrice ?? 0) *
                 ((item.quantity ?? 0) +
-                    (item.totalQttyInStorage ?? 0)));
+                    (item.totalQttyInStorageDouble ?? 0)));
       }
     } else {
       for (var item in (products ?? productList)) {
@@ -1906,7 +1910,7 @@ class DataProvider extends ChangeNotifier {
         tempTotal +=
             item.costPrice *
             ((item.quantity ?? 0) +
-                (item.totalQttyInStorage ?? 0));
+                (item.totalQttyInStorageDouble ?? 0));
       }
     } else {
       for (var item in (products ?? productList)) {
@@ -1931,7 +1935,7 @@ class DataProvider extends ChangeNotifier {
   }) {
     double tempTotal = 0;
     for (var item in (products ?? productList)) {
-      tempTotal += item.totalQttyInStorage ?? 0;
+      tempTotal += item.totalQttyInStorageDouble ?? 0;
     }
     return tempTotal;
   }

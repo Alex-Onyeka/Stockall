@@ -32,7 +32,7 @@ class _ShopDashboardMobileState
         children: [
           Container(
             padding: EdgeInsets.symmetric(
-              vertical: 20,
+              vertical: 0,
               horizontal: 20,
             ),
             decoration: BoxDecoration(

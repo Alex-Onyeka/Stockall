@@ -60,22 +60,6 @@ class _SalesPageDesktopState
     return tempGet;
   }
 
-  // List<TempProductSaleRecord> getProductSalesRecord() {
-  //   var tempRecords =
-  //       returnReceiptProvider(
-  //         context,
-  //         listen: false,
-  //       ).produtRecordSalesMain;
-
-  //   return tempRecords
-  //       .where(
-  //         (beans) =>
-  //             beans.shopId ==
-  //             returnShopProvider().userShop()!.shopId!,
-  //       )
-  //       .toList();
-  // }
-
   final GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>();
 

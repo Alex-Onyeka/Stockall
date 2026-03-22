@@ -68,7 +68,7 @@ class _MakeSalesDesktopState
       if (returnSalesProvider().setTotalPrice) {
         return priceController.text.replaceAll(',', '');
       } else {
-        return (int.parse(
+        return (double.parse(
                   priceController.text.isNotEmpty
                       ? priceController.text.replaceAll(
                         ',',
@@ -76,7 +76,7 @@ class _MakeSalesDesktopState
                       )
                       : '0',
                 ) *
-                qqty.toInt())
+                qqty.toDouble())
             .toString();
       }
     } else {
@@ -102,7 +102,7 @@ class _MakeSalesDesktopState
     double qqty = cartItem.quantity.toDouble();
     cartItem.setCustomPrice
         ? priceController.text =
-            cartItem.customPrice.toString().split('.')[0]
+            cartItem.customPrice.toString()
         : priceController.text = "";
 
     returnSalesProvider().toggleSetTotalPrice(
@@ -214,7 +214,10 @@ class _MakeSalesDesktopState
                           },
                           onChanged: (value) {
                             final parsedValue =
-                                double.tryParse(value) ?? 0;
+                                double.tryParse(
+                                  value.replaceAll(',', ''),
+                                ) ??
+                                0;
                             if (cartItem.item.isManaged) {
                               if (parsedValue >
                                   (cartItem.item.quantity ??
@@ -383,7 +386,7 @@ class _MakeSalesDesktopState
                                                 ',',
                                                 '',
                                               )
-                                          : (int.parse(
+                                          : (double.parse(
                                                     priceController.text.isNotEmpty
                                                         ? priceController.text.replaceAll(
                                                           ',',
@@ -391,7 +394,7 @@ class _MakeSalesDesktopState
                                                         )
                                                         : '0',
                                                   ) *
-                                                  qqty.toInt())
+                                                  qqty.toDouble())
                                               .toString()
                                       : (qqty *
                                               (cartItem
@@ -445,7 +448,7 @@ class _MakeSalesDesktopState
                               ),
                             ),
                             Text(
-                              qqty.toString(),
+                              formatLargeNumberDouble(qqty),
                               style: TextStyle(
                                 fontSize:
                                     theme
@@ -593,7 +596,7 @@ class _MakeSalesDesktopState
       ).setTotalPrice) {
         return sellingPriceC.text.replaceAll(',', '');
       } else {
-        return (int.parse(
+        return (double.parse(
                   sellingPriceC.text.isNotEmpty
                       ? sellingPriceC.text.replaceAll(
                         ',',
@@ -601,7 +604,7 @@ class _MakeSalesDesktopState
                       )
                       : '0',
                 ) *
-                qqty.toInt())
+                qqty.toDouble())
             .toString();
       }
     } else {
@@ -638,10 +641,9 @@ class _MakeSalesDesktopState
           isNormalEdit = false;
           nameC.text = cartItem.item.name;
           qqty = cartItem.quantity;
-          pQuantity.text = cartItem.quantity
-              .toStringAsFixed(0);
-          sellingPriceC.text = (cartItem.customPrice ?? 0)
-              .toStringAsFixed(0);
+          pQuantity.text = cartItem.quantity.toString();
+          sellingPriceC.text =
+              (cartItem.customPrice ?? 0).toString();
           returnSalesProvider().toggleAddToStock(
             cartItem.addToStock,
             context,
@@ -818,7 +820,10 @@ class _MakeSalesDesktopState
                                   onChanged: (value) {
                                     double entered =
                                         double.tryParse(
-                                          value,
+                                          value.replaceAll(
+                                            ',',
+                                            '',
+                                          ),
                                         ) ??
                                         0;
 
@@ -955,7 +960,9 @@ class _MakeSalesDesktopState
                                       ),
                                     ),
                                     Text(
-                                      qqty.toString(),
+                                      formatLargeNumberDouble(
+                                        qqty,
+                                      ),
                                       style: TextStyle(
                                         fontSize:
                                             theme
@@ -1026,11 +1033,6 @@ class _MakeSalesDesktopState
                                   SmallButtonMain(
                                     theme: theme,
                                     action: () {
-                                      // var sugP =
-                                      //     returnSuggestionProvider(
-                                      //       context,
-                                      //       listen: false,
-                                      //     );
                                       var productIndex = returnData()
                                           .productList
                                           .indexWhere((
@@ -1682,15 +1684,20 @@ class _MakeSalesDesktopState
                                                     false,
                                                 costPrice:
                                                     double.tryParse(
-                                                      costPriceC
-                                                          .text,
+                                                      costPriceC.text.replaceAll(
+                                                        ',',
+                                                        '',
+                                                      ),
                                                     ) ??
                                                     0,
-                                                sellingPrice:
-                                                    double.tryParse(
-                                                      sellingPriceC
-                                                          .text,
-                                                    ),
+                                                sellingPrice: double.tryParse(
+                                                  sellingPriceC
+                                                      .text
+                                                      .replaceAll(
+                                                        ',',
+                                                        '',
+                                                      ),
+                                                ),
                                                 quantity: 0,
                                                 shopId:
                                                     returnShopProvider()
@@ -1780,11 +1787,17 @@ class _MakeSalesDesktopState
                                                           false,
                                                       costPrice:
                                                           double.tryParse(
-                                                            costPriceC.text,
+                                                            costPriceC.text.replaceAll(
+                                                              ',',
+                                                              '',
+                                                            ),
                                                           ) ??
                                                           0,
                                                       sellingPrice: double.tryParse(
-                                                        sellingPriceC.text,
+                                                        sellingPriceC.text.replaceAll(
+                                                          ',',
+                                                          '',
+                                                        ),
                                                       ),
                                                       quantity:
                                                           0,
@@ -1933,11 +1946,17 @@ class _MakeSalesDesktopState
                                                                                 false,
                                                                             costPrice:
                                                                                 double.tryParse(
-                                                                                  costPriceC.text,
+                                                                                  costPriceC.text.replaceAll(
+                                                                                    ',',
+                                                                                    '',
+                                                                                  ),
                                                                                 ) ??
                                                                                 0,
                                                                             sellingPrice: double.tryParse(
-                                                                              sellingPriceC.text,
+                                                                              sellingPriceC.text.replaceAll(
+                                                                                ',',
+                                                                                '',
+                                                                              ),
                                                                             ),
                                                                             quantity:
                                                                                 0,
@@ -2027,7 +2046,10 @@ class _MakeSalesDesktopState
                                                                               cartItem:
                                                                                   items[index],
                                                                               number: double.parse(
-                                                                                quantityController.text,
+                                                                                quantityController.text.replaceAll(
+                                                                                  ',',
+                                                                                  '',
+                                                                                ),
                                                                               ),
                                                                               customPrice: double.tryParse(
                                                                                 priceController.text.replaceAll(
@@ -2531,11 +2553,17 @@ class _MakeSalesDesktopState
                                                             false,
                                                         costPrice:
                                                             double.tryParse(
-                                                              costPriceC.text,
+                                                              costPriceC.text.replaceAll(
+                                                                ',',
+                                                                '',
+                                                              ),
                                                             ) ??
                                                             0,
                                                         sellingPrice: double.tryParse(
-                                                          sellingPriceC.text,
+                                                          sellingPriceC.text.replaceAll(
+                                                            ',',
+                                                            '',
+                                                          ),
                                                         ),
                                                         quantity:
                                                             0,
@@ -2660,7 +2688,7 @@ class _MakeSalesDesktopState
                                                             FontWeight.bold,
                                                         // fontWeight: FontWeight.bold,
                                                       ),
-                                                      ' (${returnSalesProviderContext(context).currentCart().discount?.toStringAsFixed(0)}%)',
+                                                      ' (${returnSalesProviderContext(context).currentCart().discount?.toString()}%)',
                                                     ),
                                                   ),
                                                 ],

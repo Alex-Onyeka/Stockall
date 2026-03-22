@@ -196,6 +196,64 @@ class ComparisonSectionWidget extends StatelessWidget {
                     Divider(height: 1, color: Colors.grey),
                     SizedBox(height: 15),
                     ComparisonRow(
+                      title: 'Monthly Price',
+                      freePlanString: formatMoneyMid(
+                        context: context,
+                        amount:
+                            subPlans
+                                .firstWhere(
+                                  (pl) => pl.plan == 0,
+                                )
+                                .price,
+                      ),
+                      basicPlanString: formatMoneyMid(
+                        amount:
+                            subPlans
+                                .firstWhere(
+                                  (pl) => pl.plan == 1,
+                                )
+                                .price,
+                        context: context,
+                      ),
+                      standardPlanString: formatMoneyMid(
+                        context: context,
+                        amount:
+                            subPlans
+                                .firstWhere(
+                                  (pl) => pl.plan == 2,
+                                )
+                                .price,
+                      ),
+
+                      premiumPlanString: formatMoneyMid(
+                        context: context,
+                        amount:
+                            subPlans
+                                .firstWhere(
+                                  (pl) => pl.plan == 3,
+                                )
+                                .price,
+                      ),
+                      silverPlanString: formatMoneyMid(
+                        context: context,
+                        amount:
+                            subPlans
+                                .firstWhere(
+                                  (pl) => pl.plan == 4,
+                                )
+                                .price,
+                      ),
+                      goldPlanString: formatMoneyMid(
+                        context: context,
+                        amount:
+                            subPlans
+                                .firstWhere(
+                                  (pl) => pl.plan == 5,
+                                )
+                                .price,
+                      ),
+                    ),
+                    ComparisonRow(
                       title: 'Maximum Number of Inventory',
                       freePlanString: formatLargeNumber(
                         subPlans

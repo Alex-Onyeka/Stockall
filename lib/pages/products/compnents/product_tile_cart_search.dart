@@ -442,7 +442,7 @@ class _ProductTileCartSearchState
                                                         .quantity ==
                                                     null
                                                 ? 'Qtty Not Set'
-                                                : '${widget.product.quantity?.toStringAsFixed(0)} in Stock'
+                                                : '${formatLargeNumberDouble(widget.product.quantity ?? 0)} in Stock'
                                             : 'Item Expired'
                                         : widget
                                                 .product
@@ -454,7 +454,7 @@ class _ProductTileCartSearchState
                                                 .quantity ==
                                             null
                                         ? 'Qtty Not Set'
-                                        : '${widget.product.quantity?.toStringAsFixed(0)} in Stock',
+                                        : '${formatLargeNumberDouble(widget.product.quantity ?? 0)} in Stock',
                                   ),
                                 ),
                               ),

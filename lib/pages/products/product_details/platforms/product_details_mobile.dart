@@ -308,18 +308,12 @@ class _ProductDetailsMobileState
                                               ? product
                                                   .sellingPrice
                                                   .toString()
-                                                  .split(
-                                                    '.',
-                                                  )[0]
                                               : '';
 
                                       costController.text =
                                           product.costPrice
                                               .toString()
-                                              .toString()
-                                              .split(
-                                                '.',
-                                              )[0];
+                                              .toString();
                                     });
                                     showGeneralDialog(
                                       context: context,
@@ -465,8 +459,8 @@ class _ProductDetailsMobileState
                                                                           product.setCustomPrice,
                                                                       isManaged:
                                                                           product.isManaged,
-                                                                      totalQttyInStorage:
-                                                                          product.totalQttyInStorage,
+                                                                      totalQttyInStorageDouble:
+                                                                          product.totalQttyInStorageDouble,
                                                                       uuid:
                                                                           product.uuid,
                                                                       name:
@@ -799,7 +793,7 @@ class _ProductDetailsMobileState
                                                                         product.quantity ==
                                                                                 null
                                                                             ? 'Not Set'
-                                                                            : 'Current Quantity Amount : ${product.quantity!.toStringAsFixed(0)}',
+                                                                            : 'Current Quantity Amount : ${product.quantity!.toString()}',
                                                                       ),
                                                                       EditCartTextField(
                                                                         onChanged: (
@@ -824,23 +818,22 @@ class _ProductDetailsMobileState
                                                                             if (product.isManaged &&
                                                                                 returnShopProvider().userShop()?.manageInventoryStorage ==
                                                                                     true) {
-                                                                              if (((int.tryParse(
-                                                                                            value,
+                                                                              if (((double.tryParse(
+                                                                                            value.replaceAll(
+                                                                                              ',',
+                                                                                              '',
+                                                                                            ),
                                                                                           ) ??
                                                                                           0) +
-                                                                                      (int.tryParse(
-                                                                                            product.quantity?.toStringAsFixed(
-                                                                                                  0,
-                                                                                                ) ??
+                                                                                      (double.tryParse(
+                                                                                            product.quantity?.toString() ??
                                                                                                 '0',
                                                                                           ) ??
                                                                                           0)) >
-                                                                                  ((product.totalQttyInStorage ??
+                                                                                  ((product.totalQttyInStorageDouble ??
                                                                                           0) +
-                                                                                      (int.tryParse(
-                                                                                            product.quantity?.toStringAsFixed(
-                                                                                                  0,
-                                                                                                ) ??
+                                                                                      (double.tryParse(
+                                                                                            product.quantity?.toString() ??
                                                                                                 '0',
                                                                                           ) ??
                                                                                           0))) {
@@ -851,16 +844,17 @@ class _ProductDetailsMobileState
                                                                             if (product.isManaged &&
                                                                                 returnShopProvider().userShop()?.manageInventoryStorage ==
                                                                                     true) {
-                                                                              if (((int.tryParse(
-                                                                                        value,
+                                                                              if (((double.tryParse(
+                                                                                        value.replaceAll(
+                                                                                          ',',
+                                                                                          '',
+                                                                                        ),
                                                                                       ) ??
                                                                                       0)) >
-                                                                                  ((product.totalQttyInStorage ??
+                                                                                  ((product.totalQttyInStorageDouble ??
                                                                                           0) +
-                                                                                      (int.tryParse(
-                                                                                            product.quantity?.toStringAsFixed(
-                                                                                                  0,
-                                                                                                ) ??
+                                                                                      (double.tryParse(
+                                                                                            product.quantity?.toString() ??
                                                                                                 '0',
                                                                                           ) ??
                                                                                           0))) {
@@ -1057,20 +1051,23 @@ class _ProductDetailsMobileState
                                                                                       true;
                                                                                 },
                                                                               );
-                                                                              int totalQttyInStorageCalc() {
+                                                                              double totalQttyInStorageCalc() {
                                                                                 final total =
-                                                                                    product.totalQttyInStorage ??
+                                                                                    product.totalQttyInStorageDouble ??
                                                                                     0;
                                                                                 final qty =
-                                                                                    int.tryParse(
-                                                                                      quantityController.text,
+                                                                                    double.tryParse(
+                                                                                      quantityController.text.replaceAll(
+                                                                                        ',',
+                                                                                        '',
+                                                                                      ),
                                                                                     ) ??
                                                                                     0;
                                                                                 final currentQty =
                                                                                     product.quantity ??
                                                                                     0;
 
-                                                                                int result;
+                                                                                double result;
                                                                                 if (isAddToQuantity) {
                                                                                   result =
                                                                                       total -
@@ -1080,7 +1077,7 @@ class _ProductDetailsMobileState
                                                                                       (total -
                                                                                               (qty -
                                                                                                   currentQty))
-                                                                                          .toInt();
+                                                                                          .toDouble();
                                                                                 }
 
                                                                                 return result <
@@ -1095,7 +1092,7 @@ class _ProductDetailsMobileState
                                                                                       DateTime.now(),
                                                                                   setCustomPrice:
                                                                                       product.setCustomPrice,
-                                                                                  totalQttyInStorage:
+                                                                                  totalQttyInStorageDouble:
                                                                                       totalQttyInStorageCalc(),
                                                                                   isManaged:
                                                                                       product.isManaged,
@@ -1123,12 +1120,18 @@ class _ProductDetailsMobileState
                                                                                           : quantityController.text.isNotEmpty &&
                                                                                               !isAddToQuantity
                                                                                           ? double.parse(
-                                                                                            quantityController.text,
+                                                                                            quantityController.text.replaceAll(
+                                                                                              ',',
+                                                                                              '',
+                                                                                            ),
                                                                                           )
                                                                                           : quantityController.text.isNotEmpty &&
                                                                                               isAddToQuantity
                                                                                           ? double.parse(
-                                                                                                quantityController.text,
+                                                                                                quantityController.text.replaceAll(
+                                                                                                  ',',
+                                                                                                  '',
+                                                                                                ),
                                                                                               ) +
                                                                                               (product.quantity ??
                                                                                                   0)
@@ -1442,8 +1445,8 @@ class _ProductDetailsMobileState
                                                           product: TempProductClass(
                                                             updatedAt:
                                                                 DateTime.now(),
-                                                            totalQttyInStorage:
-                                                                product.totalQttyInStorage,
+                                                            totalQttyInStorageDouble:
+                                                                product.totalQttyInStorageDouble,
                                                             setCustomPrice:
                                                                 product.setCustomPrice,
                                                             isManaged:

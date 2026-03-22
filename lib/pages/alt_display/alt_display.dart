@@ -560,7 +560,7 @@ class AltDisplayState extends State<AltDisplay> {
                                                               FontWeight.bold,
                                                           // fontWeight: FontWeight.bold,
                                                         ),
-                                                        ' (${cartClass!.percentDiscount?.toStringAsFixed(0)}%)',
+                                                        ' (${formatLargeNumberDouble(cartClass!.percentDiscount ?? 0)}%)',
                                                       ),
                                                     ),
                                                   ],
@@ -941,12 +941,11 @@ class _CartItemAltState extends State<CartItemAlt> {
                                                 FontWeight
                                                     .bold,
                                           ),
-                                          widget
-                                              .cartItem
-                                              .quantity
-                                              .toStringAsFixed(
-                                                1,
-                                              ),
+                                          formatLargeNumberDouble(
+                                            widget
+                                                .cartItem
+                                                .quantity,
+                                          ),
                                         ),
                                       ),
                                       // SvgPicture.asset(

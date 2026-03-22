@@ -512,15 +512,11 @@ class _ProductDetailsDesktopState
                                                       sellingController.text =
                                                           product.sellingPrice !=
                                                                   null
-                                                              ? product.sellingPrice.toString().split(
-                                                                '.',
-                                                              )[0]
+                                                              ? product.sellingPrice.toString()
                                                               : '';
 
                                                       costController.text =
-                                                          product.costPrice.toString().toString().split(
-                                                            '.',
-                                                          )[0];
+                                                          product.costPrice.toString().toString();
                                                     });
                                                     showGeneralDialog(
                                                       context:
@@ -692,8 +688,8 @@ class _ProductDetailsDesktopState
                                                                                           product: TempProductClass(
                                                                                             updatedAt:
                                                                                                 DateTime.now(),
-                                                                                            totalQttyInStorage:
-                                                                                                product.totalQttyInStorage,
+                                                                                            totalQttyInStorageDouble:
+                                                                                                product.totalQttyInStorageDouble,
                                                                                             setCustomPrice:
                                                                                                 product.setCustomPrice,
                                                                                             isManaged:
@@ -981,7 +977,7 @@ class _ProductDetailsDesktopState
                                                                                       product.quantity ==
                                                                                               null
                                                                                           ? 'Not Set'
-                                                                                          : 'Current Quantity Amount : ${product.quantity!.toStringAsFixed(0)}',
+                                                                                          : 'Current Quantity Amount : ${product.quantity!.toString()}',
                                                                                     ),
                                                                                     EditCartTextField(
                                                                                       onChanged: (
@@ -1006,23 +1002,22 @@ class _ProductDetailsDesktopState
                                                                                           if (product.isManaged &&
                                                                                               returnShopProvider().userShop()?.manageInventoryStorage ==
                                                                                                   true) {
-                                                                                            if (((int.tryParse(
-                                                                                                          value,
+                                                                                            if (((double.tryParse(
+                                                                                                          value.replaceAll(
+                                                                                                            ',',
+                                                                                                            '',
+                                                                                                          ),
                                                                                                         ) ??
                                                                                                         0) +
-                                                                                                    (int.tryParse(
-                                                                                                          product.quantity?.toStringAsFixed(
-                                                                                                                0,
-                                                                                                              ) ??
+                                                                                                    (double.tryParse(
+                                                                                                          product.quantity?.toString() ??
                                                                                                               '0',
                                                                                                         ) ??
                                                                                                         0)) >
-                                                                                                ((product.totalQttyInStorage ??
+                                                                                                ((product.totalQttyInStorageDouble ??
                                                                                                         0) +
-                                                                                                    (int.tryParse(
-                                                                                                          product.quantity?.toStringAsFixed(
-                                                                                                                0,
-                                                                                                              ) ??
+                                                                                                    (double.tryParse(
+                                                                                                          product.quantity?.toString() ??
                                                                                                               '0',
                                                                                                         ) ??
                                                                                                         0))) {
@@ -1033,16 +1028,17 @@ class _ProductDetailsDesktopState
                                                                                           if (product.isManaged &&
                                                                                               returnShopProvider().userShop()?.manageInventoryStorage ==
                                                                                                   true) {
-                                                                                            if (((int.tryParse(
-                                                                                                      value,
+                                                                                            if (((double.tryParse(
+                                                                                                      value.replaceAll(
+                                                                                                        ',',
+                                                                                                        '',
+                                                                                                      ),
                                                                                                     ) ??
                                                                                                     0)) >
-                                                                                                ((product.totalQttyInStorage ??
+                                                                                                ((product.totalQttyInStorageDouble ??
                                                                                                         0) +
-                                                                                                    (int.tryParse(
-                                                                                                          product.quantity?.toStringAsFixed(
-                                                                                                                0,
-                                                                                                              ) ??
+                                                                                                    (double.tryParse(
+                                                                                                          product.quantity?.toString() ??
                                                                                                               '0',
                                                                                                         ) ??
                                                                                                         0))) {
@@ -1237,20 +1233,23 @@ class _ProductDetailsDesktopState
                                                                                                     true;
                                                                                               },
                                                                                             );
-                                                                                            int totalQttyInStorageCalc() {
+                                                                                            double totalQttyInStorageCalc() {
                                                                                               final total =
-                                                                                                  product.totalQttyInStorage ??
+                                                                                                  product.totalQttyInStorageDouble ??
                                                                                                   0;
                                                                                               final qty =
-                                                                                                  int.tryParse(
-                                                                                                    quantityController.text,
+                                                                                                  double.tryParse(
+                                                                                                    quantityController.text.replaceAll(
+                                                                                                      ',',
+                                                                                                      '',
+                                                                                                    ),
                                                                                                   ) ??
                                                                                                   0;
                                                                                               final currentQty =
                                                                                                   product.quantity ??
                                                                                                   0;
 
-                                                                                              int result;
+                                                                                              double result;
                                                                                               if (isAddToQuantity) {
                                                                                                 result =
                                                                                                     total -
@@ -1260,7 +1259,7 @@ class _ProductDetailsDesktopState
                                                                                                     (total -
                                                                                                             (qty -
                                                                                                                 currentQty))
-                                                                                                        .toInt();
+                                                                                                        .toDouble();
                                                                                               }
 
                                                                                               return result <
@@ -1275,7 +1274,7 @@ class _ProductDetailsDesktopState
                                                                                                     DateTime.now(),
                                                                                                 setCustomPrice:
                                                                                                     product.setCustomPrice,
-                                                                                                totalQttyInStorage:
+                                                                                                totalQttyInStorageDouble:
                                                                                                     totalQttyInStorageCalc(),
                                                                                                 isManaged:
                                                                                                     product.isManaged,
@@ -1303,12 +1302,18 @@ class _ProductDetailsDesktopState
                                                                                                         : quantityController.text.isNotEmpty &&
                                                                                                             !isAddToQuantity
                                                                                                         ? double.parse(
-                                                                                                          quantityController.text,
+                                                                                                          quantityController.text.replaceAll(
+                                                                                                            ',',
+                                                                                                            '',
+                                                                                                          ),
                                                                                                         )
                                                                                                         : quantityController.text.isNotEmpty &&
                                                                                                             isAddToQuantity
                                                                                                         ? double.parse(
-                                                                                                              quantityController.text,
+                                                                                                              quantityController.text.replaceAll(
+                                                                                                                ',',
+                                                                                                                '',
+                                                                                                              ),
                                                                                                             ) +
                                                                                                             (product.quantity ??
                                                                                                                 0)
@@ -1544,8 +1549,8 @@ class _ProductDetailsDesktopState
                                                                     product: TempProductClass(
                                                                       updatedAt:
                                                                           DateTime.now(),
-                                                                      totalQttyInStorage:
-                                                                          product.totalQttyInStorage,
+                                                                      totalQttyInStorageDouble:
+                                                                          product.totalQttyInStorageDouble,
                                                                       setCustomPrice:
                                                                           product.setCustomPrice,
                                                                       isManaged:

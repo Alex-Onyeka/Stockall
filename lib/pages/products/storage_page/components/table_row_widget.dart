@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
 import 'package:stockall/pages/products/storage_page/components/is_managed_toggle_widget.dart';
@@ -28,6 +30,10 @@ class _TableRowRecordWidgetState
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
+        if (screenWidth(context) > mobileScreen) {
+          returnData().unFocusSearchNode();
+          returnData().removeSearchNodeListener();
+        }
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -38,7 +44,12 @@ class _TableRowRecordWidgetState
               );
             },
           ),
-        );
+        ).then((_) {
+          if (screenWidth(context) > mobileScreen) {
+            returnData().requestFocusSearchNode();
+            returnData().addSearchNodeListener();
+          }
+        });
       },
       child: Container(
         decoration: BoxDecoration(
@@ -144,13 +155,13 @@ class _TableRowRecordWidgetState
                             fontWeight: FontWeight.bold,
                           ),
                           formatLargeNumber(
-                            ((widget.product.totalQttyInStorage ??
+                            ((widget.product.totalQttyInStorageDouble ??
                                         0) +
                                     (widget
                                             .product
                                             .quantity ??
                                         0))
-                                .toStringAsFixed(0),
+                                .toString(),
                           ),
                         ),
                       ),

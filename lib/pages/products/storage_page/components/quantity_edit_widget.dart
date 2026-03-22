@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
@@ -32,51 +31,12 @@ class _QuantityEditWidgetState
   final node = FocusNode();
   final controller = TextEditingController();
 
-  final NumberFormat _formatter =
-      NumberFormat.decimalPattern('en_NG');
-
-  String _rawValue = '';
-  bool _isEditing = false;
   bool isLoading = false;
 
   bool errorUpdating = false;
 
   void updateQuantity() {
     var theme = returnTheme(context, listen: false);
-    controller.addListener(() {
-      if (_isEditing) return;
-
-      final rawText = controller.text.replaceAll(
-        RegExp(r'[^0-9]'),
-        '',
-      );
-
-      final cleaned = rawText.replaceFirst(
-        RegExp(r'^0+'),
-        '',
-      );
-
-      if (cleaned != _rawValue) {
-        _rawValue = cleaned;
-
-        final int amount =
-            int.tryParse(
-              _rawValue.isEmpty ? '0' : _rawValue,
-            ) ??
-            0;
-        final formatted =
-            amount == 0 ? '' : _formatter.format(amount);
-
-        _isEditing = true;
-        controller.value = TextEditingValue(
-          text: formatted,
-          selection: TextSelection.collapsed(
-            offset: formatted.length,
-          ),
-        );
-        _isEditing = false;
-      }
-    });
     node.requestFocus();
     showDialog(
       context: context,
@@ -148,13 +108,13 @@ class _QuantityEditWidgetState
                                             .quantity ==
                                         null
                                     ? 'Not Set'
-                                    : 'Current Quantity In Sales: ${widget.product.quantity?.toStringAsFixed(0)}')
+                                    : 'Current Quantity In Sales: ${formatLargeNumber(widget.product.quantity?.toString() ?? '0')}')
                                 : (widget
                                             .product
-                                            .totalQttyInStorage ==
+                                            .totalQttyInStorageDouble ==
                                         null
                                     ? 'Not Set'
-                                    : 'Current Quantity In Storage: ${widget.product.totalQttyInStorage?.toStringAsFixed(0)}'),
+                                    : 'Current Quantity In Storage: ${formatLargeNumber(widget.product.totalQttyInStorageDouble?.toString() ?? '0')}'),
                           ),
                           EditCartTextField(
                             onChanged: (value) {
@@ -179,25 +139,24 @@ class _QuantityEditWidgetState
                                                 .userShop()
                                                 ?.manageInventoryStorage ==
                                             true) {
-                                      if (((int.tryParse(
-                                                    value,
+                                      if (((double.tryParse(
+                                                    value.replaceAll(
+                                                      ',',
+                                                      '',
+                                                    ),
                                                   ) ??
                                                   0) +
-                                              (int.tryParse(
-                                                    widget.product.quantity?.toStringAsFixed(
-                                                          0,
-                                                        ) ??
+                                              (double.tryParse(
+                                                    widget.product.quantity?.toString() ??
                                                         '0',
                                                   ) ??
                                                   0)) >
                                           ((widget
                                                       .product
-                                                      .totalQttyInStorage ??
+                                                      .totalQttyInStorageDouble ??
                                                   0) +
-                                              (int.tryParse(
-                                                    widget.product.quantity?.toStringAsFixed(
-                                                          0,
-                                                        ) ??
+                                              (double.tryParse(
+                                                    widget.product.quantity?.toString() ??
                                                         '0',
                                                   ) ??
                                                   0))) {
@@ -213,18 +172,20 @@ class _QuantityEditWidgetState
                                                 .userShop()
                                                 ?.manageInventoryStorage ==
                                             true) {
-                                      if (((int.tryParse(
-                                                value,
+                                      if (((double.tryParse(
+                                                value
+                                                    .replaceAll(
+                                                      ',',
+                                                      '',
+                                                    ),
                                               ) ??
                                               0)) >
                                           ((widget
                                                       .product
-                                                      .totalQttyInStorage ??
+                                                      .totalQttyInStorageDouble ??
                                                   0) +
-                                              (int.tryParse(
-                                                    widget.product.quantity?.toStringAsFixed(
-                                                          0,
-                                                        ) ??
+                                              (double.tryParse(
+                                                    widget.product.quantity?.toString() ??
                                                         '0',
                                                   ) ??
                                                   0))) {
@@ -439,14 +400,14 @@ class _QuantityEditWidgetState
               isLoading = true;
             });
 
-            int totalQttyInStorageCalc() {
+            double totalQttyInStorageCalc() {
               if (widget.isTotal) {
                 if (isAddToQuantity) {
                   return (widget
                               .product
-                              .totalQttyInStorage ??
+                              .totalQttyInStorageDouble ??
                           0) +
-                      (int.tryParse(
+                      (double.tryParse(
                             controller.text.replaceAll(
                               ',',
                               '',
@@ -454,7 +415,7 @@ class _QuantityEditWidgetState
                           ) ??
                           0);
                 } else {
-                  return (int.tryParse(
+                  return (double.tryParse(
                         controller.text.replaceAll(',', ''),
                       ) ??
                       0);
@@ -463,22 +424,22 @@ class _QuantityEditWidgetState
                 if (isAddToQuantity) {
                   return (widget
                               .product
-                              .totalQttyInStorage ??
+                              .totalQttyInStorageDouble ??
                           0) -
-                      ((int.tryParse(
+                      ((double.tryParse(
                                 controller.text.replaceAll(
                                   ',',
                                   '',
                                 ),
                               ) ??
                               0))
-                          .toInt();
+                          .toDouble();
                 } else {
                   return (widget
                               .product
-                              .totalQttyInStorage ??
+                              .totalQttyInStorageDouble ??
                           0) -
-                      ((int.tryParse(
+                      ((double.tryParse(
                                     controller.text
                                         .replaceAll(
                                           ',',
@@ -488,7 +449,7 @@ class _QuantityEditWidgetState
                                   0) -
                               (widget.product.quantity ??
                                   0))
-                          .toInt();
+                          .toDouble();
                 }
               }
             }
@@ -538,7 +499,7 @@ class _QuantityEditWidgetState
                 startDate: widget.product.startDate,
                 updatedAt: widget.product.updatedAt,
                 quantity: quantityCalc(),
-                totalQttyInStorage:
+                totalQttyInStorageDouble:
                     totalQttyInStorageCalc(),
                 name: widget.product.name,
                 unit: widget.product.unit,
@@ -584,7 +545,7 @@ class _QuantityEditWidgetState
                 startDate: widget.product.startDate,
                 updatedAt: widget.product.updatedAt,
                 quantity: quantityCalc(),
-                totalQttyInStorage:
+                totalQttyInStorageDouble:
                     totalQttyInStorageCalc(),
                 name: widget.product.name,
                 unit: widget.product.unit,
@@ -649,7 +610,7 @@ class _QuantityEditWidgetState
                   color: Colors.grey.shade900,
                 ),
                 formatLargeNumber(
-                  "${widget.isTotal ? widget.product.totalQttyInStorage ?? 0 : widget.product.quantity ?? 0}",
+                  "${widget.isTotal ? widget.product.totalQttyInStorageDouble ?? 0 : widget.product.quantity ?? 0}",
                 ),
               ),
             ),
