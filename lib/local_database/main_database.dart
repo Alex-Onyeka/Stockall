@@ -16,6 +16,7 @@ import 'package:stockall/local_database/invoices/invoices_func.dart';
 import 'package:stockall/local_database/logged_in_user/logged_in_user_func.dart';
 import 'package:stockall/local_database/main_receipt/main_receipt_func.dart';
 import 'package:stockall/local_database/notification/notification_func.dart';
+import 'package:stockall/local_database/permission/permission_func.dart';
 import 'package:stockall/local_database/product_record_func.dart/product_record_func.dart';
 import 'package:stockall/local_database/products/products_func.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';
@@ -45,8 +46,9 @@ class MainDatabase extends ChangeNotifier {
       }
       Hive.init(stockallDir.path);
     }
-    await UserFunc().init();
+    await PermissionFunc().init();
     await AppVersionFunc().init();
+    await UserFunc().init();
     await ShopFunc().init();
     await VisibilityBox().init();
     await CustomerFunc().init();
@@ -74,4 +76,4 @@ class MainDatabase extends ChangeNotifier {
   }
 }
 
-int highestHiveClassIndex = 59;
+int highestHiveClassIndex = 60;

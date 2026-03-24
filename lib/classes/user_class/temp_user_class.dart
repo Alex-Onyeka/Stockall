@@ -43,6 +43,9 @@ class TempUserClass extends HiveObject {
   @HiveField(12)
   List<String>? departmentUuids;
 
+  @HiveField(13)
+  List<String> access;
+
   TempUserClass({
     this.userId,
     this.createdAt,
@@ -57,6 +60,7 @@ class TempUserClass extends HiveObject {
     this.departmentUuid,
     this.pin,
     this.departmentUuids,
+    required this.access,
   });
 
   factory TempUserClass.fromJson(
@@ -81,6 +85,11 @@ class TempUserClass extends HiveObject {
           (json['department_uuids'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList(),
+      access:
+          (json['access'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
     );
   }
 
@@ -97,6 +106,7 @@ class TempUserClass extends HiveObject {
       'department_name': departmentName,
       'pin': pin,
       'department_uuids': departmentUuids,
+      'access': access,
     };
 
     if (includeUserId && userId != null) {

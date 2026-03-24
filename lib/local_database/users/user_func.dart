@@ -10,9 +10,15 @@ class UserFunc {
 
   Future<void> init() async {
     // await Hive.deleteBoxFromDisk(userBoxName);
-    Hive.registerAdapter(TempUserClassAdapter());
-    userBox = await Hive.openBox(userBoxName);
-    print('User Box Initialized');
+    try {
+      Hive.registerAdapter(TempUserClassAdapter());
+      userBox = await Hive.openBox(userBoxName);
+      print('User Box Initialized');
+    } catch (e) {
+      print(
+        'Error Initializing Users Box: ${e.toString()}',
+      );
+    }
   }
 
   List<TempUserClass> getUsers() {

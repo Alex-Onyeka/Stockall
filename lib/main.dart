@@ -30,6 +30,7 @@ import 'package:stockall/providers/invoices_provider.dart';
 import 'package:stockall/providers/multi_display_provider.dart';
 import 'package:stockall/providers/nav_provider.dart';
 import 'package:stockall/providers/notifications_provider.dart';
+import 'package:stockall/providers/permission_provider.dart';
 import 'package:stockall/providers/pos_printer/device_service.dart';
 // import 'package:stockall/providers/product_suggestions_provider.dart';
 import 'package:stockall/providers/receipts_provider.dart';
@@ -146,6 +147,7 @@ TempUserClass userGeneral(
         role: 'Owner',
         authUserId: 'dfsgdhjfh',
         departmentUuids: [],
+        access: [],
       );
 }
 
@@ -298,6 +300,16 @@ DataProvider returnData({BuildContext? context}) {
     return DataProvider();
   } else {
     return Provider.of<DataProvider>(context);
+  }
+}
+
+PermissionProvider returnPermissionProvider({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return PermissionProvider();
+  } else {
+    return Provider.of<PermissionProvider>(context);
   }
 }
 
@@ -534,6 +546,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => ShopDashboardProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => PermissionProvider(),
         ),
       ],
       child: MaterialApp(

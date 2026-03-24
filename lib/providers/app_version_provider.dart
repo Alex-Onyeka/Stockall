@@ -3,6 +3,7 @@ import 'package:stockall/classes/app_version/app_version.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/app_version/app_version_func.dart';
+import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -24,6 +25,7 @@ class AppVersionProvider extends ChangeNotifier {
     BuildContext context,
   ) async {
     bool isOnline = await ConnectivityProvider().isOnline();
+    await returnPermissionProvider().getPermissions();
     if (isOnline) {
       try {
         var res =

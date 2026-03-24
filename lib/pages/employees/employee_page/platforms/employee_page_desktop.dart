@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/components/buttons/main_button_p.dart';
+import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/employees/add_employee_page/add_employee_page.dart';
+import 'package:stockall/pages/employees/customize_role/customize_role_page.dart';
 import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
 import 'package:stockall/providers/comp_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -86,18 +90,97 @@ class _EmployeePageDesktopState
                             top: 90,
                             child: DetailsPageContainer(
                               editAction: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return AddEmployeePage(
-                                        employee: employee,
-                                      );
-                                    },
-                                  ),
-                                ).then((_) {
-                                  setState(() {});
-                                });
+                                showDialog(
+                                  context: context,
+                                  builder: (editDialoge) {
+                                    return DialogTemplate(
+                                      theme: theme,
+                                      message:
+                                          'Select the action you want to perform.',
+                                      title:
+                                          'Select Action',
+                                      action: () {},
+                                      showBottomActionButtons:
+                                          false,
+                                      topRightWidget:
+                                          IconButton(
+                                            onPressed: () {
+                                              Navigator.of(
+                                                editDialoge,
+                                              ).pop();
+                                            },
+                                            icon: Icon(
+                                              Icons.clear,
+                                            ),
+                                          ),
+                                      widget: Column(
+                                        mainAxisSize:
+                                            MainAxisSize
+                                                .min,
+                                        spacing: 10,
+                                        children: [
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          MainButtonP(
+                                            themeProvider:
+                                                theme,
+                                            action: () {
+                                              Navigator.of(
+                                                editDialoge,
+                                              ).pop();
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (
+                                                    context,
+                                                  ) {
+                                                    return CustomizeRolePage(
+                                                      user:
+                                                          employee,
+                                                    );
+                                                  },
+                                                ),
+                                              );
+                                            },
+                                            text:
+                                                'Customize Access',
+                                          ),
+                                          MainButtonTransparent(
+                                            themeProvider:
+                                                theme,
+                                            constraints:
+                                                BoxConstraints(),
+                                            text:
+                                                'Select New Role',
+                                            action: () {
+                                              Navigator.of(
+                                                editDialoge,
+                                              ).pop();
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (
+                                                    context,
+                                                  ) {
+                                                    return AddEmployeePage(
+                                                      employee:
+                                                          employee,
+                                                    );
+                                                  },
+                                                ),
+                                              ).then((_) {
+                                                setState(
+                                                  () {},
+                                                );
+                                              });
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
                               },
                               deleteAction: () async {
                                 var isOnline =
@@ -125,11 +208,6 @@ class _EmployeePageDesktopState
                                   return;
                                 }
                                 final safeContext = context;
-                                // final userProvider =
-                                //     returnUserProvider(
-                                //       context,
-                                //       listen: false,
-                                //     );
                                 final shopProvider =
                                     returnShopProvider();
                                 showDialog(
@@ -160,16 +238,6 @@ class _EmployeePageDesktopState
                                                   widget
                                                       .employeeId,
                                             );
-                                        // await userProvider
-                                        //     .updateEmployeeRole(
-                                        //       authUserId:
-                                        //           widget
-                                        //               .employeeId,
-                                        //       newRole: '',
-                                        //       userId:
-                                        //           widget
-                                        //               .employeeId,
-                                        //     );
                                         setState(() {
                                           isLoading = false;
                                           showSuccess =

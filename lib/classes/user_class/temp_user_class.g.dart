@@ -6,7 +6,8 @@ part of 'temp_user_class.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class TempUserClassAdapter extends TypeAdapter<TempUserClass> {
+class TempUserClassAdapter
+    extends TypeAdapter<TempUserClass> {
   @override
   final int typeId = 0;
 
@@ -14,7 +15,8 @@ class TempUserClassAdapter extends TypeAdapter<TempUserClass> {
   TempUserClass read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++)
+        reader.readByte(): reader.read(),
     };
     return TempUserClass(
       userId: fields[0] as String?,
@@ -29,14 +31,16 @@ class TempUserClassAdapter extends TypeAdapter<TempUserClass> {
       departmentName: fields[9] as String?,
       departmentUuid: fields[10] as String?,
       pin: fields[11] as String?,
-      departmentUuids: (fields[12] as List?)?.cast<String>(),
+      departmentUuids:
+          (fields[12] as List?)?.cast<String>(),
+      access: (fields[13] as List?)?.cast<String>() ?? [],
     );
   }
 
   @override
   void write(BinaryWriter writer, TempUserClass obj) {
     writer
-      ..writeByte(13)
+      ..writeByte(14)
       ..writeByte(0)
       ..write(obj.userId)
       ..writeByte(1)
@@ -62,7 +66,9 @@ class TempUserClassAdapter extends TypeAdapter<TempUserClass> {
       ..writeByte(11)
       ..write(obj.pin)
       ..writeByte(12)
-      ..write(obj.departmentUuids);
+      ..write(obj.departmentUuids)
+      ..writeByte(13)
+      ..write(obj.access);
   }
 
   @override

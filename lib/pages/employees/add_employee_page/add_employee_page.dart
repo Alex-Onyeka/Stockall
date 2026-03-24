@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/main.dart';
 import 'package:stockall/pages/employees/add_employee_page/platforms/add_employee_desktop.dart';
 import 'package:stockall/pages/employees/add_employee_page/platforms/add_employee_mobile.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
@@ -16,6 +17,14 @@ class AddEmployeePage extends StatefulWidget {
 
 class _AddEmployeePageState extends State<AddEmployeePage> {
   TextEditingController idC = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      returnPermissionProvider().getPermissions();
+    });
+  }
 
   @override
   void dispose() {

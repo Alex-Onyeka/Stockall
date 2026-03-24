@@ -391,9 +391,7 @@ class RefreshFunctions {
   Future<List<TempUserClass>> getEmployees() async {
     await shopProvider.getUserShops();
     if (context.mounted) {
-      var users = await userProvider.fetchUsersByShop(
-        context,
-      );
+      var users = await userProvider.fetchUsersByShop();
       return users;
     } else {
       return [];

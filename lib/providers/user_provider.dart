@@ -33,7 +33,7 @@ class UserProvider extends ChangeNotifier {
   bool isLoading = false;
 
   Future<List<TempUserClass>> fetchUsersByShop(
-    BuildContext context,
+    // BuildContext context,
   ) async {
     // final authUser = _supabase.currentUser;
 
@@ -248,9 +248,30 @@ class UserProvider extends ChangeNotifier {
             .single();
     final updatedUser = TempUserClass.fromJson(updatedRows);
 
-    await fetchUsersByShop(context);
+    await fetchUsersByShop();
 
     return updatedUser;
+  }
+
+  Future<int> updateStaffAccess({
+    required TempUserClass user,
+    required List<String> newAccess,
+  }) async {
+    try {
+      final updatedAccess = newAccess.toSet().toList();
+
+      await _supabase.client
+          .from('users')
+          .update({'access': updatedAccess})
+          .eq('user_id', user.userId!);
+      await fetchUsersByShop();
+      return 1;
+    } catch (e) {
+      print(
+        'Failed to update user access: ${e.toString()}',
+      );
+      return 0;
+    }
   }
 
   Future<String?> updateEmployeeRole({
@@ -296,7 +317,7 @@ class UserProvider extends ChangeNotifier {
         user.first.role = newRole;
       }
       notifyListeners();
-
+      await fetchUsersByShop();
       return null; // success
     } catch (e) {
       print('❌❌ Error updating employee role: $e');

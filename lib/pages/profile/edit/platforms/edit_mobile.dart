@@ -286,6 +286,10 @@ class _EditMobileState extends State<EditMobile> {
                                           widget
                                               .user
                                               .authUserId,
+                                      access:
+                                          widget
+                                              .user
+                                              .access,
                                       password:
                                           widget
                                               .user

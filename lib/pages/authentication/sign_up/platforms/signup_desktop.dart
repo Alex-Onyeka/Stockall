@@ -168,6 +168,7 @@ class _SignupDesktopState extends State<SignupDesktop> {
                   builder:
                       (context) => CodeSentPage(
                         user: TempUserClass(
+                          access: [],
                           userId: res,
                           createdAt: DateTime.now(),
                           name:

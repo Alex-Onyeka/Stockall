@@ -413,6 +413,10 @@ class _EditDesktopState extends State<EditDesktop> {
                                                   widget
                                                       .user
                                                       .userId,
+                                              access:
+                                                  widget
+                                                      .user
+                                                      .access,
                                               authUserId:
                                                   widget
                                                       .user

@@ -1603,6 +1603,7 @@ class DataProvider extends ChangeNotifier {
     'Bundles',
     'Cans',
     'Cartons',
+    'Crates',
     'Dozens',
     'Gallons',
     'Items',
