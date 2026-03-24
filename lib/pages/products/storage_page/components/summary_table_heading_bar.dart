@@ -113,8 +113,47 @@ class _SummaryTableHeadingBarState
               ),
             ),
           ),
+          Visibility(
+            visible: shop(context)?.useGroupUnit == true,
+            child: Expanded(
+              flex: 6,
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 5,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  border: Border(
+                    left: BorderSide(color: Colors.grey),
+                  ),
+                ),
+                child: Center(
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          style: TextStyle(
+                            fontSize:
+                                widget
+                                    .theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          widget.isHeading
+                              ? 'Total Group Qtty'
+                              : '',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
           Expanded(
-            flex: 7,
+            flex: 6,
             child: Container(
               padding: EdgeInsets.symmetric(
                 horizontal: 5,
@@ -141,7 +180,7 @@ class _SummaryTableHeadingBarState
                           fontWeight: FontWeight.bold,
                         ),
                         widget.isHeading
-                            ? 'Total Qtty'
+                            ? 'Total Unit Qtty'
                             : formatLargeNumber(
                               returnData(context: context)
                                   .getTotalOverallQuantity(
@@ -157,14 +196,57 @@ class _SummaryTableHeadingBarState
               ),
             ),
           ),
+          Visibility(
+            visible: shop(context)?.useGroupUnit == true,
+            child: Expanded(
+              flex: 6,
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 5,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  border: Border(
+                    right: BorderSide(color: Colors.grey),
+                  ),
+                ),
+                child: Center(
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          style: TextStyle(
+                            fontSize:
+                                widget
+                                    .theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          widget.isHeading
+                              ? 'Group Qtty In Storage'
+                              : '',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
           Expanded(
-            flex: 7,
+            flex: 6,
             child: Container(
               padding: EdgeInsets.symmetric(
                 horizontal: 5,
                 vertical: 10,
               ),
-              decoration: BoxDecoration(),
+              decoration: BoxDecoration(
+                border: Border(
+                  right: BorderSide(color: Colors.grey),
+                ),
+              ),
               child: Center(
                 child: Row(
                   children: [
@@ -180,7 +262,7 @@ class _SummaryTableHeadingBarState
                           fontWeight: FontWeight.bold,
                         ),
                         widget.isHeading
-                            ? 'Qtty In Storage'
+                            ? 'Unit Qtty In Storage'
                             : formatLargeNumber(
                               returnData(context: context)
                                   .getTotalQuantityInStorage(
@@ -196,8 +278,47 @@ class _SummaryTableHeadingBarState
               ),
             ),
           ),
+          Visibility(
+            visible: shop(context)?.useGroupUnit == true,
+            child: Expanded(
+              flex: 6,
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 5,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  border: Border(
+                    right: BorderSide(color: Colors.grey),
+                  ),
+                ),
+                child: Center(
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          style: TextStyle(
+                            fontSize:
+                                widget
+                                    .theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          widget.isHeading
+                              ? 'Group Qtty in Sales'
+                              : '',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
           Expanded(
-            flex: 7,
+            flex: 6,
             child: Container(
               padding: EdgeInsets.symmetric(
                 horizontal: 5,
@@ -206,7 +327,7 @@ class _SummaryTableHeadingBarState
               decoration: BoxDecoration(
                 border: Border(
                   right: BorderSide(color: Colors.grey),
-                  left: BorderSide(color: Colors.grey),
+                  // left: BorderSide(color: Colors.grey),
                 ),
               ),
               child: Center(
@@ -224,7 +345,7 @@ class _SummaryTableHeadingBarState
                           fontWeight: FontWeight.bold,
                         ),
                         widget.isHeading
-                            ? 'Qtty'
+                            ? 'Unit Qtty in Sales'
                             : formatLargeNumber(
                               returnData(context: context)
                                   .getTotalQuantity(
@@ -243,7 +364,7 @@ class _SummaryTableHeadingBarState
           Visibility(
             visible: widget.product.isNotEmpty,
             child: Expanded(
-              flex: 7,
+              flex: 6,
               child: Container(
                 padding: EdgeInsets.symmetric(
                   horizontal: 5,
@@ -284,7 +405,7 @@ class _SummaryTableHeadingBarState
           Visibility(
             visible: widget.product.isNotEmpty,
             child: Expanded(
-              flex: 7,
+              flex: 6,
               child: Container(
                 decoration: BoxDecoration(
                   border: Border(
@@ -331,14 +452,8 @@ class _SummaryTableHeadingBarState
           Visibility(
             visible: widget.product.isNotEmpty,
             child: Expanded(
-              flex: 5,
+              flex: 4,
               child: Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    // right: BorderSide(color: Colors.grey),
-                    // left: BorderSide(color: Colors.grey),
-                  ),
-                ),
                 padding: EdgeInsets.symmetric(
                   horizontal: 5,
                   vertical: 10,
@@ -357,9 +472,7 @@ class _SummaryTableHeadingBarState
                                     .fontSize,
                             fontWeight: FontWeight.bold,
                           ),
-                          widget.isHeading
-                              ? 'Is Managed'
-                              : '',
+                          widget.isHeading ? 'Managed' : '',
                         ),
                       ),
                     ],

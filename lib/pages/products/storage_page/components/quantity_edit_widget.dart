@@ -13,10 +13,12 @@ import 'package:stockall/pages/products/product_details/platforms/product_detail
 class QuantityEditWidget extends StatefulWidget {
   final TempProductClass product;
   final bool isTotal;
+  final bool isGroup;
   const QuantityEditWidget({
     super.key,
     required this.product,
     required this.isTotal,
+    required this.isGroup,
   });
 
   @override
@@ -85,7 +87,11 @@ class _QuantityEditWidgetState
                                       .fontSize,
                               fontWeight: FontWeight.bold,
                             ),
-                            'Edit ${widget.isTotal ? 'Quantity in Storage' : "Quantity In Sales"}',
+                            'Edit ${widget.isTotal
+                                ? widget.isGroup
+                                    ? "Group Quantity in Storage"
+                                    : "Unit Quantity in Storage"
+                                : "Quantity Unit In Sales"}',
                           ),
                         ],
                       ),
@@ -108,13 +114,13 @@ class _QuantityEditWidgetState
                                             .quantity ==
                                         null
                                     ? 'Not Set'
-                                    : 'Current Quantity In Sales: ${formatLargeNumber(widget.product.quantity?.toString() ?? '0')}')
+                                    : 'Current ${widget.isGroup ? 'Group' : 'Unit'} Quantity In Sales: ${widget.isGroup ? formatLargeNumber(returnValue().toString()) : formatLargeNumber(widget.product.quantity?.toString() ?? '0')}')
                                 : (widget
                                             .product
                                             .totalQttyInStorageDouble ==
                                         null
                                     ? 'Not Set'
-                                    : 'Current Quantity In Storage: ${formatLargeNumber(widget.product.totalQttyInStorageDouble?.toString() ?? '0')}'),
+                                    : 'Current ${widget.isGroup ? 'Group' : 'Unit'} Quantity In Storage: ${widget.isGroup ? formatLargeNumber(returnValue().toString()) : formatLargeNumber(widget.product.totalQttyInStorageDouble?.toString() ?? '0')}'),
                           ),
                           EditCartTextField(
                             onChanged: (value) {
@@ -403,53 +409,126 @@ class _QuantityEditWidgetState
             double totalQttyInStorageCalc() {
               if (widget.isTotal) {
                 if (isAddToQuantity) {
-                  return (widget
-                              .product
-                              .totalQttyInStorageDouble ??
-                          0) +
-                      (double.tryParse(
-                            controller.text.replaceAll(
-                              ',',
-                              '',
-                            ),
-                          ) ??
-                          0);
-                } else {
-                  return (double.tryParse(
-                        controller.text.replaceAll(',', ''),
-                      ) ??
-                      0);
-                }
-              } else {
-                if (isAddToQuantity) {
-                  return (widget
-                              .product
-                              .totalQttyInStorageDouble ??
-                          0) -
-                      ((double.tryParse(
-                                controller.text.replaceAll(
-                                  ',',
-                                  '',
-                                ),
-                              ) ??
-                              0))
-                          .toDouble();
-                } else {
-                  return (widget
-                              .product
-                              .totalQttyInStorageDouble ??
-                          0) -
-                      ((double.tryParse(
+                  return widget.isGroup
+                      ? (widget
+                                  .product
+                                  .totalQttyInStorageDouble ??
+                              0) +
+                          ((double.tryParse(
                                     controller.text
                                         .replaceAll(
                                           ',',
                                           '',
                                         ),
                                   ) ??
-                                  0) -
-                              (widget.product.quantity ??
+                                  0) *
+                              (widget
+                                      .product
+                                      .qttyPerGroup ??
                                   0))
-                          .toDouble();
+                      : (widget
+                                  .product
+                                  .totalQttyInStorageDouble ??
+                              0) +
+                          (double.tryParse(
+                                controller.text.replaceAll(
+                                  ',',
+                                  '',
+                                ),
+                              ) ??
+                              0);
+                } else {
+                  return widget.isGroup
+                      ? ((double.tryParse(
+                                controller.text.replaceAll(
+                                  ',',
+                                  '',
+                                ),
+                              ) ??
+                              0) *
+                          (widget.product.qttyPerGroup ??
+                              0))
+                      : (double.tryParse(
+                            controller.text.replaceAll(
+                              ',',
+                              '',
+                            ),
+                          ) ??
+                          0);
+                }
+              } else {
+                if (isAddToQuantity) {
+                  return widget.isGroup
+                      ? (widget
+                                  .product
+                                  .totalQttyInStorageDouble ??
+                              0) -
+                          (((double.tryParse(
+                                        controller.text
+                                            .replaceAll(
+                                              ',',
+                                              '',
+                                            ),
+                                      ) ??
+                                      0))
+                                  .toDouble() *
+                              (widget
+                                      .product
+                                      .qttyPerGroup ??
+                                  0))
+                      : (widget
+                                  .product
+                                  .totalQttyInStorageDouble ??
+                              0) -
+                          ((double.tryParse(
+                                    controller.text
+                                        .replaceAll(
+                                          ',',
+                                          '',
+                                        ),
+                                  ) ??
+                                  0))
+                              .toDouble();
+                } else {
+                  return widget.isGroup
+                      ? (widget
+                                  .product
+                                  .totalQttyInStorageDouble ??
+                              0) -
+                          (((double.tryParse(
+                                            controller.text
+                                                .replaceAll(
+                                                  ',',
+                                                  '',
+                                                ),
+                                          ) ??
+                                          0) -
+                                      (widget
+                                              .product
+                                              .quantity ??
+                                          0))
+                                  .toDouble() *
+                              (widget
+                                      .product
+                                      .qttyPerGroup ??
+                                  0))
+                      : (widget
+                                  .product
+                                  .totalQttyInStorageDouble ??
+                              0) -
+                          ((double.tryParse(
+                                        controller.text
+                                            .replaceAll(
+                                              ',',
+                                              '',
+                                            ),
+                                      ) ??
+                                      0) -
+                                  (widget
+                                          .product
+                                          .quantity ??
+                                      0))
+                              .toDouble();
                 }
               }
             }
@@ -478,6 +557,8 @@ class _QuantityEditWidgetState
 
             if (widget.isTotal) {
               var tempPro = TempProductClass(
+                groupUnit: widget.product.groupUnit,
+                qttyPerGroup: widget.product.qttyPerGroup,
                 id: widget.product.id,
                 uuid: widget.product.uuid,
                 barcode: widget.product.barcode,
@@ -524,6 +605,8 @@ class _QuantityEditWidgetState
               }
             } else {
               var tempPro = TempProductClass(
+                groupUnit: widget.product.groupUnit,
+                qttyPerGroup: widget.product.qttyPerGroup,
                 id: widget.product.id,
                 uuid: widget.product.uuid,
                 barcode: widget.product.barcode,
@@ -580,6 +663,30 @@ class _QuantityEditWidgetState
     });
   }
 
+  double returnValue() {
+    if (widget.isGroup) {
+      if (widget.isTotal) {
+        return widget.product.qttyPerGroup != null
+            ? (widget.product.totalQttyInStorageDouble ??
+                    0) /
+                (widget.product.qttyPerGroup ?? 0)
+            : 0;
+      } else {
+        return widget.product.qttyPerGroup != null
+            ? (widget.product.quantity ?? 0) /
+                (widget.product.qttyPerGroup ?? 0)
+            : 0;
+      }
+    } else {
+      if (widget.isTotal) {
+        return (widget.product.totalQttyInStorageDouble ??
+            0);
+      } else {
+        return (widget.product.quantity ?? 0);
+      }
+    }
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -609,9 +716,7 @@ class _QuantityEditWidgetState
                   fontWeight: FontWeight.bold,
                   color: Colors.grey.shade900,
                 ),
-                formatLargeNumber(
-                  "${widget.isTotal ? widget.product.totalQttyInStorageDouble ?? 0 : widget.product.quantity ?? 0}",
-                ),
+                formatLargeNumberDouble(returnValue()),
               ),
             ),
           ),

@@ -46,6 +46,9 @@ class _IsManagedToggleWidgetState
                     });
                     await dataProvider.updateProduct(
                       product: TempProductClass(
+                        groupUnit: widget.product.groupUnit,
+                        qttyPerGroup:
+                            widget.product.qttyPerGroup,
                         updatedAt: DateTime.now(),
                         setCustomPrice:
                             widget.product.setCustomPrice,

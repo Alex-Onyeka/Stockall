@@ -1530,6 +1530,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         returnSalesProvider()
                                             .setTotalPrice,
                                     item: TempProductClass(
+                                      groupUnit: 'Others',
+                                      qttyPerGroup: null,
                                       isManaged: false,
                                       uuid: uuidGen(),
                                       name: nameC.text,
@@ -1590,6 +1592,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                       returnSalesProvider()
                                           .setTotalPrice,
                                   item: TempProductClass(
+                                    groupUnit: 'Others',
+                                    qttyPerGroup: null,
                                     isManaged: false,
                                     uuid: uuidGen(),
                                     name: nameC.text,
@@ -1676,6 +1680,10 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                             returnSalesProvider()
                                                 .setTotalPrice,
                                         item: TempProductClass(
+                                          groupUnit:
+                                              'Others',
+                                          qttyPerGroup:
+                                              null,
                                           isManaged: false,
                                           uuid: uuidGen(),
                                           name: nameC.text,
@@ -1742,6 +1750,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                       returnSalesProvider()
                                           .setTotalPrice,
                                   item: TempProductClass(
+                                    groupUnit: 'Others',
+                                    qttyPerGroup: null,
                                     isManaged: false,
                                     uuid: uuidGen(),
                                     name: nameC.text,
@@ -1880,6 +1890,10 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                         setTotalPrice:
                                                             returnSalesProvider().setTotalPrice,
                                                         item: TempProductClass(
+                                                          groupUnit:
+                                                              'Others',
+                                                          qttyPerGroup:
+                                                              null,
                                                           isManaged:
                                                               false,
                                                           uuid:
@@ -2378,6 +2392,10 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                               setTotalPrice:
                                                                   returnSalesProvider().setTotalPrice,
                                                               item: TempProductClass(
+                                                                groupUnit:
+                                                                    'Others',
+                                                                qttyPerGroup:
+                                                                    null,
                                                                 isManaged:
                                                                     false,
                                                                 uuid:

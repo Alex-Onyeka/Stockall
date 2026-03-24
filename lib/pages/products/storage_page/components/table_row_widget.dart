@@ -130,13 +130,67 @@ class _TableRowRecordWidgetState
                 ),
               ),
             ),
+            Visibility(
+              visible: shop(context)?.useGroupUnit == true,
+              child: Expanded(
+                flex: 6,
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      right: BorderSide(color: Colors.grey),
+                      left: BorderSide(color: Colors.grey),
+                    ),
+                  ),
+                  padding: EdgeInsets.all(5),
+                  child: Center(
+                    child: Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            style: TextStyle(
+                              fontSize:
+                                  widget
+                                      .theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            formatLargeNumberDouble(
+                              returnData(
+                                context: context,
+                              ).returnTotalGroupQuantityValue(
+                                widget.product,
+                                (widget
+                                            .product
+                                            .totalQttyInStorageDouble ??
+                                        0) +
+                                    (widget
+                                            .product
+                                            .quantity ??
+                                        0),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
             Expanded(
-              flex: 7,
+              flex: 6,
               child: Container(
                 decoration: BoxDecoration(
                   border: Border(
                     right: BorderSide(color: Colors.grey),
-                    left: BorderSide(color: Colors.grey),
+                    left:
+                        shop(context)?.useGroupUnit == true
+                            ? BorderSide.none
+                            : BorderSide(
+                              color: Colors.grey,
+                            ),
                   ),
                 ),
                 padding: EdgeInsets.all(5),
@@ -170,22 +224,76 @@ class _TableRowRecordWidgetState
                 ),
               ),
             ),
+            Visibility(
+              visible: shop(context)?.useGroupUnit == true,
+              child: Expanded(
+                flex: 6,
+                child: QuantityEditWidget(
+                  isGroup: true,
+                  isTotal: true,
+                  product: widget.product,
+                ),
+              ),
+            ),
             Expanded(
-              flex: 7,
+              flex: 6,
               child: QuantityEditWidget(
+                isGroup: false,
                 isTotal: true,
                 product: widget.product,
               ),
             ),
+            Visibility(
+              visible: shop(context)?.useGroupUnit == true,
+              child: Expanded(
+                flex: 6,
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      right: BorderSide(color: Colors.grey),
+                      // left: BorderSide(color: Colors.grey),
+                    ),
+                  ),
+                  padding: EdgeInsets.all(5),
+                  child: Center(
+                    child: Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            style: TextStyle(
+                              fontSize:
+                                  widget
+                                      .theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            formatLargeNumberDouble(
+                              returnData(
+                                context: context,
+                              ).returnGroupQuantityValue(
+                                widget.product,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
             Expanded(
-              flex: 7,
+              flex: 6,
               child: QuantityEditWidget(
+                isGroup: false,
                 isTotal: false,
                 product: widget.product,
               ),
             ),
             Expanded(
-              flex: 7,
+              flex: 6,
               child: Container(
                 padding: EdgeInsets.all(5),
                 child: Center(
@@ -218,7 +326,7 @@ class _TableRowRecordWidgetState
               ),
             ),
             Expanded(
-              flex: 7,
+              flex: 6,
               child: Container(
                 decoration: BoxDecoration(
                   border: Border(
@@ -254,7 +362,7 @@ class _TableRowRecordWidgetState
               ),
             ),
             Expanded(
-              flex: 5,
+              flex: 4,
               child: Container(
                 decoration: BoxDecoration(
                   border: Border(
@@ -269,53 +377,6 @@ class _TableRowRecordWidgetState
                       IsManagedToggleWidget(
                         product: widget.product,
                       ),
-                      // Flexible(
-                      //   child: Text(
-                      //     style: TextStyle(
-                      //       fontSize:
-                      //           widget
-                      //               .theme
-                      //               .mobileTexts
-                      //               .b3
-                      //               .fontSize,
-                      //       fontWeight: FontWeight.bold,
-                      //       color:
-                      //           getDayDifference(
-                      //                         widget
-                      //                                 .product
-                      //                                 .expiryDate ??
-                      //                             DateTime.now(),
-                      //                       ) <
-                      //                       1 &&
-                      //                   widget
-                      //                           .product
-                      //                           .expiryDate !=
-                      //                       null
-                      //               ? widget
-                      //                   .theme
-                      //                   .lightModeColor
-                      //                   .errorColor200
-                      //               : null,
-                      //     ),
-
-                      //     widget.product.expiryDate != null
-                      //         ? getDayDifference(
-                      //                   widget
-                      //                           .product
-                      //                           .expiryDate ??
-                      //                       DateTime.now(),
-                      //                 ) >=
-                      //                 1
-                      //             ? formatDateTime(
-                      //               widget
-                      //                       .product
-                      //                       .expiryDate ??
-                      //                   DateTime.now(),
-                      //             )
-                      //             : 'Item Expired'
-                      //         : 'Not Set',
-                      //   ),
-                      // ),
                     ],
                   ),
                 ),

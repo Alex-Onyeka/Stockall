@@ -203,6 +203,186 @@ void unitsBottomSheet(
   action!();
 }
 
+void groupUnitsBottomSheet(
+  BuildContext context,
+  Function()? action,
+) async {
+  await showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(20),
+      ),
+    ),
+    backgroundColor: Colors.white,
+    builder: (BuildContext context) {
+      return DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.9,
+        maxChildSize: 0.9,
+        minChildSize: 0.3,
+        builder: (context, scrollController) {
+          List<String> units =
+              returnData(context: context).units;
+          units.sort();
+
+          return Container(
+            padding: const EdgeInsets.fromLTRB(
+              30,
+              15,
+              30,
+              45,
+            ),
+            child: Column(
+              children: [
+                Center(
+                  child: Container(
+                    height: 4,
+                    width: 70,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(
+                        5,
+                      ),
+                      color: Colors.grey.shade400,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 30),
+                Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Group Units',
+                          style: TextStyle(
+                            fontSize:
+                                returnTheme(
+                                  context,
+                                ).mobileTexts.b1.fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          'Select Item Group Unit',
+                          style: TextStyle(
+                            fontSize:
+                                returnTheme(
+                                  context,
+                                ).mobileTexts.b2.fontSize,
+                          ),
+                        ),
+                      ],
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        FocusScope.of(context).unfocus();
+                      },
+                      icon: Icon(
+                        returnData(
+                              context: context,
+                            ).groupUnitValueSet
+                            ? Icons.check
+                            : Icons.clear_rounded,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10),
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(
+                        10,
+                      ),
+                      border: Border.all(
+                        color: Colors.grey.shade300,
+                      ),
+                    ),
+                    child: ListView.builder(
+                      controller: scrollController,
+                      itemCount: units.length,
+                      itemBuilder: (context, index) {
+                        String unit = units[index];
+                        return Container(
+                          decoration: BoxDecoration(
+                            border: Border(
+                              top: BorderSide(
+                                color: Colors.grey.shade300,
+                              ),
+                            ),
+                          ),
+                          child: Material(
+                            color: Colors.white,
+                            child: ListTile(
+                              title: Text(
+                                style: TextStyle(
+                                  fontSize:
+                                      returnTheme(
+                                            context,
+                                            listen: false,
+                                          )
+                                          .mobileTexts
+                                          .b2
+                                          .fontSize,
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+                                units[index],
+                              ),
+                              onTap: () {
+                                returnData()
+                                    .selectGroupUnit(
+                                      unit: unit,
+                                    );
+                              },
+                              trailing: Checkbox(
+                                shape: CircleBorder(
+                                  side: BorderSide(),
+                                ),
+                                side: BorderSide(
+                                  color:
+                                      Colors.grey.shade400,
+                                  width: 1.2,
+                                ),
+                                activeColor:
+                                    returnTheme(context)
+                                        .lightModeColor
+                                        .prColor250,
+                                value:
+                                    returnData(
+                                      context: context,
+                                    ).selectedGroupUnit ==
+                                    unit,
+                                onChanged: (value) {
+                                  returnData()
+                                      .selectGroupUnit(
+                                        unit: unit,
+                                      );
+                                },
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    },
+  );
+  action!();
+}
+
 late Future<List<String>> categoriesFuture;
 //
 //

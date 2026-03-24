@@ -188,7 +188,6 @@ class _ShopSetupTwoDesktopState
                 });
                 await shopProvider.createShop(
                   TempShopClass(
-                    // updateNumber: currentUpdate,
                     isVerified: false,
                     currency: selectedCurrency!,
                     employees: [],
@@ -216,6 +215,7 @@ class _ShopSetupTwoDesktopState
                             ? true
                             : false,
                     applyVAT: false,
+                    useGroupUnit: false,
                   ),
                   safeContext,
                 );

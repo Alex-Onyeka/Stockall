@@ -113,41 +113,6 @@ class _EditCartTextFieldState
         TextFormField(
           focusNode: widget.focusNode,
           onFieldSubmitted: widget.onSubmitted,
-          // onChanged: (value) {
-          //   if (widget.controller.text == '.') {
-          //     widget.controller.text = '';
-          //   } else {
-          //     if (widget.controller.text.contains('.')) {
-          //       var parts = widget.controller.text.split(
-          //         '.',
-          //       );
-          //       if (parts[1].isNotEmpty) {
-          //         if (parts[1].length > 3) {
-          //           widget.controller.text = widget
-          //               .controller
-          //               .text
-          //               .substring(
-          //                 0,
-          //                 (widget.controller.text.length -
-          //                     1),
-          //               );
-          //         } else {
-          //           widget.onChanged != null
-          //               ? widget.onChanged!(value)
-          //               : {};
-          //         }
-          //       } else {
-          //         widget.onChanged != null
-          //             ? widget.onChanged!(value)
-          //             : {};
-          //       }
-          //     } else {
-          //       widget.onChanged != null
-          //           ? widget.onChanged!(value)
-          //           : {};
-          //     }
-          //   }
-          // },
           onChanged: (value) {
             if (widget.controller.text == '.') {
               widget.controller.text = '';
@@ -161,11 +126,6 @@ class _EditCartTextFieldState
           keyboardType: TextInputType.numberWithOptions(
             decimal: true,
           ),
-          // inputFormatters: [
-          //   FilteringTextInputFormatter.allow(
-          //     RegExp(r'^\d*\.?\d*'),
-          //   ),
-          // ],
           autocorrect: false,
           enableSuggestions: false,
           style: TextStyle(

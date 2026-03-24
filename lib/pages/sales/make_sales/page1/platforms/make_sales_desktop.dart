@@ -1671,6 +1671,10 @@ class _MakeSalesDesktopState
                                                   returnSalesProvider()
                                                       .setTotalPrice,
                                               item: TempProductClass(
+                                                groupUnit:
+                                                    'Others',
+                                                qttyPerGroup:
+                                                    null,
                                                 isManaged:
                                                     false,
                                                 uuid:
@@ -1775,6 +1779,10 @@ class _MakeSalesDesktopState
                                                     setTotalPrice:
                                                         returnSalesProvider().setTotalPrice,
                                                     item: TempProductClass(
+                                                      groupUnit:
+                                                          'Others',
+                                                      qttyPerGroup:
+                                                          null,
                                                       isManaged:
                                                           false,
                                                       uuid:
@@ -1934,6 +1942,10 @@ class _MakeSalesDesktopState
                                                                           setTotalPrice:
                                                                               returnSalesProvider().setTotalPrice,
                                                                           item: TempProductClass(
+                                                                            groupUnit:
+                                                                                'Others',
+                                                                            qttyPerGroup:
+                                                                                null,
                                                                             isManaged:
                                                                                 false,
                                                                             uuid:
@@ -2541,6 +2553,10 @@ class _MakeSalesDesktopState
                                                       setTotalPrice:
                                                           returnSalesProvider().setTotalPrice,
                                                       item: TempProductClass(
+                                                        groupUnit:
+                                                            'Others',
+                                                        qttyPerGroup:
+                                                            null,
                                                         isManaged:
                                                             false,
                                                         uuid:

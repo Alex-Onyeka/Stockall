@@ -178,7 +178,6 @@ class _ShopSetupTwoMobileState
                 });
                 await shopProvider.createShop(
                   TempShopClass(
-                    // updateNumber: currentUpdate,
                     isVerified: false,
                     currency: selectedCurrency!,
                     employees: [],
@@ -206,6 +205,7 @@ class _ShopSetupTwoMobileState
                             ? true
                             : false,
                     applyVAT: false,
+                    useGroupUnit: false,
                   ),
                   safeContext,
                 );
@@ -217,16 +217,6 @@ class _ShopSetupTwoMobileState
 
                 await Future.delayed(Duration(seconds: 3));
 
-                // if (safeContext.mounted) {
-                //   Navigator.pushReplacement(
-                //     safeContext,
-                //     MaterialPageRoute(
-                //       builder: (context) {
-                //         return BasePage();
-                //       },
-                //     ),
-                //   );
-                // }
                 if (safeContext.mounted) {
                   if (returnShopProvider()
                       .userShops

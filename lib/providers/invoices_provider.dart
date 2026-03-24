@@ -696,6 +696,8 @@ class InvoicesProvider extends ChangeNotifier {
                     record.quantity;
 
         TempProductClass productNew = TempProductClass(
+          groupUnit: 'Others',
+          qttyPerGroup: null,
           name: record.productName,
           unit: record.unit ?? 'Others',
           isRefundable: false,

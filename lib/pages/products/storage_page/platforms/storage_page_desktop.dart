@@ -367,152 +367,154 @@ class StoragePageDesktopState
                         child: Builder(
                           builder: (context) {
                             if (sortIndex == 1) {
-                              return SingleChildScrollView(
+                              return ListView(
                                 primary: false,
                                 scrollDirection:
                                     Axis.horizontal,
-                                child: SizedBox(
-                                  width:
-                                      products.isEmpty &&
-                                              screenWidth(
-                                                    context,
-                                                  ) <
-                                                  tabletScreen
-                                          ? screenWidth(
-                                            context,
-                                          )
-                                          : products
-                                                  .isEmpty &&
-                                              screenWidth(
-                                                    context,
-                                                  ) >
-                                                  tabletScreen
-                                          ? screenWidth(
-                                                context,
-                                              ) -
-                                              100
-                                          : products
-                                                  .isNotEmpty &&
-                                              screenWidth(
-                                                    context,
-                                                  ) <=
-                                                  750
-                                          ? screenWidth(
-                                                context,
-                                              ) +
-                                              130
-                                          : screenWidth(
-                                                context,
-                                              ) -
-                                              200,
-                                  child: RefreshIndicator(
-                                    onRefresh: () {
-                                      return getProducts();
-                                    },
-                                    backgroundColor:
-                                        Colors.white,
-                                    color:
-                                        theme
-                                            .lightModeColor
-                                            .prColor300,
-                                    displacement: 10,
-                                    child: ListView(
-                                      children: [
-                                        SummaryTableHeadingBar(
-                                          isHeading: true,
-                                          theme: theme,
-                                          product: products,
-                                        ),
-                                        Builder(
-                                          builder: (
-                                            context,
-                                          ) {
-                                            if (products
-                                                .isEmpty) {
-                                              return Padding(
-                                                padding:
-                                                    const EdgeInsets.only(
-                                                      top:
-                                                          100.0,
-                                                    ),
-                                                child: EmptyWidgetDisplayOnly(
-                                                  title:
-                                                      'Empty List',
-                                                  subText:
-                                                      'No Item has been recorded yet',
-                                                  theme:
-                                                      theme,
-                                                  height:
-                                                      35,
-                                                  icon:
-                                                      Icons
-                                                          .clear,
-                                                ),
-                                              );
-                                            } else {
-                                              return RefreshIndicator(
-                                                onRefresh: () {
-                                                  return getProducts();
-                                                },
-                                                backgroundColor:
-                                                    Colors
-                                                        .white,
-                                                color:
-                                                    theme
-                                                        .lightModeColor
-                                                        .prColor300,
-                                                displacement:
-                                                    10,
-                                                child: SingleChildScrollView(
-                                                  primary:
-                                                      true,
-                                                  child: Column(
-                                                    children: [
-                                                      ListView.builder(
-                                                        shrinkWrap:
-                                                            true,
-                                                        itemCount:
-                                                            products.length,
-                                                        physics:
-                                                            NeverScrollableScrollPhysics(),
-
-                                                        itemBuilder: (
-                                                          context,
-                                                          index,
-                                                        ) {
-                                                          var product =
-                                                              products[index];
-                                                          return TableRowRecordWidget(
-                                                            theme:
-                                                                theme,
-                                                            product:
-                                                                product,
-                                                          );
-                                                        },
+                                children: [
+                                  SizedBox(
+                                    width:
+                                        products.isEmpty &&
+                                                screenWidth(
+                                                      context,
+                                                    ) <
+                                                    tabletScreen
+                                            ? screenWidth(
+                                              context,
+                                            )
+                                            : products
+                                                    .isEmpty &&
+                                                screenWidth(
+                                                      context,
+                                                    ) >
+                                                    tabletScreen
+                                            ? screenWidth(
+                                                  context,
+                                                ) -
+                                                100
+                                            : products
+                                                    .isNotEmpty &&
+                                                screenWidth(
+                                                      context,
+                                                    ) <=
+                                                    750
+                                            ? shop(
+                                                      context,
+                                                    )?.useGroupUnit ==
+                                                    true
+                                                ? 1300
+                                                : 1000
+                                            : 1600,
+                                    child: RefreshIndicator(
+                                      onRefresh: () {
+                                        return getProducts();
+                                      },
+                                      backgroundColor:
+                                          Colors.white,
+                                      color:
+                                          theme
+                                              .lightModeColor
+                                              .prColor300,
+                                      displacement: 10,
+                                      child: ListView(
+                                        children: [
+                                          SummaryTableHeadingBar(
+                                            isHeading: true,
+                                            theme: theme,
+                                            product:
+                                                products,
+                                          ),
+                                          Builder(
+                                            builder: (
+                                              context,
+                                            ) {
+                                              if (products
+                                                  .isEmpty) {
+                                                return Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                        top:
+                                                            100.0,
                                                       ),
-                                                      SummaryTableHeadingBar(
-                                                        isHeading:
-                                                            false,
-                                                        theme:
-                                                            theme,
-                                                        product:
-                                                            products,
-                                                      ),
-                                                      SizedBox(
-                                                        height:
-                                                            20,
-                                                      ),
-                                                    ],
+                                                  child: EmptyWidgetDisplayOnly(
+                                                    title:
+                                                        'Empty List',
+                                                    subText:
+                                                        'No Item has been recorded yet',
+                                                    theme:
+                                                        theme,
+                                                    height:
+                                                        35,
+                                                    icon:
+                                                        Icons.clear,
                                                   ),
-                                                ),
-                                              );
-                                            }
-                                          },
-                                        ),
-                                      ],
+                                                );
+                                              } else {
+                                                return RefreshIndicator(
+                                                  onRefresh:
+                                                      () {
+                                                        return getProducts();
+                                                      },
+                                                  backgroundColor:
+                                                      Colors
+                                                          .white,
+                                                  color:
+                                                      theme
+                                                          .lightModeColor
+                                                          .prColor300,
+                                                  displacement:
+                                                      10,
+                                                  child: SingleChildScrollView(
+                                                    primary:
+                                                        true,
+                                                    child: Column(
+                                                      children: [
+                                                        ListView.builder(
+                                                          shrinkWrap:
+                                                              true,
+                                                          itemCount:
+                                                              products.length,
+                                                          physics:
+                                                              NeverScrollableScrollPhysics(),
+
+                                                          itemBuilder: (
+                                                            context,
+                                                            index,
+                                                          ) {
+                                                            var product =
+                                                                products[index];
+                                                            return TableRowRecordWidget(
+                                                              theme:
+                                                                  theme,
+                                                              product:
+                                                                  product,
+                                                            );
+                                                          },
+                                                        ),
+                                                        SummaryTableHeadingBar(
+                                                          isHeading:
+                                                              false,
+                                                          theme:
+                                                              theme,
+                                                          product:
+                                                              products,
+                                                        ),
+                                                        SizedBox(
+                                                          height:
+                                                              20,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
+                                              }
+                                            },
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
+                                ],
                               );
                             } else if (sortIndex == 2) {
                               return SizedBox(

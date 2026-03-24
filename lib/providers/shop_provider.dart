@@ -1108,6 +1108,71 @@ class ShopProvider extends ChangeNotifier {
     }
   }
 
+  bool isUseGroupUnitLoading = false;
+
+  Future<int> toggleUseGroupUnit() async {
+    bool isOnline = await connectivity.isOnline();
+    isUseGroupUnitLoading = true;
+    notifyListeners();
+    try {
+      if (isOnline) {
+        Map<String, dynamic>? res =
+            await supabase
+                .from('shops')
+                .update({
+                  'use_group_unit':
+                      !userShop()!.useGroupUnit!,
+                })
+                .eq('shop_id', userShop()!.shopId!)
+                .select()
+                .maybeSingle();
+        if (res == null) {
+          print('Use Group Unit Update Failed');
+          isUseGroupUnitLoading = false;
+          notifyListeners();
+          return 0;
+        }
+
+        var shops = await getUserShops();
+        setShops(shops);
+        isUseGroupUnitLoading = false;
+        notifyListeners();
+        return 1;
+      } else {
+        try {
+          userShop()!.updatedAt = DateTime.now();
+          userShop()!.useGroupUnit =
+              !userShop()!.useGroupUnit!;
+          await ShopFunc().updateShop(userShop()!);
+          if (userShop() != null) {
+            await UpdatedShopFunc().createUpdatedShop(
+              UpdatedShop(shop: userShop()!),
+            );
+            // setShops(shop);
+            notifyListeners();
+          }
+          isUseGroupUnitLoading = false;
+          notifyListeners();
+          return 1;
+        } catch (e) {
+          print(
+            "❌ Failed to Update Use Group Unit Offline: ${e.toString()}",
+          );
+          isUseGroupUnitLoading = false;
+          notifyListeners();
+          return 0;
+        }
+      }
+    } catch (e) {
+      print(
+        "❌ Failed to Update Use Group Unit: ${e.toString()}",
+      );
+      isUseGroupUnitLoading = false;
+      notifyListeners();
+      return 0;
+    }
+  }
+
   bool allowBulkSale = false;
 
   Future<int> toggleAllowBulkSale() async {

@@ -904,6 +904,8 @@ class SalesProvider extends ChangeNotifier {
 
                   TempProductClass
                   product = TempProductClass(
+                    groupUnit: 'Others',
+                    qttyPerGroup: null,
                     name: record.productName,
                     unit: 'Others',
                     isRefundable: false,
@@ -1171,6 +1173,8 @@ class SalesProvider extends ChangeNotifier {
 
                   TempProductClass
                   product = TempProductClass(
+                    groupUnit: 'Others',
+                    qttyPerGroup: null,
                     name: record.productName,
                     unit: 'Others',
                     isRefundable: false,
@@ -1725,6 +1729,8 @@ class SalesProvider extends ChangeNotifier {
                     record.quantity;
 
         TempProductClass productNew = TempProductClass(
+          groupUnit: 'Others',
+          qttyPerGroup: null,
           name: record.productName,
           unit: record.unit ?? 'Others',
           isRefundable: false,

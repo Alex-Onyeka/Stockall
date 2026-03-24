@@ -1456,8 +1456,10 @@ class DataProvider extends ChangeNotifier {
     unitValueSet = false;
     colorValueSet = false;
     sizeValueSet = false;
+    groupUnitValueSet = false;
     // clearEndDate();
     // clearStartDate();
+    clearGroupUnit();
     clearExpDate();
     clearExpenseUnit();
     notifyListeners();
@@ -1595,6 +1597,8 @@ class DataProvider extends ChangeNotifier {
 
   bool unitValueSet = false;
 
+  bool groupUnitValueSet = false;
+
   List<String> units = [
     'Ags',
     'Barrels',
@@ -1651,6 +1655,45 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  String? selectedGroupUnit;
+
+  void clearGroupUnit() {
+    selectedGroupUnit = null;
+    notifyListeners();
+  }
+
+  void selectGroupUnit({String? unit}) {
+    if (selectedGroupUnit == null) {
+      selectedGroupUnit = unit;
+      groupUnitValueSet = true;
+    } else if (selectedGroupUnit != unit) {
+      selectedGroupUnit = unit;
+      groupUnitValueSet = true;
+    } else {
+      selectedGroupUnit = null;
+      groupUnitValueSet = false;
+    }
+    notifyListeners();
+  }
+
+  double returnGroupQuantityValue(
+    TempProductClass product,
+  ) {
+    return product.quantity != null &&
+            product.qttyPerGroup != null
+        ? (product.quantity ?? 0) /
+            (product.qttyPerGroup ?? 0)
+        : 0;
+  }
+
+  double returnTotalGroupQuantityValue(
+    TempProductClass product,
+    double totalValue,
+  ) {
+    return product.qttyPerGroup != null
+        ? totalValue / (product.qttyPerGroup ?? 0)
+        : 0;
+  }
   //
   //
   //

@@ -22,6 +22,7 @@ import 'package:stockall/pages/authentication/components/email_text_field.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
 import 'package:stockall/pages/settings/components/manage_inventory_switch_toggle.dart';
 import 'package:stockall/pages/settings/components/toggle_bulk_sale.dart';
+import 'package:stockall/pages/settings/components/use_group_unit_toggle.dart';
 import 'package:stockall/pages/settings/settings_page.dart';
 import 'package:stockall/pages/shop_setup/edit_receipt_page/edit_receipt.dart';
 import 'package:stockall/pages/shop_setup/shop_dashboard/shop_dashboard.dart';
@@ -771,6 +772,7 @@ class _SettingsPageMobileState
                           ),
                         ),
                         ManageInventoryToggleSwitch(),
+                        UseGroupUnitToggle(),
                         Visibility(
                           visible: authorization(
                             authorized:

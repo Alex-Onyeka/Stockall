@@ -28,6 +28,7 @@ List<SubplanClass> subPlans = [
       setexpiryDate: true,
       allowStockallToManageInventory: true,
       generateItemBarcode: true,
+      useGroupUnit: true,
       manageInventoryStorage: true,
     ),
     salesAuth: SalesAuth(
@@ -98,6 +99,7 @@ List<SubplanClass> subPlans = [
       allowStockallToManageInventory: true,
       generateItemBarcode: true,
       manageInventoryStorage: true,
+      useGroupUnit: true,
     ),
     salesAuth: SalesAuth(
       useOfBarcode: true,
@@ -167,6 +169,7 @@ List<SubplanClass> subPlans = [
       allowStockallToManageInventory: true,
       generateItemBarcode: true,
       manageInventoryStorage: true,
+      useGroupUnit: true,
     ),
     salesAuth: SalesAuth(
       useOfBarcode: true,
@@ -237,6 +240,7 @@ List<SubplanClass> subPlans = [
       allowStockallToManageInventory: true,
       generateItemBarcode: false,
       manageInventoryStorage: false,
+      useGroupUnit: true,
     ),
     salesAuth: SalesAuth(
       useOfBarcode: true,
@@ -307,6 +311,7 @@ List<SubplanClass> subPlans = [
       allowStockallToManageInventory: false,
       generateItemBarcode: false,
       manageInventoryStorage: false,
+      useGroupUnit: false,
     ),
     salesAuth: SalesAuth(
       useOfBarcode: false,
@@ -377,6 +382,7 @@ List<SubplanClass> subPlans = [
       setexpiryDate: false,
       allowStockallToManageInventory: false,
       generateItemBarcode: false,
+      useGroupUnit: false,
     ),
     salesAuth: SalesAuth(
       useOfBarcode: false,

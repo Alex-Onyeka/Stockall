@@ -30,6 +30,8 @@ class _AddProductState extends State<AddProduct> {
       TextEditingController();
   TextEditingController storageQuantityController =
       TextEditingController();
+  TextEditingController qttyPerGroupController =
+      TextEditingController();
 
   @override
   void dispose() {
@@ -41,6 +43,7 @@ class _AddProductState extends State<AddProduct> {
     quantityController.dispose();
     lowQttyController.dispose();
     storageQuantityController.dispose();
+    qttyPerGroupController.dispose();
   }
 
   @override
@@ -75,6 +78,8 @@ class _AddProductState extends State<AddProduct> {
                 costController: costController,
                 sellingController: sellingController,
                 nameController: nameController,
+                qttyPerGroupController:
+                    qttyPerGroupController,
               );
             } else {
               return AddProductDesktop(
@@ -87,6 +92,8 @@ class _AddProductState extends State<AddProduct> {
                 costController: costController,
                 sellingController: sellingController,
                 nameController: nameController,
+                qttyPerGroupController:
+                    qttyPerGroupController,
               );
             }
           },

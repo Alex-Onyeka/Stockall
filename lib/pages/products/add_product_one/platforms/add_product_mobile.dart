@@ -30,6 +30,7 @@ class AddProductMobile extends StatefulWidget {
   final TextEditingController quantityController;
   final TextEditingController discountController;
   final TextEditingController storageQuantityController;
+  final TextEditingController qttyPerGroupController;
 
   const AddProductMobile({
     super.key,
@@ -40,6 +41,7 @@ class AddProductMobile extends StatefulWidget {
     required this.quantityController,
     required this.discountController,
     required this.storageQuantityController,
+    required this.qttyPerGroupController,
     this.product,
   });
 
@@ -61,6 +63,7 @@ class _AddProductMobileState
   //
 
   bool isOpenUnit = false;
+  bool isOpenGroupUnit = false;
   bool isSizedTypeOpen = false;
 
   TextEditingController expiryDateC =
@@ -153,6 +156,21 @@ class _AddProductMobileState
                   name: widget.nameController.text.trim(),
                   unit:
                       dataProvider.selectedUnit ?? 'Others',
+                  groupUnit:
+                      dataProvider.selectedGroupUnit ??
+                      'Others',
+                  qttyPerGroup:
+                      widget
+                              .qttyPerGroupController
+                              .text
+                              .isNotEmpty
+                          ? double.parse(
+                            widget
+                                .qttyPerGroupController
+                                .text
+                                .replaceAll(',', ''),
+                          )
+                          : null,
                   sizeType: dataProvider.selectedSize,
                   isRefundable:
                       dataProvider.isProductRefundable,
@@ -198,12 +216,6 @@ class _AddProductMobileState
                     widget.discountController.text
                         .replaceAll(',', ''),
                   ),
-                  // startDate:
-                  //     widget.discountController.text.isEmpty
-                  //         ? null
-                  //         : (dataProvider.startDate ??
-                  //             DateTime.now()),
-                  // endDate: dataProvider.endDate,
                   expiryDate: dataProvider.expiryDate,
                   category: dataProvider.selectedCategory,
                   uuid: createdProductUuid,
@@ -294,6 +306,17 @@ class _AddProductMobileState
                 uuid: widget.product!.uuid,
                 name: widget.nameController.text,
                 unit: provider.selectedUnit!,
+                groupUnit: provider.selectedGroupUnit,
+                qttyPerGroup:
+                    widget
+                            .qttyPerGroupController
+                            .text
+                            .isNotEmpty
+                        ? double.parse(
+                          widget.qttyPerGroupController.text
+                              .replaceAll(',', ''),
+                        )
+                        : null,
                 isRefundable: provider.isProductRefundable,
                 costPrice:
                     widget.costController.text.isNotEmpty
@@ -431,8 +454,13 @@ class _AddProductMobileState
       // returnData().selectedUnit =
       //     widget.product!.unit;
       returnData().selectUnit(widget.product!.unit);
-      // returnData().selectedSize =
-      //     widget.product!.sizeType ?? '';
+      returnData().selectGroupUnit(
+        unit: widget.product!.groupUnit,
+      );
+      widget.qttyPerGroupController.text =
+          widget.product!.qttyPerGroup != null
+              ? widget.product!.qttyPerGroup!.toString()
+              : '';
       widget.product!.sizeType != null
           ? returnData().selectSize(
             widget.product!.sizeType!,
@@ -443,11 +471,6 @@ class _AddProductMobileState
             widget.product!.category!,
           )
           : null;
-      // returnData().setBothDates(
-      //   start: widget.product!.startDate,
-      //   end: widget.product!.endDate,
-      //   expDate: widget.product!.expiryDate,
-      // );
       setState(() {
         costDiscount =
             widget.product!.discount != null &&
@@ -517,20 +540,6 @@ class _AddProductMobileState
         Scaffold(
           appBar: AppBar(
             scrolledUnderElevation: 0,
-            // leading: IconButton(
-            //   onPressed: () {
-            //     Navigator.of(context).pop();
-            //   },
-            //   icon: Padding(
-            //     padding: const EdgeInsets.only(
-            //       left: 20.0,
-            //       right: 10,
-            //     ),
-            //     child: Icon(
-            //       Icons.arrow_back_ios_new_rounded,
-            //     ),
-            //   ),
-            // ),
             centerTitle: true,
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -1029,6 +1038,10 @@ class _AddProductMobileState
                                                     }
 
                                                     var tempProduct = TempProductClass(
+                                                      groupUnit:
+                                                          widget.product?.groupUnit,
+                                                      qttyPerGroup:
+                                                          widget.product?.qttyPerGroup,
                                                       name:
                                                           widget.product ==
                                                                   null
@@ -1370,6 +1383,92 @@ class _AddProductMobileState
                                             ).selectedUnit ??
                                             'Select Item Unit',
                                         theme: theme,
+                                      ),
+                                    ),
+                                    SizedBox(height: 10),
+                                    Visibility(
+                                      visible:
+                                          returnShopProvider(
+                                                context:
+                                                    context,
+                                              )
+                                              .userShop()
+                                              ?.useGroupUnit ==
+                                          true,
+                                      child: SubWrapper(
+                                        isVisible:
+                                            !ItemsAuthAction()
+                                                .useGroupUnitAction(
+                                                  context:
+                                                      context,
+                                                ),
+                                        mainWidget: MainDropdown(
+                                          valueSet:
+                                              returnData(
+                                                context:
+                                                    context,
+                                              ).groupUnitValueSet,
+                                          onTap: () {
+                                            ItemsAuthAction().useGroupUnitAction(
+                                              context:
+                                                  context,
+                                              action: () {
+                                                groupUnitsBottomSheet(
+                                                  context,
+                                                  () {
+                                                    setState(() {
+                                                      isOpenGroupUnit =
+                                                          !isOpenGroupUnit;
+                                                    });
+                                                  },
+                                                );
+                                                setState(() {
+                                                  isOpenGroupUnit =
+                                                      !isOpenGroupUnit;
+                                                });
+                                              },
+                                            );
+                                          },
+                                          isOpen:
+                                              isOpenGroupUnit,
+                                          title:
+                                              'Item Group Unit (Optional)',
+                                          hint:
+                                              returnData(
+                                                context:
+                                                    context,
+                                              ).selectedGroupUnit ??
+                                              'Select Item Group Unit',
+                                          theme: theme,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(height: 10),
+                                    Visibility(
+                                      visible:
+                                          returnShopProvider(
+                                                context:
+                                                    context,
+                                              )
+                                              .userShop()
+                                              ?.useGroupUnit ==
+                                          true,
+                                      child: Column(
+                                        children: [
+                                          EditCartTextField(
+                                            theme: theme,
+                                            hint:
+                                                'Enter Item Quantity in Group',
+                                            title:
+                                                'Quantity in Group (Optional)',
+                                            controller:
+                                                widget
+                                                    .qttyPerGroupController,
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                        ],
                                       ),
                                     ),
                                     SizedBox(height: 10),

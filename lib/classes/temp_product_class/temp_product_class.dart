@@ -88,6 +88,12 @@ class TempProductClass {
   @HiveField(27)
   double? totalQttyInStorageDouble;
 
+  @HiveField(28)
+  String? groupUnit;
+
+  @HiveField(29)
+  double? qttyPerGroup;
+
   TempProductClass({
     this.id,
     required this.name,
@@ -117,6 +123,8 @@ class TempProductClass {
     this.uuid,
     this.totalQttyInStorage,
     this.totalQttyInStorageDouble,
+    required this.groupUnit,
+    required this.qttyPerGroup,
   });
 
   factory TempProductClass.fromJson(
@@ -176,6 +184,9 @@ class TempProductClass {
       totalQttyInStorageDouble:
           (json['total_qtty_in_storage_double'] as num?)
               ?.toDouble(),
+      groupUnit: json['group_unit'] as String?,
+      qttyPerGroup:
+          (json['qtty_per_group'] as num?)?.toDouble(),
     );
   }
 
@@ -211,6 +222,8 @@ class TempProductClass {
       'total_qtty_in_storage': totalQttyInStorage,
       'total_qtty_in_storage_double':
           totalQttyInStorageDouble,
+      'group_unit': groupUnit,
+      'qtty_per_group': qttyPerGroup,
     };
   }
 }
