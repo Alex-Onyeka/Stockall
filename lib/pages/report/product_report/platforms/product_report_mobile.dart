@@ -2124,8 +2124,30 @@ class _TableRowRecordWidgetState
                           fontWeight: FontWeight.bold,
                         ),
 
-                        widget.product.category ??
-                            'Not Set',
+                        returnCategoriesProvider(
+                                  context: context,
+                                ).categories
+                                .where(
+                                  (cat) =>
+                                      cat.uuid ==
+                                      widget
+                                          .product
+                                          .categoryUuid,
+                                )
+                                .isNotEmpty
+                            ? returnCategoriesProvider(
+                                  context: context,
+                                ).categories
+                                .where(
+                                  (cat) =>
+                                      cat.uuid ==
+                                      widget
+                                          .product
+                                          .categoryUuid,
+                                )
+                                .first
+                                .name
+                            : 'Not Set',
                       ),
                     ),
                   ],

@@ -347,6 +347,9 @@ class ShopProvider extends ChangeNotifier {
         shopOwnerUser =
             ShopOwnerFunc().getShopOwnerUser()?.shopOwner;
       }
+      await returnCategoriesProvider().getCategories(
+        userShop()!.shopId!,
+      );
 
       notifyListeners();
       return userShops;
@@ -580,95 +583,96 @@ class ShopProvider extends ChangeNotifier {
     }
   }
 
-  Future<List<String>> fetchShopCategories(
-    int shopId,
-  ) async {
-    bool isOnline = await connectivity.isOnline();
-    if (isOnline) {
-      final response =
-          await supabase
-              .from('shops')
-              .select('categories')
-              .eq('shop_id', shopId)
-              .single();
+  // Future<List<String>> fetchShopCategories(
+  //   int shopId,
+  // ) async {
+  //   bool isOnline = await connectivity.isOnline();
+  //   if (isOnline) {
+  //     final response =
+  //         await supabase
+  //             .from('shops')
+  //             .select('categories')
+  //             .eq('shop_id', shopId)
+  //             .single();
 
-      final List<dynamic> categories =
-          response['categories'] ?? [];
-      notifyListeners();
-      return categories.cast<String>();
-    } else {
-      // TempShopClass? shop = ShopFunc().getShop();
-      if (userShop() != null) {
-        final List<String>? categories =
-            userShop()!.categories;
-        return categories ?? [];
-      } else {
-        return [];
-      }
-    }
-  }
+  //     final List<dynamic> categories =
+  //         response['categories'] ?? [];
+  //     notifyListeners();
+  //     return categories.cast<String>();
+  //   } else {
+  //     // TempShopClass? shop = ShopFunc().getShop();
+  //     if (userShop() != null) {
+  //       final List<String>? categories =
+  //           userShop()!.categories;
+  //       return categories ?? [];
+  //     } else {
+  //       return [];
+  //     }
+  //   }
+  // }
 
-  Future<void> appendShopCategories({
-    required int shopId,
-    required List<String> newCategories,
-  }) async {
-    bool isOnline = await connectivity.isOnline();
-    if (isOnline) {
-      try {
-        // Step 1: Fetch existing categories
-        final response =
-            await supabase
-                .from('shops')
-                .select('categories')
-                .eq('shop_id', shopId)
-                .maybeSingle();
+  // Future<int> appendShopCategories({
+  //   required int shopId,
+  //   required String newCategory,
+  //   required bool isDelete,
+  // }) async {
+  //   bool isOnline = await connectivity.isOnline();
+  //   if (isOnline) {
+  //     try {
+  //       List<String> existingCategories =
+  //           returnShopProvider().userShop()?.categories ??
+  //           [];
 
-        List<String> existingCategories =
-            (response?['categories'] as List<dynamic>?)
-                ?.cast<String>() ??
-            [];
+  //       isDelete
+  //           ? existingCategories.removeWhere(
+  //             (cat) =>
+  //                 cat.toLowerCase() ==
+  //                 newCategory.toLowerCase(),
+  //           )
+  //           : existingCategories.add(newCategory);
+  //       List<String> updatedCategories = existingCategories;
 
-        // Step 2: Merge and deduplicate
-        final updatedCategories =
-            {
-              ...existingCategories,
-              ...newCategories,
-            }.toList();
+  //       await supabase
+  //           .from('shops')
+  //           .update({'categories': updatedCategories})
+  //           .eq('shop_id', shopId)
+  //           .select();
 
-        // Step 3: Update in database
+  //       await getUserShops();
+  //       notifyListeners();
+  //       return 1;
+  //       // print('Updated categories: $updateResult');
+  //     } catch (e) {
+  //       print(
+  //         'Error appending categories: ${e.toString()}',
+  //       );
+  //       return 0;
+  //     }
+  //   } else {
+  //     // TempShopClass? shop = ShopFunc().getShop();
+  //     if (userShop() != null) {
+  //       userShop()!.updatedAt = DateTime.now();
+  //       List<String> existingCategories =
+  //           returnShopProvider().userShop()?.categories ??
+  //           [];
 
-        await supabase
-            .from('shops')
-            .update({'categories': updatedCategories})
-            .eq('shop_id', shopId)
-            .select();
-
-        await getUserShops();
-        notifyListeners();
-
-        // print('Updated categories: $updateResult');
-      } catch (e) {
-        // print('Error appending categories: $e');
-        rethrow;
-      }
-    } else {
-      // TempShopClass? shop = ShopFunc().getShop();
-      if (userShop() != null) {
-        userShop()!.updatedAt = DateTime.now();
-        userShop()!.categories =
-            {
-              ...userShop()!.categories ?? [],
-              ...newCategories,
-            }.toList();
-        await ShopFunc().updateShop(userShop()!);
-        await UpdatedShopFunc().createUpdatedShop(
-          UpdatedShop(shop: userShop()!),
-        );
-        // setShop(shop);
-        notifyListeners();
-      }
-    }
-  }
+  //       isDelete
+  //           ? existingCategories.remove(newCategory)
+  //           : existingCategories.add(newCategory);
+  //       List<String> updatedCategories = existingCategories;
+  //       userShop()?.categories = updatedCategories;
+  //       await ShopFunc().updateShop(userShop()!);
+  //       await UpdatedShopFunc().createUpdatedShop(
+  //         UpdatedShop(shop: userShop()!),
+  //       );
+  //       // setShop(shop);
+  //       notifyListeners();
+  //       return 1;
+  //     } else {
+  //       return 0;
+  //     }
+  //   }
+  // }
 
   Future<void> addEmployeeToShop({
     required String newEmployeeId,

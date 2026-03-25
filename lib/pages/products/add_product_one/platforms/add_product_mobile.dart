@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_categories/category_class.dart';
 // import 'package:path/path.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
@@ -217,7 +218,8 @@ class _AddProductMobileState
                         .replaceAll(',', ''),
                   ),
                   expiryDate: dataProvider.expiryDate,
-                  category: dataProvider.selectedCategory,
+                  categoryUuid:
+                      dataProvider.selectedCategory?.uuid,
                   uuid: createdProductUuid,
                 ),
                 context,
@@ -344,7 +346,8 @@ class _AddProductMobileState
                         : null,
                 shopId: userShop!.shopId!,
                 barcode: barcode,
-                category: provider.selectedCategory,
+                categoryUuid:
+                    provider.selectedCategory?.uuid,
                 createdAt: widget.product!.createdAt,
                 discount: double.tryParse(
                   widget.discountController.text.replaceAll(
@@ -466,9 +469,27 @@ class _AddProductMobileState
             widget.product!.sizeType!,
           )
           : null;
-      widget.product!.category != null
+      widget.product!.categoryUuid != null
           ? returnData().selectCategory(
-            widget.product!.category!,
+            returnCategoriesProvider().categories
+                    .where(
+                      (cat) =>
+                          cat.uuid ==
+                          widget.product?.categoryUuid,
+                    )
+                    .isNotEmpty
+                ? returnCategoriesProvider().categories
+                    .where(
+                      (cat) =>
+                          cat.uuid ==
+                          widget.product?.categoryUuid,
+                    )
+                    .first
+                : CategoryClass(
+                  name: 'Not Set',
+                  shopId: shopId(),
+                  uuid: 'uuid',
+                ),
           )
           : null;
       setState(() {
@@ -1560,9 +1581,11 @@ class _AddProductMobileState
                                             'Category (Optional)',
                                         hint:
                                             returnData(
-                                              context:
-                                                  context,
-                                            ).selectedCategory ??
+                                                  context:
+                                                      context,
+                                                )
+                                                .selectedCategory
+                                                ?.name ??
                                             'Select Item Category',
                                         theme: theme,
                                       ),

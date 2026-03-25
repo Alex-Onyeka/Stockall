@@ -651,8 +651,8 @@ class _ProductDetailsDesktopState
                                                                                                 product.shopId,
                                                                                             barcode:
                                                                                                 product.barcode,
-                                                                                            category:
-                                                                                                product.category,
+                                                                                            categoryUuid:
+                                                                                                product.categoryUuid,
                                                                                             createdAt:
                                                                                                 product.createdAt,
                                                                                             discount:
@@ -974,8 +974,8 @@ class _ProductDetailsDesktopState
                                                                           product.shopId,
                                                                       barcode:
                                                                           product.barcode,
-                                                                      category:
-                                                                          product.category,
+                                                                      categoryUuid:
+                                                                          product.categoryUuid,
                                                                       createdAt:
                                                                           product.createdAt,
                                                                       discount:
@@ -1306,9 +1306,34 @@ class _ProductDetailsDesktopState
                                                 widget
                                                     .theme,
                                             mainText:
-                                                product
-                                                    .category ??
-                                                'Not Set',
+                                                returnCategoriesProvider(
+                                                          context:
+                                                              context,
+                                                        )
+                                                        .categories
+                                                        .where(
+                                                          (
+                                                            cat,
+                                                          ) =>
+                                                              cat.uuid ==
+                                                              product.categoryUuid,
+                                                        )
+                                                        .isNotEmpty
+                                                    ? returnCategoriesProvider(
+                                                          context:
+                                                              context,
+                                                        )
+                                                        .categories
+                                                        .where(
+                                                          (
+                                                            cat,
+                                                          ) =>
+                                                              cat.uuid ==
+                                                              product.categoryUuid,
+                                                        )
+                                                        .first
+                                                        .name
+                                                    : 'Not Set',
                                             text:
                                                 'Category',
                                           ),
@@ -2128,8 +2153,8 @@ class _ProductDetailsDesktopState
                                                                       product.shopId,
                                                                   barcode:
                                                                       product.barcode,
-                                                                  category:
-                                                                      product.category,
+                                                                  categoryUuid:
+                                                                      product.categoryUuid,
                                                                   createdAt:
                                                                       product.createdAt,
                                                                   discount:
@@ -2657,8 +2682,8 @@ class _ProductDetailsDesktopState
                                                                         product.shopId,
                                                                     barcode:
                                                                         product.barcode,
-                                                                    category:
-                                                                        product.category,
+                                                                    categoryUuid:
+                                                                        product.categoryUuid,
                                                                     createdAt:
                                                                         product.createdAt,
                                                                     discount:

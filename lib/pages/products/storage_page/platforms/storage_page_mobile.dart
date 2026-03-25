@@ -1192,7 +1192,7 @@ class _InventoryUpdateWidgetMobileState
           context: context,
         );
       } else {
-        return value;
+        return formatLargeNumber(value);
       }
     }
   }

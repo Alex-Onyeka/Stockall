@@ -21,6 +21,7 @@ import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
 import 'package:stockall/pages/barcode_printing_page/barcode_printing_page.dart';
+import 'package:stockall/pages/categories/categories_page.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
 import 'package:stockall/pages/settings/components/manage_inventory_switch_toggle.dart';
 import 'package:stockall/pages/settings/components/toggle_bulk_sale.dart';
@@ -262,6 +263,47 @@ class _SettingsPageDesktopState
                             ),
                             ManageInventoryToggleSwitch(),
                             UseGroupUnitToggle(),
+                            Visibility(
+                              visible: authorization(
+                                authorized:
+                                    Authorizations()
+                                        .updateProduct,
+                              ),
+
+                              child: SubWrapper(
+                                isVisible:
+                                    !ItemsAuthAction()
+                                        .applyVariationsAction(
+                                          context: context,
+                                        ),
+                                mainWidget: NavListTileDesktopAlt(
+                                  height: 18,
+                                  action: () {
+                                    ItemsAuthAction()
+                                        .applyVariationsAction(
+                                          context: context,
+                                          action: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  return CategoriesPage();
+                                                },
+                                              ),
+                                            );
+                                          },
+                                        );
+                                  },
+                                  title:
+                                      'Manage Categories',
+                                  icon:
+                                      Icons
+                                          .category_outlined,
+                                ),
+                              ),
+                            ),
                             Visibility(
                               visible: authorization(
                                 authorized:

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
+import 'package:stockall/classes/temp_categories/category_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 // import 'package:stockall/classes/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
@@ -20,8 +21,8 @@ import 'package:stockall/constants/play_sounds.dart';
 import 'package:stockall/constants/scan_barcode.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/categories/categories_page.dart';
 import 'package:stockall/pages/products/compnents/product_tile_cart_search.dart';
-import 'package:stockall/pages/shop_setup/create_category/create_category.dart';
 import 'package:stockall/providers/data_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -394,8 +395,7 @@ void categoriesBottomSheet(
   BuildContext context,
   Function()? action,
 ) async {
-  var shopCat =
-      returnShopProvider().userShop()!.categories ?? [];
+  var shopCat = returnCategoriesProvider().categories;
 
   // getCategories();
 
@@ -522,14 +522,14 @@ void categoriesBottomSheet(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) {
-                                          return CreateCategory();
+                                          return CategoriesPage();
                                         },
                                       ),
                                     );
                                   },
                                   altAction: () async {
-                                    await returnShopProvider()
-                                        .fetchShopCategories(
+                                    await returnCategoriesProvider()
+                                        .getCategories(
                                           shopId(),
                                         );
                                   },
@@ -546,7 +546,7 @@ void categoriesBottomSheet(
                                   context,
                                   index,
                                 ) {
-                                  String category =
+                                  CategoryClass category =
                                       shopCat[index];
                                   return Container(
                                     decoration: BoxDecoration(
@@ -577,7 +577,8 @@ void categoriesBottomSheet(
                                                 FontWeight
                                                     .w600,
                                           ),
-                                          shopCat[index],
+                                          shopCat[index]
+                                              .name,
                                         ),
                                         onTap: () {
                                           returnData()
@@ -663,7 +664,7 @@ void categoriesBottomSheet(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) {
-                                          return CreateCategory();
+                                          return CategoriesPage();
                                         },
                                       ),
                                     );
@@ -828,7 +829,7 @@ void categoriesBottomSheet(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) {
-                                      return CreateCategory();
+                                      return CategoriesPage();
                                     },
                                   ),
                                 );

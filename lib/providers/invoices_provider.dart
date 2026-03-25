@@ -707,7 +707,7 @@ class InvoicesProvider extends ChangeNotifier {
           isManaged: false,
           barcode: null,
           brand: null,
-          category: null,
+          categoryUuid: null,
           color: null,
           createdAt: DateTime.now(),
           departmentUuid: record.departmentUuid,

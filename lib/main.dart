@@ -18,6 +18,7 @@ import 'package:stockall/pages/authentication/translations/translation_provider.
 import 'package:stockall/pages/profile/delete_account/delete_account.dart';
 import 'package:stockall/pages/subscription_page/subscription_page.dart';
 import 'package:stockall/providers/app_version_provider.dart';
+import 'package:stockall/providers/categories_provider.dart';
 import 'package:stockall/providers/comp_provider.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/providers/customers_provider.dart';
@@ -225,6 +226,16 @@ ShopDashboardProvider returnShopDashboardProvider({
     return ShopDashboardProvider();
   } else {
     return Provider.of<ShopDashboardProvider>(context);
+  }
+}
+
+CategoriesProvider returnCategoriesProvider({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return CategoriesProvider();
+  } else {
+    return Provider.of<CategoriesProvider>(context);
   }
 }
 
@@ -549,6 +560,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => PermissionProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => CategoriesProvider(),
         ),
       ],
       child: MaterialApp(

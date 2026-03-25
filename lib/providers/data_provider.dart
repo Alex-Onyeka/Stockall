@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:stockall/classes/temp_categories/category_class.dart';
 import 'package:stockall/classes/temp_inventory_updates/temp_inventory_update_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/created_products/created_products.dart';
@@ -12,6 +13,9 @@ import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
+import 'package:stockall/local_database/category/unsync_funcs/created_categories/created_categories_func.dart';
+import 'package:stockall/local_database/category/unsync_funcs/deleted_categories/deleted_categories_func.dart';
+import 'package:stockall/local_database/category/unsync_funcs/updated_categories/updated_categories_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/created/created_customers_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/deleted/deleted_customers_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/updated/updated_customers_func.dart';
@@ -739,6 +743,36 @@ class DataProvider extends ChangeNotifier {
               print('Finished Syncing Deleted Sub Staffs');
               setSyncProgress(28);
             }
+            if (CreatedCategoriesFunc()
+                    .getCreateCategories()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnCategoriesProvider()
+                  .createCategoriesSync();
+              print('Finished Syncing Created Categories');
+              setSyncProgress(29);
+            }
+            if (UpdatedCategoriesFunc()
+                    .getCategories()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnCategoriesProvider()
+                  .updateCategoriesSync();
+              print('Finished Syncing Updated Categories');
+              setSyncProgress(30);
+            }
+            if (DeletedCategoriesFunc()
+                    .getCategoryIds()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnCategoriesProvider()
+                  .deleteCategoriesSync();
+              print('Finished Syncing Deleted Categories');
+              setSyncProgress(31);
+            }
             await clearTotalCache();
             toggleSyncing(false);
           }
@@ -785,7 +819,7 @@ class DataProvider extends ChangeNotifier {
   bool isSyncing = false;
   double syncProgress = 0;
   void setSyncProgress(int value) {
-    syncProgress = (value / 28) * 100;
+    syncProgress = (value / 31) * 100;
     notifyListeners();
   }
 
@@ -840,7 +874,12 @@ class DataProvider extends ChangeNotifier {
           DeletedInvoicesFunc().getInvoiceIds().isEmpty &&
           CreatedSubStaffFunc().getSubStaffs().isEmpty &&
           UpdatedSubStaffFunc().getSubStaffs().isEmpty &&
-          DeletedSubStaffFunc().getSubStaffIds().isEmpty
+          DeletedSubStaffFunc().getSubStaffIds().isEmpty &&
+          CreatedCategoriesFunc()
+              .getCreateCategories()
+              .isEmpty &&
+          UpdatedCategoriesFunc().getCategories().isEmpty &&
+          DeletedCategoriesFunc().getCategoryIds().isEmpty
       // && DeletedRecordsFunc().getRecordIds().isEmpty &&
       // IncrementedProductsFunc()
       //     .getIncrementedProducts()
@@ -882,6 +921,9 @@ class DataProvider extends ChangeNotifier {
     await CreatedSubStaffFunc().clearSubStaffs();
     await UpdatedSubStaffFunc().clearUpdatedSubStaff();
     await DeletedSubStaffFunc().clearDeletedSubStaff();
+    await CreatedCategoriesFunc().clearCategories();
+    await UpdatedCategoriesFunc().clearUpdatedCategory();
+    await DeletedCategoriesFunc().clearDeletedCategories();
   }
 
   DateTime? expiryDate;
@@ -894,51 +936,6 @@ class DataProvider extends ChangeNotifier {
     expiryDate = null;
     notifyListeners();
   }
-
-  // bool isStartDate = true;
-
-  // DateTime? startDate;
-  // DateTime? endDate;
-
-  // void changeDateBoolToTrue() {
-  //   isStartDate = true;
-  //   notifyListeners();
-  // }
-
-  // void clearStartDate() {
-  //   startDate = null;
-  //   notifyListeners();
-  // }
-
-  // void changeDateBoolToFalse() {
-  //   isStartDate = false;
-  //   notifyListeners();
-  // }
-
-  // void clearEndDate() {
-  //   endDate = null;
-  //   notifyListeners();
-  // }
-
-  // void setBothDates({
-  //   DateTime? start,
-  //   DateTime? end,
-  //   DateTime? expDate,
-  // }) {
-  //   startDate = start;
-  //   endDate = end;
-  //   expiryDate = expDate;
-  //   notifyListeners();
-  // }
-
-  // void setDate(DateTime date) {
-  //   if (isStartDate) {
-  //     startDate = date;
-  //   } else {
-  //     endDate = date;
-  //   }
-  //   notifyListeners();
-  // }
 
   List<TempProductClass> productList = [];
 
@@ -1555,7 +1552,7 @@ class DataProvider extends ChangeNotifier {
     'Others',
   ];
 
-  String? selectedCategory;
+  CategoryClass? selectedCategory;
 
   bool isOpen = false;
 
@@ -1569,7 +1566,7 @@ class DataProvider extends ChangeNotifier {
   //   );
   // }
 
-  void selectCategory(String category) {
+  void selectCategory(CategoryClass category) {
     if (selectedCategory == null) {
       selectedCategory = category;
       catValueSet = true;

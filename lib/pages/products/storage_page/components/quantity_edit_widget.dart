@@ -563,7 +563,7 @@ class _QuantityEditWidgetState
                 uuid: widget.product.uuid,
                 barcode: widget.product.barcode,
                 brand: widget.product.brand,
-                category: widget.product.category,
+                categoryUuid: widget.product.categoryUuid,
                 color: widget.product.color,
                 createdAt: widget.product.createdAt,
                 departmentName:
@@ -611,7 +611,7 @@ class _QuantityEditWidgetState
                 uuid: widget.product.uuid,
                 barcode: widget.product.barcode,
                 brand: widget.product.brand,
-                category: widget.product.category,
+                categoryUuid: widget.product.categoryUuid,
                 color: widget.product.color,
                 createdAt: widget.product.createdAt,
                 departmentName:

@@ -94,6 +94,9 @@ class TempProductClass {
   @HiveField(29)
   double? qttyPerGroup;
 
+  @HiveField(30)
+  String? categoryUuid;
+
   TempProductClass({
     this.id,
     required this.name,
@@ -125,6 +128,7 @@ class TempProductClass {
     this.totalQttyInStorageDouble,
     required this.groupUnit,
     required this.qttyPerGroup,
+    this.categoryUuid,
   });
 
   factory TempProductClass.fromJson(
@@ -135,7 +139,7 @@ class TempProductClass {
       name: json['name'] as String,
       shopId: json['shop_id'] as int,
       brand: json['brand'] as String?,
-      category: json['category'] as String?,
+      // category: json['category'] as String?,
       barcode: json['barcode'] as String?,
       unit: json['unit'] as String,
       isRefundable: json['is_refundable'] as bool,
@@ -187,6 +191,7 @@ class TempProductClass {
       groupUnit: json['group_unit'] as String?,
       qttyPerGroup:
           (json['qtty_per_group'] as num?)?.toDouble(),
+      categoryUuid: json['category_uuid'] as String?,
     );
   }
 
@@ -195,7 +200,7 @@ class TempProductClass {
       'name': name,
       'shop_id': shopId,
       'brand': brand,
-      'category': category,
+      // 'category': category,
       'barcode': barcode,
       'unit': unit,
       'is_refundable': isRefundable,
@@ -224,6 +229,7 @@ class TempProductClass {
           totalQttyInStorageDouble,
       'group_unit': groupUnit,
       'qtty_per_group': qttyPerGroup,
+      'category_uuid': categoryUuid,
     };
   }
 }

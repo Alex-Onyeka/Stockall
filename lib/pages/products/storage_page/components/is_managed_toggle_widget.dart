@@ -77,7 +77,8 @@ class _IsManagedToggleWidgetState
                                 : widget.product.quantity,
                         shopId: widget.product.shopId,
                         barcode: widget.product.barcode,
-                        category: widget.product.category,
+                        categoryUuid:
+                            widget.product.categoryUuid,
                         createdAt: widget.product.createdAt,
                         discount: widget.product.discount,
                         endDate: widget.product.endDate,

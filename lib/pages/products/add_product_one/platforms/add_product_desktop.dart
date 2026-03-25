@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_categories/category_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
@@ -230,7 +231,8 @@ class _AddProductDesktopState
                   //             DateTime.now()),
                   // endDate: dataProvider.endDate,
                   expiryDate: dataProvider.expiryDate,
-                  category: dataProvider.selectedCategory,
+                  categoryUuid:
+                      dataProvider.selectedCategory?.uuid,
                   uuid: createdProductUuid,
                 ),
                 context,
@@ -355,7 +357,8 @@ class _AddProductDesktopState
                         : null,
                 shopId: userShop!.shopId!,
                 barcode: barcode,
-                category: provider.selectedCategory,
+                categoryUuid:
+                    provider.selectedCategory?.uuid,
                 createdAt: widget.product!.createdAt,
                 discount: double.tryParse(
                   widget.discountController.text.replaceAll(
@@ -492,16 +495,29 @@ class _AddProductDesktopState
             widget.product!.sizeType!,
           )
           : null;
-      widget.product!.category != null
+      widget.product!.categoryUuid != null
           ? returnData().selectCategory(
-            widget.product!.category!,
+            returnCategoriesProvider().categories
+                    .where(
+                      (cat) =>
+                          cat.uuid ==
+                          widget.product?.categoryUuid,
+                    )
+                    .isNotEmpty
+                ? returnCategoriesProvider().categories
+                    .where(
+                      (cat) =>
+                          cat.uuid ==
+                          widget.product?.categoryUuid,
+                    )
+                    .first
+                : CategoryClass(
+                  name: 'Not Set',
+                  shopId: shopId(),
+                  uuid: 'uuid',
+                ),
           )
           : null;
-      // returnData().setBothDates(
-      //   start: widget.product!.startDate,
-      //   end: widget.product!.endDate,
-      //   expDate: widget.product!.expiryDate,
-      // );
       setState(() {
         costDiscount =
             widget.product!.discount != null &&
@@ -1859,7 +1875,7 @@ class _AddProductDesktopState
                                                 returnData(
                                                   context:
                                                       context,
-                                                ).selectedCategory ??
+                                                ).selectedCategory?.name ??
                                                 'Select Item Category',
                                             theme: theme,
                                           ),

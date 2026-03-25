@@ -497,8 +497,8 @@ class _ProductDetailsMobileState
                                                                           product.shopId,
                                                                       barcode:
                                                                           product.barcode,
-                                                                      category:
-                                                                          product.category,
+                                                                      categoryUuid:
+                                                                          product.categoryUuid,
                                                                       createdAt:
                                                                           product.createdAt,
                                                                       discount:
@@ -1251,8 +1251,8 @@ class _ProductDetailsMobileState
                                                                                             product.shopId,
                                                                                         barcode:
                                                                                             product.barcode,
-                                                                                        category:
-                                                                                            product.category,
+                                                                                        categoryUuid:
+                                                                                            product.categoryUuid,
                                                                                         createdAt:
                                                                                             product.createdAt,
                                                                                         discount:
@@ -1788,8 +1788,8 @@ class _ProductDetailsMobileState
                                                                                                     product.shopId,
                                                                                                 barcode:
                                                                                                     product.barcode,
-                                                                                                category:
-                                                                                                    product.category,
+                                                                                                categoryUuid:
+                                                                                                    product.categoryUuid,
                                                                                                 createdAt:
                                                                                                     product.createdAt,
                                                                                                 discount:
@@ -2042,8 +2042,8 @@ class _ProductDetailsMobileState
                                                                 product.shopId,
                                                             barcode:
                                                                 product.barcode,
-                                                            category:
-                                                                product.category,
+                                                            categoryUuid:
+                                                                product.categoryUuid,
                                                             createdAt:
                                                                 product.createdAt,
                                                             discount:
@@ -2309,9 +2309,31 @@ class _ProductDetailsMobileState
                                 BottomInfoSection(
                                   theme: widget.theme,
                                   mainText:
-                                      product.category ??
-                                      'Not Set',
-                                  text: 'Category',
+                                      returnCategoriesProvider(
+                                                context:
+                                                    context,
+                                              ).categories
+                                              .where(
+                                                (cat) =>
+                                                    cat.uuid ==
+                                                    product
+                                                        .categoryUuid,
+                                              )
+                                              .isNotEmpty
+                                          ? returnCategoriesProvider(
+                                                context:
+                                                    context,
+                                              ).categories
+                                              .where(
+                                                (cat) =>
+                                                    cat.uuid ==
+                                                    product
+                                                        .categoryUuid,
+                                              )
+                                              .first
+                                              .name
+                                          : 'Not Set',
+                                  text: 'CategoryUuid',
                                 ),
                                 BottomInfoSection(
                                   theme: widget.theme,

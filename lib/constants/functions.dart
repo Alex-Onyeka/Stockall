@@ -3324,8 +3324,30 @@ Future<Uint8List> _buildPdfProducts(
                                   vertical: 5,
                                 ),
                                 child: pw.Text(
-                                  product.category ??
-                                      'Not Set',
+                                  returnCategoriesProvider(
+                                            context:
+                                                context,
+                                          ).categories
+                                          .where(
+                                            (cat) =>
+                                                cat.uuid ==
+                                                product
+                                                    .categoryUuid,
+                                          )
+                                          .isNotEmpty
+                                      ? returnCategoriesProvider(
+                                            context:
+                                                context,
+                                          ).categories
+                                          .where(
+                                            (cat) =>
+                                                cat.uuid ==
+                                                product
+                                                    .categoryUuid,
+                                          )
+                                          .first
+                                          .name
+                                      : 'Not Set',
                                 ),
                               ),
                               pw.Padding(

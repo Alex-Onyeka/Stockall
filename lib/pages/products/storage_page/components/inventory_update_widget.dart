@@ -30,7 +30,9 @@ class _InventoryUpdateWidgetState
           context: context,
         );
       } else {
-        return value.isNotEmpty ? value : 'Null';
+        return value.isNotEmpty
+            ? formatLargeNumber(value)
+            : 'Null';
       }
     }
   }
