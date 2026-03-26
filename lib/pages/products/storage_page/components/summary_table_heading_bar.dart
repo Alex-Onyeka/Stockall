@@ -362,6 +362,55 @@ class _SummaryTableHeadingBarState
             ),
           ),
           Visibility(
+            visible:
+                widget.product.isNotEmpty &&
+                shop(context)?.wholeSale == true,
+            child: Expanded(
+              flex: 6,
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    right: BorderSide(color: Colors.grey),
+                    // left: BorderSide(color: Colors.grey),
+                  ),
+                ),
+                padding: EdgeInsets.symmetric(
+                  horizontal: 5,
+                  vertical: 10,
+                ),
+                child: Center(
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          style: TextStyle(
+                            fontSize:
+                                widget
+                                    .theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          widget.isHeading
+                              ? 'Whole-Sale-Price'
+                              : formatMoneyMid(
+                                amount: returnData(
+                                  context: context,
+                                ).getTotalWholeSalePrice(
+                                  products: widget.product,
+                                ),
+                                context: context,
+                              ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Visibility(
             visible: widget.product.isNotEmpty,
             child: Expanded(
               flex: 6,

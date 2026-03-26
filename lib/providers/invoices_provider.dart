@@ -492,6 +492,7 @@ class InvoicesProvider extends ChangeNotifier {
                 isProductManaged: record.isProductManaged,
                 setTotalPrice: record.setTotalPrice,
                 unit: record.unit,
+                useWholeSalePrice: record.useWholeSalePrice,
                 // invoiceUuid: invoice.uuid,
               );
             }).toList();
@@ -651,6 +652,7 @@ class InvoicesProvider extends ChangeNotifier {
       setCustomPrice: record.customPriceSet,
       setTotalPrice: record.setTotalPrice ?? false,
       salesRecordId: record.uuid,
+      useWholeSalePrice: record.useWholeSalePrice ?? false,
     );
   }
 
@@ -694,6 +696,11 @@ class InvoicesProvider extends ChangeNotifier {
                 ? record.revenue / record.quantity
                 : (record.originalCost ?? 0) /
                     record.quantity;
+        final double wholeSalePrice =
+            record.discount == null
+                ? record.revenue / record.quantity
+                : (record.originalCost ?? 0) /
+                    record.quantity;
 
         TempProductClass productNew = TempProductClass(
           groupUnit: 'Others',
@@ -718,6 +725,7 @@ class InvoicesProvider extends ChangeNotifier {
           lowQtty: 10,
           quantity: null,
           sellingPrice: sellingPrice,
+          wholeSalePrice: wholeSalePrice,
           size: null,
           sizeType: null,
           startDate: null,

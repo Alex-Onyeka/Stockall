@@ -14,6 +14,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/local_database/products/products_func.dart';
 import 'package:stockall/main.dart';
@@ -405,6 +406,21 @@ class SalesProvider extends ChangeNotifier {
     }
   }
 
+  // bool useWholeSalePrice = false;
+  void toggleWholeSale({
+    required BuildContext context,
+    required TempCartItem cartItem,
+  }) {
+    ItemsAuthAction().toggleSetWholeSaleAction(
+      context: context,
+      action: () {
+        cartItem.useWholeSalePrice =
+            !cartItem.useWholeSalePrice;
+        notifyListeners();
+      },
+    );
+  }
+
   // void offInvoice() {
   //   currentCart().isInvoice = false;
   //   notifyListeners();
@@ -746,6 +762,8 @@ class SalesProvider extends ChangeNotifier {
 
                 return TempProductSaleRecord(
                   customPriceSet: cartItem.setCustomPrice,
+                  useWholeSalePrice:
+                      cartItem.useWholeSalePrice,
                   createdAt: createdAt,
                   productId: product.id ?? 0,
                   productUuid: product.uuid,
@@ -807,6 +825,8 @@ class SalesProvider extends ChangeNotifier {
 
                 return TempProductSaleRecord(
                   customPriceSet: cartItem.setCustomPrice,
+                  useWholeSalePrice:
+                      cartItem.useWholeSalePrice,
                   createdAt: createdAt,
                   productId: product.id ?? 0,
                   productUuid: product.uuid,
@@ -902,6 +922,12 @@ class SalesProvider extends ChangeNotifier {
                           : (record.originalCost ?? 0) /
                               record.quantity;
 
+                  final double wholeSalePrice =
+                      record.discount == null
+                          ? record.revenue / record.quantity
+                          : (record.originalCost ?? 0) /
+                              record.quantity;
+
                   TempProductClass
                   product = TempProductClass(
                     groupUnit: 'Others',
@@ -926,6 +952,7 @@ class SalesProvider extends ChangeNotifier {
                     lowQtty: 10,
                     quantity: null,
                     sellingPrice: sellingPrice,
+                    wholeSalePrice: wholeSalePrice,
                     size: null,
                     sizeType: null,
                     startDate: null,
@@ -1079,6 +1106,8 @@ class SalesProvider extends ChangeNotifier {
 
                 return TempProductSaleRecord(
                   customPriceSet: cartItem.setCustomPrice,
+                  useWholeSalePrice:
+                      cartItem.useWholeSalePrice,
                   createdAt: createdAt,
                   productId: product.id ?? 0,
                   productUuid: product.uuid,
@@ -1171,6 +1200,12 @@ class SalesProvider extends ChangeNotifier {
                           : (record.originalCost ?? 0) /
                               record.quantity;
 
+                  final double wholeSalePrice =
+                      record.discount == null
+                          ? record.revenue / record.quantity
+                          : (record.originalCost ?? 0) /
+                              record.quantity;
+
                   TempProductClass
                   product = TempProductClass(
                     groupUnit: 'Others',
@@ -1195,6 +1230,7 @@ class SalesProvider extends ChangeNotifier {
                     lowQtty: 10,
                     quantity: null,
                     sellingPrice: sellingPrice,
+                    wholeSalePrice: wholeSalePrice,
                     size: null,
                     sizeType: null,
                     startDate: null,
@@ -1367,19 +1403,6 @@ class SalesProvider extends ChangeNotifier {
         calcVatAmount());
   }
 
-  // double calcVatAmount() {
-  //   if (returnShopProvider().userShop()!.applyVAT!) {
-  //     return calcTotalMain() * (vat / 100);
-  //   } else {
-  //     return 0;
-  //   }
-  // }
-
-  // double calcFinalTotalMain() {
-  //   return (calcTotalMain() - calcDiscountMain()) +
-  //       calcVatAmount();
-  // }
-
   bool isSetCustomPrice() {
     return currentCart().setCustomPrice;
   }
@@ -1394,6 +1417,22 @@ class SalesProvider extends ChangeNotifier {
     currentCart().setCustomPrice = false;
     notifyListeners();
   }
+
+  // bool useWholeSalePriceTempEdit = false;
+
+  // bool isSetWholeSalePrice(TempCartItem cartItem) {
+  //   return cartItem.useWholeSalePrice;
+  // }
+
+  // void toggleSetWholeSalePrice(TempCartItem cartItem) {
+  //   currentCart().cartItems.firstWhere((cart) => cart.item)
+  //   notifyListeners();
+  // }
+
+  // void closeWholeSalePrice() {
+  //   currentCart().setWholeSalePrice = false;
+  //   notifyListeners();
+  // }
 
   //
   //
@@ -1684,6 +1723,7 @@ class SalesProvider extends ChangeNotifier {
       setCustomPrice: record.customPriceSet,
       setTotalPrice: record.setTotalPrice ?? false,
       salesRecordId: record.uuid,
+      useWholeSalePrice: record.useWholeSalePrice ?? false,
     );
   }
 
@@ -1728,6 +1768,12 @@ class SalesProvider extends ChangeNotifier {
                 : (record.originalCost ?? 0) /
                     record.quantity;
 
+        final double wholeSalePrice =
+            record.discount == null
+                ? record.revenue / record.quantity
+                : (record.originalCost ?? 0) /
+                    record.quantity;
+
         TempProductClass productNew = TempProductClass(
           groupUnit: 'Others',
           qttyPerGroup: null,
@@ -1751,6 +1797,7 @@ class SalesProvider extends ChangeNotifier {
           lowQtty: 10,
           quantity: null,
           sellingPrice: sellingPrice,
+          wholeSalePrice: wholeSalePrice,
           size: null,
           sizeType: null,
           startDate: null,

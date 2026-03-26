@@ -67,6 +67,8 @@ class _IsManagedToggleWidgetState
                         costPrice: widget.product.costPrice,
                         sellingPrice:
                             widget.product.sellingPrice,
+                        wholeSalePrice:
+                            widget.product.wholeSalePrice,
                         quantity:
                             !widget.product.isManaged &&
                                     widget

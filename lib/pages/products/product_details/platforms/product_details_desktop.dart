@@ -56,6 +56,8 @@ class _ProductDetailsDesktopState
       TextEditingController();
   TextEditingController sellingController =
       TextEditingController();
+  TextEditingController wholeSaleController =
+      TextEditingController();
   TextEditingController quantityController =
       TextEditingController();
   TextEditingController discountController =
@@ -225,6 +227,8 @@ class _ProductDetailsDesktopState
                                             context:
                                                 context,
                                             newItem: TempCartItem(
+                                              useWholeSalePrice:
+                                                  false,
                                               setCustomPrice:
                                                   false,
                                               item: product,
@@ -419,6 +423,38 @@ class _ProductDetailsDesktopState
                                                       ),
                                                     ),
                                                   ),
+                                                  Visibility(
+                                                    visible:
+                                                        shop(
+                                                          context,
+                                                        )?.wholeSale ==
+                                                        true,
+                                                    child: Expanded(
+                                                      child: TabContainer(
+                                                        isMoney:
+                                                            true,
+                                                        text:
+                                                            'Whole Sale Price',
+                                                        price:
+                                                            product.wholeSalePrice ??
+                                                            0,
+                                                        theme:
+                                                            widget.theme,
+                                                        backGround: const Color.fromARGB(
+                                                          24,
+                                                          135,
+                                                          235,
+                                                          3,
+                                                        ),
+                                                        border: const Color.fromARGB(
+                                                          73,
+                                                          106,
+                                                          232,
+                                                          3,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
                                                 ],
                                               ),
                                               Visibility(
@@ -437,6 +473,12 @@ class _ProductDetailsDesktopState
                                                           product.sellingPrice !=
                                                                   null
                                                               ? product.sellingPrice.toString()
+                                                              : '';
+
+                                                      wholeSaleController.text =
+                                                          product.wholeSalePrice !=
+                                                                  null
+                                                              ? product.wholeSalePrice.toString()
                                                               : '';
 
                                                       costController.text =
@@ -570,6 +612,21 @@ class _ProductDetailsDesktopState
                                                                                 theme:
                                                                                     widget.theme,
                                                                               ),
+                                                                              Visibility(
+                                                                                visible:
+                                                                                    returnShopProvider().userShop()?.wholeSale ==
+                                                                                    true,
+                                                                                child: MoneyTextfield(
+                                                                                  title:
+                                                                                      'Whole Sale Price',
+                                                                                  hint:
+                                                                                      'Enter Whole Sale Price',
+                                                                                  controller:
+                                                                                      wholeSaleController,
+                                                                                  theme:
+                                                                                      widget.theme,
+                                                                                ),
+                                                                              ),
                                                                             ],
                                                                           ),
                                                                           SizedBox(
@@ -640,6 +697,15 @@ class _ProductDetailsDesktopState
                                                                                                 sellingController.text.isNotEmpty
                                                                                                     ? double.tryParse(
                                                                                                       sellingController.text.replaceAll(
+                                                                                                        ',',
+                                                                                                        '',
+                                                                                                      ),
+                                                                                                    )
+                                                                                                    : null,
+                                                                                            wholeSalePrice:
+                                                                                                wholeSaleController.text.isNotEmpty
+                                                                                                    ? double.tryParse(
+                                                                                                      wholeSaleController.text.replaceAll(
                                                                                                         ',',
                                                                                                         '',
                                                                                                       ),
@@ -964,6 +1030,8 @@ class _ProductDetailsDesktopState
                                                                           product.costPrice,
                                                                       sellingPrice:
                                                                           product.sellingPrice,
+                                                                      wholeSalePrice:
+                                                                          product.wholeSalePrice,
                                                                       quantity:
                                                                           !product.isManaged &&
                                                                                   product.quantity ==
@@ -1803,7 +1871,7 @@ class _ProductDetailsDesktopState
                                                         ),
                                                         product.quantity ==
                                                                 null
-                                                            ? 'Not Set'
+                                                            ? 'Quantity Not Set'
                                                             : 'Current Quantity Amount : ${formatLargeNumberDouble(product.quantity!)}',
                                                       ),
                                                       EditCartTextField(
@@ -2121,6 +2189,8 @@ class _ProductDetailsDesktopState
                                                                       product.costPrice,
                                                                   sellingPrice:
                                                                       product.sellingPrice,
+                                                                  wholeSalePrice:
+                                                                      product.wholeSalePrice,
                                                                   quantity:
                                                                       quantityController.text.isEmpty &&
                                                                               !isAddToQuantity &&
@@ -2409,7 +2479,7 @@ class _ProductDetailsDesktopState
                                                           ),
                                                           product.quantity ==
                                                                   null
-                                                              ? 'Not Set'
+                                                              ? 'Quantity Not Set'
                                                               : 'Current Quantity Amount : ${formatLargeNumberDouble(returnData().returnGroupQuantityValue(product))}',
                                                         ),
                                                         EditCartTextField(
@@ -2646,6 +2716,8 @@ class _ProductDetailsDesktopState
                                                                         product.costPrice,
                                                                     sellingPrice:
                                                                         product.sellingPrice,
+                                                                    wholeSalePrice:
+                                                                        product.wholeSalePrice,
                                                                     quantity:
                                                                         qttyPerUnitController.text.isEmpty &&
                                                                                 !isAddToQuantity &&
@@ -2962,7 +3034,7 @@ class EditButton extends StatelessWidget {
         onTap: action,
         borderRadius: BorderRadius.circular(5),
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 9),
+          padding: EdgeInsets.symmetric(vertical: 7),
 
           child: Center(
             child: Row(
@@ -2972,13 +3044,13 @@ class EditButton extends StatelessWidget {
                 Text(
                   style: TextStyle(
                     color: theme.lightModeColor.prColor300,
-                    fontSize: theme.mobileTexts.b2.fontSize,
+                    fontSize: theme.mobileTexts.b3.fontSize,
                     fontWeight: FontWeight.bold,
                   ),
                   text,
                 ),
                 Icon(
-                  size: 20,
+                  size: 18,
                   color:
                       color ??
                       theme.lightModeColor.prColor300,
@@ -3017,7 +3089,10 @@ class TabContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(10),
+      padding: EdgeInsets.symmetric(
+        vertical: 7,
+        horizontal: 2,
+      ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
         color: backGround,
@@ -3041,7 +3116,7 @@ class TabContainer extends StatelessWidget {
                 style: TextStyle(
                   fontSize:
                       priceTextSize ??
-                      theme.mobileTexts.b1.fontSize,
+                      theme.mobileTexts.b2.fontSize,
                   fontWeight: FontWeight.bold,
                 ),
                 '${isMoney ? currencySymbol(context: context) : ''}${formatLargeNumberDouble(price)}${isDiscount != null ? '%' : ''}',

@@ -63,38 +63,42 @@ class _MakeSalesDesktopState
       TextEditingController();
   // final nameController = TextEditingController();
 
-  String formatSellingPriceEdit(TempCartItem cartItem) {
-    if (priceController.text.isNotEmpty) {
-      if (returnSalesProvider().setTotalPrice) {
-        return priceController.text.replaceAll(',', '');
-      } else {
-        return (double.parse(
-                  priceController.text.isNotEmpty
-                      ? priceController.text.replaceAll(
-                        ',',
-                        '',
-                      )
-                      : '0',
-                ) *
-                qqty.toDouble())
-            .toString();
-      }
-    } else {
-      return (qqty * (cartItem.item.sellingPrice!))
-          .toString();
-    }
-  }
+  // String formatSellingPriceEdit(TempCartItem cartItem) {
+  //   if (priceController.text.isNotEmpty) {
+  //     if (returnSalesProvider().setTotalPrice) {
+  //       return priceController.text.replaceAll(',', '');
+  //     } else {
+  //       return (double.parse(
+  //                 priceController.text.isNotEmpty
+  //                     ? priceController.text.replaceAll(
+  //                       ',',
+  //                       '',
+  //                     )
+  //                     : '0',
+  //               ) *
+  //               qqty.toDouble())
+  //           .toString();
+  //     }
+  //   } else {
+  //     return (qqty * (cartItem.item.sellingPrice!))
+  //         .toString();
+  //   }
+  // }
 
   final FocusNode qttyNode = FocusNode();
 
   double currentValue = 0;
   double qqty = 0;
+  bool useWholeSalePriceTemp = false;
   void editCartItem({
     required double productQuantity,
     required BuildContext context,
     required Function()? updateAction,
     required TempCartItem cartItem,
   }) {
+    setState(() {
+      useWholeSalePriceTemp = cartItem.useWholeSalePrice;
+    });
     returnSalesProvider().removeListenerScanBarcode();
     qttyNode.requestFocus();
     var theme = returnTheme(context, listen: false);
@@ -142,15 +146,15 @@ class _MakeSalesDesktopState
                       Visibility(
                         visible:
                             (returnSalesProviderContext(
-                                      context,
-                                    ).isSetCustomPrice() ||
-                                    cartItem
-                                        .setCustomPrice) &&
+                                  context,
+                                ).isSetCustomPrice() ||
+                                cartItem.setCustomPrice) &&
+                            (cartItem.item.setCustomPrice ||
                                 cartItem
-                                    .item
-                                    .setCustomPrice ||
-                            cartItem.item.sellingPrice ==
-                                null,
+                                        .item
+                                        .sellingPrice ==
+                                    null) &&
+                            !useWholeSalePriceTemp,
                         child: Row(
                           crossAxisAlignment:
                               CrossAxisAlignment.end,
@@ -260,7 +264,8 @@ class _MakeSalesDesktopState
                       Visibility(
                         visible:
                             !cartItem.setCustomPrice &&
-                            cartItem.item.setCustomPrice,
+                            cartItem.item.setCustomPrice &&
+                            !useWholeSalePriceTemp,
                         child: Column(
                           children: [
                             SizedBox(height: 20),
@@ -374,7 +379,14 @@ class _MakeSalesDesktopState
                               ),
                               formatMoneyMid(
                                 amount: double.parse(
-                                  priceController
+                                  useWholeSalePriceTemp
+                                      ? (qqty *
+                                              (cartItem
+                                                      .item
+                                                      .wholeSalePrice ??
+                                                  0))
+                                          .toString()
+                                      : priceController
                                           .text
                                           .isNotEmpty
                                       ? returnSalesProviderContext(
@@ -404,6 +416,49 @@ class _MakeSalesDesktopState
                                           .toString(),
                                 ),
                                 context: context,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Visibility(
+                        visible:
+                            returnShopProvider()
+                                .userShop()
+                                ?.wholeSale ==
+                            true,
+                        child: Column(
+                          children: [
+                            SizedBox(height: 20),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(
+                                    horizontal: 20.0,
+                                  ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .spaceBetween,
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    'Use Whole Sale Price?',
+                                  ),
+                                  MyToggleButton(
+                                    boolValue:
+                                        useWholeSalePriceTemp,
+                                    toggle: () {
+                                      setState(() {
+                                        useWholeSalePriceTemp =
+                                            !useWholeSalePriceTemp;
+                                      });
+                                    },
+                                    theme: theme,
+                                  ),
+                                ],
                               ),
                             ),
                           ],
@@ -585,6 +640,8 @@ class _MakeSalesDesktopState
   TextEditingController costPriceC =
       TextEditingController();
   TextEditingController sellingPriceC =
+      TextEditingController();
+  TextEditingController wholeSalePriceC =
       TextEditingController();
   TextEditingController nameC = TextEditingController();
   bool resultOn = false;
@@ -868,6 +925,7 @@ class _MakeSalesDesktopState
                                           'Add Item to your Stock?',
                                         ),
                                         MyToggleButton(
+                                          // isSmall: true,
                                           boolValue:
                                               returnSalesProvider()
                                                   .addToStock,
@@ -1667,6 +1725,8 @@ class _MakeSalesDesktopState
                                               ).pop();
                                             },
                                             cartItem: TempCartItem(
+                                              useWholeSalePrice:
+                                                  false,
                                               setTotalPrice:
                                                   returnSalesProvider()
                                                       .setTotalPrice,
@@ -1696,6 +1756,14 @@ class _MakeSalesDesktopState
                                                     0,
                                                 sellingPrice: double.tryParse(
                                                   sellingPriceC
+                                                      .text
+                                                      .replaceAll(
+                                                        ',',
+                                                        '',
+                                                      ),
+                                                ),
+                                                wholeSalePrice: double.tryParse(
+                                                  wholeSalePriceC
                                                       .text
                                                       .replaceAll(
                                                         ',',
@@ -1776,6 +1844,8 @@ class _MakeSalesDesktopState
                                                     ).pop();
                                                   },
                                                   cartItem: TempCartItem(
+                                                    useWholeSalePrice:
+                                                        false,
                                                     setTotalPrice:
                                                         returnSalesProvider().setTotalPrice,
                                                     item: TempProductClass(
@@ -1803,6 +1873,12 @@ class _MakeSalesDesktopState
                                                           0,
                                                       sellingPrice: double.tryParse(
                                                         sellingPriceC.text.replaceAll(
+                                                          ',',
+                                                          '',
+                                                        ),
+                                                      ),
+                                                      wholeSalePrice: double.tryParse(
+                                                        wholeSalePriceC.text.replaceAll(
                                                           ',',
                                                           '',
                                                         ),
@@ -1939,6 +2015,8 @@ class _MakeSalesDesktopState
                                                                           ).pop();
                                                                         },
                                                                         cartItem: TempCartItem(
+                                                                          useWholeSalePrice:
+                                                                              false,
                                                                           setTotalPrice:
                                                                               returnSalesProvider().setTotalPrice,
                                                                           item: TempProductClass(
@@ -1966,6 +2044,12 @@ class _MakeSalesDesktopState
                                                                                 0,
                                                                             sellingPrice: double.tryParse(
                                                                               sellingPriceC.text.replaceAll(
+                                                                                ',',
+                                                                                '',
+                                                                              ),
+                                                                            ),
+                                                                            wholeSalePrice: double.tryParse(
+                                                                              wholeSalePriceC.text.replaceAll(
                                                                                 ',',
                                                                                 '',
                                                                               ),
@@ -2052,6 +2136,7 @@ class _MakeSalesDesktopState
                                                                           context:
                                                                               context,
                                                                           updateAction: () {
+                                                                            items[index].useWholeSalePrice = useWholeSalePriceTemp;
                                                                             salesProvider.editCartItemQuantity(
                                                                               setTotalPrice:
                                                                                   returnSalesProvider().setTotalPrice,
@@ -2397,6 +2482,8 @@ class _MakeSalesDesktopState
                                                     context:
                                                         context,
                                                     newItem: TempCartItem(
+                                                      useWholeSalePrice:
+                                                          false,
                                                       setCustomPrice:
                                                           false,
                                                       item:
@@ -2550,6 +2637,8 @@ class _MakeSalesDesktopState
                                                       ).pop();
                                                     },
                                                     cartItem: TempCartItem(
+                                                      useWholeSalePrice:
+                                                          false,
                                                       setTotalPrice:
                                                           returnSalesProvider().setTotalPrice,
                                                       item: TempProductClass(
@@ -2577,6 +2666,12 @@ class _MakeSalesDesktopState
                                                             0,
                                                         sellingPrice: double.tryParse(
                                                           sellingPriceC.text.replaceAll(
+                                                            ',',
+                                                            '',
+                                                          ),
+                                                        ),
+                                                        wholeSalePrice: double.tryParse(
+                                                          wholeSalePriceC.text.replaceAll(
                                                             ',',
                                                             '',
                                                           ),

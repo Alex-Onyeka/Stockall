@@ -30,6 +30,7 @@ List<SubplanClass> subPlans = [
       generateItemBarcode: true,
       useGroupUnit: true,
       manageInventoryStorage: true,
+      setWholeSale: true,
     ),
     salesAuth: SalesAuth(
       useOfBarcode: true,
@@ -100,6 +101,7 @@ List<SubplanClass> subPlans = [
       generateItemBarcode: true,
       manageInventoryStorage: true,
       useGroupUnit: true,
+      setWholeSale: true,
     ),
     salesAuth: SalesAuth(
       useOfBarcode: true,
@@ -170,6 +172,7 @@ List<SubplanClass> subPlans = [
       generateItemBarcode: true,
       manageInventoryStorage: true,
       useGroupUnit: true,
+      setWholeSale: true,
     ),
     salesAuth: SalesAuth(
       useOfBarcode: true,
@@ -241,6 +244,7 @@ List<SubplanClass> subPlans = [
       generateItemBarcode: false,
       manageInventoryStorage: false,
       useGroupUnit: true,
+      setWholeSale: true,
     ),
     salesAuth: SalesAuth(
       useOfBarcode: true,
@@ -312,6 +316,7 @@ List<SubplanClass> subPlans = [
       generateItemBarcode: false,
       manageInventoryStorage: false,
       useGroupUnit: false,
+      setWholeSale: false,
     ),
     salesAuth: SalesAuth(
       useOfBarcode: false,
@@ -383,6 +388,7 @@ List<SubplanClass> subPlans = [
       allowStockallToManageInventory: false,
       generateItemBarcode: false,
       useGroupUnit: false,
+      setWholeSale: false,
     ),
     salesAuth: SalesAuth(
       useOfBarcode: false,

@@ -15,6 +15,7 @@ import 'package:stockall/components/my_calculator.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
+import 'package:stockall/components/toggle_button/my_toggle_button.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/bottom_sheet_widgets.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -77,6 +78,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
 
   double currentValue = 0;
   double qqty = 0;
+  bool useWholeSalePriceTemp = false;
   void editCartItem({
     required double productQuantity,
     required BuildContext context,
@@ -84,6 +86,9 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
     required TempCartItem cartItem,
   }) {
     var theme = returnTheme(context, listen: false);
+    setState(() {
+      useWholeSalePriceTemp = cartItem.useWholeSalePrice;
+    });
     quantityController.text = cartItem.quantity.toString();
     double qqty = cartItem.quantity.toDouble();
     cartItem.setCustomPrice
@@ -128,15 +133,15 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                       Visibility(
                         visible:
                             (returnSalesProviderContext(
-                                      context,
-                                    ).isSetCustomPrice() ||
-                                    cartItem
-                                        .setCustomPrice) &&
+                                  context,
+                                ).isSetCustomPrice() ||
+                                cartItem.setCustomPrice) &&
+                            (cartItem.item.setCustomPrice ||
                                 cartItem
-                                    .item
-                                    .setCustomPrice ||
-                            cartItem.item.sellingPrice ==
-                                null,
+                                        .item
+                                        .sellingPrice ==
+                                    null) &&
+                            !useWholeSalePriceTemp,
                         child: Row(
                           crossAxisAlignment:
                               CrossAxisAlignment.end,
@@ -222,7 +227,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                       Visibility(
                         visible:
                             !cartItem.setCustomPrice &&
-                            cartItem.item.setCustomPrice,
+                            cartItem.item.setCustomPrice &&
+                            !useWholeSalePriceTemp,
                         child: Column(
                           children: [
                             SizedBox(height: 20),
@@ -336,7 +342,14 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                               ),
                               formatMoneyMid(
                                 amount: double.parse(
-                                  priceController
+                                  useWholeSalePriceTemp
+                                      ? (qqty *
+                                              (cartItem
+                                                      .item
+                                                      .wholeSalePrice ??
+                                                  0))
+                                          .toString()
+                                      : priceController
                                           .text
                                           .isNotEmpty
                                       ? returnSalesProviderContext(
@@ -366,6 +379,49 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                           .toString(),
                                 ),
                                 context: context,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Visibility(
+                        visible:
+                            returnShopProvider()
+                                .userShop()
+                                ?.wholeSale ==
+                            true,
+                        child: Column(
+                          children: [
+                            SizedBox(height: 20),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(
+                                    horizontal: 20.0,
+                                  ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .spaceBetween,
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    'Use Whole Sale Price?',
+                                  ),
+                                  MyToggleButton(
+                                    boolValue:
+                                        useWholeSalePriceTemp,
+                                    toggle: () {
+                                      setState(() {
+                                        useWholeSalePriceTemp =
+                                            !useWholeSalePriceTemp;
+                                      });
+                                    },
+                                    theme: theme,
+                                  ),
+                                ],
                               ),
                             ),
                           ],
@@ -545,6 +601,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
   TextEditingController costPriceC =
       TextEditingController();
   TextEditingController sellingPriceC =
+      TextEditingController();
+  TextEditingController wholeSalePriceC =
       TextEditingController();
   TextEditingController nameC = TextEditingController();
   bool resultOn = false;
@@ -1526,6 +1584,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                     ).pop();
                                   },
                                   cartItem: TempCartItem(
+                                    useWholeSalePrice:
+                                        false,
                                     setTotalPrice:
                                         returnSalesProvider()
                                             .setTotalPrice,
@@ -1549,6 +1609,15 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                       sellingPrice:
                                           double.tryParse(
                                             sellingPriceC
+                                                .text
+                                                .replaceAll(
+                                                  ',',
+                                                  '',
+                                                ),
+                                          ),
+                                      wholeSalePrice:
+                                          double.tryParse(
+                                            wholeSalePriceC
                                                 .text
                                                 .replaceAll(
                                                   ',',
@@ -1588,6 +1657,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                   ).pop();
                                 },
                                 cartItem: TempCartItem(
+                                  useWholeSalePrice: false,
                                   setTotalPrice:
                                       returnSalesProvider()
                                           .setTotalPrice,
@@ -1611,6 +1681,15 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                     sellingPrice:
                                         double.tryParse(
                                           sellingPriceC.text
+                                              .replaceAll(
+                                                ',',
+                                                '',
+                                              ),
+                                        ),
+                                    wholeSalePrice:
+                                        double.tryParse(
+                                          wholeSalePriceC
+                                              .text
                                               .replaceAll(
                                                 ',',
                                                 '',
@@ -1676,6 +1755,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         ).pop();
                                       },
                                       cartItem: TempCartItem(
+                                        useWholeSalePrice:
+                                            false,
                                         setTotalPrice:
                                             returnSalesProvider()
                                                 .setTotalPrice,
@@ -1703,6 +1784,15 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                           sellingPrice:
                                               double.tryParse(
                                                 sellingPriceC
+                                                    .text
+                                                    .replaceAll(
+                                                      ',',
+                                                      '',
+                                                    ),
+                                              ),
+                                          wholeSalePrice:
+                                              double.tryParse(
+                                                wholeSalePriceC
                                                     .text
                                                     .replaceAll(
                                                       ',',
@@ -1746,6 +1836,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                   ).pop();
                                 },
                                 cartItem: TempCartItem(
+                                  useWholeSalePrice: false,
                                   setTotalPrice:
                                       returnSalesProvider()
                                           .setTotalPrice,
@@ -1769,6 +1860,15 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                     sellingPrice:
                                         double.tryParse(
                                           sellingPriceC.text
+                                              .replaceAll(
+                                                ',',
+                                                '',
+                                              ),
+                                        ),
+                                    wholeSalePrice:
+                                        double.tryParse(
+                                          wholeSalePriceC
+                                              .text
                                               .replaceAll(
                                                 ',',
                                                 '',
@@ -1887,6 +1987,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                         ).pop();
                                                       },
                                                       cartItem: TempCartItem(
+                                                        useWholeSalePrice:
+                                                            false,
                                                         setTotalPrice:
                                                             returnSalesProvider().setTotalPrice,
                                                         item: TempProductClass(
@@ -1914,6 +2016,12 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                               0,
                                                           sellingPrice: double.tryParse(
                                                             sellingPriceC.text.replaceAll(
+                                                              ',',
+                                                              '',
+                                                            ),
+                                                          ),
+                                                          wholeSalePrice: double.tryParse(
+                                                            wholeSalePriceC.text.replaceAll(
                                                               ',',
                                                               '',
                                                             ),
@@ -2004,6 +2112,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                           context:
                                                               context,
                                                           updateAction: () {
+                                                            items[index].useWholeSalePrice = useWholeSalePriceTemp;
                                                             salesProvider.editCartItemQuantity(
                                                               setTotalPrice:
                                                                   returnSalesProvider().setTotalPrice,
@@ -2144,6 +2253,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                                 context:
                                                                     context,
                                                                 newItem: TempCartItem(
+                                                                  useWholeSalePrice:
+                                                                      false,
                                                                   setCustomPrice:
                                                                       false,
                                                                   item:
@@ -2389,6 +2500,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                               ).pop();
                                                             },
                                                             cartItem: TempCartItem(
+                                                              useWholeSalePrice:
+                                                                  false,
                                                               setTotalPrice:
                                                                   returnSalesProvider().setTotalPrice,
                                                               item: TempProductClass(
@@ -2416,6 +2529,12 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                                     0,
                                                                 sellingPrice: double.tryParse(
                                                                   sellingPriceC.text.replaceAll(
+                                                                    ',',
+                                                                    '',
+                                                                  ),
+                                                                ),
+                                                                wholeSalePrice: double.tryParse(
+                                                                  wholeSalePriceC.text.replaceAll(
                                                                     ',',
                                                                     '',
                                                                   ),

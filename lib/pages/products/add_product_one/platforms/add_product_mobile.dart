@@ -32,6 +32,7 @@ class AddProductMobile extends StatefulWidget {
   final TextEditingController discountController;
   final TextEditingController storageQuantityController;
   final TextEditingController qttyPerGroupController;
+  final TextEditingController wholeSaleController;
 
   const AddProductMobile({
     super.key,
@@ -43,6 +44,7 @@ class AddProductMobile extends StatefulWidget {
     required this.discountController,
     required this.storageQuantityController,
     required this.qttyPerGroupController,
+    required this.wholeSaleController,
     this.product,
   });
 
@@ -195,6 +197,16 @@ class _AddProductMobileState
                                 .replaceAll(',', ''),
                           )
                           : null,
+                  wholeSalePrice:
+                      widget
+                              .wholeSaleController
+                              .text
+                              .isNotEmpty
+                          ? double.parse(
+                            widget.wholeSaleController.text
+                                .replaceAll(',', ''),
+                          )
+                          : null,
                   quantity:
                       widget
                               .quantityController
@@ -334,6 +346,16 @@ class _AddProductMobileState
                               .replaceAll(',', ''),
                         )
                         : null,
+                wholeSalePrice:
+                    widget
+                            .wholeSaleController
+                            .text
+                            .isNotEmpty
+                        ? double.parse(
+                          widget.wholeSaleController.text
+                              .replaceAll(',', ''),
+                        )
+                        : null,
                 quantity:
                     widget
                             .quantityController
@@ -440,6 +462,10 @@ class _AddProductMobileState
           widget.product!.sellingPrice != null
               ? widget.product!.sellingPrice.toString()
               : '';
+      widget.wholeSaleController.text =
+          widget.product!.wholeSalePrice != null
+              ? widget.product!.wholeSalePrice.toString()
+              : '';
       widget.quantityController.text =
           widget.product!.quantity == null
               ? ''
@@ -492,29 +518,29 @@ class _AddProductMobileState
                 ),
           )
           : null;
-      setState(() {
-        costDiscount =
-            widget.product!.discount != null &&
-                    widget.product!.sellingPrice != null
-                ? widget.product!.sellingPrice! *
-                    (widget.product!.discount! / 100)
-                : 0;
-        sellingDiscount =
-            widget.product!.discount != null &&
-                    widget.product!.sellingPrice != null
-                ? widget.product!.sellingPrice! -
-                    (widget.product!.sellingPrice! *
-                        (widget.product!.discount! / 100))
-                : 0;
-        selling =
-            double.tryParse(
-              widget.sellingController.text.replaceAll(
-                ',',
-                '',
-              ),
-            ) ??
-            0;
-      });
+      // setState(() {
+      //   costDiscount =
+      //       widget.product!.discount != null &&
+      //               widget.product!.sellingPrice != null
+      //           ? widget.product!.sellingPrice! *
+      //               (widget.product!.discount! / 100)
+      //           : 0;
+      //   sellingDiscount =
+      //       widget.product!.discount != null &&
+      //               widget.product!.sellingPrice != null
+      //           ? widget.product!.sellingPrice! -
+      //               (widget.product!.sellingPrice! *
+      //                   (widget.product!.discount! / 100))
+      //           : 0;
+      //   selling =
+      //       double.tryParse(
+      //         widget.sellingController.text.replaceAll(
+      //           ',',
+      //           '',
+      //         ),
+      //       ) ??
+      //       0;
+      // });
     }
   }
 
@@ -527,23 +553,23 @@ class _AddProductMobileState
     });
   }
 
-  double cost = 0;
-  double selling = 0;
-  double discount = 0;
+  // double cost = 0;
+  // double selling = 0;
+  // double discount = 0;
 
-  double costDiscount = 0;
+  // double costDiscount = 0;
 
-  double sellingDiscount = 0;
+  // double sellingDiscount = 0;
 
-  void checkDiscount() {
-    final discountedPrice = selling * (discount / 100);
-    final discountedSellingPrice =
-        selling - (selling * (discount / 100));
-    setState(() {
-      costDiscount = discountedPrice;
-      sellingDiscount = discountedSellingPrice;
-    });
-  }
+  // void checkDiscount() {
+  //   final discountedPrice = selling * (discount / 100);
+  //   final discountedSellingPrice =
+  //       selling - (selling * (discount / 100));
+  //   setState(() {
+  //     costDiscount = discountedPrice;
+  //     sellingDiscount = discountedSellingPrice;
+  //   });
+  // }
 
   @override
   void dispose() {
@@ -618,21 +644,21 @@ class _AddProductMobileState
                                   Expanded(
                                     child: MoneyTextfield(
                                       onChanged: (value) {
-                                        if (value.isEmpty) {
-                                          cost = 0;
-                                        } else {
-                                          setState(() {
-                                            cost = double.parse(
-                                              widget
-                                                  .costController
-                                                  .text
-                                                  .replaceAll(
-                                                    ',',
-                                                    '',
-                                                  ),
-                                            );
-                                          });
-                                        }
+                                        // if (value.isEmpty) {
+                                        //   cost = 0;
+                                        // } else {
+                                        //   setState(() {
+                                        //     cost = double.parse(
+                                        //       widget
+                                        //           .costController
+                                        //           .text
+                                        //           .replaceAll(
+                                        //             ',',
+                                        //             '',
+                                        //           ),
+                                        //     );
+                                        //   });
+                                        // }
                                       },
                                       theme: theme,
                                       hint:
@@ -647,21 +673,21 @@ class _AddProductMobileState
                                   Expanded(
                                     child: MoneyTextfield(
                                       onChanged: (value) {
-                                        if (value.isEmpty) {
-                                          selling = 0;
-                                        } else {
-                                          setState(() {
-                                            selling = double.parse(
-                                              widget
-                                                  .sellingController
-                                                  .text
-                                                  .replaceAll(
-                                                    ',',
-                                                    '',
-                                                  ),
-                                            );
-                                          });
-                                        }
+                                        // if (value.isEmpty) {
+                                        //   selling = 0;
+                                        // } else {
+                                        //   setState(() {
+                                        //     selling = double.parse(
+                                        //       widget
+                                        //           .sellingController
+                                        //           .text
+                                        //           .replaceAll(
+                                        //             ',',
+                                        //             '',
+                                        //           ),
+                                        //     );
+                                        //   });
+                                        // }
                                       },
                                       theme: theme,
                                       hint:
@@ -674,6 +700,28 @@ class _AddProductMobileState
                                     ),
                                   ),
                                 ],
+                              ),
+                              Visibility(
+                                visible:
+                                    shop(
+                                      context,
+                                    )?.wholeSale ==
+                                    true,
+                                child: Column(
+                                  children: [
+                                    SizedBox(height: 10),
+                                    MoneyTextfield(
+                                      theme: theme,
+                                      hint:
+                                          'Enter Whole Sale Price',
+                                      title:
+                                          'Whole-Sale-Price (Optional)',
+                                      controller:
+                                          widget
+                                              .wholeSaleController,
+                                    ),
+                                  ],
+                                ),
                               ),
                               Visibility(
                                 visible:
@@ -1058,6 +1106,35 @@ class _AddProductMobileState
                                                       }
                                                     }
 
+                                                    wholeSalePrice() {
+                                                      if (widget
+                                                          .wholeSaleController
+                                                          .text
+                                                          .isEmpty) {
+                                                        return '';
+                                                      } else {
+                                                        if (widget.wholeSaleController.text
+                                                                .split(
+                                                                  ',',
+                                                                )
+                                                                .length >
+                                                            1) {
+                                                          return widget.wholeSaleController.text
+                                                                  .split(
+                                                                    ',',
+                                                                  )
+                                                                  .first +
+                                                              widget.wholeSaleController.text
+                                                                  .split(
+                                                                    ',',
+                                                                  )
+                                                                  .last;
+                                                        } else {
+                                                          return widget.wholeSaleController.text;
+                                                        }
+                                                      }
+                                                    }
+
                                                     var tempProduct = TempProductClass(
                                                       groupUnit:
                                                           widget.product?.groupUnit,
@@ -1093,6 +1170,13 @@ class _AddProductMobileState
                                                                 sellingPrice(),
                                                               )
                                                               : widget.product?.sellingPrice,
+                                                      wholeSalePrice:
+                                                          widget.product ==
+                                                                  null
+                                                              ? double.tryParse(
+                                                                wholeSalePrice(),
+                                                              )
+                                                              : widget.product?.wholeSalePrice,
                                                     );
 
                                                     if (widget

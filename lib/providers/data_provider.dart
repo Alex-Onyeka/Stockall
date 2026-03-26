@@ -1914,6 +1914,31 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  double getTotalWholeSalePrice({
+    List<TempProductClass>? products,
+  }) {
+    double tempTotal = 0;
+
+    if (returnShopProvider()
+            .userShop()
+            ?.manageInventoryStorage ==
+        true) {
+      for (var item in (products ?? productList)) {
+        tempTotal +=
+            ((item.wholeSalePrice ?? 0) *
+                ((item.quantity ?? 0) +
+                    (item.totalQttyInStorageDouble ?? 0)));
+      }
+    } else {
+      for (var item in (products ?? productList)) {
+        tempTotal +=
+            ((item.wholeSalePrice ?? 0) *
+                (item.quantity ?? 0));
+      }
+    }
+    return tempTotal;
+  }
+
   double getTotalSellingPrice({
     List<TempProductClass>? products,
   }) {

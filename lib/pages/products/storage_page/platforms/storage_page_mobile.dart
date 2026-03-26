@@ -298,6 +298,43 @@ class _StoragePageMobileState
                       ),
                       child: Builder(
                         builder: (context) {
+                          double tableWidth() {
+                            if (products.isEmpty) {
+                              return screenWidth(context);
+                            } else {
+                              if (shop(
+                                        context,
+                                      )?.useGroupUnit ==
+                                      true &&
+                                  shop(
+                                        context,
+                                      )?.wholeSale ==
+                                      true) {
+                                return 1700;
+                              } else if (shop(
+                                        context,
+                                      )?.useGroupUnit ==
+                                      true &&
+                                  shop(
+                                        context,
+                                      )?.wholeSale !=
+                                      true) {
+                                return 1500;
+                              } else if (shop(
+                                        context,
+                                      )?.useGroupUnit !=
+                                      true &&
+                                  shop(
+                                        context,
+                                      )?.wholeSale ==
+                                      true) {
+                                return 1500;
+                              } else {
+                                return 1350;
+                              }
+                            }
+                          }
+
                           if (sortIndex == 1) {
                             return ListView(
                               primary: false,
@@ -305,17 +342,7 @@ class _StoragePageMobileState
                                   Axis.horizontal,
                               children: [
                                 SizedBox(
-                                  width:
-                                      products.isEmpty
-                                          ? screenWidth(
-                                            context,
-                                          )
-                                          : shop(
-                                                context,
-                                              )?.useGroupUnit ==
-                                              true
-                                          ? 1500
-                                          : 1000,
+                                  width: tableWidth(),
                                   child: RefreshIndicator(
                                     onRefresh: () {
                                       return getProducts();

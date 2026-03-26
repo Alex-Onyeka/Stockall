@@ -29,6 +29,7 @@ class AddProductDesktop extends StatefulWidget {
   final TempProductClass? product;
   final TextEditingController costController;
   final TextEditingController sellingController;
+  final TextEditingController wholeSaleController;
   final TextEditingController nameController;
   final TextEditingController lowQttyController;
   final TextEditingController quantityController;
@@ -46,6 +47,7 @@ class AddProductDesktop extends StatefulWidget {
     required this.discountController,
     required this.storageQuantityController,
     required this.qttyPerGroupController,
+    required this.wholeSaleController,
     this.product,
   });
 
@@ -202,6 +204,16 @@ class _AddProductDesktopState
                                 .replaceAll(',', ''),
                           )
                           : null,
+                  wholeSalePrice:
+                      widget
+                              .wholeSaleController
+                              .text
+                              .isNotEmpty
+                          ? double.parse(
+                            widget.wholeSaleController.text
+                                .replaceAll(',', ''),
+                          )
+                          : null,
                   quantity:
                       widget
                               .quantityController
@@ -345,6 +357,16 @@ class _AddProductDesktopState
                               .replaceAll(',', ''),
                         )
                         : null,
+                wholeSalePrice:
+                    widget
+                            .wholeSaleController
+                            .text
+                            .isNotEmpty
+                        ? double.parse(
+                          widget.wholeSaleController.text
+                              .replaceAll(',', ''),
+                        )
+                        : null,
                 quantity:
                     widget
                             .quantityController
@@ -427,6 +449,7 @@ class _AddProductDesktopState
   final FocusNode nameFieldNode = FocusNode();
   final FocusNode costFieldNode = FocusNode();
   final FocusNode sellingFieldNode = FocusNode();
+  final FocusNode wholeSaleFieldNode = FocusNode();
   final FocusNode quantityFieldNode = FocusNode();
   final FocusNode barcodeFieldNode = FocusNode();
   final FocusNode storageQuantityFieldNode = FocusNode();
@@ -465,6 +488,10 @@ class _AddProductDesktopState
       widget.sellingController.text =
           widget.product!.sellingPrice != null
               ? widget.product!.sellingPrice.toString()
+              : '';
+      widget.wholeSaleController.text =
+          widget.product!.wholeSalePrice != null
+              ? widget.product!.wholeSalePrice.toString()
               : '';
       widget.quantityController.text =
           widget.product!.quantity == null
@@ -518,29 +545,29 @@ class _AddProductDesktopState
                 ),
           )
           : null;
-      setState(() {
-        costDiscount =
-            widget.product!.discount != null &&
-                    widget.product!.sellingPrice != null
-                ? widget.product!.sellingPrice! *
-                    (widget.product!.discount! / 100)
-                : 0;
-        sellingDiscount =
-            widget.product!.discount != null &&
-                    widget.product!.sellingPrice != null
-                ? widget.product!.sellingPrice! -
-                    (widget.product!.sellingPrice! *
-                        (widget.product!.discount! / 100))
-                : 0;
-        selling =
-            double.tryParse(
-              widget.sellingController.text.replaceAll(
-                ',',
-                '',
-              ),
-            ) ??
-            0;
-      });
+      // setState(() {
+      //   costDiscount =
+      //       widget.product!.discount != null &&
+      //               widget.product!.sellingPrice != null
+      //           ? widget.product!.sellingPrice! *
+      //               (widget.product!.discount! / 100)
+      //           : 0;
+      //   sellingDiscount =
+      //       widget.product!.discount != null &&
+      //               widget.product!.sellingPrice != null
+      //           ? widget.product!.sellingPrice! -
+      //               (widget.product!.sellingPrice! *
+      //                   (widget.product!.discount! / 100))
+      //           : 0;
+      //   selling =
+      //       double.tryParse(
+      //         widget.sellingController.text.replaceAll(
+      //           ',',
+      //           '',
+      //         ),
+      //       ) ??
+      //       0;
+      // });
     }
   }
 
@@ -553,23 +580,23 @@ class _AddProductDesktopState
     });
   }
 
-  double cost = 0;
-  double selling = 0;
-  double discount = 0;
+  // double cost = 0;
+  // double selling = 0;
+  // double discount = 0;
 
-  double costDiscount = 0;
+  // double costDiscount = 0;
 
-  double sellingDiscount = 0;
+  // double sellingDiscount = 0;
 
-  void checkDiscount() {
-    final discountedPrice = selling * (discount / 100);
-    final discountedSellingPrice =
-        selling - (selling * (discount / 100));
-    setState(() {
-      costDiscount = discountedPrice;
-      sellingDiscount = discountedSellingPrice;
-    });
-  }
+  // void checkDiscount() {
+  //   final discountedPrice = selling * (discount / 100);
+  //   final discountedSellingPrice =
+  //       selling - (selling * (discount / 100));
+  //   setState(() {
+  //     costDiscount = discountedPrice;
+  //     sellingDiscount = discountedSellingPrice;
+  //   });
+  // }
 
   @override
   void dispose() {
@@ -577,6 +604,7 @@ class _AddProductDesktopState
     expiryDateC.dispose();
     quantityFieldNode.dispose();
     sellingFieldNode.dispose();
+    wholeSaleFieldNode.dispose();
     costFieldNode.dispose();
     nameFieldNode.dispose();
   }
@@ -679,21 +707,21 @@ class _AddProductDesktopState
                                           onChanged: (
                                             value,
                                           ) {
-                                            if (value
-                                                .isEmpty) {
-                                              cost = 0;
-                                            } else {
-                                              setState(() {
-                                                cost =
-                                                    double.tryParse(
-                                                      widget.costController.text.replaceAll(
-                                                        ',',
-                                                        '',
-                                                      ),
-                                                    ) ??
-                                                    0;
-                                              });
-                                            }
+                                            // if (value
+                                            //     .isEmpty) {
+                                            //   cost = 0;
+                                            // } else {
+                                            //   setState(() {
+                                            //     cost =
+                                            //         double.tryParse(
+                                            //           widget.costController.text.replaceAll(
+                                            //             ',',
+                                            //             '',
+                                            //           ),
+                                            //         ) ??
+                                            //         0;
+                                            //   });
+                                            // }
                                           },
                                           theme: theme,
                                           hint:
@@ -712,30 +740,39 @@ class _AddProductDesktopState
                                           onSubmitted: (
                                             value,
                                           ) {
-                                            FocusScope.of(
-                                              context,
-                                            ).requestFocus(
-                                              quantityFieldNode,
-                                            );
+                                            returnShopProvider()
+                                                        .userShop()
+                                                        ?.wholeSale ==
+                                                    true
+                                                ? FocusScope.of(
+                                                  context,
+                                                ).requestFocus(
+                                                  wholeSaleFieldNode,
+                                                )
+                                                : FocusScope.of(
+                                                  context,
+                                                ).requestFocus(
+                                                  quantityFieldNode,
+                                                );
                                           },
                                           onChanged: (
                                             value,
                                           ) {
-                                            if (value
-                                                .isEmpty) {
-                                              selling = 0;
-                                            } else {
-                                              setState(() {
-                                                selling =
-                                                    double.tryParse(
-                                                      widget.sellingController.text.replaceAll(
-                                                        ',',
-                                                        '',
-                                                      ),
-                                                    ) ??
-                                                    0;
-                                              });
-                                            }
+                                            // if (value
+                                            //     .isEmpty) {
+                                            //   selling = 0;
+                                            // } else {
+                                            //   setState(() {
+                                            //     selling =
+                                            //         double.tryParse(
+                                            //           widget.sellingController.text.replaceAll(
+                                            //             ',',
+                                            //             '',
+                                            //           ),
+                                            //         ) ??
+                                            //         0;
+                                            //   });
+                                            // }
                                           },
                                           theme: theme,
                                           hint:
@@ -750,6 +787,62 @@ class _AddProductDesktopState
                                     ],
                                   ),
                                   SizedBox(height: 10),
+                                  Visibility(
+                                    visible:
+                                        shop(
+                                          context,
+                                        )?.wholeSale ==
+                                        true,
+                                    child: Column(
+                                      children: [
+                                        MoneyTextfield(
+                                          focusNode:
+                                              wholeSaleFieldNode,
+                                          onSubmitted: (
+                                            value,
+                                          ) {
+                                            FocusScope.of(
+                                              context,
+                                            ).requestFocus(
+                                              quantityFieldNode,
+                                            );
+                                          },
+                                          onChanged: (
+                                            value,
+                                          ) {
+                                            // if (value.isEmpty) {
+                                            //   selling = 0;
+                                            // } else {
+                                            //   setState(() {
+                                            //     selling =
+                                            //         double.tryParse(
+                                            //           widget
+                                            //               .sellingController
+                                            //               .text
+                                            //               .replaceAll(
+                                            //                 ',',
+                                            //                 '',
+                                            //               ),
+                                            //         ) ??
+                                            //         0;
+                                            //   });
+                                            // }
+                                          },
+                                          theme: theme,
+                                          hint:
+                                              'Enter Whole Sale Price',
+                                          title:
+                                              'Whole-Sale-Price (Optional)',
+                                          controller:
+                                              widget
+                                                  .wholeSaleController,
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                   Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment
@@ -1081,6 +1174,31 @@ class _AddProductDesktopState
                                                     }
                                                   }
 
+                                                  wholeSalePrice() {
+                                                    if (widget
+                                                        .wholeSaleController
+                                                        .text
+                                                        .isEmpty) {
+                                                      return '';
+                                                    } else {
+                                                      if (widget.wholeSaleController.text.split(',').length >
+                                                          1) {
+                                                        return widget.wholeSaleController.text
+                                                                .split(
+                                                                  ',',
+                                                                )
+                                                                .first +
+                                                            widget.wholeSaleController.text
+                                                                .split(
+                                                                  ',',
+                                                                )
+                                                                .last;
+                                                      } else {
+                                                        return widget.wholeSaleController.text;
+                                                      }
+                                                    }
+                                                  }
+
                                                   var tempProduct = TempProductClass(
                                                     groupUnit:
                                                         widget.product?.groupUnit,
@@ -1116,6 +1234,13 @@ class _AddProductDesktopState
                                                               sellingPrice(),
                                                             )
                                                             : widget.product?.sellingPrice,
+                                                    wholeSalePrice:
+                                                        widget.product ==
+                                                                null
+                                                            ? double.tryParse(
+                                                              wholeSalePrice(),
+                                                            )
+                                                            : widget.product?.wholeSalePrice,
                                                   );
 
                                                   if (widget
@@ -1144,9 +1269,6 @@ class _AddProductDesktopState
                                                             ? createdProductUuid!
                                                             : widget.product!.uuid!,
                                                       );
-                                                      // barcodeController.text =
-                                                      //     barcode ??
-                                                      //     '';
                                                       barCodeSet =
                                                           true;
                                                     });

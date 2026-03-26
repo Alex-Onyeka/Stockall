@@ -292,6 +292,48 @@ class _TableRowRecordWidgetState
                 product: widget.product,
               ),
             ),
+            Visibility(
+              visible: shop(context)?.wholeSale == true,
+              child: Expanded(
+                flex: 6,
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      right: BorderSide(color: Colors.grey),
+                      // left: BorderSide(color: Colors.grey),
+                    ),
+                  ),
+                  padding: EdgeInsets.all(5),
+                  child: Center(
+                    child: Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            style: TextStyle(
+                              fontSize:
+                                  widget
+                                      .theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            formatMoneyBig(
+                              amount:
+                                  widget
+                                      .product
+                                      .wholeSalePrice ??
+                                  0,
+                              context: context,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
             Expanded(
               flex: 6,
               child: Container(

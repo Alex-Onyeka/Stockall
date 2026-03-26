@@ -11,6 +11,7 @@ class ItemsAuth {
   final bool generateItemBarcode;
   final bool manageInventoryStorage;
   final bool useGroupUnit;
+  final bool setWholeSale;
 
   ItemsAuth({
     required this.numberOfItems,
@@ -21,6 +22,7 @@ class ItemsAuth {
     required this.generateItemBarcode,
     required this.manageInventoryStorage,
     required this.useGroupUnit,
+    required this.setWholeSale,
   });
 }
 
@@ -80,6 +82,37 @@ class ItemsAuthAction {
         .firstWhere((pl) => pl.plan == plan)
         .itemsAuth
         .manageInventoryStorage) {
+      action == null ? {} : action();
+      return true;
+    } else {
+      if (action != null) {
+        showUnauthorizedDialog(context);
+        if (failAction != null) {
+          failAction();
+        }
+      }
+      return false;
+    }
+    // }
+  }
+
+  bool toggleSetWholeSaleAction({
+    required BuildContext context,
+    Function()? action,
+    Function()? failAction,
+  }) {
+    var plan =
+        returnSubcsription(
+          context,
+          listen: false,
+        ).subscription?.plan;
+    if (plan == null) {
+      return false;
+    }
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .itemsAuth
+        .setWholeSale) {
       action == null ? {} : action();
       return true;
     } else {

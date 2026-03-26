@@ -97,6 +97,9 @@ class TempProductClass {
   @HiveField(30)
   String? categoryUuid;
 
+  @HiveField(31)
+  double? wholeSalePrice;
+
   TempProductClass({
     this.id,
     required this.name,
@@ -129,6 +132,7 @@ class TempProductClass {
     required this.groupUnit,
     required this.qttyPerGroup,
     this.categoryUuid,
+    required this.wholeSalePrice,
   });
 
   factory TempProductClass.fromJson(
@@ -192,6 +196,8 @@ class TempProductClass {
       qttyPerGroup:
           (json['qtty_per_group'] as num?)?.toDouble(),
       categoryUuid: json['category_uuid'] as String?,
+      wholeSalePrice:
+          (json['whole_sale_price'] as num?)?.toDouble(),
     );
   }
 
@@ -230,6 +236,7 @@ class TempProductClass {
       'group_unit': groupUnit,
       'qtty_per_group': qttyPerGroup,
       'category_uuid': categoryUuid,
+      'whole_sale_price': wholeSalePrice,
     };
   }
 }

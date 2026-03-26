@@ -91,6 +91,9 @@ class TempProductSaleRecord {
   @HiveField(28)
   String? unit;
 
+  @HiveField(29)
+  bool? useWholeSalePrice;
+
   TempProductSaleRecord({
     this.productRecordId,
     required this.createdAt,
@@ -121,6 +124,7 @@ class TempProductSaleRecord {
     this.invoiceUuid,
     this.fixedDiscount,
     this.unit,
+    this.useWholeSalePrice,
   });
 
   factory TempProductSaleRecord.fromJson(
@@ -160,6 +164,7 @@ class TempProductSaleRecord {
       fixedDiscount:
           (json['fixed_discount'] as num?)?.toDouble(),
       unit: json['unit'] as String?,
+      useWholeSalePrice: json['use_whole_sale_price'],
     );
   }
 
@@ -192,6 +197,7 @@ class TempProductSaleRecord {
       'invoice_uuid': invoiceUuid,
       'fixed_discount': fixedDiscount,
       'unit': unit,
+      'use_whole_sale_price': useWholeSalePrice,
     };
   }
 
@@ -223,6 +229,7 @@ class TempProductSaleRecord {
     bool? isProductManaged,
     bool? setTotalPrice,
     String? unit,
+    bool? useWholeSalePrice,
   }) {
     return TempProductSaleRecord(
       productRecordId:
@@ -254,7 +261,9 @@ class TempProductSaleRecord {
       isProductManaged:
           isProductManaged ?? this.isProductManaged,
       setTotalPrice: setTotalPrice ?? this.setTotalPrice,
-      unit: unit,
+      unit: unit ?? this.unit,
+      useWholeSalePrice:
+          useWholeSalePrice ?? this.useWholeSalePrice,
     );
   }
 }

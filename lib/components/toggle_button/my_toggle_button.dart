@@ -20,13 +20,14 @@ class MyToggleButton extends StatelessWidget {
     return InkWell(
       onTap: toggle,
       child: Container(
-        height: 16,
+        height:
+            isSmall != null && isSmall == true ? 16 : 18,
         width: isSmall != null && isSmall == true ? 35 : 50,
         padding: EdgeInsets.symmetric(
           horizontal:
               isSmall != null && isSmall == true ? 6 : 10,
           vertical:
-              isSmall != null && isSmall == true ? 2.5 : 5,
+              isSmall != null && isSmall == true ? 2.5 : 4,
         ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),

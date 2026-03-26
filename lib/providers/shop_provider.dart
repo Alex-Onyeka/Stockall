@@ -583,97 +583,6 @@ class ShopProvider extends ChangeNotifier {
     }
   }
 
-  // Future<List<String>> fetchShopCategories(
-  //   int shopId,
-  // ) async {
-  //   bool isOnline = await connectivity.isOnline();
-  //   if (isOnline) {
-  //     final response =
-  //         await supabase
-  //             .from('shops')
-  //             .select('categories')
-  //             .eq('shop_id', shopId)
-  //             .single();
-
-  //     final List<dynamic> categories =
-  //         response['categories'] ?? [];
-  //     notifyListeners();
-  //     return categories.cast<String>();
-  //   } else {
-  //     // TempShopClass? shop = ShopFunc().getShop();
-  //     if (userShop() != null) {
-  //       final List<String>? categories =
-  //           userShop()!.categories;
-  //       return categories ?? [];
-  //     } else {
-  //       return [];
-  //     }
-  //   }
-  // }
-
-  // Future<int> appendShopCategories({
-  //   required int shopId,
-  //   required String newCategory,
-  //   required bool isDelete,
-  // }) async {
-  //   bool isOnline = await connectivity.isOnline();
-  //   if (isOnline) {
-  //     try {
-  //       List<String> existingCategories =
-  //           returnShopProvider().userShop()?.categories ??
-  //           [];
-
-  //       isDelete
-  //           ? existingCategories.removeWhere(
-  //             (cat) =>
-  //                 cat.toLowerCase() ==
-  //                 newCategory.toLowerCase(),
-  //           )
-  //           : existingCategories.add(newCategory);
-  //       List<String> updatedCategories = existingCategories;
-
-  //       await supabase
-  //           .from('shops')
-  //           .update({'categories': updatedCategories})
-  //           .eq('shop_id', shopId)
-  //           .select();
-
-  //       await getUserShops();
-  //       notifyListeners();
-  //       return 1;
-  //       // print('Updated categories: $updateResult');
-  //     } catch (e) {
-  //       print(
-  //         'Error appending categories: ${e.toString()}',
-  //       );
-  //       return 0;
-  //     }
-  //   } else {
-  //     // TempShopClass? shop = ShopFunc().getShop();
-  //     if (userShop() != null) {
-  //       userShop()!.updatedAt = DateTime.now();
-  //       List<String> existingCategories =
-  //           returnShopProvider().userShop()?.categories ??
-  //           [];
-
-  //       isDelete
-  //           ? existingCategories.remove(newCategory)
-  //           : existingCategories.add(newCategory);
-  //       List<String> updatedCategories = existingCategories;
-  //       userShop()?.categories = updatedCategories;
-  //       await ShopFunc().updateShop(userShop()!);
-  //       await UpdatedShopFunc().createUpdatedShop(
-  //         UpdatedShop(shop: userShop()!),
-  //       );
-  //       // setShop(shop);
-  //       notifyListeners();
-  //       return 1;
-  //     } else {
-  //       return 0;
-  //     }
-  //   }
-  // }
-
   Future<void> addEmployeeToShop({
     required String newEmployeeId,
     required String role,
@@ -1042,6 +951,68 @@ class ShopProvider extends ChangeNotifier {
     } catch (e) {
       print("❌ Failed to Apply VAT: ${e.toString()}");
       isVatLoading = false;
+      notifyListeners();
+      return 0;
+    }
+  }
+
+  bool isWholeSaleLoading = false;
+
+  Future<int> toggleWholeSale() async {
+    bool isOnline = await connectivity.isOnline();
+    isWholeSaleLoading = true;
+    notifyListeners();
+    try {
+      if (isOnline) {
+        Map<String, dynamic>? res =
+            await supabase
+                .from('shops')
+                .update({
+                  'whole_sale': !userShop()!.wholeSale!,
+                })
+                .eq('shop_id', userShop()!.shopId!)
+                .select()
+                .maybeSingle();
+        if (res == null) {
+          print('Whole Sale Update Failed');
+          isWholeSaleLoading = false;
+          notifyListeners();
+          return 0;
+        }
+
+        var shops = await getUserShops();
+        setShops(shops);
+        isWholeSaleLoading = false;
+        notifyListeners();
+        return 1;
+      } else {
+        try {
+          userShop()!.updatedAt = DateTime.now();
+          userShop()!.wholeSale = !userShop()!.wholeSale!;
+          await ShopFunc().updateShop(userShop()!);
+          if (userShop() != null) {
+            await UpdatedShopFunc().createUpdatedShop(
+              UpdatedShop(shop: userShop()!),
+            );
+            notifyListeners();
+          }
+          isWholeSaleLoading = false;
+          notifyListeners();
+          return 1;
+        } catch (e) {
+          print(
+            "❌ Failed to Toggle Whole Sale Offline: ${e.toString()}",
+          );
+          isWholeSaleLoading = false;
+          notifyListeners();
+          return 0;
+        }
+      }
+    } catch (e) {
+      print(
+        "❌ Failed to Toggle Whole Sale: ${e.toString()}",
+      );
+      isWholeSaleLoading = false;
       notifyListeners();
       return 0;
     }

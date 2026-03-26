@@ -48,13 +48,14 @@ class TempProductClassAdapter extends TypeAdapter<TempProductClass> {
       groupUnit: fields[28] as String?,
       qttyPerGroup: fields[29] as double?,
       categoryUuid: fields[30] as String?,
+      wholeSalePrice: fields[31] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempProductClass obj) {
     writer
-      ..writeByte(31)
+      ..writeByte(32)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -116,7 +117,9 @@ class TempProductClassAdapter extends TypeAdapter<TempProductClass> {
       ..writeByte(29)
       ..write(obj.qttyPerGroup)
       ..writeByte(30)
-      ..write(obj.categoryUuid);
+      ..write(obj.categoryUuid)
+      ..writeByte(31)
+      ..write(obj.wholeSalePrice);
   }
 
   @override

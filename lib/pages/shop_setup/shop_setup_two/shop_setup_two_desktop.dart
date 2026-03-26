@@ -216,6 +216,7 @@ class _ShopSetupTwoDesktopState
                             : false,
                     applyVAT: false,
                     useGroupUnit: false,
+                    wholeSale: false,
                   ),
                   safeContext,
                 );
@@ -542,9 +543,6 @@ class _ShopSetupTwoDesktopState
                             widget.shop != null
                                 ? 'Update Shop Address'
                                 : 'Set Shop Address',
-                            // returnConnectivityProvider(
-                            //   context,
-                            // ).isConnected.toString(),
                           ),
                         ],
                       ),

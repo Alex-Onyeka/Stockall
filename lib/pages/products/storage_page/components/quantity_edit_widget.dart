@@ -575,6 +575,8 @@ class _QuantityEditWidgetState
                 expiryDate: widget.product.expiryDate,
                 lowQtty: widget.product.lowQtty,
                 sellingPrice: widget.product.sellingPrice,
+                wholeSalePrice:
+                    widget.product.wholeSalePrice,
                 size: widget.product.size,
                 sizeType: widget.product.sizeType,
                 startDate: widget.product.startDate,
@@ -623,6 +625,8 @@ class _QuantityEditWidgetState
                 expiryDate: widget.product.expiryDate,
                 lowQtty: widget.product.lowQtty,
                 sellingPrice: widget.product.sellingPrice,
+                wholeSalePrice:
+                    widget.product.wholeSalePrice,
                 size: widget.product.size,
                 sizeType: widget.product.sizeType,
                 startDate: widget.product.startDate,

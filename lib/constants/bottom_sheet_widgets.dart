@@ -14,6 +14,7 @@ import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/components/text_fields/text_field_barcode.dart';
+import 'package:stockall/components/toggle_button/my_toggle_button.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
@@ -1303,13 +1304,14 @@ class _CustomBottomPanelState
                       Visibility(
                         visible:
                             returnSalesProviderContext(
-                                  context,
-                                ).isSetCustomPrice() &&
+                              context,
+                            ).isSetCustomPrice() &&
+                            (cartItem.item.setCustomPrice ||
                                 cartItem
-                                    .item
-                                    .setCustomPrice ||
-                            cartItem.item.sellingPrice ==
-                                null,
+                                        .item
+                                        .sellingPrice ==
+                                    null) &&
+                            !cartItem.useWholeSalePrice,
                         child: Row(
                           spacing: 10,
                           crossAxisAlignment:
@@ -1510,12 +1512,14 @@ class _CustomBottomPanelState
                       ),
                       Visibility(
                         visible:
-                            cartItem.item.setCustomPrice,
+                            cartItem.item.setCustomPrice &&
+                            !cartItem.useWholeSalePrice,
                         child: SizedBox(height: 20),
                       ),
                       Visibility(
                         visible:
-                            cartItem.item.setCustomPrice,
+                            cartItem.item.setCustomPrice &&
+                            !cartItem.useWholeSalePrice,
                         child: InkWell(
                           onTap: () {
                             returnSalesProvider()
@@ -1627,6 +1631,59 @@ class _CustomBottomPanelState
                                   ),
                                 ),
                                 context: context,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Visibility(
+                        visible:
+                            returnShopProvider()
+                                .userShop()
+                                ?.wholeSale ==
+                            true,
+                        child: Column(
+                          children: [
+                            SizedBox(height: 20),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(
+                                    horizontal: 20.0,
+                                  ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .spaceBetween,
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    'Use Whole Sale Price?',
+                                  ),
+                                  MyToggleButton(
+                                    boolValue:
+                                        cartItem
+                                            .useWholeSalePrice,
+                                    toggle: () {
+                                      var salesProvider =
+                                          returnSalesProvider();
+                                      salesProvider
+                                          .toggleWholeSale(
+                                            cartItem:
+                                                cartItem,
+                                            context:
+                                                context,
+                                          );
+                                      priceController
+                                          .clear();
+                                      salesProvider
+                                          .closeCustomPrice();
+                                    },
+                                    theme: theme,
+                                  ),
+                                ],
                               ),
                             ),
                           ],
@@ -1882,7 +1939,10 @@ class _CustomBottomPanelState
   }
 
   String formatSellingPrice(TempCartItem cartItem) {
-    if (priceController.text.isNotEmpty) {
+    if (cartItem.useWholeSalePrice) {
+      return (qqty * (cartItem.item.wholeSalePrice ?? 0))
+          .toString();
+    } else if (priceController.text.isNotEmpty) {
       if (returnSalesProvider().setTotalPrice) {
         return priceController.text.replaceAll(',', '');
       } else {
@@ -2303,6 +2363,18 @@ class _CustomBottomPanelState
                                                     cartItem: TempCartItem(
                                                       setTotalPrice:
                                                           returnSalesProvider().setTotalPrice,
+                                                      useWholeSalePrice:
+                                                          returnSalesProvider()
+                                                              .currentCart()
+                                                              .cartItems
+                                                              .firstWhere(
+                                                                (
+                                                                  item,
+                                                                ) =>
+                                                                    item.item.uuid! ==
+                                                                    product.uuid!,
+                                                              )
+                                                              .useWholeSalePrice,
                                                       addToStock:
                                                           false,
                                                       discount:
@@ -2334,6 +2406,8 @@ class _CustomBottomPanelState
                                                     cartItem: TempCartItem(
                                                       setTotalPrice:
                                                           returnSalesProvider().setTotalPrice,
+                                                      useWholeSalePrice:
+                                                          false,
                                                       addToStock:
                                                           false,
                                                       discount:
@@ -2399,6 +2473,18 @@ class _CustomBottomPanelState
                                                     cartItem: TempCartItem(
                                                       setTotalPrice:
                                                           returnSalesProvider().setTotalPrice,
+                                                      useWholeSalePrice:
+                                                          returnSalesProvider()
+                                                              .currentCart()
+                                                              .cartItems
+                                                              .firstWhere(
+                                                                (
+                                                                  item,
+                                                                ) =>
+                                                                    item.item.uuid! ==
+                                                                    product.uuid!,
+                                                              )
+                                                              .useWholeSalePrice,
                                                       addToStock:
                                                           false,
                                                       discount:
@@ -2430,6 +2516,8 @@ class _CustomBottomPanelState
                                                     cartItem: TempCartItem(
                                                       setTotalPrice:
                                                           returnSalesProvider().setTotalPrice,
+                                                      useWholeSalePrice:
+                                                          false,
                                                       addToStock:
                                                           false,
                                                       discount:
@@ -2544,6 +2632,18 @@ class _CustomBottomPanelState
                                                     cartItem: TempCartItem(
                                                       setTotalPrice:
                                                           returnSalesProvider().setTotalPrice,
+                                                      useWholeSalePrice:
+                                                          returnSalesProvider()
+                                                              .currentCart()
+                                                              .cartItems
+                                                              .firstWhere(
+                                                                (
+                                                                  item,
+                                                                ) =>
+                                                                    item.item.uuid! ==
+                                                                    product.uuid!,
+                                                              )
+                                                              .useWholeSalePrice,
                                                       addToStock:
                                                           false,
                                                       discount:
@@ -2575,6 +2675,8 @@ class _CustomBottomPanelState
                                                     cartItem: TempCartItem(
                                                       setTotalPrice:
                                                           returnSalesProvider().setTotalPrice,
+                                                      useWholeSalePrice:
+                                                          false,
                                                       addToStock:
                                                           false,
                                                       discount:
@@ -2640,6 +2742,18 @@ class _CustomBottomPanelState
                                                     cartItem: TempCartItem(
                                                       setTotalPrice:
                                                           returnSalesProvider().setTotalPrice,
+                                                      useWholeSalePrice:
+                                                          returnSalesProvider()
+                                                              .currentCart()
+                                                              .cartItems
+                                                              .firstWhere(
+                                                                (
+                                                                  item,
+                                                                ) =>
+                                                                    item.item.uuid! ==
+                                                                    product.uuid!,
+                                                              )
+                                                              .useWholeSalePrice,
                                                       addToStock:
                                                           false,
                                                       discount:
@@ -2671,6 +2785,8 @@ class _CustomBottomPanelState
                                                     cartItem: TempCartItem(
                                                       setTotalPrice:
                                                           returnSalesProvider().setTotalPrice,
+                                                      useWholeSalePrice:
+                                                          false,
                                                       addToStock:
                                                           false,
                                                       discount:

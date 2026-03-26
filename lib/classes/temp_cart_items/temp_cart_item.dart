@@ -9,6 +9,7 @@ class TempCartItem {
   double quantity;
   double? customPrice;
   bool setCustomPrice;
+  bool useWholeSalePrice;
   bool setTotalPrice;
   bool addToStock;
   String? salesRecordId;
@@ -22,6 +23,7 @@ class TempCartItem {
     this.setCustomPrice = true,
     required this.addToStock,
     required this.setTotalPrice,
+    required this.useWholeSalePrice,
     this.salesRecordId,
   });
 
@@ -35,6 +37,7 @@ class TempCartItem {
     'setTotalPrice': setTotalPrice,
     'addToStock': addToStock,
     'salesRecordId': salesRecordId,
+    'use_whole_sale_price': useWholeSalePrice,
   };
 
   factory TempCartItem.fromJson(Map<String, dynamic> json) {
@@ -48,6 +51,7 @@ class TempCartItem {
       setTotalPrice: json['setTotalPrice'],
       salesRecordId: json['salesRecordId'],
       fixedDiscount: json['fixed_discount'],
+      useWholeSalePrice: json['use_whole_sale_price'],
     );
   }
 
@@ -73,7 +77,11 @@ class TempCartItem {
   }
 
   double totalCost() {
-    if (customPrice != null) {
+    if (useWholeSalePrice) {
+      return item.wholeSalePrice != null
+          ? item.wholeSalePrice! * quantity
+          : 0;
+    } else if (customPrice != null) {
       if (setTotalPrice) {
         return customPrice!;
       } else {
@@ -103,11 +111,19 @@ class TempCartItem {
 
   double getItemDiscountedRemainingCost() {
     if (item.discount != null) {
-      return (((item.sellingPrice ?? 0) -
-              ((item.sellingPrice ?? 0) *
-                  (item.discount ?? 0) /
-                  100)) *
-          quantity);
+      if (useWholeSalePrice) {
+        return (((item.wholeSalePrice ?? 0) -
+                ((item.wholeSalePrice ?? 0) *
+                    (item.discount ?? 0) /
+                    100)) *
+            quantity);
+      } else {
+        return (((item.sellingPrice ?? 0) -
+                ((item.sellingPrice ?? 0) *
+                    (item.discount ?? 0) /
+                    100)) *
+            quantity);
+      }
     } else {
       return totalCost();
     }
