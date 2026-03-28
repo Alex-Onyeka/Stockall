@@ -271,9 +271,17 @@ class _EmployeePageDesktopState
                                                                               onTap: () {
                                                                                 setState(
                                                                                   () {
-                                                                                    list.add(
+                                                                                    if (list.contains(
                                                                                       dept.uuid,
-                                                                                    );
+                                                                                    )) {
+                                                                                      list.remove(
+                                                                                        dept.uuid,
+                                                                                      );
+                                                                                    } else {
+                                                                                      list.add(
+                                                                                        dept.uuid,
+                                                                                      );
+                                                                                    }
                                                                                   },
                                                                                 );
                                                                               },
