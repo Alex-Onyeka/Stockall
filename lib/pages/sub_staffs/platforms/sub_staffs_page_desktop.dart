@@ -204,6 +204,10 @@ class _SubStaffsPageDesktopState
                                                           true;
                                                     });
                                                     var subStaff = TempSubStaff(
+                                                      departmentName:
+                                                          returnDepartmentProvider().currentDepartment()?.name,
+                                                      departmentUuid:
+                                                          returnDepartmentProvider().currentDepartment()?.uuid,
                                                       phone:
                                                           phoneController.text.trim(),
                                                       createdAt:

@@ -276,12 +276,10 @@ class Authorizations {
   String manageSubStaff = 'Manage Sub Staff';
   String manageShopDashboard = 'Manage Store Dashboard';
   String toggleUseGroupUnit = 'Toggle Use Group Unit';
+  String viewAllDepartments = 'View All Departments';
 }
 
 bool authorization({required String authorized}) {
-  // PermissionModel emp = returnPermissionProvider()
-  //     .permissions
-  //     .firstWhere((emp) => emp.role == currentUser().role);
   if (currentUser().access.contains(authorized)) {
     return true;
   } else {

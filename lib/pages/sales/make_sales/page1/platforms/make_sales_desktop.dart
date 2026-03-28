@@ -1731,6 +1731,14 @@ class _MakeSalesDesktopState
                                                   returnSalesProvider()
                                                       .setTotalPrice,
                                               item: TempProductClass(
+                                                departmentName:
+                                                    returnDepartmentProvider()
+                                                        .currentDepartment()
+                                                        ?.name,
+                                                departmentUuid:
+                                                    returnDepartmentProvider()
+                                                        .currentDepartment()
+                                                        ?.uuid,
                                                 groupUnit:
                                                     'Others',
                                                 qttyPerGroup:
@@ -1849,6 +1857,10 @@ class _MakeSalesDesktopState
                                                     setTotalPrice:
                                                         returnSalesProvider().setTotalPrice,
                                                     item: TempProductClass(
+                                                      departmentName:
+                                                          returnDepartmentProvider().currentDepartment()?.name,
+                                                      departmentUuid:
+                                                          returnDepartmentProvider().currentDepartment()?.uuid,
                                                       groupUnit:
                                                           'Others',
                                                       qttyPerGroup:
@@ -2020,6 +2032,10 @@ class _MakeSalesDesktopState
                                                                           setTotalPrice:
                                                                               returnSalesProvider().setTotalPrice,
                                                                           item: TempProductClass(
+                                                                            departmentName:
+                                                                                returnDepartmentProvider().currentDepartment()?.name,
+                                                                            departmentUuid:
+                                                                                returnDepartmentProvider().currentDepartment()?.uuid,
                                                                             groupUnit:
                                                                                 'Others',
                                                                             qttyPerGroup:
@@ -2642,6 +2658,10 @@ class _MakeSalesDesktopState
                                                       setTotalPrice:
                                                           returnSalesProvider().setTotalPrice,
                                                       item: TempProductClass(
+                                                        departmentName:
+                                                            returnDepartmentProvider().currentDepartment()?.name,
+                                                        departmentUuid:
+                                                            returnDepartmentProvider().currentDepartment()?.uuid,
                                                         groupUnit:
                                                             'Others',
                                                         qttyPerGroup:

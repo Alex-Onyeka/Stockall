@@ -77,6 +77,14 @@ class _ReceiptPageMobileState
             bank: 0,
             cashAlt: 0,
             isInvoice: false,
+            departmentName:
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.name,
+            departmentUuidNew:
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid,
           ),
     );
     return SafeArea(

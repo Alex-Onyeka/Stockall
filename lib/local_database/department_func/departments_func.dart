@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_departments_class/department_class.dart';
+import 'package:stockall/local_database/department_current/current_department_func.dart';
 import 'package:stockall/local_database/department_func/unsync_funcs/created_departments/created_departments_func.dart';
 import 'package:stockall/local_database/department_func/unsync_funcs/deleted_department/deleted_departments_func.dart';
 import 'package:stockall/local_database/department_func/unsync_funcs/updated_department/updated_department_func.dart';
@@ -33,11 +34,16 @@ class DepartmentsFunc {
   ) async {
     await clearDepartment();
     try {
-      for (var dept in department) {
-        await departmentBox.put(dept.uuid, dept);
+      if (department.isEmpty) {
+        CurrentDepartmentFunc().clearCurrentDepartment();
+        return 1;
+      } else {
+        for (var dept in department) {
+          await departmentBox.put(dept.uuid, dept);
+        }
+        print('Offline Departments Insert Success');
+        return 1;
       }
-      print('Offline Departments Insert Success');
-      return 1;
     } catch (e) {
       print(
         'Offline Departments Insert Failed: ${e.toString()}',

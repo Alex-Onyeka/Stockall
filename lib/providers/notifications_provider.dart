@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_notification/temp_notification.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/notification/notification_func.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';
 import 'package:stockall/main.dart';
@@ -83,6 +84,25 @@ class NotificationProvider with ChangeNotifier {
                 (item) => TempNotification.fromJson(item),
               )
               .toList();
+      if (returnShopProvider()
+              .userShop()
+              ?.manageDepartments ==
+          true) {
+        if (!authorization(
+          authorized: Authorizations().viewAllDepartments,
+        )) {
+          _notifications =
+              _notifications
+                  .where(
+                    (notif) =>
+                        notif.departmentUuid ==
+                        returnDepartmentProvider()
+                            .currentDepartment()
+                            ?.uuid,
+                  )
+                  .toList();
+        }
+      }
 
       await NotificationFunc().insertAllNotifications(
         _notifications,
@@ -90,6 +110,25 @@ class NotificationProvider with ChangeNotifier {
     } else {
       _notifications =
           NotificationFunc().getNotifications();
+      if (returnShopProvider()
+              .userShop()
+              ?.manageDepartments ==
+          true) {
+        if (!authorization(
+          authorized: Authorizations().viewAllDepartments,
+        )) {
+          _notifications =
+              _notifications
+                  .where(
+                    (notif) =>
+                        notif.departmentUuid ==
+                        returnDepartmentProvider()
+                            .currentDepartment()
+                            ?.uuid,
+                  )
+                  .toList();
+        }
+      }
     }
     notifyListeners();
     return _notifications;
@@ -135,6 +174,10 @@ class NotificationProvider with ChangeNotifier {
           );
           if (index != -1) {
             _notifications[index] = TempNotification(
+              departmentName:
+                  _notifications[index].departmentName,
+              departmentUuid:
+                  _notifications[index].departmentUuid,
               uuid: _notifications[index].uuid,
               notifId: _notifications[index].notifId,
               shopId: _notifications[index].shopId,

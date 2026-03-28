@@ -3,6 +3,7 @@ import 'package:stockall/classes/temp_categories/category_class.dart';
 import 'package:stockall/classes/temp_categories/unsynced/created_category/created_category.dart';
 import 'package:stockall/classes/temp_categories/unsynced/deleted_category/deleted_category.dart';
 import 'package:stockall/classes/temp_categories/unsynced/updated/updated_category.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/category/category_func.dart';
 import 'package:stockall/local_database/category/unsync_funcs/created_categories/created_categories_func.dart';
 import 'package:stockall/local_database/category/unsync_funcs/deleted_categories/deleted_categories_func.dart';
@@ -83,10 +84,34 @@ class CategoriesProvider extends ChangeNotifier {
             .order('name', ascending: true);
         print('Categories Gotten: ${response.length}');
 
-        categories =
+        List<CategoryClass> tempCategories =
             (response as List)
                 .map((e) => CategoryClass.fromJson(e))
                 .toList();
+
+        if (returnShopProvider()
+                .userShop()
+                ?.manageDepartments ==
+            true) {
+          if (authorization(
+            authorized: Authorizations().viewAllDepartments,
+          )) {
+            categories = tempCategories;
+          } else {
+            categories =
+                tempCategories
+                    .where(
+                      (cat) =>
+                          cat.departmentId ==
+                          returnDepartmentProvider()
+                              .currentDepartment()
+                              ?.uuid,
+                    )
+                    .toList();
+          }
+        } else {
+          categories = tempCategories;
+        }
 
         await CategoryFunc().insertAllCategories(
           categories,
@@ -102,7 +127,32 @@ class CategoriesProvider extends ChangeNotifier {
       }
     } else {
       try {
-        categories = CategoryFunc().getCategories();
+        List<CategoryClass> tempCategories =
+            CategoryFunc().getCategories();
+        if (returnShopProvider()
+                .userShop()
+                ?.manageDepartments ==
+            true) {
+          if (authorization(
+            authorized: Authorizations().viewAllDepartments,
+          )) {
+            categories = tempCategories;
+          } else {
+            categories =
+                tempCategories
+                    .where(
+                      (cat) =>
+                          cat.departmentId ==
+                          returnDepartmentProvider()
+                              .currentDepartment()
+                              ?.uuid,
+                    )
+                    .toList();
+          }
+        } else {
+          categories = tempCategories;
+        }
+
         notifyListeners();
         return categories;
       } catch (e) {

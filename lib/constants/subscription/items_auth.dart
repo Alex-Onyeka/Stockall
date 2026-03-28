@@ -74,10 +74,6 @@ class ItemsAuthAction {
     if (plan == null) {
       return false;
     }
-    // if (plan == 3) {
-    //   action == null ? {} : action();
-    //   return true;
-    // } else {
     if (subPlans
         .firstWhere((pl) => pl.plan == plan)
         .itemsAuth

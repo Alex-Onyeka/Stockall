@@ -7,12 +7,16 @@ class GeneralSettingsAuth {
   final bool customizeReceiptTemplate;
   final bool allowOfflineUse;
   final bool manageVAT;
+  final bool manageDepartments;
+  final int numberOfDepartments;
 
   GeneralSettingsAuth({
     required this.addSocials,
     required this.customizeReceiptTemplate,
     required this.allowOfflineUse,
     required this.manageVAT,
+    required this.manageDepartments,
+    required this.numberOfDepartments,
   });
 }
 
@@ -29,10 +33,6 @@ class GeneralSettingsAuthAction {
     if (plan == null) {
       return false;
     }
-    // if (plan == 3) {
-    //   action == null ? {} : action();
-    //   return true;
-    // } else {
     if (subPlans
         .firstWhere((pl) => pl.plan == plan)
         .generalSettingsAuth
@@ -60,10 +60,6 @@ class GeneralSettingsAuthAction {
     if (plan == null) {
       return false;
     }
-    // if (plan == 3) {
-    //   action == null ? {} : action();
-    //   return true;
-    // } else {
     if (subPlans
         .firstWhere((pl) => pl.plan == plan)
         .generalSettingsAuth
@@ -76,7 +72,6 @@ class GeneralSettingsAuthAction {
       }
       return false;
     }
-    // }
   }
 
   bool allowOfflineUseAction({
@@ -91,10 +86,6 @@ class GeneralSettingsAuthAction {
     if (plan == null) {
       return false;
     }
-    // if (plan == 3) {
-    //   action == null ? {} : action();
-    //   return true;
-    // } else {
     if (subPlans
         .firstWhere((pl) => pl.plan == plan)
         .generalSettingsAuth
@@ -107,7 +98,6 @@ class GeneralSettingsAuthAction {
       }
       return false;
     }
-    // }
   }
 
   bool manageVATAction({
@@ -122,10 +112,6 @@ class GeneralSettingsAuthAction {
     if (plan == null) {
       return false;
     }
-    // if (plan == 3) {
-    //   action == null ? {} : action();
-    //   return true;
-    // } else {
     if (subPlans
         .firstWhere((pl) => pl.plan == plan)
         .generalSettingsAuth
@@ -138,6 +124,60 @@ class GeneralSettingsAuthAction {
       }
       return false;
     }
-    // }
+  }
+
+  bool manageDeparmtmentsAction({
+    required BuildContext context,
+    Function()? action,
+  }) {
+    var plan =
+        returnSubcsription(
+          context,
+          listen: false,
+        ).subscription?.plan;
+    if (plan == null) {
+      return false;
+    }
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .generalSettingsAuth
+        .manageDepartments) {
+      action == null ? {} : action();
+      return true;
+    } else {
+      if (action != null) {
+        showUnauthorizedDialog(context);
+      }
+      return false;
+    }
+  }
+
+  bool numberOfDepartmentsAction({
+    required BuildContext context,
+    Function()? action,
+  }) {
+    var plan =
+        returnSubcsription(
+          context,
+          listen: false,
+        ).subscription?.plan;
+    if (plan == null) {
+      return false;
+    }
+    var currentNumberOfItems =
+        returnDepartmentProvider().departments.length;
+    if (subPlans
+            .firstWhere((pl) => pl.plan == plan)
+            .generalSettingsAuth
+            .numberOfDepartments >
+        currentNumberOfItems) {
+      action == null ? {} : action();
+      return true;
+    } else {
+      if (action != null) {
+        showUnauthorizedDialog(context);
+      }
+      return false;
+    }
   }
 }

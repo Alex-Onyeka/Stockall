@@ -73,6 +73,9 @@ class TempMainReceipt extends HiveObject {
   @HiveField(22)
   String? subStaffUuid;
 
+  @HiveField(23)
+  String? departmentUuidNew;
+
   TempMainReceipt({
     this.id,
     this.barcode,
@@ -85,7 +88,7 @@ class TempMainReceipt extends HiveObject {
     required this.paymentMethod,
     required this.bank,
     required this.cashAlt,
-    this.departmentName,
+    required this.departmentName,
     this.departmentUuid,
     required this.isInvoice,
     this.uuid,
@@ -97,6 +100,7 @@ class TempMainReceipt extends HiveObject {
     this.invoiceUuid,
     this.balance,
     this.subStaffUuid,
+    required this.departmentUuidNew,
   });
 
   factory TempMainReceipt.fromJson(
@@ -130,6 +134,8 @@ class TempMainReceipt extends HiveObject {
       invoiceUuid: json['invoice_uuid'] as String?,
       balance: (json['balance'] as num?)?.toDouble(),
       subStaffUuid: json['sub_staff_uuid'] as String?,
+      departmentUuidNew:
+          json['department_uuid_new'] as String?,
     );
   }
 
@@ -158,6 +164,7 @@ class TempMainReceipt extends HiveObject {
       'invoice_uuid': invoiceUuid,
       'balance': balance,
       'sub_staff_uuid': subStaffUuid,
+      'department_uuid_new': departmentUuidNew,
     };
   }
 }

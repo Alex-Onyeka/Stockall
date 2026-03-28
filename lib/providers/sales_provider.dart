@@ -625,6 +625,14 @@ class SalesProvider extends ChangeNotifier {
     if (currentCart().isInvoice) {
       print('Current Sale is Invoice');
       TempInvoice invoice = TempInvoice(
+        departmentName:
+            returnDepartmentProvider()
+                .currentDepartment()
+                ?.name,
+        departmentUuidNew:
+            returnDepartmentProvider()
+                .currentDepartment()
+                ?.uuid,
         createdAt: createdAt,
         shopId: shopId,
         staffId: staffId,
@@ -708,6 +716,14 @@ class SalesProvider extends ChangeNotifier {
           receiptUuid = uuidGen();
 
           TempMainReceipt receipt = TempMainReceipt(
+            departmentName:
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.name,
+            departmentUuidNew:
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid,
             createdAt: createdAt,
             shopId: shopId,
             staffId: staffId,
@@ -1023,6 +1039,14 @@ class SalesProvider extends ChangeNotifier {
       final uuid =
           currentCart().receiptUuidEdit ?? uuidGen();
       TempMainReceipt receipt = TempMainReceipt(
+        departmentName:
+            returnDepartmentProvider()
+                .currentDepartment()
+                ?.name,
+        departmentUuidNew:
+            returnDepartmentProvider()
+                .currentDepartment()
+                ?.uuid,
         createdAt: createdAt,
         shopId: shopId,
         staffId: staffId,

@@ -103,6 +103,14 @@ class _CategoriesPageMobileState
                                                     DateTime.now(),
                                                 updatedAt:
                                                     DateTime.now(),
+                                                departmentId:
+                                                    returnDepartmentProvider()
+                                                        .currentDepartment()
+                                                        ?.uuid,
+                                                departmentName:
+                                                    returnDepartmentProvider()
+                                                        .currentDepartment()
+                                                        ?.name,
                                               ),
                                             );
 

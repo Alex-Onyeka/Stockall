@@ -48,6 +48,9 @@ class PermissionProvider extends ChangeNotifier {
     } else {
       permissions = PermissionFunc().getPermissionModel();
     }
+    permissions.sort(
+      (a, b) => a.permitNumber!.compareTo(b.permitNumber!),
+    );
     notifyListeners();
     return permissions;
   }

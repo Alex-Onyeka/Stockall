@@ -64,6 +64,8 @@ List<SubplanClass> subPlans = [
       customizeReceiptTemplate: true,
       allowOfflineUse: true,
       manageVAT: true,
+      manageDepartments: true,
+      numberOfDepartments: 10,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
@@ -135,6 +137,8 @@ List<SubplanClass> subPlans = [
       customizeReceiptTemplate: true,
       allowOfflineUse: true,
       manageVAT: true,
+      manageDepartments: true,
+      numberOfDepartments: 5,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
@@ -207,6 +211,8 @@ List<SubplanClass> subPlans = [
       customizeReceiptTemplate: true,
       allowOfflineUse: true,
       manageVAT: true,
+      manageDepartments: false,
+      numberOfDepartments: 0,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
@@ -279,6 +285,8 @@ List<SubplanClass> subPlans = [
       customizeReceiptTemplate: true,
       allowOfflineUse: true,
       manageVAT: true,
+      manageDepartments: false,
+      numberOfDepartments: 0,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
@@ -351,6 +359,8 @@ List<SubplanClass> subPlans = [
       addSocials: true,
       customizeReceiptTemplate: false,
       allowOfflineUse: true,
+      manageDepartments: false,
+      numberOfDepartments: 0,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
@@ -423,6 +433,8 @@ List<SubplanClass> subPlans = [
       addSocials: false,
       customizeReceiptTemplate: false,
       allowOfflineUse: false,
+      manageDepartments: false,
+      numberOfDepartments: 0,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: false,

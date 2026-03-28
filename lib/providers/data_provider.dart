@@ -11,6 +11,7 @@ import 'package:stockall/classes/temp_product_class/unsynced/updated/updated_pro
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/local_database/category/unsync_funcs/created_categories/created_categories_func.dart';
@@ -1047,6 +1048,33 @@ class DataProvider extends ChangeNotifier {
         }
         notifyListeners();
       }
+      if (returnShopProvider()
+              .userShop()
+              ?.manageDepartments ==
+          true) {
+        if (!authorization(
+          authorized: Authorizations().viewAllDepartments,
+        )) {
+          productList =
+              productList
+                  .where(
+                    (product) =>
+                        product.departmentUuid ==
+                        returnDepartmentProvider()
+                            .currentDepartment()
+                            ?.uuid,
+                  )
+                  .toList();
+          print(
+            "✅✅✅✅ Departments Products Set: ${productList.where((product) => product.departmentUuid == returnDepartmentProvider().currentDepartment()?.uuid).length}",
+          );
+          print(
+            returnDepartmentProvider()
+                .currentDepartment()
+                ?.uuid,
+          );
+        }
+      }
       await returnInventoryUpdatesProvider()
           .getInventoryUpdates();
 
@@ -1070,6 +1098,25 @@ class DataProvider extends ChangeNotifier {
         "Offline Data Gotten: ${ProductsFunc().getProducts().length}",
       );
       productList = ProductsFunc().getProducts();
+      if (returnShopProvider()
+              .userShop()
+              ?.manageDepartments ==
+          true) {
+        if (!authorization(
+          authorized: Authorizations().viewAllDepartments,
+        )) {
+          productList =
+              productList
+                  .where(
+                    (product) =>
+                        product.departmentUuid ==
+                        returnDepartmentProvider()
+                            .currentDepartment()
+                            ?.uuid,
+                  )
+                  .toList();
+        }
+      }
       await returnInventoryUpdatesProvider()
           .getInventoryUpdates();
       // productList.clear();

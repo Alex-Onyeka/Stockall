@@ -104,6 +104,14 @@ class _AddExpensesMobileState
                       action: () async {
                         await expensesProvider.addExpense(
                           TempExpensesClass(
+                            departmentName:
+                                returnDepartmentProvider()
+                                    .currentDepartment()
+                                    ?.name,
+                            departmentUuid:
+                                returnDepartmentProvider()
+                                    .currentDepartment()
+                                    ?.uuid,
                             creator:
                                 returnUserProvider(
                                   context,
@@ -168,6 +176,10 @@ class _AddExpensesMobileState
               } else {
                 await expensesProvider.updateExpense(
                   TempExpensesClass(
+                    departmentName:
+                        widget.expenses!.departmentName,
+                    departmentUuid:
+                        widget.expenses!.departmentUuid,
                     creator:
                         widget.expenses?.userName ??
                         returnUserProvider(

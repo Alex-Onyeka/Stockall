@@ -69,6 +69,14 @@ class _ReceiptPageDesktopState
       (rec) => rec.uuid! == widget.response.resUuid,
       orElse:
           () => TempMainReceipt(
+            departmentName:
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.name,
+            departmentUuidNew:
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid,
             createdAt: DateTime.now(),
             uuid: '1',
             shopId: shopId(),

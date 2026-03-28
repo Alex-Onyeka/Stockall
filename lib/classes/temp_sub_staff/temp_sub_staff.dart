@@ -34,8 +34,8 @@ class TempSubStaff extends HiveObject {
     required this.createdAt,
     required this.shopId,
     this.staffName,
-    this.departmentName,
-    this.departmentUuid,
+    required this.departmentName,
+    required this.departmentUuid,
     this.updatedAt,
   });
 

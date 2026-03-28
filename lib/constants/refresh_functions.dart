@@ -591,6 +591,8 @@ class RefreshFunctions {
                 // await getProducts();
                 await fetchNotifications();
                 await getCustomers();
+                await returnDepartmentProvider()
+                    .getDepartments();
               },
             );
           },
@@ -629,6 +631,7 @@ class RefreshFunctions {
         // await getProducts();
         await fetchNotifications();
         await getCustomers();
+        await returnDepartmentProvider().getDepartments();
       }
     }
 

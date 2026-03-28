@@ -236,16 +236,18 @@ class _AddProductDesktopState
                     widget.discountController.text
                         .replaceAll(',', ''),
                   ),
-                  // startDate:
-                  //     widget.discountController.text.isEmpty
-                  //         ? null
-                  //         : (dataProvider.startDate ??
-                  //             DateTime.now()),
-                  // endDate: dataProvider.endDate,
                   expiryDate: dataProvider.expiryDate,
                   categoryUuid:
                       dataProvider.selectedCategory?.uuid,
                   uuid: createdProductUuid,
+                  departmentName:
+                      returnDepartmentProvider()
+                          .currentDepartment()
+                          ?.name,
+                  departmentUuid:
+                      returnDepartmentProvider()
+                          .currentDepartment()
+                          ?.uuid,
                 ),
                 context,
               );
@@ -321,6 +323,10 @@ class _AddProductDesktopState
 
             await provider.updateProduct(
               product: TempProductClass(
+                departmentName:
+                    widget.product?.departmentName,
+                departmentUuid:
+                    widget.product?.departmentUuid,
                 setCustomPrice: provider.setCustomPrice,
                 isManaged:
                     widget.quantityController.text.isEmpty
@@ -398,8 +404,6 @@ class _AddProductDesktopState
                               .replaceAll(',', ''),
                         ),
                 sizeType: provider.selectedSize,
-                // startDate: provider.startDate,
-                // uuid: widget.product?.uuid,
               ),
               oldProduct: widget.product!,
             );
@@ -542,6 +546,14 @@ class _AddProductDesktopState
                   name: 'Not Set',
                   shopId: shopId(),
                   uuid: 'uuid',
+                  departmentId:
+                      returnDepartmentProvider()
+                          .currentDepartment()
+                          ?.uuid,
+                  departmentName:
+                      returnDepartmentProvider()
+                          .currentDepartment()
+                          ?.name,
                 ),
           )
           : null;
@@ -1200,6 +1212,10 @@ class _AddProductDesktopState
                                                   }
 
                                                   var tempProduct = TempProductClass(
+                                                    departmentName:
+                                                        returnDepartmentProvider().currentDepartment()?.name,
+                                                    departmentUuid:
+                                                        returnDepartmentProvider().currentDepartment()?.name,
                                                     groupUnit:
                                                         widget.product?.groupUnit,
                                                     qttyPerGroup:

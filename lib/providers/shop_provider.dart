@@ -350,7 +350,6 @@ class ShopProvider extends ChangeNotifier {
       await returnCategoriesProvider().getCategories(
         userShop()!.shopId!,
       );
-
       notifyListeners();
       return userShops;
     } catch (e) {
@@ -850,8 +849,6 @@ class ShopProvider extends ChangeNotifier {
                       .shopId!,
             ),
           );
-          // return userShops.first;
-          // notifyListeners();
           var shops = userShops.where(
             (shop) => shop.isHeadQuarters == true,
           );
@@ -1207,6 +1204,72 @@ class ShopProvider extends ChangeNotifier {
         "❌ Failed to Update Toggle Bulk Sale: ${e.toString()}",
       );
       allowBulkSale = false;
+      notifyListeners();
+      return 0;
+    }
+  }
+
+  bool manageDepartmentsLoading = false;
+
+  Future<int> toggleManageDepartments() async {
+    bool isOnline = await connectivity.isOnline();
+    manageDepartmentsLoading = true;
+    notifyListeners();
+    try {
+      if (isOnline) {
+        Map<String, dynamic>? res =
+            await supabase
+                .from('shops')
+                .update({
+                  'manage_departments':
+                      !userShop()!.manageDepartments!,
+                })
+                .eq('shop_id', userShop()!.shopId!)
+                .select()
+                .maybeSingle();
+        if (res == null) {
+          print('Manage Departments Update Failed');
+          manageDepartmentsLoading = false;
+          notifyListeners();
+          return 0;
+        }
+
+        var shops = await getUserShops();
+        setShops(shops);
+        manageDepartmentsLoading = false;
+        // returnSalesProvider().selectFistMainCart();
+        notifyListeners();
+        return 1;
+      } else {
+        try {
+          userShop()!.updatedAt = DateTime.now();
+          userShop()!.manageDepartments =
+              !userShop()!.manageDepartments!;
+          await ShopFunc().updateShop(userShop()!);
+          if (userShop() != null) {
+            await UpdatedShopFunc().createUpdatedShop(
+              UpdatedShop(shop: userShop()!),
+            );
+            // setShops(shop);
+            notifyListeners();
+          }
+          manageDepartmentsLoading = false;
+          notifyListeners();
+          return 1;
+        } catch (e) {
+          print(
+            "❌ Failed to Update Manage Departments Offline: ${e.toString()}",
+          );
+          manageDepartmentsLoading = false;
+          notifyListeners();
+          return 0;
+        }
+      }
+    } catch (e) {
+      print(
+        "❌ Failed to Update Manage Departments: ${e.toString()}",
+      );
+      manageDepartmentsLoading = false;
       notifyListeners();
       return 0;
     }

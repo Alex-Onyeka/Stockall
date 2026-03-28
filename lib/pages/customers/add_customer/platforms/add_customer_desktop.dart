@@ -1977,6 +1977,14 @@ class _AddCustomerDesktopState
                                             'Select Your State'
                                         ? null
                                         : selectedStateName,
+                                departmentName:
+                                    returnDepartmentProvider()
+                                        .currentDepartment()
+                                        ?.name,
+                                departmentUuid:
+                                    returnDepartmentProvider()
+                                        .currentDepartment()
+                                        ?.uuid,
                               ),
                               context,
                             );
@@ -2027,6 +2035,14 @@ class _AddCustomerDesktopState
                                     widget
                                         .customer!
                                         .dateAdded,
+                                departmentName:
+                                    widget
+                                        .customer!
+                                        .departmentName,
+                                departmentUuid:
+                                    widget
+                                        .customer!
+                                        .departmentUuid,
                               ),
                               context,
                             );

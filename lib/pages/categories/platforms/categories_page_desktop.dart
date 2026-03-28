@@ -214,6 +214,10 @@ class _CategoriesPageDesktopState
                                                             DateTime.now(),
                                                         updatedAt:
                                                             DateTime.now(),
+                                                        departmentId:
+                                                            returnDepartmentProvider().currentDepartment()?.uuid,
+                                                        departmentName:
+                                                            returnDepartmentProvider().currentDepartment()?.name,
                                                       ),
                                                     );
 

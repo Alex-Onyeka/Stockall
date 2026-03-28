@@ -1925,6 +1925,8 @@ class _InvoicePageMobileState
                                                                   },
                                                                 );
                                                                 var tempInvoice = TempInvoice(
+                                                                  departmentUuidNew:
+                                                                      invoice.departmentUuidNew,
                                                                   uuid:
                                                                       invoice.uuid,
                                                                   createdAt:

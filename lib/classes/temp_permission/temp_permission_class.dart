@@ -16,11 +16,15 @@ class PermissionModel extends HiveObject {
   @HiveField(3)
   final DateTime createdAt;
 
+  @HiveField(4)
+  final int? permitNumber;
+
   PermissionModel({
     required this.id,
     required this.role,
     required this.access,
     required this.createdAt,
+    this.permitNumber,
   });
 
   // ------------------------
@@ -34,6 +38,7 @@ class PermissionModel extends HiveObject {
       role: json['role'],
       access: List<String>.from(json['access'] ?? []),
       createdAt: DateTime.parse(json['created_at']),
+      permitNumber: json['permit_number'] as int,
     );
   }
 

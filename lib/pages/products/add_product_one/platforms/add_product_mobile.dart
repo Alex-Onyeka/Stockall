@@ -140,6 +140,14 @@ class _AddProductMobileState
 
               await dataProvider.createProduct(
                 TempProductClass(
+                  departmentName:
+                      returnDepartmentProvider()
+                          .currentDepartment()
+                          ?.name,
+                  departmentUuid:
+                      returnDepartmentProvider()
+                          .currentDepartment()
+                          ?.uuid,
                   totalQttyInStorageDouble:
                       widget
                               .storageQuantityController
@@ -309,6 +317,10 @@ class _AddProductMobileState
 
             await provider.updateProduct(
               product: TempProductClass(
+                departmentName:
+                    widget.product?.departmentName,
+                departmentUuid:
+                    widget.product?.departmentUuid,
                 setCustomPrice: provider.setCustomPrice,
                 isManaged:
                     widget.quantityController.text.isEmpty
@@ -515,6 +527,14 @@ class _AddProductMobileState
                   name: 'Not Set',
                   shopId: shopId(),
                   uuid: 'uuid',
+                  departmentId:
+                      returnDepartmentProvider()
+                          .currentDepartment()
+                          ?.uuid,
+                  departmentName:
+                      returnDepartmentProvider()
+                          .currentDepartment()
+                          ?.name,
                 ),
           )
           : null;
@@ -1136,6 +1156,10 @@ class _AddProductMobileState
                                                     }
 
                                                     var tempProduct = TempProductClass(
+                                                      departmentName:
+                                                          returnDepartmentProvider().currentDepartment()?.name,
+                                                      departmentUuid:
+                                                          returnDepartmentProvider().currentDepartment()?.name,
                                                       groupUnit:
                                                           widget.product?.groupUnit,
                                                       qttyPerGroup:

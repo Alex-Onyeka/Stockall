@@ -22,7 +22,9 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
 import 'package:stockall/pages/barcode_printing_page/barcode_printing_page.dart';
 import 'package:stockall/pages/categories/categories_page.dart';
+import 'package:stockall/pages/departments/departments_dashboard.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
+import 'package:stockall/pages/settings/components/manage_departments_toggle_switch.dart';
 import 'package:stockall/pages/settings/components/manage_inventory_switch_toggle.dart';
 import 'package:stockall/pages/settings/components/toggle_bulk_sale.dart';
 import 'package:stockall/pages/settings/components/toggle_whole_sale_switch.dart';
@@ -265,6 +267,51 @@ class _SettingsPageDesktopState
                             ManageInventoryToggleSwitch(),
                             UseGroupUnitToggle(),
                             ToggleWholeSaleSwitch(),
+                            ManageDepartmentsToggleSwitch(),
+                            Visibility(
+                              visible:
+                                  authorization(
+                                    authorized:
+                                        Authorizations()
+                                            .manageShop,
+                                  ) &&
+                                  shop(
+                                        context,
+                                      )?.manageDepartments ==
+                                      true,
+                              child: SubWrapper(
+                                isVisible:
+                                    !GeneralSettingsAuthAction()
+                                        .manageDeparmtmentsAction(
+                                          context: context,
+                                        ),
+                                mainWidget: NavListTileDesktopAlt(
+                                  height: 18,
+                                  action: () {
+                                    GeneralSettingsAuthAction()
+                                        .manageDeparmtmentsAction(
+                                          context: context,
+                                          action: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  return DepartmentsDashboard();
+                                                },
+                                              ),
+                                            );
+                                          },
+                                        );
+                                  },
+                                  title: 'View Departments',
+                                  icon:
+                                      Icons
+                                          .width_normal_outlined,
+                                ),
+                              ),
+                            ),
                             Visibility(
                               visible: authorization(
                                 authorized:

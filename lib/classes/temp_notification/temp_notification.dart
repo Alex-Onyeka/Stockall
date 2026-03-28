@@ -65,8 +65,8 @@ class TempNotification {
     required this.category,
     this.itemName,
     this.uuid,
-    this.departmentName,
-    this.departmentUuid,
+    required this.departmentName,
+    required this.departmentUuid,
     this.productUuid,
     this.expensesUuid,
   });

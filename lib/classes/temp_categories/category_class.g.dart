@@ -22,13 +22,15 @@ class CategoryClassAdapter extends TypeAdapter<CategoryClass> {
       uuid: fields[0] as String,
       createdAt: fields[1] as DateTime?,
       updatedAt: fields[4] as DateTime?,
+      departmentId: fields[5] as String?,
+      departmentName: fields[6] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, CategoryClass obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -38,7 +40,11 @@ class CategoryClassAdapter extends TypeAdapter<CategoryClass> {
       ..writeByte(3)
       ..write(obj.name)
       ..writeByte(4)
-      ..write(obj.updatedAt);
+      ..write(obj.updatedAt)
+      ..writeByte(5)
+      ..write(obj.departmentId)
+      ..writeByte(6)
+      ..write(obj.departmentName);
   }
 
   @override

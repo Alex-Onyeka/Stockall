@@ -132,6 +132,25 @@ class ReceiptsProvider extends ChangeNotifier {
                   (json) => TempMainReceipt.fromJson(json),
                 )
                 .toList();
+        if (returnShopProvider()
+                .userShop()
+                ?.manageDepartments ==
+            true) {
+          if (!authorization(
+            authorized: Authorizations().viewAllDepartments,
+          )) {
+            _receipts =
+                _receipts
+                    .where(
+                      (notif) =>
+                          notif.departmentUuidNew ==
+                          returnDepartmentProvider()
+                              .currentDepartment()
+                              ?.uuid,
+                    )
+                    .toList();
+          }
+        }
 
         await MainReceiptFunc().insertAllReceipts(
           _receipts,
@@ -151,7 +170,25 @@ class ReceiptsProvider extends ChangeNotifier {
       }
     } else {
       _receipts = MainReceiptFunc().getReceipts();
-
+      if (returnShopProvider()
+              .userShop()
+              ?.manageDepartments ==
+          true) {
+        if (!authorization(
+          authorized: Authorizations().viewAllDepartments,
+        )) {
+          _receipts =
+              _receipts
+                  .where(
+                    (notif) =>
+                        notif.departmentUuidNew ==
+                        returnDepartmentProvider()
+                            .currentDepartment()
+                            ?.uuid,
+                  )
+                  .toList();
+        }
+      }
       print('Offline Receipts Gotten');
       await returnInvoicesProvider().loadInvoices(
         returnShopProvider().userShop()!.shopId!,
@@ -613,11 +650,49 @@ class ReceiptsProvider extends ChangeNotifier {
                     TempProductSaleRecord.fromJson(json),
               )
               .toList();
+      if (returnShopProvider()
+              .userShop()
+              ?.manageDepartments ==
+          true) {
+        if (!authorization(
+          authorized: Authorizations().viewAllDepartments,
+        )) {
+          _sales =
+              _sales
+                  .where(
+                    (sale) =>
+                        sale.departmentUuid ==
+                        returnDepartmentProvider()
+                            .currentDepartment()
+                            ?.uuid,
+                  )
+                  .toList();
+        }
+      }
       await ProductRecordFunc().insertAllProductRecords(
         _sales,
       );
     } else {
       _sales = ProductRecordFunc().getProductRecords();
+      if (returnShopProvider()
+              .userShop()
+              ?.manageDepartments ==
+          true) {
+        if (!authorization(
+          authorized: Authorizations().viewAllDepartments,
+        )) {
+          _sales =
+              _sales
+                  .where(
+                    (sale) =>
+                        sale.departmentUuid ==
+                        returnDepartmentProvider()
+                            .currentDepartment()
+                            ?.uuid,
+                  )
+                  .toList();
+        }
+      }
     }
 
     notifyListeners();

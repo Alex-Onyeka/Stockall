@@ -21,13 +21,14 @@ class PermissionModelAdapter extends TypeAdapter<PermissionModel> {
       role: fields[1] as String,
       access: (fields[2] as List).cast<String>(),
       createdAt: fields[3] as DateTime,
+      permitNumber: fields[4] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, PermissionModel obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -35,7 +36,9 @@ class PermissionModelAdapter extends TypeAdapter<PermissionModel> {
       ..writeByte(2)
       ..write(obj.access)
       ..writeByte(3)
-      ..write(obj.createdAt);
+      ..write(obj.createdAt)
+      ..writeByte(4)
+      ..write(obj.permitNumber);
   }
 
   @override

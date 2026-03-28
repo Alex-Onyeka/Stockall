@@ -27,13 +27,15 @@ class TempEventLogClassAdapter extends TypeAdapter<TempEventLogClass> {
       amount: fields[7] as double?,
       staffName: fields[9] as String?,
       itemName: fields[8] as String?,
+      departmentUuid: fields[10] as String?,
+      departmentName: fields[11] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempEventLogClass obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -53,7 +55,11 @@ class TempEventLogClassAdapter extends TypeAdapter<TempEventLogClass> {
       ..writeByte(8)
       ..write(obj.itemName)
       ..writeByte(9)
-      ..write(obj.staffName);
+      ..write(obj.staffName)
+      ..writeByte(10)
+      ..write(obj.departmentUuid)
+      ..writeByte(11)
+      ..write(obj.departmentName);
   }
 
   @override

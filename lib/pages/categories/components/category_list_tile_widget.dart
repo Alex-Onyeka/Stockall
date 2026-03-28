@@ -46,6 +46,14 @@ class _CategoryListTileWidgetState
               name: 'Category Name',
               shopId: shopId(),
               uuid: 'uuid',
+              departmentId:
+                  returnDepartmentProvider()
+                      .currentDepartment()
+                      ?.uuid,
+              departmentName:
+                  returnDepartmentProvider()
+                      .currentDepartment()
+                      ?.name,
             );
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
@@ -296,6 +304,10 @@ class _CategoryListTileWidgetState
                                                               category.uuid,
                                                           updatedAt:
                                                               DateTime.now(),
+                                                          departmentId:
+                                                              category.departmentId,
+                                                          departmentName:
+                                                              category.departmentName,
                                                         );
                                                         var res = await returnCategoriesProvider().updateCategory(
                                                           categoryUpdate,

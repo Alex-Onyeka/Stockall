@@ -9,6 +9,7 @@ import 'package:stockall/local_database/barcode_printer_func/price_and_barcode_l
 import 'package:stockall/local_database/barcode_printer_func/price_tag_printer_func.dart';
 import 'package:stockall/local_database/category/category_func.dart';
 import 'package:stockall/local_database/customers/customer_func.dart';
+import 'package:stockall/local_database/department_current/current_department_func.dart';
 import 'package:stockall/local_database/department_func/departments_func.dart';
 import 'package:stockall/local_database/events_log/events_log_func.dart';
 import 'package:stockall/local_database/expenses/expenses_func.dart';
@@ -74,8 +75,9 @@ class MainDatabase extends ChangeNotifier {
     }
     await DepartmentsFunc().init();
     await CategoryFunc().init();
+    await CurrentDepartmentFunc().init();
     print('init Complete');
   }
 }
 
-int highestHiveClassIndex = 64;
+int highestHiveClassIndex = 65;

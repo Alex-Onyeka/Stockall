@@ -35,6 +35,14 @@ class CustomerPageDesktop extends StatelessWidget {
               state: 'State',
               dateAdded: DateTime.now(),
               shopId: 1,
+              departmentName:
+                  returnDepartmentProvider()
+                      .currentDepartment()
+                      ?.name,
+              departmentUuid:
+                  returnDepartmentProvider()
+                      .currentDepartment()
+                      ?.uuid,
             );
     return SafeArea(
       child: Scaffold(

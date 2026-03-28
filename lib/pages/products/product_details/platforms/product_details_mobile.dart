@@ -526,6 +526,10 @@ class _ProductDetailsMobileState
                                                                   );
                                                                   await dataProvider.updateProduct(
                                                                     product: TempProductClass(
+                                                                      departmentName:
+                                                                          product.departmentName,
+                                                                      departmentUuid:
+                                                                          product.departmentUuid,
                                                                       groupUnit:
                                                                           product.groupUnit,
                                                                       qttyPerGroup:
@@ -1274,6 +1278,10 @@ class _ProductDetailsMobileState
 
                                                                                     await dataProvider.updateProduct(
                                                                                       product: TempProductClass(
+                                                                                        departmentName:
+                                                                                            product.departmentName,
+                                                                                        departmentUuid:
+                                                                                            product.departmentUuid,
                                                                                         groupUnit:
                                                                                             product.groupUnit,
                                                                                         qttyPerGroup:
@@ -1809,6 +1817,10 @@ class _ProductDetailsMobileState
 
                                                                                             await dataProvider.updateProduct(
                                                                                               product: TempProductClass(
+                                                                                                departmentName:
+                                                                                                    product.departmentName,
+                                                                                                departmentUuid:
+                                                                                                    product.departmentUuid,
                                                                                                 groupUnit:
                                                                                                     product.groupUnit,
                                                                                                 qttyPerGroup:
@@ -2089,6 +2101,10 @@ class _ProductDetailsMobileState
                                                         });
                                                         await dataProvider.updateProduct(
                                                           product: TempProductClass(
+                                                            departmentName:
+                                                                product.departmentName,
+                                                            departmentUuid:
+                                                                product.departmentUuid,
                                                             groupUnit:
                                                                 product.groupUnit,
                                                             qttyPerGroup:

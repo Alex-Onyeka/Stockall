@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_customers/unsynced/created_customers/creat
 import 'package:stockall/classes/temp_customers/unsynced/deleted_customers/deleted_customers.dart';
 import 'package:stockall/classes/temp_customers/unsynced/updated/updated_customers.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/local_database/customers/customer_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/created/created_customers_func.dart';
@@ -45,15 +46,65 @@ class CustomersProvider extends ChangeNotifier {
           .order('name', ascending: true);
       print(data.length.toString());
 
-      _customers =
+      List<TempCustomersClass> tempCustomers =
           (data as List)
               .map(
                 (json) => TempCustomersClass.fromJson(json),
               )
               .toList();
+
+      if (returnShopProvider()
+              .userShop()
+              ?.manageDepartments ==
+          true) {
+        if (authorization(
+          authorized: Authorizations().viewAllDepartments,
+        )) {
+          _customers = tempCustomers;
+        } else {
+          _customers =
+              tempCustomers
+                  .where(
+                    (customer) =>
+                        customer.departmentUuid ==
+                        returnDepartmentProvider()
+                            .currentDepartment()
+                            ?.uuid,
+                  )
+                  .toList();
+        }
+      } else {
+        _customers = tempCustomers;
+      }
+
       await CustomerFunc().insertAllCustomers(_customers);
     } else {
-      _customers = CustomerFunc().getCustomers();
+      List<TempCustomersClass> tempCustomers =
+          CustomerFunc().getCustomers();
+
+      if (returnShopProvider()
+              .userShop()
+              ?.manageDepartments ==
+          true) {
+        if (authorization(
+          authorized: Authorizations().viewAllDepartments,
+        )) {
+          _customers = tempCustomers;
+        } else {
+          _customers =
+              tempCustomers
+                  .where(
+                    (customer) =>
+                        customer.departmentUuid ==
+                        returnDepartmentProvider()
+                            .currentDepartment()
+                            ?.uuid,
+                  )
+                  .toList();
+        }
+      } else {
+        _customers = tempCustomers;
+      }
     }
     notifyListeners();
     return _customers;

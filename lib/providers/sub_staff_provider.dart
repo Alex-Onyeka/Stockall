@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_sub_staff/unsynced/created_sub_staffs/crea
 import 'package:stockall/classes/temp_sub_staff/unsynced/deleted_sub_staff/deleted_sub_staff.dart';
 import 'package:stockall/classes/temp_sub_staff/unsynced/updated/updated_sub_staff.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/sub_staff/sub_staff_func.dart';
 import 'package:stockall/local_database/sub_staff/unsync_funcs/created/created_sub_staff_func.dart';
 import 'package:stockall/local_database/sub_staff/unsync_funcs/deleted/deleted_sub_staff_func.dart';
@@ -105,10 +106,48 @@ class SubStaffProvider extends ChangeNotifier {
           (response as List)
               .map((e) => TempSubStaff.fromJson(e))
               .toList();
+      if (returnShopProvider()
+              .userShop()
+              ?.manageDepartments ==
+          true) {
+        if (!authorization(
+          authorized: Authorizations().viewAllDepartments,
+        )) {
+          subStaffs =
+              subStaffs
+                  .where(
+                    (sale) =>
+                        sale.departmentUuid ==
+                        returnDepartmentProvider()
+                            .currentDepartment()
+                            ?.uuid,
+                  )
+                  .toList();
+        }
+      }
 
       await SubStaffFunc().insertAllSubStaffs(subStaffs);
     } else {
       subStaffs = SubStaffFunc().getSubStaffs();
+      if (returnShopProvider()
+              .userShop()
+              ?.manageDepartments ==
+          true) {
+        if (!authorization(
+          authorized: Authorizations().viewAllDepartments,
+        )) {
+          subStaffs =
+              subStaffs
+                  .where(
+                    (sale) =>
+                        sale.departmentUuid ==
+                        returnDepartmentProvider()
+                            .currentDepartment()
+                            ?.uuid,
+                  )
+                  .toList();
+        }
+      }
     }
     notifyListeners();
     return subStaffs;

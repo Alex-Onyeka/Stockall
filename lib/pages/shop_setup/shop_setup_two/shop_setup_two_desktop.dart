@@ -217,6 +217,7 @@ class _ShopSetupTwoDesktopState
                     applyVAT: false,
                     useGroupUnit: false,
                     wholeSale: false,
+                    manageDepartments: false,
                   ),
                   safeContext,
                 );

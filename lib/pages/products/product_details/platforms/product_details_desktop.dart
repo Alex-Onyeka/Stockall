@@ -667,6 +667,10 @@ class _ProductDetailsDesktopState
                                                                                         );
                                                                                         await dataProvider.updateProduct(
                                                                                           product: TempProductClass(
+                                                                                            departmentName:
+                                                                                                product.departmentName,
+                                                                                            departmentUuid:
+                                                                                                product.departmentUuid,
                                                                                             groupUnit:
                                                                                                 product.groupUnit,
                                                                                             qttyPerGroup:
@@ -1004,6 +1008,10 @@ class _ProductDetailsDesktopState
                                                                   );
                                                                   await dataProvider.updateProduct(
                                                                     product: TempProductClass(
+                                                                      departmentName:
+                                                                          product.departmentName,
+                                                                      departmentUuid:
+                                                                          product.departmentUuid,
                                                                       groupUnit:
                                                                           product.groupUnit,
                                                                       qttyPerGroup:
@@ -2165,6 +2173,10 @@ class _ProductDetailsDesktopState
 
                                                               await dataProvider.updateProduct(
                                                                 product: TempProductClass(
+                                                                  departmentName:
+                                                                      product.departmentName,
+                                                                  departmentUuid:
+                                                                      product.departmentUuid,
                                                                   groupUnit:
                                                                       product.groupUnit,
                                                                   qttyPerGroup:
@@ -2692,6 +2704,10 @@ class _ProductDetailsDesktopState
 
                                                                 await dataProvider.updateProduct(
                                                                   product: TempProductClass(
+                                                                    departmentName:
+                                                                        product.departmentName,
+                                                                    departmentUuid:
+                                                                        product.departmentUuid,
                                                                     groupUnit:
                                                                         product.groupUnit,
                                                                     qttyPerGroup:

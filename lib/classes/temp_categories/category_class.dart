@@ -19,12 +19,20 @@ class CategoryClass extends HiveObject {
   @HiveField(4)
   DateTime? updatedAt;
 
+  @HiveField(5)
+  String? departmentId;
+
+  @HiveField(6)
+  String? departmentName;
+
   CategoryClass({
     required this.name,
     required this.shopId,
     required this.uuid,
     this.createdAt,
     this.updatedAt,
+    required this.departmentId,
+    required this.departmentName,
   });
 
   factory CategoryClass.fromJson(
@@ -42,6 +50,8 @@ class CategoryClass extends HiveObject {
           json['updated_at'] != null
               ? DateTime.parse(json['updated_at'])
               : null,
+      departmentId: json['department_id'] as String?,
+      departmentName: json['department_name'] as String?,
     );
   }
 
@@ -53,6 +63,8 @@ class CategoryClass extends HiveObject {
       'name': name,
       'uuid': uuid,
       'updated_at': updatedAt?.toIso8601String(),
+      'department_id': departmentId,
+      'department_name': departmentName,
     };
   }
 }

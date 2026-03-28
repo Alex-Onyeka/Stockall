@@ -57,8 +57,8 @@ class TempCustomersClass extends HiveObject {
     required this.state,
     required this.dateAdded,
     required this.shopId,
-    this.departmentName,
-    this.departmentUuid,
+    required this.departmentName,
+    required this.departmentUuid,
     this.uuid,
     this.updatedAt,
   });

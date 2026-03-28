@@ -10,6 +10,7 @@ import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/local_database/invoices/invoices_func.dart';
 import 'package:stockall/local_database/invoices/unsync_funcs/created/created_invoices_func.dart';
@@ -123,6 +124,25 @@ class InvoicesProvider extends ChangeNotifier {
             (data as List)
                 .map((json) => TempInvoice.fromJson(json))
                 .toList();
+        if (returnShopProvider()
+                .userShop()
+                ?.manageDepartments ==
+            true) {
+          if (!authorization(
+            authorized: Authorizations().viewAllDepartments,
+          )) {
+            _invoices =
+                _invoices
+                    .where(
+                      (invoice) =>
+                          invoice.departmentUuidNew ==
+                          returnDepartmentProvider()
+                              .currentDepartment()
+                              ?.uuid,
+                    )
+                    .toList();
+          }
+        }
         notifyListeners();
         await InvoicesFunc().insertAllInvoices(_invoices);
         notifyListeners();
@@ -133,6 +153,25 @@ class InvoicesProvider extends ChangeNotifier {
       }
     } else {
       _invoices = InvoicesFunc().getInvoices();
+      if (returnShopProvider()
+              .userShop()
+              ?.manageDepartments ==
+          true) {
+        if (!authorization(
+          authorized: Authorizations().viewAllDepartments,
+        )) {
+          _invoices =
+              _invoices
+                  .where(
+                    (invoice) =>
+                        invoice.departmentUuidNew ==
+                        returnDepartmentProvider()
+                            .currentDepartment()
+                            ?.uuid,
+                  )
+                  .toList();
+        }
+      }
       notifyListeners();
       print('Offline Invoices Gotten');
     }
@@ -412,6 +451,8 @@ class InvoicesProvider extends ChangeNotifier {
         isInvoice: true,
         customerName: invoice.customerName,
         customerUuid: invoice.customerUuid,
+        departmentName: invoice.departmentName,
+        departmentUuidNew: invoice.departmentUuidNew,
         invoiceUuid: invoice.uuid,
         uuid: uuidGen(),
         generalDiscount: invoice.generalDiscount,

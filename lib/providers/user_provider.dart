@@ -274,6 +274,28 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
+  Future<int> updateStaffDepartments({
+    required TempUserClass user,
+    required List<String> newDepartments,
+  }) async {
+    try {
+      final updatedDepartments =
+          newDepartments.toSet().toList();
+
+      await _supabase.client
+          .from('users')
+          .update({'department_uuids': updatedDepartments})
+          .eq('user_id', user.userId!);
+      await fetchUsersByShop();
+      return 1;
+    } catch (e) {
+      print(
+        'Failed to update user Departments: ${e.toString()}',
+      );
+      return 0;
+    }
+  }
+
   Future<String?> updateEmployeeRole({
     required String userId,
     required String newRole,

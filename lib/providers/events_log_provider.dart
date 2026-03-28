@@ -9,6 +9,7 @@ import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_sub_staff/temp_sub_staff.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/report_auth.dart';
 import 'package:stockall/local_database/events_log/events_log_func.dart';
 import 'package:stockall/local_database/events_log/unsync_funcs/created_events_log_func.dart';
@@ -116,16 +117,40 @@ class EventsLogProvider with ChangeNotifier {
           notifyListeners();
           return [];
         }
-        var tempLogs =
+        List<TempEventLogClass> tempEvents =
             res
                 .map((m) => TempEventLogClass.fromJson(m))
                 .toList();
-        logs = tempLogs;
-        await EventsLogFunc().insertAllEventsLog(tempLogs);
+
+        if (returnShopProvider()
+                .userShop()
+                ?.manageDepartments ==
+            true) {
+          if (authorization(
+            authorized: Authorizations().viewAllDepartments,
+          )) {
+            logs = tempEvents;
+          } else {
+            logs =
+                tempEvents
+                    .where(
+                      (event) =>
+                          event.departmentUuid ==
+                          returnDepartmentProvider()
+                              .currentDepartment()
+                              ?.uuid,
+                    )
+                    .toList();
+          }
+        } else {
+          logs = tempEvents;
+        }
+
+        await EventsLogFunc().insertAllEventsLog(logs);
         print('✅✅ Events Gotten Successfully Online');
         notifyListeners();
 
-        return tempLogs;
+        return logs;
       } catch (e) {
         print(
           '❌❌ Events Getting Online Failed: ${e.toString()}',
@@ -133,7 +158,32 @@ class EventsLogProvider with ChangeNotifier {
         return [];
       }
     } else {
-      logs = EventsLogFunc().getEventsLogs();
+      List<TempEventLogClass> tempEvents =
+          EventsLogFunc().getEventsLogs();
+
+      if (returnShopProvider()
+              .userShop()
+              ?.manageDepartments ==
+          true) {
+        if (authorization(
+          authorized: Authorizations().viewAllDepartments,
+        )) {
+          logs = tempEvents;
+        } else {
+          logs =
+              tempEvents
+                  .where(
+                    (event) =>
+                        event.departmentUuid ==
+                        returnDepartmentProvider()
+                            .currentDepartment()
+                            ?.uuid,
+                  )
+                  .toList();
+        }
+      } else {
+        logs = tempEvents;
+      }
       print('Events Gotten Successfully Offline');
       notifyListeners();
       return logs;
@@ -214,6 +264,14 @@ class EventsLogProvider with ChangeNotifier {
               : 'Customer Deleted #${customer.uuid!.split('-').first.substring(0, 5).toUpperCase()}',
       staffName:
           returnUserProviderSingle().currentUserMain!.name,
+      departmentName:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.name,
+      departmentUuid:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.uuid,
     );
   }
 
@@ -239,6 +297,14 @@ class EventsLogProvider with ChangeNotifier {
               : 'Expenses Deleted #${expenses.uuid!.split('-').first.substring(0, 5).toUpperCase()}',
       staffName:
           returnUserProviderSingle().currentUserMain!.name,
+      departmentName:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.name,
+      departmentUuid:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.uuid,
       amount: expenses.amount,
     );
   }
@@ -265,6 +331,14 @@ class EventsLogProvider with ChangeNotifier {
               : 'SubStaff Deleted #${subStaff.uuid!.split('-').first.substring(0, 5).toUpperCase()}',
       staffName:
           returnUserProviderSingle().currentUserMain!.name,
+      departmentName:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.name,
+      departmentUuid:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.uuid,
       // amount: subStaff.amount,
     );
   }
@@ -291,6 +365,14 @@ class EventsLogProvider with ChangeNotifier {
               : 'Expenses Deleted #${department.uuid.split('-').first.substring(0, 5).toUpperCase()}',
       staffName:
           returnUserProviderSingle().currentUserMain!.name,
+      departmentName:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.name,
+      departmentUuid:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.uuid,
       amount: null,
     );
   }
@@ -317,6 +399,14 @@ class EventsLogProvider with ChangeNotifier {
               : 'Item Deleted #${product.uuid!.split('-').first.substring(0, 5).toUpperCase()}',
       staffName:
           returnUserProviderSingle().currentUserMain!.name,
+      departmentName:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.name,
+      departmentUuid:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.uuid,
       amount: product.sellingPrice,
     );
   }
@@ -345,6 +435,14 @@ class EventsLogProvider with ChangeNotifier {
               : 'Sale Deleted #${receipt.uuid!.split('-').first.substring(0, 5).toUpperCase()}',
       staffName:
           returnUserProviderSingle().currentUserMain!.name,
+      departmentName:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.name,
+      departmentUuid:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.uuid,
       amount:
           event == 3
               ? (-1 * (receipt.bank + receipt.cashAlt))
@@ -376,6 +474,14 @@ class EventsLogProvider with ChangeNotifier {
               : 'Invoice Deleted #${invoice.uuid!.split('-').first.substring(0, 5).toUpperCase()}',
       staffName:
           returnUserProviderSingle().currentUserMain!.name,
+      departmentName:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.name,
+      departmentUuid:
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.uuid,
       amount:
           event == 3
               ? (-1 * (invoice.bank + invoice.cashAlt))
@@ -430,39 +536,39 @@ class EventsLogProvider with ChangeNotifier {
     }
   }
 
-  List<TempEventLogClass> testLogs = [
-    TempEventLogClass(
-      uuid: uuidGen(),
-      shopId: 12,
-      tableName: 'products',
-      title: 'Beans and Rice',
-      event: 'updated',
-      amount: 18000,
-      createdAt: DateTime.now(),
-      message: 'A new Item is Created',
-      staffName: 'Alex Onyeka',
-    ),
-    TempEventLogClass(
-      uuid: uuidGen(),
-      shopId: 12,
-      tableName: 'expenses',
-      title: 'I Ate Beans and Rice',
-      event: 'created',
-      amount: 5000,
-      createdAt: DateTime.now(),
-      message: 'A New Expenses was Created',
-      staffName: 'Alex Onyeka',
-    ),
-    TempEventLogClass(
-      uuid: uuidGen(),
-      shopId: 12,
-      tableName: 'shops',
-      title: '12 Itemss Sold',
-      event: 'deleted',
-      amount: 12000,
-      createdAt: DateTime.now(),
-      message: 'A New Sales was Made',
-      staffName: 'Alex Onyeka',
-    ),
-  ];
+  // List<TempEventLogClass> testLogs = [
+  //   TempEventLogClass(
+  //     uuid: uuidGen(),
+  //     shopId: 12,
+  //     tableName: 'products',
+  //     title: 'Beans and Rice',
+  //     event: 'updated',
+  //     amount: 18000,
+  //     createdAt: DateTime.now(),
+  //     message: 'A new Item is Created',
+  //     staffName: 'Alex Onyeka',
+  //   ),
+  //   TempEventLogClass(
+  //     uuid: uuidGen(),
+  //     shopId: 12,
+  //     tableName: 'expenses',
+  //     title: 'I Ate Beans and Rice',
+  //     event: 'created',
+  //     amount: 5000,
+  //     createdAt: DateTime.now(),
+  //     message: 'A New Expenses was Created',
+  //     staffName: 'Alex Onyeka',
+  //   ),
+  //   TempEventLogClass(
+  //     uuid: uuidGen(),
+  //     shopId: 12,
+  //     tableName: 'shops',
+  //     title: '12 Itemss Sold',
+  //     event: 'deleted',
+  //     amount: 12000,
+  //     createdAt: DateTime.now(),
+  //     message: 'A New Sales was Made',
+  //     staffName: 'Alex Onyeka',
+  //   ),
+  // ];
 }

@@ -93,10 +93,34 @@ class ExpensesProvider extends ChangeNotifier {
             .order('created_date', ascending: false);
         print('Expenses Gotten: $response');
 
-        expenses =
+        List<TempExpensesClass> tempExpenses =
             (response as List)
                 .map((e) => TempExpensesClass.fromJson(e))
                 .toList();
+
+        if (returnShopProvider()
+                .userShop()
+                ?.manageDepartments ==
+            true) {
+          if (authorization(
+            authorized: Authorizations().viewAllDepartments,
+          )) {
+            expenses = tempExpenses;
+          } else {
+            expenses =
+                tempExpenses
+                    .where(
+                      (exp) =>
+                          exp.departmentUuid ==
+                          returnDepartmentProvider()
+                              .currentDepartment()
+                              ?.uuid,
+                    )
+                    .toList();
+          }
+        } else {
+          expenses = tempExpenses;
+        }
 
         await ExpensesFunc().insertAllExpenses(expenses);
         notifyListeners();
@@ -110,7 +134,32 @@ class ExpensesProvider extends ChangeNotifier {
       }
     } else {
       try {
-        expenses = ExpensesFunc().getExpenses();
+        List<TempExpensesClass> tempExpenses =
+            ExpensesFunc().getExpenses();
+
+        if (returnShopProvider()
+                .userShop()
+                ?.manageDepartments ==
+            true) {
+          if (authorization(
+            authorized: Authorizations().viewAllDepartments,
+          )) {
+            expenses = tempExpenses;
+          } else {
+            expenses =
+                tempExpenses
+                    .where(
+                      (exp) =>
+                          exp.departmentUuid ==
+                          returnDepartmentProvider()
+                              .currentDepartment()
+                              ?.uuid,
+                    )
+                    .toList();
+          }
+        } else {
+          expenses = tempExpenses;
+        }
         notifyListeners();
         return expenses;
       } catch (e) {

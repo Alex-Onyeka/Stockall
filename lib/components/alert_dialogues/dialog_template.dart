@@ -8,6 +8,7 @@ class DialogTemplate extends StatelessWidget {
   final String message;
   final ThemeProvider theme;
   final Function() action;
+  final Function()? cancelAction;
   final Widget widget;
   final String? actionButtonText;
   final bool? showBottomActionButtons;
@@ -19,6 +20,7 @@ class DialogTemplate extends StatelessWidget {
     required this.message,
     required this.title,
     required this.action,
+    this.cancelAction,
     required this.widget,
     this.actionButtonText,
     this.showBottomActionButtons,
@@ -132,7 +134,9 @@ class DialogTemplate extends StatelessWidget {
                       ),
                       child: InkWell(
                         onTap: () {
-                          Navigator.of(context).pop();
+                          cancelAction != null
+                              ? cancelAction!()
+                              : Navigator.of(context).pop();
                         },
                         child: Container(
                           padding: EdgeInsets.symmetric(

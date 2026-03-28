@@ -46,6 +46,10 @@ class _IsManagedToggleWidgetState
                     });
                     await dataProvider.updateProduct(
                       product: TempProductClass(
+                        departmentName:
+                            widget.product.departmentName,
+                        departmentUuid:
+                            widget.product.departmentUuid,
                         groupUnit: widget.product.groupUnit,
                         qttyPerGroup:
                             widget.product.qttyPerGroup,

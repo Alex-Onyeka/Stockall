@@ -1,8 +1,13 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:stockall/classes/temp_current_department/temp_current_department.dart';
 import 'package:stockall/classes/temp_departments_class/department_class.dart';
 import 'package:stockall/classes/temp_departments_class/unsynced/created_departments/created_departments.dart';
 import 'package:stockall/classes/temp_departments_class/unsynced/deleted_departments/deleted_departments.dart';
 import 'package:stockall/classes/temp_departments_class/unsynced/updated/updated_departments.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/constants/functions.dart';
+import 'package:stockall/local_database/department_current/current_department_func.dart';
 import 'package:stockall/local_database/department_func/departments_func.dart';
 import 'package:stockall/local_database/department_func/unsync_funcs/created_departments/created_departments_func.dart';
 import 'package:stockall/local_database/department_func/unsync_funcs/deleted_department/deleted_departments_func.dart';
@@ -23,13 +28,125 @@ class DepartmentProvider with ChangeNotifier {
 
   List<DepartmentClass> departments = [];
 
+  DepartmentClass? currentDepartment() {
+    var offlineDepartment =
+        CurrentDepartmentFunc().getCurrentDepartment();
+    if (authorization(
+      authorized: Authorizations().viewAllDepartments,
+    )) {
+      try {
+        var depts = departments.where(
+          (dept) =>
+              dept.uuid ==
+              offlineDepartment?.currentDepartmentId,
+        );
+        return depts.isEmpty ? null : depts.first;
+      } catch (e) {
+        print(
+          'Error With Department First: ${e.toString()}',
+        );
+        return null;
+      }
+    } else {
+      if (offlineDepartment != null) {
+        try {
+          var depts = departments.where(
+            (dept) =>
+                dept.uuid ==
+                offlineDepartment.currentDepartmentId,
+          );
+          return depts.isEmpty ? null : depts.first;
+        } catch (e) {
+          print(
+            'Error With Department First: ${e.toString()}',
+          );
+          return null;
+        }
+      } else {
+        if (departments.isNotEmpty) {
+          try {
+            CurrentDepartmentFunc().createCurrentDepartment(
+              TempCurrentDepartment(
+                currentDepartmentId: departments.first.uuid,
+              ),
+            );
+            var dept =
+                departments.isNotEmpty
+                    ? departments.first
+                    : null;
+            return dept;
+          } catch (e) {
+            print(
+              'Error With Department Second: ${e.toString()}',
+            );
+            return null;
+          }
+        } else {
+          return null;
+        }
+      }
+    }
+  }
+
+  Future<void> selectDepartment({
+    required BuildContext context,
+    DepartmentClass? departmentClass,
+  }) async {
+    var isOnline = await connectivity.isOnline();
+    if (returnData().isSynced() == 0 && isOnline) {
+      showDialog(
+        // ignore: use_build_context_synchronously
+        context: context,
+        builder: (context) {
+          return InfoAlert(
+            theme: returnTheme(context, listen: false),
+            message:
+                'You have unsynced data. Synchronize data to proceed.',
+            title: 'Unsynced Records Detected.',
+          );
+        },
+      );
+      // ignore: use_build_context_synchronously
+      returnData().syncData(context);
+    } else {
+      try {
+        // var safeContext = context;
+        print('Department Selection Started');
+        var res =
+            departmentClass != null
+                ? await CurrentDepartmentFunc()
+                    .createCurrentDepartment(
+                      TempCurrentDepartment(
+                        currentDepartmentId:
+                            departmentClass.uuid,
+                      ),
+                    )
+                : await CurrentDepartmentFunc()
+                    .clearCurrentDepartment();
+        if (res == 1) {
+          print(
+            'Current Department set: ${CurrentDepartmentFunc().getCurrentDepartment()?.currentDepartmentId}',
+          );
+          notifyListeners();
+        } else {
+          print('Department Selection Failed');
+          notifyListeners();
+        }
+      } catch (e) {
+        print(
+          '❌❌ Select Department Error: ${e.toString()}',
+        );
+      }
+    }
+  }
+
   void clearDepartments() {
     departments.clear();
     print('Departments Cleared');
     notifyListeners();
   }
 
-  Future<void> createDepartment(
+  Future<int> createDepartment(
     DepartmentClass department,
   ) async {
     try {
@@ -74,8 +191,10 @@ class DepartmentProvider with ChangeNotifier {
       }
       await getDepartments();
       notifyListeners();
+      return 1;
     } catch (e) {
       print('Error Creating Department: ${e.toString()}');
+      return 0;
     }
   }
 
@@ -93,13 +212,51 @@ class DepartmentProvider with ChangeNotifier {
             (res as List)
                 .map((e) => DepartmentClass.fromJson(e))
                 .toList();
+        if (returnShopProvider()
+                .userShop()
+                ?.manageDepartments ==
+            true) {
+          if (!authorization(
+            authorized: Authorizations().viewAllDepartments,
+          )) {
+            departments =
+                departments.where((dept) {
+                  if (currentUser().departmentUuids !=
+                      null) {
+                    return currentUser().departmentUuids!
+                        .contains(dept.uuid);
+                  } else {
+                    return false;
+                  }
+                }).toList();
+          }
+        }
 
         await DepartmentsFunc().insertAllDepartment(
           departments,
         );
       } else {
         departments = DepartmentsFunc().getDepartment();
+        if (returnShopProvider()
+                .userShop()
+                ?.manageDepartments ==
+            true) {
+          if (!authorization(
+            authorized: Authorizations().viewAllDepartments,
+          )) {
+            departments =
+                departments
+                    .where(
+                      (dept) => currentUser()
+                          .departmentUuids!
+                          .contains(dept.uuid),
+                    )
+                    .toList();
+          }
+        }
       }
+
+      departments.sort((a, b) => a.name.compareTo(b.name));
       notifyListeners();
       return departments;
     } catch (e) {
@@ -108,9 +265,9 @@ class DepartmentProvider with ChangeNotifier {
     }
   }
 
-  Future<void> updateDeparment(
-    DepartmentClass department,
-  ) async {
+  Future<int> updateDeparment({
+    required DepartmentClass department,
+  }) async {
     bool isOnline = await connectivity.isOnline();
     department.updatedAt = DateTime.now();
     try {
@@ -157,78 +314,94 @@ class DepartmentProvider with ChangeNotifier {
       }
       await getDepartments();
       notifyListeners();
+      return 1;
     } catch (e) {
       print('Error Updating Department: ${e.toString()}');
+      return 0;
     }
   }
 
-  Future<void> deleteDepartment(
-    DepartmentClass department,
-  ) async {
+  Future<int> deleteDepartment({
+    required DepartmentClass department,
+  }) async {
     bool isOnline = await connectivity.isOnline();
-    if (isOnline) {
-      await supabase
-          .from(tableName)
-          .delete()
-          .eq('uuid', department.uuid);
-      await returnEventsLogProvider().createLog(
-        returnEventsLogProvider().departmentAdapter(
-          department,
-          3,
-        ),
-      );
-    } else {
-      var containsCreated =
-          CreatedDepartmentsFunc()
-              .getDepartment()
-              .where(
-                (dept) =>
-                    dept.department.uuid == department.uuid,
-              )
-              .toList();
-      var containsUpdated =
-          UpdatedDepartmentFunc()
-              .getDepartments()
-              .where(
-                (dept) =>
-                    dept.department.uuid == department.uuid,
-              )
-              .toList();
-      await DepartmentsFunc().deleteDepartment(
-        department.uuid,
-      );
-
-      if (containsCreated.isNotEmpty) {
-        CreatedDepartmentsFunc().deleteDepartment(
-          department.uuid,
+    try {
+      if (isOnline) {
+        await supabase
+            .from(tableName)
+            .delete()
+            .eq('uuid', department.uuid);
+        await returnEventsLogProvider().createLog(
+          returnEventsLogProvider().departmentAdapter(
+            department,
+            3,
+          ),
         );
       } else {
-        await DeletedDepartmentsFunc()
-            .createDeletedDepartment(
-              DeletedDepartments(
-                departmentUuid: department.uuid,
-                shopId:
-                    returnShopProvider()
-                        .userShop()!
-                        .shopId!,
-              ),
-            );
-      }
-      if (containsUpdated.isNotEmpty) {
-        UpdatedDepartmentFunc().deleteUpdatedDepartment(
+        var containsCreated =
+            CreatedDepartmentsFunc()
+                .getDepartment()
+                .where(
+                  (dept) =>
+                      dept.department.uuid ==
+                      department.uuid,
+                )
+                .toList();
+        var containsUpdated =
+            UpdatedDepartmentFunc()
+                .getDepartments()
+                .where(
+                  (dept) =>
+                      dept.department.uuid ==
+                      department.uuid,
+                )
+                .toList();
+        await DepartmentsFunc().deleteDepartment(
           department.uuid,
         );
-      }
-      await returnEventsLogProvider().createLog(
-        returnEventsLogProvider().departmentAdapter(
-          department,
-          3,
-        ),
-      );
-    }
 
-    await getDepartments();
-    notifyListeners();
+        if (containsCreated.isNotEmpty) {
+          CreatedDepartmentsFunc().deleteDepartment(
+            department.uuid,
+          );
+        } else {
+          await DeletedDepartmentsFunc()
+              .createDeletedDepartment(
+                DeletedDepartments(
+                  departmentUuid: department.uuid,
+                  shopId:
+                      returnShopProvider()
+                          .userShop()!
+                          .shopId!,
+                ),
+              );
+        }
+        if (containsUpdated.isNotEmpty) {
+          UpdatedDepartmentFunc().deleteUpdatedDepartment(
+            department.uuid,
+          );
+        }
+        await returnEventsLogProvider().createLog(
+          returnEventsLogProvider().departmentAdapter(
+            department,
+            3,
+          ),
+        );
+      }
+
+      var dept =
+          CurrentDepartmentFunc().getCurrentDepartment();
+      if (dept?.currentDepartmentId == department.uuid) {
+        CurrentDepartmentFunc().clearCurrentDepartment();
+      }
+
+      await getDepartments();
+      notifyListeners();
+      return 1;
+    } catch (e) {
+      print('Error Deleting Department: ${e.toString()}');
+      return 0;
+    }
   }
 
   Future<void> createDepartmentsSync() async {

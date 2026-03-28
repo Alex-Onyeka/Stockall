@@ -34,6 +34,12 @@ class TempEventLogClass {
   @HiveField(9)
   final String? staffName;
 
+  @HiveField(10)
+  String? departmentUuid;
+
+  @HiveField(11)
+  String? departmentName;
+
   TempEventLogClass({
     this.uuid,
     this.createdAt,
@@ -45,6 +51,8 @@ class TempEventLogClass {
     this.amount,
     this.staffName,
     this.itemName,
+    required this.departmentUuid,
+    required this.departmentName,
   });
 
   factory TempEventLogClass.fromJson(
@@ -67,6 +75,8 @@ class TempEventLogClass {
               : null,
       staffName: json['staff_name'] as String?,
       itemName: json['item_name'] as String?,
+      departmentUuid: json['department_uuid'] as String?,
+      departmentName: json['department_name'] as String?,
     );
   }
 
@@ -82,6 +92,8 @@ class TempEventLogClass {
       'amount': amount,
       'staff_name': staffName,
       'item_name': itemName,
+      'department_uuid': departmentUuid,
+      'department_name': departmentName,
     };
   }
 }

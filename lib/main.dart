@@ -24,6 +24,7 @@ import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/providers/customers_provider.dart';
 import 'package:stockall/providers/data_provider.dart';
 import 'package:stockall/providers/department_provider.dart';
+import 'package:stockall/providers/departments_dashboard_provider.dart';
 import 'package:stockall/providers/events_log_provider.dart';
 import 'package:stockall/providers/expenses_provider.dart';
 import 'package:stockall/providers/inventory_updates_provider.dart';
@@ -226,6 +227,19 @@ ShopDashboardProvider returnShopDashboardProvider({
     return ShopDashboardProvider();
   } else {
     return Provider.of<ShopDashboardProvider>(context);
+  }
+}
+
+DepartmentsDashboardProvider
+returnDepartmentsDashboardProvider({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return DepartmentsDashboardProvider();
+  } else {
+    return Provider.of<DepartmentsDashboardProvider>(
+      context,
+    );
   }
 }
 
@@ -563,6 +577,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => CategoriesProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => DepartmentsDashboardProvider(),
         ),
       ],
       child: MaterialApp(

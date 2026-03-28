@@ -207,6 +207,7 @@ class _ShopSetupTwoMobileState
                     applyVAT: false,
                     useGroupUnit: false,
                     wholeSale: false,
+                    manageDepartments: false,
                   ),
                   safeContext,
                 );
