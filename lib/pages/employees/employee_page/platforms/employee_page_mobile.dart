@@ -9,6 +9,7 @@ import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/employees/add_employee_page/add_employee_page.dart';
 import 'package:stockall/pages/employees/customize_role/customize_role_page.dart';
@@ -143,6 +144,208 @@ class _EmployeePageMobileState
                                             },
                                             text:
                                                 'Customize Access',
+                                          ),
+                                          MainButtonTransparent(
+                                            themeProvider:
+                                                theme,
+                                            constraints:
+                                                BoxConstraints(),
+                                            text:
+                                                'Manage Staff Departments',
+                                            action: () {
+                                              List<String>
+                                              list = [];
+                                              setState(() {
+                                                list.addAll(
+                                                  employee
+                                                      .departmentUuids!,
+                                                );
+                                              });
+                                              showDialog(
+                                                context:
+                                                    context,
+                                                builder: (
+                                                  firstContext,
+                                                ) {
+                                                  return StatefulBuilder(
+                                                    builder: (
+                                                      secondContext,
+                                                      setState,
+                                                    ) {
+                                                      return DialogTemplate(
+                                                        theme:
+                                                            theme,
+                                                        message:
+                                                            'Select Department for this Staff',
+                                                        title:
+                                                            'Select Department(s)',
+                                                        topRightWidget:
+                                                            returnDepartmentsDashboardProvider().isLoading
+                                                                ? SizedBox(
+                                                                  height:
+                                                                      25,
+                                                                  width:
+                                                                      25,
+                                                                  child: CircularProgressIndicator(
+                                                                    color:
+                                                                        theme.lightModeColor.secColor200,
+                                                                    strokeWidth:
+                                                                        2.5,
+                                                                  ),
+                                                                )
+                                                                : null,
+                                                        action: () {
+                                                          if (!returnDepartmentsDashboardProvider().isLoading) {
+                                                            showDialog(
+                                                              context:
+                                                                  context,
+                                                              builder: (
+                                                                confirmContext,
+                                                              ) {
+                                                                return ConfirmationAlert(
+                                                                  theme:
+                                                                      theme,
+                                                                  message:
+                                                                      'You are about to update this users Department(s). Are you sure you want to proceed?',
+                                                                  title:
+                                                                      'Update Departments',
+                                                                  action: () async {
+                                                                    Navigator.of(
+                                                                      confirmContext,
+                                                                    ).pop();
+                                                                    returnDepartmentsDashboardProvider().toggleIsLoading(
+                                                                      true,
+                                                                    );
+                                                                    setState(
+                                                                      () {},
+                                                                    );
+                                                                    await returnUserProviderSingle().updateStaffDepartments(
+                                                                      user:
+                                                                          employee,
+                                                                      newDepartments:
+                                                                          list,
+                                                                    );
+                                                                    if (secondContext.mounted) {
+                                                                      Navigator.of(
+                                                                        secondContext,
+                                                                      ).pop();
+                                                                    }
+                                                                    if (firstContext.mounted) {
+                                                                      Navigator.of(
+                                                                        firstContext,
+                                                                      ).pop();
+                                                                    }
+                                                                  },
+                                                                );
+                                                              },
+                                                            );
+                                                          }
+                                                        },
+                                                        widget: SizedBox(
+                                                          height:
+                                                              screenHeight(
+                                                                context,
+                                                              ) -
+                                                              370,
+                                                          child: SingleChildScrollView(
+                                                            child: Padding(
+                                                              padding: const EdgeInsets.symmetric(
+                                                                horizontal:
+                                                                    20.0,
+                                                                vertical:
+                                                                    15,
+                                                              ),
+                                                              child: Column(
+                                                                spacing:
+                                                                    5,
+                                                                children:
+                                                                    returnDepartmentProvider().departments
+                                                                        .map(
+                                                                          (
+                                                                            dept,
+                                                                          ) => Material(
+                                                                            color:
+                                                                                Colors.transparent,
+                                                                            child: InkWell(
+                                                                              onTap: () {
+                                                                                setState(
+                                                                                  () {
+                                                                                    list.add(
+                                                                                      dept.uuid,
+                                                                                    );
+                                                                                  },
+                                                                                );
+                                                                              },
+                                                                              child: Padding(
+                                                                                padding: const EdgeInsets.symmetric(
+                                                                                  vertical:
+                                                                                      9.0,
+                                                                                  horizontal:
+                                                                                      12,
+                                                                                ),
+                                                                                child: Row(
+                                                                                  mainAxisAlignment:
+                                                                                      MainAxisAlignment.spaceBetween,
+                                                                                  children: [
+                                                                                    Text(
+                                                                                      style: TextStyle(
+                                                                                        fontSize:
+                                                                                            theme.mobileTexts.b3.fontSize,
+                                                                                        fontWeight:
+                                                                                            FontWeight.bold,
+                                                                                      ),
+                                                                                      dept.name,
+                                                                                    ),
+                                                                                    Container(
+                                                                                      padding: EdgeInsets.all(
+                                                                                        2,
+                                                                                      ),
+                                                                                      decoration: BoxDecoration(
+                                                                                        shape:
+                                                                                            BoxShape.circle,
+                                                                                        border: Border.all(
+                                                                                          color:
+                                                                                              Colors.grey,
+                                                                                        ),
+                                                                                      ),
+                                                                                      child: Container(
+                                                                                        padding: EdgeInsets.all(
+                                                                                          5,
+                                                                                        ),
+                                                                                        decoration: BoxDecoration(
+                                                                                          shape:
+                                                                                              BoxShape.circle,
+                                                                                          color:
+                                                                                              list.contains(
+                                                                                                    dept.uuid,
+                                                                                                  )
+                                                                                                  ? theme.lightModeColor.prColor250
+                                                                                                  : Colors.transparent,
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        )
+                                                                        .toList(),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                              ).then((_) {
+                                                returnDepartmentsDashboardProvider()
+                                                    .toggleIsLoading(
+                                                      false,
+                                                    );
+                                              });
+                                            },
                                           ),
                                           MainButtonTransparent(
                                             themeProvider:
