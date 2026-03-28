@@ -1046,8 +1046,13 @@ class DataProvider extends ChangeNotifier {
               ?.manageDepartments ==
           true) {
         if (!authorization(
-          authorized: Authorizations().viewAllDepartments,
-        )) {
+              authorized:
+                  Authorizations().viewAllDepartments,
+            ) ||
+            returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid !=
+                null) {
           productList =
               productList
                   .where(
@@ -1097,8 +1102,13 @@ class DataProvider extends ChangeNotifier {
               ?.manageDepartments ==
           true) {
         if (!authorization(
-          authorized: Authorizations().viewAllDepartments,
-        )) {
+              authorized:
+                  Authorizations().viewAllDepartments,
+            ) ||
+            returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid !=
+                null) {
           productList =
               productList
                   .where(

@@ -89,8 +89,13 @@ class NotificationProvider with ChangeNotifier {
               ?.manageDepartments ==
           true) {
         if (!authorization(
-          authorized: Authorizations().viewAllDepartments,
-        )) {
+              authorized:
+                  Authorizations().viewAllDepartments,
+            ) ||
+            returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid !=
+                null) {
           _notifications =
               _notifications
                   .where(
@@ -115,8 +120,13 @@ class NotificationProvider with ChangeNotifier {
               ?.manageDepartments ==
           true) {
         if (!authorization(
-          authorized: Authorizations().viewAllDepartments,
-        )) {
+              authorized:
+                  Authorizations().viewAllDepartments,
+            ) ||
+            returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid !=
+                null) {
           _notifications =
               _notifications
                   .where(

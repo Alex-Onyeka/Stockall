@@ -111,8 +111,13 @@ class SubStaffProvider extends ChangeNotifier {
               ?.manageDepartments ==
           true) {
         if (!authorization(
-          authorized: Authorizations().viewAllDepartments,
-        )) {
+              authorized:
+                  Authorizations().viewAllDepartments,
+            ) ||
+            returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid !=
+                null) {
           subStaffs =
               subStaffs
                   .where(
@@ -134,8 +139,13 @@ class SubStaffProvider extends ChangeNotifier {
               ?.manageDepartments ==
           true) {
         if (!authorization(
-          authorized: Authorizations().viewAllDepartments,
-        )) {
+              authorized:
+                  Authorizations().viewAllDepartments,
+            ) ||
+            returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid !=
+                null) {
           subStaffs =
               subStaffs
                   .where(

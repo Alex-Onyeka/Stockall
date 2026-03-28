@@ -8,6 +8,7 @@ import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/components/discount_setter.dart/discount_setter_widget.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widget_desktop.dart';
+import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/toggle_button/my_toggle_button.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -509,86 +510,116 @@ class _SettingsPageDesktopState
                                                           vertical:
                                                               15,
                                                         ),
-                                                        child: Column(
-                                                          spacing:
-                                                              5,
-                                                          children:
-                                                              returnDepartmentProvider().departments
-                                                                  .map(
-                                                                    (
-                                                                      dept,
-                                                                    ) => Material(
-                                                                      color:
-                                                                          Colors.transparent,
-                                                                      child: InkWell(
-                                                                        onTap: () {
-                                                                          setState(
-                                                                            () {
-                                                                              if (selectedDept ==
-                                                                                  dept.uuid) {
-                                                                                selectedDept =
-                                                                                    null;
-                                                                              } else {
-                                                                                selectedDept =
-                                                                                    dept.uuid;
-                                                                              }
-                                                                            },
-                                                                          );
-                                                                        },
-                                                                        child: Padding(
-                                                                          padding: const EdgeInsets.symmetric(
-                                                                            vertical:
-                                                                                9.0,
-                                                                            horizontal:
-                                                                                12,
-                                                                          ),
-                                                                          child: Row(
-                                                                            mainAxisAlignment:
-                                                                                MainAxisAlignment.spaceBetween,
-                                                                            children: [
-                                                                              Text(
-                                                                                style: TextStyle(
-                                                                                  fontSize:
-                                                                                      theme.mobileTexts.b3.fontSize,
-                                                                                  fontWeight:
-                                                                                      FontWeight.bold,
+                                                        child: Builder(
+                                                          builder: (
+                                                            context,
+                                                          ) {
+                                                            if (returnDepartmentProvider().departments.isEmpty) {
+                                                              return SizedBox(
+                                                                height:
+                                                                    400,
+                                                                child: EmptyWidgetDisplayOnly(
+                                                                  title:
+                                                                      'No Department Found',
+                                                                  subText:
+                                                                      'You have not been added to any departments.',
+                                                                  theme:
+                                                                      theme,
+                                                                  height:
+                                                                      30,
+                                                                  altAction: () {
+                                                                    returnDepartmentProvider().getDepartments();
+                                                                  },
+                                                                  altActionText:
+                                                                      'Refresh',
+                                                                  icon:
+                                                                      Icons.clear,
+                                                                ),
+                                                              );
+                                                            } else {
+                                                              return Column(
+                                                                spacing:
+                                                                    5,
+                                                                children:
+                                                                    returnDepartmentProvider().departments
+                                                                        .map(
+                                                                          (
+                                                                            dept,
+                                                                          ) => Material(
+                                                                            color:
+                                                                                Colors.transparent,
+                                                                            child: InkWell(
+                                                                              onTap: () {
+                                                                                setState(
+                                                                                  () {
+                                                                                    if (selectedDept ==
+                                                                                        dept.uuid) {
+                                                                                      selectedDept =
+                                                                                          null;
+                                                                                    } else {
+                                                                                      selectedDept =
+                                                                                          dept.uuid;
+                                                                                    }
+                                                                                  },
+                                                                                );
+                                                                              },
+                                                                              child: Padding(
+                                                                                padding: const EdgeInsets.symmetric(
+                                                                                  vertical:
+                                                                                      9.0,
+                                                                                  horizontal:
+                                                                                      12,
                                                                                 ),
-                                                                                dept.name,
+                                                                                child: Row(
+                                                                                  mainAxisAlignment:
+                                                                                      MainAxisAlignment.spaceBetween,
+                                                                                  children: [
+                                                                                    Text(
+                                                                                      style: TextStyle(
+                                                                                        fontSize:
+                                                                                            theme.mobileTexts.b3.fontSize,
+                                                                                        fontWeight:
+                                                                                            FontWeight.bold,
+                                                                                      ),
+                                                                                      dept.name,
+                                                                                    ),
+                                                                                    Container(
+                                                                                      padding: EdgeInsets.all(
+                                                                                        2,
+                                                                                      ),
+                                                                                      decoration: BoxDecoration(
+                                                                                        shape:
+                                                                                            BoxShape.circle,
+                                                                                        border: Border.all(
+                                                                                          color:
+                                                                                              Colors.grey,
+                                                                                        ),
+                                                                                      ),
+                                                                                      child: Container(
+                                                                                        padding: EdgeInsets.all(
+                                                                                          5,
+                                                                                        ),
+                                                                                        decoration: BoxDecoration(
+                                                                                          shape:
+                                                                                              BoxShape.circle,
+                                                                                          color:
+                                                                                              selectedDept ==
+                                                                                                      dept.uuid
+                                                                                                  ? theme.lightModeColor.prColor250
+                                                                                                  : Colors.transparent,
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
                                                                               ),
-                                                                              Container(
-                                                                                padding: EdgeInsets.all(
-                                                                                  2,
-                                                                                ),
-                                                                                decoration: BoxDecoration(
-                                                                                  shape:
-                                                                                      BoxShape.circle,
-                                                                                  border: Border.all(
-                                                                                    color:
-                                                                                        Colors.grey,
-                                                                                  ),
-                                                                                ),
-                                                                                child: Container(
-                                                                                  padding: EdgeInsets.all(
-                                                                                    5,
-                                                                                  ),
-                                                                                  decoration: BoxDecoration(
-                                                                                    shape:
-                                                                                        BoxShape.circle,
-                                                                                    color:
-                                                                                        selectedDept ==
-                                                                                                dept.uuid
-                                                                                            ? theme.lightModeColor.prColor250
-                                                                                            : Colors.transparent,
-                                                                                  ),
-                                                                                ),
-                                                                              ),
-                                                                            ],
+                                                                            ),
                                                                           ),
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  )
-                                                                  .toList(),
+                                                                        )
+                                                                        .toList(),
+                                                              );
+                                                            }
+                                                          },
                                                         ),
                                                       ),
                                                     ),

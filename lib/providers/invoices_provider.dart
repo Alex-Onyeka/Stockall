@@ -129,8 +129,13 @@ class InvoicesProvider extends ChangeNotifier {
                 ?.manageDepartments ==
             true) {
           if (!authorization(
-            authorized: Authorizations().viewAllDepartments,
-          )) {
+                authorized:
+                    Authorizations().viewAllDepartments,
+              ) ||
+              returnDepartmentProvider()
+                      .currentDepartment()
+                      ?.uuid !=
+                  null) {
             _invoices =
                 _invoices
                     .where(
@@ -158,8 +163,13 @@ class InvoicesProvider extends ChangeNotifier {
               ?.manageDepartments ==
           true) {
         if (!authorization(
-          authorized: Authorizations().viewAllDepartments,
-        )) {
+              authorized:
+                  Authorizations().viewAllDepartments,
+            ) ||
+            returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid !=
+                null) {
           _invoices =
               _invoices
                   .where(

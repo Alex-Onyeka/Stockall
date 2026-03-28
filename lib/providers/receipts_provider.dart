@@ -137,8 +137,13 @@ class ReceiptsProvider extends ChangeNotifier {
                 ?.manageDepartments ==
             true) {
           if (!authorization(
-            authorized: Authorizations().viewAllDepartments,
-          )) {
+                authorized:
+                    Authorizations().viewAllDepartments,
+              ) ||
+              returnDepartmentProvider()
+                      .currentDepartment()
+                      ?.uuid !=
+                  null) {
             _receipts =
                 _receipts
                     .where(
@@ -175,8 +180,13 @@ class ReceiptsProvider extends ChangeNotifier {
               ?.manageDepartments ==
           true) {
         if (!authorization(
-          authorized: Authorizations().viewAllDepartments,
-        )) {
+              authorized:
+                  Authorizations().viewAllDepartments,
+            ) ||
+            returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid !=
+                null) {
           _receipts =
               _receipts
                   .where(
@@ -655,8 +665,13 @@ class ReceiptsProvider extends ChangeNotifier {
               ?.manageDepartments ==
           true) {
         if (!authorization(
-          authorized: Authorizations().viewAllDepartments,
-        )) {
+              authorized:
+                  Authorizations().viewAllDepartments,
+            ) ||
+            returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid !=
+                null) {
           _sales =
               _sales
                   .where(
@@ -679,8 +694,13 @@ class ReceiptsProvider extends ChangeNotifier {
               ?.manageDepartments ==
           true) {
         if (!authorization(
-          authorized: Authorizations().viewAllDepartments,
-        )) {
+              authorized:
+                  Authorizations().viewAllDepartments,
+            ) ||
+            returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid !=
+                null) {
           _sales =
               _sales
                   .where(

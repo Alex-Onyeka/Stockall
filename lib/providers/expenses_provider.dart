@@ -102,11 +102,14 @@ class ExpensesProvider extends ChangeNotifier {
                 .userShop()
                 ?.manageDepartments ==
             true) {
-          if (authorization(
-            authorized: Authorizations().viewAllDepartments,
-          )) {
-            expenses = tempExpenses;
-          } else {
+          if (!authorization(
+                authorized:
+                    Authorizations().viewAllDepartments,
+              ) ||
+              returnDepartmentProvider()
+                      .currentDepartment()
+                      ?.uuid !=
+                  null) {
             expenses =
                 tempExpenses
                     .where(
@@ -118,8 +121,6 @@ class ExpensesProvider extends ChangeNotifier {
                     )
                     .toList();
           }
-        } else {
-          expenses = tempExpenses;
         }
 
         await ExpensesFunc().insertAllExpenses(expenses);
@@ -141,11 +142,14 @@ class ExpensesProvider extends ChangeNotifier {
                 .userShop()
                 ?.manageDepartments ==
             true) {
-          if (authorization(
-            authorized: Authorizations().viewAllDepartments,
-          )) {
-            expenses = tempExpenses;
-          } else {
+          if (!authorization(
+                authorized:
+                    Authorizations().viewAllDepartments,
+              ) ||
+              returnDepartmentProvider()
+                      .currentDepartment()
+                      ?.uuid !=
+                  null) {
             expenses =
                 tempExpenses
                     .where(
@@ -157,8 +161,6 @@ class ExpensesProvider extends ChangeNotifier {
                     )
                     .toList();
           }
-        } else {
-          expenses = tempExpenses;
         }
         notifyListeners();
         return expenses;

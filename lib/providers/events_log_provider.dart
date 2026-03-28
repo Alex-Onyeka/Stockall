@@ -126,11 +126,14 @@ class EventsLogProvider with ChangeNotifier {
                 .userShop()
                 ?.manageDepartments ==
             true) {
-          if (authorization(
-            authorized: Authorizations().viewAllDepartments,
-          )) {
-            logs = tempEvents;
-          } else {
+          if (!authorization(
+                authorized:
+                    Authorizations().viewAllDepartments,
+              ) ||
+              returnDepartmentProvider()
+                      .currentDepartment()
+                      ?.uuid !=
+                  null) {
             logs =
                 tempEvents
                     .where(
@@ -142,8 +145,6 @@ class EventsLogProvider with ChangeNotifier {
                     )
                     .toList();
           }
-        } else {
-          logs = tempEvents;
         }
 
         await EventsLogFunc().insertAllEventsLog(logs);
@@ -165,11 +166,14 @@ class EventsLogProvider with ChangeNotifier {
               .userShop()
               ?.manageDepartments ==
           true) {
-        if (authorization(
-          authorized: Authorizations().viewAllDepartments,
-        )) {
-          logs = tempEvents;
-        } else {
+        if (!authorization(
+              authorized:
+                  Authorizations().viewAllDepartments,
+            ) ||
+            returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid !=
+                null) {
           logs =
               tempEvents
                   .where(
@@ -181,8 +185,6 @@ class EventsLogProvider with ChangeNotifier {
                   )
                   .toList();
         }
-      } else {
-        logs = tempEvents;
       }
       print('Events Gotten Successfully Offline');
       notifyListeners();

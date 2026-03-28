@@ -93,11 +93,14 @@ class CategoriesProvider extends ChangeNotifier {
                 .userShop()
                 ?.manageDepartments ==
             true) {
-          if (authorization(
-            authorized: Authorizations().viewAllDepartments,
-          )) {
-            categories = tempCategories;
-          } else {
+          if (!authorization(
+                authorized:
+                    Authorizations().viewAllDepartments,
+              ) ||
+              returnDepartmentProvider()
+                      .currentDepartment()
+                      ?.uuid !=
+                  null) {
             categories =
                 tempCategories
                     .where(
@@ -109,8 +112,6 @@ class CategoriesProvider extends ChangeNotifier {
                     )
                     .toList();
           }
-        } else {
-          categories = tempCategories;
         }
 
         await CategoryFunc().insertAllCategories(
@@ -133,11 +134,14 @@ class CategoriesProvider extends ChangeNotifier {
                 .userShop()
                 ?.manageDepartments ==
             true) {
-          if (authorization(
-            authorized: Authorizations().viewAllDepartments,
-          )) {
-            categories = tempCategories;
-          } else {
+          if (!authorization(
+                authorized:
+                    Authorizations().viewAllDepartments,
+              ) ||
+              returnDepartmentProvider()
+                      .currentDepartment()
+                      ?.uuid !=
+                  null) {
             categories =
                 tempCategories
                     .where(
@@ -149,8 +153,6 @@ class CategoriesProvider extends ChangeNotifier {
                     )
                     .toList();
           }
-        } else {
-          categories = tempCategories;
         }
 
         notifyListeners();

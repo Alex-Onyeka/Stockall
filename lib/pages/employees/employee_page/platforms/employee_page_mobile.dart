@@ -178,14 +178,14 @@ class _EmployeePageMobileState
                                                         message:
                                                             'Select Department for this Staff',
                                                         title:
-                                                            'Select Department(s)',
+                                                            'Select Department',
                                                         topRightWidget:
                                                             returnDepartmentsDashboardProvider().isLoading
                                                                 ? SizedBox(
                                                                   height:
-                                                                      25,
+                                                                      20,
                                                                   width:
-                                                                      25,
+                                                                      20,
                                                                   child: CircularProgressIndicator(
                                                                     color:
                                                                         theme.lightModeColor.secColor200,

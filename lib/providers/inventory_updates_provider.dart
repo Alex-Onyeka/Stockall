@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:stockall/classes/temp_inventory_updates/temp_inventory_update_class.dart';
 import 'package:stockall/classes/temp_inventory_updates/unsynced/created_inventory_updates_class.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/inventory_updates/inventory_updates_func.dart';
 import 'package:stockall/local_database/inventory_updates/unsync_funcs/created_inventory_updates_func.dart';
 import 'package:stockall/main.dart';
@@ -119,7 +120,31 @@ class InventoryUpdatesProvider with ChangeNotifier {
                       TempInventoryUpdateClass.fromJson(m),
                 )
                 .toList();
-        inventoryUpdates = tempUpdates;
+        if (returnShopProvider()
+                .userShop()
+                ?.manageDepartments ==
+            true) {
+          if (!authorization(
+                authorized:
+                    Authorizations().viewAllDepartments,
+              ) ||
+              returnDepartmentProvider()
+                      .currentDepartment()
+                      ?.uuid !=
+                  null) {
+            inventoryUpdates =
+                tempUpdates
+                    .where(
+                      (exp) =>
+                          exp.departmentUuid ==
+                          returnDepartmentProvider()
+                              .currentDepartment()
+                              ?.uuid,
+                    )
+                    .toList();
+          }
+        }
+
         await InventoryUpdatesFunc()
             .insertAllInventoryUpdates(tempUpdates);
         print(
@@ -137,6 +162,30 @@ class InventoryUpdatesProvider with ChangeNotifier {
     } else {
       inventoryUpdates =
           InventoryUpdatesFunc().getInventoryUpdatess();
+      if (returnShopProvider()
+              .userShop()
+              ?.manageDepartments ==
+          true) {
+        if (!authorization(
+              authorized:
+                  Authorizations().viewAllDepartments,
+            ) ||
+            returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid !=
+                null) {
+          inventoryUpdates =
+              inventoryUpdates
+                  .where(
+                    (exp) =>
+                        exp.departmentUuid ==
+                        returnDepartmentProvider()
+                            .currentDepartment()
+                            ?.uuid,
+                  )
+                  .toList();
+        }
+      }
       print(
         'Inventory Updates Gotten Successfully Offline',
       );
