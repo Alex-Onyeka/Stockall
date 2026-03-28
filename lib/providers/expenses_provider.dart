@@ -93,7 +93,7 @@ class ExpensesProvider extends ChangeNotifier {
             .order('created_date', ascending: false);
         print('Expenses Gotten: ${response.length}');
 
-        List<TempExpensesClass> tempExpenses =
+        expenses =
             (response as List)
                 .map((e) => TempExpensesClass.fromJson(e))
                 .toList();
@@ -111,7 +111,7 @@ class ExpensesProvider extends ChangeNotifier {
                       ?.uuid !=
                   null) {
             expenses =
-                tempExpenses
+                expenses
                     .where(
                       (exp) =>
                           exp.departmentUuid ==
@@ -135,8 +135,7 @@ class ExpensesProvider extends ChangeNotifier {
       }
     } else {
       try {
-        List<TempExpensesClass> tempExpenses =
-            ExpensesFunc().getExpenses();
+        expenses = ExpensesFunc().getExpenses();
 
         if (returnShopProvider()
                 .userShop()
@@ -151,7 +150,7 @@ class ExpensesProvider extends ChangeNotifier {
                       ?.uuid !=
                   null) {
             expenses =
-                tempExpenses
+                expenses
                     .where(
                       (exp) =>
                           exp.departmentUuid ==

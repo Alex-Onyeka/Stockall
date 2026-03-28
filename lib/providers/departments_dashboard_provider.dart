@@ -95,7 +95,7 @@ class DepartmentsDashboardProvider extends ChangeNotifier {
         final data = await supabase
             .from('receipts')
             .select()
-            .eq('department_uuid', department.uuid)
+            .eq('department_uuid_new', department.uuid)
             .order('created_at', ascending: false);
         temp.addAll(
           data
@@ -223,7 +223,7 @@ class DepartmentsDashboardProvider extends ChangeNotifier {
         final data = await supabase
             .from('invoices')
             .select()
-            .eq('department_uuid', department.uuid)
+            .eq('department_uuid_new', department.uuid)
             .order('created_at', ascending: false);
         temp.addAll(
           data

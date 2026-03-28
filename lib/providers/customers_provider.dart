@@ -46,7 +46,7 @@ class CustomersProvider extends ChangeNotifier {
           .order('name', ascending: true);
       print(data.length.toString());
 
-      List<TempCustomersClass> tempCustomers =
+      _customers =
           (data as List)
               .map(
                 (json) => TempCustomersClass.fromJson(json),
@@ -57,13 +57,16 @@ class CustomersProvider extends ChangeNotifier {
               .userShop()
               ?.manageDepartments ==
           true) {
-        if (authorization(
-          authorized: Authorizations().viewAllDepartments,
-        )) {
-          _customers = tempCustomers;
-        } else {
+        if (!authorization(
+              authorized:
+                  Authorizations().viewAllDepartments,
+            ) ||
+            returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid !=
+                null) {
           _customers =
-              tempCustomers
+              _customers
                   .where(
                     (customer) =>
                         customer.departmentUuid ==
@@ -73,26 +76,26 @@ class CustomersProvider extends ChangeNotifier {
                   )
                   .toList();
         }
-      } else {
-        _customers = tempCustomers;
       }
 
       await CustomerFunc().insertAllCustomers(_customers);
     } else {
-      List<TempCustomersClass> tempCustomers =
-          CustomerFunc().getCustomers();
+      _customers = CustomerFunc().getCustomers();
 
       if (returnShopProvider()
               .userShop()
               ?.manageDepartments ==
           true) {
-        if (authorization(
-          authorized: Authorizations().viewAllDepartments,
-        )) {
-          _customers = tempCustomers;
-        } else {
+        if (!authorization(
+              authorized:
+                  Authorizations().viewAllDepartments,
+            ) ||
+            returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid !=
+                null) {
           _customers =
-              tempCustomers
+              _customers
                   .where(
                     (customer) =>
                         customer.departmentUuid ==
@@ -102,8 +105,6 @@ class CustomersProvider extends ChangeNotifier {
                   )
                   .toList();
         }
-      } else {
-        _customers = tempCustomers;
       }
     }
     notifyListeners();

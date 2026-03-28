@@ -84,7 +84,7 @@ class CategoriesProvider extends ChangeNotifier {
             .order('name', ascending: true);
         print('Categories Gotten: ${response.length}');
 
-        List<CategoryClass> tempCategories =
+        categories =
             (response as List)
                 .map((e) => CategoryClass.fromJson(e))
                 .toList();
@@ -102,7 +102,7 @@ class CategoriesProvider extends ChangeNotifier {
                       ?.uuid !=
                   null) {
             categories =
-                tempCategories
+                categories
                     .where(
                       (cat) =>
                           cat.departmentId ==
@@ -128,8 +128,7 @@ class CategoriesProvider extends ChangeNotifier {
       }
     } else {
       try {
-        List<CategoryClass> tempCategories =
-            CategoryFunc().getCategories();
+        categories = CategoryFunc().getCategories();
         if (returnShopProvider()
                 .userShop()
                 ?.manageDepartments ==
@@ -143,7 +142,7 @@ class CategoriesProvider extends ChangeNotifier {
                       ?.uuid !=
                   null) {
             categories =
-                tempCategories
+                categories
                     .where(
                       (cat) =>
                           cat.departmentId ==

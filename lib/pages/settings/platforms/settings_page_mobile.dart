@@ -892,13 +892,14 @@ class _SettingsPageMobileState
                                                                           onTap: () {
                                                                             setState(
                                                                               () {
-                                                                                if (selectedDept ==
-                                                                                    dept.uuid) {
-                                                                                  selectedDept =
-                                                                                      null;
-                                                                                } else {
-                                                                                  selectedDept =
-                                                                                      dept.uuid;
+                                                                                if (returnDepartmentProvider().departments.length >
+                                                                                    1) {
+                                                                                  setState(
+                                                                                    () {
+                                                                                      selectedDept =
+                                                                                          dept.uuid;
+                                                                                    },
+                                                                                  );
                                                                                 }
                                                                               },
                                                                             );

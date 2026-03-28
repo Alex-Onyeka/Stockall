@@ -117,7 +117,7 @@ class EventsLogProvider with ChangeNotifier {
           notifyListeners();
           return [];
         }
-        List<TempEventLogClass> tempEvents =
+        logs =
             res
                 .map((m) => TempEventLogClass.fromJson(m))
                 .toList();
@@ -135,7 +135,7 @@ class EventsLogProvider with ChangeNotifier {
                       ?.uuid !=
                   null) {
             logs =
-                tempEvents
+                logs
                     .where(
                       (event) =>
                           event.departmentUuid ==
@@ -159,8 +159,7 @@ class EventsLogProvider with ChangeNotifier {
         return [];
       }
     } else {
-      List<TempEventLogClass> tempEvents =
-          EventsLogFunc().getEventsLogs();
+      logs = EventsLogFunc().getEventsLogs();
 
       if (returnShopProvider()
               .userShop()
@@ -175,7 +174,7 @@ class EventsLogProvider with ChangeNotifier {
                     ?.uuid !=
                 null) {
           logs =
-              tempEvents
+              logs
                   .where(
                     (event) =>
                         event.departmentUuid ==

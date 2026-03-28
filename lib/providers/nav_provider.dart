@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/restricted_page/restricted_page.dart';
@@ -132,6 +133,24 @@ class NavProvider extends ChangeNotifier {
       );
       return;
     }
+    if (returnDepartmentProvider().currentDepartment() ==
+            null &&
+        !authorization(
+          authorized: Authorizations().viewAllDepartments,
+        )) {
+      returnDepartmentProvider().selectDepartment(
+        context: context,
+        departmentClass:
+            returnDepartmentProvider()
+                    .departments
+                    .isNotEmpty
+                ? returnDepartmentProvider()
+                    .departments
+                    .first
+                : null,
+      );
+    }
+
     if (subsription != null &&
         subsription.plan != 0 &&
         (subsription.nextPayment != null &&

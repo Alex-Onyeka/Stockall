@@ -537,8 +537,16 @@ class InvoicesProvider extends ChangeNotifier {
                 fixedDiscount: record.fixedDiscount,
                 costPrice: record.costPrice,
                 addToStock: record.addToStock,
-                departmentName: record.departmentName,
-                departmentUuid: record.departmentUuid,
+                departmentName:
+                    record.departmentName ??
+                    returnDepartmentProvider()
+                        .currentDepartment()
+                        ?.name,
+                departmentUuid:
+                    record.departmentUuid ??
+                    returnDepartmentProvider()
+                        .currentDepartment()
+                        ?.uuid,
                 uuid: uuidGen(),
                 isProductManaged: record.isProductManaged,
                 setTotalPrice: record.setTotalPrice,

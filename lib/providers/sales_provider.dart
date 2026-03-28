@@ -810,9 +810,15 @@ class SalesProvider extends ChangeNotifier {
                   costPrice: cartItem.costPrice(),
                   addToStock: cartItem.addToStock,
                   departmentName:
-                      cartItem.item.departmentName,
+                      cartItem.item.departmentName ??
+                      returnDepartmentProvider()
+                          .currentDepartment()
+                          ?.name,
                   departmentUuid:
-                      cartItem.item.departmentUuid,
+                      cartItem.item.departmentUuid ??
+                      returnDepartmentProvider()
+                          .currentDepartment()
+                          ?.uuid,
                   uuid: cartItem.salesRecordId ?? uuidGen(),
                   isProductManaged: cartItem.item.isManaged,
                   setTotalPrice: cartItem.setTotalPrice,
@@ -866,9 +872,15 @@ class SalesProvider extends ChangeNotifier {
                   costPrice: cartItem.costPrice(),
                   addToStock: cartItem.addToStock,
                   departmentName:
-                      cartItem.item.departmentName,
+                      cartItem.item.departmentName ??
+                      returnDepartmentProvider()
+                          .currentDepartment()
+                          ?.name,
                   departmentUuid:
-                      cartItem.item.departmentUuid,
+                      cartItem.item.departmentUuid ??
+                      returnDepartmentProvider()
+                          .currentDepartment()
+                          ?.uuid,
                   uuid: cartItem.salesRecordId ?? uuidGen(),
                   isProductManaged: cartItem.item.isManaged,
                   setTotalPrice: cartItem.setTotalPrice,
@@ -1155,9 +1167,15 @@ class SalesProvider extends ChangeNotifier {
                   costPrice: cartItem.costPrice(),
                   addToStock: cartItem.addToStock,
                   departmentName:
-                      cartItem.item.departmentName,
+                      cartItem.item.departmentName ??
+                      returnDepartmentProvider()
+                          .currentDepartment()
+                          ?.name,
                   departmentUuid:
-                      cartItem.item.departmentUuid,
+                      cartItem.item.departmentUuid ??
+                      returnDepartmentProvider()
+                          .currentDepartment()
+                          ?.uuid,
                   uuid: cartItem.salesRecordId ?? uuidGen(),
                   isProductManaged: cartItem.item.isManaged,
                   setTotalPrice: cartItem.setTotalPrice,

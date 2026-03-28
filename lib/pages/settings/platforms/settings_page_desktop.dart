@@ -550,18 +550,15 @@ class _SettingsPageDesktopState
                                                                                 Colors.transparent,
                                                                             child: InkWell(
                                                                               onTap: () {
-                                                                                setState(
-                                                                                  () {
-                                                                                    if (selectedDept ==
-                                                                                        dept.uuid) {
-                                                                                      selectedDept =
-                                                                                          null;
-                                                                                    } else {
+                                                                                if (returnDepartmentProvider().departments.length >
+                                                                                    1) {
+                                                                                  setState(
+                                                                                    () {
                                                                                       selectedDept =
                                                                                           dept.uuid;
-                                                                                    }
-                                                                                  },
-                                                                                );
+                                                                                    },
+                                                                                  );
+                                                                                }
                                                                               },
                                                                               child: Padding(
                                                                                 padding: const EdgeInsets.symmetric(
