@@ -41,7 +41,7 @@ class _RestrictedPageState extends State<RestrictedPage> {
               SizedBox(height: 20),
               TopNavBar(
                 title: 'Users Shop',
-                subText: 'shop@gmail.com',
+                // subText: 'shop@gmail.com',
                 theme: theme,
                 openSideBar: () {},
               ),

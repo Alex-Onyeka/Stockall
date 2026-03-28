@@ -32,8 +32,8 @@ import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class DashboardDesktop extends StatefulWidget {
-  final int? shopId;
-  const DashboardDesktop({super.key, required this.shopId});
+  // final int? shopId;
+  const DashboardDesktop({super.key});
 
   @override
   State<DashboardDesktop> createState() =>
@@ -75,7 +75,9 @@ class _DashboardDesktopState
     var tempGet = await returnNotificationProvider(
       context,
       listen: false,
-    ).fetchRecentNotifications(widget.shopId!);
+    ).fetchRecentNotifications(
+      returnShopProvider().userShop()?.shopId ?? 1,
+    );
 
     return tempGet;
   }
@@ -123,22 +125,22 @@ class _DashboardDesktopState
     //       context,
     //     ).departmentExpenses();
     var productsLocal = returnData().productList();
-    if (widget.shopId == null) {
+    if (returnShopProvider().userShop() == null) {
       return Scaffold(
         body: returnCompProvider(
           context,
           listen: false,
-        ).showLoader(message: 'Loading'),
+        ).showLoader(message: 'Loading Shop'),
       );
     } else {
       if (!returnReceiptProvider(
         context,
-        listen: false,
+        // listen: false,
       ).isLoaded) {
         return returnCompProvider(
           context,
           listen: false,
-        ).showLoader(message: 'Loading');
+        ).showLoader(message: 'Loading Receipt');
       } else {
         // return Container();
         return Scaffold(

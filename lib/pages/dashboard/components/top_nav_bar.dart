@@ -18,7 +18,7 @@ class TopNavBar extends StatefulWidget {
   final Function()? refreshAction;
   // final List<TempNotification> notifications;
   final String? title;
-  final String? subText;
+  // final String? subText;
   final Function()? action;
   final ThemeProvider theme;
 
@@ -28,7 +28,7 @@ class TopNavBar extends StatefulWidget {
     super.key,
     // required this.notifications,
     this.title,
-    this.subText,
+    // this.subText,
     required this.theme,
     required this.openSideBar,
     this.action,
@@ -214,6 +214,8 @@ class _TopNavBarState extends State<TopNavBar> {
                         );
                       },
                       child: Row(
+                        crossAxisAlignment:
+                            CrossAxisAlignment.center,
                         children: [
                           Container(
                             padding: EdgeInsets.all(3),
@@ -325,28 +327,48 @@ class _TopNavBarState extends State<TopNavBar> {
                                       widget
                                           .theme
                                           .mobileTexts
-                                          .b3
+                                          .b4
                                           .fontSize,
                                   color:
-                                      widget
-                                          .theme
-                                          .lightModeColor
-                                          .prColor250,
-                                  fontWeight:
-                                      FontWeight.w500,
-                                ),
-                                cutLongText(
-                                  widget.subText ??
                                       returnShopProvider(
-                                        context: context,
-                                      ).userShop()?.email ??
-                                      'Email Not Set',
-                                  18,
+                                                    context:
+                                                        context,
+                                                  )
+                                                  .userShop()
+                                                  ?.manageDepartments ==
+                                              true
+                                          ? widget
+                                              .theme
+                                              .lightModeColor
+                                              .secColor200
+                                          : widget
+                                              .theme
+                                              .lightModeColor
+                                              .prColor250,
+                                  fontWeight:
+                                      FontWeight.normal,
                                 ),
+                                returnShopProvider(
+                                              context:
+                                                  context,
+                                            )
+                                            .userShop()
+                                            ?.manageDepartments !=
+                                        true
+                                    ? cutLongText(
+                                      returnShopProvider(
+                                                context:
+                                                    context,
+                                              )
+                                              .userShop()
+                                              ?.email ??
+                                          'Email Not Set',
+                                      18,
+                                    )
+                                    : "${cutLongText("${returnUserProvider(context).currentUserMain?.name}", 10)} ${cutLongText("(${returnUserProvider(context).currentUserMain?.role})", 10)}",
                               ),
                             ],
                           ),
-                          SizedBox(width: 0),
                           Visibility(
                             visible:
                                 authorization(

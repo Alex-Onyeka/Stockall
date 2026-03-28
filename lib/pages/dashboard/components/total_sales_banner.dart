@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
+import 'package:stockall/components/alert_dialogues/dialog_template.dart';
+import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
+import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -40,6 +43,15 @@ class _DashboardTotalSalesBannerState
       );
     } else {
       return 'Department Not Set';
+    }
+  }
+
+  String setNameUser() {
+    if (returnUserProvider(context).currentUserMain !=
+        null) {
+      return '${cutLongText(returnUserProvider(context).currentUserMain!.name.toUpperCase(), 15)} (${returnUserProvider(context).currentUserMain!.role})';
+    } else {
+      return 'Not Set';
     }
   }
 
@@ -219,41 +231,337 @@ class _DashboardTotalSalesBannerState
                     },
                   ),
                   SizedBox(height: 10),
-                  Row(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.center,
-                    spacing: 5,
-                    children: [
-                      Icon(
-                        size: 14,
-                        color: const Color.fromARGB(
-                          255,
-                          255,
-                          208,
-                          67,
-                        ),
-                        Icons.width_normal_outlined,
-                      ),
-                      Text(
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: const Color.fromARGB(
-                            255,
-                            255,
-                            208,
-                            67,
-                          ),
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b4
-                                  .fontSize,
-                        ),
+                  Builder(
+                    builder: (context) {
+                      if (returnShopProvider(
+                            context: context,
+                          ).userShop()?.manageDepartments ==
+                          true) {
+                        return Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius:
+                                BorderRadius.circular(5),
+                            onTap: () {
+                              GeneralSettingsAuthAction().manageDeparmtmentsAction(
+                                context: context,
+                                action: () {
+                                  String? selectedDept;
+                                  setState(() {
+                                    selectedDept =
+                                        returnDepartmentProvider()
+                                            .currentDepartment()
+                                            ?.uuid;
+                                  });
+                                  showDialog(
+                                    context: context,
+                                    builder: (
+                                      firstContext,
+                                    ) {
+                                      return StatefulBuilder(
+                                        builder: (
+                                          secondContext,
+                                          setState,
+                                        ) {
+                                          return DialogTemplate(
+                                            theme:
+                                                widget
+                                                    .theme,
+                                            message:
+                                                'Select Your Current Department',
+                                            title:
+                                                'Select Department',
+                                            action: () {
+                                              if (selectedDept !=
+                                                  null) {
+                                                returnDepartmentProvider().selectDepartment(
+                                                  context:
+                                                      context,
+                                                  departmentClass: returnDepartmentProvider()
+                                                      .departments
+                                                      .firstWhere(
+                                                        (
+                                                          dept,
+                                                        ) =>
+                                                            dept.uuid ==
+                                                            selectedDept,
+                                                      ),
+                                                );
+                                                Navigator.of(
+                                                  context,
+                                                ).pop();
+                                              }
+                                            },
+                                            widget: SizedBox(
+                                              height:
+                                                  screenHeight(
+                                                    context,
+                                                  ) -
+                                                  300,
+                                              child: SingleChildScrollView(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.symmetric(
+                                                    horizontal:
+                                                        20.0,
+                                                    vertical:
+                                                        15,
+                                                  ),
+                                                  child: Builder(
+                                                    builder: (
+                                                      context,
+                                                    ) {
+                                                      if (returnDepartmentProvider()
+                                                          .departments
+                                                          .isEmpty) {
+                                                        return SizedBox(
+                                                          height:
+                                                              400,
+                                                          child: EmptyWidgetDisplayOnly(
+                                                            title:
+                                                                'No Department Found',
+                                                            subText:
+                                                                'You have not been added to any departments.',
+                                                            theme:
+                                                                widget.theme,
+                                                            height:
+                                                                30,
+                                                            altAction: () {
+                                                              returnDepartmentProvider().getDepartments();
+                                                            },
+                                                            altActionText:
+                                                                'Refresh',
+                                                            icon:
+                                                                Icons.clear,
+                                                          ),
+                                                        );
+                                                      } else {
+                                                        return Column(
+                                                          spacing:
+                                                              5,
+                                                          children:
+                                                              returnDepartmentProvider().departments
+                                                                  .map(
+                                                                    (
+                                                                      dept,
+                                                                    ) => Material(
+                                                                      color:
+                                                                          Colors.transparent,
+                                                                      child: InkWell(
+                                                                        onTap: () {
+                                                                          if (returnDepartmentProvider().departments.length >
+                                                                              1) {
+                                                                            setState(
+                                                                              () {
+                                                                                selectedDept =
+                                                                                    dept.uuid;
+                                                                              },
+                                                                            );
+                                                                          }
+                                                                        },
+                                                                        child: Padding(
+                                                                          padding: const EdgeInsets.symmetric(
+                                                                            vertical:
+                                                                                9.0,
+                                                                            horizontal:
+                                                                                12,
+                                                                          ),
+                                                                          child: Row(
+                                                                            mainAxisAlignment:
+                                                                                MainAxisAlignment.spaceBetween,
+                                                                            children: [
+                                                                              Text(
+                                                                                style: TextStyle(
+                                                                                  fontSize:
+                                                                                      widget.theme.mobileTexts.b3.fontSize,
+                                                                                  fontWeight:
+                                                                                      FontWeight.bold,
+                                                                                ),
+                                                                                dept.name,
+                                                                              ),
+                                                                              Container(
+                                                                                padding: EdgeInsets.all(
+                                                                                  2,
+                                                                                ),
+                                                                                decoration: BoxDecoration(
+                                                                                  shape:
+                                                                                      BoxShape.circle,
+                                                                                  border: Border.all(
+                                                                                    color:
+                                                                                        Colors.grey,
+                                                                                  ),
+                                                                                ),
+                                                                                child: Container(
+                                                                                  padding: EdgeInsets.all(
+                                                                                    5,
+                                                                                  ),
+                                                                                  decoration: BoxDecoration(
+                                                                                    shape:
+                                                                                        BoxShape.circle,
+                                                                                    color:
+                                                                                        selectedDept ==
+                                                                                                dept.uuid
+                                                                                            ? widget.theme.lightModeColor.prColor250
+                                                                                            : Colors.transparent,
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                            ],
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  )
+                                                                  .toList(),
+                                                        );
+                                                      }
+                                                    },
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                  );
+                                },
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(
+                                4.0,
+                              ),
+                              child: Row(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment
+                                        .center,
+                                children: [
+                                  Icon(
+                                    size: 14,
+                                    color:
+                                        const Color.fromARGB(
+                                          255,
+                                          255,
+                                          208,
+                                          67,
+                                        ),
+                                    Icons
+                                        .width_normal_outlined,
+                                  ),
+                                  SizedBox(width: 5),
+                                  Text(
+                                    style: TextStyle(
+                                      fontWeight:
+                                          FontWeight.bold,
+                                      color:
+                                          const Color.fromARGB(
+                                            255,
+                                            255,
+                                            208,
+                                            67,
+                                          ),
+                                      fontSize:
+                                          widget
+                                              .theme
+                                              .mobileTexts
+                                              .b4
+                                              .fontSize,
+                                    ),
 
-                        setName(),
-                      ),
-                    ],
+                                    setName(),
+                                  ),
+                                  Icon(
+                                    color:
+                                        const Color.fromARGB(
+                                          255,
+                                          255,
+                                          208,
+                                          67,
+                                        ),
+                                    Icons
+                                        .keyboard_arrow_down_rounded,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      } else {
+                        return Row(
+                          spacing: 5,
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                          children: [
+                            Column(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontWeight:
+                                        FontWeight.bold,
+                                    color:
+                                        const Color.fromARGB(
+                                          255,
+                                          255,
+                                          208,
+                                          67,
+                                        ),
+                                    fontSize:
+                                        widget
+                                            .theme
+                                            .mobileTexts
+                                            .b4
+                                            .fontSize,
+                                  ),
+
+                                  setNameUser(),
+                                ),
+                                // Text(
+                                //   style: TextStyle(
+                                //     fontWeight:
+                                //         FontWeight.bold,
+                                //     color:
+                                //         const Color.fromARGB(
+                                //           241,
+                                //           255,
+                                //           255,
+                                //           255,
+                                //         ),
+                                //     fontSize:
+                                //         widget
+                                //             .theme
+                                //             .mobileTexts
+                                //             .b3
+                                //             .fontSize,
+                                //   ),
+
+                                //   visible.returnMoney(
+                                //     formatMoneyMid(
+                                //       amount:
+                                //           widget
+                                //               .userValue ??
+                                //           0,
+                                //       context: context,
+                                //     ),
+                                //   ),
+                                // ),
+                              ],
+                            ),
+                            Icon(
+                              size: 14,
+                              color: const Color.fromARGB(
+                                255,
+                                255,
+                                208,
+                                67,
+                              ),
+                              Icons.person,
+                            ),
+                          ],
+                        );
+                      }
+                    },
                   ),
                   SizedBox(height: 3),
                 ],

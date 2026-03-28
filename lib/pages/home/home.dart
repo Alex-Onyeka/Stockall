@@ -38,6 +38,14 @@ class _HomeState extends State<Home> {
   void _handleNoShop() {
     if (!context.mounted) return;
     returnNavProvider(context, listen: false).verify();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return Home();
+        },
+      ),
+    );
   }
 
   late Future<TempShopClass?> shopFuture;

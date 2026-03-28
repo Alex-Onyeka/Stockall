@@ -59,9 +59,9 @@ class _DashboardState extends State<Dashboard> {
       child: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth < mobileScreen) {
-            return DashboardMobile(shopId: widget.shopId);
+            return DashboardMobile();
           } else {
-            return DashboardDesktop(shopId: widget.shopId);
+            return DashboardDesktop();
           }
         },
       ),

@@ -30,8 +30,8 @@ import 'package:stockall/pages/report/report_page.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class DashboardMobile extends StatefulWidget {
-  final int? shopId;
-  const DashboardMobile({super.key, required this.shopId});
+  // final int? shopId;
+  const DashboardMobile({super.key});
 
   @override
   State<DashboardMobile> createState() =>
@@ -78,7 +78,9 @@ class _DashboardMobileState extends State<DashboardMobile> {
     var tempGet = await returnNotificationProvider(
       context,
       listen: false,
-    ).fetchRecentNotifications(widget.shopId!);
+    ).fetchRecentNotifications(
+      returnShopProvider().userShop()?.shopId ?? 1,
+    );
 
     return tempGet;
   }
@@ -125,7 +127,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     var productsLocal = returnData().productList();
-    if (widget.shopId == null) {
+    if (returnShopProvider().userShop() == null) {
       return Scaffold(
         body: returnCompProvider(
           context,
@@ -135,7 +137,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
     } else {
       if (!returnReceiptProvider(
         context,
-        listen: false,
+        // listen: false,
       ).isLoaded) {
         return returnCompProvider(
           context,

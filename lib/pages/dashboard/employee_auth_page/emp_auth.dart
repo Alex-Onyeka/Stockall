@@ -70,7 +70,7 @@ class _EmpAuthState extends State<EmpAuth> {
               SizedBox(height: 20),
               TopNavBar(
                 title: 'Users Shop',
-                subText: 'shop@gmail.com',
+                // subText: 'shop@gmail.com',
                 theme: theme,
                 openSideBar: () {},
               ),
@@ -786,6 +786,9 @@ class _EmpAuthState extends State<EmpAuth> {
                                                     );
                                                     if (context
                                                         .mounted) {
+                                                      print(
+                                                        "✅✅✅✅ Mounted... Implemented Pin Success",
+                                                      );
                                                       widget
                                                           .action!();
                                                     }
@@ -1091,7 +1094,7 @@ class _EmpAuthState extends State<EmpAuth> {
                   visible: isLoading,
                   child: returnCompProvider(
                     context,
-                  ).showLoader(message: 'Loading'),
+                  ).showLoader(message: 'Loading...'),
                 ),
               ],
             ),
