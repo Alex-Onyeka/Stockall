@@ -419,8 +419,12 @@ class DepartmentsDashboardProvider extends ChangeNotifier {
             ? allStaffs
             : allStaffs
                 .where(
-                  (staff) => staff.departmentUuids!
-                      .contains(department.uuid),
+                  (staff) =>
+                      staff.departmentUuids != null
+                          ? staff.departmentUuids!.contains(
+                            department.uuid,
+                          )
+                          : false,
                 )
                 .toList();
     return tempStaffs;

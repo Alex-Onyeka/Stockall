@@ -710,9 +710,13 @@ class _IndividualDepartmentListWidgetState
                                                                               .where(
                                                                                 (
                                                                                   user,
-                                                                                ) => user.departmentUuids!.contains(
-                                                                                  widget.department.uuid,
-                                                                                ),
+                                                                                ) =>
+                                                                                    user.departmentUuids !=
+                                                                                            null
+                                                                                        ? user.departmentUuids!.contains(
+                                                                                          widget.department.uuid,
+                                                                                        )
+                                                                                        : false,
                                                                               )
                                                                               .isEmpty) {
                                                                             return EmptyWidgetDisplayOnly(
@@ -744,9 +748,13 @@ class _IndividualDepartmentListWidgetState
                                                                                           .where(
                                                                                             (
                                                                                               user,
-                                                                                            ) => user.departmentUuids!.contains(
-                                                                                              widget.department.uuid,
-                                                                                            ),
+                                                                                            ) =>
+                                                                                                user.departmentUuids !=
+                                                                                                        null
+                                                                                                    ? user.departmentUuids!.contains(
+                                                                                                      widget.department.uuid,
+                                                                                                    )
+                                                                                                    : false,
                                                                                           )
                                                                                           .map(
                                                                                             (
@@ -794,9 +802,11 @@ class _IndividualDepartmentListWidgetState
                                                                                                           shape:
                                                                                                               BoxShape.circle,
                                                                                                           color:
-                                                                                                              user.departmentUuids!.contains(
-                                                                                                                    widget.department.uuid,
-                                                                                                                  )
+                                                                                                              user.departmentUuids !=
+                                                                                                                          null &&
+                                                                                                                      user.departmentUuids!.contains(
+                                                                                                                        widget.department.uuid,
+                                                                                                                      )
                                                                                                                   ? theme.lightModeColor.prColor250
                                                                                                                   : Colors.transparent,
                                                                                                         ),

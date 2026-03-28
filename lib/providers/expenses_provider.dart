@@ -91,7 +91,7 @@ class ExpensesProvider extends ChangeNotifier {
             .select()
             .eq('shop_id', shopId)
             .order('created_date', ascending: false);
-        print('Expenses Gotten: $response');
+        print('Expenses Gotten: ${response.length}');
 
         List<TempExpensesClass> tempExpenses =
             (response as List)

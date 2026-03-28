@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_categories/category_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/text_fields/barcode_scanner.dart';
@@ -14,9 +15,11 @@ import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/bottom_sheet_widgets.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/date_picker_function.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/generate_barcode.dart';
 // import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/scan_barcode.dart';
+import 'package:stockall/constants/subscription/general_settings_auth.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
@@ -318,9 +321,18 @@ class _AddProductMobileState
             await provider.updateProduct(
               product: TempProductClass(
                 departmentName:
-                    widget.product?.departmentName,
-                departmentUuid:
-                    widget.product?.departmentUuid,
+                    returnData().departmentUuid != null
+                        ? returnDepartmentProvider()
+                            .departments
+                            .firstWhere(
+                              (dept) =>
+                                  dept.uuid ==
+                                  returnData()
+                                      .departmentUuid,
+                            )
+                            .name
+                        : null,
+                departmentUuid: returnData().departmentUuid,
                 setCustomPrice: provider.setCustomPrice,
                 isManaged:
                     widget.quantityController.text.isEmpty
@@ -487,6 +499,8 @@ class _AddProductMobileState
           widget.product!.discount != null
               ? widget.product!.discount!.toString()
               : '';
+      returnData().departmentUuid =
+          widget.product?.departmentUuid;
       returnData().isProductRefundable =
           widget.product!.isRefundable;
       returnData().isManaged = widget.product!.isManaged;
@@ -538,29 +552,6 @@ class _AddProductMobileState
                 ),
           )
           : null;
-      // setState(() {
-      //   costDiscount =
-      //       widget.product!.discount != null &&
-      //               widget.product!.sellingPrice != null
-      //           ? widget.product!.sellingPrice! *
-      //               (widget.product!.discount! / 100)
-      //           : 0;
-      //   sellingDiscount =
-      //       widget.product!.discount != null &&
-      //               widget.product!.sellingPrice != null
-      //           ? widget.product!.sellingPrice! -
-      //               (widget.product!.sellingPrice! *
-      //                   (widget.product!.discount! / 100))
-      //           : 0;
-      //   selling =
-      //       double.tryParse(
-      //         widget.sellingController.text.replaceAll(
-      //           ',',
-      //           '',
-      //         ),
-      //       ) ??
-      //       0;
-      // });
     }
   }
 
@@ -572,24 +563,6 @@ class _AddProductMobileState
       userShop = returnShopProvider().userShop();
     });
   }
-
-  // double cost = 0;
-  // double selling = 0;
-  // double discount = 0;
-
-  // double costDiscount = 0;
-
-  // double sellingDiscount = 0;
-
-  // void checkDiscount() {
-  //   final discountedPrice = selling * (discount / 100);
-  //   final discountedSellingPrice =
-  //       selling - (selling * (discount / 100));
-  //   setState(() {
-  //     costDiscount = discountedPrice;
-  //     sellingDiscount = discountedSellingPrice;
-  //   });
-  // }
 
   @override
   void dispose() {
@@ -1321,6 +1294,310 @@ class _AddProductMobileState
                                       controller:
                                           widget
                                               .lowQttyController,
+                                    ),
+                                    Visibility(
+                                      visible:
+                                          returnShopProvider()
+                                                  .userShop()
+                                                  ?.manageDepartments ==
+                                              true &&
+                                          authorization(
+                                            authorized:
+                                                Authorizations()
+                                                    .viewAllDepartments,
+                                          ) &&
+                                          widget.product !=
+                                              null,
+                                      child: SizedBox(
+                                        height: 10,
+                                      ),
+                                    ),
+                                    Visibility(
+                                      visible:
+                                          returnShopProvider()
+                                                  .userShop()
+                                                  ?.manageDepartments ==
+                                              true &&
+                                          authorization(
+                                            authorized:
+                                                Authorizations()
+                                                    .viewAllDepartments,
+                                          ) &&
+                                          widget.product !=
+                                              null,
+                                      child: InkWell(
+                                        onTap: () {
+                                          GeneralSettingsAuthAction().manageDeparmtmentsAction(
+                                            context:
+                                                context,
+                                            action: () {
+                                              String?
+                                              selectedDept;
+                                              setState(() {
+                                                selectedDept =
+                                                    returnData()
+                                                        .departmentUuid;
+                                              });
+                                              showDialog(
+                                                context:
+                                                    context,
+                                                builder: (
+                                                  firstContext,
+                                                ) {
+                                                  return StatefulBuilder(
+                                                    builder: (
+                                                      secondContext,
+                                                      setState,
+                                                    ) {
+                                                      return DialogTemplate(
+                                                        theme:
+                                                            theme,
+                                                        message:
+                                                            'Select Department for this Staff',
+                                                        title:
+                                                            'Select Department(s)',
+                                                        action: () {
+                                                          returnData().setDepartment(
+                                                            selectedDept,
+                                                          );
+                                                          Navigator.of(
+                                                            context,
+                                                          ).pop();
+                                                        },
+                                                        widget: SizedBox(
+                                                          height:
+                                                              screenHeight(
+                                                                context,
+                                                              ) -
+                                                              300,
+                                                          child: SingleChildScrollView(
+                                                            child: Padding(
+                                                              padding: const EdgeInsets.symmetric(
+                                                                horizontal:
+                                                                    20.0,
+                                                                vertical:
+                                                                    15,
+                                                              ),
+                                                              child: Column(
+                                                                spacing:
+                                                                    5,
+                                                                children:
+                                                                    returnDepartmentProvider().departments
+                                                                        .map(
+                                                                          (
+                                                                            dept,
+                                                                          ) => Material(
+                                                                            color:
+                                                                                Colors.transparent,
+                                                                            child: InkWell(
+                                                                              onTap: () {
+                                                                                setState(
+                                                                                  () {
+                                                                                    if (selectedDept ==
+                                                                                        dept.uuid) {
+                                                                                      selectedDept =
+                                                                                          null;
+                                                                                    } else {
+                                                                                      selectedDept =
+                                                                                          dept.uuid;
+                                                                                    }
+                                                                                  },
+                                                                                );
+                                                                              },
+                                                                              child: Padding(
+                                                                                padding: const EdgeInsets.symmetric(
+                                                                                  vertical:
+                                                                                      9.0,
+                                                                                  horizontal:
+                                                                                      12,
+                                                                                ),
+                                                                                child: Row(
+                                                                                  mainAxisAlignment:
+                                                                                      MainAxisAlignment.spaceBetween,
+                                                                                  children: [
+                                                                                    Text(
+                                                                                      style: TextStyle(
+                                                                                        fontSize:
+                                                                                            theme.mobileTexts.b3.fontSize,
+                                                                                        fontWeight:
+                                                                                            FontWeight.bold,
+                                                                                      ),
+                                                                                      dept.name,
+                                                                                    ),
+                                                                                    Container(
+                                                                                      padding: EdgeInsets.all(
+                                                                                        2,
+                                                                                      ),
+                                                                                      decoration: BoxDecoration(
+                                                                                        shape:
+                                                                                            BoxShape.circle,
+                                                                                        border: Border.all(
+                                                                                          color:
+                                                                                              Colors.grey,
+                                                                                        ),
+                                                                                      ),
+                                                                                      child: Container(
+                                                                                        padding: EdgeInsets.all(
+                                                                                          5,
+                                                                                        ),
+                                                                                        decoration: BoxDecoration(
+                                                                                          shape:
+                                                                                              BoxShape.circle,
+                                                                                          color:
+                                                                                              selectedDept ==
+                                                                                                      dept.uuid
+                                                                                                  ? theme.lightModeColor.prColor250
+                                                                                                  : Colors.transparent,
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        )
+                                                                        .toList(),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                              );
+                                            },
+                                          );
+                                        },
+                                        child: Column(
+                                          mainAxisSize:
+                                              MainAxisSize
+                                                  .min,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment
+                                                  .start,
+                                          spacing: 5,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  textAlign:
+                                                      TextAlign
+                                                          .start,
+                                                  style:
+                                                      theme
+                                                          .mobileTexts
+                                                          .b3
+                                                          .textStyleBold,
+                                                  'Set Department',
+                                                ),
+                                              ],
+                                            ),
+                                            SubWrapper(
+                                              isVisible:
+                                                  !GeneralSettingsAuthAction().manageDeparmtmentsAction(
+                                                    context:
+                                                        context,
+                                                  ),
+                                              mainWidget: Container(
+                                                padding: EdgeInsets.symmetric(
+                                                  vertical:
+                                                      0,
+                                                  horizontal:
+                                                      5,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                    color:
+                                                        returnData().departmentUuid !=
+                                                                null
+                                                            ? theme.lightModeColor.prColor300
+                                                            : Colors.grey,
+                                                    width:
+                                                        returnData().departmentUuid !=
+                                                                null
+                                                            ? 1.3
+                                                            : 1,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                        5,
+                                                      ),
+                                                ),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        SizedBox(
+                                                          width:
+                                                              10,
+                                                        ),
+                                                        Text(
+                                                          style: TextStyle(
+                                                            fontSize:
+                                                                returnData().departmentUuid !=
+                                                                        null
+                                                                    ? theme.mobileTexts.b2.fontSize
+                                                                    : theme.mobileTexts.b2.fontSize,
+                                                            fontWeight:
+                                                                returnData().departmentUuid !=
+                                                                        null
+                                                                    ? FontWeight.bold
+                                                                    : null,
+                                                            color:
+                                                                returnData().departmentUuid !=
+                                                                        null
+                                                                    ? null
+                                                                    : Colors.grey.shade500,
+                                                          ),
+                                                          returnData().departmentUuid ==
+                                                                  null
+                                                              ? 'Select Department'
+                                                              : returnDepartmentProvider().departments
+                                                                  .firstWhere(
+                                                                    (
+                                                                      dept,
+                                                                    ) =>
+                                                                        dept.uuid ==
+                                                                        returnData().departmentUuid,
+                                                                  )
+                                                                  .name,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Ink(
+                                                      child: InkWell(
+                                                        borderRadius: BorderRadius.circular(
+                                                          20,
+                                                        ),
+                                                        onTap: () {
+                                                          returnData().clearDepartment();
+                                                        },
+                                                        child: Container(
+                                                          padding: EdgeInsets.all(
+                                                            7,
+                                                          ),
+                                                          decoration: BoxDecoration(
+                                                            shape:
+                                                                BoxShape.circle,
+                                                          ),
+                                                          child: Icon(
+                                                            Icons.clear,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     ),
                                     SizedBox(height: 10),
                                     InkWell(

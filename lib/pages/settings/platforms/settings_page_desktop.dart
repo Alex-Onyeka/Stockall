@@ -433,6 +433,183 @@ class _SettingsPageDesktopState
                               ),
                             ),
                             Visibility(
+                              visible:
+                                  !authorization(
+                                    authorized:
+                                        Authorizations()
+                                            .viewAllDepartments,
+                                  ),
+                              child: SubWrapper(
+                                isVisible:
+                                    !GeneralSettingsAuthAction()
+                                        .manageDeparmtmentsAction(
+                                          context: context,
+                                        ),
+                                mainWidget: NavListTileDesktopAlt(
+                                  height: 18,
+                                  action: () {
+                                    GeneralSettingsAuthAction().manageDeparmtmentsAction(
+                                      context: context,
+                                      action: () {
+                                        String?
+                                        selectedDept;
+                                        setState(() {
+                                          selectedDept =
+                                              returnDepartmentProvider()
+                                                  .currentDepartment()
+                                                  ?.uuid;
+                                        });
+                                        showDialog(
+                                          context: context,
+                                          builder: (
+                                            firstContext,
+                                          ) {
+                                            return StatefulBuilder(
+                                              builder: (
+                                                secondContext,
+                                                setState,
+                                              ) {
+                                                return DialogTemplate(
+                                                  theme:
+                                                      theme,
+                                                  message:
+                                                      'Select Your Current Department',
+                                                  title:
+                                                      'Select Department',
+                                                  action: () {
+                                                    if (selectedDept !=
+                                                        null) {
+                                                      returnDepartmentProvider().selectDepartment(
+                                                        context:
+                                                            context,
+                                                        departmentClass: returnDepartmentProvider().departments.firstWhere(
+                                                          (
+                                                            dept,
+                                                          ) =>
+                                                              dept.uuid ==
+                                                              selectedDept,
+                                                        ),
+                                                      );
+                                                      Navigator.of(
+                                                        context,
+                                                      ).pop();
+                                                    }
+                                                  },
+                                                  widget: SizedBox(
+                                                    height:
+                                                        screenHeight(
+                                                          context,
+                                                        ) -
+                                                        300,
+                                                    child: SingleChildScrollView(
+                                                      child: Padding(
+                                                        padding: const EdgeInsets.symmetric(
+                                                          horizontal:
+                                                              20.0,
+                                                          vertical:
+                                                              15,
+                                                        ),
+                                                        child: Column(
+                                                          spacing:
+                                                              5,
+                                                          children:
+                                                              returnDepartmentProvider().departments
+                                                                  .map(
+                                                                    (
+                                                                      dept,
+                                                                    ) => Material(
+                                                                      color:
+                                                                          Colors.transparent,
+                                                                      child: InkWell(
+                                                                        onTap: () {
+                                                                          setState(
+                                                                            () {
+                                                                              if (selectedDept ==
+                                                                                  dept.uuid) {
+                                                                                selectedDept =
+                                                                                    null;
+                                                                              } else {
+                                                                                selectedDept =
+                                                                                    dept.uuid;
+                                                                              }
+                                                                            },
+                                                                          );
+                                                                        },
+                                                                        child: Padding(
+                                                                          padding: const EdgeInsets.symmetric(
+                                                                            vertical:
+                                                                                9.0,
+                                                                            horizontal:
+                                                                                12,
+                                                                          ),
+                                                                          child: Row(
+                                                                            mainAxisAlignment:
+                                                                                MainAxisAlignment.spaceBetween,
+                                                                            children: [
+                                                                              Text(
+                                                                                style: TextStyle(
+                                                                                  fontSize:
+                                                                                      theme.mobileTexts.b3.fontSize,
+                                                                                  fontWeight:
+                                                                                      FontWeight.bold,
+                                                                                ),
+                                                                                dept.name,
+                                                                              ),
+                                                                              Container(
+                                                                                padding: EdgeInsets.all(
+                                                                                  2,
+                                                                                ),
+                                                                                decoration: BoxDecoration(
+                                                                                  shape:
+                                                                                      BoxShape.circle,
+                                                                                  border: Border.all(
+                                                                                    color:
+                                                                                        Colors.grey,
+                                                                                  ),
+                                                                                ),
+                                                                                child: Container(
+                                                                                  padding: EdgeInsets.all(
+                                                                                    5,
+                                                                                  ),
+                                                                                  decoration: BoxDecoration(
+                                                                                    shape:
+                                                                                        BoxShape.circle,
+                                                                                    color:
+                                                                                        selectedDept ==
+                                                                                                dept.uuid
+                                                                                            ? theme.lightModeColor.prColor250
+                                                                                            : Colors.transparent,
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                            ],
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  )
+                                                                  .toList(),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            );
+                                          },
+                                        );
+                                      },
+                                    );
+                                  },
+                                  title:
+                                      'Manage Departments',
+                                  icon:
+                                      Icons
+                                          .width_normal_outlined,
+                                ),
+                              ),
+                            ),
+                            Visibility(
                               visible: authorization(
                                 authorized:
                                     Authorizations()

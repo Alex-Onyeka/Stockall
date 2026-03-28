@@ -100,25 +100,6 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // void clearsearchTextField() {
-  //   searchController.clear();
-  // }
-
-  // Timer? timer;
-  // void startBarcodeTimer() {
-  //   cancelBarcodeTimer();
-  //   keepNodeFocus();
-  //   timer = Timer.periodic(Duration(seconds: 2), (timer) {
-  //     keepNodeFocus();
-  //   });
-  //   print('Timer Started');
-  // }
-
-  // void cancelBarcodeTimer() {
-  //   timer?.cancel();
-  //   print('Timer Cancelled');
-  // }
-
   bool isLoading = false;
   ConnectivityProvider connectivity =
       ConnectivityProvider();
@@ -927,6 +908,18 @@ class DataProvider extends ChangeNotifier {
     await DeletedCategoriesFunc().clearDeletedCategories();
   }
 
+  String? departmentUuid;
+  void setDepartment(String? uuid) {
+    departmentUuid = uuid;
+
+    notifyListeners();
+  }
+
+  void clearDepartment() {
+    departmentUuid = null;
+    notifyListeners();
+  }
+
   DateTime? expiryDate;
   void setExpDate(DateTime date) {
     expiryDate = date;
@@ -1071,10 +1064,11 @@ class DataProvider extends ChangeNotifier {
           print(
             returnDepartmentProvider()
                 .currentDepartment()
-                ?.uuid,
+                ?.name,
           );
         }
       }
+      notifyListeners();
       await returnInventoryUpdatesProvider()
           .getInventoryUpdates();
 
@@ -1117,6 +1111,7 @@ class DataProvider extends ChangeNotifier {
                   .toList();
         }
       }
+      notifyListeners();
       await returnInventoryUpdatesProvider()
           .getInventoryUpdates();
       // productList.clear();
@@ -1505,6 +1500,7 @@ class DataProvider extends ChangeNotifier {
     // clearStartDate();
     clearGroupUnit();
     clearExpDate();
+    clearDepartment();
     clearExpenseUnit();
     notifyListeners();
   }

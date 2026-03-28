@@ -206,7 +206,7 @@ class DepartmentProvider with ChangeNotifier {
             .from(tableName)
             .select()
             .eq('shop_id', shopId());
-        print('Departments Gotten: Get Departments');
+        print('Departments Gotten: ${res.length}');
 
         departments =
             (res as List)
@@ -223,8 +223,11 @@ class DepartmentProvider with ChangeNotifier {
                 departments.where((dept) {
                   if (currentUser().departmentUuids !=
                       null) {
-                    return currentUser().departmentUuids!
-                        .contains(dept.uuid);
+                    return currentUser().departmentUuids !=
+                            null
+                        ? currentUser().departmentUuids!
+                            .contains(dept.uuid)
+                        : false;
                   } else {
                     return false;
                   }
@@ -247,9 +250,13 @@ class DepartmentProvider with ChangeNotifier {
             departments =
                 departments
                     .where(
-                      (dept) => currentUser()
-                          .departmentUuids!
-                          .contains(dept.uuid),
+                      (dept) =>
+                          currentUser().departmentUuids !=
+                                  null
+                              ? currentUser()
+                                  .departmentUuids!
+                                  .contains(dept.uuid)
+                              : false,
                     )
                     .toList();
           }
@@ -257,6 +264,10 @@ class DepartmentProvider with ChangeNotifier {
       }
 
       departments.sort((a, b) => a.name.compareTo(b.name));
+      print('Staffs Departments: ${departments.length}');
+      print(
+        'Current Department: ${returnDepartmentProvider().currentDepartment()?.name}',
+      );
       notifyListeners();
       return departments;
     } catch (e) {

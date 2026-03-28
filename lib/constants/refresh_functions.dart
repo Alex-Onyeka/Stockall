@@ -576,6 +576,8 @@ class RefreshFunctions {
                 print(
                   "Allowed Items RefreshAll: ${dataProvider.allowedRangeItems}",
                 );
+                await returnDepartmentProvider()
+                    .getDepartments();
                 if (safeContext.mounted) {
                   await getMainReceipts();
                 }
@@ -591,8 +593,6 @@ class RefreshFunctions {
                 // await getProducts();
                 await fetchNotifications();
                 await getCustomers();
-                await returnDepartmentProvider()
-                    .getDepartments();
               },
             );
           },
@@ -613,6 +613,7 @@ class RefreshFunctions {
         print(
           "Allowed Items RefreshAll: ${dataProvider.allowedRangeItems}",
         );
+        await returnDepartmentProvider().getDepartments();
         if (safeContext.mounted) {
           await getMainReceipts();
         }

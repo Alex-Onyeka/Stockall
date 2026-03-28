@@ -158,8 +158,8 @@ class _EmployeePageDesktopState
                                               list = [];
                                               setState(() {
                                                 list.addAll(
-                                                  employee
-                                                      .departmentUuids!,
+                                                  employee.departmentUuids ??
+                                                      [],
                                                 );
                                               });
                                               showDialog(

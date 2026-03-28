@@ -157,8 +157,8 @@ class _EmployeePageMobileState
                                               list = [];
                                               setState(() {
                                                 list.addAll(
-                                                  employee
-                                                      .departmentUuids!,
+                                                  employee.departmentUuids ??
+                                                      [],
                                                 );
                                               });
                                               showDialog(
