@@ -124,30 +124,6 @@ class InvoicesProvider extends ChangeNotifier {
             (data as List)
                 .map((json) => TempInvoice.fromJson(json))
                 .toList();
-        if (returnShopProvider()
-                .userShop()
-                ?.manageDepartments ==
-            true) {
-          if (!authorization(
-                authorized:
-                    Authorizations().viewAllDepartments,
-              ) ||
-              returnDepartmentProvider()
-                      .currentDepartment()
-                      ?.uuid !=
-                  null) {
-            _invoices =
-                _invoices
-                    .where(
-                      (invoice) =>
-                          invoice.departmentUuidNew ==
-                          returnDepartmentProvider()
-                              .currentDepartment()
-                              ?.uuid,
-                    )
-                    .toList();
-          }
-        }
         notifyListeners();
         await InvoicesFunc().insertAllInvoices(_invoices);
         notifyListeners();
@@ -158,30 +134,6 @@ class InvoicesProvider extends ChangeNotifier {
       }
     } else {
       _invoices = InvoicesFunc().getInvoices();
-      if (returnShopProvider()
-              .userShop()
-              ?.manageDepartments ==
-          true) {
-        if (!authorization(
-              authorized:
-                  Authorizations().viewAllDepartments,
-            ) ||
-            returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid !=
-                null) {
-          _invoices =
-              _invoices
-                  .where(
-                    (invoice) =>
-                        invoice.departmentUuidNew ==
-                        returnDepartmentProvider()
-                            .currentDepartment()
-                            ?.uuid,
-                  )
-                  .toList();
-        }
-      }
       notifyListeners();
       print('Offline Invoices Gotten');
     }
@@ -723,7 +675,7 @@ class InvoicesProvider extends ChangeNotifier {
     List<TempCartItem> cartItems = [];
 
     for (var record in saleRecords) {
-      var product = returnData().productList.where(
+      var product = returnData().productList().where(
         (p) => p.uuid == record.productUuid,
       );
 
@@ -879,55 +831,51 @@ class InvoicesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<TempInvoice> returnUserInvoicesByDayOrWeek(
-    List<TempInvoice> invoices,
-  ) {
-    if (rangeStartDate != null) {
-      // final weekStartLocal = weekStartDate!;
-      // final weekEndLocal = weekStartLocal.add(
-      //   const Duration(days: 7),
-      // );
-
-      return invoices.where((invoice) {
-        final created =
-            invoice.createdAt
-                .toLocal(); // convert UTC to local
-        return !created.isBefore(rangeStartDate!) &&
-            created.isBefore(
-              rangeEndDate ?? DateTime.now(),
-            );
-      }).toList();
+  List<TempInvoice> departmentInvoices() {
+    if (returnShopProvider()
+            .userShop()
+            ?.manageDepartments ==
+        true) {
+      if (!authorization(
+        authorized: Authorizations().viewAllDepartments,
+      )) {
+        return invoicesMain.where((cat) {
+          // if (cat.departmentUuidNew == null) {
+          //   return true;
+          // } else {
+          return cat.departmentUuidNew ==
+              returnDepartmentProvider()
+                  .currentDepartment()
+                  ?.uuid;
+          // }
+        }).toList();
+      } else {
+        if (returnDepartmentProvider()
+                .currentDepartment()
+                ?.uuid ==
+            null) {
+          return invoicesMain;
+        } else {
+          return invoicesMain.where((cat) {
+            // if (cat.departmentUuidNew == null) {
+            //   return true;
+            // } else {
+            return cat.departmentUuidNew ==
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid;
+            // }
+          }).toList();
+        }
+      }
+    } else {
+      return invoicesMain;
     }
-
-    if (dateSet != null) {
-      // Force local date without UTC logic
-      final localNow = DateTime.now();
-      final localTarget = dateSet?.toLocal() ?? localNow;
-
-      final startOfDay = DateTime(
-        localTarget.year,
-        localTarget.month,
-        localTarget.day,
-      );
-      final endOfDay = startOfDay.add(
-        const Duration(days: 1),
-      );
-      return invoices.where((invoice) {
-        final created = invoice.createdAt.toLocal();
-        final inRange =
-            !created.isBefore(startOfDay) &&
-            created.isBefore(endOfDay);
-
-        return inRange;
-      }).toList();
-    }
-
-    return invoices;
   }
 
   List<TempInvoice> returnInvoicesByDayOrWeekAll() {
     if (rangeStartDate != null) {
-      return invoicesMain.where((invoice) {
+      return departmentInvoices().where((invoice) {
         final created = invoice.createdAt.toLocal();
         return !created.isBefore(rangeStartDate!) &&
             created.isBefore(
@@ -949,10 +897,8 @@ class InvoicesProvider extends ChangeNotifier {
         const Duration(days: 1),
       );
 
-      return invoicesMain.where((invoice) {
-        final created =
-            invoice.createdAt
-                .toLocal(); // ALWAYS convert to local
+      return departmentInvoices().where((invoice) {
+        final created = invoice.createdAt.toLocal();
         final inRange =
             !created.isBefore(startOfDay) &&
             created.isBefore(endOfDay);
@@ -960,7 +906,7 @@ class InvoicesProvider extends ChangeNotifier {
         return inRange;
       }).toList();
     }
-    return invoicesMain;
+    return departmentInvoices();
   }
 
   double getTotalRevenueForSelectedDayAll({

@@ -66,11 +66,11 @@ class _CalculatorPageState extends State<CalculatorPage> {
                 notifications:
                     returnNotificationProvider(
                           context,
-                        ).notifications.isEmpty
+                        ).notifications().isEmpty
                         ? []
                         : returnNotificationProvider(
                           context,
-                        ).notifications,
+                        ).notifications(),
               ),
               Expanded(
                 child: DesktopPageContainer(

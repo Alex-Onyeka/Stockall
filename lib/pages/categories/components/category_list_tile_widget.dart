@@ -31,13 +31,13 @@ class _CategoryListTileWidgetState
     var theme = returnTheme(context);
     CategoryClass category =
         returnCategoriesProvider(context: context)
-                .categories
+                .categories()
                 .where(
                   (cat) => cat.uuid == widget.categoryUuid,
                 )
                 .isNotEmpty
             ? returnCategoriesProvider(context: context)
-                .categories
+                .categories()
                 .where(
                   (cat) => cat.uuid == widget.categoryUuid,
                 )

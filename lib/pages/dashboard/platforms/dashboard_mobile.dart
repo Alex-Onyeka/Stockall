@@ -64,11 +64,6 @@ class _DashboardMobileState extends State<DashboardMobile> {
   bool isLoading = false;
   bool showSuccess = false;
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
   void clearDate() {
     returnReportProvider(
       context,
@@ -129,11 +124,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    var receiptsLocal =
-        returnReceiptProvider(context).receipts;
-    var expensesLocal =
-        returnExpensesProvider(context).expenses;
-    var productsLocal = returnData().productList;
+    var productsLocal = returnData().productList();
     if (widget.shopId == null) {
       return Scaffold(
         body: returnCompProvider(
@@ -205,11 +196,11 @@ class _DashboardMobileState extends State<DashboardMobile> {
                 notifications:
                     returnNotificationProvider(
                           context,
-                        ).notifications.isEmpty
+                        ).notifications().isEmpty
                         ? []
                         : returnNotificationProvider(
                           context,
-                        ).notifications,
+                        ).notifications(),
               ),
               body: Stack(
                 children: [
@@ -265,34 +256,21 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                 Visibility(
                                   visible: !isStoreKeeper(),
                                   child: DashboardTotalSalesBanner(
-                                    expenses: expensesLocal,
-                                    userValue: returnReceiptProvider(
-                                      context,
-                                    ).getTotalRevenueForSelectedDay(
-                                      returnReceiptProvider(
-                                            context,
-                                          ).receipts
-                                          .where(
-                                            (emp) =>
-                                                emp.staffId ==
-                                                userGeneral(
-                                                  context,
-                                                ).userId,
-                                          )
-                                          .toList(),
-                                    ),
-                                    currentUser:
-                                        userGeneral(
+                                    // expenses: expensesLocal,
+                                    userValue:
+                                        returnReceiptProvider(
                                           context,
+                                        ).getTotalRevenueForSelectedDayAll(
+                                          staffId:
+                                              userGeneral(
+                                                context,
+                                              ).userId,
                                         ),
                                     theme: theme,
-                                    value: returnReceiptProvider(
-                                      context,
-                                    ).getTotalRevenueForSelectedDay(
-                                      returnReceiptProvider(
-                                        context,
-                                      ).receipts,
-                                    ),
+                                    value:
+                                        returnReceiptProvider(
+                                          context,
+                                        ).getTotalRevenueForSelectedDay(),
                                   ),
                                 ),
 
@@ -352,7 +330,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                           icon:
                                               productIconSvg,
                                           number:
-                                              '${returnReceiptProvider(context).returnOwnReceiptsByDayOrWeek(receiptsLocal).length}',
+                                              '${returnReceiptProvider(context).returnOwnReceiptsByDayOrWeek().length}',
                                           title:
                                               'Todays Sales',
                                           action: () {

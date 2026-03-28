@@ -98,11 +98,11 @@ class _SalesPageDesktopState
         notifications:
             returnNotificationProvider(
                   context,
-                ).notifications.isEmpty
+                ).notifications().isEmpty
                 ? []
                 : returnNotificationProvider(
                   context,
-                ).notifications,
+                ).notifications(),
         globalKey: _scaffoldKey,
       ),
       body: Stack(
@@ -140,11 +140,11 @@ class _SalesPageDesktopState
                 notifications:
                     returnNotificationProvider(
                           context,
-                        ).notifications.isEmpty
+                        ).notifications().isEmpty
                         ? []
                         : returnNotificationProvider(
                           context,
-                        ).notifications,
+                        ).notifications(),
               ),
               Expanded(
                 child: DesktopPageContainer(
@@ -205,13 +205,10 @@ class _SalesPageDesktopState
                                             Colors.green,
                                         title1:
                                             'Sales Revenue',
-                                        value1: returnReceiptProvider(
-                                          context,
-                                        ).getTotalRevenueForSelectedDay(
-                                          returnReceiptProvider(
-                                            context,
-                                          ).receipts,
-                                        ),
+                                        value1:
+                                            returnReceiptProvider(
+                                              context,
+                                            ).getTotalRevenueForSelectedDay(),
                                         color2:
                                             Colors.amber,
                                         title2:
@@ -220,11 +217,7 @@ class _SalesPageDesktopState
                                             returnReceiptProvider(
                                                   context,
                                                 )
-                                                .returnOwnReceiptsByDayOrWeek(
-                                                  returnReceiptProvider(
-                                                    context,
-                                                  ).receipts,
-                                                )
+                                                .returnOwnReceiptsByDayOrWeek()
                                                 .toList()
                                                 .length
                                                 .toDouble(),
@@ -424,11 +417,7 @@ class _SalesPageDesktopState
                                             if (returnReceiptProvider(
                                                   context,
                                                 )
-                                                .returnOwnReceiptsByDayOrWeek(
-                                                  returnReceiptProvider(
-                                                    context,
-                                                  ).receipts,
-                                                )
+                                                .returnOwnReceiptsByDayOrWeek()
                                                 .toList()
                                                 .isEmpty) {
                                               return EmptyWidgetDisplay(
@@ -478,14 +467,9 @@ class _SalesPageDesktopState
                                                     10,
                                                 child: ListView.builder(
                                                   itemCount:
-                                                      returnReceiptProvider(context)
-                                                          .returnOwnReceiptsByDayOrWeek(
-                                                            returnReceiptProvider(
-                                                              context,
-                                                            ).receipts,
-                                                          )
-                                                          .toList()
-                                                          .length,
+                                                      returnReceiptProvider(
+                                                        context,
+                                                      ).returnOwnReceiptsByDayOrWeek().toList().length,
                                                   itemBuilder: (
                                                     context,
                                                     index,
@@ -493,14 +477,8 @@ class _SalesPageDesktopState
                                                     TempMainReceipt
                                                     mainReceipt =
                                                         returnReceiptProvider(
-                                                              context,
-                                                            )
-                                                            .returnOwnReceiptsByDayOrWeek(
-                                                              returnReceiptProvider(
-                                                                context,
-                                                              ).receipts,
-                                                            )
-                                                            .toList()[index];
+                                                          context,
+                                                        ).returnOwnReceiptsByDayOrWeek().toList()[index];
                                                     return MainReceiptTile(
                                                       action: () {
                                                         Navigator.push(

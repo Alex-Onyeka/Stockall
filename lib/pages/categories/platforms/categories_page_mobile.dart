@@ -290,7 +290,7 @@ class _CategoriesPageMobileState
                 child: Builder(
                   builder: (context) {
                     if (returnCategoriesProvider()
-                        .categories
+                        .categories()
                         .isEmpty) {
                       return Material(
                         color: Colors.transparent,
@@ -327,7 +327,8 @@ class _CategoriesPageMobileState
                           children:
                               returnCategoriesProvider(
                                     context: context,
-                                  ).categories
+                                  )
+                                  .categories()
                                   .map(
                                     (category) =>
                                         CategoryListTileWidget(

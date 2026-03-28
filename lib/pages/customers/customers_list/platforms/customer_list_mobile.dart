@@ -35,7 +35,7 @@ class _CustomerListMobileState
     if (returnCustomers(
       context,
       listen: false,
-    ).customersMain.isEmpty) {
+    ).customersMain().isEmpty) {
       getCustomerList(context);
     }
   }
@@ -112,7 +112,7 @@ class _CustomerListMobileState
         child: Builder(
           builder: (context) {
             var customers =
-                returnCustomers(context).customersMain;
+                returnCustomers(context).customersMain();
             if (customers.isEmpty) {
               return EmptyWidgetDisplay(
                 title: 'Empty Customer List',

@@ -88,7 +88,8 @@ class _NotificationsMobileState
                                 returnNotificationProvider(
                                       context,
                                       listen: false,
-                                    ).notifications
+                                    )
+                                    .notifications()
                                     .where(
                                       (notif) =>
                                           notif.category ==
@@ -112,7 +113,8 @@ class _NotificationsMobileState
                                 returnNotificationProvider(
                                       context,
                                       listen: false,
-                                    ).notifications
+                                    )
+                                    .notifications()
                                     .where(
                                       (notif) =>
                                           notif.category ==
@@ -136,7 +138,8 @@ class _NotificationsMobileState
                                 returnNotificationProvider(
                                       context,
                                       listen: false,
-                                    ).notifications
+                                    )
+                                    .notifications()
                                     .where(
                                       (notif) =>
                                           notif.category ==
@@ -172,7 +175,8 @@ class _NotificationsMobileState
                         if (returnNotificationProvider(
                               context,
                               listen: false,
-                            ).notifications
+                            )
+                            .notifications()
                             .where(
                               (notif) =>
                                   notif.category ==
@@ -202,7 +206,8 @@ class _NotificationsMobileState
                                   returnNotificationProvider(
                                         context,
                                         listen: false,
-                                      ).notifications
+                                      )
+                                      .notifications()
                                       .where(
                                         (notif) =>
                                             notif
@@ -219,7 +224,8 @@ class _NotificationsMobileState
                                     returnNotificationProvider(
                                           context,
                                           listen: false,
-                                        ).notifications
+                                        )
+                                        .notifications()
                                         .where(
                                           (notif) =>
                                               notif
@@ -304,7 +310,8 @@ class _NotificationsMobileState
                         if (returnNotificationProvider(
                               context,
                               listen: false,
-                            ).notifications
+                            )
+                            .notifications()
                             .where(
                               (notif) =>
                                   notif.category ==
@@ -334,7 +341,8 @@ class _NotificationsMobileState
                                   returnNotificationProvider(
                                         context,
                                         listen: false,
-                                      ).notifications
+                                      )
+                                      .notifications()
                                       .where(
                                         (notif) =>
                                             notif
@@ -351,7 +359,8 @@ class _NotificationsMobileState
                                     returnNotificationProvider(
                                           context,
                                           listen: false,
-                                        ).notifications
+                                        )
+                                        .notifications()
                                         .where(
                                           (notif) =>
                                               notif
@@ -436,7 +445,8 @@ class _NotificationsMobileState
                         if (returnNotificationProvider(
                               context,
                               listen: false,
-                            ).notifications
+                            )
+                            .notifications()
                             .where(
                               (notif) =>
                                   notif.category ==
@@ -466,7 +476,8 @@ class _NotificationsMobileState
                                   returnNotificationProvider(
                                         context,
                                         listen: false,
-                                      ).notifications
+                                      )
+                                      .notifications()
                                       .where(
                                         (notif) =>
                                             notif
@@ -483,7 +494,8 @@ class _NotificationsMobileState
                                     returnNotificationProvider(
                                           context,
                                           listen: false,
-                                        ).notifications
+                                        )
+                                        .notifications()
                                         .where(
                                           (notif) =>
                                               notif

@@ -78,7 +78,7 @@ class _TotalProductsMobileState
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    var products = returnData().productList;
+    var products = returnData().productList();
     List<TempProductClass> filterProducts() {
       switch (currentSelect) {
         case 1:

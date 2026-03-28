@@ -978,7 +978,8 @@ class _TopNavBarState extends State<TopNavBar> {
                               visible:
                                   returnNotificationProvider(
                                         context,
-                                      ).notifications
+                                      )
+                                      .notifications()
                                       .where(
                                         (notif) =>
                                             !notif.isViewed,
@@ -1003,7 +1004,7 @@ class _TopNavBarState extends State<TopNavBar> {
                                           returnNotificationProvider(
                                                         context,
                                                       )
-                                                      .notifications
+                                                      .notifications()
                                                       .where(
                                                         (
                                                           notif,
@@ -1016,7 +1017,7 @@ class _TopNavBarState extends State<TopNavBar> {
                                               : 11,
                                       color: Colors.white,
                                     ),
-                                    '${returnNotificationProvider(context).notifications.where((notif) => !notif.isViewed).length}',
+                                    '${returnNotificationProvider(context).notifications().where((notif) => !notif.isViewed).length}',
                                   ),
                                 ),
                               ),

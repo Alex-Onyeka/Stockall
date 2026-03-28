@@ -15,8 +15,49 @@ class NotificationProvider with ChangeNotifier {
 
   List<TempNotification> _notifications = [];
 
-  List<TempNotification> get notifications =>
-      _notifications;
+  // List<TempNotification> get notifications =>
+  //     _notifications;
+  List<TempNotification> notifications() {
+    if (returnShopProvider()
+            .userShop()
+            ?.manageDepartments ==
+        true) {
+      if (!authorization(
+        authorized: Authorizations().viewAllDepartments,
+      )) {
+        return _notifications.where((cat) {
+          // if (cat.departmentUuid == null) {
+          //   return true;
+          // } else {
+          return cat.departmentUuid ==
+              returnDepartmentProvider()
+                  .currentDepartment()
+                  ?.uuid;
+          // }
+        }).toList();
+      } else {
+        if (returnDepartmentProvider()
+                .currentDepartment()
+                ?.uuid ==
+            null) {
+          return _notifications;
+        } else {
+          return _notifications.where((cat) {
+            // if (cat.departmentUuid == null) {
+            //   return true;
+            // } else {
+            return cat.departmentUuid ==
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid;
+            // }
+          }).toList();
+        }
+      }
+    } else {
+      return _notifications;
+    }
+  }
 
   void clearNotifications() {
     _notifications.clear();
@@ -25,7 +66,7 @@ class NotificationProvider with ChangeNotifier {
   }
 
   void deleteNotification(TempNotification notif) {
-    notifications.remove(notif);
+    notifications().remove(notif);
     notifyListeners();
   }
 
@@ -84,61 +125,12 @@ class NotificationProvider with ChangeNotifier {
                 (item) => TempNotification.fromJson(item),
               )
               .toList();
-      if (returnShopProvider()
-              .userShop()
-              ?.manageDepartments ==
-          true) {
-        if (!authorization(
-              authorized:
-                  Authorizations().viewAllDepartments,
-            ) ||
-            returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid !=
-                null) {
-          _notifications =
-              _notifications
-                  .where(
-                    (notif) =>
-                        notif.departmentUuid ==
-                        returnDepartmentProvider()
-                            .currentDepartment()
-                            ?.uuid,
-                  )
-                  .toList();
-        }
-      }
-
       await NotificationFunc().insertAllNotifications(
         _notifications,
       );
     } else {
       _notifications =
           NotificationFunc().getNotifications();
-      if (returnShopProvider()
-              .userShop()
-              ?.manageDepartments ==
-          true) {
-        if (!authorization(
-              authorized:
-                  Authorizations().viewAllDepartments,
-            ) ||
-            returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid !=
-                null) {
-          _notifications =
-              _notifications
-                  .where(
-                    (notif) =>
-                        notif.departmentUuid ==
-                        returnDepartmentProvider()
-                            .currentDepartment()
-                            ?.uuid,
-                  )
-                  .toList();
-        }
-      }
     }
     notifyListeners();
     return _notifications;
@@ -152,7 +144,7 @@ class NotificationProvider with ChangeNotifier {
     bool isOnline = await connectivity.isOnline();
 
     if (isOnline) {
-      var no = notifications.firstWhere(
+      var no = notifications().firstWhere(
         (noti) => noti.uuid == notifUuid,
       );
       if (!no.isViewed) {

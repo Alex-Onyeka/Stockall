@@ -54,19 +54,62 @@ class InventoryUpdatesProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  List<TempInventoryUpdateClass>
+  departmentInventoryUpdates() {
+    if (returnShopProvider()
+            .userShop()
+            ?.manageDepartments ==
+        true) {
+      if (!authorization(
+        authorized: Authorizations().viewAllDepartments,
+      )) {
+        return inventoryUpdates.where((cat) {
+          // if (cat.departmentUuid == null) {
+          //   return true;
+          // } else {
+          return cat.departmentUuid ==
+              returnDepartmentProvider()
+                  .currentDepartment()
+                  ?.uuid;
+          // }
+        }).toList();
+      } else {
+        if (returnDepartmentProvider()
+                .currentDepartment()
+                ?.uuid ==
+            null) {
+          return inventoryUpdates;
+        } else {
+          return inventoryUpdates.where((cat) {
+            // if (cat.departmentUuid == null) {
+            //   return true;
+            // } else {
+            return cat.departmentUuid ==
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid;
+            // }
+          }).toList();
+        }
+      }
+    } else {
+      return inventoryUpdates;
+    }
+  }
+
   List<TempInventoryUpdateClass> returnInventoryUpdates() {
-    inventoryUpdates.sort(
+    departmentInventoryUpdates().sort(
       (a, b) => b.createdAt!.compareTo(a.createdAt!),
     );
     if (dateSet == null &&
         rangeEndDate == null &&
         rangeStartDate == null) {
-      inventoryUpdates.sort(
+      departmentInventoryUpdates().sort(
         (a, b) => b.createdAt!.compareTo(a.createdAt!),
       );
-      return inventoryUpdates;
+      return departmentInventoryUpdates();
     } else if (dateSet != null) {
-      return inventoryUpdates
+      return departmentInventoryUpdates()
           .where(
             (inventoryUpdate) =>
                 (inventoryUpdate.createdAt!.day ==
@@ -78,7 +121,7 @@ class InventoryUpdatesProvider with ChangeNotifier {
           )
           .toList();
     } else {
-      return inventoryUpdates
+      return departmentInventoryUpdates()
           .where(
             (update) =>
                 ((update.createdAt!.isAfter(
@@ -91,7 +134,6 @@ class InventoryUpdatesProvider with ChangeNotifier {
                     ))),
           )
           .toList();
-      // return inventoryUpdates;
     }
   }
 
@@ -120,31 +162,6 @@ class InventoryUpdatesProvider with ChangeNotifier {
                       TempInventoryUpdateClass.fromJson(m),
                 )
                 .toList();
-        if (returnShopProvider()
-                .userShop()
-                ?.manageDepartments ==
-            true) {
-          if (!authorization(
-                authorized:
-                    Authorizations().viewAllDepartments,
-              ) ||
-              returnDepartmentProvider()
-                      .currentDepartment()
-                      ?.uuid !=
-                  null) {
-            inventoryUpdates =
-                tempUpdates
-                    .where(
-                      (exp) =>
-                          exp.departmentUuid ==
-                          returnDepartmentProvider()
-                              .currentDepartment()
-                              ?.uuid,
-                    )
-                    .toList();
-          }
-        }
-
         await InventoryUpdatesFunc()
             .insertAllInventoryUpdates(tempUpdates);
         print(
@@ -162,30 +179,6 @@ class InventoryUpdatesProvider with ChangeNotifier {
     } else {
       inventoryUpdates =
           InventoryUpdatesFunc().getInventoryUpdatess();
-      if (returnShopProvider()
-              .userShop()
-              ?.manageDepartments ==
-          true) {
-        if (!authorization(
-              authorized:
-                  Authorizations().viewAllDepartments,
-            ) ||
-            returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid !=
-                null) {
-          inventoryUpdates =
-              inventoryUpdates
-                  .where(
-                    (exp) =>
-                        exp.departmentUuid ==
-                        returnDepartmentProvider()
-                            .currentDepartment()
-                            ?.uuid,
-                  )
-                  .toList();
-        }
-      }
       print(
         'Inventory Updates Gotten Successfully Offline',
       );

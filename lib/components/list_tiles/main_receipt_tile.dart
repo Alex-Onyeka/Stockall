@@ -94,7 +94,7 @@ class _MainReceiptTileMobileState
   void getCustomer() {
     List<TempCustomersClass> customers =
         returnCustomers(context, listen: false)
-            .customersMain
+            .customersMain()
             .where(
               (customer) =>
                   customer.uuid != null &&
@@ -387,7 +387,7 @@ class _MainReceiptTileDesktopState
   void getCustomer() {
     List<TempCustomersClass> customers =
         returnCustomers(context, listen: false)
-            .customersMain
+            .customersMain()
             .where(
               (customer) =>
                   customer.uuid ==

@@ -132,31 +132,6 @@ class ReceiptsProvider extends ChangeNotifier {
                   (json) => TempMainReceipt.fromJson(json),
                 )
                 .toList();
-        if (returnShopProvider()
-                .userShop()
-                ?.manageDepartments ==
-            true) {
-          if (!authorization(
-                authorized:
-                    Authorizations().viewAllDepartments,
-              ) ||
-              returnDepartmentProvider()
-                      .currentDepartment()
-                      ?.uuid !=
-                  null) {
-            _receipts =
-                _receipts
-                    .where(
-                      (notif) =>
-                          notif.departmentUuidNew ==
-                          returnDepartmentProvider()
-                              .currentDepartment()
-                              ?.uuid,
-                    )
-                    .toList();
-          }
-        }
-
         await MainReceiptFunc().insertAllReceipts(
           _receipts,
         );
@@ -175,30 +150,6 @@ class ReceiptsProvider extends ChangeNotifier {
       }
     } else {
       _receipts = MainReceiptFunc().getReceipts();
-      if (returnShopProvider()
-              .userShop()
-              ?.manageDepartments ==
-          true) {
-        if (!authorization(
-              authorized:
-                  Authorizations().viewAllDepartments,
-            ) ||
-            returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid !=
-                null) {
-          _receipts =
-              _receipts
-                  .where(
-                    (notif) =>
-                        notif.departmentUuidNew ==
-                        returnDepartmentProvider()
-                            .currentDepartment()
-                            ?.uuid,
-                  )
-                  .toList();
-        }
-      }
       print('Offline Receipts Gotten');
       await returnInvoicesProvider().loadInvoices(
         returnShopProvider().userShop()!.shopId!,
@@ -389,49 +340,6 @@ class ReceiptsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // UPDATE a receipt
-  // Future<void> payCredit(String uuid) async {
-  //   try {
-  //     bool isOnline = await connectivity.isOnline();
-  //     if (isOnline) {
-  //       final updateData = {
-  //         'is_invoice': false,
-  //         'created_at':
-  //             DateTime.now()
-  //                 .subtract(Duration(hours: 1))
-  //                 .toIso8601String(),
-  //       };
-
-  //       final response =
-  //           await supabase
-  //               .from('receipts')
-  //               .update(updateData)
-  //               .eq('uuid', uuid)
-  //               .select();
-
-  //       if (response.isEmpty) {
-  //         print('❌ No matching receipt to update.');
-  //         return;
-  //       }
-  //       await MainReceiptFunc().payCredit(uuid);
-  //     } else {
-  //       await MainReceiptFunc().payCredit(uuid);
-  //       await UpdatedReceiptsFunc().createUpdatedReceipt(
-  //         uuid,
-  //       );
-  //     }
-  //     final rec = receipts.firstWhere(
-  //       (recc) => recc.uuid! == uuid,
-  //     );
-  //     rec.isInvoice = false;
-  //     print('✅ Receipt updated successfully.');
-  //     notifyListeners();
-  //   } catch (e) {
-  //     print('❌ Error updating receipt: $e');
-  //   }
-  // }
-
-  //
   //
   //
   //
@@ -660,59 +568,11 @@ class ReceiptsProvider extends ChangeNotifier {
                     TempProductSaleRecord.fromJson(json),
               )
               .toList();
-      if (returnShopProvider()
-              .userShop()
-              ?.manageDepartments ==
-          true) {
-        if (!authorization(
-              authorized:
-                  Authorizations().viewAllDepartments,
-            ) ||
-            returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid !=
-                null) {
-          _sales =
-              _sales
-                  .where(
-                    (sale) =>
-                        sale.departmentUuid ==
-                        returnDepartmentProvider()
-                            .currentDepartment()
-                            ?.uuid,
-                  )
-                  .toList();
-        }
-      }
       await ProductRecordFunc().insertAllProductRecords(
         _sales,
       );
     } else {
       _sales = ProductRecordFunc().getProductRecords();
-      if (returnShopProvider()
-              .userShop()
-              ?.manageDepartments ==
-          true) {
-        if (!authorization(
-              authorized:
-                  Authorizations().viewAllDepartments,
-            ) ||
-            returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid !=
-                null) {
-          _sales =
-              _sales
-                  .where(
-                    (sale) =>
-                        sale.departmentUuid ==
-                        returnDepartmentProvider()
-                            .currentDepartment()
-                            ?.uuid,
-                  )
-                  .toList();
-        }
-      }
     }
 
     notifyListeners();
@@ -810,20 +670,59 @@ class ReceiptsProvider extends ChangeNotifier {
     }
   }
 
-  List<TempMainReceipt> returnReceipts() {
-    return returnOwnReceiptsByDayOrWeek(receipts);
+  List<TempMainReceipt> departmentReceipts() {
+    if (returnShopProvider()
+            .userShop()
+            ?.manageDepartments ==
+        true) {
+      if (!authorization(
+        authorized: Authorizations().viewAllDepartments,
+      )) {
+        return receipts.where((cat) {
+          // if (cat.departmentUuidNew == null) {
+          //   return true;
+          // } else {
+          //   return cat.departmentUuidNew ==
+          //       returnDepartmentProvider()
+          //           .currentDepartment()
+          //           ?.uuid;
+          // }
+          return cat.departmentUuidNew ==
+              returnDepartmentProvider()
+                  .currentDepartment()
+                  ?.uuid;
+        }).toList();
+      } else {
+        if (returnDepartmentProvider()
+                .currentDepartment()
+                ?.uuid ==
+            null) {
+          return receipts;
+        } else {
+          return receipts.where((cat) {
+            // if (cat.departmentUuidNew == null) {
+            //   return true;
+            // } else {
+            return cat.departmentUuidNew ==
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid;
+            // }
+          }).toList();
+        }
+      }
+    } else {
+      return receipts;
+    }
   }
 
-  List<TempMainReceipt> returnOwnReceiptsByDayOrWeek(
-    // BuildContext context,
-    List<TempMainReceipt> receiptss,
-  ) {
-    if (rangeStartDate != null) {
-      if (authorization(
-        authorized:
-            Authorizations().viewAllTransactionRecords,
-      )) {
-        return receiptss.where((receipt) {
+  List<TempMainReceipt> returnOwnReceiptsByDayOrWeek() {
+    if (returnShopProvider()
+            .userShop()
+            ?.manageDepartments ==
+        true) {
+      if (rangeStartDate != null) {
+        return departmentReceipts().where((receipt) {
           final created = receipt.createdAt.toLocal();
           return !created.isBefore(rangeStartDate!) &&
               !created.isAfter(
@@ -831,61 +730,86 @@ class ReceiptsProvider extends ChangeNotifier {
               );
         }).toList();
       } else {
-        return receiptss.where((receipt) {
-          final created =
-              receipt.createdAt
-                  .toLocal(); // convert UTC to local
-          return !created.isBefore(rangeStartDate!) &&
-              !created.isAfter(
-                rangeEndDate ?? DateTime.now(),
-              ) &&
-              receipt.staffId == currentUser().userId;
-        }).toList();
+        final currentDate = dateSet ?? DateTime.now();
+
+        return departmentReceipts()
+            .where(
+              (receipt) =>
+                  (receipt.createdAt.day ==
+                      currentDate.day) &&
+                  (receipt.createdAt.month ==
+                      currentDate.month) &&
+                  (receipt.createdAt.year ==
+                      currentDate.year),
+            )
+            .toList();
       }
-    }
-
-    final currentDate = dateSet ?? DateTime.now();
-
-    if (authorization(
-      authorized:
-          Authorizations().viewAllTransactionRecords,
-    )) {
-      return receiptss
-          .where(
-            (receipt) =>
-                (receipt.createdAt.day ==
-                    currentDate.day) &&
-                (receipt.createdAt.month ==
-                    currentDate.month) &&
-                (receipt.createdAt.year ==
-                    currentDate.year),
-          )
-          .toList();
     } else {
-      return receiptss
-          .where(
-            (receipt) =>
-                (receipt.createdAt.day ==
-                    currentDate.day) &&
-                (receipt.createdAt.month ==
-                    currentDate.month) &&
-                (receipt.createdAt.year ==
-                    currentDate.year) &&
-                receipt.staffId == currentUser().userId,
-          )
-          .toList();
+      if (rangeStartDate != null) {
+        if (authorization(
+          authorized:
+              Authorizations().viewAllTransactionRecords,
+        )) {
+          return receipts.where((receipt) {
+            final created = receipt.createdAt.toLocal();
+            return !created.isBefore(rangeStartDate!) &&
+                !created.isAfter(
+                  rangeEndDate ?? DateTime.now(),
+                );
+          }).toList();
+        } else {
+          return receipts.where((receipt) {
+            final created =
+                receipt.createdAt
+                    .toLocal(); // convert UTC to local
+            return !created.isBefore(rangeStartDate!) &&
+                !created.isAfter(
+                  rangeEndDate ?? DateTime.now(),
+                ) &&
+                receipt.staffId == currentUser().userId;
+          }).toList();
+        }
+      } else {
+        final currentDate = dateSet ?? DateTime.now();
+
+        if (authorization(
+          authorized:
+              Authorizations().viewAllTransactionRecords,
+        )) {
+          return receipts
+              .where(
+                (receipt) =>
+                    (receipt.createdAt.day ==
+                        currentDate.day) &&
+                    (receipt.createdAt.month ==
+                        currentDate.month) &&
+                    (receipt.createdAt.year ==
+                        currentDate.year),
+              )
+              .toList();
+        } else {
+          return receipts
+              .where(
+                (receipt) =>
+                    (receipt.createdAt.day ==
+                        currentDate.day) &&
+                    (receipt.createdAt.month ==
+                        currentDate.month) &&
+                    (receipt.createdAt.year ==
+                        currentDate.year) &&
+                    receipt.staffId == currentUser().userId,
+              )
+              .toList();
+        }
+      }
     }
   }
 
-  //
-
   List<TempProductSaleRecord>
-  returnproductsRecordByDayOrWeek(
-    List<TempProductSaleRecord> records,
-  ) {
+  returnproductsRecordByDayOrWeek() {
     List<TempProductSaleRecord> recordss = [];
 
-    for (var rec in records) {
+    for (var rec in produtRecordSalesMain) {
       TempMainReceipt? receipt;
 
       try {
@@ -893,7 +817,7 @@ class ReceiptsProvider extends ChangeNotifier {
           (recx) => recx.uuid == rec.receiptUuid,
         );
       } catch (e) {
-        receipt = null; // receipt not found
+        receipt = null;
       }
 
       if (receipt != null) {
@@ -959,13 +883,12 @@ class ReceiptsProvider extends ChangeNotifier {
   //
 
   double getTotalRevenueForSelectedDay(
-    List<TempMainReceipt> receiptss,
+    // List<TempMainReceipt> receipts,
   ) {
     double tempTotalRevenue = 0;
 
     for (var receipt in returnOwnReceiptsByDayOrWeek(
       // context,
-      receiptss,
     )) {
       tempTotalRevenue += getTotalMainRevenueReceipt(
         receipt,
@@ -984,18 +907,18 @@ class ReceiptsProvider extends ChangeNotifier {
 
     for (var receipt
         in (staffId != null
-            ? returnReceipts().where(
+            ? returnOwnReceiptsByDayOrWeek().where(
               (rec) => rec.staffId == staffId,
             )
             : subStaffId != null
-            ? returnReceipts().where(
+            ? returnOwnReceiptsByDayOrWeek().where(
               (rec) => rec.subStaffUuid == subStaffId,
             )
             : customerId != null
-            ? returnReceipts().where(
+            ? returnOwnReceiptsByDayOrWeek().where(
               (rec) => rec.customerUuid == customerId,
             )
-            : returnReceipts())) {
+            : returnOwnReceiptsByDayOrWeek())) {
       tempTotalRevenue += getTotalMainRevenueReceipt(
         receipt,
       );
@@ -1010,14 +933,13 @@ class ReceiptsProvider extends ChangeNotifier {
 
   double getTotalCostPriceForSelectedDay(
     BuildContext context,
-    List<TempMainReceipt> receiptss,
+    List<TempMainReceipt> receipts,
     List<TempProductSaleRecord> productSalesRecords,
   ) {
     double tempTotalCostPrice = 0;
 
     for (var receipt in returnOwnReceiptsByDayOrWeek(
       // context,
-      receiptss,
     )) {
       var productRecords =
           productSalesRecords

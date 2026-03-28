@@ -931,10 +931,52 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<TempProductClass> productList = [];
+  List<TempProductClass> productListMain = [];
+
+  List<TempProductClass> productList() {
+    if (returnShopProvider()
+            .userShop()
+            ?.manageDepartments ==
+        true) {
+      if (!authorization(
+        authorized: Authorizations().viewAllDepartments,
+      )) {
+        return productListMain.where((cat) {
+          if (cat.departmentUuid == null) {
+            return true;
+          } else {
+            return cat.departmentUuid ==
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid;
+          }
+        }).toList();
+      } else {
+        if (returnDepartmentProvider()
+                .currentDepartment()
+                ?.uuid ==
+            null) {
+          return productListMain;
+        } else {
+          return productListMain.where((cat) {
+            if (cat.departmentUuid == null) {
+              return true;
+            } else {
+              return cat.departmentUuid ==
+                  returnDepartmentProvider()
+                      .currentDepartment()
+                      ?.uuid;
+            }
+          }).toList();
+        }
+      }
+    } else {
+      return productListMain;
+    }
+  }
 
   void clearProducts() {
-    productList.clear();
+    productListMain.clear();
     print('Products Cleared');
     notifyListeners();
   }
@@ -975,18 +1017,18 @@ class DataProvider extends ChangeNotifier {
 
       print('Items gotten: ${data.length}');
 
-      productList =
+      productListMain =
           (data as List)
               .map(
                 (json) => TempProductClass.fromJson(json),
               )
               .toList();
-      productList.sort(
+      productListMain.sort(
         (a, b) => a.name.toLowerCase().compareTo(
           b.name.toLowerCase(),
         ),
       );
-      print('Product List Set: ${productList.length}');
+      print('Product List Set: ${productListMain.length}');
       if (data.length > 999) {
         final data2 = await supabase
             .from('products')
@@ -1000,21 +1042,23 @@ class DataProvider extends ChangeNotifier {
                   : 2000,
             );
         print('Items 2 gotten: ${data2.length}');
-        productList.addAll(
+        productListMain.addAll(
           (data2 as List)
               .map(
                 (stuff) => TempProductClass.fromJson(stuff),
               )
               .toList(),
         );
-        productList.sort(
+        productListMain.sort(
           (a, b) => a.name.toLowerCase().compareTo(
             b.name.toLowerCase(),
           ),
         );
-        print('Product List 2 Set: ${productList.length}');
+        print(
+          'Product List 2 Set: ${productListMain.length}',
+        );
 
-        if (productList.length > 1999) {
+        if (productListMain.length > 1999) {
           final data3 = await supabase
               .from('products')
               .select()
@@ -1022,7 +1066,7 @@ class DataProvider extends ChangeNotifier {
               .order('name', ascending: true)
               .range(2001, allowedRangeItems ?? 3000);
           print('Items 3 gotten: ${data3.length}');
-          productList.addAll(
+          productListMain.addAll(
             (data3 as List)
                 .map(
                   (stuff) =>
@@ -1030,54 +1074,24 @@ class DataProvider extends ChangeNotifier {
                 )
                 .toList(),
           );
-          productList.sort(
+          productListMain.sort(
             (a, b) => a.name.toLowerCase().compareTo(
               b.name.toLowerCase(),
             ),
           );
           print(
-            'Product List 3 Set: ${productList.length}',
+            'Product List 3 Set: ${productListMain.length}',
           );
         }
         notifyListeners();
-      }
-      if (returnShopProvider()
-              .userShop()
-              ?.manageDepartments ==
-          true) {
-        if (!authorization(
-              authorized:
-                  Authorizations().viewAllDepartments,
-            ) ||
-            returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid !=
-                null) {
-          productList =
-              productList
-                  .where(
-                    (product) =>
-                        product.departmentUuid ==
-                        returnDepartmentProvider()
-                            .currentDepartment()
-                            ?.uuid,
-                  )
-                  .toList();
-          print(
-            "✅✅✅✅ Departments Products Set: ${productList.where((product) => product.departmentUuid == returnDepartmentProvider().currentDepartment()?.uuid).length}",
-          );
-          print(
-            returnDepartmentProvider()
-                .currentDepartment()
-                ?.name,
-          );
-        }
       }
       notifyListeners();
       await returnInventoryUpdatesProvider()
           .getInventoryUpdates();
 
-      await ProductsFunc().insertAllProducts(productList);
+      await ProductsFunc().insertAllProducts(
+        productListMain,
+      );
     } else {
       // int getRange() {
       //   if ((allowedRangeItems ?? 0) >
@@ -1096,39 +1110,15 @@ class DataProvider extends ChangeNotifier {
       print(
         "Offline Data Gotten: ${ProductsFunc().getProducts().length}",
       );
-      productList = ProductsFunc().getProducts();
-      if (returnShopProvider()
-              .userShop()
-              ?.manageDepartments ==
-          true) {
-        if (!authorization(
-              authorized:
-                  Authorizations().viewAllDepartments,
-            ) ||
-            returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid !=
-                null) {
-          productList =
-              productList
-                  .where(
-                    (product) =>
-                        product.departmentUuid ==
-                        returnDepartmentProvider()
-                            .currentDepartment()
-                            ?.uuid,
-                  )
-                  .toList();
-        }
-      }
+      productListMain = ProductsFunc().getProducts();
       notifyListeners();
       await returnInventoryUpdatesProvider()
           .getInventoryUpdates();
-      // productList.clear();
+      // productListMain.clear();
     }
 
     notifyListeners();
-    return productList;
+    return productListMain;
   }
 
   Future<List<TempProductClass>> searchProductName(
@@ -1976,14 +1966,14 @@ class DataProvider extends ChangeNotifier {
             .userShop()
             ?.manageInventoryStorage ==
         true) {
-      for (var item in (products ?? productList)) {
+      for (var item in (products ?? productListMain)) {
         tempTotal +=
             ((item.wholeSalePrice ?? 0) *
                 ((item.quantity ?? 0) +
                     (item.totalQttyInStorageDouble ?? 0)));
       }
     } else {
-      for (var item in (products ?? productList)) {
+      for (var item in (products ?? productListMain)) {
         tempTotal +=
             ((item.wholeSalePrice ?? 0) *
                 (item.quantity ?? 0));
@@ -2001,14 +1991,14 @@ class DataProvider extends ChangeNotifier {
             .userShop()
             ?.manageInventoryStorage ==
         true) {
-      for (var item in (products ?? productList)) {
+      for (var item in (products ?? productListMain)) {
         tempTotal +=
             ((item.sellingPrice ?? 0) *
                 ((item.quantity ?? 0) +
                     (item.totalQttyInStorageDouble ?? 0)));
       }
     } else {
-      for (var item in (products ?? productList)) {
+      for (var item in (products ?? productListMain)) {
         tempTotal +=
             ((item.sellingPrice ?? 0) *
                 (item.quantity ?? 0));
@@ -2025,14 +2015,14 @@ class DataProvider extends ChangeNotifier {
             .userShop()
             ?.manageInventoryStorage ==
         true) {
-      for (var item in (products ?? productList)) {
+      for (var item in (products ?? productListMain)) {
         tempTotal +=
             item.costPrice *
             ((item.quantity ?? 0) +
                 (item.totalQttyInStorageDouble ?? 0));
       }
     } else {
-      for (var item in (products ?? productList)) {
+      for (var item in (products ?? productListMain)) {
         tempTotal += item.costPrice * (item.quantity ?? 0);
       }
     }
@@ -2043,7 +2033,7 @@ class DataProvider extends ChangeNotifier {
     List<TempProductClass>? products,
   }) {
     double tempTotal = 0;
-    for (var item in (products ?? productList)) {
+    for (var item in (products ?? productListMain)) {
       tempTotal += item.quantity ?? 0;
     }
     return tempTotal;
@@ -2053,7 +2043,7 @@ class DataProvider extends ChangeNotifier {
     List<TempProductClass>? products,
   }) {
     double tempTotal = 0;
-    for (var item in (products ?? productList)) {
+    for (var item in (products ?? productListMain)) {
       tempTotal += item.totalQttyInStorageDouble ?? 0;
     }
     return tempTotal;

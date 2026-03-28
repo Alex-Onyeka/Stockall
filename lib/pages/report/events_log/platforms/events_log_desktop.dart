@@ -64,11 +64,11 @@ class _EventsLogDesktopState
         notifications:
             returnNotificationProvider(
                   context,
-                ).notifications.isEmpty
+                ).notifications().isEmpty
                 ? []
                 : returnNotificationProvider(
                   context,
-                ).notifications,
+                ).notifications(),
         globalKey: _scaffoldKey,
       ),
       body: Row(
@@ -109,7 +109,7 @@ class _EventsLogDesktopState
               notifications:
                   returnNotificationProvider(
                     context,
-                  ).notifications,
+                  ).notifications(),
             ),
           ),
           Expanded(

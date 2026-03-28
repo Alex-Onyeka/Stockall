@@ -76,10 +76,7 @@ class _ExpensesDesktopState extends State<ExpensesDesktop> {
       listen: false,
     );
     var expenses = expenseProvider
-        .returnExpensesByDayOrWeek(
-          context,
-          returnExpensesProvider(context).expenses,
-        );
+        .returnExpensesByDayOrWeek(context);
     var theme = returnTheme(context);
     return Scaffold(
       key: _scaffoldKey,
@@ -112,11 +109,11 @@ class _ExpensesDesktopState extends State<ExpensesDesktop> {
         notifications:
             returnNotificationProvider(
                   context,
-                ).notifications.isEmpty
+                ).notifications().isEmpty
                 ? []
                 : returnNotificationProvider(
                   context,
-                ).notifications,
+                ).notifications(),
         globalKey: _scaffoldKey,
       ),
       body: Stack(
@@ -154,11 +151,11 @@ class _ExpensesDesktopState extends State<ExpensesDesktop> {
                 notifications:
                     returnNotificationProvider(
                           context,
-                        ).notifications.isEmpty
+                        ).notifications().isEmpty
                         ? []
                         : returnNotificationProvider(
                           context,
-                        ).notifications,
+                        ).notifications(),
               ),
               Expanded(
                 child: DesktopPageContainer(

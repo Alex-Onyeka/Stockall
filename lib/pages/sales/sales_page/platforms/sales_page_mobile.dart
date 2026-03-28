@@ -195,22 +195,15 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                           firsRow: true,
                           color1: Colors.green,
                           title1: 'Sales Revenue',
-                          value1: returnReceiptProvider(
-                            context,
-                          ).getTotalRevenueForSelectedDay(
-                            returnReceiptProvider(
-                              context,
-                            ).receipts,
-                          ),
+                          value1:
+                              returnReceiptProvider(
+                                context,
+                              ).getTotalRevenueForSelectedDay(),
                           color2: Colors.amber,
                           title2: 'Sales Number',
                           value2:
                               returnReceiptProvider(context)
-                                  .returnOwnReceiptsByDayOrWeek(
-                                    returnReceiptProvider(
-                                      context,
-                                    ).receipts,
-                                  )
+                                  .returnOwnReceiptsByDayOrWeek()
                                   .toList()
                                   .length
                                   .toDouble(),
@@ -391,11 +384,7 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                               if (returnReceiptProvider(
                                     context,
                                   )
-                                  .returnOwnReceiptsByDayOrWeek(
-                                    returnReceiptProvider(
-                                      context,
-                                    ).receipts,
-                                  )
+                                  .returnOwnReceiptsByDayOrWeek()
                                   .toList()
                                   .isEmpty) {
                                 return EmptyWidgetDisplay(
@@ -440,11 +429,7 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                         returnReceiptProvider(
                                               context,
                                             )
-                                            .returnOwnReceiptsByDayOrWeek(
-                                              returnReceiptProvider(
-                                                context,
-                                              ).receipts,
-                                            )
+                                            .returnOwnReceiptsByDayOrWeek()
                                             .toList()
                                             .length,
                                     itemBuilder: (
@@ -456,11 +441,7 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                           returnReceiptProvider(
                                                 context,
                                               )
-                                              .returnOwnReceiptsByDayOrWeek(
-                                                returnReceiptProvider(
-                                                  context,
-                                                ).receipts,
-                                              )
+                                              .returnOwnReceiptsByDayOrWeek()
                                               .toList()[index];
                                       return MainReceiptTile(
                                         action: () {

@@ -31,7 +31,47 @@ class CustomersProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<TempCustomersClass> get customersMain => _customers;
+  List<TempCustomersClass> customersMain() {
+    if (returnShopProvider()
+            .userShop()
+            ?.manageDepartments ==
+        true) {
+      if (!authorization(
+        authorized: Authorizations().viewAllDepartments,
+      )) {
+        return _customers.where((cat) {
+          if (cat.departmentUuid == null) {
+            return true;
+          } else {
+            return cat.departmentUuid ==
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid;
+          }
+        }).toList();
+      } else {
+        if (returnDepartmentProvider()
+                .currentDepartment()
+                ?.uuid ==
+            null) {
+          return _customers;
+        } else {
+          return _customers.where((cat) {
+            if (cat.departmentUuid == null) {
+              return true;
+            } else {
+              return cat.departmentUuid ==
+                  returnDepartmentProvider()
+                      .currentDepartment()
+                      ?.uuid;
+            }
+          }).toList();
+        }
+      }
+    } else {
+      return _customers;
+    }
+  }
 
   /// Fetch all customers by shop ID
   Future<List<TempCustomersClass>> fetchCustomers(
@@ -53,59 +93,9 @@ class CustomersProvider extends ChangeNotifier {
               )
               .toList();
 
-      if (returnShopProvider()
-              .userShop()
-              ?.manageDepartments ==
-          true) {
-        if (!authorization(
-              authorized:
-                  Authorizations().viewAllDepartments,
-            ) ||
-            returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid !=
-                null) {
-          _customers =
-              _customers
-                  .where(
-                    (customer) =>
-                        customer.departmentUuid ==
-                        returnDepartmentProvider()
-                            .currentDepartment()
-                            ?.uuid,
-                  )
-                  .toList();
-        }
-      }
-
       await CustomerFunc().insertAllCustomers(_customers);
     } else {
       _customers = CustomerFunc().getCustomers();
-
-      if (returnShopProvider()
-              .userShop()
-              ?.manageDepartments ==
-          true) {
-        if (!authorization(
-              authorized:
-                  Authorizations().viewAllDepartments,
-            ) ||
-            returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid !=
-                null) {
-          _customers =
-              _customers
-                  .where(
-                    (customer) =>
-                        customer.departmentUuid ==
-                        returnDepartmentProvider()
-                            .currentDepartment()
-                            ?.uuid,
-                  )
-                  .toList();
-        }
-      }
     }
     notifyListeners();
     return _customers;

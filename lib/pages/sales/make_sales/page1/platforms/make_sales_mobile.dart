@@ -638,7 +638,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
       context: context,
       action: () {
         var theme = returnTheme(context, listen: false);
-        if (returnData().productList
+        if (returnData()
+                .productList()
                 .where(
                   (product) =>
                       product.uuid == cartItem.item.uuid,
@@ -1102,7 +1103,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                     theme: theme,
                                     action: () {
                                       var productIndex = returnData()
-                                          .productList
+                                          .productList()
                                           .indexWhere((
                                             item,
                                           ) {
@@ -1265,7 +1266,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                 cartItem,
                                             isCustomEdit:
                                                 returnData()
-                                                    .productList
+                                                    .productList()
                                                     .where(
                                                       (
                                                         product,
@@ -1357,7 +1358,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    var products = returnData().productList;
+    var products = returnData().productList();
     return GestureDetector(
       onTap:
           () =>
@@ -2133,7 +2134,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                           returnSalesProvider();
 
                                                       if (returnData()
-                                                          .productList
+                                                          .productList()
                                                           .where(
                                                             (
                                                               product,
@@ -2272,7 +2273,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                           if (result !=
                                                               null) {
                                                             var prod =
-                                                                returnData().productList
+                                                                returnData()
+                                                                    .productList()
                                                                     .where(
                                                                       (
                                                                         pro,
@@ -2427,7 +2429,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                 Visibility(
                                                   visible:
                                                       returnData()
-                                                          .productList
+                                                          .productList()
                                                           .isNotEmpty,
                                                   child: Expanded(
                                                     child: Ink(

@@ -22,7 +22,7 @@ class CustomerPageDesktop extends StatelessWidget {
     var theme = returnTheme(context);
     var tempCustomer = returnCustomers(
       context,
-    ).customersMain.where((cust) => cust.uuid! == uuid);
+    ).customersMain().where((cust) => cust.uuid! == uuid);
     var customer =
         tempCustomer.isNotEmpty
             ? tempCustomer.first

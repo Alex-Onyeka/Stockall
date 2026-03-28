@@ -883,7 +883,8 @@ Future<dynamic> settingsGenerateProductBarcode(
                                       returnData(
                                             context:
                                                 context,
-                                          ).productList
+                                          )
+                                          .productList()
                                           .where(
                                             (
                                               product,

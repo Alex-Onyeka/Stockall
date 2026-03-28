@@ -64,7 +64,7 @@ class _ReceiptPageMobileState
     var theme = returnTheme(context);
     TempMainReceipt mainReceipt = returnReceiptProvider(
       context,
-    ).receipts.firstWhere(
+    ).returnOwnReceiptsByDayOrWeek().firstWhere(
       (rec) => rec.uuid! == widget.response.resUuid,
       orElse:
           () => TempMainReceipt(
@@ -351,7 +351,7 @@ class _ReceiptDetailsContainerState
     try {
       customer = returnCustomers(
         context,
-      ).customersMain.firstWhere(
+      ).customersMain().firstWhere(
         (c) => c.uuid == widget.mainReceipt.customerUuid,
       );
     } catch (e) {

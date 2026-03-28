@@ -132,6 +132,7 @@ class DepartmentProvider with ChangeNotifier {
           print('Department Selection Failed');
           notifyListeners();
         }
+        returnShopProvider().getUserShops();
       } catch (e) {
         print(
           '❌❌ Select Department Error: ${e.toString()}',

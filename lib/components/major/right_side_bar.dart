@@ -293,20 +293,12 @@ class RightSideBar extends StatelessWidget {
                             if (returnReceiptProvider(
                                       context,
                                     )
-                                    .returnOwnReceiptsByDayOrWeek(
-                                      returnReceiptProvider(
-                                        context,
-                                      ).receipts,
-                                    )
+                                    .returnOwnReceiptsByDayOrWeek()
                                     .isEmpty ||
                                 returnReceiptProvider(
                                       context,
                                     )
-                                    .returnproductsRecordByDayOrWeek(
-                                      returnReceiptProvider(
-                                        context,
-                                      ).produtRecordSalesMain,
-                                    )
+                                    .returnproductsRecordByDayOrWeek()
                                     .isEmpty) {
                               return Expanded(
                                 child: Material(
@@ -353,11 +345,7 @@ class RightSideBar extends StatelessWidget {
                                       returnReceiptProvider(
                                             context,
                                           )
-                                          .returnOwnReceiptsByDayOrWeek(
-                                            returnReceiptProvider(
-                                              context,
-                                            ).receipts,
-                                          )
+                                          .returnOwnReceiptsByDayOrWeek()
                                           .length,
                                   itemBuilder: (
                                     context,
@@ -366,11 +354,7 @@ class RightSideBar extends StatelessWidget {
                                     var receipts =
                                         returnReceiptProvider(
                                           context,
-                                        ).returnOwnReceiptsByDayOrWeek(
-                                          returnReceiptProvider(
-                                            context,
-                                          ).receipts,
-                                        );
+                                        ).returnOwnReceiptsByDayOrWeek();
                                     receipts.sort(
                                       (a, b) => b.createdAt
                                           .compareTo(

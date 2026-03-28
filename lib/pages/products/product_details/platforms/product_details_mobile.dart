@@ -75,7 +75,8 @@ class _ProductDetailsMobileState
   Widget build(BuildContext context) {
     final shopI = returnShopProvider().userShop()!.shopId!;
     List<TempProductClass>? productList =
-        returnData().productList
+        returnData()
+            .productList()
             .where(
               (product) =>
                   product.uuid! == widget.productUuid,
@@ -2413,7 +2414,8 @@ class _ProductDetailsMobileState
                                       returnCategoriesProvider(
                                                 context:
                                                     context,
-                                              ).categories
+                                              )
+                                              .categories()
                                               .where(
                                                 (cat) =>
                                                     cat.uuid ==
@@ -2424,7 +2426,8 @@ class _ProductDetailsMobileState
                                           ? returnCategoriesProvider(
                                                 context:
                                                     context,
-                                              ).categories
+                                              )
+                                              .categories()
                                               .where(
                                                 (cat) =>
                                                     cat.uuid ==

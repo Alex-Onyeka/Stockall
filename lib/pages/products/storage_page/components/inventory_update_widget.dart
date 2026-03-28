@@ -355,7 +355,8 @@ class _InventoryUpdateWidgetState
                         Visibility(
                           visible:
                               widget.update.uuid != null &&
-                              returnData().productList
+                              returnData()
+                                  .productList()
                                   .where(
                                     (pr) =>
                                         pr.uuid ==

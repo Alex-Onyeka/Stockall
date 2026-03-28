@@ -98,7 +98,7 @@ class _ProductPageDesktopState
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     final products =
-        context.watch<DataProvider>().productList;
+        context.watch<DataProvider>().productList();
     return Scaffold(
       key: _scaffoldKey,
       drawer: MyDrawerWidgetDesktopMain(
@@ -130,11 +130,11 @@ class _ProductPageDesktopState
         notifications:
             returnNotificationProvider(
                   context,
-                ).notifications.isEmpty
+                ).notifications().isEmpty
                 ? []
                 : returnNotificationProvider(
                   context,
-                ).notifications,
+                ).notifications(),
         globalKey: _scaffoldKey,
       ),
       body: Stack(
@@ -172,11 +172,11 @@ class _ProductPageDesktopState
                 notifications:
                     returnNotificationProvider(
                           context,
-                        ).notifications.isEmpty
+                        ).notifications().isEmpty
                         ? []
                         : returnNotificationProvider(
                           context,
-                        ).notifications,
+                        ).notifications(),
               ),
               Expanded(
                 child: DesktopPageContainer(

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
-import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
@@ -11,16 +10,14 @@ import 'package:stockall/providers/theme_provider.dart';
 
 class DashboardTotalSalesBanner extends StatefulWidget {
   final double? value;
-  final TempUserClass? currentUser;
+  // final TempUserClass? currentUser;
   final double? userValue;
-  final List<TempExpensesClass>? expenses;
   const DashboardTotalSalesBanner({
     super.key,
     required this.theme,
     required this.value,
-    this.currentUser,
+    // this.currentUser,
     this.userValue,
-    this.expenses,
   });
 
   final ThemeProvider theme;
@@ -33,10 +30,16 @@ class DashboardTotalSalesBanner extends StatefulWidget {
 class _DashboardTotalSalesBannerState
     extends State<DashboardTotalSalesBanner> {
   String setName() {
-    if (widget.currentUser != null) {
-      return '${cutLongText(widget.currentUser!.name.toUpperCase(), 15)} (${widget.currentUser!.role})';
+    if (returnDepartmentProvider().currentDepartment() !=
+        null) {
+      return cutLongText(
+        returnDepartmentProvider()
+            .currentDepartment()!
+            .name,
+        22,
+      );
     } else {
-      return 'Not Set';
+      return 'Department Not Set';
     }
   }
 
@@ -172,7 +175,7 @@ class _DashboardTotalSalesBannerState
                   SizedBox(height: 0),
                   Builder(
                     builder: (context) {
-                      var expenses = widget.expenses;
+                      // var expenses = widget.expenses;
                       List<TempExpensesClass>
                       getTodaysExpenses() {
                         return returnExpensesProvider(
@@ -180,7 +183,7 @@ class _DashboardTotalSalesBannerState
                           listen: false,
                         ).returnExpensesByDayOrWeek(
                           context,
-                          expenses ?? [],
+                          // expenses ?? [],
                         );
                       }
 
@@ -218,59 +221,9 @@ class _DashboardTotalSalesBannerState
                   SizedBox(height: 10),
                   Row(
                     crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                        CrossAxisAlignment.center,
                     spacing: 5,
                     children: [
-                      Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: const Color.fromARGB(
-                                255,
-                                255,
-                                208,
-                                67,
-                              ),
-                              fontSize:
-                                  widget
-                                      .theme
-                                      .mobileTexts
-                                      .b4
-                                      .fontSize,
-                            ),
-
-                            setName(),
-                          ),
-                          Text(
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: const Color.fromARGB(
-                                241,
-                                255,
-                                255,
-                                255,
-                              ),
-                              fontSize:
-                                  widget
-                                      .theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
-                            ),
-
-                            visible.returnMoney(
-                              formatMoneyMid(
-                                amount:
-                                    widget.userValue ?? 0,
-                                context: context,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
                       Icon(
                         size: 14,
                         color: const Color.fromARGB(
@@ -279,10 +232,30 @@ class _DashboardTotalSalesBannerState
                           208,
                           67,
                         ),
-                        Icons.person,
+                        Icons.width_normal_outlined,
+                      ),
+                      Text(
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: const Color.fromARGB(
+                            255,
+                            255,
+                            208,
+                            67,
+                          ),
+                          fontSize:
+                              widget
+                                  .theme
+                                  .mobileTexts
+                                  .b4
+                                  .fontSize,
+                        ),
+
+                        setName(),
                       ),
                     ],
                   ),
+                  SizedBox(height: 3),
                 ],
               ),
             ],

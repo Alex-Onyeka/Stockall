@@ -82,7 +82,8 @@ class _ProductDetailsDesktopState
   Widget build(BuildContext context) {
     final shopI = returnShopProvider().userShop()!.shopId!;
     List<TempProductClass>? productList =
-        returnData(context: context).productList
+        returnData(context: context)
+            .productList()
             .where(
               (product) =>
                   product.uuid! == widget.productUuid,
@@ -128,11 +129,11 @@ class _ProductDetailsDesktopState
           notifications:
               returnNotificationProvider(
                     context,
-                  ).notifications.isEmpty
+                  ).notifications().isEmpty
                   ? []
                   : returnNotificationProvider(
                     context,
-                  ).notifications,
+                  ).notifications(),
           globalKey: _scaffoldKey,
         ),
         body: Row(
@@ -176,7 +177,7 @@ class _ProductDetailsDesktopState
                 notifications:
                     returnNotificationProvider(
                       context,
-                    ).notifications,
+                    ).notifications(),
               ),
             ),
             Expanded(
@@ -1386,7 +1387,7 @@ class _ProductDetailsDesktopState
                                                           context:
                                                               context,
                                                         )
-                                                        .categories
+                                                        .categories()
                                                         .where(
                                                           (
                                                             cat,
@@ -1399,7 +1400,7 @@ class _ProductDetailsDesktopState
                                                           context:
                                                               context,
                                                         )
-                                                        .categories
+                                                        .categories()
                                                         .where(
                                                           (
                                                             cat,

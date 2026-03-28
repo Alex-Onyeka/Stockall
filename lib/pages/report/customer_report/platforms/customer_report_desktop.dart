@@ -39,11 +39,7 @@ class _CustomerReportDesktopState
     var theme = returnTheme(context);
     var salesRecords =
         returnReceiptProvider(context)
-            .returnproductsRecordByDayOrWeek(
-              returnReceiptProvider(
-                context,
-              ).produtRecordSalesMain,
-            )
+            .returnproductsRecordByDayOrWeek()
             .where((record) => record.customerUuid != null)
             .toList();
 

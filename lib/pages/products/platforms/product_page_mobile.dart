@@ -94,7 +94,7 @@ class _ProductPageMobileState
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     final products =
-        context.watch<DataProvider>().productList;
+        context.watch<DataProvider>().productList();
     return Scaffold(
       bottomNavigationBar: MainBottomNav(
         action: () {

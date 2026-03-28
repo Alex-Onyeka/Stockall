@@ -407,7 +407,7 @@ class _SubStaffsPageDesktopState
               builder: (context) {
                 if (returnSubStaffProvider(
                   context: context,
-                ).subStaffs.isEmpty) {
+                ).subStaffs().isEmpty) {
                   return Material(
                     color: Colors.transparent,
                     child: EmptyWidgetDisplayOnly(
@@ -440,7 +440,8 @@ class _SubStaffsPageDesktopState
                       children:
                           returnSubStaffProvider(
                                 context: context,
-                              ).subStaffs
+                              )
+                              .subStaffs()
                               .map(
                                 (staff) =>
                                     SubStaffListTileWidget(

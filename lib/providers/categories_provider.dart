@@ -21,10 +21,53 @@ class CategoriesProvider extends ChangeNotifier {
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
 
-  List<CategoryClass> categories = [];
+  List<CategoryClass> categoriesMain = [];
+
+  List<CategoryClass> categories() {
+    if (returnShopProvider()
+            .userShop()
+            ?.manageDepartments ==
+        true) {
+      if (!authorization(
+        authorized: Authorizations().viewAllDepartments,
+      )) {
+        return categoriesMain.where((cat) {
+          if (cat.departmentId == null) {
+            return true;
+          } else {
+            return cat.departmentId ==
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid;
+          }
+        }).toList();
+      } else {
+        if (returnDepartmentProvider()
+                .currentDepartment()
+                ?.uuid ==
+            null) {
+          return categoriesMain;
+        } else {
+          return categoriesMain.where((cat) {
+            if (cat.departmentId == null) {
+              return true;
+            } else {
+              return cat.departmentId ==
+                  returnDepartmentProvider()
+                      .currentDepartment()
+                      ?.uuid;
+            }
+          }).toList();
+        }
+      }
+    } else {
+      return categoriesMain;
+    }
+  }
+
   final String tableName = 'categories';
   void clearCategories() {
-    categories.clear();
+    categoriesMain.clear();
     print('Categories Cleared');
     notifyListeners();
   }
@@ -84,41 +127,16 @@ class CategoriesProvider extends ChangeNotifier {
             .order('name', ascending: true);
         print('Categories Gotten: ${response.length}');
 
-        categories =
+        categoriesMain =
             (response as List)
                 .map((e) => CategoryClass.fromJson(e))
                 .toList();
 
-        if (returnShopProvider()
-                .userShop()
-                ?.manageDepartments ==
-            true) {
-          if (!authorization(
-                authorized:
-                    Authorizations().viewAllDepartments,
-              ) ||
-              returnDepartmentProvider()
-                      .currentDepartment()
-                      ?.uuid !=
-                  null) {
-            categories =
-                categories
-                    .where(
-                      (cat) =>
-                          cat.departmentId ==
-                          returnDepartmentProvider()
-                              .currentDepartment()
-                              ?.uuid,
-                    )
-                    .toList();
-          }
-        }
-
         await CategoryFunc().insertAllCategories(
-          categories,
+          categoriesMain,
         );
         notifyListeners();
-        return categories;
+        return categoriesMain;
       } catch (e) {
         print(
           'Error Getting Categories Online: ${e.toString()}',
@@ -128,34 +146,10 @@ class CategoriesProvider extends ChangeNotifier {
       }
     } else {
       try {
-        categories = CategoryFunc().getCategories();
-        if (returnShopProvider()
-                .userShop()
-                ?.manageDepartments ==
-            true) {
-          if (!authorization(
-                authorized:
-                    Authorizations().viewAllDepartments,
-              ) ||
-              returnDepartmentProvider()
-                      .currentDepartment()
-                      ?.uuid !=
-                  null) {
-            categories =
-                categories
-                    .where(
-                      (cat) =>
-                          cat.departmentId ==
-                          returnDepartmentProvider()
-                              .currentDepartment()
-                              ?.uuid,
-                    )
-                    .toList();
-          }
-        }
+        categoriesMain = CategoryFunc().getCategories();
 
         notifyListeners();
-        return categories;
+        return categoriesMain;
       } catch (e) {
         print(
           'Error Getting Categories Offline: ${e.toString()}',

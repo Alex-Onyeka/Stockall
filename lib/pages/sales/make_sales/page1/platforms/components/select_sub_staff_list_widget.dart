@@ -35,7 +35,9 @@ class _SelectSubStaffListWidgetState
       width: 400,
       child: Builder(
         builder: (context) {
-          if (returnSubStaffProvider().subStaffs.isEmpty) {
+          if (returnSubStaffProvider()
+              .subStaffs()
+              .isEmpty) {
             return Center(
               child: EmptyWidgetDisplayOnly(
                 title: 'No Sub Staff',
@@ -70,7 +72,8 @@ class _SelectSubStaffListWidgetState
             child: ListView(
               // shrinkWrap: true,
               children:
-                  returnSubStaffProvider().subStaffs
+                  returnSubStaffProvider()
+                      .subStaffs()
                       .where((st) {
                         var beans =
                             returnSalesProviderContext(

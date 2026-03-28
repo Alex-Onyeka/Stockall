@@ -468,7 +468,7 @@ class _BarcodePrintingPageState
                                               returnData(
                                                 context:
                                                     context,
-                                              ).productList.where((
+                                              ).productList().where((
                                                 product,
                                               ) {
                                                 if (productPage ==

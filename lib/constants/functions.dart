@@ -3325,7 +3325,8 @@ Future<Uint8List> _buildPdfProducts(
                                   returnCategoriesProvider(
                                             context:
                                                 context,
-                                          ).categories
+                                          )
+                                          .categories()
                                           .where(
                                             (cat) =>
                                                 cat.uuid ==
@@ -3336,7 +3337,8 @@ Future<Uint8List> _buildPdfProducts(
                                       ? returnCategoriesProvider(
                                             context:
                                                 context,
-                                          ).categories
+                                          )
+                                          .categories()
                                           .where(
                                             (cat) =>
                                                 cat.uuid ==

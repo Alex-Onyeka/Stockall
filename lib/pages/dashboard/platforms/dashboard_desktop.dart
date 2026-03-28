@@ -118,11 +118,11 @@ class _DashboardDesktopState
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    var receiptsLocal =
-        returnReceiptProvider(context).receipts;
-    var expensesLocal =
-        returnExpensesProvider(context).expenses;
-    var productsLocal = returnData().productList;
+    // var expensesLocal =
+    //     returnExpensesProvider(
+    //       context,
+    //     ).departmentExpenses();
+    var productsLocal = returnData().productList();
     if (widget.shopId == null) {
       return Scaffold(
         body: returnCompProvider(
@@ -172,11 +172,11 @@ class _DashboardDesktopState
             notifications:
                 returnNotificationProvider(
                       context,
-                    ).notifications.isEmpty
+                    ).notifications().isEmpty
                     ? []
                     : returnNotificationProvider(
                       context,
-                    ).notifications,
+                    ).notifications(),
             globalKey: _scaffoldKey,
           ),
           body: Stack(
@@ -215,11 +215,11 @@ class _DashboardDesktopState
                     notifications:
                         returnNotificationProvider(
                               context,
-                            ).notifications.isEmpty
+                            ).notifications().isEmpty
                             ? []
                             : returnNotificationProvider(
                               context,
-                            ).notifications,
+                            ).notifications(),
                   ),
                   Expanded(
                     child: DesktopPageContainer(
@@ -304,37 +304,22 @@ class _DashboardDesktopState
                                                   children: [
                                                     Expanded(
                                                       child: DashboardTotalSalesBanner(
-                                                        expenses:
-                                                            expensesLocal,
+                                                        // expenses:
+                                                        //     expensesLocal,
                                                         userValue: returnReceiptProvider(
                                                           context,
-                                                        ).getTotalRevenueForSelectedDay(
-                                                          returnReceiptProvider(
+                                                        ).getTotalRevenueForSelectedDayAll(
+                                                          staffId:
+                                                              userGeneral(
                                                                 context,
-                                                              ).receipts
-                                                              .where(
-                                                                (
-                                                                  rec,
-                                                                ) =>
-                                                                    rec.staffId ==
-                                                                    userGeneral(
-                                                                      context,
-                                                                    ).userId,
-                                                              )
-                                                              .toList(),
-                                                        ),
-                                                        currentUser: userGeneral(
-                                                          context,
+                                                              ).userId,
                                                         ),
                                                         theme:
                                                             theme,
-                                                        value: returnReceiptProvider(
-                                                          context,
-                                                        ).getTotalRevenueForSelectedDay(
-                                                          returnReceiptProvider(
-                                                            context,
-                                                          ).receipts,
-                                                        ),
+                                                        value:
+                                                            returnReceiptProvider(
+                                                              context,
+                                                            ).getTotalRevenueForSelectedDay(),
                                                       ),
                                                     ),
                                                     Material(
@@ -454,7 +439,7 @@ class _DashboardDesktopState
                                                         icon:
                                                             productIconSvg,
                                                         number:
-                                                            '${returnReceiptProvider(context).returnOwnReceiptsByDayOrWeek(receiptsLocal).length}',
+                                                            '${returnReceiptProvider(context).returnOwnReceiptsByDayOrWeek().length}',
                                                         title:
                                                             'Sales',
                                                         action: () {
@@ -522,7 +507,7 @@ class _DashboardDesktopState
                                                         icon:
                                                             productIconSvg,
                                                         number:
-                                                            '${returnExpensesProvider(context).returnExpensesByDayOrWeek(context, returnExpensesProvider(context).expenses).length}',
+                                                            '${returnExpensesProvider(context).returnExpensesByDayOrWeek(context).length}',
                                                         title:
                                                             'Expenses',
                                                         action: () {
@@ -1551,7 +1536,7 @@ class _DashboardDesktopState
 //             returnData().clearBarcodeTextField();
 //           } else {
 //             if (value.isNotEmpty) {
-//               var items = returnData().productList.where(
+//               var items = returnData().productList().where(
 //                 (product) =>
 //                     product.barcode?.toLowerCase() ==
 //                         value.toLowerCase() ||

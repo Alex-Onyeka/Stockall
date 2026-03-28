@@ -473,7 +473,7 @@ class _GeneralReportMobileState
                                                                     FontWeight.w700,
                                                               ),
 
-                                                              '#${returnReceiptProvider(context).returnOwnReceiptsByDayOrWeek(receiptSnapshot.data!).length}',
+                                                              '#${returnReceiptProvider(context).returnOwnReceiptsByDayOrWeek().length}',
                                                             );
                                                           }
                                                         },
@@ -550,7 +550,6 @@ class _GeneralReportMobileState
                                                                   listen:
                                                                       false,
                                                                 ).getTotalRevenueForSelectedDay(
-                                                                  receiptSnapshot.data!,
                                                                   // productRecordSnapShot.connectionState ==
                                                                   //         ConnectionState.waiting
                                                                   //     ? []
@@ -655,7 +654,7 @@ class _GeneralReportMobileState
                                                             ? '0'
                                                             : expensesSnapshot.hasError
                                                             ? '0'
-                                                            : '#${returnExpensesProvider(context, listen: false).returnExpensesByDayOrWeek(context, expensesSnapshot.data!).length}',
+                                                            : '#${returnExpensesProvider(context, listen: false).returnExpensesByDayOrWeek(context).length}',
                                                       ),
                                                     ],
                                                   ),
@@ -717,7 +716,6 @@ class _GeneralReportMobileState
                                                                       false,
                                                                 ).returnExpensesByDayOrWeek(
                                                                   context,
-                                                                  expensesSnapshot.data!,
                                                                 );
                                                                 double getTotal() {
                                                                   double temp =
@@ -851,19 +849,11 @@ class _GeneralReportMobileState
                                                               '${currencySymbol(context: context)} 0.0 - ${currencySymbol(context: context)} 0.0',
                                                             );
                                                           } else {
-                                                            var receipts = returnReceiptProvider(
-                                                              context,
-                                                              listen:
-                                                                  false,
-                                                            ).returnOwnReceiptsByDayOrWeek(
-                                                              receiptSnapshot.data!,
-                                                            );
                                                             var total = returnReceiptProvider(
                                                               context,
                                                               listen:
                                                                   false,
                                                             ).getTotalRevenueForSelectedDay(
-                                                              receipts,
                                                               // productRecordSnapShot.connectionState ==
                                                               //         ConnectionState.waiting
                                                               //     ? []
@@ -880,7 +870,6 @@ class _GeneralReportMobileState
                                                                     false,
                                                               ).returnExpensesByDayOrWeek(
                                                                 context,
-                                                                expensesSnapshot.data!,
                                                               )) {
                                                                 temp +=
                                                                     item.amount;
@@ -960,19 +949,11 @@ class _GeneralReportMobileState
                                                                   '${currencySymbol(context: context)} 0.0 - ${currencySymbol(context: context)} 0.0',
                                                                 );
                                                               } else {
-                                                                var receipts = returnReceiptProvider(
-                                                                  context,
-                                                                  listen:
-                                                                      false,
-                                                                ).returnOwnReceiptsByDayOrWeek(
-                                                                  receiptSnapshot.data!,
-                                                                );
                                                                 var total = returnReceiptProvider(
                                                                   context,
                                                                   listen:
                                                                       false,
                                                                 ).getTotalRevenueForSelectedDay(
-                                                                  receipts,
                                                                   // productRecordSnapShot.connectionState ==
                                                                   //         ConnectionState.waiting
                                                                   //     ? []
@@ -988,7 +969,6 @@ class _GeneralReportMobileState
                                                                         false,
                                                                   ).returnExpensesByDayOrWeek(
                                                                     context,
-                                                                    expensesSnapshot.data!,
                                                                   )) {
                                                                     temp +=
                                                                         item.amount;
@@ -1170,13 +1150,12 @@ class _GeneralReportMobileState
                                                               '${currencySymbol(context: context)} 0.0 - ${currencySymbol(context: context)} 0.0',
                                                             );
                                                           } else {
-                                                            var receipts = returnReceiptProvider(
-                                                              context,
-                                                              listen:
-                                                                  false,
-                                                            ).returnOwnReceiptsByDayOrWeek(
-                                                              receiptSnapshot.data!,
-                                                            );
+                                                            var receipts =
+                                                                returnReceiptProvider(
+                                                                  context,
+                                                                  listen:
+                                                                      false,
+                                                                ).returnOwnReceiptsByDayOrWeek();
 
                                                             if (productRecordSnapShot.connectionState ==
                                                                 ConnectionState.waiting) {
@@ -1209,7 +1188,6 @@ class _GeneralReportMobileState
                                                                 listen:
                                                                     false,
                                                               ).getTotalRevenueForSelectedDay(
-                                                                receipts,
                                                                 // productRecordSnapShot.connectionState ==
                                                                 //         ConnectionState.waiting
                                                                 //     ? []
@@ -1322,13 +1300,12 @@ class _GeneralReportMobileState
                                                                   '${currencySymbol(context: context)} 0.0',
                                                                 );
                                                               } else {
-                                                                var receipts = returnReceiptProvider(
-                                                                  context,
-                                                                  listen:
-                                                                      false,
-                                                                ).returnOwnReceiptsByDayOrWeek(
-                                                                  receiptSnapshot.data!,
-                                                                );
+                                                                var receipts =
+                                                                    returnReceiptProvider(
+                                                                      context,
+                                                                      listen:
+                                                                          false,
+                                                                    ).returnOwnReceiptsByDayOrWeek();
                                                                 if (productRecordSnapShot.connectionState ==
                                                                     ConnectionState.waiting) {
                                                                   return Text(
@@ -1368,7 +1345,6 @@ class _GeneralReportMobileState
                                                                     listen:
                                                                         false,
                                                                   ).getTotalRevenueForSelectedDay(
-                                                                    receipts,
                                                                     // productRecordSnapShot.connectionState ==
                                                                     //         ConnectionState.waiting
                                                                     //     ? []
@@ -1540,13 +1516,12 @@ class _GeneralReportMobileState
                                                               '${currencySymbol(context: context)} 0.0 - ${currencySymbol(context: context)} 0.0',
                                                             );
                                                           } else {
-                                                            var receipts = returnReceiptProvider(
-                                                              context,
-                                                              listen:
-                                                                  false,
-                                                            ).returnOwnReceiptsByDayOrWeek(
-                                                              receiptSnapshot.data!,
-                                                            );
+                                                            var receipts =
+                                                                returnReceiptProvider(
+                                                                  context,
+                                                                  listen:
+                                                                      false,
+                                                                ).returnOwnReceiptsByDayOrWeek();
 
                                                             var expenses = returnExpensesProvider(
                                                               context,
@@ -1554,7 +1529,6 @@ class _GeneralReportMobileState
                                                                   false,
                                                             ).returnExpensesByDayOrWeek(
                                                               context,
-                                                              expensesSnapshot.data!,
                                                             );
 
                                                             double
@@ -1574,7 +1548,6 @@ class _GeneralReportMobileState
                                                               listen:
                                                                   false,
                                                             ).getTotalRevenueForSelectedDay(
-                                                              receipts,
                                                               // productRecordSnapShot.connectionState ==
                                                               //         ConnectionState.waiting
                                                               //     ? []
@@ -1692,13 +1665,12 @@ class _GeneralReportMobileState
                                                                   '${currencySymbol(context: context)} 0.0',
                                                                 );
                                                               } else {
-                                                                var receipts = returnReceiptProvider(
-                                                                  context,
-                                                                  listen:
-                                                                      false,
-                                                                ).returnOwnReceiptsByDayOrWeek(
-                                                                  receiptSnapshot.data!,
-                                                                );
+                                                                var receipts =
+                                                                    returnReceiptProvider(
+                                                                      context,
+                                                                      listen:
+                                                                          false,
+                                                                    ).returnOwnReceiptsByDayOrWeek();
 
                                                                 var expenses = returnExpensesProvider(
                                                                   context,
@@ -1706,7 +1678,6 @@ class _GeneralReportMobileState
                                                                       false,
                                                                 ).returnExpensesByDayOrWeek(
                                                                   context,
-                                                                  expensesSnapshot.data!,
                                                                 );
 
                                                                 double getExpensesTotal() {
@@ -1725,7 +1696,6 @@ class _GeneralReportMobileState
                                                                   listen:
                                                                       false,
                                                                 ).getTotalRevenueForSelectedDay(
-                                                                  receipts,
                                                                   // productRecordSnapShot.connectionState ==
                                                                   //         ConnectionState.waiting
                                                                   //     ? []
@@ -1868,10 +1838,7 @@ class _GeneralReportMobileState
                                             returnReceiptProvider(
                                               context,
                                               listen: false,
-                                            ).returnproductsRecordByDayOrWeek(
-                                              productRecordSnapShot
-                                                  .data!,
-                                            );
+                                            ).returnproductsRecordByDayOrWeek();
 
                                         List<
                                           ProductSummaryClass

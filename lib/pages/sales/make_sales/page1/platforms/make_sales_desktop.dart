@@ -681,7 +681,8 @@ class _MakeSalesDesktopState
       context: context,
       action: () {
         var theme = returnTheme(context, listen: false);
-        if (returnData().productList
+        if (returnData()
+                .productList()
                 .where(
                   (product) =>
                       product.uuid == cartItem.item.uuid,
@@ -1092,7 +1093,7 @@ class _MakeSalesDesktopState
                                     theme: theme,
                                     action: () {
                                       var productIndex = returnData()
-                                          .productList
+                                          .productList()
                                           .indexWhere((
                                             item,
                                           ) {
@@ -1255,7 +1256,7 @@ class _MakeSalesDesktopState
                                                 cartItem,
                                             isCustomEdit:
                                                 returnData()
-                                                    .productList
+                                                    .productList()
                                                     .where(
                                                       (
                                                         product,
@@ -1406,7 +1407,7 @@ class _MakeSalesDesktopState
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    var products = returnData().productList;
+    var products = returnData().productList();
     return GestureDetector(
       onTap:
           () =>
@@ -2137,7 +2138,8 @@ class _MakeSalesDesktopState
                                                                       var salesProvider =
                                                                           returnSalesProvider();
 
-                                                                      if (returnData().productList
+                                                                      if (returnData()
+                                                                          .productList()
                                                                           .where(
                                                                             (
                                                                               product,
@@ -2483,7 +2485,7 @@ class _MakeSalesDesktopState
                                             action: () async {
                                               if (value
                                                   .isNotEmpty) {
-                                                var items = returnData().productList.where(
+                                                var items = returnData().productList().where(
                                                   (
                                                     product,
                                                   ) =>
@@ -2554,7 +2556,7 @@ class _MakeSalesDesktopState
                                           Visibility(
                                             visible:
                                                 returnData()
-                                                    .productList
+                                                    .productList()
                                                     .isNotEmpty,
                                             child: Ink(
                                               decoration: BoxDecoration(

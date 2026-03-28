@@ -17,7 +17,8 @@ class CustomerPageMobile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    var customer = returnCustomers(context).customersMain
+    var customer = returnCustomers(context)
+        .customersMain()
         .firstWhere((cust) => cust.uuid! == uuid);
     return SafeArea(
       child: Scaffold(

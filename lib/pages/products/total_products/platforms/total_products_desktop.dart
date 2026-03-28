@@ -94,7 +94,7 @@ class _TotalProductsDesktopState
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    var products = returnData().productList;
+    var products = returnData().productList();
     List<TempProductClass> filterProducts() {
       switch (currentSelect) {
         case 1:
@@ -158,11 +158,11 @@ class _TotalProductsDesktopState
         notifications:
             returnNotificationProvider(
                   context,
-                ).notifications.isEmpty
+                ).notifications().isEmpty
                 ? []
                 : returnNotificationProvider(
                   context,
-                ).notifications,
+                ).notifications(),
         globalKey: _scaffoldKey,
       ),
       body: Stack(
@@ -200,11 +200,11 @@ class _TotalProductsDesktopState
                 notifications:
                     returnNotificationProvider(
                           context,
-                        ).notifications.isEmpty
+                        ).notifications().isEmpty
                         ? []
                         : returnNotificationProvider(
                           context,
-                        ).notifications,
+                        ).notifications(),
               ),
               Expanded(
                 child: Container(

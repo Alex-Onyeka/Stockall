@@ -60,9 +60,6 @@ class TotalExpensesDesktopState
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    var expensesMain =
-        returnExpensesProvider(context).expenses;
-
     return GestureDetector(
       onTap: () {
         returnExpensesProvider(
@@ -101,11 +98,11 @@ class TotalExpensesDesktopState
           notifications:
               returnNotificationProvider(
                     context,
-                  ).notifications.isEmpty
+                  ).notifications().isEmpty
                   ? []
                   : returnNotificationProvider(
                     context,
-                  ).notifications,
+                  ).notifications(),
           globalKey: _scaffoldKey,
         ),
         body: Stack(
@@ -144,11 +141,11 @@ class TotalExpensesDesktopState
                   notifications:
                       returnNotificationProvider(
                             context,
-                          ).notifications.isEmpty
+                          ).notifications().isEmpty
                           ? []
                           : returnNotificationProvider(
                             context,
-                          ).notifications,
+                          ).notifications(),
                 ),
                 Expanded(
                   child: DesktopPageContainer(
@@ -235,7 +232,6 @@ class TotalExpensesDesktopState
                                 context,
                               ).returnExpensesByDayOrWeek(
                                 context,
-                                expensesMain,
                               );
                           double getTotalExpenses() {
                             double tempTotal = 0;

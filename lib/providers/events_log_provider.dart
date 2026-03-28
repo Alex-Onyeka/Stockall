@@ -62,19 +62,61 @@ class EventsLogProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  List<TempEventLogClass> departmentEvents() {
+    if (returnShopProvider()
+            .userShop()
+            ?.manageDepartments ==
+        true) {
+      if (!authorization(
+        authorized: Authorizations().viewAllDepartments,
+      )) {
+        return logs.where((cat) {
+          // if (cat.departmentUuid == null) {
+          //   return true;
+          // } else {
+          return cat.departmentUuid ==
+              returnDepartmentProvider()
+                  .currentDepartment()
+                  ?.uuid;
+          // }
+        }).toList();
+      } else {
+        if (returnDepartmentProvider()
+                .currentDepartment()
+                ?.uuid ==
+            null) {
+          return logs;
+        } else {
+          return logs.where((cat) {
+            // if (cat.departmentUuid == null) {
+            //   return true;
+            // } else {
+            return cat.departmentUuid ==
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid;
+            // }
+          }).toList();
+        }
+      }
+    } else {
+      return logs;
+    }
+  }
+
   List<TempEventLogClass> returnLogs() {
-    logs.sort(
+    departmentEvents().sort(
       (a, b) => b.createdAt!.compareTo(a.createdAt!),
     );
     if (dateSet == null &&
         rangeEndDate == null &&
         rangeStartDate == null) {
-      logs.sort(
+      departmentEvents().sort(
         (a, b) => b.createdAt!.compareTo(a.createdAt!),
       );
-      return logs;
+      return departmentEvents();
     } else if (dateSet != null) {
-      return logs
+      return departmentEvents()
           .where(
             (log) =>
                 (log.createdAt!.day == dateSet!.day) &&
@@ -82,9 +124,9 @@ class EventsLogProvider with ChangeNotifier {
                 (log.createdAt!.year == dateSet!.year),
           )
           .toList();
-      // return logs;
+      // return departmentEvents();
     } else {
-      return logs
+      return departmentEvents()
           .where(
             (log) =>
                 ((log.createdAt!.isAfter(
@@ -122,31 +164,6 @@ class EventsLogProvider with ChangeNotifier {
                 .map((m) => TempEventLogClass.fromJson(m))
                 .toList();
 
-        if (returnShopProvider()
-                .userShop()
-                ?.manageDepartments ==
-            true) {
-          if (!authorization(
-                authorized:
-                    Authorizations().viewAllDepartments,
-              ) ||
-              returnDepartmentProvider()
-                      .currentDepartment()
-                      ?.uuid !=
-                  null) {
-            logs =
-                logs
-                    .where(
-                      (event) =>
-                          event.departmentUuid ==
-                          returnDepartmentProvider()
-                              .currentDepartment()
-                              ?.uuid,
-                    )
-                    .toList();
-          }
-        }
-
         await EventsLogFunc().insertAllEventsLog(logs);
         print('✅✅ Events Gotten Successfully Online');
         notifyListeners();
@@ -161,30 +178,6 @@ class EventsLogProvider with ChangeNotifier {
     } else {
       logs = EventsLogFunc().getEventsLogs();
 
-      if (returnShopProvider()
-              .userShop()
-              ?.manageDepartments ==
-          true) {
-        if (!authorization(
-              authorized:
-                  Authorizations().viewAllDepartments,
-            ) ||
-            returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid !=
-                null) {
-          logs =
-              logs
-                  .where(
-                    (event) =>
-                        event.departmentUuid ==
-                        returnDepartmentProvider()
-                            .currentDepartment()
-                            ?.uuid,
-                  )
-                  .toList();
-        }
-      }
       print('Events Gotten Successfully Offline');
       notifyListeners();
       return logs;

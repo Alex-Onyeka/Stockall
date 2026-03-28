@@ -297,7 +297,7 @@ class _SubStaffsPageMobileState
                   builder: (context) {
                     if (returnSubStaffProvider(
                       context: context,
-                    ).subStaffs.isEmpty) {
+                    ).subStaffs().isEmpty) {
                       return Material(
                         color: Colors.transparent,
                         child: EmptyWidgetDisplayOnly(
@@ -333,7 +333,8 @@ class _SubStaffsPageMobileState
                           children:
                               returnSubStaffProvider(
                                     context: context,
-                                  ).subStaffs
+                                  )
+                                  .subStaffs()
                                   .map(
                                     (staff) =>
                                         SubStaffListTileWidget(

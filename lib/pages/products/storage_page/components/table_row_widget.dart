@@ -83,13 +83,15 @@ class _TableRowRecordWidgetState
                                     .fontSize,
                             fontWeight: FontWeight.bold,
                           ),
-                          (returnData(
-                                    context: context,
-                                  ).productList.indexWhere(
-                                    (item) =>
-                                        item.uuid ==
-                                        widget.product.uuid,
-                                  ) +
+                          (returnData(context: context)
+                                      .productList()
+                                      .indexWhere(
+                                        (item) =>
+                                            item.uuid ==
+                                            widget
+                                                .product
+                                                .uuid,
+                                      ) +
                                   1)
                               .toString(),
                         ),

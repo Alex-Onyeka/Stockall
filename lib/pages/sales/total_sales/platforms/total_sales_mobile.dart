@@ -211,9 +211,7 @@ class _TotalSalesMobileState
                                         ? returnReceiptProvider(
                                               context,
                                             )
-                                            .returnReceipts(
-                                              // context,
-                                            )
+                                            .returnOwnReceiptsByDayOrWeek()
                                             .where(
                                               (receipt) =>
                                                   receipt
@@ -228,9 +226,7 @@ class _TotalSalesMobileState
                                         ? returnReceiptProvider(
                                               context,
                                             )
-                                            .returnReceipts(
-                                              // context,
-                                            )
+                                            .returnOwnReceiptsByDayOrWeek()
                                             .where(
                                               (receipt) =>
                                                   receipt
@@ -246,9 +242,7 @@ class _TotalSalesMobileState
                                         ? returnReceiptProvider(
                                               context,
                                             )
-                                            .returnReceipts(
-                                              // context,
-                                            )
+                                            .returnOwnReceiptsByDayOrWeek()
                                             .where(
                                               (receipt) =>
                                                   receipt
@@ -262,9 +256,7 @@ class _TotalSalesMobileState
                                         : returnReceiptProvider(
                                               context,
                                             )
-                                            .returnReceipts(
-                                              // context,
-                                            )
+                                            .returnOwnReceiptsByDayOrWeek()
                                             .toList()
                                             .length
                                             .toDouble(),
@@ -417,9 +409,7 @@ class _TotalSalesMobileState
                               ? returnReceiptProvider(
                                     context,
                                   )
-                                  .returnReceipts(
-                                    // context,
-                                  )
+                                  .returnOwnReceiptsByDayOrWeek()
                                   .toList()
                                   .where(
                                     (rec) =>
@@ -432,9 +422,7 @@ class _TotalSalesMobileState
                               ? returnReceiptProvider(
                                     context,
                                   )
-                                  .returnReceipts(
-                                    // context,
-                                  )
+                                  .returnOwnReceiptsByDayOrWeek()
                                   .toList()
                                   .where(
                                     (rec) =>
@@ -447,27 +435,18 @@ class _TotalSalesMobileState
                               ? returnReceiptProvider(
                                     context,
                                   )
-                                  .returnOwnReceiptsByDayOrWeek(
-                                    // context,
-                                    returnReceiptProvider(
-                                          context,
-                                        ).receipts
-                                        .where(
-                                          (rec) =>
-                                              rec.customerUuid ==
-                                              widget
-                                                  .customerUuid,
-                                        )
-                                        .toList(),
+                                  .returnOwnReceiptsByDayOrWeek()
+                                  .where(
+                                    (rec) =>
+                                        rec.customerUuid ==
+                                        widget.customerUuid,
                                   )
                                   .toList()
                                   .isEmpty
                               : returnReceiptProvider(
                                     context,
                                   )
-                                  .returnReceipts(
-                                    // context,
-                                  )
+                                  .returnOwnReceiptsByDayOrWeek()
                                   .toList()
                                   .isEmpty) {
                             return EmptyWidgetDisplayOnly(
@@ -497,9 +476,7 @@ class _TotalSalesMobileState
                                         ? returnReceiptProvider(
                                               context,
                                             )
-                                            .returnReceipts(
-                                              // context,
-                                            )
+                                            .returnOwnReceiptsByDayOrWeek()
                                             .where(
                                               (rec) =>
                                                   rec.staffId ==
@@ -512,9 +489,7 @@ class _TotalSalesMobileState
                                         ? returnReceiptProvider(
                                               context,
                                             )
-                                            .returnReceipts(
-                                              // context,
-                                            )
+                                            .returnOwnReceiptsByDayOrWeek()
                                             .where(
                                               (rec) =>
                                                   rec.subStaffUuid ==
@@ -528,9 +503,7 @@ class _TotalSalesMobileState
                                         ? returnReceiptProvider(
                                               context,
                                             )
-                                            .returnReceipts(
-                                              // context,
-                                            )
+                                            .returnOwnReceiptsByDayOrWeek()
                                             .where(
                                               (rec) =>
                                                   rec.customerUuid ==
@@ -542,9 +515,7 @@ class _TotalSalesMobileState
                                         : returnReceiptProvider(
                                               context,
                                             )
-                                            .returnReceipts(
-                                              // context,
-                                            )
+                                            .returnOwnReceiptsByDayOrWeek()
                                             .toList()
                                             .length,
                                 itemBuilder: (
@@ -556,9 +527,7 @@ class _TotalSalesMobileState
                                           ? returnReceiptProvider(
                                                 context,
                                               )
-                                              .returnReceipts(
-                                                // context,
-                                              )
+                                              .returnOwnReceiptsByDayOrWeek()
                                               .where(
                                                 (rec) =>
                                                     rec.staffId ==
@@ -571,9 +540,7 @@ class _TotalSalesMobileState
                                           ? returnReceiptProvider(
                                                 context,
                                               )
-                                              .returnReceipts(
-                                                // context,
-                                              )
+                                              .returnOwnReceiptsByDayOrWeek()
                                               .where(
                                                 (rec) =>
                                                     rec.subStaffUuid ==
@@ -586,9 +553,7 @@ class _TotalSalesMobileState
                                           ? returnReceiptProvider(
                                                 context,
                                               )
-                                              .returnReceipts(
-                                                // context,
-                                              )
+                                              .returnOwnReceiptsByDayOrWeek()
                                               .where(
                                                 (rec) =>
                                                     rec.customerUuid ==
@@ -599,7 +564,7 @@ class _TotalSalesMobileState
                                           : returnReceiptProvider(
                                                 context,
                                               )
-                                              .returnReceipts()
+                                              .returnOwnReceiptsByDayOrWeek()
                                               .toList()[index];
                                   return MainReceiptTile(
                                     action: () {

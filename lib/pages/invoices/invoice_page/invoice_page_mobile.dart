@@ -84,7 +84,7 @@ class _InvoicePageMobileState
         invs.isNotEmpty ? invs.first : null;
     var custs =
         returnCustomers(context, listen: false)
-            .customersMain
+            .customersMain()
             .where(
               (cus) => cus.uuid == invoice?.customerUuid,
             )
@@ -425,7 +425,8 @@ class _InvoicePageMobileState
                                       returnReceiptProvider(
                                             context,
                                             listen: false,
-                                          ).receipts
+                                          )
+                                          .returnOwnReceiptsByDayOrWeek()
                                           .where(
                                             (rec) =>
                                                 rec.invoiceUuid ==
@@ -565,7 +566,7 @@ class _InvoicePageMobileState
                                                 safeContext,
                                             receipts:
                                                 returnReceiptProviderSingle()
-                                                    .receipts
+                                                    .returnOwnReceiptsByDayOrWeek()
                                                     .where(
                                                       (
                                                         rec,
@@ -610,7 +611,8 @@ class _InvoicePageMobileState
                                                       context:
                                                           safeContext,
                                                       receipts:
-                                                          returnReceiptProviderSingle().receipts
+                                                          returnReceiptProviderSingle()
+                                                              .returnOwnReceiptsByDayOrWeek()
                                                               .where(
                                                                 (
                                                                   rec,
@@ -2134,7 +2136,8 @@ class _InvoicePageMobileState
                                             ) {
                                               if (returnReceiptProvider(
                                                     context,
-                                                  ).receipts
+                                                  )
+                                                  .returnOwnReceiptsByDayOrWeek()
                                                   .where(
                                                     (rec) =>
                                                         rec.invoiceUuid ==
@@ -2189,7 +2192,7 @@ class _InvoicePageMobileState
                                                     returnReceiptProvider(
                                                           context,
                                                         )
-                                                        .receipts
+                                                        .returnOwnReceiptsByDayOrWeek()
                                                         .where(
                                                           (
                                                             rec,

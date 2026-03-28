@@ -66,11 +66,11 @@ class _NotificationsDesktopState
         notifications:
             returnNotificationProvider(
                   context,
-                ).notifications.isEmpty
+                ).notifications().isEmpty
                 ? []
                 : returnNotificationProvider(
                   context,
-                ).notifications,
+                ).notifications(),
         globalKey: _scaffoldKey,
       ),
       body: Stack(
@@ -108,11 +108,11 @@ class _NotificationsDesktopState
                 notifications:
                     returnNotificationProvider(
                           context,
-                        ).notifications.isEmpty
+                        ).notifications().isEmpty
                         ? []
                         : returnNotificationProvider(
                           context,
-                        ).notifications,
+                        ).notifications(),
               ),
               Expanded(
                 child: DesktopPageContainer(
@@ -185,7 +185,7 @@ class _NotificationsDesktopState
                                                 listen:
                                                     false,
                                               )
-                                              .notifications
+                                              .notifications()
                                               .where(
                                                 (notif) =>
                                                     notif.category ==
@@ -211,7 +211,7 @@ class _NotificationsDesktopState
                                                 listen:
                                                     false,
                                               )
-                                              .notifications
+                                              .notifications()
                                               .where(
                                                 (notif) =>
                                                     notif.category ==
@@ -237,7 +237,7 @@ class _NotificationsDesktopState
                                                 listen:
                                                     false,
                                               )
-                                              .notifications
+                                              .notifications()
                                               .where(
                                                 (notif) =>
                                                     notif.category ==
@@ -274,7 +274,8 @@ class _NotificationsDesktopState
                                   if (returnNotificationProvider(
                                         context,
                                         listen: false,
-                                      ).notifications
+                                      )
+                                      .notifications()
                                       .where(
                                         (notif) =>
                                             notif
@@ -309,7 +310,7 @@ class _NotificationsDesktopState
                                                   listen:
                                                       false,
                                                 )
-                                                .notifications
+                                                .notifications()
                                                 .where(
                                                   (notif) =>
                                                       notif
@@ -329,7 +330,7 @@ class _NotificationsDesktopState
                                                     listen:
                                                         false,
                                                   )
-                                                  .notifications
+                                                  .notifications()
                                                   .where(
                                                     (
                                                       notif,
@@ -417,7 +418,8 @@ class _NotificationsDesktopState
                                   if (returnNotificationProvider(
                                         context,
                                         listen: false,
-                                      ).notifications
+                                      )
+                                      .notifications()
                                       .where(
                                         (notif) =>
                                             notif
@@ -452,7 +454,7 @@ class _NotificationsDesktopState
                                                   listen:
                                                       false,
                                                 )
-                                                .notifications
+                                                .notifications()
                                                 .where(
                                                   (notif) =>
                                                       notif
@@ -472,7 +474,7 @@ class _NotificationsDesktopState
                                                     listen:
                                                         false,
                                                   )
-                                                  .notifications
+                                                  .notifications()
                                                   .where(
                                                     (
                                                       notif,
@@ -560,7 +562,8 @@ class _NotificationsDesktopState
                                   if (returnNotificationProvider(
                                         context,
                                         listen: false,
-                                      ).notifications
+                                      )
+                                      .notifications()
                                       .where(
                                         (notif) =>
                                             notif
@@ -595,7 +598,7 @@ class _NotificationsDesktopState
                                                   listen:
                                                       false,
                                                 )
-                                                .notifications
+                                                .notifications()
                                                 .where(
                                                   (notif) =>
                                                       notif
@@ -615,7 +618,7 @@ class _NotificationsDesktopState
                                                     listen:
                                                         false,
                                                   )
-                                                  .notifications
+                                                  .notifications()
                                                   .where(
                                                     (
                                                       notif,

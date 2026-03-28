@@ -79,7 +79,8 @@ class _ProductReportMobileState
     var theme = returnTheme(context);
     var products =
         searchController.text.isNotEmpty
-            ? returnData(context: context).productList
+            ? returnData(context: context)
+                .productList()
                 .where(
                   (pr) =>
                       pr.name.toLowerCase().contains(
@@ -90,7 +91,8 @@ class _ProductReportMobileState
                 .toList()
                 .sublist(
                   0,
-                  returnData(context: context).productList
+                  returnData(context: context)
+                              .productList()
                               .where(
                                 (pr) =>
                                     pr.name
@@ -109,7 +111,7 @@ class _ProductReportMobileState
                           100
                       ? 100
                       : returnData(context: context)
-                          .productList
+                          .productList()
                           .where(
                             (pr) =>
                                 pr.name
@@ -126,16 +128,16 @@ class _ProductReportMobileState
                 )
             : returnData(
               context: context,
-            ).productList.sublist(
+            ).productList().sublist(
               start,
               returnData(
                         context: context,
-                      ).productList.length >
+                      ).productList().length >
                       50
                   ? end
                   : returnData(
                     context: context,
-                  ).productList.length,
+                  ).productList().length,
             );
 
     return Stack(
@@ -806,7 +808,7 @@ class _ProductReportMobileState
                                                     returnData(
                                                       context:
                                                           context,
-                                                    ).productList.length.toDouble(),
+                                                    ).productList().length.toDouble(),
                                                 theme:
                                                     theme,
                                                 backGround:
@@ -839,7 +841,7 @@ class _ProductReportMobileState
                                                           context:
                                                               context,
                                                         )
-                                                        .productList
+                                                        .productList()
                                                         .where(
                                                           (
                                                             item,
@@ -883,7 +885,7 @@ class _ProductReportMobileState
                                                           context:
                                                               context,
                                                         )
-                                                        .productList
+                                                        .productList()
                                                         .where(
                                                           (
                                                             item,
@@ -927,7 +929,7 @@ class _ProductReportMobileState
                                                           context:
                                                               context,
                                                         )
-                                                        .productList
+                                                        .productList()
                                                         .where(
                                                           (
                                                             item,
@@ -984,12 +986,12 @@ class _ProductReportMobileState
                                 start = 0;
                                 end =
                                     returnData()
-                                                .productList
+                                                .productList()
                                                 .length >
                                             50
                                         ? 50
                                         : returnData()
-                                            .productList
+                                            .productList()
                                             .length;
                                 count = 1;
                               });
@@ -1067,7 +1069,7 @@ class _ProductReportMobileState
                                     navigate(
                                       false,
                                       returnData()
-                                          .productList
+                                          .productList()
                                           .length,
                                     );
                                   }
@@ -1127,7 +1129,7 @@ class _ProductReportMobileState
                                           FontWeight.bold,
                                       color: Colors.grey,
                                     ),
-                                    "${returnData(context: context).productList.length > 50 ? (returnData(context: context).productList.length / 50).ceil() : 1}",
+                                    "${returnData(context: context).productList().length > 50 ? (returnData(context: context).productList().length / 50).ceil() : 1}",
                                   ),
                                 ],
                               ),
@@ -1135,12 +1137,12 @@ class _ProductReportMobileState
                                 onPressed: () {
                                   if (end !=
                                       returnData()
-                                          .productList
+                                          .productList()
                                           .length) {
                                     navigate(
                                       true,
                                       returnData()
-                                          .productList
+                                          .productList()
                                           .length,
                                     );
                                   }
@@ -1152,11 +1154,11 @@ class _ProductReportMobileState
                                                   returnData(
                                                     context:
                                                         context,
-                                                  ).productList.length ||
+                                                  ).productList().length ||
                                               returnData(
                                                     context:
                                                         context,
-                                                  ).productList.length <=
+                                                  ).productList().length <=
                                                   50
                                           ? Colors
                                               .grey
@@ -1838,7 +1840,7 @@ class _TableRowRecordWidgetState
                         ),
                         (returnData(
                                   context: context,
-                                ).productList.indexWhere(
+                                ).productList().indexWhere(
                                   (item) =>
                                       item.uuid ==
                                       widget.product.uuid,
@@ -2126,7 +2128,8 @@ class _TableRowRecordWidgetState
 
                         returnCategoriesProvider(
                                   context: context,
-                                ).categories
+                                )
+                                .categories()
                                 .where(
                                   (cat) =>
                                       cat.uuid ==
@@ -2137,7 +2140,8 @@ class _TableRowRecordWidgetState
                                 .isNotEmpty
                             ? returnCategoriesProvider(
                                   context: context,
-                                ).categories
+                                )
+                                .categories()
                                 .where(
                                   (cat) =>
                                       cat.uuid ==

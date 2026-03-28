@@ -18,9 +18,9 @@ class ExpensesProvider extends ChangeNotifier {
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
 
-  List<TempExpensesClass> expenses = [];
+  List<TempExpensesClass> expensesMain = [];
   void clearExpenses() {
-    expenses.clear();
+    expensesMain.clear();
     print('Expenses Cleared');
     notifyListeners();
   }
@@ -93,39 +93,16 @@ class ExpensesProvider extends ChangeNotifier {
             .order('created_date', ascending: false);
         print('Expenses Gotten: ${response.length}');
 
-        expenses =
+        expensesMain =
             (response as List)
                 .map((e) => TempExpensesClass.fromJson(e))
                 .toList();
 
-        if (returnShopProvider()
-                .userShop()
-                ?.manageDepartments ==
-            true) {
-          if (!authorization(
-                authorized:
-                    Authorizations().viewAllDepartments,
-              ) ||
-              returnDepartmentProvider()
-                      .currentDepartment()
-                      ?.uuid !=
-                  null) {
-            expenses =
-                expenses
-                    .where(
-                      (exp) =>
-                          exp.departmentUuid ==
-                          returnDepartmentProvider()
-                              .currentDepartment()
-                              ?.uuid,
-                    )
-                    .toList();
-          }
-        }
-
-        await ExpensesFunc().insertAllExpenses(expenses);
+        await ExpensesFunc().insertAllExpenses(
+          expensesMain,
+        );
         notifyListeners();
-        return expenses;
+        return expensesMain;
       } catch (e) {
         print(
           'Error Getting Expenses Online: ${e.toString()}',
@@ -135,34 +112,9 @@ class ExpensesProvider extends ChangeNotifier {
       }
     } else {
       try {
-        expenses = ExpensesFunc().getExpenses();
-
-        if (returnShopProvider()
-                .userShop()
-                ?.manageDepartments ==
-            true) {
-          if (!authorization(
-                authorized:
-                    Authorizations().viewAllDepartments,
-              ) ||
-              returnDepartmentProvider()
-                      .currentDepartment()
-                      ?.uuid !=
-                  null) {
-            expenses =
-                expenses
-                    .where(
-                      (exp) =>
-                          exp.departmentUuid ==
-                          returnDepartmentProvider()
-                              .currentDepartment()
-                              ?.uuid,
-                    )
-                    .toList();
-          }
-        }
+        expensesMain = ExpensesFunc().getExpenses();
         notifyListeners();
-        return expenses;
+        return expensesMain;
       } catch (e) {
         print(
           'Error Getting Expenses Offline: ${e.toString()}',
@@ -220,17 +172,58 @@ class ExpensesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  List<TempExpensesClass> departmentExpenses() {
+    if (returnShopProvider()
+            .userShop()
+            ?.manageDepartments ==
+        true) {
+      if (!authorization(
+        authorized: Authorizations().viewAllDepartments,
+      )) {
+        return expensesMain.where((cat) {
+          // if (cat.departmentUuid == null) {
+          //   return true;
+          // } else {
+          return cat.departmentUuid ==
+              returnDepartmentProvider()
+                  .currentDepartment()
+                  ?.uuid;
+          // }
+        }).toList();
+      } else {
+        if (returnDepartmentProvider()
+                .currentDepartment()
+                ?.uuid ==
+            null) {
+          return expensesMain;
+        } else {
+          return expensesMain.where((cat) {
+            // if (cat.departmentUuid == null) {
+            //   return true;
+            // } else {
+            return cat.departmentUuid ==
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid;
+            // }
+          }).toList();
+        }
+      }
+    } else {
+      return expensesMain;
+    }
+  }
+
   List<TempExpensesClass> returnExpensesByDayOrWeek(
     BuildContext context,
-    List<TempExpensesClass> expenses,
   ) {
-    if (rangeStartDate != null) {
-      if (authorization(
-        authorized:
-            Authorizations().viewAllTransactionRecords,
-      )) {
-        return expenses.where((expenses) {
-          final created = expenses.createdDate!.toUtc();
+    if (returnShopProvider()
+            .userShop()
+            ?.manageDepartments ==
+        true) {
+      if (rangeStartDate != null) {
+        return departmentExpenses().where((expense) {
+          final created = expense.createdDate!.toUtc();
           return created.isAfter(
                 rangeStartDate!.subtract(
                   const Duration(seconds: 1),
@@ -241,51 +234,84 @@ class ExpensesProvider extends ChangeNotifier {
               );
         }).toList();
       } else {
-        return expenses.where((expense) {
-          final created = expense.createdDate!.toUtc();
-          return created.isAfter(
-                rangeStartDate!.subtract(
-                  const Duration(seconds: 1),
-                ),
-              ) &&
-              created.isBefore(
-                rangeEndDate ?? DateTime.now(),
-              ) &&
-              expense.userId == currentUser().userId;
-        }).toList();
+        var currentDate = dateSet ?? DateTime.now();
+
+        return departmentExpenses()
+            .where(
+              (expense) =>
+                  (expense.createdDate!.day ==
+                      currentDate.day) &&
+                  (expense.createdDate!.month ==
+                      currentDate.month) &&
+                  (expense.createdDate!.year ==
+                      currentDate.year),
+            )
+            .toList();
       }
-    }
-
-    var currentDate = dateSet ?? DateTime.now();
-
-    if (authorization(
-      authorized:
-          Authorizations().viewAllTransactionRecords,
-    )) {
-      return expenses
-          .where(
-            (expense) =>
-                (expense.createdDate!.day ==
-                    currentDate.day) &&
-                (expense.createdDate!.month ==
-                    currentDate.month) &&
-                (expense.createdDate!.year ==
-                    currentDate.year),
-          )
-          .toList();
     } else {
-      return expenses
-          .where(
-            (expense) =>
-                (expense.createdDate!.day ==
-                    currentDate.day) &&
-                (expense.createdDate!.month ==
-                    currentDate.month) &&
-                (expense.createdDate!.year ==
-                    currentDate.year) &&
-                expense.userId == currentUser().userId,
-          )
-          .toList();
+      if (rangeStartDate != null) {
+        if (authorization(
+          authorized:
+              Authorizations().viewAllTransactionRecords,
+        )) {
+          return expensesMain.where((expense) {
+            final created = expense.createdDate!.toUtc();
+            return created.isAfter(
+                  rangeStartDate!.subtract(
+                    const Duration(seconds: 1),
+                  ),
+                ) &&
+                created.isBefore(
+                  rangeEndDate ?? DateTime.now(),
+                );
+          }).toList();
+        } else {
+          return expensesMain.where((expense) {
+            final created = expense.createdDate!.toUtc();
+            return created.isAfter(
+                  rangeStartDate!.subtract(
+                    const Duration(seconds: 1),
+                  ),
+                ) &&
+                created.isBefore(
+                  rangeEndDate ?? DateTime.now(),
+                ) &&
+                expense.userId == currentUser().userId;
+          }).toList();
+        }
+      } else {
+        var currentDate = dateSet ?? DateTime.now();
+
+        if (authorization(
+          authorized:
+              Authorizations().viewAllTransactionRecords,
+        )) {
+          return expensesMain
+              .where(
+                (expense) =>
+                    (expense.createdDate!.day ==
+                        currentDate.day) &&
+                    (expense.createdDate!.month ==
+                        currentDate.month) &&
+                    (expense.createdDate!.year ==
+                        currentDate.year),
+              )
+              .toList();
+        } else {
+          return expensesMain
+              .where(
+                (expense) =>
+                    (expense.createdDate!.day ==
+                        currentDate.day) &&
+                    (expense.createdDate!.month ==
+                        currentDate.month) &&
+                    (expense.createdDate!.year ==
+                        currentDate.year) &&
+                    expense.userId == currentUser().userId,
+              )
+              .toList();
+        }
+      }
     }
   }
 

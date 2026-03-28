@@ -394,7 +394,7 @@ class _CategoriesPageDesktopState
             child: Builder(
               builder: (context) {
                 if (returnCategoriesProvider()
-                    .categories
+                    .categories()
                     .isEmpty) {
                   return Material(
                     color: Colors.transparent,
@@ -428,7 +428,8 @@ class _CategoriesPageDesktopState
                       children:
                           returnCategoriesProvider(
                                 context: context,
-                              ).categories
+                              )
+                              .categories()
                               .map(
                                 (category) =>
                                     CategoryListTileWidget(

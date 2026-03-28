@@ -80,9 +80,9 @@ class _DetailsPageContainerState
 
   @override
   Widget build(BuildContext context) {
-    final matching = returnExpensesProvider(
-      context,
-    ).expenses.where((e) => e.uuid == widget.expenseUuid);
+    final matching = returnExpensesProvider(context)
+        .returnExpensesByDayOrWeek(context)
+        .where((e) => e.uuid == widget.expenseUuid);
 
     if (matching.isEmpty) {
       return Scaffold(

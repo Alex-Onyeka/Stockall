@@ -114,9 +114,9 @@ class _DetailsPageContainerState
     //   },
     // );
 
-    final matching = returnExpensesProvider(
-      context,
-    ).expenses.where((e) => e.uuid == widget.expenseUuid);
+    final matching = returnExpensesProvider(context)
+        .returnExpensesByDayOrWeek(context)
+        .where((e) => e.uuid == widget.expenseUuid);
 
     if (matching.isEmpty) {
       return Scaffold(

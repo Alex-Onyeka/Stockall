@@ -26,13 +26,9 @@ class ExpensesAuthAction {
     if (plan == null) {
       return false;
     }
-    // if (plan == 3) {
-    //   action == null ? {} : action();
-    //   return true;
-    // } else {
     var todaysExpenses =
         returnExpensesProvider(context, listen: false)
-            .expenses
+            .expensesMain
             .where(
               (exp) => exp.createdDate!.isAfter(
                 startOfDay(

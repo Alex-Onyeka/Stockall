@@ -100,7 +100,8 @@ class StoragePageDesktopState
     var theme = returnTheme(context);
     var products =
         searchController.text.isNotEmpty
-            ? returnData(context: context).productList
+            ? returnData(context: context)
+                .productList()
                 .where(
                   (pr) =>
                       pr.name.toLowerCase().contains(
@@ -111,7 +112,8 @@ class StoragePageDesktopState
                 .toList()
                 .sublist(
                   0,
-                  returnData(context: context).productList
+                  returnData(context: context)
+                              .productList()
                               .where(
                                 (pr) =>
                                     pr.name
@@ -130,7 +132,7 @@ class StoragePageDesktopState
                           100
                       ? 100
                       : returnData(context: context)
-                          .productList
+                          .productList()
                           .where(
                             (pr) =>
                                 pr.name
@@ -147,16 +149,16 @@ class StoragePageDesktopState
                 )
             : returnData(
               context: context,
-            ).productList.sublist(
+            ).productList().sublist(
               start,
               returnData(
                         context: context,
-                      ).productList.length >
+                      ).productList().length >
                       50
                   ? end
                   : returnData(
                     context: context,
-                  ).productList.length,
+                  ).productList().length,
             );
 
     return Stack(
@@ -698,7 +700,7 @@ class StoragePageDesktopState
                                                     returnData(
                                                       context:
                                                           context,
-                                                    ).productList.length.toDouble(),
+                                                    ).productList().length.toDouble(),
                                                 theme:
                                                     theme,
                                                 backGround:
@@ -739,7 +741,7 @@ class StoragePageDesktopState
                                                           context:
                                                               context,
                                                         )
-                                                        .productList
+                                                        .productList()
                                                         .where(
                                                           (
                                                             item,
@@ -780,7 +782,7 @@ class StoragePageDesktopState
                                                           context:
                                                               context,
                                                         )
-                                                        .productList
+                                                        .productList()
                                                         .where(
                                                           (
                                                             item,
@@ -821,7 +823,7 @@ class StoragePageDesktopState
                                                           context:
                                                               context,
                                                         )
-                                                        .productList
+                                                        .productList()
                                                         .where(
                                                           (
                                                             item,
@@ -1053,7 +1055,7 @@ class StoragePageDesktopState
                                   } else {
                                     var allPrs =
                                         returnData()
-                                            .productList
+                                            .productList()
                                             .where(
                                               (pr) =>
                                                   pr.barcode ==
@@ -1070,12 +1072,12 @@ class StoragePageDesktopState
                                   start = 0;
                                   end =
                                       returnData()
-                                                  .productList
+                                                  .productList()
                                                   .length >
                                               50
                                           ? 50
                                           : returnData()
-                                              .productList
+                                              .productList()
                                               .length;
                                   count = 1;
                                 });
@@ -1159,7 +1161,7 @@ class StoragePageDesktopState
                                       navigate(
                                         false,
                                         returnData()
-                                            .productList
+                                            .productList()
                                             .length,
                                       );
                                     }
@@ -1219,7 +1221,7 @@ class StoragePageDesktopState
                                             FontWeight.bold,
                                         color: Colors.grey,
                                       ),
-                                      "${returnData(context: context).productList.length > 50 ? (returnData(context: context).productList.length / 50).ceil() : 1}",
+                                      "${returnData(context: context).productList().length > 50 ? (returnData(context: context).productList().length / 50).ceil() : 1}",
                                     ),
                                   ],
                                 ),
@@ -1227,12 +1229,12 @@ class StoragePageDesktopState
                                   onPressed: () {
                                     if (end !=
                                         returnData()
-                                            .productList
+                                            .productList()
                                             .length) {
                                       navigate(
                                         true,
                                         returnData()
-                                            .productList
+                                            .productList()
                                             .length,
                                       );
                                     }
@@ -1244,11 +1246,11 @@ class StoragePageDesktopState
                                                     returnData(
                                                       context:
                                                           context,
-                                                    ).productList.length ||
+                                                    ).productList().length ||
                                                 returnData(
                                                       context:
                                                           context,
-                                                    ).productList.length <=
+                                                    ).productList().length <=
                                                     50
                                             ? Colors
                                                 .grey

@@ -100,11 +100,7 @@ class _SalesAndRevenueReportMobileState
     List<TempProductSaleRecord> salesRecords =
         returnReceiptProvider(
           context,
-        ).returnproductsRecordByDayOrWeek(
-          returnReceiptProvider(
-            context,
-          ).produtRecordSalesMain,
-        );
+        ).returnproductsRecordByDayOrWeek();
 
     return Scaffold(
       appBar: appBar(

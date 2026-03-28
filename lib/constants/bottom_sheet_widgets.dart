@@ -396,7 +396,7 @@ void categoriesBottomSheet(
   BuildContext context,
   Function()? action,
 ) async {
-  var shopCat = returnCategoriesProvider().categories;
+  var shopCat = returnCategoriesProvider().categories();
 
   // getCategories();
 
@@ -1430,7 +1430,7 @@ class _CustomBottomPanelState
                                       newItem: cartItem,
                                       isCustomEdit:
                                           returnData()
-                                              .productList
+                                              .productList()
                                               .where(
                                                 (product) =>
                                                     product
@@ -1882,7 +1882,7 @@ class _CustomBottomPanelState
                                     newItem: cartItem,
                                     isCustomEdit:
                                         returnData()
-                                            .productList
+                                            .productList()
                                             .where(
                                               (product) =>
                                                   product
@@ -2154,7 +2154,7 @@ class _CustomBottomPanelState
                                         value.toLowerCase();
                                   });
                                   var items = returnData()
-                                      .productList
+                                      .productList()
                                       .where(
                                         (product) =>
                                             product.barcode
@@ -2196,7 +2196,7 @@ class _CustomBottomPanelState
                                           .text = result;
                                     }
                                     var items = returnData()
-                                        .productList
+                                        .productList()
                                         .where(
                                           (product) =>
                                               product
@@ -2256,7 +2256,7 @@ class _CustomBottomPanelState
                                     ),
                                   );
                                 } else if (returnData()
-                                        .productList
+                                        .productList()
                                         .where(
                                           (product) =>
                                               product.name
@@ -2575,7 +2575,7 @@ class _CustomBottomPanelState
                                             ),
                                         itemCount:
                                             returnData()
-                                                .productList
+                                                .productList()
                                                 .where(
                                                   (
                                                     product,
@@ -2596,7 +2596,7 @@ class _CustomBottomPanelState
                                         ) {
                                           final product =
                                               returnData()
-                                                  .productList
+                                                  .productList()
                                                   .where(
                                                     (
                                                       product,
@@ -3276,7 +3276,8 @@ void selectProduct(
                               context: context,
                               newItem: cartItem,
                               isCustomEdit:
-                                  returnData().productList
+                                  returnData()
+                                      .productList()
                                       .where(
                                         (product) =>
                                             product.uuid ==

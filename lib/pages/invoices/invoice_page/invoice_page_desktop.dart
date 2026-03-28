@@ -89,7 +89,7 @@ class _InvoicePageDesktopState
         invs.isNotEmpty ? invs.first : null;
     var custs =
         returnCustomers(context, listen: false)
-            .customersMain
+            .customersMain()
             .where(
               (cus) => cus.uuid == invoice?.customerUuid,
             )
@@ -362,7 +362,7 @@ class _InvoicePageDesktopState
                                           context: context,
                                           receipts:
                                               returnReceiptProviderSingle()
-                                                  .receipts
+                                                  .returnOwnReceiptsByDayOrWeek()
                                                   .where(
                                                     (rec) =>
                                                         rec.invoiceUuid ==
@@ -393,7 +393,7 @@ class _InvoicePageDesktopState
                                           context: context,
                                           receipts:
                                               returnReceiptProviderSingle()
-                                                  .receipts
+                                                  .returnOwnReceiptsByDayOrWeek()
                                                   .where(
                                                     (rec) =>
                                                         rec.invoiceUuid ==
@@ -459,7 +459,7 @@ class _InvoicePageDesktopState
                                                   context,
                                               receipts:
                                                   returnReceiptProviderSingle()
-                                                      .receipts
+                                                      .returnOwnReceiptsByDayOrWeek()
                                                       .where(
                                                         (
                                                           rec,
@@ -483,7 +483,7 @@ class _InvoicePageDesktopState
                                                   context,
                                               receipts:
                                                   returnReceiptProviderSingle()
-                                                      .receipts
+                                                      .returnOwnReceiptsByDayOrWeek()
                                                       .where(
                                                         (
                                                           rec,
@@ -529,7 +529,8 @@ class _InvoicePageDesktopState
                             visible:
                                 returnReceiptProvider(
                                       context,
-                                    ).receipts
+                                    )
+                                    .returnOwnReceiptsByDayOrWeek()
                                     .where(
                                       (rec) =>
                                           rec.invoiceUuid ==
@@ -2064,7 +2065,8 @@ class _InvoicePageDesktopState
                                     builder: (context) {
                                       if (returnReceiptProvider(
                                             context,
-                                          ).receipts
+                                          )
+                                          .returnOwnReceiptsByDayOrWeek()
                                           .where(
                                             (rec) =>
                                                 rec.invoiceUuid ==
@@ -2120,7 +2122,8 @@ class _InvoicePageDesktopState
                                         children:
                                             returnReceiptProvider(
                                                   context,
-                                                ).receipts
+                                                )
+                                                .returnOwnReceiptsByDayOrWeek()
                                                 .where(
                                                   (rec) =>
                                                       rec.invoiceUuid ==

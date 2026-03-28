@@ -42,7 +42,7 @@ class _CustomerListDesktopState
     if (returnCustomers(
       context,
       listen: false,
-    ).customersMain.isEmpty) {
+    ).customersMain().isEmpty) {
       getCustomerList(context);
     }
   }
@@ -97,11 +97,11 @@ class _CustomerListDesktopState
         notifications:
             returnNotificationProvider(
                   context,
-                ).notifications.isEmpty
+                ).notifications().isEmpty
                 ? []
                 : returnNotificationProvider(
                   context,
-                ).notifications,
+                ).notifications(),
         globalKey: _scaffoldKey,
       ),
       body: Stack(
@@ -142,11 +142,11 @@ class _CustomerListDesktopState
                   notifications:
                       returnNotificationProvider(
                             context,
-                          ).notifications.isEmpty
+                          ).notifications().isEmpty
                           ? []
                           : returnNotificationProvider(
                             context,
-                          ).notifications,
+                          ).notifications(),
                 ),
               ),
               Expanded(
@@ -274,7 +274,7 @@ class _CustomerListDesktopState
                           var customers =
                               returnCustomers(
                                 context,
-                              ).customersMain;
+                              ).customersMain();
                           if (customers.isEmpty) {
                             return EmptyWidgetDisplay(
                               title: 'Empty Customer List',

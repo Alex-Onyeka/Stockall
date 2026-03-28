@@ -49,9 +49,6 @@ class _TotalExpensesMobileState
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    var expensesMain =
-        returnExpensesProvider(context).expenses;
-
     return GestureDetector(
       onTap: () {
         returnExpensesProvider(
@@ -116,10 +113,7 @@ class _TotalExpensesMobileState
           builder: (context) {
             var expenses = returnExpensesProvider(
               context,
-            ).returnExpensesByDayOrWeek(
-              context,
-              expensesMain,
-            );
+            ).returnExpensesByDayOrWeek(context);
             double getTotalExpenses() {
               double tempTotal = 0;
               for (var item in expenses) {

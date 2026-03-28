@@ -78,7 +78,7 @@ class _MainInvoiceTileMobileState
   void getCustomer() {
     List<TempCustomersClass> customers =
         returnCustomers(context, listen: false)
-            .customersMain
+            .customersMain()
             .where(
               (customer) =>
                   customer.uuid != null &&
@@ -369,7 +369,7 @@ class _MainInvoiceTileDesktopState
   void getCustomer() {
     List<TempCustomersClass> customers =
         returnCustomers(context, listen: false)
-            .customersMain
+            .customersMain()
             .where(
               (customer) =>
                   customer.uuid != null &&

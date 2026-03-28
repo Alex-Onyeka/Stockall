@@ -931,7 +931,8 @@ class SalesProvider extends ChangeNotifier {
                 // ignore: use_build_context_synchronously
                 if (record.addToStock == true &&
                     // ignore: use_build_context_synchronously
-                    returnData().productList
+                    returnData()
+                        .productList()
                         .where(
                           (pro) =>
                               pro.name ==
@@ -1223,7 +1224,8 @@ class SalesProvider extends ChangeNotifier {
               // Step 4: Create new product for items with addToStock == true
               for (final record in productSaleRecords) {
                 if (record.addToStock == true &&
-                    returnData().productList
+                    returnData()
+                        .productList()
                         .where(
                           (pro) =>
                               pro.name ==
@@ -1496,7 +1498,7 @@ class SalesProvider extends ChangeNotifier {
     double newTotal = totalInAllCarts + quantityToAdd;
     double availableQty = product.quantity ?? 0;
     if (newTotal > availableQty &&
-        returnData().productList.contains(product) &&
+        returnData().productList().contains(product) &&
         product.isManaged) {
       print(
         'Cannot add — total ($newTotal) exceeds available stock ($availableQty)',
@@ -1777,7 +1779,7 @@ class SalesProvider extends ChangeNotifier {
     List<TempCartItem> cartItems = [];
 
     for (var record in saleRecords) {
-      var product = returnData().productList.where(
+      var product = returnData().productList().where(
         (p) => p.uuid == record.productUuid,
       );
 

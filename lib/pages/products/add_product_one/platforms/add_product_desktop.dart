@@ -117,7 +117,7 @@ class _AddProductDesktopState
       );
     } else {
       final safeContext = context;
-      var samePro = returnData().productList.where(
+      var samePro = returnData().productList().where(
         (pr) =>
             pr.name.toLowerCase() ==
             widget.nameController.text.toLowerCase(),
@@ -541,14 +541,16 @@ class _AddProductDesktopState
           : null;
       widget.product!.categoryUuid != null
           ? returnData().selectCategory(
-            returnCategoriesProvider().categories
+            returnCategoriesProvider()
+                    .categories()
                     .where(
                       (cat) =>
                           cat.uuid ==
                           widget.product?.categoryUuid,
                     )
                     .isNotEmpty
-                ? returnCategoriesProvider().categories
+                ? returnCategoriesProvider()
+                    .categories()
                     .where(
                       (cat) =>
                           cat.uuid ==

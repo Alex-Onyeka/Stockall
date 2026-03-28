@@ -22,10 +22,53 @@ class SubStaffProvider extends ChangeNotifier {
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
 
-  List<TempSubStaff> subStaffs = [];
+  List<TempSubStaff> subStaffsMain = [];
+
+  List<TempSubStaff> subStaffs() {
+    if (returnShopProvider()
+            .userShop()
+            ?.manageDepartments ==
+        true) {
+      if (!authorization(
+        authorized: Authorizations().viewAllDepartments,
+      )) {
+        return subStaffsMain.where((cat) {
+          // if (cat.departmentUuid == null) {
+          //   return true;
+          // } else {
+          return cat.departmentUuid ==
+              returnDepartmentProvider()
+                  .currentDepartment()
+                  ?.uuid;
+          // }
+        }).toList();
+      } else {
+        if (returnDepartmentProvider()
+                .currentDepartment()
+                ?.uuid ==
+            null) {
+          return subStaffsMain;
+        } else {
+          return subStaffsMain.where((cat) {
+            // if (cat.departmentUuid == null) {
+            //   return true;
+            // } else {
+            return cat.departmentUuid ==
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid;
+            // }
+          }).toList();
+        }
+      }
+    } else {
+      return subStaffsMain;
+    }
+  }
+
   final String tableName = 'sub_staff';
   void clearSubStaffs() {
-    subStaffs.clear();
+    subStaffsMain.clear();
     print('Sub Staffs Cleared');
     notifyListeners();
   }
@@ -102,65 +145,18 @@ class SubStaffProvider extends ChangeNotifier {
           .order('created_at', ascending: false);
       print('Sub Staffs Gotten: ${response.length}');
 
-      subStaffs =
+      subStaffsMain =
           (response as List)
               .map((e) => TempSubStaff.fromJson(e))
               .toList();
-      if (returnShopProvider()
-              .userShop()
-              ?.manageDepartments ==
-          true) {
-        if (!authorization(
-              authorized:
-                  Authorizations().viewAllDepartments,
-            ) ||
-            returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid !=
-                null) {
-          subStaffs =
-              subStaffs
-                  .where(
-                    (sale) =>
-                        sale.departmentUuid ==
-                        returnDepartmentProvider()
-                            .currentDepartment()
-                            ?.uuid,
-                  )
-                  .toList();
-        }
-      }
-
-      await SubStaffFunc().insertAllSubStaffs(subStaffs);
+      await SubStaffFunc().insertAllSubStaffs(
+        subStaffsMain,
+      );
     } else {
-      subStaffs = SubStaffFunc().getSubStaffs();
-      if (returnShopProvider()
-              .userShop()
-              ?.manageDepartments ==
-          true) {
-        if (!authorization(
-              authorized:
-                  Authorizations().viewAllDepartments,
-            ) ||
-            returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid !=
-                null) {
-          subStaffs =
-              subStaffs
-                  .where(
-                    (sale) =>
-                        sale.departmentUuid ==
-                        returnDepartmentProvider()
-                            .currentDepartment()
-                            ?.uuid,
-                  )
-                  .toList();
-        }
-      }
+      subStaffsMain = SubStaffFunc().getSubStaffs();
     }
     notifyListeners();
-    return subStaffs;
+    return subStaffsMain;
   }
 
   //
