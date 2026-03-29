@@ -2421,6 +2421,14 @@ class _MakeSalesDesktopState
                                                       await returnSalesProvider().addNewCart(
                                                         context,
                                                         TempCart(
+                                                          departmentName:
+                                                              returnDepartmentProvider().currentDepartment()?.name,
+                                                          departmentUuid:
+                                                              returnDepartmentProvider().currentDepartment()?.uuid,
+                                                          staffId:
+                                                              currentUser().userId,
+                                                          staffName:
+                                                              "${currentUser().name} ${currentUser().lastName}",
                                                           cartItems:
                                                               [],
                                                           isInvoice:

@@ -21,7 +21,6 @@ import 'package:stockall/pages/customers/customers_list/customer_list.dart';
 import 'package:stockall/pages/sales/make_sales/page1/platforms/make_sales_desktop.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
-import 'package:stockall/services/auth_service.dart';
 
 class MakeSalesDesktopTwo extends StatefulWidget {
   final double totalAmount;
@@ -840,6 +839,14 @@ class _MakeSalesDesktopTwoState
                                                   returnSalesProvider().addNewCart(
                                                     context,
                                                     TempCart(
+                                                      departmentName:
+                                                          returnDepartmentProvider().currentDepartment()?.name,
+                                                      departmentUuid:
+                                                          returnDepartmentProvider().currentDepartment()?.uuid,
+                                                      staffId:
+                                                          currentUser().userId,
+                                                      staffName:
+                                                          "${currentUser().name} ${currentUser().lastName}",
                                                       cartItems:
                                                           [],
                                                       isInvoice:
@@ -1156,15 +1163,15 @@ class _MakeSalesDesktopTwoState
                                                   salesCartItem:
                                                       returnSalesProvider()
                                                           .currentCart(),
-                                                  staffId:
-                                                      AuthService()
-                                                          .currentUser!,
-                                                  staffName:
-                                                      returnUserProvider(
-                                                        context,
-                                                        listen:
-                                                            false,
-                                                      ).currentUserMain!.name,
+                                                  // staffId:
+                                                  //     AuthService()
+                                                  //         .currentUser!,
+                                                  // staffName:
+                                                  //     returnUserProvider(
+                                                  //       context,
+                                                  //       listen:
+                                                  //           false,
+                                                  //     ).currentUserMain!.name,
                                                   shopId:
                                                       returnShopProvider()
                                                           .userShop()!

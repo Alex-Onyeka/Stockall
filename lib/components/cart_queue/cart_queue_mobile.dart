@@ -344,6 +344,17 @@ class _CartQueueMobileState extends State<CartQueueMobile> {
                       returnSalesProvider().addNewCart(
                         context,
                         TempCart(
+                          departmentName:
+                              returnDepartmentProvider()
+                                  .currentDepartment()
+                                  ?.name,
+                          departmentUuid:
+                              returnDepartmentProvider()
+                                  .currentDepartment()
+                                  ?.uuid,
+                          staffId: currentUser().userId,
+                          staffName:
+                              "${currentUser().name} ${currentUser().lastName}",
                           cartItems: [],
                           isInvoice: false,
                         ),

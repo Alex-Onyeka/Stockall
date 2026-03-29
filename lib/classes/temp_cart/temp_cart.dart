@@ -18,6 +18,10 @@ class TempCart {
   bool isSettingDiscountOpen;
   String? cartName;
   String? subStaffUuid;
+  String? staffName;
+  String? staffId;
+  String? departmentUuid;
+  String? departmentName;
 
   TempCart({
     required this.cartItems,
@@ -37,6 +41,10 @@ class TempCart {
     this.fixedDiscount,
     this.cartName,
     this.subStaffUuid,
+    required this.staffName,
+    required this.staffId,
+    required this.departmentName,
+    required this.departmentUuid,
   });
 
   // String id() {

@@ -726,6 +726,24 @@ class ShopProvider extends ChangeNotifier {
         print('Failed to update shop: $updateResponse');
       } else {
         print('Employee removed successfully.');
+        try {
+          var res =
+              await supabase
+                  .from('users')
+                  .update({'department_uuids': []})
+                  .eq('user_id', employeeIdToRemove)
+                  .select()
+                  .maybeSingle();
+          if (res != null) {
+            var newRes = TempUserClass.fromJson(res);
+            print('Staff Department updated Successfully');
+            print(newRes.departmentUuids?.length);
+          }
+        } catch (e) {
+          print(
+            'Staff Department Updated Failed: ${e.toString()}',
+          );
+        }
       }
     } catch (e) {
       print('Exception occurred: $e');

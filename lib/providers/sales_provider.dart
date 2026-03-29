@@ -57,6 +57,17 @@ class SalesProvider extends ChangeNotifier {
       var cartId = uuidGen();
       mainCartQueue.first.cartQueue.add(
         TempCart(
+          departmentName:
+              returnDepartmentProvider()
+                  .currentDepartment()
+                  ?.name,
+          departmentUuid:
+              returnDepartmentProvider()
+                  .currentDepartment()
+                  ?.uuid,
+          staffId: currentUser().userId,
+          staffName:
+              "${currentUser().name} ${currentUser().lastName}",
           cartItems: [],
           isInvoice: false,
           id: cartId,
@@ -142,6 +153,17 @@ class SalesProvider extends ChangeNotifier {
               .cartQueue
               .add(
                 TempCart(
+                  departmentName:
+                      returnDepartmentProvider()
+                          .currentDepartment()
+                          ?.name,
+                  departmentUuid:
+                      returnDepartmentProvider()
+                          .currentDepartment()
+                          ?.uuid,
+                  staffId: currentUser().userId,
+                  staffName:
+                      "${currentUser().name} ${currentUser().lastName}",
                   cartItems: [],
                   isInvoice: false,
                   id: cartId,
@@ -606,8 +628,8 @@ class SalesProvider extends ChangeNotifier {
   Future<CheckoutResponse?> checkoutMain({
     required BuildContext context,
     required TempCart salesCartItem,
-    required String staffId,
-    required String staffName,
+    // required String staffId,
+    // required String staffName,
     required int shopId,
     required String paymentMethod,
     required double cashAlt,
@@ -635,8 +657,8 @@ class SalesProvider extends ChangeNotifier {
                 ?.uuid,
         createdAt: createdAt,
         shopId: shopId,
-        staffId: staffId,
-        staffName: staffName,
+        staffId: salesCartItem.staffId!, // staffId,
+        staffName: salesCartItem.staffName!, // staffName,
         paymentMethod: paymentMethod,
         bank: bank,
         cashAlt: cashAlt,
@@ -726,8 +748,9 @@ class SalesProvider extends ChangeNotifier {
                     ?.uuid,
             createdAt: createdAt,
             shopId: shopId,
-            staffId: staffId,
-            staffName: staffName,
+            staffId: salesCartItem.staffId!, // staffId,
+            staffName:
+                salesCartItem.staffName!, // staffName,
             paymentMethod: paymentMethod,
             bank: partPaymentValue('Bank') ?? bank,
             cashAlt: partPaymentValue('Cash') ?? cashAlt,
@@ -785,11 +808,13 @@ class SalesProvider extends ChangeNotifier {
                   productUuid: product.uuid,
                   productName: product.name,
                   shopId: product.shopId,
-                  staffId: staffId,
-                  // customerId: customerId,
+                  staffId:
+                      salesCartItem.staffId!, // staffId,
+                  staffName:
+                      salesCartItem
+                          .staffName!, // staffName,
                   customerUuid: customerUuid,
                   customerName: customerName,
-                  staffName: staffName,
                   recepitId: 0,
                   receiptUuid: receiptUuid,
                   quantity: cartItem.quantity,
@@ -854,11 +879,13 @@ class SalesProvider extends ChangeNotifier {
                   productUuid: product.uuid,
                   productName: product.name,
                   shopId: product.shopId,
-                  staffId: staffId,
-                  // customerId: customerId,
+                  staffId:
+                      salesCartItem.staffId!, // staffId,
+                  staffName:
+                      salesCartItem
+                          .staffName!, // staffName,
                   customerUuid: customerUuid,
                   customerName: customerName,
-                  staffName: staffName,
                   recepitId: 0,
                   // receiptUuid: receiptUuid,
                   quantity: cartItem.quantity,
@@ -1062,8 +1089,8 @@ class SalesProvider extends ChangeNotifier {
                 ?.uuid,
         createdAt: createdAt,
         shopId: shopId,
-        staffId: staffId,
-        staffName: staffName,
+        staffId: salesCartItem.staffId!, // staffId,
+        staffName: salesCartItem.staffName!, // staffName,
         paymentMethod: paymentMethod,
         bank: bank,
         cashAlt: cashAlt,
@@ -1150,11 +1177,13 @@ class SalesProvider extends ChangeNotifier {
                   productUuid: product.uuid,
                   productName: product.name,
                   shopId: product.shopId,
-                  staffId: staffId,
-                  // customerId: customerId,
+                  staffId:
+                      salesCartItem.staffId!, // staffId,
+                  staffName:
+                      salesCartItem
+                          .staffName!, // staffName,
                   customerUuid: customerUuid,
                   customerName: customerName,
-                  staffName: staffName,
                   recepitId: receiptId ?? 0,
                   receiptUuid: receiptUuid,
                   quantity: cartItem.quantity,
@@ -1761,7 +1790,8 @@ class SalesProvider extends ChangeNotifier {
     return TempCartItem(
       item: product,
       quantity: record.quantity,
-      discount: 0,
+      discount: record.discount,
+      fixedDiscount: record.fixedDiscount,
       customPrice: record.customPriceSet ? tempRev : null,
       addToStock: record.addToStock ?? false,
       setCustomPrice: record.customPriceSet,
@@ -1866,7 +1896,6 @@ class SalesProvider extends ChangeNotifier {
     SalesAuthAction().editReceiptAction(
       context: context,
       action: () async {
-        // Get all sale records for this receipt
         final saleRecords =
             returnReceiptProvider(context, listen: false)
                 .produtRecordSalesMain
@@ -1889,7 +1918,11 @@ class SalesProvider extends ChangeNotifier {
             .isEmpty) {
           var newId = uuidGen();
           var tempCart = TempCart(
+            departmentName: receipt.departmentName,
+            departmentUuid: receipt.departmentUuidNew,
             subStaffUuid: receipt.subStaffUuid,
+            staffId: receipt.staffId,
+            staffName: receipt.staffName,
             id: newId,
             fixedDiscount: receipt.fixedDiscount,
             createdDate: receipt.createdAt,
@@ -1958,7 +1991,21 @@ class SalesProvider extends ChangeNotifier {
               if (currentMainCart().cartQueue.length == 1) {
                 await addNewCart(
                   context,
-                  TempCart(cartItems: [], isInvoice: false),
+                  TempCart(
+                    departmentName:
+                        returnDepartmentProvider()
+                            .currentDepartment()
+                            ?.name,
+                    departmentUuid:
+                        returnDepartmentProvider()
+                            .currentDepartment()
+                            ?.uuid,
+                    cartItems: [],
+                    isInvoice: false,
+                    staffId: currentUser().userId,
+                    staffName:
+                        "${currentUser().name} ${currentUser().lastName}",
+                  ),
                 );
               }
 

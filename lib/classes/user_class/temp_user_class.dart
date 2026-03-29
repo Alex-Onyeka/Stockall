@@ -59,7 +59,7 @@ class TempUserClass extends HiveObject {
     this.departmentName,
     this.departmentUuid,
     this.pin,
-    this.departmentUuids,
+    required this.departmentUuids,
     required this.access,
   });
 

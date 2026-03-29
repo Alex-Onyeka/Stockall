@@ -579,6 +579,10 @@ class InvoicesProvider extends ChangeNotifier {
             .isEmpty) {
           var newId = uuidGen();
           var tempCart = TempCart(
+            departmentName: invoice.departmentName,
+            departmentUuid: invoice.departmentUuidNew,
+            staffId: invoice.staffId,
+            staffName: invoice.staffName,
             id: newId,
             fixedDiscount: invoice.fixedDiscount,
             createdDate: invoice.createdAt,
@@ -774,7 +778,21 @@ class InvoicesProvider extends ChangeNotifier {
                   1) {
                 await returnSalesProvider().addNewCart(
                   context,
-                  TempCart(cartItems: [], isInvoice: false),
+                  TempCart(
+                    departmentName:
+                        returnDepartmentProvider()
+                            .currentDepartment()
+                            ?.name,
+                    departmentUuid:
+                        returnDepartmentProvider()
+                            .currentDepartment()
+                            ?.uuid,
+                    cartItems: [],
+                    isInvoice: false,
+                    staffId: currentUser().userId,
+                    staffName:
+                        "${currentUser().name} ${currentUser().lastName}",
+                  ),
                 );
               }
 
