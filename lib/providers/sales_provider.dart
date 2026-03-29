@@ -648,10 +648,12 @@ class SalesProvider extends ChangeNotifier {
       print('Current Sale is Invoice');
       TempInvoice invoice = TempInvoice(
         departmentName:
+            salesCartItem.departmentName ??
             returnDepartmentProvider()
                 .currentDepartment()
                 ?.name,
         departmentUuidNew:
+            salesCartItem.departmentUuid ??
             returnDepartmentProvider()
                 .currentDepartment()
                 ?.uuid,
@@ -739,10 +741,12 @@ class SalesProvider extends ChangeNotifier {
 
           TempMainReceipt receipt = TempMainReceipt(
             departmentName:
+                salesCartItem.departmentName ??
                 returnDepartmentProvider()
                     .currentDepartment()
                     ?.name,
             departmentUuidNew:
+                salesCartItem.departmentUuid ??
                 returnDepartmentProvider()
                     .currentDepartment()
                     ?.uuid,
@@ -835,12 +839,12 @@ class SalesProvider extends ChangeNotifier {
                   costPrice: cartItem.costPrice(),
                   addToStock: cartItem.addToStock,
                   departmentName:
-                      cartItem.item.departmentName ??
+                      salesCartItem.departmentName ??
                       returnDepartmentProvider()
                           .currentDepartment()
                           ?.name,
                   departmentUuid:
-                      cartItem.item.departmentUuid ??
+                      salesCartItem.departmentUuid ??
                       returnDepartmentProvider()
                           .currentDepartment()
                           ?.uuid,
@@ -899,12 +903,12 @@ class SalesProvider extends ChangeNotifier {
                   costPrice: cartItem.costPrice(),
                   addToStock: cartItem.addToStock,
                   departmentName:
-                      cartItem.item.departmentName ??
+                      salesCartItem.departmentName ??
                       returnDepartmentProvider()
                           .currentDepartment()
                           ?.name,
                   departmentUuid:
-                      cartItem.item.departmentUuid ??
+                      salesCartItem.departmentUuid ??
                       returnDepartmentProvider()
                           .currentDepartment()
                           ?.uuid,
@@ -1080,10 +1084,12 @@ class SalesProvider extends ChangeNotifier {
           currentCart().receiptUuidEdit ?? uuidGen();
       TempMainReceipt receipt = TempMainReceipt(
         departmentName:
+            salesCartItem.departmentName ??
             returnDepartmentProvider()
                 .currentDepartment()
                 ?.name,
         departmentUuidNew:
+            salesCartItem.departmentUuid ??
             returnDepartmentProvider()
                 .currentDepartment()
                 ?.uuid,
@@ -1197,12 +1203,12 @@ class SalesProvider extends ChangeNotifier {
                   costPrice: cartItem.costPrice(),
                   addToStock: cartItem.addToStock,
                   departmentName:
-                      cartItem.item.departmentName ??
+                      salesCartItem.departmentName ??
                       returnDepartmentProvider()
                           .currentDepartment()
                           ?.name,
                   departmentUuid:
-                      cartItem.item.departmentUuid ??
+                      salesCartItem.departmentUuid ??
                       returnDepartmentProvider()
                           .currentDepartment()
                           ?.uuid,
