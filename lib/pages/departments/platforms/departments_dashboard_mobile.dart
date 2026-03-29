@@ -385,9 +385,7 @@ class DepartmentsDashboardMobileState
                                     Icons.checklist_rounded,
                                 action: () {
                                   returnDepartmentProvider()
-                                      .selectDepartment(
-                                        context: context,
-                                      );
+                                      .selectDepartment();
                                 },
                                 title:
                                     'View All Deparments',

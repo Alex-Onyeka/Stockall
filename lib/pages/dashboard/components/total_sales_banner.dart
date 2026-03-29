@@ -230,7 +230,7 @@ class _DashboardTotalSalesBannerState
                       );
                     },
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 2),
                   Builder(
                     builder: (context) {
                       if (returnShopProvider(
@@ -272,25 +272,31 @@ class _DashboardTotalSalesBannerState
                                             title:
                                                 'Select Department',
                                             action: () {
-                                              if (selectedDept !=
-                                                  null) {
-                                                returnDepartmentProvider().selectDepartment(
-                                                  context:
-                                                      context,
-                                                  departmentClass: returnDepartmentProvider()
-                                                      .departments
-                                                      .firstWhere(
-                                                        (
-                                                          dept,
-                                                        ) =>
-                                                            dept.uuid ==
-                                                            selectedDept,
-                                                      ),
-                                                );
-                                                Navigator.of(
-                                                  context,
-                                                ).pop();
-                                              }
+                                              returnDepartmentProvider().selectDepartment(
+                                                departmentClass:
+                                                    returnDepartmentProvider().departments
+                                                            .where(
+                                                              (
+                                                                dept,
+                                                              ) =>
+                                                                  dept.uuid ==
+                                                                  selectedDept,
+                                                            )
+                                                            .isEmpty
+                                                        ? null
+                                                        : returnDepartmentProvider().departments
+                                                            .where(
+                                                              (
+                                                                dept,
+                                                              ) =>
+                                                                  dept.uuid ==
+                                                                  selectedDept,
+                                                            )
+                                                            .first,
+                                              );
+                                              Navigator.of(
+                                                context,
+                                              ).pop();
                                             },
                                             widget: SizedBox(
                                               height:
@@ -348,15 +354,18 @@ class _DashboardTotalSalesBannerState
                                                                           Colors.transparent,
                                                                       child: InkWell(
                                                                         onTap: () {
-                                                                          if (returnDepartmentProvider().departments.length >
-                                                                              1) {
-                                                                            setState(
-                                                                              () {
+                                                                          setState(
+                                                                            () {
+                                                                              if (selectedDept ==
+                                                                                  dept.uuid) {
+                                                                                selectedDept =
+                                                                                    null;
+                                                                              } else {
                                                                                 selectedDept =
                                                                                     dept.uuid;
-                                                                              },
-                                                                            );
-                                                                          }
+                                                                              }
+                                                                            },
+                                                                          );
                                                                         },
                                                                         child: Padding(
                                                                           padding: const EdgeInsets.symmetric(

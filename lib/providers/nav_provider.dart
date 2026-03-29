@@ -139,7 +139,6 @@ class NavProvider extends ChangeNotifier {
           authorized: Authorizations().viewAllDepartments,
         )) {
       returnDepartmentProvider().selectDepartment(
-        context: context,
         departmentClass:
             returnDepartmentProvider()
                     .departments

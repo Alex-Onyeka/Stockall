@@ -19,6 +19,14 @@ DateTime startOfDay(DateTime date) {
   return DateTime(date.year, date.month, date.day);
 }
 
+String addZeroAfterDecimalPoint(String value) {
+  if (value.contains('.')) {
+    return value;
+  } else {
+    return "$value.0";
+  }
+}
+
 String formatLargeNumber(String numberString) {
   final number = double.tryParse(
     numberString.replaceAll(',', ''),
@@ -27,12 +35,12 @@ String formatLargeNumber(String numberString) {
 
   // Format with commas
   final formatter = NumberFormat('#,###.###');
-  return formatter.format(number);
+  return addZeroAfterDecimalPoint(formatter.format(number));
 }
 
 String formatLargeNumberDouble(num number) {
   final formatter = NumberFormat('#,###.###');
-  return formatter.format(number);
+  return addZeroAfterDecimalPoint(formatter.format(number));
 }
 
 String formatLargeNumberDoubleWidgetDecimal(num number) {
@@ -73,11 +81,6 @@ String cutLongText(String text, int length) {
 
 String formatMoney(num amount, BuildContext context) {
   if (amount < 1000000) {
-    // return NumberFormat.currency(
-    //   locale: 'en_NG',
-    //   symbol: currencySymbol(context: context),
-    //   decimalDigits: 1,
-    // ).format(amount);
     return "${currencySymbol(context: context)}${formatLargeNumberDouble(amount)}";
   } else {
     String symbol = currencySymbol(context: context);
@@ -103,11 +106,6 @@ String formatMoneyMid({
   bool? isR,
 }) {
   if (amount < 100000000) {
-    // return NumberFormat.currency(
-    //   locale: 'en_NG',
-    //   symbol: currencySymbol(context: context, isR: isR),
-    //   decimalDigits: 2,
-    // ).format(amount);
     return "${currencySymbol(context: context, isR: isR)}${formatLargeNumberDouble(amount)}";
   } else {
     String symbol = currencySymbol(

@@ -130,7 +130,7 @@ class _DashboardDesktopState
         body: returnCompProvider(
           context,
           listen: false,
-        ).showLoader(message: 'Loading Shop'),
+        ).showLoader(message: 'Loading'),
       );
     } else {
       if (!returnReceiptProvider(
@@ -140,7 +140,7 @@ class _DashboardDesktopState
         return returnCompProvider(
           context,
           listen: false,
-        ).showLoader(message: 'Loading Receipt');
+        ).showLoader(message: 'Loading');
       } else {
         // return Container();
         return Scaffold(

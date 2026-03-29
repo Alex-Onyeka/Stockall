@@ -481,8 +481,6 @@ class _SettingsPageDesktopState
                                                     if (selectedDept !=
                                                         null) {
                                                       returnDepartmentProvider().selectDepartment(
-                                                        context:
-                                                            context,
                                                         departmentClass: returnDepartmentProvider().departments.firstWhere(
                                                           (
                                                             dept,

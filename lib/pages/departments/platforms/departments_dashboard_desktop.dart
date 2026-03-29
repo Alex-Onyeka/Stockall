@@ -505,10 +505,7 @@ class _DepartmentsDashboardDesktopState
                                                 .checklist_rounded,
                                         action: () {
                                           returnDepartmentProvider()
-                                              .selectDepartment(
-                                                context:
-                                                    context,
-                                              );
+                                              .selectDepartment();
                                         },
                                         title:
                                             'View All Deparments',

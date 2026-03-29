@@ -5,7 +5,6 @@ import 'package:stockall/classes/temp_departments_class/department_class.dart';
 import 'package:stockall/classes/temp_departments_class/unsynced/created_departments/created_departments.dart';
 import 'package:stockall/classes/temp_departments_class/unsynced/deleted_departments/deleted_departments.dart';
 import 'package:stockall/classes/temp_departments_class/unsynced/updated/updated_departments.dart';
-import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/department_current/current_department_func.dart';
 import 'package:stockall/local_database/department_func/departments_func.dart';
@@ -89,55 +88,34 @@ class DepartmentProvider with ChangeNotifier {
   }
 
   Future<void> selectDepartment({
-    required BuildContext context,
     DepartmentClass? departmentClass,
   }) async {
-    var isOnline = await connectivity.isOnline();
-    if (returnData().isSynced() == 0 && isOnline) {
-      showDialog(
-        // ignore: use_build_context_synchronously
-        context: context,
-        builder: (context) {
-          return InfoAlert(
-            theme: returnTheme(context, listen: false),
-            message:
-                'You have unsynced data. Synchronize data to proceed.',
-            title: 'Unsynced Records Detected.',
-          );
-        },
-      );
-      // ignore: use_build_context_synchronously
-      returnData().syncData(context);
-    } else {
-      try {
-        // var safeContext = context;
-        print('Department Selection Started');
-        var res =
-            departmentClass != null
-                ? await CurrentDepartmentFunc()
-                    .createCurrentDepartment(
-                      TempCurrentDepartment(
-                        currentDepartmentId:
-                            departmentClass.uuid,
-                      ),
-                    )
-                : await CurrentDepartmentFunc()
-                    .clearCurrentDepartment();
-        if (res == 1) {
-          print(
-            'Current Department set: ${CurrentDepartmentFunc().getCurrentDepartment()?.currentDepartmentId}',
-          );
-          notifyListeners();
-        } else {
-          print('Department Selection Failed');
-          notifyListeners();
-        }
-        returnShopProvider().getUserShops();
-      } catch (e) {
+    try {
+      // var safeContext = context;
+      print('Department Selection Started');
+      var res =
+          departmentClass != null
+              ? await CurrentDepartmentFunc()
+                  .createCurrentDepartment(
+                    TempCurrentDepartment(
+                      currentDepartmentId:
+                          departmentClass.uuid,
+                    ),
+                  )
+              : await CurrentDepartmentFunc()
+                  .clearCurrentDepartment();
+      if (res == 1) {
         print(
-          '❌❌ Select Department Error: ${e.toString()}',
+          'Current Department set: ${CurrentDepartmentFunc().getCurrentDepartment()?.currentDepartmentId}',
         );
+        notifyListeners();
+      } else {
+        print('Department Selection Failed');
+        notifyListeners();
       }
+      returnShopProvider().setState();
+    } catch (e) {
+      print('❌❌ Select Department Error: ${e.toString()}');
     }
   }
 

@@ -967,9 +967,7 @@ class _IndividualDepartmentListWidgetState
                                         .department
                                         .uuid) {
                                   returnDepartmentProvider()
-                                      .selectDepartment(
-                                        context: context,
-                                      );
+                                      .selectDepartment();
                                 } else {
                                   showDialog(
                                     context: context,
@@ -985,8 +983,6 @@ class _IndividualDepartmentListWidgetState
                                         action: () async {
                                           await returnDepartmentProvider()
                                               .selectDepartment(
-                                                context:
-                                                    context,
                                                 departmentClass:
                                                     widget
                                                         .department,

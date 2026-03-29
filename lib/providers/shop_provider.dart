@@ -876,6 +876,10 @@ class ShopProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setState() {
+    notifyListeners();
+  }
+
   void setShops(List<TempShopClass> shops) {
     userShops = shops;
     var localShop = CurrentShopFunc().getCurrentShop();
@@ -1234,6 +1238,9 @@ class ShopProvider extends ChangeNotifier {
           return 0;
         }
 
+        if (userShop()!.manageDepartments!) {
+          returnDepartmentProvider().selectDepartment();
+        }
         var shops = await getUserShops();
         setShops(shops);
         manageDepartmentsLoading = false;
@@ -1242,6 +1249,9 @@ class ShopProvider extends ChangeNotifier {
         return 1;
       } else {
         try {
+          if (userShop()!.manageDepartments!) {
+            returnDepartmentProvider().selectDepartment();
+          }
           userShop()!.updatedAt = DateTime.now();
           userShop()!.manageDepartments =
               !userShop()!.manageDepartments!;

@@ -1511,6 +1511,37 @@ class _SummaryTableHeadingBarState
               ),
             ),
           ),
+          Expanded(
+            flex: 5,
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: 5,
+                vertical: 10,
+              ),
+              child: Center(
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              widget
+                                  .theme
+                                  .mobileTexts
+                                  .b3
+                                  .fontSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        widget.isHeading
+                            ? 'Total-Value'
+                            : '',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
           Visibility(
             visible: widget.product.isNotEmpty,
             child: Expanded(
