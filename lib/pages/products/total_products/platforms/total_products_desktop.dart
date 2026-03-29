@@ -17,6 +17,7 @@ import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/products/compnents/product_filter_button.dart';
+import 'package:stockall/pages/products/compnents/product_filter_button_category.dart';
 import 'package:stockall/pages/products/compnents/product_tile_main.dart';
 import 'package:stockall/pages/products/compnents/search_product_tile.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
@@ -27,9 +28,11 @@ class TotalProductsDesktop extends StatefulWidget {
   const TotalProductsDesktop({
     super.key,
     required this.theme,
+    this.categoryUuid,
   });
 
   final ThemeProvider theme;
+  final String? categoryUuid;
 
   @override
   State<TotalProductsDesktop> createState() =>
@@ -64,8 +67,19 @@ class _TotalProductsDesktopState
   void initState() {
     super.initState();
     returnData().toggleFloatingAction(context);
-
-    // _productsFuture = getProductList(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (returnCategoriesProvider()
+          .categories()
+          .isNotEmpty) {
+        setState(() {
+          categoryUuid =
+              returnCategoriesProvider()
+                  .categories()
+                  .first
+                  .uuid;
+        });
+      }
+    });
   }
 
   @override
@@ -90,11 +104,23 @@ class _TotalProductsDesktopState
 
   final GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>();
+  int filterIndex = 0;
+  String? categoryUuid;
 
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
-    var products = returnData().productList();
+    var products =
+        widget.categoryUuid != null
+            ? returnData()
+                .productList()
+                .where(
+                  (pr) =>
+                      pr.categoryUuid ==
+                      widget.categoryUuid,
+                )
+                .toList()
+            : returnData().productList();
     List<TempProductClass> filterProducts() {
       switch (currentSelect) {
         case 1:
@@ -125,6 +151,15 @@ class _TotalProductsDesktopState
         default:
           return products;
       }
+    }
+
+    List<TempProductClass> categoryFilterProducts() {
+      if (categoryUuid != null) {
+        return products
+            .where((pr) => pr.categoryUuid == categoryUuid)
+            .toList();
+      }
+      return products;
     }
 
     return Scaffold(
@@ -231,53 +266,184 @@ class _TotalProductsDesktopState
                     appBar: appBar(
                       context: context,
                       title: 'All Items',
-                      widget: Visibility(
-                        visible:
-                            screenWidth(context) >
-                            mobileScreen,
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            borderRadius:
-                                BorderRadius.circular(10),
-                            onTap: () async {
-                              await getProductList();
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(
-                                10,
-                              ),
-                              child: Row(
-                                spacing: 5,
-                                children: [
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
+                      widget: Row(
+                        spacing: 5,
+                        children: [
+                          Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius:
+                                  BorderRadius.circular(10),
+                              onTap: () async {
+                                await getProductList();
+                              },
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.all(
+                                      10,
                                     ),
-                                    'Refresh',
-                                  ),
-                                  Icon(
-                                    size: 18,
-                                    Icons.refresh_rounded,
-                                  ),
-                                ],
+                                child: Row(
+                                  spacing: 5,
+                                  children: [
+                                    Visibility(
+                                      visible:
+                                          screenWidth(
+                                            context,
+                                          ) >
+                                          tabletScreenSmall,
+                                      child: Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b3
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        'Refresh',
+                                      ),
+                                    ),
+                                    Icon(
+                                      size: 18,
+                                      Icons.refresh_rounded,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                        ),
+                          Visibility(
+                            visible:
+                                widget.categoryUuid == null
+                                    ? true
+                                    : false,
+                            child: PopupMenuButton(
+                              offset: Offset(-20, 30),
+                              color: Colors.white,
+                              itemBuilder: (context) {
+                                return [
+                                  PopupMenuItem(
+                                    onTap: () {
+                                      setState(() {
+                                        filterIndex = 0;
+                                      });
+                                    },
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal:
+                                                10.0,
+                                          ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .spaceBetween,
+                                        children: [
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b3
+                                                      .fontSize,
+                                              fontWeight:
+                                                  filterIndex ==
+                                                          0
+                                                      ? FontWeight
+                                                          .bold
+                                                      : null,
+                                            ),
+                                            'Inventory Record',
+                                          ),
+                                          Visibility(
+                                            visible:
+                                                filterIndex ==
+                                                0,
+                                            child: Icon(
+                                              size: 17,
+                                              color:
+                                                  Colors
+                                                      .grey
+                                                      .shade700,
+                                              Icons.check,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  PopupMenuItem(
+                                    onTap: () {
+                                      setState(() {
+                                        filterIndex = 1;
+                                      });
+                                    },
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal:
+                                                10.0,
+                                          ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .spaceBetween,
+                                        children: [
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b3
+                                                      .fontSize,
+                                              fontWeight:
+                                                  filterIndex ==
+                                                          1
+                                                      ? FontWeight
+                                                          .bold
+                                                      : null,
+                                            ),
+                                            'Categories',
+                                          ),
+                                          Visibility(
+                                            visible:
+                                                filterIndex ==
+                                                1,
+                                            child: Icon(
+                                              size: 17,
+                                              color:
+                                                  Colors
+                                                      .grey
+                                                      .shade700,
+                                              Icons.check,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ];
+                              },
+                              child: Container(
+                                padding: EdgeInsets.all(5),
+                                child: Icon(
+                                  Icons.more_vert_rounded,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     floatingActionButton: Visibility(
-                      visible: authorization(
-                        authorized:
-                            Authorizations().addProduct,
-                      ),
+                      visible:
+                          authorization(
+                            authorized:
+                                Authorizations().addProduct,
+                          ) &&
+                          widget.categoryUuid == null,
                       child: FloatingActionButtonMain(
                         action: () {
                           ItemsAuthAction().numberOfItemsAction(
@@ -426,32 +592,43 @@ class _TotalProductsDesktopState
                                               buttonText:
                                                   'Add Item',
                                               subText:
-                                                  'Click on the button below to start adding Items to your store.',
+                                                  widget.categoryUuid ==
+                                                          null
+                                                      ? 'Click on the button below to start adding Items to your store.'
+                                                      : 'Go to your Items Page to add items to your store.',
                                               title:
-                                                  'You have no Items Yet',
+                                                  widget.categoryUuid ==
+                                                          null
+                                                      ? 'You have not Item Under this Category'
+                                                      : 'You have no Items Yet',
                                               svg:
                                                   productIconSvg,
                                               height: 35,
-                                              action: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (
-                                                      context,
-                                                    ) {
-                                                      return AddProduct();
-                                                    },
-                                                  ),
-                                                ).then((_) {
-                                                  if (context
-                                                      .mounted) {
-                                                    // _productsFuture =
-                                                    // getProductList(
-                                                    //   context,
-                                                    // );
-                                                  }
-                                                });
-                                              },
+                                              action:
+                                                  widget.categoryUuid !=
+                                                          null
+                                                      ? () {
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (
+                                                              context,
+                                                            ) {
+                                                              return AddProduct();
+                                                            },
+                                                          ),
+                                                        ).then((
+                                                          _,
+                                                        ) {
+                                                          if (context.mounted) {
+                                                            // _productsFuture =
+                                                            // getProductList(
+                                                            //   context,
+                                                            // );
+                                                          }
+                                                        });
+                                                      }
+                                                      : () {},
                                               theme:
                                                   widget
                                                       .theme,
@@ -481,238 +658,325 @@ class _TotalProductsDesktopState
                                             ),
                                         child: Column(
                                           children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal:
-                                                        5.0,
-                                                  ),
-                                              child: SizedBox(
-                                                width:
-                                                    double
-                                                        .infinity,
-                                                // height: 40,
-                                                child: Builder(
-                                                  builder: (
-                                                    context,
-                                                  ) {
-                                                    if (screenWidth(
-                                                          context,
-                                                        ) <
-                                                        tabletScreen) {
-                                                      return SingleChildScrollView(
-                                                        scrollDirection:
-                                                            Axis.horizontal,
-                                                        child: Row(
-                                                          spacing:
-                                                              6,
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment.center,
-                                                          children: [
-                                                            ProductsFilterButton(
-                                                              action: () {
-                                                                setState(
-                                                                  () {
-                                                                    changeSelected(
-                                                                      0,
-                                                                    );
-                                                                  },
-                                                                );
-                                                              },
-                                                              currentSelected:
-                                                                  currentSelect,
-                                                              number:
-                                                                  0,
-                                                              title:
-                                                                  'All Items',
-                                                              theme:
-                                                                  theme,
-                                                            ),
-                                                            ProductsFilterButton(
-                                                              action: () {
-                                                                setState(
-                                                                  () {
-                                                                    changeSelected(
-                                                                      1,
-                                                                    );
-                                                                  },
-                                                                );
-                                                              },
-                                                              currentSelected:
-                                                                  currentSelect,
-                                                              number:
-                                                                  1,
-                                                              title:
-                                                                  'In Stock',
-                                                              theme:
-                                                                  theme,
-                                                            ),
-                                                            ProductsFilterButton(
-                                                              action: () {
-                                                                setState(
-                                                                  () {
-                                                                    changeSelected(
-                                                                      2,
-                                                                    );
-                                                                  },
-                                                                );
-                                                              },
-                                                              currentSelected:
-                                                                  currentSelect,
-                                                              number:
-                                                                  2,
-                                                              title:
-                                                                  'Low Stock',
-                                                              theme:
-                                                                  theme,
-                                                            ),
-                                                            ProductsFilterButton(
-                                                              currentSelected:
-                                                                  currentSelect,
-                                                              action: () {
-                                                                setState(
-                                                                  () {
-                                                                    changeSelected(
-                                                                      3,
-                                                                    );
-                                                                  },
-                                                                );
-                                                              },
-                                                              number:
-                                                                  3,
-                                                              title:
-                                                                  'Out of Stock',
-                                                              theme:
-                                                                  theme,
-                                                            ),
-                                                            ProductsFilterButton(
-                                                              currentSelected:
-                                                                  currentSelect,
-                                                              action: () {
-                                                                setState(
-                                                                  () {
-                                                                    changeSelected(
-                                                                      4,
-                                                                    );
-                                                                  },
-                                                                );
-                                                              },
-                                                              number:
-                                                                  4,
-                                                              title:
-                                                                  'UnManaged',
-                                                              theme:
-                                                                  theme,
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      );
-                                                    } else {
-                                                      return Row(
-                                                        spacing:
-                                                            5,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment.center,
-                                                        children: [
-                                                          ProductsFilterButton(
-                                                            action: () {
-                                                              setState(
-                                                                () {
-                                                                  changeSelected(
+                                            Visibility(
+                                              visible:
+                                                  widget
+                                                      .categoryUuid ==
+                                                  null,
+                                              child: Padding(
+                                                padding: const EdgeInsets.symmetric(
+                                                  horizontal:
+                                                      5.0,
+                                                ),
+                                                child: SizedBox(
+                                                  width:
+                                                      double
+                                                          .infinity,
+                                                  // height: 40,
+                                                  child: Builder(
+                                                    builder: (
+                                                      context,
+                                                    ) {
+                                                      if (screenWidth(
+                                                            context,
+                                                          ) <
+                                                          tabletScreen) {
+                                                        return Builder(
+                                                          builder: (
+                                                            context,
+                                                          ) {
+                                                            if (filterIndex ==
+                                                                0) {
+                                                              return SingleChildScrollView(
+                                                                scrollDirection:
+                                                                    Axis.horizontal,
+                                                                child: Row(
+                                                                  spacing:
+                                                                      6,
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment.center,
+                                                                  children: [
+                                                                    ProductsFilterButton(
+                                                                      action: () {
+                                                                        setState(
+                                                                          () {
+                                                                            changeSelected(
+                                                                              0,
+                                                                            );
+                                                                          },
+                                                                        );
+                                                                      },
+                                                                      currentSelected:
+                                                                          currentSelect,
+                                                                      number:
+                                                                          0,
+                                                                      title:
+                                                                          'All Items',
+                                                                      theme:
+                                                                          theme,
+                                                                    ),
+                                                                    ProductsFilterButton(
+                                                                      action: () {
+                                                                        setState(
+                                                                          () {
+                                                                            changeSelected(
+                                                                              1,
+                                                                            );
+                                                                          },
+                                                                        );
+                                                                      },
+                                                                      currentSelected:
+                                                                          currentSelect,
+                                                                      number:
+                                                                          1,
+                                                                      title:
+                                                                          'In Stock',
+                                                                      theme:
+                                                                          theme,
+                                                                    ),
+                                                                    ProductsFilterButton(
+                                                                      action: () {
+                                                                        setState(
+                                                                          () {
+                                                                            changeSelected(
+                                                                              2,
+                                                                            );
+                                                                          },
+                                                                        );
+                                                                      },
+                                                                      currentSelected:
+                                                                          currentSelect,
+                                                                      number:
+                                                                          2,
+                                                                      title:
+                                                                          'Low Stock',
+                                                                      theme:
+                                                                          theme,
+                                                                    ),
+                                                                    ProductsFilterButton(
+                                                                      currentSelected:
+                                                                          currentSelect,
+                                                                      action: () {
+                                                                        setState(
+                                                                          () {
+                                                                            changeSelected(
+                                                                              3,
+                                                                            );
+                                                                          },
+                                                                        );
+                                                                      },
+                                                                      number:
+                                                                          3,
+                                                                      title:
+                                                                          'Out of Stock',
+                                                                      theme:
+                                                                          theme,
+                                                                    ),
+                                                                    ProductsFilterButton(
+                                                                      currentSelected:
+                                                                          currentSelect,
+                                                                      action: () {
+                                                                        setState(
+                                                                          () {
+                                                                            changeSelected(
+                                                                              4,
+                                                                            );
+                                                                          },
+                                                                        );
+                                                                      },
+                                                                      number:
+                                                                          4,
+                                                                      title:
+                                                                          'UnManaged',
+                                                                      theme:
+                                                                          theme,
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              );
+                                                            } else {
+                                                              return SingleChildScrollView(
+                                                                scrollDirection:
+                                                                    Axis.horizontal,
+                                                                child: Row(
+                                                                  spacing:
+                                                                      6,
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment.center,
+                                                                  children:
+                                                                      returnCategoriesProvider()
+                                                                          .categories()
+                                                                          .map(
+                                                                            (
+                                                                              cat,
+                                                                            ) => ProductFilterButtonCategory(
+                                                                              theme:
+                                                                                  theme,
+                                                                              action: () {
+                                                                                setState(
+                                                                                  () {
+                                                                                    categoryUuid =
+                                                                                        cat.uuid;
+                                                                                  },
+                                                                                );
+                                                                              },
+                                                                              currentSelected:
+                                                                                  categoryUuid!,
+                                                                              title:
+                                                                                  cat.name,
+                                                                              uuid:
+                                                                                  cat.uuid,
+                                                                            ),
+                                                                          )
+                                                                          .toList(),
+                                                                ),
+                                                              );
+                                                            }
+                                                          },
+                                                        );
+                                                      } else {
+                                                        if (filterIndex ==
+                                                            0) {
+                                                          return Row(
+                                                            spacing:
+                                                                5,
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment.center,
+                                                            children: [
+                                                              ProductsFilterButton(
+                                                                action: () {
+                                                                  setState(
+                                                                    () {
+                                                                      changeSelected(
+                                                                        0,
+                                                                      );
+                                                                    },
+                                                                  );
+                                                                },
+                                                                currentSelected:
+                                                                    currentSelect,
+                                                                number:
                                                                     0,
+                                                                title:
+                                                                    'All Items',
+                                                                theme:
+                                                                    theme,
+                                                              ),
+                                                              ProductsFilterButton(
+                                                                action: () {
+                                                                  setState(
+                                                                    () {
+                                                                      changeSelected(
+                                                                        1,
+                                                                      );
+                                                                    },
                                                                   );
                                                                 },
-                                                              );
-                                                            },
-                                                            currentSelected:
-                                                                currentSelect,
-                                                            number:
-                                                                0,
-                                                            title:
-                                                                'All Items',
-                                                            theme:
-                                                                theme,
-                                                          ),
-                                                          ProductsFilterButton(
-                                                            action: () {
-                                                              setState(
-                                                                () {
-                                                                  changeSelected(
+                                                                currentSelected:
+                                                                    currentSelect,
+                                                                number:
                                                                     1,
+                                                                title:
+                                                                    'In Stock',
+                                                                theme:
+                                                                    theme,
+                                                              ),
+                                                              ProductsFilterButton(
+                                                                action: () {
+                                                                  setState(
+                                                                    () {
+                                                                      changeSelected(
+                                                                        2,
+                                                                      );
+                                                                    },
                                                                   );
                                                                 },
-                                                              );
-                                                            },
-                                                            currentSelected:
-                                                                currentSelect,
-                                                            number:
-                                                                1,
-                                                            title:
-                                                                'In Stock',
-                                                            theme:
-                                                                theme,
-                                                          ),
-                                                          ProductsFilterButton(
-                                                            action: () {
-                                                              setState(
-                                                                () {
-                                                                  changeSelected(
+                                                                currentSelected:
+                                                                    currentSelect,
+                                                                number:
                                                                     2,
+                                                                title:
+                                                                    'Low Stock',
+                                                                theme:
+                                                                    theme,
+                                                              ),
+                                                              ProductsFilterButton(
+                                                                currentSelected:
+                                                                    currentSelect,
+                                                                action: () {
+                                                                  setState(
+                                                                    () {
+                                                                      changeSelected(
+                                                                        3,
+                                                                      );
+                                                                    },
                                                                   );
                                                                 },
-                                                              );
-                                                            },
-                                                            currentSelected:
-                                                                currentSelect,
-                                                            number:
-                                                                2,
-                                                            title:
-                                                                'Low Stock',
-                                                            theme:
-                                                                theme,
-                                                          ),
-                                                          ProductsFilterButton(
-                                                            currentSelected:
-                                                                currentSelect,
-                                                            action: () {
-                                                              setState(
-                                                                () {
-                                                                  changeSelected(
+                                                                number:
                                                                     3,
+                                                                title:
+                                                                    'Out of Stock',
+                                                                theme:
+                                                                    theme,
+                                                              ),
+                                                              ProductsFilterButton(
+                                                                currentSelected:
+                                                                    currentSelect,
+                                                                action: () {
+                                                                  setState(
+                                                                    () {
+                                                                      changeSelected(
+                                                                        4,
+                                                                      );
+                                                                    },
                                                                   );
                                                                 },
-                                                              );
-                                                            },
-                                                            number:
-                                                                3,
-                                                            title:
-                                                                'Out of Stock',
-                                                            theme:
-                                                                theme,
-                                                          ),
-                                                          ProductsFilterButton(
-                                                            currentSelected:
-                                                                currentSelect,
-                                                            action: () {
-                                                              setState(
-                                                                () {
-                                                                  changeSelected(
+                                                                number:
                                                                     4,
-                                                                  );
-                                                                },
-                                                              );
-                                                            },
-                                                            number:
-                                                                4,
-                                                            title:
-                                                                'UnManaged',
-                                                            theme:
-                                                                theme,
-                                                          ),
-                                                        ],
-                                                      );
-                                                    }
-                                                  },
+                                                                title:
+                                                                    'UnManaged',
+                                                                theme:
+                                                                    theme,
+                                                              ),
+                                                            ],
+                                                          );
+                                                        } else {
+                                                          return Row(
+                                                            spacing:
+                                                                5,
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment.center,
+                                                            children:
+                                                                returnCategoriesProvider()
+                                                                    .categories()
+                                                                    .map(
+                                                                      (
+                                                                        cat,
+                                                                      ) => ProductFilterButtonCategory(
+                                                                        theme:
+                                                                            theme,
+                                                                        action: () {
+                                                                          setState(
+                                                                            () {
+                                                                              categoryUuid =
+                                                                                  cat.uuid;
+                                                                            },
+                                                                          );
+                                                                        },
+                                                                        currentSelected:
+                                                                            categoryUuid!,
+                                                                        title:
+                                                                            cat.name,
+                                                                        uuid:
+                                                                            cat.uuid,
+                                                                      ),
+                                                                    )
+                                                                    .toList(),
+                                                          );
+                                                        }
+                                                      }
+                                                    },
+                                                  ),
                                                 ),
                                               ),
                                             ),
@@ -724,93 +988,185 @@ class _TotalProductsDesktopState
                                                 builder: (
                                                   context,
                                                 ) {
-                                                  if (filterProducts()
-                                                      .isNotEmpty) {
-                                                    return RefreshIndicator(
-                                                      onRefresh:
-                                                          getProductList,
-                                                      color:
-                                                          theme.lightModeColor.prColor300,
-                                                      backgroundColor:
-                                                          Colors.white,
-                                                      displacement:
-                                                          10,
-                                                      child: ListView.builder(
-                                                        itemCount:
-                                                            filterProducts().length,
-                                                        itemBuilder: (
-                                                          context,
-                                                          index,
-                                                        ) {
-                                                          List<
+                                                  if (filterIndex ==
+                                                      0) {
+                                                    if (filterProducts()
+                                                        .isNotEmpty) {
+                                                      return RefreshIndicator(
+                                                        onRefresh:
+                                                            getProductList,
+                                                        color:
+                                                            theme.lightModeColor.prColor300,
+                                                        backgroundColor:
+                                                            Colors.white,
+                                                        displacement:
+                                                            10,
+                                                        child: ListView.builder(
+                                                          itemCount:
+                                                              filterProducts().length,
+                                                          itemBuilder: (
+                                                            context,
+                                                            index,
+                                                          ) {
+                                                            List<
+                                                              TempProductClass
+                                                            >
+                                                            products =
+                                                                filterProducts();
+
                                                             TempProductClass
-                                                          >
-                                                          products =
-                                                              filterProducts();
+                                                            product =
+                                                                products[index];
 
-                                                          TempProductClass
-                                                          product =
-                                                              products[index];
-
-                                                          return ProductTileMain(
-                                                            action: () {
-                                                              Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                  builder: (
-                                                                    context,
+                                                            return ProductTileMain(
+                                                              action: () {
+                                                                Navigator.push(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                    builder: (
+                                                                      context,
+                                                                    ) {
+                                                                      return ProductDetailsPage(
+                                                                        productUuid:
+                                                                            product.uuid!,
+                                                                      );
+                                                                    },
+                                                                  ),
+                                                                ).then(
+                                                                  (
+                                                                    _,
                                                                   ) {
-                                                                    return ProductDetailsPage(
-                                                                      productUuid:
-                                                                          product.uuid!,
-                                                                    );
+                                                                    if (context.mounted) {
+                                                                      setState(
+                                                                        () {
+                                                                          // _productsFuture =
+                                                                          // getProductList(
+                                                                          //   context,
+                                                                          // );
+                                                                        },
+                                                                      );
+                                                                    }
                                                                   },
-                                                                ),
-                                                              ).then(
-                                                                (
-                                                                  _,
-                                                                ) {
-                                                                  if (context.mounted) {
-                                                                    setState(
-                                                                      () {
-                                                                        // _productsFuture =
-                                                                        // getProductList(
-                                                                        //   context,
-                                                                        // );
-                                                                      },
-                                                                    );
-                                                                  }
-                                                                },
-                                                              );
-                                                            },
-                                                            theme:
-                                                                theme,
-                                                            product:
-                                                                product,
-                                                          );
-                                                        },
-                                                      ),
-                                                    );
-                                                  } else {
-                                                    return Padding(
-                                                      padding: const EdgeInsets.only(
-                                                        bottom:
-                                                            30.0,
-                                                      ),
-                                                      child: EmptyWidgetDisplayOnly(
-                                                        title:
-                                                            'Empty List',
-                                                        subText:
-                                                            'You Don\'t have any item under this category',
+                                                                );
+                                                              },
+                                                              theme:
+                                                                  theme,
+                                                              product:
+                                                                  product,
+                                                            );
+                                                          },
+                                                        ),
+                                                      );
+                                                    } else {
+                                                      return Padding(
+                                                        padding: const EdgeInsets.only(
+                                                          bottom:
+                                                              30.0,
+                                                        ),
+                                                        child: EmptyWidgetDisplayOnly(
+                                                          title:
+                                                              'Empty List',
+                                                          subText:
+                                                              'You Don\'t have any item under this category',
 
-                                                        icon:
-                                                            Icons.dangerous_outlined,
-                                                        theme:
-                                                            theme,
-                                                        height:
-                                                            40,
-                                                      ),
-                                                    );
+                                                          icon:
+                                                              Icons.dangerous_outlined,
+                                                          theme:
+                                                              theme,
+                                                          height:
+                                                              40,
+                                                        ),
+                                                      );
+                                                    }
+                                                  } else {
+                                                    if (categoryFilterProducts()
+                                                        .isNotEmpty) {
+                                                      return RefreshIndicator(
+                                                        onRefresh:
+                                                            getProductList,
+                                                        color:
+                                                            theme.lightModeColor.prColor300,
+                                                        backgroundColor:
+                                                            Colors.white,
+                                                        displacement:
+                                                            10,
+                                                        child: ListView.builder(
+                                                          itemCount:
+                                                              categoryFilterProducts().length,
+                                                          itemBuilder: (
+                                                            context,
+                                                            index,
+                                                          ) {
+                                                            List<
+                                                              TempProductClass
+                                                            >
+                                                            products =
+                                                                categoryFilterProducts();
+
+                                                            TempProductClass
+                                                            product =
+                                                                products[index];
+
+                                                            return ProductTileMain(
+                                                              action: () {
+                                                                Navigator.push(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                    builder: (
+                                                                      context,
+                                                                    ) {
+                                                                      return ProductDetailsPage(
+                                                                        productUuid:
+                                                                            product.uuid!,
+                                                                      );
+                                                                    },
+                                                                  ),
+                                                                ).then(
+                                                                  (
+                                                                    _,
+                                                                  ) {
+                                                                    if (context.mounted) {
+                                                                      setState(
+                                                                        () {
+                                                                          // _productsFuture =
+                                                                          // getProductList(
+                                                                          //   context,
+                                                                          // );
+                                                                        },
+                                                                      );
+                                                                    }
+                                                                  },
+                                                                );
+                                                              },
+                                                              theme:
+                                                                  theme,
+                                                              product:
+                                                                  product,
+                                                            );
+                                                          },
+                                                        ),
+                                                      );
+                                                    } else {
+                                                      return Padding(
+                                                        padding: const EdgeInsets.only(
+                                                          bottom:
+                                                              30.0,
+                                                        ),
+                                                        child: EmptyWidgetDisplayOnly(
+                                                          title:
+                                                              'Empty List',
+                                                          subText:
+                                                              'You Don\'t have any item under this category',
+
+                                                          icon:
+                                                              Icons.dangerous_outlined,
+                                                          theme:
+                                                              theme,
+                                                          height:
+                                                              40,
+                                                        ),
+                                                      );
+                                                    }
                                                   }
                                                 },
                                               ),

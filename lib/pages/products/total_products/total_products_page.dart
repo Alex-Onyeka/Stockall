@@ -6,7 +6,12 @@ import 'package:stockall/providers/theme_provider.dart';
 
 class TotalProductsPage extends StatelessWidget {
   final ThemeProvider theme;
-  const TotalProductsPage({super.key, required this.theme});
+  final String? categoryUuid;
+  const TotalProductsPage({
+    super.key,
+    required this.theme,
+    this.categoryUuid,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +22,15 @@ class TotalProductsPage extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth < mobileScreen) {
-            return TotalProductsMobile(theme: theme);
+            return TotalProductsMobile(
+              theme: theme,
+              categoryUuid: categoryUuid,
+            );
           } else {
-            return TotalProductsDesktop(theme: theme);
+            return TotalProductsDesktop(
+              theme: theme,
+              categoryUuid: categoryUuid,
+            );
           }
         },
       ),

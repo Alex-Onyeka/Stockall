@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
-class ProductsFilterButton extends StatelessWidget {
+class ProductFilterButtonCategory extends StatelessWidget {
   final String title;
-  final int currentSelected;
-  final int number;
+  final String currentSelected;
+  final String uuid;
   final Function()? action;
-  const ProductsFilterButton({
+  const ProductFilterButtonCategory({
     super.key,
     required this.theme,
     required this.title,
-    required this.number,
+    required this.uuid,
     required this.currentSelected,
     required this.action,
   });
@@ -24,13 +24,13 @@ class ProductsFilterButton extends StatelessWidget {
       child: Ink(
         decoration: BoxDecoration(
           color:
-              currentSelected == number
+              currentSelected == uuid
                   ? theme.lightModeColor.prColor300
                   : Colors.transparent,
           borderRadius: BorderRadius.circular(5),
           border: Border.all(
             color:
-                currentSelected == number
+                currentSelected == uuid
                     ? Colors.transparent
                     : theme.lightModeColor.prColor300,
           ),
@@ -48,12 +48,12 @@ class ProductsFilterButton extends StatelessWidget {
               child: Text(
                 style: TextStyle(
                   color:
-                      currentSelected == number
+                      currentSelected == uuid
                           ? Colors.white
                           : theme.lightModeColor.prColor300,
                   fontWeight: FontWeight.bold,
                   fontSize:
-                      currentSelected == number
+                      currentSelected == uuid
                           ? theme.mobileTexts.b3.fontSize
                           : theme.mobileTexts.b4.fontSize,
                 ),
