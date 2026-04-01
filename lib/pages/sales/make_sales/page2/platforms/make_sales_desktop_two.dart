@@ -401,18 +401,18 @@ class _MakeSalesDesktopTwoState
                                               'Is this Sale On Credit?',
                                             ),
                                             InkWell(
-                                              onTap: () {
+                                              onTap: () async {
                                                 if (returnSalesProvider()
                                                     .currentCart()
                                                     .isInvoice) {
-                                                  returnSalesProvider().switchInvoiceSale(
+                                                  await returnSalesProvider().switchInvoiceSale(
                                                     context:
                                                         context,
                                                     value:
                                                         false,
                                                   );
                                                 } else {
-                                                  returnSalesProvider().switchInvoiceSale(
+                                                  await returnSalesProvider().switchInvoiceSale(
                                                     context:
                                                         context,
                                                     value:

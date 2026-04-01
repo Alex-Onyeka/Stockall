@@ -9,8 +9,6 @@ import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/platforms/product_details_desktop.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
-import 'package:stockall/pages/products/storage_page/components/summary_table_heading_bar.dart';
-import 'package:stockall/pages/products/storage_page/components/table_row_widget.dart';
 import 'package:stockall/pages/report/events_log/platforms/events_log_mobile.dart';
 
 class StoragePageMobile extends StatefulWidget {
@@ -358,11 +356,11 @@ class _StoragePageMobileState
                                     displacement: 10,
                                     child: ListView(
                                       children: [
-                                        SummaryTableHeadingBar(
-                                          isHeading: true,
-                                          theme: theme,
-                                          product: products,
-                                        ),
+                                        // SummaryTableHeadingBar(
+                                        //   isHeading: true,
+                                        //   theme: theme,
+                                        //   product: products,
+                                        // ),
                                         Builder(
                                           builder: (
                                             context,
@@ -420,24 +418,25 @@ class _StoragePageMobileState
                                                           context,
                                                           index,
                                                         ) {
-                                                          var product =
-                                                              products[index];
-                                                          return TableRowRecordWidget(
-                                                            theme:
-                                                                theme,
-                                                            product:
-                                                                product,
-                                                          );
+                                                          return Container();
+                                                          // var product =
+                                                          //     products[index];
+                                                          // return TableRowRecordWidget(
+                                                          //   theme:
+                                                          //       theme,
+                                                          //   product:
+                                                          //       product,
+                                                          // );
                                                         },
                                                       ),
-                                                      SummaryTableHeadingBar(
-                                                        isHeading:
-                                                            false,
-                                                        theme:
-                                                            theme,
-                                                        product:
-                                                            products,
-                                                      ),
+                                                      // SummaryTableHeadingBar(
+                                                      //   isHeading:
+                                                      //       false,
+                                                      //   theme:
+                                                      //       theme,
+                                                      //   product:
+                                                      //       products,
+                                                      // ),
                                                       SizedBox(
                                                         height:
                                                             20,

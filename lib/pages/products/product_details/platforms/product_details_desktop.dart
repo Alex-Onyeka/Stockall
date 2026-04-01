@@ -1501,7 +1501,6 @@ class _ProductDetailsDesktopState
                                                 await provider
                                                     .deleteProductMain(
                                                       product,
-                                                      context,
                                                     );
                                                 await provider
                                                     .getProducts(
@@ -1743,9 +1742,15 @@ class _ProductDetailsDesktopState
             ],
           ),
           Visibility(
-            visible: authorization(
-              authorized: Authorizations().updateProduct,
-            ),
+            visible:
+                authorization(
+                  authorized:
+                      Authorizations().updateProduct,
+                ) &&
+                authorization(
+                  authorized:
+                      Authorizations().updateItemQuantity,
+                ),
             child: Row(
               children: [
                 Expanded(
@@ -2350,7 +2355,12 @@ class _ProductDetailsDesktopState
                             context,
                           )?.manageInventoryStorage !=
                           true &&
-                      shop(context)?.useGroupUnit == true,
+                      shop(context)?.useGroupUnit == true &&
+                      authorization(
+                        authorized:
+                            Authorizations()
+                                .updateItemQuantity,
+                      ),
                   child: SizedBox(width: 10),
                 ),
                 Visibility(
@@ -2359,7 +2369,12 @@ class _ProductDetailsDesktopState
                             context,
                           )?.manageInventoryStorage !=
                           true &&
-                      shop(context)?.useGroupUnit == true,
+                      shop(context)?.useGroupUnit == true &&
+                      authorization(
+                        authorized:
+                            Authorizations()
+                                .updateItemQuantity,
+                      ),
                   child: Expanded(
                     child: EditButton(
                       theme: widget.theme,

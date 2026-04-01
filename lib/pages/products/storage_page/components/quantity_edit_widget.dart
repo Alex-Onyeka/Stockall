@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
-import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
@@ -11,7 +10,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/platforms/product_details_desktop.dart';
 
 class QuantityEditWidget extends StatefulWidget {
-  final TempProductClass product;
+  final TempStorageProducts product;
   final bool isTotal;
   final bool isGroup;
   const QuantityEditWidget({
@@ -99,109 +98,109 @@ class _QuantityEditWidgetState
                       Column(
                         spacing: 20,
                         children: [
-                          Text(
-                            style: TextStyle(
-                              fontWeight: FontWeight.normal,
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
-                            ),
-                            !widget.isTotal
-                                ? (widget
-                                            .product
-                                            .quantity ==
-                                        null
-                                    ? 'Not Set'
-                                    : 'Current ${widget.isGroup ? 'Group' : 'Unit'} Quantity In Sales: ${widget.isGroup ? formatLargeNumber(returnValue().toString()) : formatLargeNumber(widget.product.quantity?.toString() ?? '0')}')
-                                : (widget
-                                            .product
-                                            .totalQttyInStorageDouble ==
-                                        null
-                                    ? 'Not Set'
-                                    : 'Current ${widget.isGroup ? 'Group' : 'Unit'} Quantity In Storage: ${widget.isGroup ? formatLargeNumber(returnValue().toString()) : formatLargeNumber(widget.product.totalQttyInStorageDouble?.toString() ?? '0')}'),
-                          ),
+                          // Text(
+                          //   style: TextStyle(
+                          //     fontWeight: FontWeight.normal,
+                          //     fontSize:
+                          //         theme
+                          //             .mobileTexts
+                          //             .b3
+                          //             .fontSize,
+                          //   ),
+                          //   !widget.isTotal
+                          //       ? (widget
+                          //                   .product
+                          //                   .quantity ==
+                          //               null
+                          //           ? 'Not Set'
+                          //           : 'Current ${widget.isGroup ? 'Group' : 'Unit'} Quantity In Sales: ${widget.isGroup ? formatLargeNumber(returnValue().toString()) : formatLargeNumber(widget.product.quantity?.toString() ?? '0')}')
+                          //       : (widget
+                          //                   .product
+                          //                   .totalQttyInStorageDouble ==
+                          //               null
+                          //           ? 'Not Set'
+                          //           : 'Current ${widget.isGroup ? 'Group' : 'Unit'} Quantity In Storage: ${widget.isGroup ? formatLargeNumber(returnValue().toString()) : formatLargeNumber(widget.product.totalQttyInStorageDouble?.toString() ?? '0')}'),
+                          // ),
                           EditCartTextField(
                             onChanged: (value) {
-                              if (value.isEmpty) {
-                                setState(() {
-                                  controller.text = '0';
-                                });
-                              } else if (value
-                                      .toString()[0] ==
-                                  '0') {
-                                setState(() {
-                                  controller.text = value
-                                      .substring(1);
-                                });
-                              } else {
-                                if (!widget.isTotal) {
-                                  if (isAddToQuantity) {
-                                    if (widget
-                                            .product
-                                            .isManaged &&
-                                        returnShopProvider()
-                                                .userShop()
-                                                ?.manageInventoryStorage ==
-                                            true) {
-                                      if (((double.tryParse(
-                                                    value.replaceAll(
-                                                      ',',
-                                                      '',
-                                                    ),
-                                                  ) ??
-                                                  0) +
-                                              (double.tryParse(
-                                                    widget.product.quantity?.toString() ??
-                                                        '0',
-                                                  ) ??
-                                                  0)) >
-                                          ((widget
-                                                      .product
-                                                      .totalQttyInStorageDouble ??
-                                                  0) +
-                                              (double.tryParse(
-                                                    widget.product.quantity?.toString() ??
-                                                        '0',
-                                                  ) ??
-                                                  0))) {
-                                        controller.text =
-                                            '0';
-                                      }
-                                    }
-                                  } else if (!isAddToQuantity) {
-                                    if (widget
-                                            .product
-                                            .isManaged &&
-                                        returnShopProvider()
-                                                .userShop()
-                                                ?.manageInventoryStorage ==
-                                            true) {
-                                      if (((double.tryParse(
-                                                value
-                                                    .replaceAll(
-                                                      ',',
-                                                      '',
-                                                    ),
-                                              ) ??
-                                              0)) >
-                                          ((widget
-                                                      .product
-                                                      .totalQttyInStorageDouble ??
-                                                  0) +
-                                              (double.tryParse(
-                                                    widget.product.quantity?.toString() ??
-                                                        '0',
-                                                  ) ??
-                                                  0))) {
-                                        controller.text =
-                                            '0';
-                                      }
-                                    }
-                                  }
-                                }
-                              }
+                              // if (value.isEmpty) {
+                              //   setState(() {
+                              //     controller.text = '0';
+                              //   });
+                              // } else if (value
+                              //         .toString()[0] ==
+                              //     '0') {
+                              //   setState(() {
+                              //     controller.text = value
+                              //         .substring(1);
+                              //   });
+                              // } else {
+                              //   if (!widget.isTotal) {
+                              //     if (isAddToQuantity) {
+                              //       if (widget
+                              //               .product
+                              //               .isManaged &&
+                              //           returnShopProvider()
+                              //                   .userShop()
+                              //                   ?.manageInventoryStorage ==
+                              //               true) {
+                              //         if (((double.tryParse(
+                              //                       value.replaceAll(
+                              //                         ',',
+                              //                         '',
+                              //                       ),
+                              //                     ) ??
+                              //                     0) +
+                              //                 (double.tryParse(
+                              //                       widget.product.quantity?.toString() ??
+                              //                           '0',
+                              //                     ) ??
+                              //                     0)) >
+                              //             ((widget
+                              //                         .product
+                              //                         .totalQttyInStorageDouble ??
+                              //                     0) +
+                              //                 (double.tryParse(
+                              //                       widget.product.quantity?.toString() ??
+                              //                           '0',
+                              //                     ) ??
+                              //                     0))) {
+                              //           controller.text =
+                              //               '0';
+                              //         }
+                              //       }
+                              //     } else if (!isAddToQuantity) {
+                              //       if (widget
+                              //               .product
+                              //               .isManaged &&
+                              //           returnShopProvider()
+                              //                   .userShop()
+                              //                   ?.manageInventoryStorage ==
+                              //               true) {
+                              //         if (((double.tryParse(
+                              //                   value
+                              //                       .replaceAll(
+                              //                         ',',
+                              //                         '',
+                              //                       ),
+                              //                 ) ??
+                              //                 0)) >
+                              //             ((widget
+                              //                         .product
+                              //                         .totalQttyInStorageDouble ??
+                              //                     0) +
+                              //                 (double.tryParse(
+                              //                       widget.product.quantity?.toString() ??
+                              //                           '0',
+                              //                     ) ??
+                              //                     0))) {
+                              //           controller.text =
+                              //               '0';
+                              //         }
+                              //       }
+                              //     }
+                              //   }
+                              // }
                             },
                             title: 'Quantity',
                             hint: 'Enter Quantity Amount',
@@ -384,311 +383,313 @@ class _QuantityEditWidgetState
   }
 
   void saveEdit() async {
-    showDialog(
-      context: context,
-      builder: (newC) {
-        return ConfirmationAlert(
-          theme: returnTheme(context, listen: false),
-          message:
-              controller.text.isEmpty && !isAddToQuantity
-                  ? 'You are about to empty your Inventory, are you sure you want to proceed?'
-                  : 'You are about to permanently Save this update, are you sure you want to proceed?',
-          title:
-              controller.text.isEmpty && !isAddToQuantity
-                  ? 'Clear Inventory'
-                  : 'Update Quantity',
-          action: () async {
-            Navigator.of(newC).pop();
-            Navigator.of(context).pop();
-            node.unfocus();
-            setState(() {
-              errorUpdating = false;
-              isLoading = true;
-            });
+    // showDialog(
+    //   context: context,
+    //   builder: (newC) {
+    //     return ConfirmationAlert(
+    //       theme: returnTheme(context, listen: false),
+    //       message:
+    //           controller.text.isEmpty && !isAddToQuantity
+    //               ? 'You are about to empty your Inventory, are you sure you want to proceed?'
+    //               : 'You are about to permanently Save this update, are you sure you want to proceed?',
+    //       title:
+    //           controller.text.isEmpty && !isAddToQuantity
+    //               ? 'Clear Inventory'
+    //               : 'Update Quantity',
+    //       action: () async {
+    //         Navigator.of(newC).pop();
+    //         Navigator.of(context).pop();
+    //         node.unfocus();
+    //         setState(() {
+    //           errorUpdating = false;
+    //           isLoading = true;
+    //         });
 
-            double totalQttyInStorageCalc() {
-              if (widget.isTotal) {
-                if (isAddToQuantity) {
-                  return widget.isGroup
-                      ? (widget
-                                  .product
-                                  .totalQttyInStorageDouble ??
-                              0) +
-                          ((double.tryParse(
-                                    controller.text
-                                        .replaceAll(
-                                          ',',
-                                          '',
-                                        ),
-                                  ) ??
-                                  0) *
-                              (widget
-                                      .product
-                                      .qttyPerGroup ??
-                                  0))
-                      : (widget
-                                  .product
-                                  .totalQttyInStorageDouble ??
-                              0) +
-                          (double.tryParse(
-                                controller.text.replaceAll(
-                                  ',',
-                                  '',
-                                ),
-                              ) ??
-                              0);
-                } else {
-                  return widget.isGroup
-                      ? ((double.tryParse(
-                                controller.text.replaceAll(
-                                  ',',
-                                  '',
-                                ),
-                              ) ??
-                              0) *
-                          (widget.product.qttyPerGroup ??
-                              0))
-                      : (double.tryParse(
-                            controller.text.replaceAll(
-                              ',',
-                              '',
-                            ),
-                          ) ??
-                          0);
-                }
-              } else {
-                if (isAddToQuantity) {
-                  return widget.isGroup
-                      ? (widget
-                                  .product
-                                  .totalQttyInStorageDouble ??
-                              0) -
-                          (((double.tryParse(
-                                        controller.text
-                                            .replaceAll(
-                                              ',',
-                                              '',
-                                            ),
-                                      ) ??
-                                      0))
-                                  .toDouble() *
-                              (widget
-                                      .product
-                                      .qttyPerGroup ??
-                                  0))
-                      : (widget
-                                  .product
-                                  .totalQttyInStorageDouble ??
-                              0) -
-                          ((double.tryParse(
-                                    controller.text
-                                        .replaceAll(
-                                          ',',
-                                          '',
-                                        ),
-                                  ) ??
-                                  0))
-                              .toDouble();
-                } else {
-                  return widget.isGroup
-                      ? (widget
-                                  .product
-                                  .totalQttyInStorageDouble ??
-                              0) -
-                          (((double.tryParse(
-                                            controller.text
-                                                .replaceAll(
-                                                  ',',
-                                                  '',
-                                                ),
-                                          ) ??
-                                          0) -
-                                      (widget
-                                              .product
-                                              .quantity ??
-                                          0))
-                                  .toDouble() *
-                              (widget
-                                      .product
-                                      .qttyPerGroup ??
-                                  0))
-                      : (widget
-                                  .product
-                                  .totalQttyInStorageDouble ??
-                              0) -
-                          ((double.tryParse(
-                                        controller.text
-                                            .replaceAll(
-                                              ',',
-                                              '',
-                                            ),
-                                      ) ??
-                                      0) -
-                                  (widget
-                                          .product
-                                          .quantity ??
-                                      0))
-                              .toDouble();
-                }
-              }
-            }
+    //         double totalQttyInStorageCalc() {
+    //           // if (widget.isTotal) {
+    //           //   if (isAddToQuantity) {
+    //           //     return widget.isGroup
+    //           //         ? (widget
+    //           //                     .product
+    //           //                     .totalQttyInStorageDouble ??
+    //           //                 0) +
+    //           //             ((double.tryParse(
+    //           //                       controller.text
+    //           //                           .replaceAll(
+    //           //                             ',',
+    //           //                             '',
+    //           //                           ),
+    //           //                     ) ??
+    //           //                     0) *
+    //           //                 (widget
+    //           //                         .product
+    //           //                         .qttyPerGroup ??
+    //           //                     0))
+    //           //         : (widget
+    //           //                     .product
+    //           //                     .totalQttyInStorageDouble ??
+    //           //                 0) +
+    //           //             (double.tryParse(
+    //           //                   controller.text.replaceAll(
+    //           //                     ',',
+    //           //                     '',
+    //           //                   ),
+    //           //                 ) ??
+    //           //                 0);
+    //           //   } else {
+    //           //     return widget.isGroup
+    //           //         ? ((double.tryParse(
+    //           //                   controller.text.replaceAll(
+    //           //                     ',',
+    //           //                     '',
+    //           //                   ),
+    //           //                 ) ??
+    //           //                 0) *
+    //           //             (widget.product.qttyPerGroup ??
+    //           //                 0))
+    //           //         : (double.tryParse(
+    //           //               controller.text.replaceAll(
+    //           //                 ',',
+    //           //                 '',
+    //           //               ),
+    //           //             ) ??
+    //           //             0);
+    //           //   }
+    //           // } else {
+    //           //   if (isAddToQuantity) {
+    //           //     return widget.isGroup
+    //           //         ? (widget
+    //           //                     .product
+    //           //                     .totalQttyInStorageDouble ??
+    //           //                 0) -
+    //           //             (((double.tryParse(
+    //           //                           controller.text
+    //           //                               .replaceAll(
+    //           //                                 ',',
+    //           //                                 '',
+    //           //                               ),
+    //           //                         ) ??
+    //           //                         0))
+    //           //                     .toDouble() *
+    //           //                 (widget
+    //           //                         .product
+    //           //                         .qttyPerGroup ??
+    //           //                     0))
+    //           //         : (widget
+    //           //                     .product
+    //           //                     .totalQttyInStorageDouble ??
+    //           //                 0) -
+    //           //             ((double.tryParse(
+    //           //                       controller.text
+    //           //                           .replaceAll(
+    //           //                             ',',
+    //           //                             '',
+    //           //                           ),
+    //           //                     ) ??
+    //           //                     0))
+    //           //                 .toDouble();
+    //           //   } else {
+    //           //     return widget.isGroup
+    //           //         ? (widget
+    //           //                     .product
+    //           //                     .totalQttyInStorageDouble ??
+    //           //                 0) -
+    //           //             (((double.tryParse(
+    //           //                               controller.text
+    //           //                                   .replaceAll(
+    //           //                                     ',',
+    //           //                                     '',
+    //           //                                   ),
+    //           //                             ) ??
+    //           //                             0) -
+    //           //                         (widget
+    //           //                                 .product
+    //           //                                 .quantity ??
+    //           //                             0))
+    //           //                     .toDouble() *
+    //           //                 (widget
+    //           //                         .product
+    //           //                         .qttyPerGroup ??
+    //           //                     0))
+    //           //         : (widget
+    //           //                     .product
+    //           //                     .totalQttyInStorageDouble ??
+    //           //                 0) -
+    //           //             ((double.tryParse(
+    //           //                           controller.text
+    //           //                               .replaceAll(
+    //           //                                 ',',
+    //           //                                 '',
+    //           //                               ),
+    //           //                         ) ??
+    //           //                         0) -
+    //           //                     (widget
+    //           //                             .product
+    //           //                             .quantity ??
+    //           //                         0))
+    //           //                 .toDouble();
+    //           //   }
+    //           // }
+    //           return 0;
+    //         }
 
-            double? quantityCalc() {
-              if (widget.isTotal) {
-                return widget.product.quantity;
-              } else {
-                if (isAddToQuantity) {
-                  return ((double.tryParse(
-                            controller.text.replaceAll(
-                              ',',
-                              '',
-                            ),
-                          ) ??
-                          0) +
-                      (widget.product.quantity ?? 0));
-                } else {
-                  return ((double.tryParse(
-                        controller.text.replaceAll(',', ''),
-                      ) ??
-                      0));
-                }
-              }
-            }
+    //         double? quantityCalc() {
+    //           if (widget.isTotal) {
+    //             return widget.product.quantity;
+    //           } else {
+    //             if (isAddToQuantity) {
+    //               return ((double.tryParse(
+    //                         controller.text.replaceAll(
+    //                           ',',
+    //                           '',
+    //                         ),
+    //                       ) ??
+    //                       0) +
+    //                   (widget.product.quantity ?? 0));
+    //             } else {
+    //               return ((double.tryParse(
+    //                     controller.text.replaceAll(',', ''),
+    //                   ) ??
+    //                   0));
+    //             }
+    //           }
+    //         }
 
-            if (widget.isTotal) {
-              var tempPro = TempProductClass(
-                groupUnit: widget.product.groupUnit,
-                qttyPerGroup: widget.product.qttyPerGroup,
-                id: widget.product.id,
-                uuid: widget.product.uuid,
-                barcode: widget.product.barcode,
-                brand: widget.product.brand,
-                categoryUuid: widget.product.categoryUuid,
-                color: widget.product.color,
-                createdAt: widget.product.createdAt,
-                departmentName:
-                    widget.product.departmentName,
-                departmentUuid:
-                    widget.product.departmentUuid,
-                discount: widget.product.discount,
-                endDate: widget.product.endDate,
-                expiryDate: widget.product.expiryDate,
-                lowQtty: widget.product.lowQtty,
-                sellingPrice: widget.product.sellingPrice,
-                wholeSalePrice:
-                    widget.product.wholeSalePrice,
-                size: widget.product.size,
-                sizeType: widget.product.sizeType,
-                startDate: widget.product.startDate,
-                updatedAt: widget.product.updatedAt,
-                quantity: quantityCalc(),
-                totalQttyInStorageDouble:
-                    totalQttyInStorageCalc(),
-                name: widget.product.name,
-                unit: widget.product.unit,
-                isRefundable: widget.product.isRefundable,
-                costPrice: widget.product.costPrice,
-                shopId: widget.product.shopId,
-                setCustomPrice:
-                    widget.product.setCustomPrice,
-                isManaged: widget.product.isManaged,
-              );
-              var res = await returnData().updateProduct(
-                product: tempPro,
-                oldProduct: widget.product,
-              );
-              setState(() {
-                isLoading = false;
-              });
-              if (res == null) {
-                setState(() {
-                  errorUpdating = true;
-                });
-              }
-            } else {
-              var tempPro = TempProductClass(
-                groupUnit: widget.product.groupUnit,
-                qttyPerGroup: widget.product.qttyPerGroup,
-                id: widget.product.id,
-                uuid: widget.product.uuid,
-                barcode: widget.product.barcode,
-                brand: widget.product.brand,
-                categoryUuid: widget.product.categoryUuid,
-                color: widget.product.color,
-                createdAt: widget.product.createdAt,
-                departmentName:
-                    widget.product.departmentName,
-                departmentUuid:
-                    widget.product.departmentUuid,
-                discount: widget.product.discount,
-                endDate: widget.product.endDate,
-                expiryDate: widget.product.expiryDate,
-                lowQtty: widget.product.lowQtty,
-                sellingPrice: widget.product.sellingPrice,
-                wholeSalePrice:
-                    widget.product.wholeSalePrice,
-                size: widget.product.size,
-                sizeType: widget.product.sizeType,
-                startDate: widget.product.startDate,
-                updatedAt: widget.product.updatedAt,
-                quantity: quantityCalc(),
-                totalQttyInStorageDouble:
-                    totalQttyInStorageCalc(),
-                name: widget.product.name,
-                unit: widget.product.unit,
-                isRefundable: widget.product.isRefundable,
-                costPrice: widget.product.costPrice,
-                shopId: widget.product.shopId,
-                setCustomPrice:
-                    widget.product.setCustomPrice,
-                isManaged: widget.product.isManaged,
-              );
-              var res = await returnData().updateProduct(
-                product: tempPro,
-                oldProduct: widget.product,
-              );
-              setState(() {
-                isLoading = false;
-              });
-              if (res == null) {
-                setState(() {
-                  errorUpdating = true;
-                });
-              }
-            }
-          },
-        );
-      },
-    ).then((_) {
-      if (screenWidth(context) > mobileScreen) {
-        returnData().requestFocusSearchNode();
-        returnData().addSearchNodeListener();
-      }
-    });
+    //         if (widget.isTotal) {
+    //           var tempPro = TempProductClass(
+    //             groupUnit: widget.product.groupUnit,
+    //             qttyPerGroup: widget.product.qttyPerGroup,
+    //             id: widget.product.id,
+    //             uuid: widget.product.uuid,
+    //             barcode: widget.product.barcode,
+    //             brand: widget.product.brand,
+    //             categoryUuid: widget.product.categoryUuid,
+    //             color: widget.product.color,
+    //             createdAt: widget.product.createdAt,
+    //             departmentName:
+    //                 widget.product.departmentName,
+    //             departmentUuid:
+    //                 widget.product.departmentUuid,
+    //             discount: widget.product.discount,
+    //             endDate: widget.product.endDate,
+    //             expiryDate: widget.product.expiryDate,
+    //             lowQtty: widget.product.lowQtty,
+    //             sellingPrice: widget.product.sellingPrice,
+    //             wholeSalePrice:
+    //                 widget.product.wholeSalePrice,
+    //             size: widget.product.size,
+    //             sizeType: widget.product.sizeType,
+    //             startDate: widget.product.startDate,
+    //             updatedAt: widget.product.updatedAt,
+    //             quantity: quantityCalc(),
+    //             totalQttyInStorageDouble:
+    //                 totalQttyInStorageCalc(),
+    //             name: widget.product.name,
+    //             unit: widget.product.unit,
+    //             isRefundable: widget.product.isRefundable,
+    //             costPrice: widget.product.costPrice,
+    //             shopId: widget.product.shopId,
+    //             setCustomPrice:
+    //                 widget.product.setCustomPrice,
+    //             isManaged: widget.product.isManaged,
+    //           );
+    //           var res = await returnData().updateProduct(
+    //             product: tempPro,
+    //             oldProduct: widget.product,
+    //           );
+    //           setState(() {
+    //             isLoading = false;
+    //           });
+    //           if (res == null) {
+    //             setState(() {
+    //               errorUpdating = true;
+    //             });
+    //           }
+    //         } else {
+    //           var tempPro = TempProductClass(
+    //             groupUnit: widget.product.groupUnit,
+    //             qttyPerGroup: widget.product.qttyPerGroup,
+    //             id: widget.product.id,
+    //             uuid: widget.product.uuid,
+    //             barcode: widget.product.barcode,
+    //             brand: widget.product.brand,
+    //             categoryUuid: widget.product.categoryUuid,
+    //             color: widget.product.color,
+    //             createdAt: widget.product.createdAt,
+    //             departmentName:
+    //                 widget.product.departmentName,
+    //             departmentUuid:
+    //                 widget.product.departmentUuid,
+    //             discount: widget.product.discount,
+    //             endDate: widget.product.endDate,
+    //             expiryDate: widget.product.expiryDate,
+    //             lowQtty: widget.product.lowQtty,
+    //             sellingPrice: widget.product.sellingPrice,
+    //             wholeSalePrice:
+    //                 widget.product.wholeSalePrice,
+    //             size: widget.product.size,
+    //             sizeType: widget.product.sizeType,
+    //             startDate: widget.product.startDate,
+    //             updatedAt: widget.product.updatedAt,
+    //             quantity: quantityCalc(),
+    //             totalQttyInStorageDouble:
+    //                 totalQttyInStorageCalc(),
+    //             name: widget.product.name,
+    //             unit: widget.product.unit,
+    //             isRefundable: widget.product.isRefundable,
+    //             costPrice: widget.product.costPrice,
+    //             shopId: widget.product.shopId,
+    //             setCustomPrice:
+    //                 widget.product.setCustomPrice,
+    //             isManaged: widget.product.isManaged,
+    //           );
+    //           var res = await returnData().updateProduct(
+    //             product: tempPro,
+    //             oldProduct: widget.product,
+    //           );
+    //           setState(() {
+    //             isLoading = false;
+    //           });
+    //           if (res == null) {
+    //             setState(() {
+    //               errorUpdating = true;
+    //             });
+    //           }
+    //         }
+    //       },
+    //     );
+    //   },
+    // ).then((_) {
+    //   if (screenWidth(context) > mobileScreen) {
+    //     returnData().requestFocusSearchNode();
+    //     returnData().addSearchNodeListener();
+    //   }
+    // });
   }
 
   double returnValue() {
-    if (widget.isGroup) {
-      if (widget.isTotal) {
-        return widget.product.qttyPerGroup != null
-            ? (widget.product.totalQttyInStorageDouble ??
-                    0) /
-                (widget.product.qttyPerGroup ?? 0)
-            : 0;
-      } else {
-        return widget.product.qttyPerGroup != null
-            ? (widget.product.quantity ?? 0) /
-                (widget.product.qttyPerGroup ?? 0)
-            : 0;
-      }
-    } else {
-      if (widget.isTotal) {
-        return (widget.product.totalQttyInStorageDouble ??
-            0);
-      } else {
-        return (widget.product.quantity ?? 0);
-      }
-    }
+    // if (widget.isGroup) {
+    //   if (widget.isTotal) {
+    //     return widget.product.qttyPerGroup != null
+    //         ? (widget.product.totalQttyInStorageDouble ??
+    //                 0) /
+    //             (widget.product.qttyPerGroup ?? 0)
+    //         : 0;
+    //   } else {
+    //     return widget.product.qttyPerGroup != null
+    //         ? (widget.product.quantity ?? 0) /
+    //             (widget.product.qttyPerGroup ?? 0)
+    //         : 0;
+    //   }
+    // } else {
+    //   if (widget.isTotal) {
+    //     return (widget.product.totalQttyInStorageDouble ??
+    //         0);
+    //   } else {
+    //     return (widget.product.quantity ?? 0);
+    //   }
+    // }
+    return 0;
   }
 
   @override

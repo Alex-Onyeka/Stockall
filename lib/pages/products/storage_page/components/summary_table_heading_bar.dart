@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
-import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -13,7 +12,7 @@ class SummaryTableHeadingBar extends StatefulWidget {
   });
 
   final ThemeProvider theme;
-  final List<TempProductClass> product;
+  final List<TempStorageProducts> product;
   final bool isHeading;
   @override
   State<SummaryTableHeadingBar> createState() =>
@@ -81,6 +80,7 @@ class _SummaryTableHeadingBarState
               decoration: BoxDecoration(
                 border: Border(
                   left: BorderSide(color: Colors.grey),
+                  right: BorderSide(color: Colors.grey),
                 ),
               ),
               child: Center(
@@ -106,89 +106,6 @@ class _SummaryTableHeadingBarState
                         widget.isHeading
                             ? 'Item Name'
                             : 'TOTAL',
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Visibility(
-            visible: shop(context)?.useGroupUnit == true,
-            child: Expanded(
-              flex: 6,
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 5,
-                  vertical: 10,
-                ),
-                decoration: BoxDecoration(
-                  border: Border(
-                    left: BorderSide(color: Colors.grey),
-                  ),
-                ),
-                child: Center(
-                  child: Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          style: TextStyle(
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          widget.isHeading
-                              ? 'Total Group Qtty'
-                              : '',
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 6,
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 5,
-                vertical: 10,
-              ),
-              decoration: BoxDecoration(
-                border: Border(
-                  right: BorderSide(color: Colors.grey),
-                  left: BorderSide(color: Colors.grey),
-                ),
-              ),
-              child: Center(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b3
-                                  .fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        widget.isHeading
-                            ? 'Total Unit Qtty'
-                            : formatLargeNumber(
-                              returnData(context: context)
-                                  .getTotalOverallQuantity(
-                                    products:
-                                        widget.product,
-                                  )
-                                  .toString(),
-                            ),
                       ),
                     ),
                   ],
@@ -263,14 +180,15 @@ class _SummaryTableHeadingBarState
                         ),
                         widget.isHeading
                             ? 'Unit Qtty In Storage'
-                            : formatLargeNumber(
-                              returnData(context: context)
-                                  .getTotalQuantityInStorage(
-                                    products:
-                                        widget.product,
-                                  )
-                                  .toString(),
-                            ),
+                            : '',
+                        // formatLargeNumber(
+                        //   returnData(context: context)
+                        //       .getTotalQuantityInStorage(
+                        //         products:
+                        //             widget.product,
+                        //       )
+                        //       .toString(),
+                        // ),
                       ),
                     ),
                   ],
@@ -346,14 +264,15 @@ class _SummaryTableHeadingBarState
                         ),
                         widget.isHeading
                             ? 'Unit Qtty in Sales'
-                            : formatLargeNumber(
-                              returnData(context: context)
-                                  .getTotalQuantity(
-                                    products:
-                                        widget.product,
-                                  )
-                                  .toString(),
-                            ),
+                            : '',
+                        // formatLargeNumber(
+                        //   returnData(context: context)
+                        //       .getTotalQuantity(
+                        //         products:
+                        //             widget.product,
+                        //       )
+                        //       .toString(),
+                        // ),
                       ),
                     ),
                   ],
@@ -394,134 +313,15 @@ class _SummaryTableHeadingBarState
                           ),
                           widget.isHeading
                               ? 'Whole-Sale-Price'
-                              : formatMoneyMid(
-                                amount: returnData(
-                                  context: context,
-                                ).getTotalWholeSalePrice(
-                                  products: widget.product,
-                                ),
-                                context: context,
-                              ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Visibility(
-            visible: widget.product.isNotEmpty,
-            child: Expanded(
-              flex: 6,
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 5,
-                  vertical: 10,
-                ),
-                child: Center(
-                  child: Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          style: TextStyle(
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          widget.isHeading
-                              ? 'Selling-Price'
-                              : formatMoneyMid(
-                                amount: returnData(
-                                  context: context,
-                                ).getTotalSellingPrice(
-                                  products: widget.product,
-                                ),
-                                context: context,
-                              ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Visibility(
-            visible: widget.product.isNotEmpty,
-            child: Expanded(
-              flex: 6,
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    right: BorderSide(color: Colors.grey),
-                    left: BorderSide(color: Colors.grey),
-                  ),
-                ),
-                padding: EdgeInsets.symmetric(
-                  horizontal: 5,
-                  vertical: 10,
-                ),
-                child: Center(
-                  child: Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          style: TextStyle(
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          widget.isHeading
-                              ? 'Cost-Price'
-                              : formatMoneyBig(
-                                amount: returnData(
-                                  context: context,
-                                ).getTotalCostPrice(
-                                  products: widget.product,
-                                ),
-                                context: context,
-                              ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Visibility(
-            visible: widget.product.isNotEmpty,
-            child: Expanded(
-              flex: 4,
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 5,
-                  vertical: 10,
-                ),
-                child: Center(
-                  child: Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          style: TextStyle(
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          widget.isHeading ? 'Managed' : '',
+                              : '',
+                          // formatMoneyMid(
+                          //   amount: returnData(
+                          //     context: context,
+                          //   ).getTotalWholeSalePrice(
+                          //     products: widget.product,
+                          //   ),
+                          //   context: context,
+                          // ),
                         ),
                       ),
                     ],

@@ -344,17 +344,17 @@ class _MakeSalesMobileTwoState
                               'Is this Sale On Credit?',
                             ),
                             InkWell(
-                              onTap: () {
+                              onTap: () async {
                                 if (returnSalesProvider()
                                     .currentCart()
                                     .isInvoice) {
-                                  returnSalesProvider()
+                                  await returnSalesProvider()
                                       .switchInvoiceSale(
                                         context: context,
                                         value: false,
                                       );
                                 } else {
-                                  returnSalesProvider()
+                                  await returnSalesProvider()
                                       .switchInvoiceSale(
                                         context: context,
                                         value: true,

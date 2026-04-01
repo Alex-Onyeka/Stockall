@@ -21,11 +21,11 @@ class ComparisonSectionWidget extends StatelessWidget {
     return SizedBox(
       height:
           screenWidth(context) < mobileScreenSmall
-              ? 1550
+              ? 1500
               : screenWidth(context) > mobileScreenSmall &&
                   screenWidth(context) < tabletScreen
-              ? 1600
-              : 1420,
+              ? 1650
+              : 1480,
       child: ListView(
         scrollDirection: Axis.horizontal,
         shrinkWrap: true,

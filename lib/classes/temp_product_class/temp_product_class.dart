@@ -100,6 +100,9 @@ class TempProductClass {
   @HiveField(31)
   double? wholeSalePrice;
 
+  @HiveField(32)
+  String? storageUuid;
+
   TempProductClass({
     this.id,
     required this.name,
@@ -133,6 +136,7 @@ class TempProductClass {
     required this.qttyPerGroup,
     this.categoryUuid,
     required this.wholeSalePrice,
+    this.storageUuid,
   });
 
   factory TempProductClass.fromJson(
@@ -198,6 +202,7 @@ class TempProductClass {
       categoryUuid: json['category_uuid'] as String?,
       wholeSalePrice:
           (json['whole_sale_price'] as num?)?.toDouble(),
+      storageUuid: json['storage_uuid'] as String?,
     );
   }
 
@@ -237,6 +242,82 @@ class TempProductClass {
       'qtty_per_group': qttyPerGroup,
       'category_uuid': categoryUuid,
       'whole_sale_price': wholeSalePrice,
+      'storage_uuid': storageUuid,
     };
+  }
+
+  TempProductClass copyWith({
+    int? id,
+    String? name,
+    int? shopId,
+    String? brand,
+    DateTime? createdAt,
+    String? category,
+    String? barcode,
+    String? unit,
+    bool? isRefundable,
+    String? color,
+    String? sizeType,
+    String? size,
+    double? costPrice,
+    double? sellingPrice,
+    double? discount,
+    DateTime? startDate,
+    DateTime? endDate,
+    double? quantity,
+    bool? setCustomPrice,
+    String? departmentName,
+    String? departmentUuid,
+    double? lowQtty,
+    DateTime? expiryDate,
+    bool? isManaged,
+    DateTime? updatedAt,
+    String? uuid,
+    int? totalQttyInStorage,
+    double? totalQttyInStorageDouble,
+    String? groupUnit,
+    double? qttyPerGroup,
+    String? categoryUuid,
+    double? wholeSalePrice,
+    String? storageUuid,
+  }) {
+    return TempProductClass(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      shopId: shopId ?? this.shopId,
+      brand: brand ?? this.brand,
+      createdAt: createdAt ?? this.createdAt,
+      category: category ?? this.category,
+      barcode: barcode ?? this.barcode,
+      unit: unit ?? this.unit,
+      isRefundable: isRefundable ?? this.isRefundable,
+      color: color ?? this.color,
+      sizeType: sizeType ?? this.sizeType,
+      size: size ?? this.size,
+      costPrice: costPrice ?? this.costPrice,
+      sellingPrice: sellingPrice ?? this.sellingPrice,
+      discount: discount ?? this.discount,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+      quantity: quantity ?? this.quantity,
+      setCustomPrice: setCustomPrice ?? this.setCustomPrice,
+      departmentName: departmentName ?? this.departmentName,
+      departmentUuid: departmentUuid ?? this.departmentUuid,
+      lowQtty: lowQtty ?? this.lowQtty,
+      expiryDate: expiryDate ?? this.expiryDate,
+      isManaged: isManaged ?? this.isManaged,
+      updatedAt: updatedAt ?? this.updatedAt,
+      uuid: uuid ?? this.uuid,
+      totalQttyInStorage:
+          totalQttyInStorage ?? this.totalQttyInStorage,
+      totalQttyInStorageDouble:
+          totalQttyInStorageDouble ??
+          this.totalQttyInStorageDouble,
+      groupUnit: groupUnit ?? this.groupUnit,
+      qttyPerGroup: qttyPerGroup ?? this.qttyPerGroup,
+      categoryUuid: categoryUuid ?? this.categoryUuid,
+      wholeSalePrice: wholeSalePrice ?? this.wholeSalePrice,
+      storageUuid: storageUuid ?? this.storageUuid,
+    );
   }
 }

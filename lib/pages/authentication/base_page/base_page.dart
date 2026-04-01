@@ -57,8 +57,9 @@ class _BasePageState extends State<BasePage> {
           null) {
         await getUser();
       }
+      returnSalesProvider().fetchMainCart();
       if (returnSalesProvider().mainCartQueue.isEmpty) {
-        var cartId = returnSalesProvider().initCart();
+        var cartId = await returnSalesProvider().initCart();
         if (cartId.isEmpty) {
           print('Cart Id is empty');
         } else {
@@ -68,6 +69,14 @@ class _BasePageState extends State<BasePage> {
         }
         print(
           'Cart Queue Length: ${returnSalesProvider().currentMainCart().cartQueue}',
+        );
+      } else {
+        await returnMultiDisplayProvider().createWindow(
+          cartId:
+              returnSalesProvider()
+                  .mainCartQueue
+                  .first
+                  .mainCartId!,
         );
       }
     });

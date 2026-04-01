@@ -313,7 +313,7 @@ class _MainReceiptTileMobileState
                         fontWeight: FontWeight.bold,
                         color: Colors.grey.shade700,
                       ),
-                      'Cashier: ${cutLongText2(widget.mainReceipt.staffName.split(' ')[0])} ${widget.mainReceipt.staffName.split(' ').length > 1 ? widget.mainReceipt.staffName.split(' ')[1].split('')[0] : ''}.',
+                      'Cashier: ${cutLongText2(widget.mainReceipt.staffName.split(' ')[0])}',
                     ),
                   ],
                 ),

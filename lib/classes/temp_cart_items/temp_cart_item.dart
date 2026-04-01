@@ -1,17 +1,40 @@
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
+import 'package:hive/hive.dart';
 
-class TempCartItem {
-  final TempProductClass item;
+part 'temp_cart_item.g.dart';
+
+@HiveType(typeId: 72)
+class TempCartItem extends HiveObject {
+  @HiveField(0)
+  TempProductClass item;
+
+  @HiveField(1)
   double? discount;
+
+  @HiveField(2)
   double? fixedDiscount;
+
+  @HiveField(3)
   double quantity;
+
+  @HiveField(4)
   double? customPrice;
+
+  @HiveField(5)
   bool setCustomPrice;
+
+  @HiveField(6)
   bool useWholeSalePrice;
+
+  @HiveField(7)
   bool setTotalPrice;
+
+  @HiveField(8)
   bool addToStock;
+
+  @HiveField(9)
   String? salesRecordId;
 
   TempCartItem({

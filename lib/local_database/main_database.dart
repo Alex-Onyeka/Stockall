@@ -7,6 +7,7 @@ import 'package:stockall/local_database/app_version/app_version_func.dart';
 import 'package:stockall/local_database/barcode_printer_func/barcode_printer_local_func.dart';
 import 'package:stockall/local_database/barcode_printer_func/price_and_barcode_local_func.dart';
 import 'package:stockall/local_database/barcode_printer_func/price_tag_printer_func.dart';
+import 'package:stockall/local_database/cart_func/cart_func.dart';
 import 'package:stockall/local_database/category/category_func.dart';
 import 'package:stockall/local_database/customers/customer_func.dart';
 import 'package:stockall/local_database/department_current/current_department_func.dart';
@@ -25,6 +26,7 @@ import 'package:stockall/local_database/shop/shop_func.dart';
 import 'package:stockall/local_database/shop_current/current_shop_func.dart';
 import 'package:stockall/local_database/shop_logos/shop_logos_func.dart';
 import 'package:stockall/local_database/shop_owner/shop_owner_func.dart';
+import 'package:stockall/local_database/storage_product/storage_products_func.dart';
 import 'package:stockall/local_database/sub_staff/sub_staff_func.dart';
 import 'package:stockall/local_database/subscription/subscription_func.dart';
 import 'package:stockall/local_database/users/user_func.dart';
@@ -76,8 +78,10 @@ class MainDatabase extends ChangeNotifier {
     await DepartmentsFunc().init();
     await CategoryFunc().init();
     await CurrentDepartmentFunc().init();
+    await StorageProductsFunc().init();
+    await CartFunc().init();
     print('init Complete');
   }
 }
 
-int highestHiveClassIndex = 65;
+int highestHiveClassIndex = 72;

@@ -1333,7 +1333,7 @@ class _MakeSalesDesktopState
               .currentCart()
               .cartItems
               .isEmpty) {
-        returnSalesProvider().switchInvoiceSale(
+        await returnSalesProvider().switchInvoiceSale(
           value: true,
           context: context,
         );
@@ -1342,7 +1342,7 @@ class _MakeSalesDesktopState
               .currentCart()
               .cartItems
               .isEmpty) {
-        returnSalesProvider().switchInvoiceSale(
+        await returnSalesProvider().switchInvoiceSale(
           value: false,
           context: context,
         );
@@ -1602,11 +1602,11 @@ class _MakeSalesDesktopState
                                               .cartItems
                                               .isEmpty,
                                       child: InkWell(
-                                        onTap: () {
+                                        onTap: () async {
                                           if (returnSalesProvider()
                                               .currentCart()
                                               .isInvoice) {
-                                            returnSalesProvider()
+                                            await returnSalesProvider()
                                                 .switchInvoiceSale(
                                                   context:
                                                       context,
@@ -1614,7 +1614,7 @@ class _MakeSalesDesktopState
                                                       false,
                                                 );
                                           } else {
-                                            returnSalesProvider()
+                                            await returnSalesProvider()
                                                 .switchInvoiceSale(
                                                   context:
                                                       context,
@@ -3289,8 +3289,8 @@ class _SubStaffSelectionWidgetState
                                                                           'You are about to Remove this Staff from this Bulk Sale Terminal, This action can not be reversed are you sure you want to proceed?',
                                                                       title:
                                                                           'Remove Staff',
-                                                                      action: () {
-                                                                        returnSalesProvider().removeStaffFromMainCart(
+                                                                      action: () async {
+                                                                        await returnSalesProvider().removeStaffFromMainCart(
                                                                           cart.mainCartId!,
                                                                         );
                                                                         print(
@@ -3351,10 +3351,10 @@ class _SubStaffSelectionWidgetState
                                                                             : null,
                                                                     title:
                                                                         'Select Sub Staff',
-                                                                    action: () {
+                                                                    action: () async {
                                                                       if (returnSalesProvider().selectedSubStaff !=
                                                                           null) {
-                                                                        returnSalesProvider().addSubStaffToMainCart(
+                                                                        await returnSalesProvider().addSubStaffToMainCart(
                                                                           cart.mainCartId!,
                                                                         );
                                                                         Navigator.of(

@@ -365,7 +365,7 @@ class _DashboardDesktopState
                                                               horizontal:
                                                                   30,
                                                               vertical:
-                                                                  48,
+                                                                  40,
                                                             ),
                                                             child: Column(
                                                               spacing:

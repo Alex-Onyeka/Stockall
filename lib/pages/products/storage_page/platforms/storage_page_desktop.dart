@@ -100,65 +100,57 @@ class StoragePageDesktopState
     var theme = returnTheme(context);
     var products =
         searchController.text.isNotEmpty
-            ? returnData(context: context)
-                .productList()
+            ? returnStorageProductProvider(context: context)
+                .storageProductListMain
                 .where(
-                  (pr) =>
-                      pr.name.toLowerCase().contains(
-                        searchController.text.toLowerCase(),
-                      ) ||
-                      pr.barcode == searchController.text,
+                  (pr) => pr.name.toLowerCase().contains(
+                    searchController.text.toLowerCase(),
+                  ),
                 )
                 .toList()
                 .sublist(
                   0,
-                  returnData(context: context)
-                              .productList()
+                  returnStorageProductProvider(
+                                context: context,
+                              ).storageProductListMain
                               .where(
-                                (pr) =>
-                                    pr.name
-                                        .toLowerCase()
-                                        .contains(
-                                          searchController
-                                              .text
-                                              .toLowerCase(),
-                                        ) ||
-                                    pr.barcode ==
-                                        searchController
-                                            .text,
+                                (pr) => pr.name
+                                    .toLowerCase()
+                                    .contains(
+                                      searchController.text
+                                          .toLowerCase(),
+                                    ),
                               )
                               .toList()
                               .length >
                           100
                       ? 100
-                      : returnData(context: context)
-                          .productList()
+                      : returnStorageProductProvider(
+                            context: context,
+                          ).storageProductListMain
                           .where(
-                            (pr) =>
-                                pr.name
-                                    .toLowerCase()
-                                    .contains(
-                                      searchController.text
-                                          .toLowerCase(),
-                                    ) ||
-                                pr.barcode ==
-                                    searchController.text,
+                            (pr) => pr.name
+                                .toLowerCase()
+                                .contains(
+                                  searchController.text
+                                      .toLowerCase(),
+                                ),
                           )
                           .toList()
                           .length,
                 )
-            : returnData(
+            : returnStorageProductProvider(
               context: context,
-            ).productList().sublist(
+            ).storageProductListMain.sublist(
               start,
-              returnData(
+              returnStorageProductProvider(
                         context: context,
-                      ).productList().length >
+                      ).storageProductListMain.length >
                       50
                   ? end
-                  : returnData(
+                  : returnStorageProductProvider(
                     context: context,
-                  ).productList().length,
+                  ).storageProductListMain.length,
             );
 
     return Stack(

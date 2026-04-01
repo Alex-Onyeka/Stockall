@@ -871,11 +871,17 @@ class _ProductDetailsMobileState
                                         ],
                                       ),
                                       Visibility(
-                                        visible: authorization(
-                                          authorized:
-                                              Authorizations()
-                                                  .updateProduct,
-                                        ),
+                                        visible:
+                                            authorization(
+                                              authorized:
+                                                  Authorizations()
+                                                      .updateProduct,
+                                            ) &&
+                                            authorization(
+                                              authorized:
+                                                  Authorizations()
+                                                      .updateItemQuantity,
+                                            ),
                                         child: SizedBox(
                                           height: 10,
                                         ),
@@ -1460,7 +1466,11 @@ class _ProductDetailsMobileState
                                                   shop(
                                                         context,
                                                       )?.useGroupUnit ==
-                                                      true,
+                                                      true &&
+                                                  authorization(
+                                                    authorized:
+                                                        Authorizations().updateItemQuantity,
+                                                  ),
                                               child:
                                                   SizedBox(
                                                     width:
@@ -1476,7 +1486,11 @@ class _ProductDetailsMobileState
                                                   shop(
                                                         context,
                                                       )?.useGroupUnit ==
-                                                      true,
+                                                      true &&
+                                                  authorization(
+                                                    authorized:
+                                                        Authorizations().updateItemQuantity,
+                                                  ),
                                               child: Expanded(
                                                 child: EditButton(
                                                   theme:
@@ -2515,7 +2529,6 @@ class _ProductDetailsMobileState
                                       await provider
                                           .deleteProductMain(
                                             product,
-                                            context,
                                           );
                                       await provider
                                           .getProducts(

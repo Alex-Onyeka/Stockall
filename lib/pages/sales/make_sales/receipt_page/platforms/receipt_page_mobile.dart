@@ -77,6 +77,7 @@ class _ReceiptPageMobileState
             bank: 0,
             cashAlt: 0,
             isInvoice: false,
+            cartName: 'Cart 1',
             departmentName:
                 returnDepartmentProvider()
                     .currentDepartment()

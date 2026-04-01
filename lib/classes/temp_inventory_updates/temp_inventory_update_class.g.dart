@@ -30,13 +30,17 @@ class TempInventoryUpdateClassAdapter
       newValue: fields[6] as String?,
       oldValue: fields[5] as String?,
       itemUuid: fields[11] as String?,
+      staffIdTwo: fields[13] as String?,
+      staffNameTwo: fields[12] as String?,
+      departmentNameTwo: fields[15] as String?,
+      departmentUuidTwo: fields[14] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempInventoryUpdateClass obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(16)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -60,7 +64,15 @@ class TempInventoryUpdateClassAdapter
       ..writeByte(10)
       ..write(obj.departmentName)
       ..writeByte(11)
-      ..write(obj.itemUuid);
+      ..write(obj.itemUuid)
+      ..writeByte(12)
+      ..write(obj.staffNameTwo)
+      ..writeByte(13)
+      ..write(obj.staffIdTwo)
+      ..writeByte(14)
+      ..write(obj.departmentUuidTwo)
+      ..writeByte(15)
+      ..write(obj.departmentNameTwo);
   }
 
   @override

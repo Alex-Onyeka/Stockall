@@ -277,6 +277,7 @@ class Authorizations {
   String manageShopDashboard = 'Manage Store Dashboard';
   String toggleUseGroupUnit = 'Toggle Use Group Unit';
   String viewAllDepartments = 'View All Departments';
+  String updateItemQuantity = 'Update Item Quantity';
 }
 
 bool authorization({required String authorized}) {

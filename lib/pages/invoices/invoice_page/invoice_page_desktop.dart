@@ -1894,6 +1894,8 @@ class _InvoicePageDesktopState
                                                               invoice.vat,
                                                           subStaffUuid:
                                                               invoice.subStaffUuid,
+                                                          cartName:
+                                                              invoice.cartName,
                                                         );
 
                                                         var res = await returnInvoicesProvider().makeInvoicePayment(

@@ -245,7 +245,6 @@ class _AddProductMobileState
                       dataProvider.selectedCategory?.uuid,
                   uuid: createdProductUuid,
                 ),
-                context,
               );
 
               await dataProvider.getProducts(shopId!);
@@ -719,82 +718,94 @@ class _AddProductMobileState
                                 ),
                               ),
                               Visibility(
-                                visible:
-                                    returnShopProvider()
-                                            .userShop()
-                                            ?.manageInventoryStorage ==
-                                        true &&
-                                    widget.product ==
-                                        null &&
-                                    ItemsAuthAction()
-                                        .manageInventoryStorageAction(
-                                          context: context,
-                                        ),
+                                visible: authorization(
+                                  authorized:
+                                      Authorizations()
+                                          .updateItemQuantity,
+                                ),
                                 child: Column(
                                   children: [
+                                    Visibility(
+                                      visible:
+                                          returnShopProvider()
+                                                  .userShop()
+                                                  ?.manageInventoryStorage ==
+                                              true &&
+                                          widget.product ==
+                                              null &&
+                                          ItemsAuthAction()
+                                              .manageInventoryStorageAction(
+                                                context:
+                                                    context,
+                                              ),
+                                      child: Column(
+                                        children: [
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          EditCartTextField(
+                                            theme: theme,
+                                            hint:
+                                                'Enter Quantity In Storage',
+                                            title:
+                                                'Storage Quantity (Optional)',
+                                            controller:
+                                                widget
+                                                    .storageQuantityController,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                     SizedBox(height: 10),
                                     EditCartTextField(
                                       theme: theme,
                                       hint:
-                                          'Enter Quantity In Storage',
+                                          'Enter Quantity',
                                       title:
-                                          'Storage Quantity (Optional)',
+                                          'Quantity (Optional)',
                                       controller:
                                           widget
-                                              .storageQuantityController,
+                                              .quantityController,
+                                      onChanged: (value) {
+                                        if (value
+                                            .isNotEmpty) {
+                                          if (widget.product !=
+                                                  null &&
+                                              widget
+                                                      .product
+                                                      ?.isManaged ==
+                                                  true &&
+                                              returnShopProvider()
+                                                      .userShop()
+                                                      ?.manageInventoryStorage ==
+                                                  true) {
+                                            if (((double.tryParse(
+                                                      value.replaceAll(
+                                                        ',',
+                                                        '',
+                                                      ),
+                                                    ) ??
+                                                    0)) >
+                                                ((widget.product?.totalQttyInStorageDouble ??
+                                                        0) +
+                                                    (double.tryParse(
+                                                          widget.product?.quantity?.toString() ??
+                                                              '0',
+                                                        ) ??
+                                                        0))) {
+                                              widget
+                                                      .quantityController
+                                                      .text =
+                                                  (widget.product?.quantity ??
+                                                          0)
+                                                      .toString();
+                                            }
+                                          }
+                                        }
+                                      },
                                     ),
                                   ],
                                 ),
-                              ),
-                              SizedBox(height: 10),
-                              EditCartTextField(
-                                theme: theme,
-                                hint: 'Enter Quantity',
-                                title:
-                                    'Quantity (Optional)',
-                                controller:
-                                    widget
-                                        .quantityController,
-                                onChanged: (value) {
-                                  if (value.isNotEmpty) {
-                                    if (widget.product !=
-                                            null &&
-                                        widget
-                                                .product
-                                                ?.isManaged ==
-                                            true &&
-                                        returnShopProvider()
-                                                .userShop()
-                                                ?.manageInventoryStorage ==
-                                            true) {
-                                      if (((double.tryParse(
-                                                value
-                                                    .replaceAll(
-                                                      ',',
-                                                      '',
-                                                    ),
-                                              ) ??
-                                              0)) >
-                                          ((widget
-                                                      .product
-                                                      ?.totalQttyInStorageDouble ??
-                                                  0) +
-                                              (double.tryParse(
-                                                    widget.product?.quantity?.toString() ??
-                                                        '0',
-                                                  ) ??
-                                                  0))) {
-                                        widget
-                                            .quantityController
-                                            .text = (widget
-                                                        .product
-                                                        ?.quantity ??
-                                                    0)
-                                                .toString();
-                                      }
-                                    }
-                                  }
-                                },
                               ),
                               SizedBox(height: 20),
                               InkWell(

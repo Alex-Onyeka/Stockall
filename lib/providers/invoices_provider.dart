@@ -424,6 +424,7 @@ class InvoicesProvider extends ChangeNotifier {
         balance:
             getBalance(invoice: invoice) - currentPayment,
         subStaffUuid: invoice.subStaffUuid,
+        cartName: invoice.cartName,
       );
 
       print('Checkout Started');

@@ -16,6 +16,7 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
+import 'package:stockall/local_database/cart_func/cart_func.dart';
 import 'package:stockall/local_database/products/products_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/alt_display/alt_display.dart';
@@ -44,37 +45,117 @@ class SalesProvider extends ChangeNotifier {
 
   List<TempMainCart> mainCartQueue = [];
 
-  String initCart() {
+  Future<void> fetchMainCart() async {
+    mainCartQueue = CartFunc().getMainCart();
+    print('Main Carts Gotten: ${mainCartQueue.length}');
+    if (mainCartQueue.isNotEmpty) {
+      if ((mainCartIdCache.isEmpty ||
+          cartIdCache.isEmpty)) {
+        mainCartIdCache = mainCartQueue.first.mainCartId!;
+        cartIdCache =
+            mainCartQueue.first.cartQueue.first.id!;
+      }
+    } else {
+      await initCart();
+      // mainCartQueue = CartFunc().getMainCart();
+      // print('Main Carts Gotten: ${mainCartQueue.length}');
+      // if (mainCartQueue.isNotEmpty) {
+      //   if ((mainCartIdCache.isEmpty ||
+      //       cartIdCache.isEmpty)) {
+      //     mainCartIdCache = mainCartQueue.first.mainCartId!;
+      //     cartIdCache =
+      //         mainCartQueue.first.cartQueue.first.id!;
+      //   }
+      // }
+      // notifyListeners();
+    }
+    notifyListeners();
+  }
+
+  Future<void> deleteAllCarts() async {
+    await CartFunc().clearMainCart();
+    mainCartQueue.clear();
+    mainCartIdCache = '';
+    cartIdCache = '';
+    notifyListeners();
+  }
+
+  Future<String> initCart() async {
     try {
       var mainCartId = uuidGen();
+      print('Main Cart Id: $mainCartId');
+      print('Main Cart Length: ${mainCartQueue.length}');
 
-      mainCartQueue.add(
+      // mainCartQueue.add(
+      //   TempMainCart(cartQueue: [], mainCartId: mainCartId),
+      // );
+      await CartFunc().createMainCart(
         TempMainCart(cartQueue: [], mainCartId: mainCartId),
       );
+      // print(
+      //   'First Main Cart Id: ${mainCartQueue.first.mainCartId}',
+      // );
+      // print('Main Cart Length: ${mainCartQueue.length}');
 
       mainCartIdCache = mainCartId;
+      // print('Main Cart Id Cached: $mainCartIdCache');
 
       var cartId = uuidGen();
-      mainCartQueue.first.cartQueue.add(
-        TempCart(
-          departmentName:
-              returnDepartmentProvider()
-                  .currentDepartment()
-                  ?.name,
-          departmentUuid:
-              returnDepartmentProvider()
-                  .currentDepartment()
-                  ?.uuid,
-          staffId: currentUser().userId,
-          staffName:
-              "${currentUser().name} ${currentUser().lastName}",
-          cartItems: [],
-          isInvoice: false,
-          id: cartId,
+      print('Normal Cart Id: $cartId');
+      // print(
+      //   'Normal Cart Length: ${mainCartQueue.first.cartQueue.length}',
+      // );
+
+      await CartFunc().updateMainCart(
+        TempMainCart(
+          cartQueue: [
+            TempCart(
+              departmentName:
+                  returnDepartmentProvider()
+                      .currentDepartment()
+                      ?.name,
+              departmentUuid:
+                  returnDepartmentProvider()
+                      .currentDepartment()
+                      ?.uuid,
+              staffId: currentUser().userId,
+              staffName:
+                  "${currentUser().name} ${currentUser().lastName}",
+              cartItems: [],
+              isInvoice: false,
+              id: cartId,
+            ),
+          ],
+          mainCartId: mainCartId,
         ),
       );
+      // mainCartQueue.first.cartQueue.add(
+      //   TempCart(
+      //     departmentName:
+      //         returnDepartmentProvider()
+      //             .currentDepartment()
+      //             ?.name,
+      //     departmentUuid:
+      //         returnDepartmentProvider()
+      //             .currentDepartment()
+      //             ?.uuid,
+      //     staffId: currentUser().userId,
+      //     staffName:
+      //         "${currentUser().name} ${currentUser().lastName}",
+      //     cartItems: [],
+      //     isInvoice: false,
+      //     id: cartId,
+      //   ),
+      // );
+      // print(
+      //   'First Normal Cart Id: ${mainCartQueue.first.cartQueue.first.id}',
+      // );
+      // print(
+      //   'Normal Cart Length: ${mainCartQueue.first.cartQueue.length}',
+      // );
       cartIdCache = cartId;
-
+      print('Normal Cart Id Cached: $cartIdCache');
+      fetchMainCart();
       notifyListeners();
       return cartId;
     } catch (e) {
@@ -100,9 +181,17 @@ class SalesProvider extends ChangeNotifier {
   String mainCartIdCache = '';
 
   TempMainCart currentMainCart() {
+    // try {
     return mainCartQueue.firstWhere(
       (cart) => cart.mainCartId == mainCartIdCache,
     );
+    // } catch (e) {
+    //   print('Error : ${e.toString()}');
+    //   return TempMainCart(
+    //     cartQueue: [],
+    //     mainCartId: 'mainCartId',
+    //   );
+    // }
   }
 
   TempSubStaff? selectedSubStaff;
@@ -111,20 +200,28 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addSubStaffToMainCart(String mainCartId) {
-    mainCartQueue
-        .firstWhere((c) => c.mainCartId == mainCartId)
-        .subStaff = selectedSubStaff;
+  Future<void> addSubStaffToMainCart(
+    String mainCartId,
+  ) async {
+    var res = mainCartQueue.firstWhere(
+      (c) => c.mainCartId == mainCartId,
+    );
+    res.subStaff = selectedSubStaff;
+    await CartFunc().updateMainCart(res);
     print(
       'Added: ${mainCartQueue.firstWhere((c) => c.mainCartId == mainCartId).subStaff?.staffName}',
     );
     notifyListeners();
   }
 
-  void removeStaffFromMainCart(String mainCartId) {
-    mainCartQueue
-        .firstWhere((c) => c.mainCartId == mainCartId)
-        .subStaff = null;
+  Future<void> removeStaffFromMainCart(
+    String mainCartId,
+  ) async {
+    var res = mainCartQueue.firstWhere(
+      (c) => c.mainCartId == mainCartId,
+    );
+    res.subStaff = null;
+    await CartFunc().updateMainCart(res);
     print(
       'Removed: ${mainCartQueue.firstWhere((c) => c.mainCartId == mainCartId).subStaff?.staffName}',
     );
@@ -139,6 +236,13 @@ class SalesProvider extends ChangeNotifier {
           var mainCartId = uuidGen();
 
           mainCartQueue.add(
+            TempMainCart(
+              cartQueue: [],
+              mainCartId: mainCartId,
+            ),
+          );
+
+          await CartFunc().createMainCart(
             TempMainCart(
               cartQueue: [],
               mainCartId: mainCartId,
@@ -169,18 +273,23 @@ class SalesProvider extends ChangeNotifier {
                   id: cartId,
                 ),
               );
+          await CartFunc().updateMainCart(
+            mainCartQueue.firstWhere(
+              (c) => c.mainCartId == mainCartId,
+            ),
+          );
           cartIdCache = cartId;
           await returnMultiDisplayProvider().createWindow(
             cartId: cartId,
           );
 
           notifyListeners();
-          print(
-            "Main Cart Length: ${mainCartQueue.length}",
-          );
-          print(
-            'Cart Queue Length: ${mainCartQueue.firstWhere((c) => c.mainCartId == mainCartId).cartQueue.length}',
-          );
+          // print(
+          //   "Main Cart Length: ${mainCartQueue.length}",
+          // );
+          // print(
+          //   'Cart Queue Length: ${mainCartQueue.firstWhere((c) => c.mainCartId == mainCartId).cartQueue.length}',
+          // );
         } catch (e) {
           print(
             'Error Creating New Main Cart: ${e.toString()}',
@@ -193,16 +302,33 @@ class SalesProvider extends ChangeNotifier {
   }
 
   TempCart currentCart() {
+    // try {
     return currentMainCart().cartQueue.firstWhere(
       (cart) => cart.id == cartIdCache,
     );
+    // } catch (e) {
+    //   print('Error Occoured: ${e.toString()}');
+    //   return TempCart(
+    //     cartItems: [],
+    //     isInvoice: false,
+    //     staffName: 'Alex',
+    //     staffId: 'staffId',
+    //     departmentName: 'departmentName',
+    //     departmentUuid: 'departmentUuid',
+    //     cartName: 'Beans',
+    //   );
+    // }
   }
 
-  void updateCurrentCartName(String id, String name) {
+  Future<void> updateCurrentCartName(
+    String id,
+    String name,
+  ) async {
     var cart = currentMainCart().cartQueue.firstWhere(
       (car) => car.id == id,
     );
     cart.cartName = name.isNotEmpty ? name : null;
+    await CartFunc().updateMainCart(currentMainCart());
     notifyListeners();
   }
 
@@ -217,6 +343,7 @@ class SalesProvider extends ChangeNotifier {
         tempCart.id = newId;
         currentMainCart().cartQueue.add(tempCart);
         cartIdCache = newId;
+        await CartFunc().updateMainCart(currentMainCart());
         await returnMultiDisplayProvider().createWindow(
           cartId: newId,
         );
@@ -278,6 +405,7 @@ class SalesProvider extends ChangeNotifier {
     mainCartQueue.removeWhere(
       (cart) => cart.mainCartId == cartId,
     );
+    await CartFunc().deleteMainCart(cartId);
 
     await returnMultiDisplayProvider().closeWindow(
       cartId: id!,
@@ -300,6 +428,7 @@ class SalesProvider extends ChangeNotifier {
     currentMainCart().cartQueue.removeWhere(
       (cart) => cart.id == cartId,
     );
+    await CartFunc().updateMainCart(currentMainCart());
     await returnMultiDisplayProvider().closeWindow(
       cartId: cartId,
     );
@@ -316,7 +445,7 @@ class SalesProvider extends ChangeNotifier {
               .cartQueue
               .first
               .id;
-      selectCart(id!);
+      await selectCart(id!);
       notifyListeners();
     } catch (e) {
       print("Error Selecting main Cart: ${e.toString()}");
@@ -394,10 +523,10 @@ class SalesProvider extends ChangeNotifier {
     }
   }
 
-  void switchInvoiceSale({
+  Future<void> switchInvoiceSale({
     required bool value,
     required BuildContext context,
-  }) {
+  }) async {
     if (value) {
       SalesAuthAction().invoiceManagementAction(
         context: context,
@@ -410,6 +539,7 @@ class SalesProvider extends ChangeNotifier {
       currentCart().isInvoice = value;
       notifyListeners();
     }
+    await CartFunc().updateMainCart(currentMainCart());
   }
 
   bool addToStock = false;
@@ -435,9 +565,10 @@ class SalesProvider extends ChangeNotifier {
   }) {
     ItemsAuthAction().toggleSetWholeSaleAction(
       context: context,
-      action: () {
+      action: () async {
         cartItem.useWholeSalePrice =
             !cartItem.useWholeSalePrice;
+        await CartFunc().updateMainCart(currentMainCart());
         notifyListeners();
       },
     );
@@ -505,6 +636,7 @@ class SalesProvider extends ChangeNotifier {
     }
     print(currentCart().fixedDiscount);
     print(currentCart().discount);
+    CartFunc().updateMainCart(currentMainCart());
     returnMultiDisplayProvider().updateWindow(
       cartClass: AltCartClass(
         cartId: currentCart().id!,
@@ -532,6 +664,7 @@ class SalesProvider extends ChangeNotifier {
         "${item.item.name}: ${item.discount} ${item.revenue()}",
       );
     }
+    CartFunc().updateMainCart(currentMainCart());
     returnMultiDisplayProvider().updateWindow(
       cartClass: AltCartClass(
         cartId: currentCart().id!,
@@ -556,6 +689,7 @@ class SalesProvider extends ChangeNotifier {
     if (currentCart().fixedDiscount != null) {
       addFixedDiscount(currentCart().fixedDiscount);
     }
+    CartFunc().updateMainCart(currentMainCart());
   }
 
   List<double> discounts = [
@@ -595,6 +729,7 @@ class SalesProvider extends ChangeNotifier {
       print(currentCart().isSettingDiscountOpen);
       notifyListeners();
     }
+    CartFunc().updateMainCart(currentMainCart());
   }
 
   final SupabaseClient supabase = Supabase.instance.client;
@@ -678,6 +813,9 @@ class SalesProvider extends ChangeNotifier {
         subStaffUuid:
             currentCart().subStaffUuid ??
             currentMainCart().subStaff?.uuid,
+        cartName:
+            currentCart().cartName ??
+            'Cart ${currentMainCart().cartQueue.length + 1}',
       );
       TempInvoice? invoiceRes;
       try {
@@ -775,6 +913,7 @@ class SalesProvider extends ChangeNotifier {
             subStaffUuid:
                 currentCart().subStaffUuid ??
                 currentMainCart().subStaff?.uuid,
+            cartName: currentCart().cartName,
           );
 
           print('Checkout Started');
@@ -1022,7 +1161,6 @@ class SalesProvider extends ChangeNotifier {
                   if (context.mounted) {
                     await returnData().createProduct(
                       product,
-                      context,
                     );
                   } else {
                     print(
@@ -1114,6 +1252,7 @@ class SalesProvider extends ChangeNotifier {
         originalCost: calcSubTotal(),
         balance: null,
         subStaffUuid: currentMainCart().subStaff?.uuid,
+        cartName: currentCart().cartName,
       );
       if (currentCart().receiptUuidEdit != null) {
         print(
@@ -1319,7 +1458,6 @@ class SalesProvider extends ChangeNotifier {
                   if (context.mounted) {
                     await returnData().createProduct(
                       product,
-                      context,
                     );
                   } else {
                     print(
@@ -1418,6 +1556,7 @@ class SalesProvider extends ChangeNotifier {
                 : 0,
       ),
     );
+    await CartFunc().updateMainCart(currentMainCart());
     print('Cart Cleared');
 
     notifyListeners();
@@ -1489,11 +1628,13 @@ class SalesProvider extends ChangeNotifier {
   void toggleSetCustomPrice() {
     currentCart().setCustomPrice =
         !currentCart().setCustomPrice;
+    CartFunc().updateMainCart(currentMainCart());
     notifyListeners();
   }
 
   void closeCustomPrice() {
     currentCart().setCustomPrice = false;
+    CartFunc().updateMainCart(currentMainCart());
     notifyListeners();
   }
 
@@ -1639,6 +1780,7 @@ class SalesProvider extends ChangeNotifier {
         }
       }
       addAnyDiscount();
+      await CartFunc().updateMainCart(currentMainCart());
 
       notifyListeners();
       return result;
@@ -1682,6 +1824,7 @@ class SalesProvider extends ChangeNotifier {
                 : 0,
       ),
     );
+    await CartFunc().updateMainCart(currentMainCart());
     notifyListeners();
   }
 
@@ -1711,11 +1854,13 @@ class SalesProvider extends ChangeNotifier {
       ),
     );
     addAnyDiscount();
+    CartFunc().updateMainCart(currentMainCart());
     notifyListeners();
   }
 
   void resetPaymentMethod() {
     currentCart().paymentMethod = 0;
+    CartFunc().updateMainCart(currentMainCart());
     notifyListeners();
   }
 
@@ -1745,6 +1890,7 @@ class SalesProvider extends ChangeNotifier {
       context: context,
       action: () {
         currentCart().paymentMethod = index;
+        CartFunc().updateMainCart(currentMainCart());
         notifyListeners();
       },
     );

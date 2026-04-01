@@ -117,8 +117,8 @@ class _CartQueueMobileState extends State<CartQueueMobile> {
                                   message:
                                       'Enter the name of the Cart',
                                   title: 'Enter Cart Name',
-                                  action: () {
-                                    returnSalesProvider()
+                                  action: () async {
+                                    await returnSalesProvider()
                                         .updateCurrentCartName(
                                           cartItem.id!,
                                           formatText(

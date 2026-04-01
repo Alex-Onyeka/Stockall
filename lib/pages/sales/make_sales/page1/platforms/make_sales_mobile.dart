@@ -1332,13 +1332,13 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (widget.isInvoice != null &&
           returnSalesProvider()
               .currentCart()
               .cartItems
               .isEmpty) {
-        returnSalesProvider().switchInvoiceSale(
+        await returnSalesProvider().switchInvoiceSale(
           value: true,
           context: context,
         );
@@ -1347,7 +1347,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
               .currentCart()
               .cartItems
               .isEmpty) {
-        returnSalesProvider().switchInvoiceSale(
+        await returnSalesProvider().switchInvoiceSale(
           value: false,
           context: context,
         );
@@ -1367,6 +1367,14 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
       child: PopScope(
         canPop: false,
         child: Scaffold(
+          // appBar: AppBar(
+          //   title: InkWell(
+          //     onTap: () {
+          //       Navigator.of(context).pop();
+          //     },
+          //     child: Icon(Icons.back_hand),
+          //   ),
+          // ),
           appBar: appBar(
             backAction:
                 returnSalesProvider()
@@ -1459,17 +1467,17 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                         context,
                       ).currentCart().cartItems.isEmpty,
                   child: InkWell(
-                    onTap: () {
+                    onTap: () async {
                       if (returnSalesProvider()
                           .currentCart()
                           .isInvoice) {
-                        returnSalesProvider()
+                        await returnSalesProvider()
                             .switchInvoiceSale(
                               context: context,
                               value: false,
                             );
                       } else {
-                        returnSalesProvider()
+                        await returnSalesProvider()
                             .switchInvoiceSale(
                               context: context,
                               value: true,

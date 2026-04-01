@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,6 +10,7 @@ import 'package:stockall/classes/temp_product_class/unsynced/created_products/cr
 import 'package:stockall/classes/temp_product_class/unsynced/deleted_products/deleted_products.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/updated/updated_products.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
+import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
@@ -49,6 +51,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/providers/department_provider.dart';
 import 'package:stockall/providers/invoices_provider.dart';
+import 'package:stockall/providers/storage_product_provider.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -114,14 +117,10 @@ class DataProvider extends ChangeNotifier {
 
   Future<void> createProduct(
     TempProductClass product,
-    BuildContext context,
+    // BuildContext context,
   ) async {
-    // var data =
     bool isOnline = await connectivity.isOnline();
-
-    // product.uuid = uuidGen();
     product.updatedAt = DateTime.now();
-
     if (isOnline) {
       var data =
           await supabase
@@ -156,13 +155,10 @@ class DataProvider extends ChangeNotifier {
       print('Offline Product inserted Successfully');
     }
 
-    // productList.add(newProduct);
-    if (context.mounted) {
-      print('Mounted');
-      await getProducts(
-        returnShopProvider().userShop()!.shopId!,
-      );
-    }
+    print('Mounted');
+    await getProducts(
+      returnShopProvider().userShop()!.shopId!,
+    );
 
     clearFields();
   }
@@ -1086,13 +1082,21 @@ class DataProvider extends ChangeNotifier {
         notifyListeners();
       }
       notifyListeners();
-      await returnInventoryUpdatesProvider()
-          .getInventoryUpdates();
+      if (returnShopProvider()
+              .userShop()
+              ?.manageInventoryStorage ==
+          true) {
+        await returnStorageProductProvider()
+            .getStorageProducts(shopId);
+        await returnInventoryUpdatesProvider()
+            .getInventoryUpdates();
+      }
 
       await ProductsFunc().insertAllProducts(
         productListMain,
       );
     } else {
+      // productListMain.clear();
       // int getRange() {
       //   if ((allowedRangeItems ?? 0) >
       //       ProductsFunc().getProducts().length) {
@@ -1112,8 +1116,15 @@ class DataProvider extends ChangeNotifier {
       );
       productListMain = ProductsFunc().getProducts();
       notifyListeners();
-      await returnInventoryUpdatesProvider()
-          .getInventoryUpdates();
+      if (returnShopProvider()
+              .userShop()
+              ?.manageInventoryStorage ==
+          true) {
+        await returnStorageProductProvider()
+            .getStorageProducts(shopId);
+        await returnInventoryUpdatesProvider()
+            .getInventoryUpdates();
+      }
       // productListMain.clear();
     }
 
@@ -1389,7 +1400,7 @@ class DataProvider extends ChangeNotifier {
 
   Future<void> deleteProductMain(
     TempProductClass product,
-    BuildContext context,
+    // BuildContext context,
   ) async {
     bool isOnline = await connectivity.isOnline();
     if (isOnline) {
@@ -1454,11 +1465,9 @@ class DataProvider extends ChangeNotifier {
         // ignore: use_build_context_synchronously
       );
     }
-    if (context.mounted) {
-      await getProducts(
-        returnShopProvider().userShop()!.shopId!,
-      );
-    }
+    await getProducts(
+      returnShopProvider().userShop()!.shopId!,
+    );
     notifyListeners();
   }
 
@@ -2054,6 +2063,180 @@ class DataProvider extends ChangeNotifier {
   }) {
     return getTotalQuantity(products: products) +
         getTotalQuantityInStorage(products: products);
+  }
+
+  bool isSelectProducts = false;
+  List<TempProductClass> selectedProducts = [];
+
+  void toggleIsSelectProduct(bool value) {
+    isSelectProducts = value;
+    if (!value) {
+      selectedProducts.clear();
+    }
+    notifyListeners();
+  }
+
+  void selectProduct(TempProductClass newProduct) {
+    if (selectedProducts.contains(newProduct)) {
+      selectedProducts.remove(newProduct);
+    } else {
+      selectedProducts.add(newProduct);
+    }
+    notifyListeners();
+  }
+
+  Future<int> deleteSelectedProducts() async {
+    bool isOnline = await ConnectivityProvider().isOnline();
+    try {
+      if (isOnline) {
+        var productUuids =
+            selectedProducts.map((pr) => pr.uuid!).toList();
+        await supabase.rpc(
+          'delete_products_by_uuids',
+          params: {'product_uuids': productUuids},
+        );
+        print("Products Delete Successful Online");
+        for (var pr in selectedProducts) {
+          await returnEventsLogProvider().createLog(
+            returnEventsLogProvider().productAdapter(pr, 3),
+          );
+        }
+
+        await getProducts(shopId());
+        toggleIsSelectProduct(false);
+        return 1;
+      } else {
+        for (var pr in ProductsFunc().getProducts().where(
+          (prr) => selectedProducts.contains(prr),
+        )) {
+          await deleteProductMain(pr);
+        }
+        toggleIsSelectProduct(false);
+        return 1;
+      }
+    } catch (e) {
+      print(
+        "Error Deleting Multiple Products: ${e.toString()}",
+      );
+      return 0;
+    }
+  }
+
+  Future<int> duplicateSelectedProducts() async {
+    bool isOnline = await ConnectivityProvider().isOnline();
+    try {
+      if (isOnline) {
+        var productUuids =
+            selectedProducts.map((pr) => pr.uuid!).toList();
+        await supabase.rpc(
+          'duplicate_products',
+          params: {'product_uuids': productUuids},
+        );
+        print("Products Duplicated Successful Online");
+        for (var pr in selectedProducts) {
+          await returnEventsLogProvider().createLog(
+            returnEventsLogProvider().productAdapter(pr, 1),
+          );
+        }
+
+        await getProducts(shopId());
+        toggleIsSelectProduct(false);
+        return 1;
+      } else {
+        for (var pr in selectedProducts) {
+          final random = Random();
+          final number = random.nextInt(50);
+
+          final newProduct = pr.copyWith(
+            uuid: uuidGen(),
+            name: '${pr.name} Copy $number',
+            createdAt: DateTime.now(),
+          );
+
+          await ProductsFunc().createProduct(newProduct);
+
+          await CreatedProductFunc().createProduct(
+            CreatedProducts(product: newProduct),
+          );
+
+          await returnEventsLogProvider().createLog(
+            returnEventsLogProvider().productAdapter(
+              newProduct,
+              1,
+            ),
+          );
+        }
+        await getProducts(shopId());
+        toggleIsSelectProduct(false);
+        return 1;
+      }
+    } catch (e) {
+      print(
+        "Error Duplicating Multiple Products: ${e.toString()}",
+      );
+      return 0;
+    }
+  }
+
+  Future<int> generateStorageSelectedProducts() async {
+    bool isOnline = await ConnectivityProvider().isOnline();
+    try {
+      if (isOnline) {
+        List<StorageProductInput> temp =
+            selectedProducts
+                .map(
+                  (pr) => StorageProductInput(
+                    name: pr.name,
+                    productUuid: pr.uuid!,
+                    shopId: pr.shopId,
+                    groupUnit: pr.groupUnit,
+                    singleUnit: pr.unit,
+                  ),
+                )
+                .toList();
+        List<Map<String, dynamic>> payload =
+            temp.map((pr) => pr.toJson()).toList();
+        await supabase.rpc(
+          'insert_storage_products_bulk',
+          params: {'products': payload},
+        );
+        print(
+          "Storage Products Generation Successful Online",
+        );
+        // for (var pr in selectedProducts) {
+        //   await returnEventsLogProvider().createLog(
+        //     returnEventsLogProvider().productAdapter(pr, 1),
+        //   );
+        // }
+
+        await getProducts(shopId());
+        toggleIsSelectProduct(false);
+        return 1;
+      } else {
+        for (var pr in selectedProducts) {
+          returnStorageProductProvider()
+              .createStorageProduct(
+                TempStorageProducts(
+                  name: pr.name,
+                  shopId: pr.shopId,
+                  groupUnit: pr.groupUnit,
+                  unit: pr.unit,
+                  createdAt: DateTime.now(),
+                  uuid: uuidGen(),
+                  updatedAt: DateTime.now(),
+                ),
+              );
+        }
+        await getProducts(shopId());
+        toggleIsSelectProduct(false);
+        return 1;
+      }
+    } catch (e) {
+      print(
+        "Error Generating Multiple Storage Products: ${e.toString()}",
+      );
+      return 0;
+    }
   }
 }
 

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
+import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
-import 'package:stockall/pages/products/storage_page/components/is_managed_toggle_widget.dart';
 import 'package:stockall/pages/products/storage_page/components/quantity_edit_widget.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -17,7 +16,7 @@ class TableRowRecordWidget extends StatefulWidget {
   });
 
   final ThemeProvider theme;
-  final TempProductClass product;
+  final TempStorageProducts product;
 
   @override
   State<TableRowRecordWidget> createState() =>
@@ -83,8 +82,10 @@ class _TableRowRecordWidgetState
                                     .fontSize,
                             fontWeight: FontWeight.bold,
                           ),
-                          (returnData(context: context)
-                                      .productList()
+                          (returnStorageProductProvider(
+                                        context: context,
+                                      )
+                                      .storageProductListMain
                                       .indexWhere(
                                         (item) =>
                                             item.uuid ==
@@ -108,6 +109,7 @@ class _TableRowRecordWidgetState
                 decoration: BoxDecoration(
                   border: Border(
                     left: BorderSide(color: Colors.grey),
+                    right: BorderSide(color: Colors.grey),
                   ),
                 ),
                 child: Center(
@@ -125,100 +127,6 @@ class _TableRowRecordWidgetState
                             fontWeight: FontWeight.bold,
                           ),
                           widget.product.name,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Visibility(
-              visible: shop(context)?.useGroupUnit == true,
-              child: Expanded(
-                flex: 6,
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      right: BorderSide(color: Colors.grey),
-                      left: BorderSide(color: Colors.grey),
-                    ),
-                  ),
-                  padding: EdgeInsets.all(5),
-                  child: Center(
-                    child: Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            style: TextStyle(
-                              fontSize:
-                                  widget
-                                      .theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            formatLargeNumberDouble(
-                              returnData(
-                                context: context,
-                              ).returnTotalGroupQuantityValue(
-                                widget.product,
-                                (widget
-                                            .product
-                                            .totalQttyInStorageDouble ??
-                                        0) +
-                                    (widget
-                                            .product
-                                            .quantity ??
-                                        0),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 6,
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    right: BorderSide(color: Colors.grey),
-                    left:
-                        shop(context)?.useGroupUnit == true
-                            ? BorderSide.none
-                            : BorderSide(
-                              color: Colors.grey,
-                            ),
-                  ),
-                ),
-                padding: EdgeInsets.all(5),
-                child: Center(
-                  child: Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          style: TextStyle(
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          formatLargeNumber(
-                            ((widget.product.totalQttyInStorageDouble ??
-                                        0) +
-                                    (widget
-                                            .product
-                                            .quantity ??
-                                        0))
-                                .toString(),
-                          ),
                         ),
                       ),
                     ],
@@ -272,11 +180,12 @@ class _TableRowRecordWidgetState
                               fontWeight: FontWeight.bold,
                             ),
                             formatLargeNumberDouble(
-                              returnData(
-                                context: context,
-                              ).returnGroupQuantityValue(
-                                widget.product,
-                              ),
+                              // returnData(
+                              //   context: context,
+                              // ).returnGroupQuantityValue(
+                              //   widget.product,
+                              // ),
+                              2000,
                             ),
                           ),
                         ),
@@ -321,107 +230,13 @@ class _TableRowRecordWidgetState
                               fontWeight: FontWeight.bold,
                             ),
                             formatMoneyBig(
-                              amount:
-                                  widget
-                                      .product
-                                      .wholeSalePrice ??
-                                  0,
+                              amount: 2000,
                               context: context,
                             ),
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 6,
-              child: Container(
-                padding: EdgeInsets.all(5),
-                child: Center(
-                  child: Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          style: TextStyle(
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          formatMoneyBig(
-                            amount:
-                                widget
-                                    .product
-                                    .sellingPrice ??
-                                0,
-                            context: context,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 6,
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    right: BorderSide(color: Colors.grey),
-                    left: BorderSide(color: Colors.grey),
-                  ),
-                ),
-                padding: EdgeInsets.all(5),
-                child: Center(
-                  child: Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          style: TextStyle(
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          formatMoneyBig(
-                            amount:
-                                widget.product.costPrice,
-                            context: context,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 4,
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    // right: BorderSide(color: Colors.grey),
-                    // left: BorderSide(color: Colors.grey),
-                  ),
-                ),
-                padding: EdgeInsets.all(5),
-                child: Center(
-                  child: Row(
-                    children: [
-                      IsManagedToggleWidget(
-                        product: widget.product,
-                      ),
-                    ],
                   ),
                 ),
               ),

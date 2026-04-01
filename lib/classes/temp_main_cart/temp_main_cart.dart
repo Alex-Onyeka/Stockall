@@ -1,23 +1,25 @@
+import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/classes/temp_sub_staff/temp_sub_staff.dart';
 
-class TempMainCart {
+part 'temp_main_cart.g.dart';
+
+@HiveType(typeId: 70)
+class TempMainCart extends HiveObject {
+  @HiveField(0)
   List<TempCart> cartQueue;
+
+  @HiveField(1)
   TempSubStaff? subStaff;
-  // String? mainCartName;
+
+  @HiveField(2)
   String? mainCartId;
 
   TempMainCart({
     required this.cartQueue,
-    // this.mainCartName,
     required this.mainCartId,
     this.subStaff,
   });
-
-  // String cartId() {
-  //   var id = uuidGen();
-  //   return id;
-  // }
 
   String? cartName() {
     return subStaff?.staffName;

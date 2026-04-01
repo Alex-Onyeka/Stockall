@@ -1963,6 +1963,8 @@ class _InvoicePageMobileState
                                                                       invoice.vat,
                                                                   subStaffUuid:
                                                                       invoice.subStaffUuid,
+                                                                  cartName:
+                                                                      invoice.cartName,
                                                                 );
 
                                                                 var res = await returnInvoicesProvider().makeInvoicePayment(

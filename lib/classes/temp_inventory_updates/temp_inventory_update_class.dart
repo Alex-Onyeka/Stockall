@@ -40,6 +40,18 @@ class TempInventoryUpdateClass {
   @HiveField(11)
   String? itemUuid;
 
+  @HiveField(12)
+  String? staffNameTwo;
+
+  @HiveField(13)
+  String? staffIdTwo;
+
+  @HiveField(14)
+  String? departmentUuidTwo;
+
+  @HiveField(15)
+  String? departmentNameTwo;
+
   TempInventoryUpdateClass({
     this.uuid,
     this.createdAt,
@@ -53,6 +65,10 @@ class TempInventoryUpdateClass {
     this.newValue,
     this.oldValue,
     this.itemUuid,
+    this.staffIdTwo,
+    this.staffNameTwo,
+    this.departmentNameTwo,
+    this.departmentUuidTwo,
   });
 
   factory TempInventoryUpdateClass.fromJson(
@@ -74,6 +90,12 @@ class TempInventoryUpdateClass {
       staffId: json['staff_id'] as String?,
       departmentName: json['department_name'] as String?,
       departmentUuid: json['department_uuid'] as String?,
+      departmentNameTwo:
+          json['department_name_two'] as String?,
+      departmentUuidTwo:
+          json['department_uuid_two'] as String?,
+      staffNameTwo: json['staff_name_two'] as String?,
+      staffIdTwo: json['staff_uuid_two'] as String?,
     );
   }
 
@@ -91,6 +113,10 @@ class TempInventoryUpdateClass {
       'staff_id': staffId,
       'department_name': departmentName,
       'department_id': departmentUuid,
+      'department_name_two': departmentNameTwo,
+      'department_uuid_two': departmentUuidTwo,
+      'staff_name_two': staffNameTwo,
+      'staff_uuid_two': staffIdTwo,
     };
   }
 }

@@ -7,11 +7,15 @@ import 'package:stockall/providers/theme_provider.dart';
 class ProductTileMain extends StatefulWidget {
   final Function() action;
   final TempProductClass product;
+  final bool? isSelectProduct;
+  final List<String>? uuidList;
   const ProductTileMain({
     super.key,
     required this.theme,
     required this.product,
     required this.action,
+    this.isSelectProduct,
+    this.uuidList,
   });
 
   final ThemeProvider theme;
@@ -64,6 +68,49 @@ class _ProductTileMainState extends State<ProductTileMain> {
                   child: Row(
                     // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      Visibility(
+                        visible:
+                            widget.isSelectProduct !=
+                                null &&
+                            widget.isSelectProduct == true,
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.all(1),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color:
+                                      Colors.grey.shade600,
+                                ),
+                              ),
+                              child: Container(
+                                padding: EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color:
+                                      widget.uuidList !=
+                                                  null &&
+                                              widget
+                                                  .uuidList!
+                                                  .contains(
+                                                    widget
+                                                        .product
+                                                        .uuid!,
+                                                  )
+                                          ? widget
+                                              .theme
+                                              .lightModeColor
+                                              .prColor250
+                                          : Colors
+                                              .transparent,
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                          ],
+                        ),
+                      ),
                       Container(
                         height: 50,
                         width: 50,
@@ -162,12 +209,21 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                     ],
                                   ),
                                 ),
-                                Icon(
-                                  size: 18,
-                                  color:
-                                      Colors.grey.shade400,
-                                  Icons
-                                      .arrow_forward_ios_rounded,
+                                Visibility(
+                                  visible:
+                                      widget.isSelectProduct ==
+                                          null ||
+                                      widget.isSelectProduct ==
+                                          false,
+                                  child: Icon(
+                                    size: 18,
+                                    color:
+                                        Colors
+                                            .grey
+                                            .shade400,
+                                    Icons
+                                        .arrow_forward_ios_rounded,
+                                  ),
                                 ),
                               ],
                             ),
