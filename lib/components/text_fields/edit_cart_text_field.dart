@@ -12,6 +12,7 @@ class EditCartTextField extends StatefulWidget {
   final bool? discount;
   final FocusNode? focusNode;
   final Function(String)? onSubmitted;
+  final bool? showTitle;
 
   const EditCartTextField({
     super.key,
@@ -23,6 +24,7 @@ class EditCartTextField extends StatefulWidget {
     this.discount,
     this.focusNode,
     this.onSubmitted,
+    this.showTitle,
   });
 
   @override
@@ -105,9 +107,13 @@ class _EditCartTextFieldState
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          widget.title,
-          style: widget.theme.mobileTexts.b3.textStyleBold,
+        Visibility(
+          visible: widget.showTitle != false,
+          child: Text(
+            widget.title,
+            style:
+                widget.theme.mobileTexts.b3.textStyleBold,
+          ),
         ),
         SizedBox(height: 5),
         TextFormField(

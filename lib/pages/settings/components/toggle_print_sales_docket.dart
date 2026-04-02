@@ -4,12 +4,12 @@ import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widg
 import 'package:stockall/components/toggle_button/my_toggle_button.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/general_settings_auth.dart';
+import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 
-class ManageDepartmentsToggleSwitch
-    extends StatelessWidget {
-  const ManageDepartmentsToggleSwitch({super.key});
+class TogglePrintSalesDocket extends StatelessWidget {
+  const TogglePrintSalesDocket({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,12 +22,13 @@ class ManageDepartmentsToggleSwitch
           !isStoreKeeper(),
       child: SubWrapper(
         isVisible:
-            !GeneralSettingsAuthAction()
-                .manageDeparmtmentsAction(context: context),
+            !SalesAuthAction().printReceiptAction(
+              context: context,
+            ),
         mainWidget: NavListTileDesktopAlt(
           height: 18,
           action: () {
-            GeneralSettingsAuthAction().manageDeparmtmentsAction(
+            SalesAuthAction().printReceiptAction(
               context: context,
               action: () {
                 var shopProvider = returnShopProvider();
@@ -39,19 +40,19 @@ class ManageDepartmentsToggleSwitch
                       message:
                           shopProvider
                                   .userShop()!
-                                  .manageDepartments!
-                              ? 'You can no longer Create and manage Multiple Departments, are you sure you want to proceed?'
-                              : 'You can now Create and manage Multiple Departments, are you sure you want to proceed?',
+                                  .printSalesDocket!
+                              ? 'You can no Longer Generate and Printer Sales Docket, are you sure you want to proceed?'
+                              : 'You can now Generate and Printer Sales Docket, are you sure you want to proceed?',
                       title:
                           shopProvider
                                   .userShop()!
-                                  .manageDepartments!
-                              ? 'Turn Off Manage Departments'
-                              : 'Turn On Manage Departments',
+                                  .printSalesDocket!
+                              ? 'Turn Off Print Sales Docket'
+                              : 'Turn On Print Sales Docket',
                       action: () async {
                         Navigator.of(context).pop();
                         shopProvider
-                            .toggleManageDepartments();
+                            .togglePrintSalesDocket();
                       },
                     );
                   },
@@ -63,7 +64,7 @@ class ManageDepartmentsToggleSwitch
             builder: (context) {
               if (returnShopProvider(
                 context: context,
-              ).manageDepartmentsLoading) {
+              ).printSalesDocketLoading) {
                 return SizedBox(
                   height: 16,
                   width: 16,
@@ -78,7 +79,7 @@ class ManageDepartmentsToggleSwitch
                   boolValue:
                       returnShopProvider(
                         context: context,
-                      ).userShop()?.manageDepartments ??
+                      ).userShop()?.printSalesDocket ??
                       true,
                   toggle: () {
                     GeneralSettingsAuthAction().manageDeparmtmentsAction(
@@ -94,19 +95,19 @@ class ManageDepartmentsToggleSwitch
                               message:
                                   shopProvider
                                           .userShop()!
-                                          .manageDepartments!
-                                      ? 'You can no longer Create and manage Multiple Departments, are you sure you want to proceed?'
-                                      : 'You can now Create and manage Multiple Departments, are you sure you want to proceed?',
+                                          .printSalesDocket!
+                                      ? 'You can no Longer Generate and Printer Sales Docket, are you sure you want to proceed?'
+                                      : 'You can now Generate and Printer Sales Docket, are you sure you want to proceed?',
                               title:
                                   shopProvider
                                           .userShop()!
-                                          .manageDepartments!
-                                      ? 'Turn Off Manage Departments'
-                                      : 'Turn On Manage Departments',
+                                          .printSalesDocket!
+                                      ? 'Turn Off Print Sales Docket'
+                                      : 'Turn On Print Sales Docket',
                               action: () async {
                                 Navigator.of(context).pop();
                                 shopProvider
-                                    .toggleManageDepartments();
+                                    .togglePrintSalesDocket();
                               },
                             );
                           },
@@ -119,8 +120,8 @@ class ManageDepartmentsToggleSwitch
               }
             },
           ),
-          title: 'Manage Departments',
-          icon: Icons.manage_search,
+          title: 'Toggle Print Sales Docket',
+          icon: Icons.print,
         ),
       ),
     );

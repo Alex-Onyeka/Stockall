@@ -1303,6 +1303,78 @@ class ShopProvider extends ChangeNotifier {
     }
   }
 
+  bool printSalesDocketLoading = false;
+
+  Future<int> togglePrintSalesDocket() async {
+    bool isOnline = await connectivity.isOnline();
+    printSalesDocketLoading = true;
+    notifyListeners();
+    try {
+      if (isOnline) {
+        Map<String, dynamic>? res =
+            await supabase
+                .from('shops')
+                .update({
+                  'print_sales_docket':
+                      !userShop()!.printSalesDocket!,
+                })
+                .eq('shop_id', userShop()!.shopId!)
+                .select()
+                .maybeSingle();
+        if (res == null) {
+          print('Print Sales Docket Update Failed');
+          printSalesDocketLoading = false;
+          notifyListeners();
+          return 0;
+        }
+
+        // if (userShop()!.printSalesDocket!) {
+        //   returnDepartmentProvider().selectDepartment();
+        // }
+        var shops = await getUserShops();
+        setShops(shops);
+        printSalesDocketLoading = false;
+        // returnSalesProvider().selectFistMainCart();
+        notifyListeners();
+        return 1;
+      } else {
+        try {
+          // if (userShop()!.manageDepartments!) {
+          //   returnDepartmentProvider().selectDepartment();
+          // }
+          userShop()!.updatedAt = DateTime.now();
+          userShop()!.printSalesDocket =
+              !userShop()!.printSalesDocket!;
+          await ShopFunc().updateShop(userShop()!);
+          if (userShop() != null) {
+            await UpdatedShopFunc().createUpdatedShop(
+              UpdatedShop(shop: userShop()!),
+            );
+            // setShops(shop);
+            notifyListeners();
+          }
+          printSalesDocketLoading = false;
+          notifyListeners();
+          return 1;
+        } catch (e) {
+          print(
+            "❌ Failed to Update Print Sales Docket Offline: ${e.toString()}",
+          );
+          printSalesDocketLoading = false;
+          notifyListeners();
+          return 0;
+        }
+      }
+    } catch (e) {
+      print(
+        "❌ Failed to Update Print Sales Docket: ${e.toString()}",
+      );
+      printSalesDocketLoading = false;
+      notifyListeners();
+      return 0;
+    }
+  }
+
   String name = '';
   String country = '';
   String? email;

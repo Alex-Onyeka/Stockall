@@ -143,6 +143,7 @@ class _AddProductMobileState
 
               await dataProvider.createProduct(
                 TempProductClass(
+                  storageUuid: null,
                   departmentName:
                       returnDepartmentProvider()
                           .currentDepartment()
@@ -319,6 +320,7 @@ class _AddProductMobileState
 
             await provider.updateProduct(
               product: TempProductClass(
+                storageUuid: widget.product?.storageUuid,
                 departmentName:
                     returnData().departmentUuid != null
                         ? returnDepartmentProvider()
@@ -1142,6 +1144,8 @@ class _AddProductMobileState
                                                     }
 
                                                     var tempProduct = TempProductClass(
+                                                      storageUuid:
+                                                          widget.product?.storageUuid,
                                                       departmentName:
                                                           returnDepartmentProvider().currentDepartment()?.name,
                                                       departmentUuid:

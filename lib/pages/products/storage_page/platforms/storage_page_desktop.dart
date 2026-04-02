@@ -360,52 +360,52 @@ class StoragePageDesktopState
                         ),
                         child: Builder(
                           builder: (context) {
-                            double tableWidth() {
-                              if (products.isEmpty) {
-                                if (screenWidth(context) <
-                                    tabletScreen) {
-                                  return screenWidth(
-                                    context,
-                                  );
-                                } else {
-                                  return screenWidth(
-                                        context,
-                                      ) -
-                                      100;
-                                }
-                              } else {
-                                if (shop(
-                                          context,
-                                        )?.useGroupUnit ==
-                                        true &&
-                                    shop(
-                                          context,
-                                        )?.wholeSale ==
-                                        true) {
-                                  return 1700;
-                                } else if (shop(
-                                          context,
-                                        )?.useGroupUnit ==
-                                        true &&
-                                    shop(
-                                          context,
-                                        )?.wholeSale !=
-                                        true) {
-                                  return 1500;
-                                } else if (shop(
-                                          context,
-                                        )?.useGroupUnit !=
-                                        true &&
-                                    shop(
-                                          context,
-                                        )?.wholeSale ==
-                                        true) {
-                                  return 1500;
-                                } else {
-                                  return 1350;
-                                }
-                              }
-                            }
+                            // double tableWidth() {
+                            //   if (products.isEmpty) {
+                            //     if (screenWidth(context) <
+                            //         tabletScreen) {
+                            //       return screenWidth(
+                            //         context,
+                            //       );
+                            //     } else {
+                            //       return screenWidth(
+                            //             context,
+                            //           ) -
+                            //           100;
+                            //     }
+                            //   } else {
+                            //     if (shop(
+                            //               context,
+                            //             )?.useGroupUnit ==
+                            //             true &&
+                            //         shop(
+                            //               context,
+                            //             )?.wholeSale ==
+                            //             true) {
+                            //       return 1400;
+                            //     } else if (shop(
+                            //               context,
+                            //             )?.useGroupUnit ==
+                            //             true &&
+                            //         shop(
+                            //               context,
+                            //             )?.wholeSale !=
+                            //             true) {
+                            //       return 1400;
+                            //     } else if (shop(
+                            //               context,
+                            //             )?.useGroupUnit !=
+                            //             true &&
+                            //         shop(
+                            //               context,
+                            //             )?.wholeSale ==
+                            //             true) {
+                            //       return 1400;
+                            //     } else {
+                            //       return 1300;
+                            //     }
+                            //   }
+                            // }
 
                             if (sortIndex == 1) {
                               return ListView(
@@ -414,7 +414,11 @@ class StoragePageDesktopState
                                     Axis.horizontal,
                                 children: [
                                   SizedBox(
-                                    width: tableWidth(),
+                                    width:
+                                        screenWidth(
+                                          context,
+                                        ) -
+                                        120,
                                     child: RefreshIndicator(
                                       onRefresh: () {
                                         return getProducts();

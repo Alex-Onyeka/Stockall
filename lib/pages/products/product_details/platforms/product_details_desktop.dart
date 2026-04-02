@@ -668,6 +668,8 @@ class _ProductDetailsDesktopState
                                                                                         );
                                                                                         await dataProvider.updateProduct(
                                                                                           product: TempProductClass(
+                                                                                            storageUuid:
+                                                                                                product.storageUuid,
                                                                                             departmentName:
                                                                                                 product.departmentName,
                                                                                             departmentUuid:
@@ -1009,6 +1011,8 @@ class _ProductDetailsDesktopState
                                                                   );
                                                                   await dataProvider.updateProduct(
                                                                     product: TempProductClass(
+                                                                      storageUuid:
+                                                                          product.storageUuid,
                                                                       departmentName:
                                                                           product.departmentName,
                                                                       departmentUuid:
@@ -2179,6 +2183,8 @@ class _ProductDetailsDesktopState
 
                                                               await dataProvider.updateProduct(
                                                                 product: TempProductClass(
+                                                                  storageUuid:
+                                                                      product.storageUuid,
                                                                   departmentName:
                                                                       product.departmentName,
                                                                   departmentUuid:
@@ -2720,6 +2726,8 @@ class _ProductDetailsDesktopState
 
                                                                 await dataProvider.updateProduct(
                                                                   product: TempProductClass(
+                                                                    storageUuid:
+                                                                        product.storageUuid,
                                                                     departmentName:
                                                                         product.departmentName,
                                                                     departmentUuid:

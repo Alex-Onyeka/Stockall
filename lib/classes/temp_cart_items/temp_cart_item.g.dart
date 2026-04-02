@@ -6,8 +6,7 @@ part of 'temp_cart_item.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class TempCartItemAdapter
-    extends TypeAdapter<TempCartItem> {
+class TempCartItemAdapter extends TypeAdapter<TempCartItem> {
   @override
   final int typeId = 72;
 
@@ -15,8 +14,7 @@ class TempCartItemAdapter
   TempCartItem read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++)
-        reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return TempCartItem(
       item: fields[0] as TempProductClass,

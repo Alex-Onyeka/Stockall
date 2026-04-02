@@ -35,42 +35,49 @@ class UserProvider extends ChangeNotifier {
   Future<List<TempUserClass>> fetchUsersByShop(
     // BuildContext context,
   ) async {
-    // final authUser = _supabase.currentUser;
+    try {
+      // final authUser = _supabase.currentUser;
 
-    isLoading = true;
-    bool isOnline = await ConnectivityProvider().isOnline();
+      isLoading = true;
+      bool isOnline =
+          await ConnectivityProvider().isOnline();
 
-    if (isOnline) {
-      await returnShopProvider().getUserShops();
-      var employees =
-          returnShopProvider().userShop()!.employees!;
-      final data = await _supabase.client
-          .from('users')
-          .select()
-          .inFilter('user_id', employees);
-      print('Users Gotten from Supabase: ${data.length}');
+      if (isOnline) {
+        await returnShopProvider().getUserShops();
+        var employees =
+            returnShopProvider().userShop()!.employees ??
+            [];
+        final data = await _supabase.client
+            .from('users')
+            .select()
+            .inFilter('user_id', employees);
+        print('Users Gotten from Supabase: ${data.length}');
 
-      _users =
-          data
-              .map<TempUserClass>(
-                (json) => TempUserClass.fromJson(json),
-              )
-              .toList();
+        _users =
+            data
+                .map<TempUserClass>(
+                  (json) => TempUserClass.fromJson(json),
+                )
+                .toList();
+        notifyListeners();
+        await UserFunc().insertAllUsers(_users);
+      } else {
+        _users = UserFunc().getUsers();
+        notifyListeners();
+      }
+
+      _users.sort(
+        (a, b) => a.name.toLowerCase().compareTo(
+          b.name.toLowerCase(),
+        ),
+      );
       notifyListeners();
-      await UserFunc().insertAllUsers(_users);
-    } else {
-      _users = UserFunc().getUsers();
-      notifyListeners();
+      isLoading = false;
+      return _users;
+    } catch (e) {
+      print('Error Fetching Users: ${e.toString()}');
+      return [];
     }
-
-    _users.sort(
-      (a, b) => a.name.toLowerCase().compareTo(
-        b.name.toLowerCase(),
-      ),
-    );
-    notifyListeners();
-    isLoading = false;
-    return _users;
   }
 
   TempUserClass? _currentUser;

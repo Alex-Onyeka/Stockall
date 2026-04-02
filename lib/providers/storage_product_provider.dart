@@ -439,7 +439,7 @@ class StorageProductProvider extends ChangeNotifier {
     return storageProductListMain;
   }
 
-  Future<TempStorageProducts?> updateProduct({
+  Future<int> updateProduct({
     required TempStorageProducts product,
     TempStorageProducts? oldProduct,
   }) async {
@@ -523,10 +523,11 @@ class StorageProductProvider extends ChangeNotifier {
             returnShopProvider().userShop()!.shopId!,
           );
           notifyListeners();
-          return TempStorageProducts.fromJson(res);
+          // return TempStorageProducts.fromJson(res);
+          return 1;
         } else {
           print('Storage Product Update Failed');
-          return null;
+          return 0;
         }
       } else {
         var res = await StorageProductsFunc()
@@ -574,16 +575,16 @@ class StorageProductProvider extends ChangeNotifier {
           // StorageProductsFunc().createStorageProduct(
           //   uuid: product.uuid!,
           // );
-          return product;
+          return 1;
         } else {
           notifyListeners();
-          return null;
+          return 0;
         }
       }
     } catch (e) {
       notifyListeners();
       print("Error Updating Product: ${e.toString()}");
-      return null;
+      return 0;
     }
   }
 

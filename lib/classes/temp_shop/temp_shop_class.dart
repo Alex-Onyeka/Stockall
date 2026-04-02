@@ -154,6 +154,9 @@ class TempShopClass {
   @HiveField(49)
   bool? manageDepartments;
 
+  @HiveField(50)
+  bool? printSalesDocket;
+
   TempShopClass({
     this.shopId,
     required this.createdAt,
@@ -205,6 +208,7 @@ class TempShopClass {
     required this.useGroupUnit,
     required this.wholeSale,
     required this.manageDepartments,
+    required this.printSalesDocket,
   });
 
   factory TempShopClass.fromJson(
@@ -278,6 +282,7 @@ class TempShopClass {
       wholeSale: json['whole_sale'] as bool?,
       manageDepartments:
           json['manage_departments'] as bool?,
+      printSalesDocket: json['print_sales_docket'] as bool?,
     );
   }
 
@@ -331,6 +336,7 @@ class TempShopClass {
       'use_group_unit': useGroupUnit,
       'whole_sale': wholeSale,
       'manage_departments': manageDepartments,
+      'print_sales_docket': printSalesDocket,
     };
   }
 }

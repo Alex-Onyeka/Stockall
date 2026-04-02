@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stockall/classes/temp_cart/temp_cart.dart';
@@ -27,6 +28,7 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/play_sounds.dart';
+import 'package:stockall/constants/sales_docket_print_download.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
@@ -61,29 +63,6 @@ class _MakeSalesDesktopState
       TextEditingController();
   TextEditingController discountPercentController =
       TextEditingController();
-  // final nameController = TextEditingController();
-
-  // String formatSellingPriceEdit(TempCartItem cartItem) {
-  //   if (priceController.text.isNotEmpty) {
-  //     if (returnSalesProvider().setTotalPrice) {
-  //       return priceController.text.replaceAll(',', '');
-  //     } else {
-  //       return (double.parse(
-  //                 priceController.text.isNotEmpty
-  //                     ? priceController.text.replaceAll(
-  //                       ',',
-  //                       '',
-  //                     )
-  //                     : '0',
-  //               ) *
-  //               qqty.toDouble())
-  //           .toString();
-  //     }
-  //   } else {
-  //     return (qqty * (cartItem.item.sellingPrice!))
-  //         .toString();
-  //   }
-  // }
 
   final FocusNode qttyNode = FocusNode();
 
@@ -1333,7 +1312,7 @@ class _MakeSalesDesktopState
               .currentCart()
               .cartItems
               .isEmpty) {
-        await returnSalesProvider().switchInvoiceSale(
+        returnSalesProvider().switchInvoiceSale(
           value: true,
           context: context,
         );
@@ -1342,7 +1321,7 @@ class _MakeSalesDesktopState
               .currentCart()
               .cartItems
               .isEmpty) {
-        await returnSalesProvider().switchInvoiceSale(
+        returnSalesProvider().switchInvoiceSale(
           value: false,
           context: context,
         );
@@ -1606,7 +1585,7 @@ class _MakeSalesDesktopState
                                           if (returnSalesProvider()
                                               .currentCart()
                                               .isInvoice) {
-                                            await returnSalesProvider()
+                                            returnSalesProvider()
                                                 .switchInvoiceSale(
                                                   context:
                                                       context,
@@ -1614,7 +1593,7 @@ class _MakeSalesDesktopState
                                                       false,
                                                 );
                                           } else {
-                                            await returnSalesProvider()
+                                            returnSalesProvider()
                                                 .switchInvoiceSale(
                                                   context:
                                                       context,
@@ -1732,6 +1711,8 @@ class _MakeSalesDesktopState
                                                   returnSalesProvider()
                                                       .setTotalPrice,
                                               item: TempProductClass(
+                                                storageUuid:
+                                                    null,
                                                 departmentName:
                                                     returnDepartmentProvider()
                                                         .currentDepartment()
@@ -1858,6 +1839,8 @@ class _MakeSalesDesktopState
                                                     setTotalPrice:
                                                         returnSalesProvider().setTotalPrice,
                                                     item: TempProductClass(
+                                                      storageUuid:
+                                                          null,
                                                       departmentName:
                                                           returnDepartmentProvider().currentDepartment()?.name,
                                                       departmentUuid:
@@ -2033,6 +2016,8 @@ class _MakeSalesDesktopState
                                                                           setTotalPrice:
                                                                               returnSalesProvider().setTotalPrice,
                                                                           item: TempProductClass(
+                                                                            storageUuid:
+                                                                                null,
                                                                             departmentName:
                                                                                 returnDepartmentProvider().currentDepartment()?.name,
                                                                             departmentUuid:
@@ -2652,76 +2637,84 @@ class _MakeSalesDesktopState
                                               ),
                                               child: InkWell(
                                                 onTap: () {
-                                                  returnSalesProvider().toggleAddToStock(
-                                                    false,
-                                                    context,
-                                                  );
-                                                  makeCustomSale(
-                                                    closeAction: () {
-                                                      Navigator.of(
+                                                  SalesAuthAction().printReceiptAction(
+                                                    context:
                                                         context,
-                                                      ).pop();
-                                                    },
-                                                    cartItem: TempCartItem(
-                                                      useWholeSalePrice:
-                                                          false,
-                                                      setTotalPrice:
-                                                          returnSalesProvider().setTotalPrice,
-                                                      item: TempProductClass(
-                                                        departmentName:
-                                                            returnDepartmentProvider().currentDepartment()?.name,
-                                                        departmentUuid:
-                                                            returnDepartmentProvider().currentDepartment()?.uuid,
-                                                        groupUnit:
-                                                            'Others',
-                                                        qttyPerGroup:
-                                                            null,
-                                                        isManaged:
-                                                            false,
-                                                        uuid:
-                                                            uuidGen(),
-                                                        name:
-                                                            nameC.text,
-                                                        unit:
-                                                            'Others',
-                                                        isRefundable:
-                                                            false,
-                                                        costPrice:
-                                                            double.tryParse(
-                                                              costPriceC.text.replaceAll(
+                                                    action: () {
+                                                      returnSalesProvider().toggleAddToStock(
+                                                        false,
+                                                        context,
+                                                      );
+                                                      makeCustomSale(
+                                                        closeAction: () {
+                                                          Navigator.of(
+                                                            context,
+                                                          ).pop();
+                                                        },
+                                                        cartItem: TempCartItem(
+                                                          useWholeSalePrice:
+                                                              false,
+                                                          setTotalPrice:
+                                                              returnSalesProvider().setTotalPrice,
+                                                          item: TempProductClass(
+                                                            storageUuid:
+                                                                null,
+                                                            departmentName:
+                                                                returnDepartmentProvider().currentDepartment()?.name,
+                                                            departmentUuid:
+                                                                returnDepartmentProvider().currentDepartment()?.uuid,
+                                                            groupUnit:
+                                                                'Others',
+                                                            qttyPerGroup:
+                                                                null,
+                                                            isManaged:
+                                                                false,
+                                                            uuid:
+                                                                uuidGen(),
+                                                            name:
+                                                                nameC.text,
+                                                            unit:
+                                                                'Others',
+                                                            isRefundable:
+                                                                false,
+                                                            costPrice:
+                                                                double.tryParse(
+                                                                  costPriceC.text.replaceAll(
+                                                                    ',',
+                                                                    '',
+                                                                  ),
+                                                                ) ??
+                                                                0,
+                                                            sellingPrice: double.tryParse(
+                                                              sellingPriceC.text.replaceAll(
                                                                 ',',
                                                                 '',
                                                               ),
-                                                            ) ??
-                                                            0,
-                                                        sellingPrice: double.tryParse(
-                                                          sellingPriceC.text.replaceAll(
-                                                            ',',
-                                                            '',
+                                                            ),
+                                                            wholeSalePrice: double.tryParse(
+                                                              wholeSalePriceC.text.replaceAll(
+                                                                ',',
+                                                                '',
+                                                              ),
+                                                            ),
+                                                            quantity:
+                                                                0,
+                                                            shopId:
+                                                                returnShopProvider().userShop()!.shopId!,
+                                                            setCustomPrice:
+                                                                true,
                                                           ),
+                                                          addToStock:
+                                                              true,
+                                                          quantity:
+                                                              0,
+                                                          discount:
+                                                              null,
+                                                          setCustomPrice:
+                                                              true,
                                                         ),
-                                                        wholeSalePrice: double.tryParse(
-                                                          wholeSalePriceC.text.replaceAll(
-                                                            ',',
-                                                            '',
-                                                          ),
-                                                        ),
-                                                        quantity:
-                                                            0,
-                                                        shopId:
-                                                            returnShopProvider().userShop()!.shopId!,
-                                                        setCustomPrice:
-                                                            true,
-                                                      ),
-                                                      addToStock:
-                                                          true,
-                                                      quantity:
-                                                          0,
-                                                      discount:
-                                                          null,
-                                                      setCustomPrice:
-                                                          true,
-                                                    ),
+                                                      );
+                                                    },
                                                   );
                                                 },
                                                 child: Container(
@@ -2736,6 +2729,118 @@ class _MakeSalesDesktopState
                                                             theme.mobileTexts.b3.fontSize,
                                                       ),
                                                       'Add Custom Item',
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Visibility(
+                                            visible:
+                                                returnShopProvider()
+                                                    .userShop()
+                                                    ?.printSalesDocket ==
+                                                true,
+                                            child: SubWrapper(
+                                              isVisible:
+                                                  !SalesAuthAction().printReceiptAction(
+                                                    context:
+                                                        context,
+                                                  ),
+                                              mainWidget: Ink(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                        5,
+                                                      ),
+                                                  border: Border.all(
+                                                    color:
+                                                        theme.lightModeColor.prColor300,
+                                                  ),
+                                                ),
+                                                child: InkWell(
+                                                  onTap: () {
+                                                    SalesAuthAction().printReceiptAction(
+                                                      context:
+                                                          context,
+                                                      action: () {
+                                                        showDialog(
+                                                          context:
+                                                              context,
+                                                          builder: (
+                                                            confirmContext,
+                                                          ) {
+                                                            return ConfirmationAlert(
+                                                              theme:
+                                                                  theme,
+                                                              message:
+                                                                  'You are about to print docket slip for this cart. Are you sure you want to proceed?',
+                                                              title:
+                                                                  'Print Docket Slip',
+                                                              action: () {
+                                                                Navigator.of(
+                                                                  confirmContext,
+                                                                ).pop();
+                                                                if (kIsWeb) {
+                                                                  downloadDocket(
+                                                                    cart:
+                                                                        returnSalesProvider().currentCart(),
+                                                                    context:
+                                                                        context,
+                                                                    fileName:
+                                                                        'DocketSlip${DateTime.now().microsecondsSinceEpoch.toString().substring(0, 5)}',
+                                                                    waiter:
+                                                                        returnSalesProvider().currentMainCart().subStaff?.staffName ??
+                                                                        'Not Set',
+                                                                  );
+                                                                } else {
+                                                                  printDocket(
+                                                                    cart:
+                                                                        returnSalesProvider().currentCart(),
+                                                                    context:
+                                                                        context,
+                                                                    fileName:
+                                                                        'DocketSlip${DateTime.now().microsecondsSinceEpoch.toString().substring(0, 5)}',
+                                                                    waiter:
+                                                                        returnSalesProvider().currentMainCart().subStaff?.staffName ??
+                                                                        'Not Set',
+                                                                  );
+                                                                }
+                                                              },
+                                                            );
+                                                          },
+                                                        );
+                                                      },
+                                                    );
+                                                  },
+                                                  child: Container(
+                                                    padding: EdgeInsets.symmetric(
+                                                      vertical:
+                                                          9,
+                                                    ),
+                                                    child: Center(
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment.center,
+                                                        spacing:
+                                                            5,
+                                                        children: [
+                                                          Text(
+                                                            style: TextStyle(
+                                                              fontSize:
+                                                                  theme.mobileTexts.b3.fontSize,
+                                                            ),
+                                                            'Print Docket',
+                                                          ),
+                                                          Icon(
+                                                            size:
+                                                                18,
+                                                            color:
+                                                                Colors.grey,
+                                                            Icons.print_rounded,
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
                                                   ),
                                                 ),

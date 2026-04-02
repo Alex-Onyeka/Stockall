@@ -149,6 +149,7 @@ class _AddProductDesktopState
 
               await dataProvider.createProduct(
                 TempProductClass(
+                  storageUuid: null,
                   isManaged:
                       widget.quantityController.text.isEmpty
                           ? false
@@ -324,6 +325,7 @@ class _AddProductDesktopState
 
             await provider.updateProduct(
               product: TempProductClass(
+                storageUuid: widget.product?.storageUuid,
                 departmentName:
                     returnData().departmentUuid != null
                         ? returnDepartmentProvider()
@@ -1231,6 +1233,8 @@ class _AddProductDesktopState
                                                   }
 
                                                   var tempProduct = TempProductClass(
+                                                    storageUuid:
+                                                        widget.product?.storageUuid,
                                                     departmentName:
                                                         returnDepartmentProvider().currentDepartment()?.name,
                                                     departmentUuid:

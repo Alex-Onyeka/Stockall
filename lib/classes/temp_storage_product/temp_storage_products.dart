@@ -11,22 +11,22 @@ class TempStorageProducts {
   DateTime? createdAt;
 
   @HiveField(2)
-  final int shopId;
+  int shopId;
 
   @HiveField(3)
-  final String name;
+  String name;
 
   @HiveField(4)
-  final String? desc;
+  String? desc;
 
   @HiveField(5)
-  final double? quantity;
+  double? quantity;
 
   @HiveField(6)
-  final String? unit;
+  String? unit;
 
   @HiveField(7)
-  final String? groupUnit;
+  String? groupUnit;
 
   @HiveField(8)
   DateTime? updatedAt;
@@ -55,8 +55,11 @@ class TempStorageProducts {
       shopId: json['shop_id'] as int,
       name: json['name'] as String,
       desc: json['desc'] as String?,
-      quantity: json['quantity'] as double?,
-      unit: json['unit'] as String?,
+      quantity:
+          json['quantity'] != null
+              ? (json['quantity'] as num).toDouble()
+              : null,
+      unit: json['single_unit'] as String?,
       groupUnit: json['group_unit'] as String?,
       updatedAt:
           json['updated_at'] != null
@@ -73,9 +76,9 @@ class TempStorageProducts {
       'name': name,
       'description': desc,
       'quantity': quantity,
-      'unit': unit,
+      'single_unit': unit,
       'group_unit': groupUnit,
-      'updated_at': updatedAt,
+      'updated_at': updatedAt?.toIso8601String(),
     };
   }
 }

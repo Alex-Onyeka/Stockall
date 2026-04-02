@@ -4,8 +4,8 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/products/product_details/product_details_page.dart';
 import 'package:stockall/pages/products/storage_page/components/quantity_edit_widget.dart';
+import 'package:stockall/pages/products/storage_page/storage_details/storage_details_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class TableRowRecordWidget extends StatefulWidget {
@@ -37,9 +37,8 @@ class _TableRowRecordWidgetState
           context,
           MaterialPageRoute(
             builder: (context) {
-              return ProductDetailsPage(
+              return StorageDetailsPage(
                 productUuid: widget.product.uuid!,
-                comingFromInventoryUpdatesPage: true,
               );
             },
           ),
@@ -134,113 +133,113 @@ class _TableRowRecordWidgetState
                 ),
               ),
             ),
-            Visibility(
-              visible: shop(context)?.useGroupUnit == true,
-              child: Expanded(
-                flex: 6,
-                child: QuantityEditWidget(
-                  isGroup: true,
-                  isTotal: true,
-                  product: widget.product,
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 6,
-              child: QuantityEditWidget(
-                isGroup: false,
-                isTotal: true,
-                product: widget.product,
-              ),
-            ),
-            Visibility(
-              visible: shop(context)?.useGroupUnit == true,
-              child: Expanded(
-                flex: 6,
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      right: BorderSide(color: Colors.grey),
-                      // left: BorderSide(color: Colors.grey),
-                    ),
-                  ),
-                  padding: EdgeInsets.all(5),
-                  child: Center(
-                    child: Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            style: TextStyle(
-                              fontSize:
-                                  widget
-                                      .theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            formatLargeNumberDouble(
-                              // returnData(
-                              //   context: context,
-                              // ).returnGroupQuantityValue(
-                              //   widget.product,
-                              // ),
-                              2000,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 6,
-              child: QuantityEditWidget(
-                isGroup: false,
-                isTotal: false,
-                product: widget.product,
-              ),
-            ),
-            Visibility(
-              visible: shop(context)?.wholeSale == true,
-              child: Expanded(
-                flex: 6,
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      right: BorderSide(color: Colors.grey),
-                      // left: BorderSide(color: Colors.grey),
-                    ),
-                  ),
-                  padding: EdgeInsets.all(5),
-                  child: Center(
-                    child: Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            style: TextStyle(
-                              fontSize:
-                                  widget
-                                      .theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            formatMoneyBig(
-                              amount: 2000,
-                              context: context,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            // Visibility(
+            //   visible: shop(context)?.useGroupUnit == true,
+            //   child: Expanded(
+            //     flex: 6,
+            //     child: QuantityEditWidget(
+            //       isGroup: true,
+            //       isTotal: true,
+            //       product: widget.product,
+            //     ),
+            //   ),
+            // ),
+            // Expanded(
+            //   flex: 6,
+            //   child: QuantityEditWidget(
+            //     isGroup: false,
+            //     isTotal: true,
+            //     product: widget.product,
+            //   ),
+            // ),
+            // Visibility(
+            //   visible: shop(context)?.useGroupUnit == true,
+            //   child: Expanded(
+            //     flex: 6,
+            //     child: Container(
+            //       decoration: BoxDecoration(
+            //         border: Border(
+            //           right: BorderSide(color: Colors.grey),
+            //           // left: BorderSide(color: Colors.grey),
+            //         ),
+            //       ),
+            //       padding: EdgeInsets.all(5),
+            //       child: Center(
+            //         child: Row(
+            //           children: [
+            //             Flexible(
+            //               child: Text(
+            //                 style: TextStyle(
+            //                   fontSize:
+            //                       widget
+            //                           .theme
+            //                           .mobileTexts
+            //                           .b3
+            //                           .fontSize,
+            //                   fontWeight: FontWeight.bold,
+            //                 ),
+            //                 formatLargeNumberDouble(
+            //                   // returnData(
+            //                   //   context: context,
+            //                   // ).returnGroupQuantityValue(
+            //                   //   widget.product,
+            //                   // ),
+            //                   2000,
+            //                 ),
+            //               ),
+            //             ),
+            //           ],
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            // Expanded(
+            //   flex: 6,
+            //   child: QuantityEditWidget(
+            //     isGroup: false,
+            //     isTotal: false,
+            //     product: widget.product,
+            //   ),
+            // ),
+            // Visibility(
+            //   visible: shop(context)?.wholeSale == true,
+            //   child: Expanded(
+            //     flex: 6,
+            //     child: Container(
+            //       decoration: BoxDecoration(
+            //         border: Border(
+            //           right: BorderSide(color: Colors.grey),
+            //           // left: BorderSide(color: Colors.grey),
+            //         ),
+            //       ),
+            //       padding: EdgeInsets.all(5),
+            //       child: Center(
+            //         child: Row(
+            //           children: [
+            //             Flexible(
+            //               child: Text(
+            //                 style: TextStyle(
+            //                   fontSize:
+            //                       widget
+            //                           .theme
+            //                           .mobileTexts
+            //                           .b3
+            //                           .fontSize,
+            //                   fontWeight: FontWeight.bold,
+            //                 ),
+            //                 formatMoneyBig(
+            //                   amount: 2000,
+            //                   context: context,
+            //                 ),
+            //               ),
+            //             ),
+            //           ],
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),

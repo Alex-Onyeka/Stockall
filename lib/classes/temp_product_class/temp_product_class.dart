@@ -136,7 +136,7 @@ class TempProductClass {
     required this.qttyPerGroup,
     this.categoryUuid,
     required this.wholeSalePrice,
-    this.storageUuid,
+    required this.storageUuid,
   });
 
   factory TempProductClass.fromJson(

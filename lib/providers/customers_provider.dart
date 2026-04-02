@@ -6,6 +6,7 @@ import 'package:stockall/classes/temp_customers/unsynced/updated/updated_custome
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/general_settings_auth.dart';
+import 'package:stockall/local_database/cart_func/cart_func.dart';
 import 'package:stockall/local_database/customers/customer_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/created/created_customers_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/deleted/deleted_customers_func.dart';
@@ -328,6 +329,9 @@ class CustomersProvider extends ChangeNotifier {
     returnSalesProvider()
         .currentCart()
         .selectedCustomerName = null;
+    CartFunc().updateMainCart(
+      returnSalesProvider().currentMainCart(),
+    );
     notifyListeners();
   }
 
@@ -342,6 +346,9 @@ class CustomersProvider extends ChangeNotifier {
         .currentCart()
         .selectedCustomerName = name;
     notifyListeners();
+    CartFunc().updateMainCart(
+      returnSalesProvider().currentMainCart(),
+    );
   }
 
   //

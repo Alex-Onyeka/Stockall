@@ -298,42 +298,42 @@ class _StoragePageMobileState
                       ),
                       child: Builder(
                         builder: (context) {
-                          double tableWidth() {
-                            if (products.isEmpty) {
-                              return screenWidth(context);
-                            } else {
-                              if (shop(
-                                        context,
-                                      )?.useGroupUnit ==
-                                      true &&
-                                  shop(
-                                        context,
-                                      )?.wholeSale ==
-                                      true) {
-                                return 1700;
-                              } else if (shop(
-                                        context,
-                                      )?.useGroupUnit ==
-                                      true &&
-                                  shop(
-                                        context,
-                                      )?.wholeSale !=
-                                      true) {
-                                return 1500;
-                              } else if (shop(
-                                        context,
-                                      )?.useGroupUnit !=
-                                      true &&
-                                  shop(
-                                        context,
-                                      )?.wholeSale ==
-                                      true) {
-                                return 1500;
-                              } else {
-                                return 1350;
-                              }
-                            }
-                          }
+                          // double tableWidth() {
+                          //   if (products.isEmpty) {
+                          //     return screenWidth(context);
+                          //   } else {
+                          //     if (shop(
+                          //               context,
+                          //             )?.useGroupUnit ==
+                          //             true &&
+                          //         shop(
+                          //               context,
+                          //             )?.wholeSale ==
+                          //             true) {
+                          //       return 1700;
+                          //     } else if (shop(
+                          //               context,
+                          //             )?.useGroupUnit ==
+                          //             true &&
+                          //         shop(
+                          //               context,
+                          //             )?.wholeSale !=
+                          //             true) {
+                          //       return 1500;
+                          //     } else if (shop(
+                          //               context,
+                          //             )?.useGroupUnit !=
+                          //             true &&
+                          //         shop(
+                          //               context,
+                          //             )?.wholeSale ==
+                          //             true) {
+                          //       return 1500;
+                          //     } else {
+                          //       return 1350;
+                          //     }
+                          //   }
+                          // }
 
                           if (sortIndex == 1) {
                             return ListView(
@@ -342,7 +342,9 @@ class _StoragePageMobileState
                                   Axis.horizontal,
                               children: [
                                 SizedBox(
-                                  width: tableWidth(),
+                                  width:
+                                      screenWidth(context) -
+                                      50,
                                   child: RefreshIndicator(
                                     onRefresh: () {
                                       return getProducts();

@@ -208,6 +208,7 @@ class _ShopSetupTwoMobileState
                     useGroupUnit: false,
                     wholeSale: false,
                     manageDepartments: false,
+                    printSalesDocket: false,
                   ),
                   safeContext,
                 );

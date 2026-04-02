@@ -348,13 +348,13 @@ class _MakeSalesMobileTwoState
                                 if (returnSalesProvider()
                                     .currentCart()
                                     .isInvoice) {
-                                  await returnSalesProvider()
+                                  returnSalesProvider()
                                       .switchInvoiceSale(
                                         context: context,
                                         value: false,
                                       );
                                 } else {
-                                  await returnSalesProvider()
+                                  returnSalesProvider()
                                       .switchInvoiceSale(
                                         context: context,
                                         value: true,

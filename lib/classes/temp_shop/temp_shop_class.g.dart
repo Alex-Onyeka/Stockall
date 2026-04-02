@@ -6,7 +6,8 @@ part of 'temp_shop_class.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
+class TempShopClassAdapter
+    extends TypeAdapter<TempShopClass> {
   @override
   final int typeId = 7;
 
@@ -14,7 +15,8 @@ class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
   TempShopClass read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++)
+        reader.readByte(): reader.read(),
     };
     return TempShopClass(
       shopId: fields[0] as int?,
@@ -65,13 +67,14 @@ class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
       useGroupUnit: fields[47] as bool?,
       wholeSale: fields[48] as bool?,
       manageDepartments: fields[49] as bool?,
+      printSalesDocket: fields[50] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempShopClass obj) {
     writer
-      ..writeByte(48)
+      ..writeByte(49)
       ..writeByte(0)
       ..write(obj.shopId)
       ..writeByte(1)
@@ -167,7 +170,9 @@ class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
       ..writeByte(48)
       ..write(obj.wholeSale)
       ..writeByte(49)
-      ..write(obj.manageDepartments);
+      ..write(obj.manageDepartments)
+      ..writeByte(50)
+      ..write(obj.printSalesDocket);
   }
 
   @override

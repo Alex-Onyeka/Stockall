@@ -523,23 +523,24 @@ class SalesProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> switchInvoiceSale({
+  void switchInvoiceSale({
     required bool value,
     required BuildContext context,
-  }) async {
+  }) {
     if (value) {
       SalesAuthAction().invoiceManagementAction(
         context: context,
         action: () {
           currentCart().isInvoice = value;
+          CartFunc().updateMainCart(currentMainCart());
           notifyListeners();
         },
       );
     } else {
       currentCart().isInvoice = value;
+      CartFunc().updateMainCart(currentMainCart());
       notifyListeners();
     }
-    await CartFunc().updateMainCart(currentMainCart());
   }
 
   bool addToStock = false;
@@ -801,7 +802,10 @@ class SalesProvider extends ChangeNotifier {
         cashAlt: cashAlt,
         customerName: customerName,
         customerUuid: customerUuid,
-        uuid: currentCart().invoiceUuidEdit ?? uuidGen(),
+        uuid:
+            currentCart().invoiceUuidEdit ??
+            currentCart().id ??
+            uuidGen(),
         generalDiscount: currentCart().discount,
         fixedDiscount: currentCart().fixedDiscount,
         vat:
@@ -900,7 +904,7 @@ class SalesProvider extends ChangeNotifier {
             customerName: customerName,
             customerUuid: customerUuid,
             invoiceUuid: invoiceRes?.uuid,
-            uuid: receiptUuid,
+            uuid: currentCart().id ?? receiptUuid,
             generalDiscount: currentCart().discount,
             fixedDiscount: currentCart().fixedDiscount,
             vat:
@@ -1129,6 +1133,7 @@ class SalesProvider extends ChangeNotifier {
 
                   TempProductClass
                   product = TempProductClass(
+                    storageUuid: null,
                     groupUnit: 'Others',
                     qttyPerGroup: null,
                     name: record.productName,
@@ -1219,7 +1224,9 @@ class SalesProvider extends ChangeNotifier {
         'Fixed Discount: ${currentCart().fixedDiscount}',
       );
       final uuid =
-          currentCart().receiptUuidEdit ?? uuidGen();
+          currentCart().receiptUuidEdit ??
+          currentCart().id ??
+          uuidGen();
       TempMainReceipt receipt = TempMainReceipt(
         departmentName:
             salesCartItem.departmentName ??
@@ -1426,6 +1433,7 @@ class SalesProvider extends ChangeNotifier {
 
                   TempProductClass
                   product = TempProductClass(
+                    storageUuid: null,
                     groupUnit: 'Others',
                     qttyPerGroup: null,
                     name: record.productName,
@@ -2001,6 +2009,7 @@ class SalesProvider extends ChangeNotifier {
                     record.quantity;
 
         TempProductClass productNew = TempProductClass(
+          storageUuid: null,
           groupUnit: 'Others',
           qttyPerGroup: null,
           name: record.productName,

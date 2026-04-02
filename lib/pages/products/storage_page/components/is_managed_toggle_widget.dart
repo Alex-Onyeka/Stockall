@@ -94,6 +94,8 @@ class _IsManagedToggleWidgetState
                         sizeType: widget.product.sizeType,
                         startDate: widget.product.startDate,
                         uuid: widget.product.uuid,
+                        storageUuid:
+                            widget.product.storageUuid,
                       ),
                       oldProduct: widget.product,
                     );

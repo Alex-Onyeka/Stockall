@@ -218,6 +218,7 @@ class _ShopSetupTwoDesktopState
                     useGroupUnit: false,
                     wholeSale: false,
                     manageDepartments: false,
+                    printSalesDocket: false,
                   ),
                   safeContext,
                 );

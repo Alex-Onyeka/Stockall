@@ -120,89 +120,100 @@ class DialogTemplate extends StatelessWidget {
             SizedBox(height: 5),
             Visibility(
               visible: showBottomActionButtons == null,
-              child: Row(
-                spacing: 15,
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Column(
                 children: [
-                  Expanded(
-                    child: Ink(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(
-                          5,
-                        ),
-                        color: Colors.grey.shade200,
-                      ),
-                      child: InkWell(
-                        onTap: () {
-                          cancelAction != null
-                              ? cancelAction!()
-                              : Navigator.of(context).pop();
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 10,
+                  Row(
+                    spacing: 15,
+                    mainAxisAlignment:
+                        MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Ink(
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.circular(5),
+                            color: Colors.grey.shade200,
                           ),
-
-                          child: Center(
-                            child: Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b3
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey.shade800,
+                          child: InkWell(
+                            onTap: () {
+                              cancelAction != null
+                                  ? cancelAction!()
+                                  : Navigator.of(
+                                    context,
+                                  ).pop();
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 10,
                               ),
-                              'Cancel',
+
+                              child: Center(
+                                child: Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                    color:
+                                        Colors
+                                            .grey
+                                            .shade800,
+                                  ),
+                                  'Cancel',
+                                ),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Ink(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(
-                          5,
-                        ),
-                        color:
-                            theme
-                                .lightModeColor
-                                .errorColor200,
-                      ),
-                      child: InkWell(
-                        onTap: action,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 10,
+                      Expanded(
+                        child: Ink(
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.circular(5),
+                            color:
+                                theme
+                                    .lightModeColor
+                                    .errorColor200,
                           ),
-
-                          child: Center(
-                            child: Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b3
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                          child: InkWell(
+                            onTap: action,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 10,
                               ),
-                              actionButtonText ?? 'Proceed',
+
+                              child: Center(
+                                child: Text(
+                                  style: TextStyle(
+                                    fontSize:
+                                        theme
+                                            .mobileTexts
+                                            .b3
+                                            .fontSize,
+                                    fontWeight:
+                                        FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                  actionButtonText ??
+                                      'Proceed',
+                                ),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
+                  SizedBox(height: 10),
                 ],
               ),
             ),
-            SizedBox(height: 10),
           ],
         ),
       ),

@@ -405,14 +405,14 @@ class _MakeSalesDesktopTwoState
                                                 if (returnSalesProvider()
                                                     .currentCart()
                                                     .isInvoice) {
-                                                  await returnSalesProvider().switchInvoiceSale(
+                                                  returnSalesProvider().switchInvoiceSale(
                                                     context:
                                                         context,
                                                     value:
                                                         false,
                                                   );
                                                 } else {
-                                                  await returnSalesProvider().switchInvoiceSale(
+                                                  returnSalesProvider().switchInvoiceSale(
                                                     context:
                                                         context,
                                                     value:
