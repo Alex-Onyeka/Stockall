@@ -46,29 +46,24 @@ class SalesProvider extends ChangeNotifier {
   List<TempMainCart> mainCartQueue = [];
 
   Future<void> fetchMainCart() async {
-    mainCartQueue = CartFunc().getMainCart();
-    print('Main Carts Gotten: ${mainCartQueue.length}');
-    if (mainCartQueue.isNotEmpty) {
-      if ((mainCartIdCache.isEmpty ||
-          cartIdCache.isEmpty)) {
-        mainCartIdCache = mainCartQueue.first.mainCartId!;
-        cartIdCache =
-            mainCartQueue.first.cartQueue.first.id!;
+    try {
+      mainCartQueue = CartFunc().getMainCart();
+      print('Main Carts Gotten: ${mainCartQueue.length}');
+      if (mainCartQueue.isNotEmpty) {
+        if ((mainCartIdCache.isEmpty ||
+            cartIdCache.isEmpty)) {
+          mainCartIdCache = mainCartQueue.first.mainCartId!;
+          cartIdCache =
+              mainCartQueue.first.cartQueue.first.id!;
+        }
+      } else {
+        await initCart();
       }
-    } else {
-      await initCart();
-      // mainCartQueue = CartFunc().getMainCart();
-      // print('Main Carts Gotten: ${mainCartQueue.length}');
-      // if (mainCartQueue.isNotEmpty) {
-      //   if ((mainCartIdCache.isEmpty ||
-      //       cartIdCache.isEmpty)) {
-      //     mainCartIdCache = mainCartQueue.first.mainCartId!;
-      //     cartIdCache =
-      //         mainCartQueue.first.cartQueue.first.id!;
-      //   }
-      // }
-      // notifyListeners();
+    } catch (e) {
+      print('Error Fetching Main Cart: ${e.toString()}');
+      await CartFunc().clearMainCart();
     }
+
     notifyListeners();
   }
 
@@ -129,30 +124,6 @@ class SalesProvider extends ChangeNotifier {
           mainCartId: mainCartId,
         ),
       );
-      // mainCartQueue.first.cartQueue.add(
-      //   TempCart(
-      //     departmentName:
-      //         returnDepartmentProvider()
-      //             .currentDepartment()
-      //             ?.name,
-      //     departmentUuid:
-      //         returnDepartmentProvider()
-      //             .currentDepartment()
-      //             ?.uuid,
-      //     staffId: currentUser().userId,
-      //     staffName:
-      //         "${currentUser().name} ${currentUser().lastName}",
-      //     cartItems: [],
-      //     isInvoice: false,
-      //     id: cartId,
-      //   ),
-      // );
-      // print(
-      //   'First Normal Cart Id: ${mainCartQueue.first.cartQueue.first.id}',
-      // );
-      // print(
-      //   'Normal Cart Length: ${mainCartQueue.first.cartQueue.length}',
-      // );
       cartIdCache = cartId;
       print('Normal Cart Id Cached: $cartIdCache');
       fetchMainCart();
@@ -160,6 +131,7 @@ class SalesProvider extends ChangeNotifier {
       return cartId;
     } catch (e) {
       print('Error Initializing Cart: ${e.toString()}');
+      await CartFunc().clearMainCart();
       return '';
     }
   }
