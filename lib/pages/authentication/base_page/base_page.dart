@@ -57,28 +57,32 @@ class _BasePageState extends State<BasePage> {
           null) {
         await getUser();
       }
-      returnSalesProvider().fetchMainCart();
-      if (returnSalesProvider().mainCartQueue.isEmpty) {
-        var cartId = await returnSalesProvider().initCart();
-        if (cartId.isEmpty) {
-          print('Cart Id is empty');
-        } else {
-          await returnMultiDisplayProvider().createWindow(
-            cartId: cartId,
-          );
-        }
-        print(
-          'Cart Queue Length: ${returnSalesProvider().currentMainCart().cartQueue}',
-        );
-      } else {
-        await returnMultiDisplayProvider().createWindow(
-          cartId:
-              returnSalesProvider()
-                  .mainCartQueue
-                  .first
-                  .mainCartId!,
-        );
-      }
+      var cartId =
+          await returnSalesProvider().fetchMainCart();
+      await returnMultiDisplayProvider().createWindow(
+        cartId: cartId,
+      );
+      // if (returnSalesProvider().mainCartQueue.isEmpty) {
+      //   var cartId = await returnSalesProvider().initCart();
+      //   if (cartId.isEmpty) {
+      //     print('Cart Id is empty');
+      //   } else {
+      //     await returnMultiDisplayProvider().createWindow(
+      //       cartId: cartId,
+      //     );
+      //   }
+      //   print(
+      //     'Cart Queue Length: ${returnSalesProvider().currentMainCart().cartQueue}',
+      //   );
+      // } else {
+      //   await returnMultiDisplayProvider().createWindow(
+      //     cartId:
+      //         returnSalesProvider()
+      //             .mainCartQueue
+      //             .first
+      //             .mainCartId!,
+      //   );
+      // }
     });
   }
 

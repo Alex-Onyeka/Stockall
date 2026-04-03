@@ -45,26 +45,29 @@ class SalesProvider extends ChangeNotifier {
 
   List<TempMainCart> mainCartQueue = [];
 
-  Future<void> fetchMainCart() async {
+  Future<String> fetchMainCart() async {
     try {
       mainCartQueue = CartFunc().getMainCart();
       print('Main Carts Gotten: ${mainCartQueue.length}');
       if (mainCartQueue.isNotEmpty) {
-        if ((mainCartIdCache.isEmpty ||
-            cartIdCache.isEmpty)) {
-          mainCartIdCache = mainCartQueue.first.mainCartId!;
-          cartIdCache =
-              mainCartQueue.first.cartQueue.first.id!;
-        }
+        // if ((mainCartIdCache.isEmpty ||
+        //     cartIdCache.isEmpty)) {
+        mainCartIdCache = mainCartQueue.first.mainCartId!;
+        cartIdCache =
+            mainCartQueue.first.cartQueue.first.id!;
+        notifyListeners();
+        return cartIdCache;
+        // }
       } else {
-        await initCart();
+        // notifyListeners();
+        return await initCart();
       }
     } catch (e) {
       print('Error Fetching Main Cart: ${e.toString()}');
       await CartFunc().clearMainCart();
+      notifyListeners();
+      return await initCart();
     }
-
-    notifyListeners();
   }
 
   Future<void> deleteAllCarts() async {
