@@ -22,6 +22,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/alt_display/alt_display.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/providers/customers_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SalesProvider extends ChangeNotifier {
@@ -83,27 +84,12 @@ class SalesProvider extends ChangeNotifier {
       var mainCartId = uuidGen();
       print('Main Cart Id: $mainCartId');
       print('Main Cart Length: ${mainCartQueue.length}');
-
-      // mainCartQueue.add(
-      //   TempMainCart(cartQueue: [], mainCartId: mainCartId),
-      // );
       await CartFunc().createMainCart(
         TempMainCart(cartQueue: [], mainCartId: mainCartId),
       );
-      // print(
-      //   'First Main Cart Id: ${mainCartQueue.first.mainCartId}',
-      // );
-      // print('Main Cart Length: ${mainCartQueue.length}');
-
       mainCartIdCache = mainCartId;
-      // print('Main Cart Id Cached: $mainCartIdCache');
-
       var cartId = uuidGen();
       print('Normal Cart Id: $cartId');
-      // print(
-      //   'Normal Cart Length: ${mainCartQueue.first.cartQueue.length}',
-      // );
-
       await CartFunc().updateMainCart(
         TempMainCart(
           cartQueue: [
@@ -156,17 +142,9 @@ class SalesProvider extends ChangeNotifier {
   String mainCartIdCache = '';
 
   TempMainCart currentMainCart() {
-    // try {
     return mainCartQueue.firstWhere(
       (cart) => cart.mainCartId == mainCartIdCache,
     );
-    // } catch (e) {
-    //   print('Error : ${e.toString()}');
-    //   return TempMainCart(
-    //     cartQueue: [],
-    //     mainCartId: 'mainCartId',
-    //   );
-    // }
   }
 
   TempSubStaff? selectedSubStaff;
@@ -736,19 +714,151 @@ class SalesProvider extends ChangeNotifier {
     }
   }
 
+  String staffName() {
+    if (currentCart().invoiceUuidEdit != null) {
+      return currentCart().staffName ??
+          "${currentUser().name} ${currentUser().lastName}";
+    } else {
+      return "${currentUser().name} ${currentUser().lastName}";
+    }
+  }
+
+  String staffUuid() {
+    if (currentCart().invoiceUuidEdit != null) {
+      return currentCart().staffId ??
+          currentUser().userId ??
+          'Not Set';
+    } else {
+      return currentUser().userId ?? 'Not Set';
+    }
+  }
+
+  String? customerName() {
+    if (currentCart().invoiceUuidEdit != null) {
+      return currentCart().selectedCustomerName ??
+          (CustomersProvider()
+                  .customersMain()
+                  .where(
+                    (cust) =>
+                        cust.uuid ==
+                        currentCart().selectedCustomer,
+                  )
+                  .isNotEmpty
+              ? CustomersProvider()
+                  .customersMain()
+                  .where(
+                    (cust) =>
+                        cust.uuid ==
+                        currentCart().selectedCustomer,
+                  )
+                  .first
+                  .name
+              : 'Not Set');
+    } else {
+      return CustomersProvider()
+              .customersMain()
+              .where(
+                (cust) =>
+                    cust.uuid ==
+                    currentCart().selectedCustomer,
+              )
+              .isNotEmpty
+          ? CustomersProvider()
+              .customersMain()
+              .where(
+                (cust) =>
+                    cust.uuid ==
+                    currentCart().selectedCustomer,
+              )
+              .first
+              .name
+          : 'Not Set';
+    }
+  }
+
+  String? customerUuid() {
+    if (currentCart().invoiceUuidEdit != null) {
+      return currentCart().selectedCustomer ??
+          (CustomersProvider()
+                  .customersMain()
+                  .where(
+                    (cust) =>
+                        cust.uuid ==
+                        currentCart().selectedCustomer,
+                  )
+                  .isNotEmpty
+              ? CustomersProvider()
+                  .customersMain()
+                  .where(
+                    (cust) =>
+                        cust.uuid ==
+                        currentCart().selectedCustomer,
+                  )
+                  .first
+                  .uuid
+              : null);
+    } else {
+      return CustomersProvider()
+              .customersMain()
+              .where(
+                (cust) =>
+                    cust.uuid ==
+                    currentCart().selectedCustomer,
+              )
+              .isNotEmpty
+          ? CustomersProvider()
+              .customersMain()
+              .where(
+                (cust) =>
+                    cust.uuid ==
+                    currentCart().selectedCustomer,
+              )
+              .first
+              .uuid
+          : null;
+    }
+  }
+
+  String? departmentName() {
+    if (currentCart().invoiceUuidEdit != null) {
+      return currentCart().departmentName ??
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.name ??
+          null;
+    } else {
+      return returnDepartmentProvider()
+              .currentDepartment()
+              ?.name ??
+          null;
+    }
+  }
+
+  String? departmentUuid() {
+    if (currentCart().invoiceUuidEdit != null) {
+      return currentCart().departmentUuid ??
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.uuid ??
+          null;
+    } else {
+      return returnDepartmentProvider()
+              .currentDepartment()
+              ?.uuid ??
+          null;
+    }
+  }
+
   Future<CheckoutResponse?> checkoutMain({
     required BuildContext context,
     required TempCart salesCartItem,
-    // required String staffId,
-    // required String staffName,
     required int shopId,
     required String paymentMethod,
     required double cashAlt,
     required double bank,
     double? partPayment,
-    // int? customerId,
-    String? customerUuid,
-    String? customerName,
+    // String? customerUuid,
+    // String? customerName,
   }) async {
     bool isOnline = await connectivity.isOnline();
     final createdAt =
@@ -758,25 +868,17 @@ class SalesProvider extends ChangeNotifier {
     if (currentCart().isInvoice) {
       print('Current Sale is Invoice');
       TempInvoice invoice = TempInvoice(
-        departmentName:
-            salesCartItem.departmentName ??
-            returnDepartmentProvider()
-                .currentDepartment()
-                ?.name,
-        departmentUuidNew:
-            salesCartItem.departmentUuid ??
-            returnDepartmentProvider()
-                .currentDepartment()
-                ?.uuid,
+        departmentName: departmentName(),
+        departmentUuidNew: departmentUuid(),
         createdAt: createdAt,
         shopId: shopId,
-        staffId: salesCartItem.staffId!, // staffId,
-        staffName: salesCartItem.staffName!, // staffName,
+        staffId: staffUuid(),
+        staffName: staffName(),
         paymentMethod: paymentMethod,
         bank: bank,
         cashAlt: cashAlt,
-        customerName: customerName,
-        customerUuid: customerUuid,
+        customerName: customerName(),
+        customerUuid: customerUuid(),
         uuid:
             currentCart().invoiceUuidEdit ??
             currentCart().id ??
@@ -857,27 +959,18 @@ class SalesProvider extends ChangeNotifier {
           receiptUuid = uuidGen();
 
           TempMainReceipt receipt = TempMainReceipt(
-            departmentName:
-                salesCartItem.departmentName ??
-                returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.name,
-            departmentUuidNew:
-                salesCartItem.departmentUuid ??
-                returnDepartmentProvider()
-                    .currentDepartment()
-                    ?.uuid,
+            departmentName: departmentName(),
+            departmentUuidNew: departmentUuid(),
             createdAt: createdAt,
             shopId: shopId,
-            staffId: salesCartItem.staffId!, // staffId,
-            staffName:
-                salesCartItem.staffName!, // staffName,
+            staffId: staffUuid(), // staffId,
+            staffName: staffName(), // staffName,
             paymentMethod: paymentMethod,
             bank: partPaymentValue('Bank') ?? bank,
             cashAlt: partPaymentValue('Cash') ?? cashAlt,
             isInvoice: true, //salesCartItem.isInvoice,
-            customerName: customerName,
-            customerUuid: customerUuid,
+            customerName: customerName(),
+            customerUuid: customerUuid(),
             invoiceUuid: invoiceRes?.uuid,
             uuid: currentCart().id ?? receiptUuid,
             generalDiscount: currentCart().discount,
@@ -930,13 +1023,10 @@ class SalesProvider extends ChangeNotifier {
                   productUuid: product.uuid,
                   productName: product.name,
                   shopId: product.shopId,
-                  staffId:
-                      salesCartItem.staffId!, // staffId,
-                  staffName:
-                      salesCartItem
-                          .staffName!, // staffName,
-                  customerUuid: customerUuid,
-                  customerName: customerName,
+                  staffId: staffUuid(), // staffId,
+                  staffName: staffName(), // staffName,
+                  customerUuid: customerUuid(),
+                  customerName: customerName(),
                   recepitId: 0,
                   receiptUuid: receiptUuid,
                   quantity: cartItem.quantity,
@@ -956,16 +1046,8 @@ class SalesProvider extends ChangeNotifier {
                   fixedDiscount: cartItem.fixedDiscount,
                   costPrice: cartItem.costPrice(),
                   addToStock: cartItem.addToStock,
-                  departmentName:
-                      salesCartItem.departmentName ??
-                      returnDepartmentProvider()
-                          .currentDepartment()
-                          ?.name,
-                  departmentUuid:
-                      salesCartItem.departmentUuid ??
-                      returnDepartmentProvider()
-                          .currentDepartment()
-                          ?.uuid,
+                  departmentName: departmentName(),
+                  departmentUuid: departmentUuid(),
                   uuid: cartItem.salesRecordId ?? uuidGen(),
                   isProductManaged: cartItem.item.isManaged,
                   setTotalPrice: cartItem.setTotalPrice,
@@ -1001,13 +1083,10 @@ class SalesProvider extends ChangeNotifier {
                   productUuid: product.uuid,
                   productName: product.name,
                   shopId: product.shopId,
-                  staffId:
-                      salesCartItem.staffId!, // staffId,
-                  staffName:
-                      salesCartItem
-                          .staffName!, // staffName,
-                  customerUuid: customerUuid,
-                  customerName: customerName,
+                  staffId: staffUuid(), // staffId,
+                  staffName: staffName(), // staffName,
+                  customerUuid: customerUuid(),
+                  customerName: customerName(),
                   recepitId: 0,
                   // receiptUuid: receiptUuid,
                   quantity: cartItem.quantity,
@@ -1020,16 +1099,8 @@ class SalesProvider extends ChangeNotifier {
                   fixedDiscount: cartItem.fixedDiscount,
                   costPrice: cartItem.costPrice(),
                   addToStock: cartItem.addToStock,
-                  departmentName:
-                      salesCartItem.departmentName ??
-                      returnDepartmentProvider()
-                          .currentDepartment()
-                          ?.name,
-                  departmentUuid:
-                      salesCartItem.departmentUuid ??
-                      returnDepartmentProvider()
-                          .currentDepartment()
-                          ?.uuid,
+                  departmentName: departmentName(),
+                  departmentUuid: departmentUuid(),
                   uuid: cartItem.salesRecordId ?? uuidGen(),
                   isProductManaged: cartItem.item.isManaged,
                   setTotalPrice: cartItem.setTotalPrice,
@@ -1193,21 +1264,17 @@ class SalesProvider extends ChangeNotifier {
         return null;
       }
     } else {
-      print('Current Sale is Receipt');
-      print("Percent Discount: ${currentCart().discount}");
-      print(
-        'Fixed Discount: ${currentCart().fixedDiscount}',
-      );
+      // print('Current Sale is Receipt');
+      // print("Percent Discount: ${currentCart().discount}");
+      // print(
+      //   'Fixed Discount: ${currentCart().fixedDiscount}',
+      // );
       final uuid =
           currentCart().receiptUuidEdit ??
           currentCart().id ??
           uuidGen();
       TempMainReceipt receipt = TempMainReceipt(
-        departmentName:
-            salesCartItem.departmentName ??
-            returnDepartmentProvider()
-                .currentDepartment()
-                ?.name,
+        departmentName: departmentName(),
         departmentUuidNew:
             salesCartItem.departmentUuid ??
             returnDepartmentProvider()
@@ -1215,14 +1282,14 @@ class SalesProvider extends ChangeNotifier {
                 ?.uuid,
         createdAt: createdAt,
         shopId: shopId,
-        staffId: salesCartItem.staffId!, // staffId,
-        staffName: salesCartItem.staffName!, // staffName,
+        staffId: staffUuid(), // staffId,
+        staffName: staffName(), // staffName,
         paymentMethod: paymentMethod,
         bank: bank,
         cashAlt: cashAlt,
         isInvoice: salesCartItem.isInvoice,
-        customerName: customerName,
-        customerUuid: customerUuid,
+        customerName: customerName(),
+        customerUuid: customerUuid(),
         uuid: uuid,
         generalDiscount: currentCart().discount,
         fixedDiscount: currentCart().fixedDiscount,
@@ -1304,13 +1371,10 @@ class SalesProvider extends ChangeNotifier {
                   productUuid: product.uuid,
                   productName: product.name,
                   shopId: product.shopId,
-                  staffId:
-                      salesCartItem.staffId!, // staffId,
-                  staffName:
-                      salesCartItem
-                          .staffName!, // staffName,
-                  customerUuid: customerUuid,
-                  customerName: customerName,
+                  staffId: staffUuid(), // staffId,
+                  staffName: staffName(), // staffName,
+                  customerUuid: customerUuid(),
+                  customerName: customerName(),
                   recepitId: receiptId ?? 0,
                   receiptUuid: receiptUuid,
                   quantity: cartItem.quantity,
@@ -1323,11 +1387,7 @@ class SalesProvider extends ChangeNotifier {
                   fixedDiscount: cartItem.fixedDiscount,
                   costPrice: cartItem.costPrice(),
                   addToStock: cartItem.addToStock,
-                  departmentName:
-                      salesCartItem.departmentName ??
-                      returnDepartmentProvider()
-                          .currentDepartment()
-                          ?.name,
+                  departmentName: departmentName(),
                   departmentUuid:
                       salesCartItem.departmentUuid ??
                       returnDepartmentProvider()

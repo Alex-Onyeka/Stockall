@@ -27,6 +27,7 @@ class UserProvider extends ChangeNotifier {
 
   void clearUsers() {
     usersMain.clear();
+    print('📍📍📍Users Cleared');
     notifyListeners();
   }
 

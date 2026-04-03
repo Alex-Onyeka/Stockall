@@ -16,6 +16,10 @@ import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CustomersProvider extends ChangeNotifier {
+  static final CustomersProvider _instance =
+      CustomersProvider._internal();
+  factory CustomersProvider() => _instance;
+  CustomersProvider._internal();
   //
   //
   //

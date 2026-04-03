@@ -1207,15 +1207,6 @@ class _MakeSalesDesktopTwoState
                                                   paymentMethod:
                                                       returnSalesProvider()
                                                           .returnPaymentMethod(),
-                                                  customerUuid:
-                                                      returnSalesProvider()
-                                                          .currentCart()
-                                                          .selectedCustomer,
-
-                                                  customerName:
-                                                      returnSalesProvider()
-                                                          .currentCart()
-                                                          .selectedCustomerName,
                                                   partPayment: double.tryParse(
                                                     widget
                                                         .partPaymentController

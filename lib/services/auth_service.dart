@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_logged_in_user/logged_in_user.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/local_database/cart_func/cart_func.dart';
 import 'package:stockall/local_database/logged_in_user/logged_in_user_func.dart';
 import 'package:stockall/local_database/shop_current/current_shop_func.dart';
 import 'package:stockall/local_database/users/user_func.dart';
@@ -284,20 +285,11 @@ class AuthService extends ChangeNotifier {
       context,
       listen: false,
     ).clearNotifications();
-    // returnSuggestionProvider(
-    //   context,
-    //   listen: false,
-    // ).clearSuggestionsMain();
-    returnReceiptProvider(
-      context,
-      listen: false,
-    ).clearReceipts();
-    returnReceiptProvider(
-      context,
-      listen: false,
-    ).load(false);
+    returnReceiptProviderSingle().clearReceipts();
+    returnReceiptProviderSingle().load(false);
     await CurrentShopFunc().clearCurrentShop();
     returnSalesProvider().clearCart();
+    await CartFunc().clearMainCart();
     bool isOnline = await connectivity.isOnline();
 
     if (isOnline) {
@@ -306,6 +298,8 @@ class AuthService extends ChangeNotifier {
     } else {
       await LoggedInUserFunc().logOut();
     }
+    returnShopProvider().clearShop();
+    returnUserProviderSingle().clearUsers();
     if (context.mounted) {
       returnNavProvider(context, listen: false).navigate(0);
       Navigator.pushReplacement(
@@ -316,11 +310,6 @@ class AuthService extends ChangeNotifier {
           },
         ),
       );
-      returnShopProvider().clearShop();
-      returnUserProvider(
-        context,
-        listen: false,
-      ).clearUsers();
     } else {
       print('Context is Not Mounted');
     }

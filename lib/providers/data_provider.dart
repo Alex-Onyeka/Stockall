@@ -60,8 +60,6 @@ class DataProvider extends ChangeNotifier {
       DataProvider._internal();
   factory DataProvider() => _instance;
   DataProvider._internal();
-  // final TextEditingController searchController =
-  //     TextEditingController();
   final FocusNode searchNode = FocusNode();
 
   void keepNodeFocus() {

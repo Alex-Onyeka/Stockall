@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/authentication/base_page/base_page.dart';
 import 'package:stockall/pages/dashboard/dashboard.dart';
 import 'package:stockall/pages/dashboard/employee_auth_page/emp_auth.dart';
 import 'package:stockall/pages/products/products_page.dart';
@@ -21,7 +22,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  bool _handledNoShop = false;
+  // bool _handledNoShop = false;
 
   TempUserClass? user;
 
@@ -42,7 +43,7 @@ class _HomeState extends State<Home> {
       context,
       MaterialPageRoute(
         builder: (context) {
-          return Home();
+          return BasePage();
         },
       ),
     );
@@ -114,7 +115,7 @@ class _HomeState extends State<Home> {
                       context,
                       MaterialPageRoute(
                         builder: (context) {
-                          return Home();
+                          return BasePage();
                         },
                       ),
                     );
@@ -146,7 +147,7 @@ class _HomeState extends State<Home> {
                         context,
                         MaterialPageRoute(
                           builder: (context) {
-                            return Home();
+                            return BasePage();
                           },
                         ),
                       );
@@ -182,7 +183,7 @@ class _HomeState extends State<Home> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) {
-                                      return Home();
+                                      return BasePage();
                                     },
                                   ),
                                 );
@@ -193,15 +194,15 @@ class _HomeState extends State<Home> {
                       } else if (returnShopProvider()
                               .userShop() ==
                           null) {
-                        if (!_handledNoShop) {
-                          _handledNoShop = true;
-                          WidgetsBinding.instance
-                              .addPostFrameCallback((_) {
-                                if (context.mounted) {
-                                  _handleNoShop();
-                                }
-                              });
-                        }
+                        // if (!_handledNoShop) {
+                        //   _handledNoShop = true;
+                        //   WidgetsBinding.instance
+                        //       .addPostFrameCallback((_) {
+                        //         if (context.mounted) {
+                        //           _handleNoShop();
+                        //         }
+                        //       });
+                        // }
                         return ShopBannerScreen();
                       } else {
                         if (!returnNavProvider(

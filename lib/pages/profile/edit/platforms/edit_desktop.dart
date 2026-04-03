@@ -10,8 +10,8 @@ import 'package:stockall/components/text_fields/phone_number_text_field.dart';
 import 'package:stockall/components/text_fields/pin_code.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/authentication/base_page/base_page.dart';
 import 'package:stockall/pages/authentication/components/email_text_field.dart';
-import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -566,13 +566,13 @@ class _EditDesktopState extends State<EditDesktop> {
                                             if (widget
                                                     .main !=
                                                 null) {
-                                              Navigator.push(
+                                              Navigator.pushReplacement(
                                                 safeContex,
                                                 MaterialPageRoute(
                                                   builder: (
                                                     context,
                                                   ) {
-                                                    return Home();
+                                                    return BasePage();
                                                   },
                                                 ),
                                               );

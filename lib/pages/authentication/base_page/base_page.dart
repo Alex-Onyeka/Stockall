@@ -26,14 +26,6 @@ class _BasePageState extends State<BasePage> {
     });
   }
 
-  String? userAuthId;
-
-  void getUserAuthId() {
-    setState(() {
-      userAuthId = AuthService().currentUser;
-    });
-  }
-
   Future<TempUserClass?> getUser() async {
     var user = await returnUserProvider(
       context,
@@ -52,7 +44,7 @@ class _BasePageState extends State<BasePage> {
         context,
         listen: false,
       ).setVisible();
-      getUserAuthId();
+      // getUserAuthId();
       if (returnUserProviderSingle().currentUserMain ==
           null) {
         await getUser();
@@ -62,27 +54,6 @@ class _BasePageState extends State<BasePage> {
       await returnMultiDisplayProvider().createWindow(
         cartId: cartId,
       );
-      // if (returnSalesProvider().mainCartQueue.isEmpty) {
-      //   var cartId = await returnSalesProvider().initCart();
-      //   if (cartId.isEmpty) {
-      //     print('Cart Id is empty');
-      //   } else {
-      //     await returnMultiDisplayProvider().createWindow(
-      //       cartId: cartId,
-      //     );
-      //   }
-      //   print(
-      //     'Cart Queue Length: ${returnSalesProvider().currentMainCart().cartQueue}',
-      //   );
-      // } else {
-      //   await returnMultiDisplayProvider().createWindow(
-      //     cartId:
-      //         returnSalesProvider()
-      //             .mainCartQueue
-      //             .first
-      //             .mainCartId!,
-      //   );
-      // }
     });
   }
 
@@ -96,7 +67,7 @@ class _BasePageState extends State<BasePage> {
         ).showLoader(message: General().loadingText),
       );
     } else {
-      if (userAuthId != null) {
+      if (AuthService().currentUser != null) {
         return const Home();
       } else {
         return const AuthScreensPage();
