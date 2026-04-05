@@ -224,8 +224,11 @@ class _CartQueueDesktopState
                                           action: () {
                                             returnSalesProvider()
                                                 .deleteCart(
-                                                  cartItem
-                                                      .id!,
+                                                  cartId:
+                                                      cartItem
+                                                          .id!,
+                                                  context:
+                                                      context,
                                                 );
                                             Navigator.of(
                                               context,

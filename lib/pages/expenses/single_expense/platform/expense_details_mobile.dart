@@ -435,7 +435,7 @@ class ExpenseDetailsContainer extends StatelessWidget {
                 Expanded(
                   flex: 9,
                   child: TabBarUserInfoSection(
-                    mainText: expense.creator,
+                    mainText: expense.creator ?? 'Not Set',
                     text: 'Created By: ',
                   ),
                 ),

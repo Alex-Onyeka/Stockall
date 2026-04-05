@@ -147,8 +147,8 @@ const String appName = 'Stockall';
 const String appDesc =
     'Your smart inventory companion. Track stock, manage sales, and grow your business with ease — all in one place. Let\'s simplify your workflow and boost your efficiency. 🚀';
 
-const String appVersionMobile = '1.1.0+23';
-const String appVersionDesktop = '1.1.23.0';
+const String appVersionMobile = '1.1.0+24';
+const String appVersionDesktop = '1.1.25.0';
 
 const double vat = 7.5;
 

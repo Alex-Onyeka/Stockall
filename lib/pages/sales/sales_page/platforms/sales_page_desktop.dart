@@ -15,6 +15,7 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
+import 'package:stockall/local_database/cart_func/cart_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
@@ -332,27 +333,29 @@ class _SalesPageDesktopState
                                                 .spaceBetween,
                                         children: [
                                           Expanded(
-                                            child: Text(
-                                              style: TextStyle(
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                                fontSize:
-                                                    theme
-                                                        .mobileTexts
-                                                        .b1
-                                                        .fontSize,
+                                            child: InkWell(
+                                              onTap: () {
+                                                // CartFunc()
+                                                //     .clearMainCart();
+                                              },
+                                              child: Text(
+                                                style: TextStyle(
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                  fontSize:
+                                                      theme
+                                                          .mobileTexts
+                                                          .b1
+                                                          .fontSize,
+                                                ),
+                                                returnReceiptProvider(context).dateSet !=
+                                                            null ||
+                                                        returnReceiptProvider(context).rangeStartDate !=
+                                                            null
+                                                    ? 'All Sales'
+                                                    : 'Sales For Today',
                                               ),
-                                              returnReceiptProvider(
-                                                            context,
-                                                          ).dateSet !=
-                                                          null ||
-                                                      returnReceiptProvider(
-                                                            context,
-                                                          ).rangeStartDate !=
-                                                          null
-                                                  ? 'All Sales'
-                                                  : 'Sales For Today',
                                             ),
                                           ),
                                           MaterialButton(

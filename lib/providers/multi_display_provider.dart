@@ -187,6 +187,7 @@ class MultiDisplayProvider extends ChangeNotifier {
   Future<void> selectWindow({
     required String cartId,
     int? cartIndex,
+    required AltCartClass cartClass,
   }) async {
     var yes = await isAllowed();
     await getAllSubWindows();
@@ -210,6 +211,10 @@ class MultiDisplayProvider extends ChangeNotifier {
             'Updated Window Name and Title Numbers to $cartIndex',
           );
         }
+        await updateWindow(
+          cartClass: cartClass,
+          // showCart: true,
+        );
         await selWin.controller.setFrame(
           Offset(
                 altDisplay!.visiblePosition!.dx - 10,

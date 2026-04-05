@@ -794,12 +794,14 @@ class InvoicesProvider extends ChangeNotifier {
                     staffId: currentUser().userId,
                     staffName:
                         "${currentUser().name} ${currentUser().lastName}",
+                    id: uuidGen(),
                   ),
                 );
               }
 
               await returnSalesProvider().deleteCart(
-                returnSalesProvider().cartIdCache,
+                cartId: returnSalesProvider().cartIdCache,
+                context: context,
               );
               // await selectCart(cartIndex - 1);
               notifyListeners();
@@ -891,6 +893,12 @@ class InvoicesProvider extends ChangeNotifier {
     } else {
       return invoicesMain;
     }
+  }
+
+  List<TempInvoice> returnUnpaidInvoices() {
+    return returnInvoicesByDayOrWeekAll()
+        .where((inv) => getBalance(invoice: inv) != 0)
+        .toList();
   }
 
   List<TempInvoice> returnInvoicesByDayOrWeekAll() {

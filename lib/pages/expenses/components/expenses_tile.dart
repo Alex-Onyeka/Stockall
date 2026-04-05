@@ -197,7 +197,9 @@ class _ExpensesTileState extends State<ExpensesTile> {
                         color: Colors.grey.shade900,
                         fontWeight: FontWeight.bold,
                       ),
-                      cutLongText2(widget.expense.creator),
+                      cutLongText2(
+                        widget.expense.creator ?? 'Not Set',
+                      ),
                     ),
                   ],
                 ),

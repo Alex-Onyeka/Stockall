@@ -17,7 +17,7 @@ class TempExpensesClass extends HiveObject {
   String name;
 
   @HiveField(4)
-  String creator;
+  String? creator;
 
   @HiveField(5)
   String? description;
@@ -32,7 +32,7 @@ class TempExpensesClass extends HiveObject {
   String? unit;
 
   @HiveField(9)
-  String userId;
+  String? userId;
 
   @HiveField(10)
   String? departmentName;
@@ -84,9 +84,9 @@ class TempExpensesClass extends HiveObject {
           json['quantity'] != null
               ? (json['quantity'] as num).toDouble()
               : null,
-      unit: json['unit'],
-      userId: json['user_id'],
-      creator: json['creator'],
+      unit: json['unit'] as String?,
+      userId: json['user_id'] as String?,
+      creator: json['creator'] as String?,
       departmentUuid: json['department_uuid'] as String?,
       departmentName: json['department_name'] as String?,
       uuid: json['uuid'] as String?,

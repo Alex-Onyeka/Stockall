@@ -364,7 +364,7 @@ class _DashboardMobileState extends State<DashboardMobile> {
                                             icon:
                                                 productIconSvg,
                                             number:
-                                                '${returnInvoicesProvider(context: context).returnInvoicesByDayOrWeekAll().length}',
+                                                '${returnInvoicesProvider(context: context).returnUnpaidInvoices().length}',
                                             title:
                                                 'Total Invoices',
                                             action: () {

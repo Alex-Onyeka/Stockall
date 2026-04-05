@@ -266,8 +266,10 @@ class _CartQueueMobileState extends State<CartQueueMobile> {
                                                     'Are you sure?',
                                                 action: () {
                                                   returnSalesProvider().deleteCart(
-                                                    cartItem
-                                                        .id!,
+                                                    cartId:
+                                                        cartItem.id!,
+                                                    context:
+                                                        context,
                                                   );
                                                   Navigator.of(
                                                     context,

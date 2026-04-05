@@ -71,12 +71,13 @@ class _ExpensesDesktopState extends State<ExpensesDesktop> {
 
   @override
   Widget build(BuildContext context) {
-    var expenseProvider = returnExpensesProvider(
+    // var expenseProvider = returnExpensesProvider(
+    //   context,
+    //   listen: false,
+    // );
+    var expenses = returnExpensesProvider(
       context,
-      listen: false,
-    );
-    var expenses = expenseProvider
-        .returnExpensesByDayOrWeek(context);
+    ).returnExpensesByDayOrWeek(context);
     var theme = returnTheme(context);
     return Scaffold(
       key: _scaffoldKey,
@@ -294,25 +295,35 @@ class _ExpensesDesktopState extends State<ExpensesDesktop> {
                                                 false,
                                             onSearch: false,
                                             isDateSet:
-                                                expenseProvider
-                                                        .dateSet !=
+                                                returnExpensesProvider(
+                                                      context,
+                                                    ).dateSet !=
                                                     null ||
-                                                expenseProvider
-                                                        .rangeStartDate !=
+                                                returnExpensesProvider(
+                                                      context,
+                                                    ).rangeStartDate !=
                                                     null,
                                             setDate:
-                                                expenseProvider
-                                                        .dateSet !=
+                                                returnExpensesProvider(
+                                                      context,
+                                                    ).dateSet !=
                                                     null ||
-                                                expenseProvider
-                                                        .rangeStartDate !=
+                                                returnExpensesProvider(
+                                                      context,
+                                                    ).rangeStartDate !=
                                                     null,
                                             filterAction: () {
-                                              if (expenseProvider
-                                                          .dateSet !=
+                                              if (returnExpensesProvider(
+                                                        context,
+                                                        listen:
+                                                            false,
+                                                      ).dateSet !=
                                                       null ||
-                                                  expenseProvider
-                                                          .rangeStartDate !=
+                                                  returnExpensesProvider(
+                                                        context,
+                                                        listen:
+                                                            false,
+                                                      ).rangeStartDate !=
                                                       null) {
                                                 returnExpensesProvider(
                                                   context,

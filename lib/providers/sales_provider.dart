@@ -44,6 +44,17 @@ class SalesProvider extends ChangeNotifier {
 
   // List<TempCart> cartQueue = [];
 
+  bool checkIfCartExists(String cartId) {
+    for (var cart in mainCartQueue) {
+      for (var ca in cart.cartQueue) {
+        if (ca.id == cartId) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   List<TempMainCart> mainCartQueue = [];
 
   Future<String> fetchMainCart() async {
@@ -51,16 +62,24 @@ class SalesProvider extends ChangeNotifier {
       mainCartQueue = CartFunc().getMainCart();
       print('Main Carts Gotten: ${mainCartQueue.length}');
       if (mainCartQueue.isNotEmpty) {
-        // if ((mainCartIdCache.isEmpty ||
-        //     cartIdCache.isEmpty)) {
-        mainCartIdCache = mainCartQueue.first.mainCartId!;
-        cartIdCache =
-            mainCartQueue.first.cartQueue.first.id!;
+        if (mainCartIdCache.isEmpty ||
+            mainCartQueue
+                .where(
+                  (mainC) =>
+                      mainC.mainCartId == mainCartIdCache,
+                )
+                .isEmpty) {
+          mainCartIdCache = mainCartQueue.first.mainCartId!;
+        }
+        if (cartIdCache.isEmpty ||
+            !checkIfCartExists(cartIdCache)) {
+          cartIdCache =
+              mainCartQueue.first.cartQueue.first.id!;
+        }
         notifyListeners();
         return cartIdCache;
         // }
       } else {
-        // notifyListeners();
         return await initCart();
       }
     } catch (e) {
@@ -367,26 +386,65 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteCart(String cartId) async {
-    if (getIndexOfCartItem(cartId) == 0) {
-      var newCartId = getTempCartByIndex(1).id!;
-      await selectCart(newCartId);
-    } else {
-      var newCartId =
-          getTempCartByIndex(
-            getIndexOfCartItem(cartId) - 1,
-          ).id!;
-      await selectCart(newCartId);
-    }
-    currentMainCart().cartQueue.removeWhere(
-      (cart) => cart.id == cartId,
-    );
-    await CartFunc().updateMainCart(currentMainCart());
-    await returnMultiDisplayProvider().closeWindow(
-      cartId: cartId,
-    );
+  Future<void> deleteCart({
+    required String cartId,
+    required BuildContext context,
+  }) async {
+    if (currentMainCart().cartQueue.length > 1) {
+      if (getIndexOfCartItem(cartId) == 0) {
+        var newCartId = getTempCartByIndex(1).id!;
+        await selectCart(newCartId);
+      } else {
+        var newCartId =
+            getTempCartByIndex(
+              getIndexOfCartItem(cartId) - 1,
+            ).id!;
+        await selectCart(newCartId);
+      }
+      currentMainCart().cartQueue.removeWhere(
+        (cart) => cart.id == cartId,
+      );
+      await CartFunc().updateMainCart(currentMainCart());
+      await returnMultiDisplayProvider().closeWindow(
+        cartId: cartId,
+      );
 
-    notifyListeners();
+      notifyListeners();
+    } else {
+      // await CartFunc().updateMainCart(currentMainCart());
+      currentMainCart().cartQueue.removeWhere(
+        (cart) => cart.id == cartId,
+      );
+      await addNewCart(
+        context,
+        TempCart(
+          departmentName:
+              returnDepartmentProvider()
+                  .currentDepartment()
+                  ?.name,
+          departmentUuid:
+              returnDepartmentProvider()
+                  .currentDepartment()
+                  ?.uuid,
+          staffId: currentUser().userId,
+          staffName:
+              "${currentUser().name} ${currentUser().lastName}",
+          cartItems: [],
+          isInvoice: false,
+          id: uuidGen(),
+        ),
+      );
+      try {
+        await returnMultiDisplayProvider().closeWindow(
+          cartId: cartId,
+        );
+        print('🙌🙌🙌💕😢Window Closed');
+      } catch (e) {
+        print(
+          '❌❌❌❌❌😂Error Closing Window: ${e.toString()}',
+        );
+      }
+    }
   }
 
   Future<void> selectMainCart(String cartId) async {
@@ -407,9 +465,21 @@ class SalesProvider extends ChangeNotifier {
 
   Future<void> selectCart(String cartId) async {
     cartIdCache = cartId;
+    var cartClass = AltCartClass(
+      cartId: currentCart().id!,
+      cartItems: currentCart().cartItems.reversed.toList(),
+      fixedDiscount: currentCart().fixedDiscount,
+      percentDiscount: currentCart().discount,
+      vat:
+          returnShopProvider().userShop()?.applyVAT == true
+              ? vat
+              : 0,
+      currency: returnShopProvider().userShop()!.currency,
+    );
     // if (cartQueue.length > 1) {
     await returnMultiDisplayProvider().selectWindow(
       cartId: cartId,
+      cartClass: cartClass,
       cartIndex: (getIndexOfCartItem(cartId) + 1),
     );
     // }
@@ -1222,9 +1292,10 @@ class SalesProvider extends ChangeNotifier {
               }
               // Step 5: Reset state
               // resetPaymentMethod();
-              currentMainCart().cartQueue.length > 1
-                  ? await deleteCart(cartIdCache)
-                  : await clearCart();
+              await deleteCart(
+                cartId: cartIdCache,
+                context: context,
+              );
 
               if (context.mounted) {
                 returnCustomers(
@@ -1511,9 +1582,10 @@ class SalesProvider extends ChangeNotifier {
               }
               // Step 5: Reset state
               // resetPaymentMethod();
-              currentMainCart().cartQueue.length > 1
-                  ? await deleteCart(cartIdCache)
-                  : await clearCart();
+              await deleteCart(
+                cartId: cartIdCache,
+                context: context,
+              );
 
               if (context.mounted) {
                 returnCustomers(
@@ -1576,6 +1648,8 @@ class SalesProvider extends ChangeNotifier {
       }
     }
   }
+
+  // Future<void> deleteCart
 
   Future<void> clearCart() async {
     currentCart().cartItems.clear();
@@ -2201,11 +2275,15 @@ class SalesProvider extends ChangeNotifier {
                     staffId: currentUser().userId,
                     staffName:
                         "${currentUser().name} ${currentUser().lastName}",
+                    id: uuidGen(),
                   ),
                 );
               }
 
-              await deleteCart(cartIdCache);
+              await deleteCart(
+                cartId: cartIdCache,
+                context: context,
+              );
               // await selectCart(cartIndex - 1);
               notifyListeners();
               Navigator.of(context).pop();
