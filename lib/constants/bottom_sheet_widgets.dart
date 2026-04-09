@@ -2242,8 +2242,11 @@ class _CustomBottomPanelState
                                 ),
                                 Builder(
                                   builder: (context) {
-                                    if (Platform
-                                            .isWindows &&
+                                    if (platforms(
+                                              context,
+                                            ) ==
+                                            TargetPlatform
+                                                .windows &&
                                         screenWidth(
                                               context,
                                             ) >
