@@ -25,6 +25,7 @@ import 'package:stockall/pages/departments/departments_dashboard.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
 import 'package:stockall/pages/settings/components/manage_departments_toggle_switch.dart';
 import 'package:stockall/pages/settings/components/manage_inventory_switch_toggle.dart';
+import 'package:stockall/pages/settings/components/set_closing_time.dart';
 import 'package:stockall/pages/settings/components/toggle_bulk_sale.dart';
 import 'package:stockall/pages/settings/components/toggle_whole_sale_switch.dart';
 import 'package:stockall/pages/settings/components/use_group_unit_toggle.dart';
@@ -1021,6 +1022,7 @@ class _SettingsPageMobileState
                         UseGroupUnitToggle(),
                         ToggleWholeSaleSwitch(),
                         ManageDepartmentsToggleSwitch(),
+                        SetClosingTime(),
                         Visibility(
                           visible:
                               authorization(

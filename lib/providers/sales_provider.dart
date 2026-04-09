@@ -1330,22 +1330,13 @@ class SalesProvider extends ChangeNotifier {
         return null;
       }
     } else {
-      // print('Current Sale is Receipt');
-      // print("Percent Discount: ${currentCart().discount}");
-      // print(
-      //   'Fixed Discount: ${currentCart().fixedDiscount}',
-      // );
       final uuid =
           currentCart().receiptUuidEdit ??
           currentCart().id ??
           uuidGen();
       TempMainReceipt receipt = TempMainReceipt(
         departmentName: departmentName(),
-        departmentUuidNew:
-            salesCartItem.departmentUuid ??
-            returnDepartmentProvider()
-                .currentDepartment()
-                ?.uuid,
+        departmentUuidNew: departmentUuid(),
         createdAt: createdAt,
         shopId: shopId,
         staffId: staffUuid(), // staffId,
@@ -1454,11 +1445,7 @@ class SalesProvider extends ChangeNotifier {
                   costPrice: cartItem.costPrice(),
                   addToStock: cartItem.addToStock,
                   departmentName: departmentName(),
-                  departmentUuid:
-                      salesCartItem.departmentUuid ??
-                      returnDepartmentProvider()
-                          .currentDepartment()
-                          ?.uuid,
+                  departmentUuid: departmentUuid(),
                   uuid: cartItem.salesRecordId ?? uuidGen(),
                   isProductManaged: cartItem.item.isManaged,
                   setTotalPrice: cartItem.setTotalPrice,

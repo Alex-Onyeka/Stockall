@@ -813,7 +813,7 @@ class ReceiptsProvider extends ChangeNotifier {
       TempMainReceipt? receipt;
 
       try {
-        receipt = departmentReceipts().firstWhere(
+        receipt = returnOwnReceiptsByDayOrWeek().firstWhere(
           (recx) => recx.uuid == rec.receiptUuid,
         );
       } catch (e) {
