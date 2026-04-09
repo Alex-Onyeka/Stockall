@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -2240,47 +2238,49 @@ class _CustomBottomPanelState
                                     },
                                   ),
                                 ),
-                                Visibility(
-                                  visible:
-                                      Platform.isWindows,
-                                  child: Row(
-                                    children: [
-                                      SizedBox(width: 2),
-                                      IconButton(
-                                        onPressed: () async {
-                                          mainSearchNode
-                                              .requestFocus();
-                                          try {
-                                            if (Platform
-                                                .isWindows) {
-                                              await Process.start(
-                                                'cmd',
-                                                [
-                                                  '/c',
-                                                  'start',
-                                                  '',
-                                                  'osk',
-                                                ],
-                                                mode:
-                                                    ProcessStartMode
-                                                        .detached,
-                                              );
-                                            }
-                                          } catch (e) {
-                                            print(
-                                              'Error Opening Keyboard: ${e.toString()}',
-                                            );
-                                          }
-                                        },
-                                        icon: Icon(
-                                          size: 25,
-                                          Icons
-                                              .keyboard_alt_outlined,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                // Visibility(
+                                //   visible:
+                                //       Platform.isWindows &&
+                                //       screenWidth(context) >
+                                //           mobileScreen,
+                                //   child: Row(
+                                //     children: [
+                                //       SizedBox(width: 2),
+                                //       IconButton(
+                                //         onPressed: () async {
+                                //           mainSearchNode
+                                //               .requestFocus();
+                                //           try {
+                                //             if (Platform
+                                //                 .isWindows) {
+                                //               await Process.start(
+                                //                 'cmd',
+                                //                 [
+                                //                   '/c',
+                                //                   'start',
+                                //                   '',
+                                //                   'osk',
+                                //                 ],
+                                //                 mode:
+                                //                     ProcessStartMode
+                                //                         .detached,
+                                //               );
+                                //             }
+                                //           } catch (e) {
+                                //             print(
+                                //               'Error Opening Keyboard: ${e.toString()}',
+                                //             );
+                                //           }
+                                //         },
+                                //         icon: Icon(
+                                //           size: 25,
+                                //           Icons
+                                //               .keyboard_alt_outlined,
+                                //         ),
+                                //       ),
+                                //     ],
+                                //   ),
+                                // ),
                               ],
                             ),
                           ),
