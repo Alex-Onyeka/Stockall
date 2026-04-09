@@ -25,8 +25,16 @@ DateTime fourAmNextDay(DateTime date) {
     date.year,
     date.month,
     date.day,
-    cTime?.hour != null ? (cTime!.hour - 1) : 23,
-    cTime?.minute ?? 59,
+    cTime != null
+        ? (cTime.minute == 00)
+            ? (cTime.hour - 1)
+            : cTime.hour
+        : 23,
+    cTime != null
+        ? cTime.minute == 00
+            ? 59
+            : (cTime.minute - 1)
+        : 59,
     59,
     999,
   ).add(Duration(days: cTime != null ? 1 : 0));
