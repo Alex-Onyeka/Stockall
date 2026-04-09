@@ -2240,48 +2240,56 @@ class _CustomBottomPanelState
                                     },
                                   ),
                                 ),
-                                Visibility(
-                                  visible:
-                                      Platform.isWindows &&
-                                      screenWidth(context) >
-                                          mobileScreen,
-                                  child: Row(
-                                    children: [
-                                      SizedBox(width: 2),
-                                      IconButton(
-                                        onPressed: () async {
-                                          mainSearchNode
-                                              .requestFocus();
-                                          try {
-                                            if (Platform
-                                                .isWindows) {
-                                              await Process.start(
-                                                'cmd',
-                                                [
-                                                  '/c',
-                                                  'start',
-                                                  '',
-                                                  'osk',
-                                                ],
-                                                mode:
-                                                    ProcessStartMode
-                                                        .detached,
-                                              );
-                                            }
-                                          } catch (e) {
-                                            print(
-                                              'Error Opening Keyboard: ${e.toString()}',
-                                            );
-                                          }
-                                        },
-                                        icon: Icon(
-                                          size: 25,
-                                          Icons
-                                              .keyboard_alt_outlined,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                Builder(
+                                  builder: (context) {
+                                    if (Platform
+                                            .isWindows &&
+                                        screenWidth(
+                                              context,
+                                            ) >
+                                            mobileScreen) {
+                                      return Row(
+                                        children: [
+                                          SizedBox(
+                                            width: 2,
+                                          ),
+                                          IconButton(
+                                            onPressed: () async {
+                                              mainSearchNode
+                                                  .requestFocus();
+                                              try {
+                                                if (Platform
+                                                    .isWindows) {
+                                                  await Process.start(
+                                                    'cmd',
+                                                    [
+                                                      '/c',
+                                                      'start',
+                                                      '',
+                                                      'osk',
+                                                    ],
+                                                    mode:
+                                                        ProcessStartMode.detached,
+                                                  );
+                                                }
+                                              } catch (e) {
+                                                print(
+                                                  'Error Opening Keyboard: ${e.toString()}',
+                                                );
+                                              }
+                                            },
+                                            icon: Icon(
+                                              size: 25,
+                                              Icons
+                                                  .keyboard_alt_outlined,
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    } else {
+                                      return Container();
+                                    }
+                                  },
                                 ),
                               ],
                             ),
