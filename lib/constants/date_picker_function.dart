@@ -338,3 +338,92 @@ Future<DateTime?> myDatePickerAction(
     lastDate: DateTime(2100, 9, 7, 17, 30),
   );
 }
+
+Future<TimeOfDay?> myTimePickerAction(
+  ThemeProvider theme,
+  BuildContext context,
+) {
+  return showTimePicker(
+    confirmText: 'Select',
+    builder: (context, child) {
+      return Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: const ColorScheme.light(
+            primary: Colors.orange,
+            onPrimary: Colors.white,
+            secondary: Colors.orange,
+          ),
+          datePickerTheme: DatePickerThemeData(
+            dividerColor: Colors.grey.shade300,
+            headerHeadlineStyle: TextStyle(
+              fontSize: theme.mobileTexts.h2.fontSize,
+              fontWeight: FontWeight.bold,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadiusGeometry.circular(
+                10,
+              ),
+            ),
+            todayForegroundColor: WidgetStatePropertyAll(
+              Colors.orange,
+            ),
+            weekdayStyle: TextStyle(
+              fontSize: theme.mobileTexts.b2.fontSize,
+            ),
+            dayStyle: TextStyle(
+              fontSize: theme.mobileTexts.b3.fontSize,
+              fontWeight: FontWeight.bold,
+            ),
+            confirmButtonStyle: ButtonStyle(
+              overlayColor: WidgetStatePropertyAll(
+                const Color.fromARGB(35, 255, 254, 254),
+              ),
+              foregroundColor: WidgetStatePropertyAll(
+                Colors.white,
+              ),
+              backgroundColor: WidgetStatePropertyAll(
+                theme.lightModeColor.prColor300,
+              ),
+              shape: WidgetStatePropertyAll(
+                RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadiusGeometry.circular(5),
+                ),
+              ),
+              textStyle: WidgetStatePropertyAll(
+                TextStyle(
+                  fontSize: theme.mobileTexts.b3.fontSize,
+                  // fontWeight:
+                  //     FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            cancelButtonStyle: ButtonStyle(
+              foregroundColor: WidgetStatePropertyAll(
+                Colors.grey.shade800,
+              ),
+              backgroundColor: WidgetStatePropertyAll(
+                Colors.grey.shade300,
+              ),
+              shape: WidgetStatePropertyAll(
+                RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadiusGeometry.circular(5),
+                ),
+              ),
+              textStyle: WidgetStatePropertyAll(
+                TextStyle(
+                  fontSize: theme.mobileTexts.b3.fontSize,
+                ),
+              ),
+            ),
+          ),
+        ),
+        child: child!,
+      );
+    },
+    context: context,
+    initialTime: TimeOfDay.now(),
+  );
+}

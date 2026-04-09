@@ -19,6 +19,7 @@ import 'package:stockall/classes/temp_shop_owner/shop_owner.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/subscription/multiple_stores_auth.dart';
 import 'package:stockall/local_database/barcode_printer_func/barcode_printer_local_func.dart';
@@ -1303,11 +1304,11 @@ class ShopProvider extends ChangeNotifier {
     }
   }
 
-  bool useCloseSalesLoading = false;
+  bool isSetCloseSaleTimeLoading = false;
 
-  Future<int> toggleUseCloseSales() async {
+  Future<int> setCloseSaleTime({TimeOfDay? time}) async {
     bool isOnline = await connectivity.isOnline();
-    useCloseSalesLoading = true;
+    isSetCloseSaleTimeLoading = true;
     notifyListeners();
     try {
       if (isOnline) {
@@ -1315,36 +1316,36 @@ class ShopProvider extends ChangeNotifier {
             await supabase
                 .from('shops')
                 .update({
-                  'use_close_sale':
-                      !userShop()!.useCloseSale!,
+                  'close_sale_time': timeOfDayToPostgres(
+                    time,
+                  ),
                 })
                 .eq('shop_id', userShop()!.shopId!)
                 .select()
                 .maybeSingle();
         if (res == null) {
-          print('Use Close Sale Update Failed');
-          useCloseSalesLoading = false;
+          print('Close Sale Update Failed');
+          isSetCloseSaleTimeLoading = false;
           notifyListeners();
           return 0;
         }
 
-        if (userShop()!.useCloseSale!) {
-          returnDepartmentProvider().selectDepartment();
-        }
+        // if (userShop()!.useCloseSale!) {
+        //   returnDepartmentProvider().selectDepartment();
+        // }
         var shops = await getUserShops();
         setShops(shops);
-        useCloseSalesLoading = false;
+        isSetCloseSaleTimeLoading = false;
         // returnSalesProvider().selectFistMainCart();
         notifyListeners();
         return 1;
       } else {
         try {
-          if (userShop()!.useCloseSale!) {
-            returnDepartmentProvider().selectDepartment();
-          }
+          // if (userShop()!.useCloseSale!) {
+          //   returnDepartmentProvider().selectDepartment();
+          // }
           userShop()!.updatedAt = DateTime.now();
-          userShop()!.useCloseSale =
-              !userShop()!.useCloseSale!;
+          userShop()!.closeSaleTime = time;
           await ShopFunc().updateShop(userShop()!);
           if (userShop() != null) {
             await UpdatedShopFunc().createUpdatedShop(
@@ -1353,23 +1354,23 @@ class ShopProvider extends ChangeNotifier {
             // setShops(shop);
             notifyListeners();
           }
-          useCloseSalesLoading = false;
+          isSetCloseSaleTimeLoading = false;
           notifyListeners();
           return 1;
         } catch (e) {
           print(
-            "❌ Failed to Update Use Close Sale Offline: ${e.toString()}",
+            "❌ Failed to Update Close Sale Offline: ${e.toString()}",
           );
-          useCloseSalesLoading = false;
+          isSetCloseSaleTimeLoading = false;
           notifyListeners();
           return 0;
         }
       }
     } catch (e) {
       print(
-        "❌ Failed to Update Use Close Sale: ${e.toString()}",
+        "❌ Failed to Update Close Sale: ${e.toString()}",
       );
-      useCloseSalesLoading = false;
+      isSetCloseSaleTimeLoading = false;
       notifyListeners();
       return 0;
     }

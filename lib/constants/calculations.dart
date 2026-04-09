@@ -1,30 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/main.dart';
 import 'package:uuid/uuid.dart';
 
 DateTime fourAm(DateTime date) {
+  var cTime =
+      returnShopProvider().userShop()?.closeSaleTime;
   return DateTime(
     date.year,
     date.month,
     date.day,
-    04,
-    00,
+    cTime?.hour ?? 00,
+    cTime?.minute ?? 00,
     00,
     00,
   );
 }
 
 DateTime fourAmNextDay(DateTime date) {
+  var cTime =
+      returnShopProvider().userShop()?.closeSaleTime;
   return DateTime(
     date.year,
     date.month,
     date.day,
-    03,
-    59,
+    cTime?.hour != null ? (cTime!.hour - 1) : 23,
+    cTime?.minute ?? 59,
     59,
     999,
-  ).add(Duration(days: 1));
+  ).add(Duration(days: cTime != null ? 1 : 0));
 }
 
 DateTime endOfDay(DateTime date) {
@@ -94,6 +99,26 @@ String formatDateWithDay(DateTime date) {
 
 String formatTime(DateTime date) {
   return DateFormat('hh:mm a').format(date);
+}
+
+String? timeOfDayToPostgres(TimeOfDay? time) {
+  if (time == null) {
+    return null;
+  } else {
+    final hour = time.hour.toString().padLeft(2, '0');
+    final minute = time.minute.toString().padLeft(2, '0');
+
+    return "$hour:$minute:00";
+  }
+}
+
+TimeOfDay parseTimeOfDay(String time) {
+  final parts = time.split(":");
+
+  return TimeOfDay(
+    hour: int.parse(parts[0]),
+    minute: int.parse(parts[1]),
+  );
 }
 
 String cutLongText(String text, int length) {

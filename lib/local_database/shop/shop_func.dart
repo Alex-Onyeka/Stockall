@@ -12,6 +12,7 @@ class ShopFunc {
   final String shopBoxName = 'shopBoxStockall';
 
   Future<void> init() async {
+    // await Hive.deleteBoxFromDisk(shopBoxName);
     Hive.registerAdapter(TempShopClassAdapter());
     shopBox = await Hive.openBox(shopBoxName);
     await UpdatedShopFunc().init();

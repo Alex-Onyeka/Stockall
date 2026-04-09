@@ -50,10 +50,10 @@ class MainDatabase extends ChangeNotifier {
       }
       Hive.init(stockallDir.path);
     }
-    await PermissionFunc().init();
-    await AppVersionFunc().init();
     await UserFunc().init();
     await ShopFunc().init();
+    await PermissionFunc().init();
+    await AppVersionFunc().init();
     await VisibilityBox().init();
     await CustomerFunc().init();
     await ExpensesFunc().init();

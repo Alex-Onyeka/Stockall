@@ -179,7 +179,6 @@ class _ShopSetupTwoMobileState
                 await shopProvider.createShop(
                   TempShopClass(
                     closeSaleTime: null,
-                    useCloseSale: false,
                     isVerified: false,
                     currency: selectedCurrency!,
                     employees: [],

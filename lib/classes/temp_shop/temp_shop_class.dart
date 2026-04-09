@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:stockall/constants/calculations.dart';
 
 part 'temp_shop_class.g.dart';
 
@@ -66,12 +68,6 @@ class TempShopClass {
 
   @HiveField(20)
   DateTime? updatedAt;
-
-  // @HiveField(21)
-  // int? plan;
-
-  // @HiveField(22)
-  // DateTime? nextPayment;
 
   @HiveField(23)
   String? instaHandle;
@@ -158,10 +154,7 @@ class TempShopClass {
   bool? printSalesDocket;
 
   @HiveField(51)
-  bool? useCloseSale;
-
-  @HiveField(52)
-  DateTime? closeSaleTime;
+  TimeOfDay? closeSaleTime;
 
   TempShopClass({
     this.shopId,
@@ -215,7 +208,6 @@ class TempShopClass {
     required this.wholeSale,
     required this.manageDepartments,
     required this.printSalesDocket,
-    required this.useCloseSale,
     required this.closeSaleTime,
   });
 
@@ -284,8 +276,10 @@ class TempShopClass {
       manageDepartments:
           json['manage_departments'] as bool?,
       printSalesDocket: json['print_sales_docket'] as bool?,
-      useCloseSale: json['use_close_sale'] as bool?,
-      closeSaleTime: json['close_sale_time'] as DateTime?,
+      closeSaleTime:
+          json['close_sale_time'] != null
+              ? parseTimeOfDay(json['close_sale_time'])
+              : null,
     );
   }
 
@@ -340,8 +334,7 @@ class TempShopClass {
       'whole_sale': wholeSale,
       'manage_departments': manageDepartments,
       'print_sales_docket': printSalesDocket,
-      'use_close_sale': useCloseSale,
-      'close_sale_time': closeSaleTime?.toIso8601String(),
+      'close_sale_time': closeSaleTime,
     };
   }
 }
