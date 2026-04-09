@@ -26,9 +26,6 @@ class NotificationProvider with ChangeNotifier {
         authorized: Authorizations().viewAllDepartments,
       )) {
         return _notifications.where((cat) {
-          // if (cat.departmentUuid == null) {
-          //   return true;
-          // } else {
           return cat.departmentUuid ==
               returnDepartmentProvider()
                   .currentDepartment()
@@ -43,9 +40,6 @@ class NotificationProvider with ChangeNotifier {
           return _notifications;
         } else {
           return _notifications.where((cat) {
-            // if (cat.departmentUuid == null) {
-            //   return true;
-            // } else {
             return cat.departmentUuid ==
                 returnDepartmentProvider()
                     .currentDepartment()

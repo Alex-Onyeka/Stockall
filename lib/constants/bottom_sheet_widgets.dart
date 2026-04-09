@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -1938,6 +1940,8 @@ class _CustomBottomPanelState
     productResults.clear();
   }
 
+  FocusNode mainSearchNode = FocusNode();
+
   String formatSellingPrice(TempCartItem cartItem) {
     if (cartItem.useWholeSalePrice) {
       return (qqty * (cartItem.item.wholeSalePrice ?? 0))
@@ -2133,88 +2137,151 @@ class _CustomBottomPanelState
                                 const EdgeInsets.symmetric(
                                   horizontal: 20.0,
                                 ),
-                            child: TextFieldBarcode(
-                              clearTextField: () {
-                                setState(() {});
-                              },
-                              searchController:
-                                  widget.searchController,
-                              onChanged: (value) async {
-                                setState(() {
-                                  scanResult = null;
-                                  productResults.clear();
-                                });
-                                if (value == '') {
-                                  setState(() {
-                                    searchResult = null;
-                                  });
-                                } else {
-                                  setState(() {
-                                    searchResult =
-                                        value.toLowerCase();
-                                  });
-                                  var items = returnData()
-                                      .productList()
-                                      .where(
-                                        (product) =>
-                                            product.barcode
-                                                ?.toLowerCase() ==
-                                            value
-                                                .toLowerCase(),
-                                      );
-                                  if (items.isNotEmpty) {
-                                    SalesAuthAction()
-                                        .useBarcodeAction(
-                                          context: context,
-                                          action: () async {
-                                            await playBeep();
-                                          },
-                                          failAction: () {
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: TextFieldBarcode(
+                                    node: mainSearchNode,
+                                    clearTextField: () {
+                                      setState(() {});
+                                    },
+                                    searchController:
+                                        widget
+                                            .searchController,
+                                    onChanged: (
+                                      value,
+                                    ) async {
+                                      setState(() {
+                                        scanResult = null;
+                                        productResults
+                                            .clear();
+                                      });
+                                      if (value == '') {
+                                        setState(() {
+                                          searchResult =
+                                              null;
+                                        });
+                                      } else {
+                                        setState(() {
+                                          searchResult =
+                                              value
+                                                  .toLowerCase();
+                                        });
+                                        var items = returnData()
+                                            .productList()
+                                            .where(
+                                              (product) =>
+                                                  product
+                                                      .barcode
+                                                      ?.toLowerCase() ==
+                                                  value
+                                                      .toLowerCase(),
+                                            );
+                                        if (items
+                                            .isNotEmpty) {
+                                          SalesAuthAction().useBarcodeAction(
+                                            context:
+                                                context,
+                                            action: () async {
+                                              await playBeep();
+                                            },
+                                            failAction: () {
+                                              widget
+                                                  .searchController
+                                                  .clear();
+                                            },
+                                          );
+                                        }
+                                      }
+                                    },
+                                    onPressedScan: () async {
+                                      SalesAuthAction().useBarcodeAction(
+                                        context: context,
+                                        action: () async {
+                                          productResults
+                                              .clear();
+                                          searchResult =
+                                              null;
+                                          String? result =
+                                              await scanCode(
+                                                context,
+                                                'Failed',
+                                              );
+                                          setState(() {});
+                                          if (result !=
+                                              null) {
                                             widget
                                                 .searchController
-                                                .clear();
-                                          },
-                                        );
-                                  }
-                                }
-                              },
-                              onPressedScan: () async {
-                                SalesAuthAction().useBarcodeAction(
-                                  context: context,
-                                  action: () async {
-                                    productResults.clear();
-                                    searchResult = null;
-                                    String? result =
-                                        await scanCode(
-                                          context,
-                                          'Failed',
-                                        );
-                                    setState(() {});
-                                    if (result != null) {
-                                      widget
-                                          .searchController
-                                          .text = result;
-                                    }
-                                    var items = returnData()
-                                        .productList()
-                                        .where(
-                                          (product) =>
-                                              product
-                                                  .barcode ==
-                                              result,
-                                        );
-                                    if (items.isNotEmpty) {
-                                      setState(() {
-                                        scanResult = result;
-                                        productResults
-                                            .addAll(items);
-                                      });
-                                      await playBeep();
-                                    }
-                                    setState(() {});
-                                  },
-                                );
-                              },
+                                                .text = result;
+                                          }
+                                          var items = returnData()
+                                              .productList()
+                                              .where(
+                                                (product) =>
+                                                    product
+                                                        .barcode ==
+                                                    result,
+                                              );
+                                          if (items
+                                              .isNotEmpty) {
+                                            setState(() {
+                                              scanResult =
+                                                  result;
+                                              productResults
+                                                  .addAll(
+                                                    items,
+                                                  );
+                                            });
+                                            await playBeep();
+                                          }
+                                          setState(() {});
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ),
+                                Visibility(
+                                  visible:
+                                      Platform.isWindows,
+                                  child: Row(
+                                    children: [
+                                      SizedBox(width: 2),
+                                      IconButton(
+                                        onPressed: () async {
+                                          mainSearchNode
+                                              .requestFocus();
+                                          try {
+                                            if (Platform
+                                                .isWindows) {
+                                              await Process.start(
+                                                'cmd',
+                                                [
+                                                  '/c',
+                                                  'start',
+                                                  '',
+                                                  'osk',
+                                                ],
+                                                mode:
+                                                    ProcessStartMode
+                                                        .detached,
+                                              );
+                                            }
+                                          } catch (e) {
+                                            print(
+                                              'Error Opening Keyboard: ${e.toString()}',
+                                            );
+                                          }
+                                        },
+                                        icon: Icon(
+                                          size: 25,
+                                          Icons
+                                              .keyboard_alt_outlined,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                           Expanded(

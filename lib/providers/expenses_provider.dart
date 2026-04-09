@@ -181,9 +181,6 @@ class ExpensesProvider extends ChangeNotifier {
         authorized: Authorizations().viewAllDepartments,
       )) {
         return expensesMain.where((cat) {
-          // if (cat.departmentUuid == null) {
-          //   return true;
-          // } else {
           return cat.departmentUuid ==
               returnDepartmentProvider()
                   .currentDepartment()
@@ -198,14 +195,10 @@ class ExpensesProvider extends ChangeNotifier {
           return expensesMain;
         } else {
           return expensesMain.where((cat) {
-            // if (cat.departmentUuid == null) {
-            //   return true;
-            // } else {
             return cat.departmentUuid ==
                 returnDepartmentProvider()
                     .currentDepartment()
                     ?.uuid;
-            // }
           }).toList();
         }
       }
@@ -224,13 +217,13 @@ class ExpensesProvider extends ChangeNotifier {
       if (rangeStartDate != null) {
         return departmentExpenses().where((expense) {
           final created = expense.createdDate!.toUtc();
-          return created.isAfter(
-                rangeStartDate!.subtract(
-                  const Duration(seconds: 1),
-                ),
+          return !created.isBefore(
+                fourAm(rangeStartDate!),
               ) &&
-              created.isBefore(
-                rangeEndDate ?? DateTime.now(),
+              !created.isAfter(
+                fourAmNextDay(
+                  rangeEndDate ?? DateTime.now(),
+                ),
               );
         }).toList();
       } else {
@@ -239,12 +232,12 @@ class ExpensesProvider extends ChangeNotifier {
         return departmentExpenses()
             .where(
               (expense) =>
-                  (expense.createdDate!.day ==
-                      currentDate.day) &&
-                  (expense.createdDate!.month ==
-                      currentDate.month) &&
-                  (expense.createdDate!.year ==
-                      currentDate.year),
+                  !expense.createdDate!.isBefore(
+                    fourAm(currentDate),
+                  ) &&
+                  !expense.createdDate!.isAfter(
+                    fourAmNextDay(currentDate),
+                  ),
             )
             .toList();
       }
@@ -256,25 +249,25 @@ class ExpensesProvider extends ChangeNotifier {
         )) {
           return expensesMain.where((expense) {
             final created = expense.createdDate!.toUtc();
-            return created.isAfter(
-                  rangeStartDate!.subtract(
-                    const Duration(seconds: 1),
-                  ),
+            return !created.isBefore(
+                  fourAm(rangeStartDate!),
                 ) &&
-                created.isBefore(
-                  rangeEndDate ?? DateTime.now(),
+                !created.isAfter(
+                  fourAmNextDay(
+                    rangeEndDate ?? DateTime.now(),
+                  ),
                 );
           }).toList();
         } else {
           return expensesMain.where((expense) {
             final created = expense.createdDate!.toUtc();
-            return created.isAfter(
-                  rangeStartDate!.subtract(
-                    const Duration(seconds: 1),
-                  ),
+            return !created.isBefore(
+                  fourAm(rangeStartDate!),
                 ) &&
-                created.isBefore(
-                  rangeEndDate ?? DateTime.now(),
+                !created.isAfter(
+                  fourAmNextDay(
+                    rangeEndDate ?? DateTime.now(),
+                  ),
                 ) &&
                 expense.userId == currentUser().userId;
           }).toList();
@@ -289,24 +282,24 @@ class ExpensesProvider extends ChangeNotifier {
           return expensesMain
               .where(
                 (expense) =>
-                    (expense.createdDate!.day ==
-                        currentDate.day) &&
-                    (expense.createdDate!.month ==
-                        currentDate.month) &&
-                    (expense.createdDate!.year ==
-                        currentDate.year),
+                    !expense.createdDate!.isBefore(
+                      fourAm(currentDate),
+                    ) &&
+                    !expense.createdDate!.isAfter(
+                      fourAmNextDay(currentDate),
+                    ),
               )
               .toList();
         } else {
           return expensesMain
               .where(
                 (expense) =>
-                    (expense.createdDate!.day ==
-                        currentDate.day) &&
-                    (expense.createdDate!.month ==
-                        currentDate.month) &&
-                    (expense.createdDate!.year ==
-                        currentDate.year) &&
+                    !expense.createdDate!.isBefore(
+                      fourAm(currentDate),
+                    ) &&
+                    !expense.createdDate!.isAfter(
+                      fourAmNextDay(currentDate),
+                    ) &&
                     expense.userId == currentUser().userId,
               )
               .toList();

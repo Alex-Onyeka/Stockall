@@ -3,6 +3,30 @@ import 'package:intl/intl.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:uuid/uuid.dart';
 
+DateTime fourAm(DateTime date) {
+  return DateTime(
+    date.year,
+    date.month,
+    date.day,
+    04,
+    00,
+    00,
+    00,
+  );
+}
+
+DateTime fourAmNextDay(DateTime date) {
+  return DateTime(
+    date.year,
+    date.month,
+    date.day,
+    03,
+    59,
+    59,
+    999,
+  ).add(Duration(days: 1));
+}
+
 DateTime endOfDay(DateTime date) {
   return DateTime(
     date.year,

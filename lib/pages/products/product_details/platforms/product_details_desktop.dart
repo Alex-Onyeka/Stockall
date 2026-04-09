@@ -4,7 +4,6 @@ import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 // import 'package:path/path.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/major/drawer_widget/my_drawer_widget.dart';
 import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widget_desktop.dart';
@@ -485,6 +484,9 @@ class _ProductDetailsDesktopState
                                                       costController.text =
                                                           product.costPrice.toString().toString();
                                                     });
+                                                    bool
+                                                    isEditPriceLoading =
+                                                        false;
                                                     showGeneralDialog(
                                                       context:
                                                           context,
@@ -493,346 +495,360 @@ class _ProductDetailsDesktopState
                                                         animation,
                                                         secondaryAnimation,
                                                       ) {
-                                                        return Material(
-                                                          color:
-                                                              Colors.transparent,
-                                                          child: GestureDetector(
-                                                            onTap:
-                                                                () =>
-                                                                    FocusManager.instance.primaryFocus?.unfocus(),
-                                                            child: Container(
-                                                              decoration: BoxDecoration(
+                                                        return StatefulBuilder(
+                                                          builder:
+                                                              (
+                                                                context,
+                                                                setState,
+                                                              ) => Material(
                                                                 color:
-                                                                    Colors.white,
-                                                              ),
-                                                              child: Padding(
-                                                                padding: const EdgeInsets.only(
-                                                                  left:
-                                                                      30.0,
-                                                                  top:
-                                                                      40,
-                                                                  right:
-                                                                      30,
-                                                                ),
-                                                                child: Column(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment.center,
-                                                                  children: [
-                                                                    Container(
-                                                                      padding: EdgeInsets.all(
-                                                                        40,
+                                                                    Colors.transparent,
+                                                                child: GestureDetector(
+                                                                  onTap:
+                                                                      () =>
+                                                                          FocusManager.instance.primaryFocus?.unfocus(),
+                                                                  child: Container(
+                                                                    decoration: BoxDecoration(
+                                                                      color:
+                                                                          Colors.white,
+                                                                    ),
+                                                                    child: Padding(
+                                                                      padding: const EdgeInsets.only(
+                                                                        left:
+                                                                            30.0,
+                                                                        top:
+                                                                            40,
+                                                                        right:
+                                                                            30,
                                                                       ),
-                                                                      margin: EdgeInsets.only(
-                                                                        bottom:
-                                                                            100,
-                                                                      ),
-                                                                      decoration: BoxDecoration(
-                                                                        color:
-                                                                            Colors.white,
-                                                                        borderRadius: BorderRadius.circular(
-                                                                          15,
-                                                                        ),
-                                                                        boxShadow: [
-                                                                          BoxShadow(
-                                                                            color: const Color.fromARGB(
-                                                                              39,
-                                                                              4,
-                                                                              1,
-                                                                              41,
-                                                                            ),
-                                                                            blurRadius:
-                                                                                10,
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                      width:
-                                                                          500,
                                                                       child: Column(
+                                                                        mainAxisAlignment:
+                                                                            MainAxisAlignment.center,
                                                                         children: [
-                                                                          Row(
-                                                                            mainAxisAlignment:
-                                                                                MainAxisAlignment.spaceBetween,
-                                                                            children: [
-                                                                              Opacity(
-                                                                                opacity:
-                                                                                    0,
-                                                                                child: IconButton(
-                                                                                  onPressed:
-                                                                                      () {},
-                                                                                  icon: Icon(
-                                                                                    Icons.clear,
-                                                                                  ),
-                                                                                ),
-                                                                              ),
-                                                                              Text(
-                                                                                style: TextStyle(
-                                                                                  fontSize:
-                                                                                      widget.theme.mobileTexts.b1.fontSize,
-                                                                                  fontWeight:
-                                                                                      FontWeight.bold,
-                                                                                ),
-                                                                                'Edit Prices',
-                                                                              ),
-                                                                              IconButton(
-                                                                                onPressed: () {
-                                                                                  Navigator.of(
-                                                                                    context,
-                                                                                  ).pop();
-                                                                                },
-                                                                                icon: Icon(
-                                                                                  Icons.clear,
-                                                                                ),
-                                                                              ),
-                                                                            ],
-                                                                          ),
-                                                                          SizedBox(
-                                                                            height:
+                                                                          Container(
+                                                                            padding: EdgeInsets.all(
+                                                                              40,
+                                                                            ),
+                                                                            margin: EdgeInsets.only(
+                                                                              bottom:
+                                                                                  100,
+                                                                            ),
+                                                                            decoration: BoxDecoration(
+                                                                              color:
+                                                                                  Colors.white,
+                                                                              borderRadius: BorderRadius.circular(
                                                                                 15,
-                                                                          ),
-                                                                          Column(
-                                                                            spacing:
-                                                                                20,
-                                                                            children: [
-                                                                              MoneyTextfield(
-                                                                                title:
-                                                                                    'Cost Price',
-                                                                                hint:
-                                                                                    'Enter Cost Price',
-                                                                                controller:
-                                                                                    costController,
-                                                                                theme:
-                                                                                    widget.theme,
                                                                               ),
-                                                                              MoneyTextfield(
-                                                                                title:
-                                                                                    'Selling Price',
-                                                                                hint:
-                                                                                    'Enter Selling Price',
-                                                                                controller:
-                                                                                    sellingController,
-                                                                                theme:
-                                                                                    widget.theme,
-                                                                              ),
-                                                                              Visibility(
-                                                                                visible:
-                                                                                    returnShopProvider().userShop()?.wholeSale ==
-                                                                                    true,
-                                                                                child: MoneyTextfield(
-                                                                                  title:
-                                                                                      'Whole Sale Price',
-                                                                                  hint:
-                                                                                      'Enter Whole Sale Price',
-                                                                                  controller:
-                                                                                      wholeSaleController,
-                                                                                  theme:
-                                                                                      widget.theme,
+                                                                              boxShadow: [
+                                                                                BoxShadow(
+                                                                                  color: const Color.fromARGB(
+                                                                                    39,
+                                                                                    4,
+                                                                                    1,
+                                                                                    41,
+                                                                                  ),
+                                                                                  blurRadius:
+                                                                                      10,
                                                                                 ),
-                                                                              ),
-                                                                            ],
-                                                                          ),
-                                                                          SizedBox(
-                                                                            height:
-                                                                                20,
-                                                                          ),
-                                                                          MainButtonP(
-                                                                            themeProvider:
-                                                                                widget.theme,
-                                                                            action: () {
-                                                                              final safeContext =
-                                                                                  context;
-                                                                              if (costController.text.isNotEmpty) {
-                                                                                showDialog(
-                                                                                  context:
-                                                                                      safeContext,
-                                                                                  builder: (
-                                                                                    confirmDialog,
-                                                                                  ) {
-                                                                                    return ConfirmationAlert(
-                                                                                      theme:
-                                                                                          widget.theme,
-                                                                                      message:
-                                                                                          'Are you sure you want to proceed?',
-                                                                                      title:
-                                                                                          'Proceed?',
-                                                                                      action: () async {
-                                                                                        final dataProvider =
-                                                                                            returnData();
-                                                                                        Navigator.of(
-                                                                                          confirmDialog,
-                                                                                        ).pop();
-                                                                                        setState(
-                                                                                          () {
-                                                                                            isLoading =
-                                                                                                true;
-                                                                                          },
-                                                                                        );
-                                                                                        await dataProvider.updateProduct(
-                                                                                          product: TempProductClass(
-                                                                                            storageUuid:
-                                                                                                product.storageUuid,
-                                                                                            departmentName:
-                                                                                                product.departmentName,
-                                                                                            departmentUuid:
-                                                                                                product.departmentUuid,
-                                                                                            groupUnit:
-                                                                                                product.groupUnit,
-                                                                                            qttyPerGroup:
-                                                                                                product.qttyPerGroup,
-                                                                                            updatedAt:
-                                                                                                DateTime.now(),
-                                                                                            totalQttyInStorageDouble:
-                                                                                                product.totalQttyInStorageDouble,
-                                                                                            setCustomPrice:
-                                                                                                product.setCustomPrice,
-                                                                                            isManaged:
-                                                                                                product.isManaged,
-                                                                                            // id:
-                                                                                            //     product.id,
-                                                                                            name:
-                                                                                                product.name,
-                                                                                            unit:
-                                                                                                product.unit,
-                                                                                            isRefundable:
-                                                                                                product.isRefundable,
-                                                                                            costPrice: double.parse(
-                                                                                              costController.text.replaceAll(
-                                                                                                ',',
-                                                                                                '',
-                                                                                              ),
+                                                                              ],
+                                                                            ),
+                                                                            width:
+                                                                                500,
+                                                                            child: Column(
+                                                                              children: [
+                                                                                Row(
+                                                                                  mainAxisAlignment:
+                                                                                      MainAxisAlignment.spaceBetween,
+                                                                                  children: [
+                                                                                    Opacity(
+                                                                                      opacity:
+                                                                                          0,
+                                                                                      child: IconButton(
+                                                                                        onPressed:
+                                                                                            () {},
+                                                                                        icon: Icon(
+                                                                                          Icons.clear,
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                    Text(
+                                                                                      style: TextStyle(
+                                                                                        fontSize:
+                                                                                            widget.theme.mobileTexts.b1.fontSize,
+                                                                                        fontWeight:
+                                                                                            FontWeight.bold,
+                                                                                      ),
+                                                                                      'Edit Prices',
+                                                                                    ),
+                                                                                    Builder(
+                                                                                      builder: (
+                                                                                        context,
+                                                                                      ) {
+                                                                                        if (isEditPriceLoading ==
+                                                                                            true) {
+                                                                                          return SizedBox(
+                                                                                            height:
+                                                                                                20,
+                                                                                            width:
+                                                                                                20,
+                                                                                            child: CircularProgressIndicator(
+                                                                                              strokeWidth:
+                                                                                                  1.5,
+                                                                                              color:
+                                                                                                  widget.theme.lightModeColor.secColor200,
                                                                                             ),
-                                                                                            sellingPrice:
-                                                                                                sellingController.text.isNotEmpty
-                                                                                                    ? double.tryParse(
-                                                                                                      sellingController.text.replaceAll(
-                                                                                                        ',',
-                                                                                                        '',
-                                                                                                      ),
-                                                                                                    )
-                                                                                                    : null,
-                                                                                            wholeSalePrice:
-                                                                                                wholeSaleController.text.isNotEmpty
-                                                                                                    ? double.tryParse(
-                                                                                                      wholeSaleController.text.replaceAll(
-                                                                                                        ',',
-                                                                                                        '',
-                                                                                                      ),
-                                                                                                    )
-                                                                                                    : null,
-                                                                                            quantity:
-                                                                                                product.quantity,
-                                                                                            shopId:
-                                                                                                product.shopId,
-                                                                                            barcode:
-                                                                                                product.barcode,
-                                                                                            categoryUuid:
-                                                                                                product.categoryUuid,
-                                                                                            createdAt:
-                                                                                                product.createdAt,
-                                                                                            discount:
-                                                                                                product.discount,
-                                                                                            endDate:
-                                                                                                product.endDate,
-                                                                                            expiryDate:
-                                                                                                product.expiryDate,
-                                                                                            lowQtty:
-                                                                                                product.lowQtty,
-                                                                                            sizeType:
-                                                                                                product.sizeType,
-                                                                                            startDate:
-                                                                                                product.startDate,
-                                                                                            uuid:
-                                                                                                product.uuid,
-                                                                                          ),
-                                                                                          oldProduct:
-                                                                                              product,
-                                                                                        );
-
-                                                                                        if (safeContext.mounted) {
-                                                                                          await dataProvider.getProducts(
-                                                                                            shopI,
+                                                                                          );
+                                                                                        } else {
+                                                                                          return IconButton(
+                                                                                            onPressed: () {
+                                                                                              Navigator.of(
+                                                                                                context,
+                                                                                              ).pop();
+                                                                                            },
+                                                                                            icon: Icon(
+                                                                                              Icons.clear,
+                                                                                            ),
                                                                                           );
                                                                                         }
-
-                                                                                        setState(
-                                                                                          () {
-                                                                                            isLoading =
-                                                                                                false;
-                                                                                            showSuccess =
-                                                                                                true;
-                                                                                          },
-                                                                                        );
-
-                                                                                        if (safeContext.mounted) {
-                                                                                          Navigator.of(
+                                                                                      },
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
+                                                                                SizedBox(
+                                                                                  height:
+                                                                                      15,
+                                                                                ),
+                                                                                Column(
+                                                                                  spacing:
+                                                                                      20,
+                                                                                  children: [
+                                                                                    MoneyTextfield(
+                                                                                      title:
+                                                                                          'Cost Price',
+                                                                                      hint:
+                                                                                          'Enter Cost Price',
+                                                                                      controller:
+                                                                                          costController,
+                                                                                      theme:
+                                                                                          widget.theme,
+                                                                                    ),
+                                                                                    MoneyTextfield(
+                                                                                      title:
+                                                                                          'Selling Price',
+                                                                                      hint:
+                                                                                          'Enter Selling Price',
+                                                                                      controller:
+                                                                                          sellingController,
+                                                                                      theme:
+                                                                                          widget.theme,
+                                                                                    ),
+                                                                                    Visibility(
+                                                                                      visible:
+                                                                                          returnShopProvider().userShop()?.wholeSale ==
+                                                                                          true,
+                                                                                      child: MoneyTextfield(
+                                                                                        title:
+                                                                                            'Whole Sale Price',
+                                                                                        hint:
+                                                                                            'Enter Whole Sale Price',
+                                                                                        controller:
+                                                                                            wholeSaleController,
+                                                                                        theme:
+                                                                                            widget.theme,
+                                                                                      ),
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
+                                                                                SizedBox(
+                                                                                  height:
+                                                                                      20,
+                                                                                ),
+                                                                                MainButtonP(
+                                                                                  themeProvider:
+                                                                                      widget.theme,
+                                                                                  action: () {
+                                                                                    final safeContext =
+                                                                                        context;
+                                                                                    if (isEditPriceLoading ==
+                                                                                        false) {
+                                                                                      showDialog(
+                                                                                        context:
                                                                                             safeContext,
-                                                                                          ).pop();
-                                                                                          setState(
-                                                                                            () {
-                                                                                              // productFuture =
-                                                                                              //     getProduct();
+                                                                                        builder: (
+                                                                                          confirmDialog,
+                                                                                        ) {
+                                                                                          return ConfirmationAlert(
+                                                                                            theme:
+                                                                                                widget.theme,
+                                                                                            message:
+                                                                                                'Are you sure you want to proceed?',
+                                                                                            title:
+                                                                                                'Proceed?',
+                                                                                            action: () async {
+                                                                                              final dataProvider =
+                                                                                                  returnData();
+                                                                                              Navigator.of(
+                                                                                                confirmDialog,
+                                                                                              ).pop();
+                                                                                              setState(
+                                                                                                () {
+                                                                                                  isEditPriceLoading =
+                                                                                                      true;
+                                                                                                },
+                                                                                              );
+                                                                                              await dataProvider.updateProduct(
+                                                                                                product: TempProductClass(
+                                                                                                  storageUuid:
+                                                                                                      product.storageUuid,
+                                                                                                  departmentName:
+                                                                                                      product.departmentName,
+                                                                                                  departmentUuid:
+                                                                                                      product.departmentUuid,
+                                                                                                  groupUnit:
+                                                                                                      product.groupUnit,
+                                                                                                  qttyPerGroup:
+                                                                                                      product.qttyPerGroup,
+                                                                                                  updatedAt:
+                                                                                                      DateTime.now(),
+                                                                                                  totalQttyInStorageDouble:
+                                                                                                      product.totalQttyInStorageDouble,
+                                                                                                  setCustomPrice:
+                                                                                                      product.setCustomPrice,
+                                                                                                  isManaged:
+                                                                                                      product.isManaged,
+                                                                                                  // id:
+                                                                                                  //     product.id,
+                                                                                                  name:
+                                                                                                      product.name,
+                                                                                                  unit:
+                                                                                                      product.unit,
+                                                                                                  isRefundable:
+                                                                                                      product.isRefundable,
+                                                                                                  costPrice:
+                                                                                                      double.tryParse(
+                                                                                                        costController.text.replaceAll(
+                                                                                                          ',',
+                                                                                                          '',
+                                                                                                        ),
+                                                                                                      ) ??
+                                                                                                      0,
+                                                                                                  sellingPrice:
+                                                                                                      sellingController.text.isNotEmpty
+                                                                                                          ? double.tryParse(
+                                                                                                            sellingController.text.replaceAll(
+                                                                                                              ',',
+                                                                                                              '',
+                                                                                                            ),
+                                                                                                          )
+                                                                                                          : null,
+                                                                                                  wholeSalePrice:
+                                                                                                      wholeSaleController.text.isNotEmpty
+                                                                                                          ? double.tryParse(
+                                                                                                            wholeSaleController.text.replaceAll(
+                                                                                                              ',',
+                                                                                                              '',
+                                                                                                            ),
+                                                                                                          )
+                                                                                                          : null,
+                                                                                                  quantity:
+                                                                                                      product.quantity,
+                                                                                                  shopId:
+                                                                                                      product.shopId,
+                                                                                                  barcode:
+                                                                                                      product.barcode,
+                                                                                                  categoryUuid:
+                                                                                                      product.categoryUuid,
+                                                                                                  createdAt:
+                                                                                                      product.createdAt,
+                                                                                                  discount:
+                                                                                                      product.discount,
+                                                                                                  endDate:
+                                                                                                      product.endDate,
+                                                                                                  expiryDate:
+                                                                                                      product.expiryDate,
+                                                                                                  lowQtty:
+                                                                                                      product.lowQtty,
+                                                                                                  sizeType:
+                                                                                                      product.sizeType,
+                                                                                                  startDate:
+                                                                                                      product.startDate,
+                                                                                                  uuid:
+                                                                                                      product.uuid,
+                                                                                                ),
+                                                                                                oldProduct:
+                                                                                                    product,
+                                                                                              );
+
+                                                                                              // if (safeContext.mounted) {
+                                                                                              //   await dataProvider.getProducts(
+                                                                                              //     shopI,
+                                                                                              //   );
+                                                                                              // }
+
+                                                                                              // setState(
+                                                                                              //   () {
+                                                                                              //     isLoading =
+                                                                                              //         false;
+                                                                                              //     showSuccess =
+                                                                                              //         true;
+                                                                                              //   },
+                                                                                              // );
+
+                                                                                              if (safeContext.mounted) {
+                                                                                                Navigator.of(
+                                                                                                  safeContext,
+                                                                                                ).pop();
+                                                                                                setState(
+                                                                                                  () {
+                                                                                                    // productFuture =
+                                                                                                    //     getProduct();
+                                                                                                  },
+                                                                                                );
+                                                                                              }
+
+                                                                                              // setState(
+                                                                                              //   () {
+                                                                                              //     showSuccess =
+                                                                                              //         false;
+                                                                                              //   },
+                                                                                              // );
                                                                                             },
                                                                                           );
-                                                                                        }
-
-                                                                                        setState(
-                                                                                          () {
-                                                                                            showSuccess =
-                                                                                                false;
-                                                                                          },
-                                                                                        );
-                                                                                      },
-                                                                                    );
+                                                                                        },
+                                                                                      );
+                                                                                    }
                                                                                   },
-                                                                                );
-                                                                              } else {
-                                                                                showDialog(
-                                                                                  context:
-                                                                                      context,
-                                                                                  builder: (
-                                                                                    context,
-                                                                                  ) {
-                                                                                    return InfoAlert(
-                                                                                      theme:
-                                                                                          widget.theme,
-                                                                                      message:
-                                                                                          'Cost price and Selling price must be set.',
-                                                                                      title:
-                                                                                          'Empty Fields',
-                                                                                    );
-                                                                                  },
-                                                                                );
-                                                                              }
-                                                                            },
-                                                                            text:
-                                                                                'Update Prices',
-                                                                          ),
-                                                                          SizedBox(
-                                                                            height:
-                                                                                15,
-                                                                          ),
-                                                                          Material(
-                                                                            color:
-                                                                                Colors.transparent,
-                                                                            child: EditButton(
-                                                                              text:
-                                                                                  'Cancel',
-                                                                              action: () {
-                                                                                Navigator.of(
-                                                                                  context,
-                                                                                ).pop();
-                                                                              },
-                                                                              theme:
-                                                                                  widget.theme,
+                                                                                  text:
+                                                                                      'Update Prices',
+                                                                                ),
+                                                                                SizedBox(
+                                                                                  height:
+                                                                                      15,
+                                                                                ),
+                                                                                Material(
+                                                                                  color:
+                                                                                      Colors.transparent,
+                                                                                  child: EditButton(
+                                                                                    text:
+                                                                                        'Cancel',
+                                                                                    action: () {
+                                                                                      Navigator.of(
+                                                                                        context,
+                                                                                      ).pop();
+                                                                                    },
+                                                                                    theme:
+                                                                                        widget.theme,
+                                                                                  ),
+                                                                                ),
+                                                                              ],
                                                                             ),
                                                                           ),
                                                                         ],
                                                                       ),
                                                                     ),
-                                                                  ],
+                                                                  ),
                                                                 ),
                                                               ),
-                                                            ),
-                                                          ),
                                                         );
                                                       },
                                                     );
@@ -1768,6 +1784,8 @@ class _ProductDetailsDesktopState
                           animation,
                           secondaryAnimation,
                         ) {
+                          bool isEditQuantityLoading =
+                              false;
                           return StatefulBuilder(
                             builder:
                                 (
@@ -1860,15 +1878,37 @@ class _ProductDetailsDesktopState
                                                         ),
                                                         'Edit Quantity',
                                                       ),
-                                                      IconButton(
-                                                        onPressed: () {
-                                                          Navigator.of(
-                                                            context,
-                                                          ).pop();
+                                                      Builder(
+                                                        builder: (
+                                                          context,
+                                                        ) {
+                                                          if (isEditQuantityLoading ==
+                                                              true) {
+                                                            return SizedBox(
+                                                              height:
+                                                                  20,
+                                                              width:
+                                                                  20,
+                                                              child: CircularProgressIndicator(
+                                                                color:
+                                                                    widget.theme.lightModeColor.secColor200,
+                                                                strokeWidth:
+                                                                    1.5,
+                                                              ),
+                                                            );
+                                                          } else {
+                                                            return IconButton(
+                                                              onPressed: () {
+                                                                Navigator.of(
+                                                                  context,
+                                                                ).pop();
+                                                              },
+                                                              icon: Icon(
+                                                                Icons.clear,
+                                                              ),
+                                                            );
+                                                          }
                                                         },
-                                                        icon: Icon(
-                                                          Icons.clear,
-                                                        ),
                                                       ),
                                                     ],
                                                   ),
@@ -2117,200 +2157,203 @@ class _ProductDetailsDesktopState
                                                       final dataProvider =
                                                           returnData();
 
-                                                      showDialog(
-                                                        context:
-                                                            safeContext,
-                                                        builder: (
-                                                          confirmDialog,
-                                                        ) {
-                                                          return ConfirmationAlert(
-                                                            theme:
-                                                                widget.theme,
-                                                            message:
-                                                                quantityController.text.isEmpty &&
-                                                                        !isAddToQuantity
-                                                                    ? 'You are about to empty your entire product stock, are you sure?'
-                                                                    : 'Are you sure you want to proceed?',
-                                                            title:
-                                                                quantityController.text.isEmpty &&
-                                                                        !isAddToQuantity
-                                                                    ? "Empty Stock?"
-                                                                    : 'Proceed?',
-                                                            action: () async {
-                                                              Navigator.of(
-                                                                confirmDialog,
-                                                              ).pop();
-                                                              setState(
-                                                                () {
-                                                                  isLoading =
-                                                                      true;
-                                                                },
-                                                              );
-                                                              double totalQttyInStorageCalc() {
-                                                                final total =
-                                                                    product.totalQttyInStorageDouble ??
-                                                                    0;
-                                                                final qty =
-                                                                    double.tryParse(
-                                                                      quantityController.text.replaceAll(
-                                                                        ',',
-                                                                        '',
-                                                                      ),
-                                                                    ) ??
-                                                                    0;
-                                                                final currentQty =
-                                                                    product.quantity ??
-                                                                    0;
-
-                                                                double result;
-                                                                if (isAddToQuantity) {
-                                                                  result =
-                                                                      total -
-                                                                      qty;
-                                                                } else {
-                                                                  result =
-                                                                      (total -
-                                                                              (qty -
-                                                                                  currentQty))
-                                                                          .toDouble();
-                                                                }
-
-                                                                return result <
-                                                                        0
-                                                                    ? 0
-                                                                    : result;
-                                                              }
-
-                                                              await dataProvider.updateProduct(
-                                                                product: TempProductClass(
-                                                                  storageUuid:
-                                                                      product.storageUuid,
-                                                                  departmentName:
-                                                                      product.departmentName,
-                                                                  departmentUuid:
-                                                                      product.departmentUuid,
-                                                                  groupUnit:
-                                                                      product.groupUnit,
-                                                                  qttyPerGroup:
-                                                                      product.qttyPerGroup,
-                                                                  updatedAt:
-                                                                      DateTime.now(),
-                                                                  setCustomPrice:
-                                                                      product.setCustomPrice,
-                                                                  totalQttyInStorageDouble:
-                                                                      totalQttyInStorageCalc(),
-                                                                  isManaged:
-                                                                      product.isManaged,
-                                                                  // id:
-                                                                  //     product.id,
-                                                                  name:
-                                                                      product.name,
-                                                                  unit:
-                                                                      product.unit,
-                                                                  isRefundable:
-                                                                      product.isRefundable,
-                                                                  costPrice:
-                                                                      product.costPrice,
-                                                                  sellingPrice:
-                                                                      product.sellingPrice,
-                                                                  wholeSalePrice:
-                                                                      product.wholeSalePrice,
-                                                                  quantity:
-                                                                      quantityController.text.isEmpty &&
-                                                                              !isAddToQuantity &&
-                                                                              product.isManaged
-                                                                          ? 0
-                                                                          : quantityController.text.isEmpty &&
-                                                                              !isAddToQuantity &&
-                                                                              !product.isManaged
-                                                                          ? null
-                                                                          : quantityController.text.isNotEmpty &&
-                                                                              !isAddToQuantity
-                                                                          ? double.parse(
-                                                                            quantityController.text.replaceAll(
-                                                                              ',',
-                                                                              '',
-                                                                            ),
-                                                                          )
-                                                                          : quantityController.text.isNotEmpty &&
-                                                                              isAddToQuantity
-                                                                          ? double.parse(
-                                                                                quantityController.text.replaceAll(
-                                                                                  ',',
-                                                                                  '',
-                                                                                ),
-                                                                              ) +
-                                                                              (product.quantity ??
-                                                                                  0)
-                                                                          : product.quantity,
-                                                                  shopId:
-                                                                      product.shopId,
-                                                                  barcode:
-                                                                      product.barcode,
-                                                                  categoryUuid:
-                                                                      product.categoryUuid,
-                                                                  createdAt:
-                                                                      product.createdAt,
-                                                                  discount:
-                                                                      product.discount,
-                                                                  endDate:
-                                                                      product.endDate,
-                                                                  expiryDate:
-                                                                      product.expiryDate,
-                                                                  lowQtty:
-                                                                      product.lowQtty,
-                                                                  sizeType:
-                                                                      product.sizeType,
-                                                                  startDate:
-                                                                      product.startDate,
-                                                                  uuid:
-                                                                      product.uuid,
-                                                                ),
-                                                                oldProduct:
-                                                                    product,
-                                                              );
-
-                                                              setState(
-                                                                () {
-                                                                  isLoading =
-                                                                      false;
-                                                                  showSuccess =
-                                                                      true;
-                                                                },
-                                                              );
-                                                              if (safeContext.mounted) {
-                                                                await dataProvider.getProducts(
-                                                                  shopI,
-                                                                );
-                                                              }
-                                                              if (safeContext.mounted) {
-                                                                await dataProvider.getProducts(
-                                                                  shopI,
-                                                                );
-                                                              }
-
-                                                              if (safeContext.mounted) {
+                                                      if (isEditQuantityLoading ==
+                                                          false) {
+                                                        showDialog(
+                                                          context:
+                                                              safeContext,
+                                                          builder: (
+                                                            confirmDialog,
+                                                          ) {
+                                                            return ConfirmationAlert(
+                                                              theme:
+                                                                  widget.theme,
+                                                              message:
+                                                                  quantityController.text.isEmpty &&
+                                                                          !isAddToQuantity
+                                                                      ? 'You are about to empty your entire product stock, are you sure?'
+                                                                      : 'Are you sure you want to proceed?',
+                                                              title:
+                                                                  quantityController.text.isEmpty &&
+                                                                          !isAddToQuantity
+                                                                      ? "Empty Stock?"
+                                                                      : 'Proceed?',
+                                                              action: () async {
                                                                 Navigator.of(
-                                                                  safeContext,
+                                                                  confirmDialog,
                                                                 ).pop();
                                                                 setState(
                                                                   () {
-                                                                    // productFuture =
-                                                                    //     getProduct();
+                                                                    isEditQuantityLoading =
+                                                                        true;
                                                                   },
                                                                 );
-                                                              }
+                                                                double totalQttyInStorageCalc() {
+                                                                  final total =
+                                                                      product.totalQttyInStorageDouble ??
+                                                                      0;
+                                                                  final qty =
+                                                                      double.tryParse(
+                                                                        quantityController.text.replaceAll(
+                                                                          ',',
+                                                                          '',
+                                                                        ),
+                                                                      ) ??
+                                                                      0;
+                                                                  final currentQty =
+                                                                      product.quantity ??
+                                                                      0;
 
-                                                              setState(
-                                                                () {
-                                                                  showSuccess =
-                                                                      false;
-                                                                },
-                                                              );
-                                                            },
-                                                          );
-                                                        },
-                                                      );
+                                                                  double result;
+                                                                  if (isAddToQuantity) {
+                                                                    result =
+                                                                        total -
+                                                                        qty;
+                                                                  } else {
+                                                                    result =
+                                                                        (total -
+                                                                                (qty -
+                                                                                    currentQty))
+                                                                            .toDouble();
+                                                                  }
+
+                                                                  return result <
+                                                                          0
+                                                                      ? 0
+                                                                      : result;
+                                                                }
+
+                                                                await dataProvider.updateProduct(
+                                                                  product: TempProductClass(
+                                                                    storageUuid:
+                                                                        product.storageUuid,
+                                                                    departmentName:
+                                                                        product.departmentName,
+                                                                    departmentUuid:
+                                                                        product.departmentUuid,
+                                                                    groupUnit:
+                                                                        product.groupUnit,
+                                                                    qttyPerGroup:
+                                                                        product.qttyPerGroup,
+                                                                    updatedAt:
+                                                                        DateTime.now(),
+                                                                    setCustomPrice:
+                                                                        product.setCustomPrice,
+                                                                    totalQttyInStorageDouble:
+                                                                        totalQttyInStorageCalc(),
+                                                                    isManaged:
+                                                                        product.isManaged,
+                                                                    // id:
+                                                                    //     product.id,
+                                                                    name:
+                                                                        product.name,
+                                                                    unit:
+                                                                        product.unit,
+                                                                    isRefundable:
+                                                                        product.isRefundable,
+                                                                    costPrice:
+                                                                        product.costPrice,
+                                                                    sellingPrice:
+                                                                        product.sellingPrice,
+                                                                    wholeSalePrice:
+                                                                        product.wholeSalePrice,
+                                                                    quantity:
+                                                                        quantityController.text.isEmpty &&
+                                                                                !isAddToQuantity &&
+                                                                                product.isManaged
+                                                                            ? 0
+                                                                            : quantityController.text.isEmpty &&
+                                                                                !isAddToQuantity &&
+                                                                                !product.isManaged
+                                                                            ? null
+                                                                            : quantityController.text.isNotEmpty &&
+                                                                                !isAddToQuantity
+                                                                            ? double.parse(
+                                                                              quantityController.text.replaceAll(
+                                                                                ',',
+                                                                                '',
+                                                                              ),
+                                                                            )
+                                                                            : quantityController.text.isNotEmpty &&
+                                                                                isAddToQuantity
+                                                                            ? double.parse(
+                                                                                  quantityController.text.replaceAll(
+                                                                                    ',',
+                                                                                    '',
+                                                                                  ),
+                                                                                ) +
+                                                                                (product.quantity ??
+                                                                                    0)
+                                                                            : product.quantity,
+                                                                    shopId:
+                                                                        product.shopId,
+                                                                    barcode:
+                                                                        product.barcode,
+                                                                    categoryUuid:
+                                                                        product.categoryUuid,
+                                                                    createdAt:
+                                                                        product.createdAt,
+                                                                    discount:
+                                                                        product.discount,
+                                                                    endDate:
+                                                                        product.endDate,
+                                                                    expiryDate:
+                                                                        product.expiryDate,
+                                                                    lowQtty:
+                                                                        product.lowQtty,
+                                                                    sizeType:
+                                                                        product.sizeType,
+                                                                    startDate:
+                                                                        product.startDate,
+                                                                    uuid:
+                                                                        product.uuid,
+                                                                  ),
+                                                                  oldProduct:
+                                                                      product,
+                                                                );
+
+                                                                // setState(
+                                                                //   () {
+                                                                //     isLoading =
+                                                                //         false;
+                                                                //     showSuccess =
+                                                                //         true;
+                                                                //   },
+                                                                // );
+                                                                // if (safeContext.mounted) {
+                                                                //   await dataProvider.getProducts(
+                                                                //     shopI,
+                                                                //   );
+                                                                // }
+                                                                // if (safeContext.mounted) {
+                                                                //   await dataProvider.getProducts(
+                                                                //     shopI,
+                                                                //   );
+                                                                // }
+
+                                                                if (safeContext.mounted) {
+                                                                  Navigator.of(
+                                                                    safeContext,
+                                                                  ).pop();
+                                                                  setState(
+                                                                    () {
+                                                                      // productFuture =
+                                                                      //     getProduct();
+                                                                    },
+                                                                  );
+                                                                }
+
+                                                                // setState(
+                                                                //   () {
+                                                                //     showSuccess =
+                                                                //         false;
+                                                                //   },
+                                                                // );
+                                                              },
+                                                            );
+                                                          },
+                                                        );
+                                                      }
                                                     },
                                                     text:
                                                         'Update Quantity',
@@ -2385,6 +2428,7 @@ class _ProductDetailsDesktopState
                     child: EditButton(
                       theme: widget.theme,
                       action: () {
+                        bool isEditQuantityLoading = false;
                         showGeneralDialog(
                           context: context,
                           pageBuilder: (
@@ -2484,15 +2528,37 @@ class _ProductDetailsDesktopState
                                                           ),
                                                           'Edit ${product.groupUnit != null && product.groupUnit != 'Others' ? '${product.groupUnit}' : 'Group'} Quantity',
                                                         ),
-                                                        IconButton(
-                                                          onPressed: () {
-                                                            Navigator.of(
-                                                              context,
-                                                            ).pop();
+                                                        Builder(
+                                                          builder: (
+                                                            context,
+                                                          ) {
+                                                            if (isEditQuantityLoading ==
+                                                                true) {
+                                                              return SizedBox(
+                                                                height:
+                                                                    20,
+                                                                width:
+                                                                    20,
+                                                                child: CircularProgressIndicator(
+                                                                  color:
+                                                                      widget.theme.lightModeColor.secColor200,
+                                                                  strokeWidth:
+                                                                      1.5,
+                                                                ),
+                                                              );
+                                                            } else {
+                                                              return IconButton(
+                                                                onPressed: () {
+                                                                  Navigator.of(
+                                                                    context,
+                                                                  ).pop();
+                                                                },
+                                                                icon: Icon(
+                                                                  Icons.clear,
+                                                                ),
+                                                              );
+                                                            }
                                                           },
-                                                          icon: Icon(
-                                                            Icons.clear,
-                                                          ),
                                                         ),
                                                       ],
                                                     ),
@@ -2694,167 +2760,170 @@ class _ProductDetailsDesktopState
                                                         final dataProvider =
                                                             returnData();
 
-                                                        showDialog(
-                                                          context:
-                                                              safeContext,
-                                                          builder: (
-                                                            confirmDialog,
-                                                          ) {
-                                                            return ConfirmationAlert(
-                                                              theme:
-                                                                  widget.theme,
-                                                              message:
-                                                                  qttyPerUnitController.text.isEmpty &&
-                                                                          !isAddToQuantity
-                                                                      ? 'You are about to empty your entire product stock, are you sure?'
-                                                                      : 'Are you sure you want to proceed?',
-                                                              title:
-                                                                  qttyPerUnitController.text.isEmpty &&
-                                                                          !isAddToQuantity
-                                                                      ? "Empty Stock?"
-                                                                      : 'Proceed?',
-                                                              action: () async {
-                                                                Navigator.of(
-                                                                  confirmDialog,
-                                                                ).pop();
-                                                                setState(
-                                                                  () {
-                                                                    isLoading =
-                                                                        true;
-                                                                  },
-                                                                );
-
-                                                                await dataProvider.updateProduct(
-                                                                  product: TempProductClass(
-                                                                    storageUuid:
-                                                                        product.storageUuid,
-                                                                    departmentName:
-                                                                        product.departmentName,
-                                                                    departmentUuid:
-                                                                        product.departmentUuid,
-                                                                    groupUnit:
-                                                                        product.groupUnit,
-                                                                    qttyPerGroup:
-                                                                        product.qttyPerGroup,
-                                                                    updatedAt:
-                                                                        DateTime.now(),
-                                                                    setCustomPrice:
-                                                                        product.setCustomPrice,
-                                                                    totalQttyInStorageDouble:
-                                                                        product.totalQttyInStorageDouble,
-                                                                    isManaged:
-                                                                        product.isManaged,
-                                                                    // id:
-                                                                    //     product.id,
-                                                                    name:
-                                                                        product.name,
-                                                                    unit:
-                                                                        product.unit,
-                                                                    isRefundable:
-                                                                        product.isRefundable,
-                                                                    costPrice:
-                                                                        product.costPrice,
-                                                                    sellingPrice:
-                                                                        product.sellingPrice,
-                                                                    wholeSalePrice:
-                                                                        product.wholeSalePrice,
-                                                                    quantity:
-                                                                        qttyPerUnitController.text.isEmpty &&
-                                                                                !isAddToQuantity &&
-                                                                                product.isManaged
-                                                                            ? 0
-                                                                            : qttyPerUnitController.text.isEmpty &&
-                                                                                !isAddToQuantity &&
-                                                                                !product.isManaged
-                                                                            ? null
-                                                                            : qttyPerUnitController.text.isNotEmpty &&
-                                                                                !isAddToQuantity
-                                                                            ? (double.parse(
-                                                                                  qttyPerUnitController.text.replaceAll(
-                                                                                    ',',
-                                                                                    '',
-                                                                                  ),
-                                                                                ) *
-                                                                                (product.qttyPerGroup ??
-                                                                                    0))
-                                                                            : qttyPerUnitController.text.isNotEmpty &&
-                                                                                isAddToQuantity
-                                                                            ? (double.parse(
-                                                                                      qttyPerUnitController.text.replaceAll(
-                                                                                        ',',
-                                                                                        '',
-                                                                                      ),
-                                                                                    ) *
-                                                                                    (product.qttyPerGroup ??
-                                                                                        0)) +
-                                                                                (product.quantity ??
-                                                                                    0)
-                                                                            : product.quantity,
-                                                                    shopId:
-                                                                        product.shopId,
-                                                                    barcode:
-                                                                        product.barcode,
-                                                                    categoryUuid:
-                                                                        product.categoryUuid,
-                                                                    createdAt:
-                                                                        product.createdAt,
-                                                                    discount:
-                                                                        product.discount,
-                                                                    endDate:
-                                                                        product.endDate,
-                                                                    expiryDate:
-                                                                        product.expiryDate,
-                                                                    lowQtty:
-                                                                        product.lowQtty,
-                                                                    sizeType:
-                                                                        product.sizeType,
-                                                                    startDate:
-                                                                        product.startDate,
-                                                                    uuid:
-                                                                        product.uuid,
-                                                                  ),
-                                                                  oldProduct:
-                                                                      product,
-                                                                );
-
-                                                                setState(
-                                                                  () {
-                                                                    isLoading =
-                                                                        false;
-                                                                    showSuccess =
-                                                                        true;
-                                                                  },
-                                                                );
-                                                                if (safeContext.mounted) {
-                                                                  await dataProvider.getProducts(
-                                                                    shopI,
-                                                                  );
-                                                                }
-                                                                if (safeContext.mounted) {
-                                                                  await dataProvider.getProducts(
-                                                                    shopI,
-                                                                  );
-                                                                }
-
-                                                                if (safeContext.mounted) {
+                                                        if (isEditQuantityLoading ==
+                                                            false) {
+                                                          showDialog(
+                                                            context:
+                                                                safeContext,
+                                                            builder: (
+                                                              confirmDialog,
+                                                            ) {
+                                                              return ConfirmationAlert(
+                                                                theme:
+                                                                    widget.theme,
+                                                                message:
+                                                                    qttyPerUnitController.text.isEmpty &&
+                                                                            !isAddToQuantity
+                                                                        ? 'You are about to empty your entire product stock, are you sure?'
+                                                                        : 'Are you sure you want to proceed?',
+                                                                title:
+                                                                    qttyPerUnitController.text.isEmpty &&
+                                                                            !isAddToQuantity
+                                                                        ? "Empty Stock?"
+                                                                        : 'Proceed?',
+                                                                action: () async {
                                                                   Navigator.of(
-                                                                    safeContext,
+                                                                    confirmDialog,
                                                                   ).pop();
                                                                   setState(
-                                                                    () {},
+                                                                    () {
+                                                                      isEditQuantityLoading =
+                                                                          true;
+                                                                    },
                                                                   );
-                                                                }
 
-                                                                setState(
-                                                                  () {
-                                                                    showSuccess =
-                                                                        false;
-                                                                  },
-                                                                );
-                                                              },
-                                                            );
-                                                          },
-                                                        );
+                                                                  await dataProvider.updateProduct(
+                                                                    product: TempProductClass(
+                                                                      storageUuid:
+                                                                          product.storageUuid,
+                                                                      departmentName:
+                                                                          product.departmentName,
+                                                                      departmentUuid:
+                                                                          product.departmentUuid,
+                                                                      groupUnit:
+                                                                          product.groupUnit,
+                                                                      qttyPerGroup:
+                                                                          product.qttyPerGroup,
+                                                                      updatedAt:
+                                                                          DateTime.now(),
+                                                                      setCustomPrice:
+                                                                          product.setCustomPrice,
+                                                                      totalQttyInStorageDouble:
+                                                                          product.totalQttyInStorageDouble,
+                                                                      isManaged:
+                                                                          product.isManaged,
+                                                                      // id:
+                                                                      //     product.id,
+                                                                      name:
+                                                                          product.name,
+                                                                      unit:
+                                                                          product.unit,
+                                                                      isRefundable:
+                                                                          product.isRefundable,
+                                                                      costPrice:
+                                                                          product.costPrice,
+                                                                      sellingPrice:
+                                                                          product.sellingPrice,
+                                                                      wholeSalePrice:
+                                                                          product.wholeSalePrice,
+                                                                      quantity:
+                                                                          qttyPerUnitController.text.isEmpty &&
+                                                                                  !isAddToQuantity &&
+                                                                                  product.isManaged
+                                                                              ? 0
+                                                                              : qttyPerUnitController.text.isEmpty &&
+                                                                                  !isAddToQuantity &&
+                                                                                  !product.isManaged
+                                                                              ? null
+                                                                              : qttyPerUnitController.text.isNotEmpty &&
+                                                                                  !isAddToQuantity
+                                                                              ? (double.parse(
+                                                                                    qttyPerUnitController.text.replaceAll(
+                                                                                      ',',
+                                                                                      '',
+                                                                                    ),
+                                                                                  ) *
+                                                                                  (product.qttyPerGroup ??
+                                                                                      0))
+                                                                              : qttyPerUnitController.text.isNotEmpty &&
+                                                                                  isAddToQuantity
+                                                                              ? (double.parse(
+                                                                                        qttyPerUnitController.text.replaceAll(
+                                                                                          ',',
+                                                                                          '',
+                                                                                        ),
+                                                                                      ) *
+                                                                                      (product.qttyPerGroup ??
+                                                                                          0)) +
+                                                                                  (product.quantity ??
+                                                                                      0)
+                                                                              : product.quantity,
+                                                                      shopId:
+                                                                          product.shopId,
+                                                                      barcode:
+                                                                          product.barcode,
+                                                                      categoryUuid:
+                                                                          product.categoryUuid,
+                                                                      createdAt:
+                                                                          product.createdAt,
+                                                                      discount:
+                                                                          product.discount,
+                                                                      endDate:
+                                                                          product.endDate,
+                                                                      expiryDate:
+                                                                          product.expiryDate,
+                                                                      lowQtty:
+                                                                          product.lowQtty,
+                                                                      sizeType:
+                                                                          product.sizeType,
+                                                                      startDate:
+                                                                          product.startDate,
+                                                                      uuid:
+                                                                          product.uuid,
+                                                                    ),
+                                                                    oldProduct:
+                                                                        product,
+                                                                  );
+
+                                                                  setState(
+                                                                    () {
+                                                                      // isEditQuantityLoading =
+                                                                      //     false;
+                                                                      // showSuccess =
+                                                                      //     true;
+                                                                    },
+                                                                  );
+                                                                  // if (safeContext.mounted) {
+                                                                  //   await dataProvider.getProducts(
+                                                                  //     shopI,
+                                                                  //   );
+                                                                  // }
+                                                                  // if (safeContext.mounted) {
+                                                                  //   await dataProvider.getProducts(
+                                                                  //     shopI,
+                                                                  //   );
+                                                                  // }
+
+                                                                  if (safeContext.mounted) {
+                                                                    Navigator.of(
+                                                                      safeContext,
+                                                                    ).pop();
+                                                                    setState(
+                                                                      () {},
+                                                                    );
+                                                                  }
+
+                                                                  // setState(
+                                                                  //   () {
+                                                                  //     showSuccess =
+                                                                  //         false;
+                                                                  //   },
+                                                                  // );
+                                                                },
+                                                              );
+                                                            },
+                                                          );
+                                                        }
                                                       },
                                                       text:
                                                           'Update Quantity',

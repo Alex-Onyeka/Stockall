@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_main_receipt/unsynced/created_receipts/cre
 import 'package:stockall/classes/temp_main_receipt/unsynced/deleted_customers/deleted_receipts.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/classes/temp_product_slaes_record/unsynced/created_records/created_records.dart';
+import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/main_receipt/main_receipt_func.dart';
 import 'package:stockall/local_database/main_receipt/unsync_funcs/created/created_receipts_func.dart';
@@ -679,14 +680,6 @@ class ReceiptsProvider extends ChangeNotifier {
         authorized: Authorizations().viewAllDepartments,
       )) {
         return receipts.where((cat) {
-          // if (cat.departmentUuidNew == null) {
-          //   return true;
-          // } else {
-          //   return cat.departmentUuidNew ==
-          //       returnDepartmentProvider()
-          //           .currentDepartment()
-          //           ?.uuid;
-          // }
           return cat.departmentUuidNew ==
               returnDepartmentProvider()
                   .currentDepartment()
@@ -700,9 +693,6 @@ class ReceiptsProvider extends ChangeNotifier {
           return receipts;
         } else {
           return receipts.where((cat) {
-            // if (cat.departmentUuidNew == null) {
-            //   return true;
-            // } else {
             return cat.departmentUuidNew ==
                 returnDepartmentProvider()
                     .currentDepartment()
@@ -724,9 +714,13 @@ class ReceiptsProvider extends ChangeNotifier {
       if (rangeStartDate != null) {
         return departmentReceipts().where((receipt) {
           final created = receipt.createdAt.toLocal();
-          return !created.isBefore(rangeStartDate!) &&
+          return !created.isBefore(
+                fourAm(rangeStartDate!),
+              ) &&
               !created.isAfter(
-                rangeEndDate ?? DateTime.now(),
+                fourAmNextDay(
+                  rangeEndDate ?? DateTime.now(),
+                ),
               );
         }).toList();
       } else {
@@ -735,12 +729,12 @@ class ReceiptsProvider extends ChangeNotifier {
         return departmentReceipts()
             .where(
               (receipt) =>
-                  (receipt.createdAt.day ==
-                      currentDate.day) &&
-                  (receipt.createdAt.month ==
-                      currentDate.month) &&
-                  (receipt.createdAt.year ==
-                      currentDate.year),
+                  !receipt.createdAt.isBefore(
+                    fourAm(currentDate),
+                  ) &&
+                  !receipt.createdAt.isAfter(
+                    fourAmNextDay(currentDate),
+                  ),
             )
             .toList();
       }
@@ -752,19 +746,25 @@ class ReceiptsProvider extends ChangeNotifier {
         )) {
           return receipts.where((receipt) {
             final created = receipt.createdAt.toLocal();
-            return !created.isBefore(rangeStartDate!) &&
+            return !created.isBefore(
+                  fourAm(rangeStartDate!),
+                ) &&
                 !created.isAfter(
-                  rangeEndDate ?? DateTime.now(),
+                  fourAmNextDay(
+                    rangeEndDate ?? DateTime.now(),
+                  ),
                 );
           }).toList();
         } else {
           return receipts.where((receipt) {
-            final created =
-                receipt.createdAt
-                    .toLocal(); // convert UTC to local
-            return !created.isBefore(rangeStartDate!) &&
+            final created = receipt.createdAt.toLocal();
+            return !created.isBefore(
+                  fourAm(rangeStartDate!),
+                ) &&
                 !created.isAfter(
-                  rangeEndDate ?? DateTime.now(),
+                  fourAmNextDay(
+                    rangeEndDate ?? DateTime.now(),
+                  ),
                 ) &&
                 receipt.staffId == currentUser().userId;
           }).toList();
@@ -779,24 +779,24 @@ class ReceiptsProvider extends ChangeNotifier {
           return receipts
               .where(
                 (receipt) =>
-                    (receipt.createdAt.day ==
-                        currentDate.day) &&
-                    (receipt.createdAt.month ==
-                        currentDate.month) &&
-                    (receipt.createdAt.year ==
-                        currentDate.year),
+                    !receipt.createdAt.isBefore(
+                      fourAm(currentDate),
+                    ) &&
+                    !receipt.createdAt.isAfter(
+                      fourAmNextDay(currentDate),
+                    ),
               )
               .toList();
         } else {
           return receipts
               .where(
                 (receipt) =>
-                    (receipt.createdAt.day ==
-                        currentDate.day) &&
-                    (receipt.createdAt.month ==
-                        currentDate.month) &&
-                    (receipt.createdAt.year ==
-                        currentDate.year) &&
+                    !receipt.createdAt.isBefore(
+                      fourAm(currentDate),
+                    ) &&
+                    !receipt.createdAt.isAfter(
+                      fourAmNextDay(currentDate),
+                    ) &&
                     receipt.staffId == currentUser().userId,
               )
               .toList();
@@ -813,7 +813,7 @@ class ReceiptsProvider extends ChangeNotifier {
       TempMainReceipt? receipt;
 
       try {
-        receipt = receipts.firstWhere(
+        receipt = departmentReceipts().firstWhere(
           (recx) => recx.uuid == rec.receiptUuid,
         );
       } catch (e) {
@@ -832,17 +832,25 @@ class ReceiptsProvider extends ChangeNotifier {
       )) {
         return recordss.where((record) {
           final created = record.createdAt.toLocal();
-          return !created.isBefore(rangeStartDate!) &&
+          return !created.isBefore(
+                fourAm(rangeStartDate!),
+              ) &&
               !created.isAfter(
-                rangeEndDate ?? DateTime.now(),
+                fourAmNextDay(
+                  rangeEndDate ?? DateTime.now(),
+                ),
               );
         }).toList();
       } else {
         return recordss.where((record) {
           final created = record.createdAt.toLocal();
-          return !created.isBefore(rangeStartDate!) &&
+          return !created.isBefore(
+                fourAm(rangeStartDate!),
+              ) &&
               !created.isAfter(
-                rangeEndDate ?? DateTime.now(),
+                fourAmNextDay(
+                  rangeEndDate ?? DateTime.now(),
+                ),
               ) &&
               record.staffId == currentUser().userId;
         }).toList();
@@ -857,21 +865,24 @@ class ReceiptsProvider extends ChangeNotifier {
       return recordss
           .where(
             (record) =>
-                (record.createdAt.day == currentDate.day) &&
-                (record.createdAt.month ==
-                    currentDate.month) &&
-                (record.createdAt.year == currentDate.year),
+                !record.createdAt.isBefore(
+                  fourAm(currentDate),
+                ) &&
+                !record.createdAt.isAfter(
+                  fourAmNextDay(currentDate),
+                ),
           )
           .toList();
     } else {
       return recordss
           .where(
             (record) =>
-                (record.createdAt.day == currentDate.day) &&
-                (record.createdAt.month ==
-                    currentDate.month) &&
-                (record.createdAt.year ==
-                    currentDate.year) &&
+                !record.createdAt.isBefore(
+                  fourAm(currentDate),
+                ) &&
+                !record.createdAt.isAfter(
+                  fourAmNextDay(currentDate),
+                ) &&
                 record.staffId == currentUser().userId,
           )
           .toList();

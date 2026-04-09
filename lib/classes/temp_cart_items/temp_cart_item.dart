@@ -152,6 +152,33 @@ class TempCartItem extends HiveObject {
     }
   }
 
+  TempCartItem copyWith({
+    TempProductClass? item,
+    double? discount,
+    double? fixedDiscount,
+    double? quantity,
+    double? customPrice,
+    bool? setCustomPrice,
+    bool? useWholeSalePrice,
+    bool? setTotalPrice,
+    bool? addToStock,
+    String? salesRecordId,
+  }) {
+    return TempCartItem(
+      item: item ?? this.item,
+      discount: discount ?? this.discount,
+      fixedDiscount: fixedDiscount ?? this.fixedDiscount,
+      quantity: quantity ?? this.quantity,
+      customPrice: customPrice ?? this.customPrice,
+      setCustomPrice: setCustomPrice ?? this.setCustomPrice,
+      useWholeSalePrice:
+          useWholeSalePrice ?? this.useWholeSalePrice,
+      setTotalPrice: setTotalPrice ?? this.setTotalPrice,
+      addToStock: addToStock ?? this.addToStock,
+      salesRecordId: salesRecordId ?? this.salesRecordId,
+    );
+  }
+
   // double profitOrLoss() {
   //   return item.costPrice == 0
   //       ? 0

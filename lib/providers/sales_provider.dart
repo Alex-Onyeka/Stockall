@@ -823,7 +823,7 @@ class SalesProvider extends ChangeNotifier {
                   )
                   .first
                   .name
-              : 'Not Set');
+              : null);
     } else {
       return CustomersProvider()
               .customersMain()
@@ -842,7 +842,7 @@ class SalesProvider extends ChangeNotifier {
               )
               .first
               .name
-          : 'Not Set';
+          : null;
     }
   }
 
@@ -894,13 +894,11 @@ class SalesProvider extends ChangeNotifier {
       return currentCart().departmentName ??
           returnDepartmentProvider()
               .currentDepartment()
-              ?.name ??
-          null;
+              ?.name;
     } else {
       return returnDepartmentProvider()
-              .currentDepartment()
-              ?.name ??
-          null;
+          .currentDepartment()
+          ?.name;
     }
   }
 
@@ -909,13 +907,11 @@ class SalesProvider extends ChangeNotifier {
       return currentCart().departmentUuid ??
           returnDepartmentProvider()
               .currentDepartment()
-              ?.uuid ??
-          null;
+              ?.uuid;
     } else {
       return returnDepartmentProvider()
-              .currentDepartment()
-              ?.uuid ??
-          null;
+          .currentDepartment()
+          ?.uuid;
     }
   }
 
@@ -1196,11 +1192,10 @@ class SalesProvider extends ChangeNotifier {
                   cartItem.item.isManaged) {
                 if (isOnline) {
                   await supabase.rpc(
-                    'decrement_product_quantity_new',
+                    'decrement_product_quantity_new_double',
                     params: {
                       'p_product_uuid': cartItem.item.uuid,
-                      'p_quantity':
-                          cartItem.quantity.toInt(),
+                      'p_quantity': cartItem.quantity,
                     },
                   );
                 } else {
@@ -1488,11 +1483,10 @@ class SalesProvider extends ChangeNotifier {
                   cartItem.item.isManaged) {
                 if (isOnline) {
                   await supabase.rpc(
-                    'decrement_product_quantity_new',
+                    'decrement_product_quantity_new_double',
                     params: {
                       'p_product_uuid': cartItem.item.uuid,
-                      'p_quantity':
-                          cartItem.quantity.toInt(),
+                      'p_quantity': cartItem.quantity,
                     },
                   );
                 } else {

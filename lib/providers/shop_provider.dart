@@ -1303,6 +1303,78 @@ class ShopProvider extends ChangeNotifier {
     }
   }
 
+  bool useCloseSalesLoading = false;
+
+  Future<int> toggleUseCloseSales() async {
+    bool isOnline = await connectivity.isOnline();
+    useCloseSalesLoading = true;
+    notifyListeners();
+    try {
+      if (isOnline) {
+        Map<String, dynamic>? res =
+            await supabase
+                .from('shops')
+                .update({
+                  'use_close_sale':
+                      !userShop()!.useCloseSale!,
+                })
+                .eq('shop_id', userShop()!.shopId!)
+                .select()
+                .maybeSingle();
+        if (res == null) {
+          print('Use Close Sale Update Failed');
+          useCloseSalesLoading = false;
+          notifyListeners();
+          return 0;
+        }
+
+        if (userShop()!.useCloseSale!) {
+          returnDepartmentProvider().selectDepartment();
+        }
+        var shops = await getUserShops();
+        setShops(shops);
+        useCloseSalesLoading = false;
+        // returnSalesProvider().selectFistMainCart();
+        notifyListeners();
+        return 1;
+      } else {
+        try {
+          if (userShop()!.useCloseSale!) {
+            returnDepartmentProvider().selectDepartment();
+          }
+          userShop()!.updatedAt = DateTime.now();
+          userShop()!.useCloseSale =
+              !userShop()!.useCloseSale!;
+          await ShopFunc().updateShop(userShop()!);
+          if (userShop() != null) {
+            await UpdatedShopFunc().createUpdatedShop(
+              UpdatedShop(shop: userShop()!),
+            );
+            // setShops(shop);
+            notifyListeners();
+          }
+          useCloseSalesLoading = false;
+          notifyListeners();
+          return 1;
+        } catch (e) {
+          print(
+            "❌ Failed to Update Use Close Sale Offline: ${e.toString()}",
+          );
+          useCloseSalesLoading = false;
+          notifyListeners();
+          return 0;
+        }
+      }
+    } catch (e) {
+      print(
+        "❌ Failed to Update Use Close Sale: ${e.toString()}",
+      );
+      useCloseSalesLoading = false;
+      notifyListeners();
+      return 0;
+    }
+  }
+
   bool printSalesDocketLoading = false;
 
   Future<int> togglePrintSalesDocket() async {

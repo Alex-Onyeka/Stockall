@@ -37,6 +37,7 @@ import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/products/compnents/cart_item_main.dart';
 import 'package:stockall/pages/sales/make_sales/page1/platforms/components/select_sub_staff_list_widget.dart';
 import 'package:stockall/pages/sales/make_sales/page2/make_sales_two.dart';
+import 'package:stockall/providers/theme_provider.dart';
 
 class MakeSalesDesktop extends StatefulWidget {
   final TextEditingController searchController;
@@ -2764,52 +2765,218 @@ class _MakeSalesDesktopState
                                                       context:
                                                           context,
                                                       action: () {
+                                                        var number =
+                                                            2;
+                                                        for (
+                                                          var i = 0;
+                                                          i <
+                                                              number;
+                                                          i++
+                                                        ) {
+                                                          if (returnSalesProvider().scanBarcodeCartPageNode.hasFocus) {
+                                                            returnSalesProvider().removeListenerScanBarcode();
+                                                          }
+                                                          print(
+                                                            "${returnSalesProvider().scanBarcodeCartPageNode.hasFocus} Beans",
+                                                          );
+                                                        }
+                                                        List<
+                                                          TempCartItem
+                                                        >
+                                                        list =
+                                                            [];
+                                                        bool
+                                                        showTotal =
+                                                            false;
+                                                        // setState(() {
+                                                        //   list.addAll(
+                                                        //     returnSalesProvider().currentCart().cartItems,
+                                                        //   );
+                                                        // });
                                                         showDialog(
                                                           context:
                                                               context,
                                                           builder: (
-                                                            confirmContext,
+                                                            firstContext,
                                                           ) {
-                                                            return ConfirmationAlert(
-                                                              theme:
-                                                                  theme,
-                                                              message:
-                                                                  'You are about to print docket slip for this cart. Are you sure you want to proceed?',
-                                                              title:
-                                                                  'Print Docket Slip',
-                                                              action: () {
-                                                                Navigator.of(
-                                                                  confirmContext,
-                                                                ).pop();
-                                                                if (kIsWeb) {
-                                                                  downloadDocket(
-                                                                    cart:
-                                                                        returnSalesProvider().currentCart(),
-                                                                    context:
-                                                                        context,
-                                                                    fileName:
-                                                                        'DocketSlip${DateTime.now().microsecondsSinceEpoch.toString().substring(0, 5)}',
-                                                                    waiter:
-                                                                        returnSalesProvider().currentMainCart().subStaff?.staffName ??
-                                                                        'Not Set',
-                                                                  );
-                                                                } else {
-                                                                  printDocket(
-                                                                    cart:
-                                                                        returnSalesProvider().currentCart(),
-                                                                    context:
-                                                                        context,
-                                                                    fileName:
-                                                                        'DocketSlip${DateTime.now().microsecondsSinceEpoch.toString().substring(0, 5)}',
-                                                                    waiter:
-                                                                        returnSalesProvider().currentMainCart().subStaff?.staffName ??
-                                                                        'Not Set',
-                                                                  );
-                                                                }
+                                                            return StatefulBuilder(
+                                                              builder: (
+                                                                secondContext,
+                                                                setState,
+                                                              ) {
+                                                                return DialogTemplate(
+                                                                  theme:
+                                                                      theme,
+                                                                  message:
+                                                                      'Select Items to print for this Docket',
+                                                                  title:
+                                                                      'Select Item(s)',
+                                                                  action: () {
+                                                                    showDialog(
+                                                                      context:
+                                                                          context,
+                                                                      builder: (
+                                                                        confirmContext,
+                                                                      ) {
+                                                                        return ConfirmationAlert(
+                                                                          theme:
+                                                                              theme,
+                                                                          message:
+                                                                              'You are about to print docket slip for this cart. Are you sure you want to proceed?',
+                                                                          title:
+                                                                              'Print Docket Slip',
+                                                                          action: () {
+                                                                            Navigator.of(
+                                                                              confirmContext,
+                                                                            ).pop();
+                                                                            if (kIsWeb) {
+                                                                              downloadDocket(
+                                                                                setTotal:
+                                                                                    showTotal,
+                                                                                items:
+                                                                                    list,
+                                                                                cart:
+                                                                                    returnSalesProvider().currentCart(),
+                                                                                context:
+                                                                                    context,
+                                                                                fileName:
+                                                                                    'DocketSlip${DateTime.now().microsecondsSinceEpoch.toString().substring(0, 5)}',
+                                                                                waiter:
+                                                                                    returnSalesProvider().currentMainCart().subStaff?.staffName ??
+                                                                                    'Not Set',
+                                                                              );
+                                                                            } else {
+                                                                              printDocket(
+                                                                                setTotal:
+                                                                                    showTotal,
+                                                                                items:
+                                                                                    list,
+                                                                                cart:
+                                                                                    returnSalesProvider().currentCart(),
+                                                                                context:
+                                                                                    context,
+                                                                                fileName:
+                                                                                    'DocketSlip${DateTime.now().microsecondsSinceEpoch.toString().substring(0, 5)}',
+                                                                                waiter:
+                                                                                    returnSalesProvider().currentMainCart().subStaff?.staffName ??
+                                                                                    'Not Set',
+                                                                              );
+                                                                            }
+                                                                          },
+                                                                        );
+                                                                      },
+                                                                    );
+                                                                  },
+                                                                  widget: SizedBox(
+                                                                    height:
+                                                                        screenHeight(
+                                                                          context,
+                                                                        ) -
+                                                                        300,
+                                                                    child: Column(
+                                                                      children: [
+                                                                        Expanded(
+                                                                          child: SingleChildScrollView(
+                                                                            child: Padding(
+                                                                              padding: const EdgeInsets.symmetric(
+                                                                                horizontal:
+                                                                                    20.0,
+                                                                                vertical:
+                                                                                    15,
+                                                                              ),
+                                                                              child: Column(
+                                                                                spacing:
+                                                                                    5,
+                                                                                children:
+                                                                                    returnSalesProvider()
+                                                                                        .currentCart()
+                                                                                        .cartItems
+                                                                                        .map(
+                                                                                          (
+                                                                                            item,
+                                                                                          ) => DocketListTileWidget(
+                                                                                            item:
+                                                                                                item,
+                                                                                            list:
+                                                                                                list,
+                                                                                            theme:
+                                                                                                theme,
+                                                                                          ),
+                                                                                        )
+                                                                                        .toList(),
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                        Container(
+                                                                          padding: const EdgeInsets.symmetric(
+                                                                            horizontal:
+                                                                                20.0,
+                                                                            vertical:
+                                                                                10,
+                                                                          ),
+                                                                          decoration: BoxDecoration(
+                                                                            border: Border(
+                                                                              top: BorderSide(
+                                                                                color:
+                                                                                    Colors.grey.shade300,
+                                                                                width:
+                                                                                    1,
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                          child: Row(
+                                                                            mainAxisAlignment:
+                                                                                MainAxisAlignment.spaceBetween,
+                                                                            children: [
+                                                                              Text(
+                                                                                style: TextStyle(
+                                                                                  fontWeight:
+                                                                                      FontWeight.bold,
+                                                                                ),
+                                                                                'Print Total Bill',
+                                                                              ),
+                                                                              MyToggleButton(
+                                                                                boolValue:
+                                                                                    showTotal,
+                                                                                toggle: () {
+                                                                                  setState(
+                                                                                    () {
+                                                                                      if (showTotal ==
+                                                                                          true) {
+                                                                                        showTotal =
+                                                                                            false;
+                                                                                        list.clear();
+                                                                                      } else {
+                                                                                        showTotal =
+                                                                                            true;
+                                                                                        list.clear();
+                                                                                        list.addAll(
+                                                                                          returnSalesProvider().currentCart().cartItems,
+                                                                                        );
+                                                                                      }
+                                                                                    },
+                                                                                  );
+                                                                                },
+                                                                                theme:
+                                                                                    theme,
+                                                                              ),
+                                                                            ],
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                );
                                                               },
                                                             );
                                                           },
-                                                        );
+                                                        ).then((
+                                                          _,
+                                                        ) {
+                                                          returnSalesProvider().requestFocusScanBarcode();
+                                                          returnSalesProvider().addListenerScanBarcode();
+                                                        });
                                                       },
                                                     );
                                                   },
@@ -3127,6 +3294,201 @@ class _MakeSalesDesktopState
       ),
     );
     // return Scaffold(appBar: AppBar());
+  }
+}
+
+class DocketListTileWidget extends StatefulWidget {
+  const DocketListTileWidget({
+    super.key,
+    required this.list,
+    required this.theme,
+    required this.item,
+  });
+
+  final List<TempCartItem> list;
+  final ThemeProvider theme;
+  final TempCartItem item;
+
+  @override
+  State<DocketListTileWidget> createState() =>
+      _DocketListTileWidgetState();
+}
+
+class _DocketListTileWidgetState
+    extends State<DocketListTileWidget> {
+  TempCartItem? newItem;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        newItem = widget.item.copyWith(quantity: 0);
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          setState(() {
+            if (widget.list.contains(newItem)) {
+              widget.list.remove(newItem);
+            } else {
+              widget.list.add(newItem!);
+              if (newItem?.quantity == 0) {
+                newItem?.quantity++;
+              }
+            }
+          });
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: 7.0,
+            horizontal: 12,
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment:
+                MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  style: TextStyle(
+                    fontSize:
+                        widget
+                            .theme
+                            .mobileTexts
+                            .b3
+                            .fontSize,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  newItem?.item.name ?? 'Name',
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                spacing: 6,
+                children: [
+                  Ink(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(
+                        3,
+                      ),
+                      color: Colors.grey.shade200,
+                    ),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(
+                        3,
+                      ),
+                      onTap: () {
+                        setState(() {
+                          if ((newItem?.quantity ?? 0) >
+                              0) {
+                            newItem?.quantity--;
+                          }
+                          if ((newItem?.quantity ?? 0) ==
+                              0) {
+                            widget.list.remove(newItem);
+                          }
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 7.0,
+                          horizontal: 8,
+                        ),
+                        child: Icon(
+                          size: 14,
+                          Icons.arrow_back_ios_new_rounded,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Text(
+                    style: TextStyle(
+                      fontSize:
+                          widget
+                              .theme
+                              .mobileTexts
+                              .b2
+                              .fontSize,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    newItem?.quantity.toString() ?? '0',
+                  ),
+                  Ink(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(
+                        3,
+                      ),
+                      color: Colors.grey.shade200,
+                    ),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(
+                        3,
+                      ),
+                      onTap: () {
+                        setState(() {
+                          newItem?.quantity++;
+                          if (!widget.list.contains(
+                            newItem,
+                          )) {
+                            widget.list.add(newItem!);
+                          }
+                        });
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 7.0,
+                          horizontal: 8,
+                        ),
+                        child: Icon(
+                          size: 14,
+                          Icons.arrow_forward_ios_rounded,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.grey,
+                        ),
+                      ),
+                      child: Container(
+                        padding: EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color:
+                              widget.list.contains(newItem)
+                                  ? widget
+                                      .theme
+                                      .lightModeColor
+                                      .prColor250
+                                  : Colors.transparent,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 

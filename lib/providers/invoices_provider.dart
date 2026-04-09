@@ -862,9 +862,6 @@ class InvoicesProvider extends ChangeNotifier {
         authorized: Authorizations().viewAllDepartments,
       )) {
         return invoicesMain.where((cat) {
-          // if (cat.departmentUuidNew == null) {
-          //   return true;
-          // } else {
           return cat.departmentUuidNew ==
               returnDepartmentProvider()
                   .currentDepartment()
@@ -879,9 +876,6 @@ class InvoicesProvider extends ChangeNotifier {
           return invoicesMain;
         } else {
           return invoicesMain.where((cat) {
-            // if (cat.departmentUuidNew == null) {
-            //   return true;
-            // } else {
             return cat.departmentUuidNew ==
                 returnDepartmentProvider()
                     .currentDepartment()
@@ -905,31 +899,19 @@ class InvoicesProvider extends ChangeNotifier {
     if (rangeStartDate != null) {
       return departmentInvoices().where((invoice) {
         final created = invoice.createdAt.toLocal();
-        return !created.isBefore(rangeStartDate!) &&
-            created.isBefore(
-              rangeEndDate ?? DateTime.now(),
+        return !created.isBefore(fourAm(rangeStartDate!)) &&
+            !created.isAfter(
+              fourAmNextDay(rangeEndDate ?? DateTime.now()),
             );
       }).toList();
     }
 
     if (dateSet != null) {
-      final localNow = DateTime.now();
-      final localTarget = dateSet?.toLocal() ?? localNow;
-
-      final startOfDay = DateTime(
-        localTarget.year,
-        localTarget.month,
-        localTarget.day,
-      );
-      final endOfDay = startOfDay.add(
-        const Duration(days: 1),
-      );
-
       return departmentInvoices().where((invoice) {
         final created = invoice.createdAt.toLocal();
         final inRange =
-            !created.isBefore(startOfDay) &&
-            created.isBefore(endOfDay);
+            !created.isBefore(fourAm(dateSet!)) &&
+            !created.isAfter(fourAmNextDay(dateSet!));
 
         return inRange;
       }).toList();
@@ -1043,9 +1025,9 @@ class InvoicesProvider extends ChangeNotifier {
       // Prepare batch payload
       if (CreatedInvoicesFunc().getInvoices().isNotEmpty &&
           isOnline) {
-        final TempInvoice =
+        final tempInvoice =
             CreatedInvoicesFunc().getInvoices().toList();
-        var newInvoices = TempInvoice.map((inv) {
+        var newInvoices = tempInvoice.map((inv) {
           inv.invoice.createdAt =
               inv.invoice.createdAt.toUtc();
           return inv;

@@ -71,9 +71,6 @@ class EventsLogProvider with ChangeNotifier {
         authorized: Authorizations().viewAllDepartments,
       )) {
         return logs.where((cat) {
-          // if (cat.departmentUuid == null) {
-          //   return true;
-          // } else {
           return cat.departmentUuid ==
               returnDepartmentProvider()
                   .currentDepartment()
@@ -88,14 +85,10 @@ class EventsLogProvider with ChangeNotifier {
           return logs;
         } else {
           return logs.where((cat) {
-            // if (cat.departmentUuid == null) {
-            //   return true;
-            // } else {
             return cat.departmentUuid ==
                 returnDepartmentProvider()
                     .currentDepartment()
                     ?.uuid;
-            // }
           }).toList();
         }
       }
@@ -119,24 +112,24 @@ class EventsLogProvider with ChangeNotifier {
       return departmentEvents()
           .where(
             (log) =>
-                (log.createdAt!.day == dateSet!.day) &&
-                (log.createdAt!.month == dateSet!.month) &&
-                (log.createdAt!.year == dateSet!.year),
+                !log.createdAt!.isBefore(
+                  fourAm(dateSet!),
+                ) &&
+                !log.createdAt!.isAfter(
+                  fourAmNextDay(dateSet!),
+                ),
           )
           .toList();
-      // return departmentEvents();
     } else {
       return departmentEvents()
           .where(
             (log) =>
-                ((log.createdAt!.isAfter(
-                      rangeStartDate!.subtract(
-                        Duration(days: 1),
-                      ),
-                    )) &&
-                    (log.createdAt!.isBefore(
-                      rangeEndDate!.add(Duration(days: 1)),
-                    ))),
+                !log.createdAt!.isBefore(
+                  fourAm(rangeStartDate!),
+                ) &&
+                !log.createdAt!.isAfter(
+                  fourAmNextDay(rangeEndDate!),
+                ),
           )
           .toList();
     }

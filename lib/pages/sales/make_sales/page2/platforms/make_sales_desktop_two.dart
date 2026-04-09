@@ -1163,15 +1163,6 @@ class _MakeSalesDesktopTwoState
                                                   salesCartItem:
                                                       returnSalesProvider()
                                                           .currentCart(),
-                                                  // staffId:
-                                                  //     AuthService()
-                                                  //         .currentUser!,
-                                                  // staffName:
-                                                  //     returnUserProvider(
-                                                  //       context,
-                                                  //       listen:
-                                                  //           false,
-                                                  //     ).currentUserMain!.name,
                                                   shopId:
                                                       returnShopProvider()
                                                           .userShop()!

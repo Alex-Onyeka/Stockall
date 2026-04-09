@@ -157,6 +157,12 @@ class TempShopClass {
   @HiveField(50)
   bool? printSalesDocket;
 
+  @HiveField(51)
+  bool? useCloseSale;
+
+  @HiveField(52)
+  DateTime? closeSaleTime;
+
   TempShopClass({
     this.shopId,
     required this.createdAt,
@@ -209,6 +215,8 @@ class TempShopClass {
     required this.wholeSale,
     required this.manageDepartments,
     required this.printSalesDocket,
+    required this.useCloseSale,
+    required this.closeSaleTime,
   });
 
   factory TempShopClass.fromJson(
@@ -243,13 +251,6 @@ class TempShopClass {
           json['updated_at'] != null
               ? DateTime.parse(json['updated_at'] as String)
               : null,
-      // plan: json['plan'],
-      // nextPayment:
-      //     json['next_payment'] != null
-      //         ? DateTime.parse(
-      //           json['next_payment'] as String,
-      //         )
-      //         : null,
       instaHandle: json['insta_handle'] as String?,
       faceBookHandle: json['facebook_handle'] as String?,
       showAddress: json['show_address'] as bool?,
@@ -283,6 +284,8 @@ class TempShopClass {
       manageDepartments:
           json['manage_departments'] as bool?,
       printSalesDocket: json['print_sales_docket'] as bool?,
+      useCloseSale: json['use_close_sale'] as bool?,
+      closeSaleTime: json['close_sale_time'] as DateTime?,
     );
   }
 
@@ -337,6 +340,8 @@ class TempShopClass {
       'whole_sale': wholeSale,
       'manage_departments': manageDepartments,
       'print_sales_docket': printSalesDocket,
+      'use_close_sale': useCloseSale,
+      'close_sale_time': closeSaleTime?.toIso8601String(),
     };
   }
 }

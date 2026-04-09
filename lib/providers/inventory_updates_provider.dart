@@ -64,9 +64,6 @@ class InventoryUpdatesProvider with ChangeNotifier {
         authorized: Authorizations().viewAllDepartments,
       )) {
         return inventoryUpdates.where((cat) {
-          // if (cat.departmentUuid == null) {
-          //   return true;
-          // } else {
           return cat.departmentUuid ==
               returnDepartmentProvider()
                   .currentDepartment()
@@ -81,9 +78,6 @@ class InventoryUpdatesProvider with ChangeNotifier {
           return inventoryUpdates;
         } else {
           return inventoryUpdates.where((cat) {
-            // if (cat.departmentUuid == null) {
-            //   return true;
-            // } else {
             return cat.departmentUuid ==
                 returnDepartmentProvider()
                     .currentDepartment()
@@ -112,25 +106,23 @@ class InventoryUpdatesProvider with ChangeNotifier {
       return departmentInventoryUpdates()
           .where(
             (inventoryUpdate) =>
-                (inventoryUpdate.createdAt!.day ==
-                    dateSet!.day) &&
-                (inventoryUpdate.createdAt!.month ==
-                    dateSet!.month) &&
-                (inventoryUpdate.createdAt!.year ==
-                    dateSet!.year),
+                !inventoryUpdate.createdAt!.isBefore(
+                  fourAm(dateSet!),
+                ) &&
+                !inventoryUpdate.createdAt!.isAfter(
+                  fourAmNextDay(dateSet!),
+                ),
           )
           .toList();
     } else {
       return departmentInventoryUpdates()
           .where(
             (update) =>
-                ((update.createdAt!.isAfter(
-                      rangeStartDate!.subtract(
-                        Duration(days: 1),
-                      ),
+                ((!update.createdAt!.isBefore(
+                      fourAm(rangeStartDate!),
                     )) &&
-                    (update.createdAt!.isBefore(
-                      rangeEndDate!.add(Duration(days: 1)),
+                    (!update.createdAt!.isAfter(
+                      fourAmNextDay(rangeEndDate!),
                     ))),
           )
           .toList();

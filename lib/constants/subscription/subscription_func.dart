@@ -66,6 +66,7 @@ List<SubplanClass> subPlans = [
       manageVAT: true,
       manageDepartments: true,
       numberOfDepartments: 10,
+      useCloseSale: true,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
@@ -139,6 +140,7 @@ List<SubplanClass> subPlans = [
       manageVAT: true,
       manageDepartments: true,
       numberOfDepartments: 5,
+      useCloseSale: true,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
@@ -213,6 +215,7 @@ List<SubplanClass> subPlans = [
       manageVAT: true,
       manageDepartments: false,
       numberOfDepartments: 0,
+      useCloseSale: true,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
@@ -287,6 +290,7 @@ List<SubplanClass> subPlans = [
       manageVAT: true,
       manageDepartments: false,
       numberOfDepartments: 0,
+      useCloseSale: false,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
@@ -361,6 +365,7 @@ List<SubplanClass> subPlans = [
       allowOfflineUse: true,
       manageDepartments: false,
       numberOfDepartments: 0,
+      useCloseSale: false,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
@@ -435,6 +440,7 @@ List<SubplanClass> subPlans = [
       allowOfflineUse: false,
       manageDepartments: false,
       numberOfDepartments: 0,
+      useCloseSale: false,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: false,

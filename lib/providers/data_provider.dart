@@ -372,10 +372,10 @@ class DataProvider extends ChangeNotifier {
 
         for (final salesProduct in salesProducts) {
           await supabase.rpc(
-            'decrement_product_quantity_during_sync',
+            'decrement_product_quantity_during_sync_double',
             params: {
               'p_uuid': salesProduct.productUuid,
-              'p_qty': salesProduct.quantity.toInt(),
+              'p_qty': salesProduct.quantity,
             },
           );
 
@@ -1086,8 +1086,8 @@ class DataProvider extends ChangeNotifier {
           true) {
         await returnStorageProductProvider()
             .getStorageProducts(shopId);
-        await returnInventoryUpdatesProvider()
-            .getInventoryUpdates();
+        // await returnInventoryUpdatesProvider()
+        //     .getInventoryUpdates();
       }
 
       await ProductsFunc().insertAllProducts(
@@ -1120,8 +1120,8 @@ class DataProvider extends ChangeNotifier {
           true) {
         await returnStorageProductProvider()
             .getStorageProducts(shopId);
-        await returnInventoryUpdatesProvider()
-            .getInventoryUpdates();
+        // await returnInventoryUpdatesProvider()
+        //     .getInventoryUpdates();
       }
       // productListMain.clear();
     }
