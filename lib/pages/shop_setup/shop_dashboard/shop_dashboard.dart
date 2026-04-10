@@ -18,11 +18,12 @@ class _ShopDashboardState extends State<ShopDashboard> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       returnShopDashboardProvider().clearDate();
-      if (returnShopDashboardProvider()
-          .allReceipts
-          .isEmpty) {
-        await returnShopDashboardProvider().fetchAllData();
-      }
+      // if (returnShopDashboardProvider()
+      //     .allReceipts
+      //     .isEmpty) {
+      //   await returnShopDashboardProvider().fetchAllData();
+      // }
+      await returnShopDashboardProvider().fetchAllData();
     });
   }
 

@@ -490,7 +490,10 @@ class _RestrictedPageState extends State<RestrictedPage> {
                                                     if (safceContext
                                                         .mounted) {
                                                       await AuthService().signOut(
-                                                        safceContext,
+                                                        context:
+                                                            safceContext,
+                                                        allowLogout:
+                                                            true,
                                                       );
                                                     }
                                                   },

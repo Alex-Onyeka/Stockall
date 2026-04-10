@@ -121,20 +121,28 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                       theme: theme,
                       message: 'You are about to Logout',
                       title: 'Are you Sure?',
-                      action: () {
-                        AuthService().signOut(context);
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return AuthScreensPage();
-                            },
-                          ),
-                        );
-                        returnNavProvider(
-                          context,
-                          listen: false,
-                        ).navigate(0);
+                      action: () async {
+                        var res = await AuthService()
+                            .signOut(
+                              context: context,
+                              allowLogout: false,
+                            );
+                        if (res == 1) {
+                          if (context.mounted) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return AuthScreensPage();
+                                },
+                              ),
+                            );
+                            returnNavProvider(
+                              context,
+                              listen: false,
+                            ).navigate(0);
+                          }
+                        }
                       },
                     );
                   },

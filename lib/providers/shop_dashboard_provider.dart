@@ -6,6 +6,7 @@ import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
+import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -124,9 +125,13 @@ class ShopDashboardProvider extends ChangeNotifier {
       return tempRecs
           .where(
             (recc) =>
-                !recc.createdAt.isBefore(rangeStartDate!) &&
+                !recc.createdAt.isBefore(
+                  fourAm(rangeStartDate!),
+                ) &&
                 !recc.createdAt.isAfter(
-                  rangeEndDate ?? DateTime.now(),
+                  fourAmNextDay(
+                    rangeEndDate ?? DateTime.now(),
+                  ),
                 ),
           )
           .toList();
@@ -134,13 +139,12 @@ class ShopDashboardProvider extends ChangeNotifier {
       return tempRecs
           .where(
             (recc) =>
-                (recc.createdAt.day ==
-                    (dateSet?.day ?? DateTime.now().day)) &&
-                (recc.createdAt.month ==
-                    (dateSet?.month ??
-                        DateTime.now().month)) &&
-                (recc.createdAt.year ==
-                    (dateSet?.year ?? DateTime.now().year)),
+                !recc.createdAt.isBefore(
+                  fourAm(dateSet ?? DateTime.now()),
+                ) &&
+                !recc.createdAt.isAfter(
+                  fourAmNextDay(dateSet ?? DateTime.now()),
+                ),
           )
           .toList();
     }
@@ -183,10 +187,12 @@ class ShopDashboardProvider extends ChangeNotifier {
           .where(
             (exp) =>
                 !exp.createdDate!.isBefore(
-                  rangeStartDate!,
+                  fourAm(rangeStartDate!),
                 ) &&
                 !exp.createdDate!.isAfter(
-                  rangeEndDate ?? DateTime.now(),
+                  fourAmNextDay(
+                    rangeEndDate ?? DateTime.now(),
+                  ),
                 ),
           )
           .toList();
@@ -194,13 +200,12 @@ class ShopDashboardProvider extends ChangeNotifier {
       return tempExp
           .where(
             (exp) =>
-                (exp.createdDate!.day ==
-                    (dateSet?.day ?? DateTime.now().day)) &&
-                (exp.createdDate!.month ==
-                    (dateSet?.month ??
-                        DateTime.now().month)) &&
-                (exp.createdDate!.year ==
-                    (dateSet?.year ?? DateTime.now().year)),
+                !exp.createdDate!.isBefore(
+                  fourAm(dateSet ?? DateTime.now()),
+                ) &&
+                !exp.createdDate!.isAfter(
+                  fourAmNextDay(dateSet ?? DateTime.now()),
+                ),
           )
           .toList();
     }
@@ -241,9 +246,13 @@ class ShopDashboardProvider extends ChangeNotifier {
       return tempInv
           .where(
             (inv) =>
-                !inv.createdAt.isBefore(rangeStartDate!) &&
+                !inv.createdAt.isBefore(
+                  fourAm(rangeStartDate!),
+                ) &&
                 !inv.createdAt.isAfter(
-                  rangeEndDate ?? DateTime.now(),
+                  fourAmNextDay(
+                    rangeEndDate ?? DateTime.now(),
+                  ),
                 ),
           )
           .toList();
@@ -251,13 +260,12 @@ class ShopDashboardProvider extends ChangeNotifier {
       return tempInv
           .where(
             (inv) =>
-                (inv.createdAt.day ==
-                    (dateSet?.day ?? DateTime.now().day)) &&
-                (inv.createdAt.month ==
-                    (dateSet?.month ??
-                        DateTime.now().month)) &&
-                (inv.createdAt.year ==
-                    (dateSet?.year ?? DateTime.now().year)),
+                !inv.createdAt.isBefore(
+                  fourAm(dateSet ?? DateTime.now()),
+                ) &&
+                !inv.createdAt.isAfter(
+                  fourAmNextDay(dateSet ?? DateTime.now()),
+                ),
           )
           .toList();
     }

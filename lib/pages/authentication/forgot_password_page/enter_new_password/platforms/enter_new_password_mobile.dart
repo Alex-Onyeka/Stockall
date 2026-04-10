@@ -54,7 +54,10 @@ class _EnterNewPasswordMobileState
         });
         await Future.delayed(Duration(seconds: 2));
         if (context.mounted) {
-          await AuthService().signOut(context);
+          await AuthService().signOut(
+            context: context,
+            allowLogout: true,
+          );
         }
         if (context.mounted) {
           Navigator.pushReplacement(
@@ -282,7 +285,10 @@ class _EnterNewPasswordMobileState
                     constraints: BoxConstraints(),
                     text: General().cancelText,
                     action: () async {
-                      await AuthService().signOut(context);
+                      await AuthService().signOut(
+                        context: context,
+                        allowLogout: true,
+                      );
                       if (context.mounted) {
                         Navigator.of(context).pop();
                       }

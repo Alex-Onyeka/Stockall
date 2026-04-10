@@ -352,7 +352,10 @@ class _ShopBannerScreenDesktopState
                                         });
                                         await AuthService()
                                             .signOut(
-                                              context,
+                                              context:
+                                                  context,
+                                              allowLogout:
+                                                  true,
                                             );
                                         if (context
                                             .mounted) {

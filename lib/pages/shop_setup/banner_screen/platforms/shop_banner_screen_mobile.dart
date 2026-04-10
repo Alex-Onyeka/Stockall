@@ -180,7 +180,12 @@ class _ShopBannerScreenMobileState
                                         isLoading = true;
                                       });
                                       await AuthService()
-                                          .signOut(context);
+                                          .signOut(
+                                            context:
+                                                context,
+                                            allowLogout:
+                                                true,
+                                          );
                                       if (context.mounted) {
                                         Navigator.pushReplacement(
                                           context,

@@ -76,6 +76,16 @@ class SalesProvider extends ChangeNotifier {
           cartIdCache =
               mainCartQueue.first.cartQueue.first.id!;
         }
+        if (currentCart().receiptUuidEdit == null) {
+          currentCart().departmentUuid =
+              returnDepartmentProvider()
+                  .currentDepartment()
+                  ?.uuid;
+          currentCart().departmentName =
+              returnDepartmentProvider()
+                  .currentDepartment()
+                  ?.name;
+        }
         notifyListeners();
         return cartIdCache;
         // }
@@ -386,6 +396,17 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool isEmptyCart() {
+    for (var cart in mainCartQueue) {
+      for (var ca in cart.cartQueue) {
+        if (ca.cartItems.isNotEmpty) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   Future<void> deleteCart({
     required String cartId,
     required BuildContext context,
@@ -482,6 +503,17 @@ class SalesProvider extends ChangeNotifier {
       cartClass: cartClass,
       cartIndex: (getIndexOfCartItem(cartId) + 1),
     );
+    notifyListeners();
+    if (currentCart().receiptUuidEdit == null) {
+      currentCart().departmentUuid =
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.uuid;
+      currentCart().departmentName =
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.name;
+    }
     // }
     print(returnMultiDisplayProvider().windows.length);
     notifyListeners();

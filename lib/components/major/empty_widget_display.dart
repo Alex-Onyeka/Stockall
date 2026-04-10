@@ -151,7 +151,10 @@ class EmptyWidgetDisplay extends StatelessWidget {
                     SizedBox(height: 10),
                     InkWell(
                       onTap: () {
-                        AuthService().signOut(context);
+                        AuthService().signOut(
+                          context: context,
+                          allowLogout: false,
+                        );
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(

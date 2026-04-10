@@ -85,9 +85,15 @@ class TotalExpensesDesktopState
                       isLoading = true;
                     });
                     if (safeContext.mounted) {
-                      await AuthService().signOut(
-                        safeContext,
+                      var res = await AuthService().signOut(
+                        context: safeContext,
+                        allowLogout: false,
                       );
+                      if (res == 0 && safeContext.mounted) {
+                        setState(() {
+                          isLoading = false;
+                        });
+                      }
                     }
                   },
                 );
@@ -128,9 +134,17 @@ class TotalExpensesDesktopState
                               isLoading = true;
                             });
                             if (safeContext.mounted) {
-                              await AuthService().signOut(
-                                safeContext,
-                              );
+                              var res = await AuthService()
+                                  .signOut(
+                                    context: safeContext,
+                                    allowLogout: false,
+                                  );
+                              if (res == 0 &&
+                                  safeContext.mounted) {
+                                setState(() {
+                                  isLoading = false;
+                                });
+                              }
                             }
                           },
                         );

@@ -164,30 +164,32 @@ class _DashboardMobileState extends State<DashboardMobile> {
                 action: () {
                   showDialog(
                     context: context,
-                    builder: (context) {
+                    builder: (confirmContext) {
                       return ConfirmationAlert(
                         theme: theme,
                         message: 'You are about to Logout',
                         title: 'Are you Sure?',
                         action: () async {
-                          if (context.mounted) {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return AuthScreensPage();
-                                },
-                              ),
-                            );
-                            returnNavProvider(
-                              context,
-                              listen: false,
-                            ).navigate(0);
-                          }
-                          if (context.mounted) {
-                            await AuthService().signOut(
-                              context,
-                            );
+                          var res = await AuthService()
+                              .signOut(
+                                context: context,
+                                allowLogout: false,
+                              );
+                          if (res == 1) {
+                            if (context.mounted) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return AuthScreensPage();
+                                  },
+                                ),
+                              );
+                              returnNavProvider(
+                                context,
+                                listen: false,
+                              ).navigate(0);
+                            }
                           }
                         },
                       );

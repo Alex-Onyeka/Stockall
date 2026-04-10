@@ -1021,7 +1021,10 @@ class _EmpAuthState extends State<EmpAuth> {
                                                     if (safceContext
                                                         .mounted) {
                                                       await AuthService().signOut(
-                                                        safceContext,
+                                                        context:
+                                                            safceContext,
+                                                        allowLogout:
+                                                            true,
                                                       );
                                                     }
                                                   },

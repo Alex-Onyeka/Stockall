@@ -606,7 +606,8 @@ class _EditMobileState extends State<EditMobile> {
                       text: 'Logout',
                       action: () async {
                         await AuthService().signOut(
-                          context,
+                          context: context,
+                          allowLogout: true,
                         );
                       },
                     ),

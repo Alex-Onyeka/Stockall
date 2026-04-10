@@ -43,7 +43,10 @@ class _VerifyPhoneMobileState
         setState(() {});
         await Future.delayed(Duration(seconds: 2));
         if (context.mounted) {
-          await AuthService().signOut(context);
+          await AuthService().signOut(
+            context: context,
+            allowLogout: true,
+          );
         }
         if (context.mounted) {
           Navigator.pushReplacement(

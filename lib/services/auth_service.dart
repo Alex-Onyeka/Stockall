@@ -271,50 +271,86 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  Future<void> signOut(BuildContext context) async {
-    returnCustomers(
-      context,
-      listen: false,
-    ).clearCustomers();
-    returnData().clearProducts();
-    returnExpensesProvider(
-      context,
-      listen: false,
-    ).clearExpenses();
-    returnNotificationProvider(
-      context,
-      listen: false,
-    ).clearNotifications();
-    returnReceiptProviderSingle().clearReceipts();
-    returnReceiptProviderSingle().load(false);
-    await CurrentShopFunc().clearCurrentShop();
-    returnSalesProvider().clearCart();
-    await CartFunc().clearMainCart();
-    bool isOnline = await connectivity.isOnline();
-
-    if (isOnline) {
-      await _client.auth.signOut();
-      await LoggedInUserFunc().logOut();
-    } else {
-      await LoggedInUserFunc().logOut();
-    }
-    returnShopProvider().clearShop();
-    returnUserProviderSingle().clearUsers();
-    if (context.mounted) {
-      returnNavProvider(context, listen: false).navigate(0);
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) {
-            return AuthScreensPage();
-          },
-        ),
+  Future<int> signOut({
+    required BuildContext context,
+    required bool allowLogout,
+  }) async {
+    if (returnData().isSynced() == 0 && !allowLogout) {
+      showDialog(
+        context: context,
+        builder: (errorContext) {
+          return InfoAlert(
+            theme: returnTheme(context),
+            message:
+                'You currently have some records that have not been backed up to the cloud. Please Proceed to Synchronize, before Logging out.',
+            title: 'Unsyned Records Detected',
+          );
+        },
       );
+      return 0;
+    } else if (!returnSalesProvider().isEmptyCart() &&
+        !allowLogout) {
+      showDialog(
+        context: context,
+        builder: (errorContext) {
+          return InfoAlert(
+            theme: returnTheme(context),
+            message:
+                'You currently have some Items in your cart that you have not checked out. Please Proceed to complete the sales or clear all the carts, before Logging out.',
+            title: 'Cart Not Empty',
+          );
+        },
+      );
+      return 0;
     } else {
-      print('Context is Not Mounted');
-    }
+      returnCustomers(
+        context,
+        listen: false,
+      ).clearCustomers();
+      returnData().clearProducts();
+      returnExpensesProvider(
+        context,
+        listen: false,
+      ).clearExpenses();
+      returnNotificationProvider(
+        context,
+        listen: false,
+      ).clearNotifications();
+      returnReceiptProviderSingle().clearReceipts();
+      returnReceiptProviderSingle().load(false);
+      await CurrentShopFunc().clearCurrentShop();
+      returnSalesProvider().clearCart();
+      await CartFunc().clearMainCart();
+      bool isOnline = await connectivity.isOnline();
 
-    notifyListeners();
+      if (isOnline) {
+        await _client.auth.signOut();
+        await LoggedInUserFunc().logOut();
+      } else {
+        await LoggedInUserFunc().logOut();
+      }
+      returnShopProvider().clearShop();
+      returnUserProviderSingle().clearUsers();
+      if (context.mounted) {
+        returnNavProvider(
+          context,
+          listen: false,
+        ).navigate(0);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return AuthScreensPage();
+            },
+          ),
+        );
+      } else {
+        print('Context is Not Mounted');
+      }
+
+      notifyListeners();
+      return 1;
+    }
   }
 
   Future<void> sendPasswordResetEmail(String email) async {
@@ -456,7 +492,7 @@ class AuthService extends ChangeNotifier {
           context,
           listen: false,
         ).deleteUser(user.id);
-        await signOut(context);
+        await signOut(context: context, allowLogout: true);
         return 1;
       } else {
         print(

@@ -23,12 +23,14 @@ class _DepartmentsDashboardState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       returnDepartmentsDashboardProvider().clearDate();
-      if (returnDepartmentsDashboardProvider()
-          .allReceipts
-          .isEmpty) {
-        await returnDepartmentsDashboardProvider()
-            .fetchAllData();
-      }
+      // if (returnDepartmentsDashboardProvider()
+      //     .allReceipts
+      //     .isEmpty) {
+      //   await returnDepartmentsDashboardProvider()
+      //       .fetchAllData();
+      // }
+      await returnDepartmentsDashboardProvider()
+          .fetchAllData();
     });
   }
 

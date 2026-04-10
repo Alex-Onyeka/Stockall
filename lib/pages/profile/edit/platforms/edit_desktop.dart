@@ -777,7 +777,8 @@ class _EditDesktopState extends State<EditDesktop> {
                               text: 'Logout',
                               action: () async {
                                 await AuthService().signOut(
-                                  context,
+                                  context: context,
+                                  allowLogout: true,
                                 );
                               },
                             ),

@@ -85,9 +85,15 @@ class _SalesPageDesktopState
                     isLoading = true;
                   });
                   if (safeContext.mounted) {
-                    await AuthService().signOut(
-                      safeContext,
+                    var res = await AuthService().signOut(
+                      context: safeContext,
+                      allowLogout: false,
                     );
+                    if (res == 0 && safeContext.mounted) {
+                      setState(() {
+                        isLoading = false;
+                      });
+                    }
                   }
                 },
               );
@@ -127,9 +133,17 @@ class _SalesPageDesktopState
                             isLoading = true;
                           });
                           if (safeContext.mounted) {
-                            await AuthService().signOut(
-                              safeContext,
-                            );
+                            var res = await AuthService()
+                                .signOut(
+                                  context: safeContext,
+                                  allowLogout: false,
+                                );
+                            if (res == 0 &&
+                                safeContext.mounted) {
+                              setState(() {
+                                isLoading = false;
+                              });
+                            }
                           }
                         },
                       );

@@ -51,7 +51,10 @@ class _EnterNewPasswordDesktopState
         });
         await Future.delayed(Duration(seconds: 2));
         if (context.mounted) {
-          await AuthService().signOut(context);
+          await AuthService().signOut(
+            context: context,
+            allowLogout: true,
+          );
         }
         if (context.mounted) {
           Navigator.pushReplacement(
@@ -399,7 +402,12 @@ class _EnterNewPasswordDesktopState
                                             .cancelText,
                                     action: () async {
                                       await AuthService()
-                                          .signOut(context);
+                                          .signOut(
+                                            context:
+                                                context,
+                                            allowLogout:
+                                                true,
+                                          );
                                       if (context.mounted) {
                                         Navigator.of(
                                           context,
