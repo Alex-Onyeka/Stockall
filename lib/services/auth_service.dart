@@ -129,15 +129,17 @@ class AuthService extends ChangeNotifier {
         access: user.access,
       );
 
-      // if (newEmail != null) {
-      // Insert into Supabase
-      await _client.from('users').upsert(userRow.toJson());
-      // } else {
-      //   await _client
-      //       .from('users')
-      //       .update({'email': newEmail})
-      //       .eq('user_id', userId);
-      // }
+      if (newEmail == null) {
+        // Insert into Supabase
+        await _client
+            .from('users')
+            .upsert(userRow.toJson());
+      } else {
+        await _client
+            .from('users')
+            .update({'email': newEmail})
+            .eq('user_id', userId);
+      }
 
       if (context.mounted) {
         returnNavProvider(context, listen: false).verify();

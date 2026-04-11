@@ -14,6 +14,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/local_database/cart_func/cart_func.dart';
@@ -76,6 +77,36 @@ class SalesProvider extends ChangeNotifier {
           cartIdCache =
               mainCartQueue.first.cartQueue.first.id!;
         }
+        if (returnShopProvider()
+                .userShop()
+                ?.manageDepartments ==
+            true) {
+          if (!authorization(
+            authorized: Authorizations().viewAllDepartments,
+          )) {
+            if (returnDepartmentProvider()
+                    .currentDepartment() ==
+                null) {
+              if (returnUserProviderSingle()
+                          .currentUserMain
+                          ?.departmentUuids
+                          ?.isNotEmpty !=
+                      null &&
+                  returnUserProviderSingle()
+                      .currentUserMain!
+                      .departmentUuids!
+                      .isNotEmpty) {
+                returnDepartmentProvider().selectDepartment(
+                  departmentClass:
+                      returnDepartmentProvider()
+                          .departments
+                          .first,
+                );
+              }
+            }
+          }
+        }
+
         if (currentCart().receiptUuidEdit == null) {
           currentCart().departmentUuid =
               returnDepartmentProvider()
