@@ -1345,7 +1345,10 @@ class ShopProvider extends ChangeNotifier {
           //   returnDepartmentProvider().selectDepartment();
           // }
           userShop()!.updatedAt = DateTime.now();
-          userShop()!.closeSaleTime = time;
+          userShop()!.closeSaleTimeString =
+              time != null
+                  ? timeOfDayToPostgres(time)
+                  : null;
           await ShopFunc().updateShop(userShop()!);
           if (userShop() != null) {
             await UpdatedShopFunc().createUpdatedShop(

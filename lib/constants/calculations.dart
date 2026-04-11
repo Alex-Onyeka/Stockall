@@ -6,11 +6,20 @@ import 'package:uuid/uuid.dart';
 
 DateTime fourAm(DateTime date) {
   var cTime =
-      returnShopProvider().userShop()?.closeSaleTime;
+      returnShopProvider()
+                  .userShop()
+                  ?.closeSaleTimeString ==
+              null
+          ? null
+          : parseTimeOfDay(
+            returnShopProvider()
+                .userShop()!
+                .closeSaleTimeString!,
+          );
   return DateTime(
     date.year,
     date.month,
-    date.day,
+    cTime != null ? date.day - 1 : date.day,
     cTime?.hour ?? 00,
     cTime?.minute ?? 00,
     00,
@@ -20,7 +29,16 @@ DateTime fourAm(DateTime date) {
 
 DateTime fourAmNextDay(DateTime date) {
   var cTime =
-      returnShopProvider().userShop()?.closeSaleTime;
+      returnShopProvider()
+                  .userShop()
+                  ?.closeSaleTimeString ==
+              null
+          ? null
+          : parseTimeOfDay(
+            returnShopProvider()
+                .userShop()!
+                .closeSaleTimeString!,
+          );
   return DateTime(
     date.year,
     date.month,
@@ -37,7 +55,7 @@ DateTime fourAmNextDay(DateTime date) {
         : 59,
     59,
     999,
-  ).add(Duration(days: cTime != null ? 1 : 0));
+  );
 }
 
 DateTime endOfDay(DateTime date) {

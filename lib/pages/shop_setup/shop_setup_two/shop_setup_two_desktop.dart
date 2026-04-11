@@ -188,7 +188,8 @@ class _ShopSetupTwoDesktopState
                 });
                 await shopProvider.createShop(
                   TempShopClass(
-                    closeSaleTime: null,
+                    // closeSaleTime: null,
+                    closeSaleTimeString: null,
                     isVerified: false,
                     currency: selectedCurrency!,
                     employees: [],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widget_desktop.dart';
+import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/general_settings_auth.dart';
@@ -38,7 +39,7 @@ class _SetClosingTimeState extends State<SetClosingTime> {
               action: () {
                 if (returnShopProvider()
                         .userShop()!
-                        .closeSaleTime ==
+                        .closeSaleTimeString ==
                     null) {
                   myTimePickerAction(theme, context).then((
                     value,
@@ -55,14 +56,14 @@ class _SetClosingTimeState extends State<SetClosingTime> {
                             message:
                                 returnShopProvider()
                                             .userShop()!
-                                            .closeSaleTime !=
+                                            .closeSaleTimeString !=
                                         null
                                     ? 'You are about to cancel your closing sales time. Your sales will now by automatically closed at 12AM, are you sure you want to proceed?'
                                     : 'You are about to select your closing sales time. Your sales will now close at the time you select, are you sure you want to proceed?',
                             title:
                                 returnShopProvider()
                                             .userShop()!
-                                            .closeSaleTime !=
+                                            .closeSaleTimeString !=
                                         null
                                     ? 'Cancel Closing sales Time'
                                     : 'Set Closing Sales Time',
@@ -87,14 +88,14 @@ class _SetClosingTimeState extends State<SetClosingTime> {
                         message:
                             returnShopProvider()
                                         .userShop()!
-                                        .closeSaleTime !=
+                                        .closeSaleTimeString !=
                                     null
                                 ? 'You are about to cancel your closing sales time. Your sales will now by automatically closed at 12AM, are you sure you want to proceed?'
                                 : 'You are about to select your closing sales time. Your sales will now close at the time you select, are you sure you want to proceed?',
                         title:
                             returnShopProvider()
                                         .userShop()!
-                                        .closeSaleTime !=
+                                        .closeSaleTimeString !=
                                     null
                                 ? 'Cancel Closing sales Time'
                                 : 'Set Closing Sales Time',
@@ -129,15 +130,15 @@ class _SetClosingTimeState extends State<SetClosingTime> {
                     fontSize: theme.mobileTexts.b4.fontSize,
                     fontWeight: FontWeight.bold,
                   ),
-                  shop(context)?.closeSaleTime == null
+                  shop(context)?.closeSaleTimeString == null
                       ? 'Not Set'
-                      : '${shop(context)?.closeSaleTime?.hour} : ${shop(context)?.closeSaleTime?.minute} ${shop(context)?.closeSaleTime?.period.name.toUpperCase()}',
+                      : '${parseTimeOfDay(shop(context)!.closeSaleTimeString!).hour} : ${parseTimeOfDay(shop(context)!.closeSaleTimeString!).minute} ${parseTimeOfDay(shop(context)!.closeSaleTimeString!).period.name.toUpperCase()}',
                 );
               }
             },
           ),
           title:
-              shop(context)?.closeSaleTime == null
+              shop(context)?.closeSaleTimeString == null
                   ? 'Set Closing Time'
                   : 'Cancel Closing Time',
           icon: Icons.manage_search,
