@@ -7,7 +7,6 @@ import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/major/top_banner_two.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
@@ -15,6 +14,7 @@ import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/providers/theme_provider.dart';
+import 'package:stockall/services/auth_service.dart';
 import 'package:stockall/services/printing/import_helper.dart'
     show scanBluetoothPrinters;
 
@@ -62,18 +62,32 @@ class _ReceiptPageMobileState
   Widget build(BuildContext context) {
     var shop = returnShopProvider().userShop();
     var theme = returnTheme(context);
-    TempMainReceipt? mainReceipt() {
-      var reccs = returnReceiptProvider(
-        context,
-      ).returnOwnReceiptsByDayOrWeek().where(
-        (rec) => rec.uuid! == widget.response.resUuid,
-      );
-      if (reccs.isEmpty) {
-        return null;
-      } else {
-        return reccs.first;
-      }
-    }
+    TempMainReceipt mainReceipt = returnReceiptProvider(
+      context,
+    ).returnOwnReceiptsByDayOrWeek().firstWhere(
+      (rec) => rec.uuid! == widget.response.resUuid,
+      orElse:
+          () => TempMainReceipt(
+            departmentName:
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.name,
+            departmentUuidNew:
+                returnDepartmentProvider()
+                    .currentDepartment()
+                    ?.uuid,
+            createdAt: DateTime.now(),
+            uuid: '1',
+            shopId: shopId(),
+            staffId: AuthService().currentUser!,
+            staffName: 'Staff Name',
+            paymentMethod: 'Cash',
+            bank: 0,
+            cashAlt: 0,
+            isInvoice: false,
+            cartName: 'Cart 1',
+          ),
+    );
 
     return SafeArea(
       child: PopScope(
@@ -264,40 +278,13 @@ class _ReceiptPageMobileState
                               context,
                             ).size.height -
                             25,
-                        child: Builder(
-                          builder: (context) {
-                            if (mainReceipt() != null) {
-                              return ReceiptDetailsContainer(
-                                isComingFromInvoice:
-                                    widget
-                                        .isComingFromInvoice,
-                                isMain: widget.isMain,
-                                shop: shop!,
-                                mainReceipt: mainReceipt()!,
-                                theme: theme,
-                              );
-                            } else {
-                              return Center(
-                                child: EmptyWidgetDisplayOnly(
-                                  title:
-                                      'An Error Occoured',
-                                  subText:
-                                      'Click this button below to refresh',
-                                  theme: theme,
-                                  height: 30,
-                                  altAction: () {
-                                    returnReceiptProviderSingle()
-                                        .loadReceipts(
-                                          shopId(),
-                                        );
-                                  },
-                                  altActionText:
-                                      'Refresh Receipt',
-                                  icon: Icons.refresh,
-                                ),
-                              );
-                            }
-                          },
+                        child: ReceiptDetailsContainer(
+                          isComingFromInvoice:
+                              widget.isComingFromInvoice,
+                          isMain: widget.isMain,
+                          shop: shop!,
+                          mainReceipt: mainReceipt,
+                          theme: theme,
                         ),
                       ),
                     ),

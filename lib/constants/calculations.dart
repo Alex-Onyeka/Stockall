@@ -4,58 +4,96 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:uuid/uuid.dart';
 
-DateTime fourAm(DateTime date) {
-  var cTime =
-      returnShopProvider()
-                  .userShop()
-                  ?.closeSaleTimeString ==
-              null
-          ? null
-          : parseTimeOfDay(
-            returnShopProvider()
-                .userShop()!
-                .closeSaleTimeString!,
-          );
-  return DateTime(
-    date.year,
-    date.month,
-    cTime != null ? date.day - 1 : date.day,
-    cTime?.hour ?? 00,
-    cTime?.minute ?? 00,
-    00,
-    00,
+DateTime resolveBusinessDate(DateTime now) {
+  final shop = returnShopProvider().userShop();
+
+  final cTime =
+      shop?.closeSaleTimeString != null
+          ? parseTimeOfDay(shop!.closeSaleTimeString!)
+          : null;
+
+  final closingToday = DateTime(
+    now.year,
+    now.month,
+    now.day,
+    cTime?.hour ?? 0,
+    cTime?.minute ?? 0,
   );
+
+  if (now.isBefore(closingToday)) {
+    return now.subtract(const Duration(days: 1));
+  }
+
+  return now;
 }
 
-DateTime fourAmNextDay(DateTime date) {
-  var cTime =
-      returnShopProvider()
-                  .userShop()
-                  ?.closeSaleTimeString ==
-              null
-          ? null
-          : parseTimeOfDay(
-            returnShopProvider()
-                .userShop()!
-                .closeSaleTimeString!,
-          );
+DateTime fourAm(DateTime date) {
+  // var cTime =
+  //     returnShopProvider()
+  //                 .userShop()
+  //                 ?.closeSaleTimeString ==
+  //             null
+  //         ? null
+  //         : parseTimeOfDay(
+  //           returnShopProvider()
+  //               .userShop()!
+  //               .closeSaleTimeString!,
+  //         );
+  // return DateTime(
+  //   date.year,
+  //   date.month,
+  //   date.day,
+  //   cTime?.hour ?? 00,
+  //   cTime?.minute ?? 00,
+  //   00,
+  //   00,
+  // );
+  final shop = returnShopProvider().userShop();
+
+  final cTime =
+      shop?.closeSaleTimeString != null
+          ? parseTimeOfDay(shop!.closeSaleTimeString!)
+          : null;
+
   return DateTime(
     date.year,
     date.month,
     date.day,
-    cTime != null
-        ? (cTime.minute == 00)
-            ? (cTime.hour - 1)
-            : cTime.hour
-        : 23,
-    cTime != null
-        ? cTime.minute == 00
-            ? 59
-            : (cTime.minute - 1)
-        : 59,
-    59,
-    999,
+    cTime?.hour ?? 0,
+    cTime?.minute ?? 0,
   );
+}
+
+DateTime fourAmNextDay(DateTime date) {
+  // var cTime =
+  //     returnShopProvider()
+  //                 .userShop()
+  //                 ?.closeSaleTimeString ==
+  //             null
+  //         ? null
+  //         : parseTimeOfDay(
+  //           returnShopProvider()
+  //               .userShop()!
+  //               .closeSaleTimeString!,
+  //         );
+  // return DateTime(
+  //   date.year,
+  //   date.month,
+  //   cTime != null ? date.day + 1 : date.day,
+  //   cTime != null
+  //       ? (cTime.minute == 00)
+  //           ? (cTime.hour - 1)
+  //           : cTime.hour
+  //       : 23,
+  //   cTime != null
+  //       ? cTime.minute == 00
+  //           ? 59
+  //           : (cTime.minute - 1)
+  //       : 59,
+  //   59,
+  //   999,
+  // );
+  return fourAm(date).add(const Duration(days: 1));
 }
 
 DateTime endOfDay(DateTime date) {

@@ -220,14 +220,16 @@ class ExpensesProvider extends ChangeNotifier {
           return !created.isBefore(
                 fourAm(rangeStartDate!),
               ) &&
-              !created.isAfter(
+              created.isBefore(
                 fourAmNextDay(
-                  rangeEndDate ?? DateTime.now(),
+                  rangeEndDate ??
+                      resolveBusinessDate(DateTime.now()),
                 ),
               );
         }).toList();
       } else {
-        var currentDate = dateSet ?? DateTime.now();
+        var currentDate =
+            dateSet ?? resolveBusinessDate(DateTime.now());
 
         return departmentExpenses()
             .where(
@@ -235,7 +237,7 @@ class ExpensesProvider extends ChangeNotifier {
                   !expense.createdDate!.isBefore(
                     fourAm(currentDate),
                   ) &&
-                  !expense.createdDate!.isAfter(
+                  expense.createdDate!.isBefore(
                     fourAmNextDay(currentDate),
                   ),
             )
@@ -252,9 +254,10 @@ class ExpensesProvider extends ChangeNotifier {
             return !created.isBefore(
                   fourAm(rangeStartDate!),
                 ) &&
-                !created.isAfter(
+                created.isBefore(
                   fourAmNextDay(
-                    rangeEndDate ?? DateTime.now(),
+                    rangeEndDate ??
+                        resolveBusinessDate(DateTime.now()),
                   ),
                 );
           }).toList();
@@ -264,16 +267,18 @@ class ExpensesProvider extends ChangeNotifier {
             return !created.isBefore(
                   fourAm(rangeStartDate!),
                 ) &&
-                !created.isAfter(
+                created.isBefore(
                   fourAmNextDay(
-                    rangeEndDate ?? DateTime.now(),
+                    rangeEndDate ??
+                        resolveBusinessDate(DateTime.now()),
                   ),
                 ) &&
                 expense.userId == currentUser().userId;
           }).toList();
         }
       } else {
-        var currentDate = dateSet ?? DateTime.now();
+        var currentDate =
+            dateSet ?? resolveBusinessDate(DateTime.now());
 
         if (authorization(
           authorized:
@@ -285,7 +290,7 @@ class ExpensesProvider extends ChangeNotifier {
                     !expense.createdDate!.isBefore(
                       fourAm(currentDate),
                     ) &&
-                    !expense.createdDate!.isAfter(
+                    expense.createdDate!.isBefore(
                       fourAmNextDay(currentDate),
                     ),
               )
@@ -297,7 +302,7 @@ class ExpensesProvider extends ChangeNotifier {
                     !expense.createdDate!.isBefore(
                       fourAm(currentDate),
                     ) &&
-                    !expense.createdDate!.isAfter(
+                    expense.createdDate!.isBefore(
                       fourAmNextDay(currentDate),
                     ) &&
                     expense.userId == currentUser().userId,

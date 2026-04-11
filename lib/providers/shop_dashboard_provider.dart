@@ -128,9 +128,10 @@ class ShopDashboardProvider extends ChangeNotifier {
                 !recc.createdAt.isBefore(
                   fourAm(rangeStartDate!),
                 ) &&
-                !recc.createdAt.isAfter(
+                recc.createdAt.isBefore(
                   fourAmNextDay(
-                    rangeEndDate ?? DateTime.now(),
+                    rangeEndDate ??
+                        resolveBusinessDate(DateTime.now()),
                   ),
                 ),
           )
@@ -140,10 +141,16 @@ class ShopDashboardProvider extends ChangeNotifier {
           .where(
             (recc) =>
                 !recc.createdAt.isBefore(
-                  fourAm(dateSet ?? DateTime.now()),
+                  fourAm(
+                    dateSet ??
+                        resolveBusinessDate(DateTime.now()),
+                  ),
                 ) &&
-                !recc.createdAt.isAfter(
-                  fourAmNextDay(dateSet ?? DateTime.now()),
+                recc.createdAt.isBefore(
+                  fourAmNextDay(
+                    dateSet ??
+                        resolveBusinessDate(DateTime.now()),
+                  ),
                 ),
           )
           .toList();
@@ -189,9 +196,10 @@ class ShopDashboardProvider extends ChangeNotifier {
                 !exp.createdDate!.isBefore(
                   fourAm(rangeStartDate!),
                 ) &&
-                !exp.createdDate!.isAfter(
+                exp.createdDate!.isBefore(
                   fourAmNextDay(
-                    rangeEndDate ?? DateTime.now(),
+                    rangeEndDate ??
+                        resolveBusinessDate(DateTime.now()),
                   ),
                 ),
           )
@@ -201,10 +209,16 @@ class ShopDashboardProvider extends ChangeNotifier {
           .where(
             (exp) =>
                 !exp.createdDate!.isBefore(
-                  fourAm(dateSet ?? DateTime.now()),
+                  fourAm(
+                    dateSet ??
+                        resolveBusinessDate(DateTime.now()),
+                  ),
                 ) &&
-                !exp.createdDate!.isAfter(
-                  fourAmNextDay(dateSet ?? DateTime.now()),
+                exp.createdDate!.isBefore(
+                  fourAmNextDay(
+                    dateSet ??
+                        resolveBusinessDate(DateTime.now()),
+                  ),
                 ),
           )
           .toList();
@@ -249,9 +263,10 @@ class ShopDashboardProvider extends ChangeNotifier {
                 !inv.createdAt.isBefore(
                   fourAm(rangeStartDate!),
                 ) &&
-                !inv.createdAt.isAfter(
+                inv.createdAt.isBefore(
                   fourAmNextDay(
-                    rangeEndDate ?? DateTime.now(),
+                    rangeEndDate ??
+                        resolveBusinessDate(DateTime.now()),
                   ),
                 ),
           )
@@ -261,10 +276,16 @@ class ShopDashboardProvider extends ChangeNotifier {
           .where(
             (inv) =>
                 !inv.createdAt.isBefore(
-                  fourAm(dateSet ?? DateTime.now()),
+                  fourAm(
+                    dateSet ??
+                        resolveBusinessDate(DateTime.now()),
+                  ),
                 ) &&
-                !inv.createdAt.isAfter(
-                  fourAmNextDay(dateSet ?? DateTime.now()),
+                inv.createdAt.isBefore(
+                  fourAmNextDay(
+                    dateSet ??
+                        resolveBusinessDate(DateTime.now()),
+                  ),
                 ),
           )
           .toList();

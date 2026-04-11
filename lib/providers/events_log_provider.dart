@@ -115,7 +115,7 @@ class EventsLogProvider with ChangeNotifier {
                 !log.createdAt!.isBefore(
                   fourAm(dateSet!),
                 ) &&
-                !log.createdAt!.isAfter(
+                log.createdAt!.isBefore(
                   fourAmNextDay(dateSet!),
                 ),
           )
@@ -127,8 +127,11 @@ class EventsLogProvider with ChangeNotifier {
                 !log.createdAt!.isBefore(
                   fourAm(rangeStartDate!),
                 ) &&
-                !log.createdAt!.isAfter(
-                  fourAmNextDay(rangeEndDate!),
+                log.createdAt!.isBefore(
+                  fourAmNextDay(
+                    rangeEndDate ??
+                        resolveBusinessDate(DateTime.now()),
+                  ),
                 ),
           )
           .toList();

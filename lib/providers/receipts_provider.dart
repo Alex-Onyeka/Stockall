@@ -717,14 +717,17 @@ class ReceiptsProvider extends ChangeNotifier {
           return !created.isBefore(
                 fourAm(rangeStartDate!),
               ) &&
-              !created.isAfter(
+              created.isBefore(
                 fourAmNextDay(
-                  rangeEndDate ?? DateTime.now(),
+                  rangeEndDate ??
+                      resolveBusinessDate(DateTime.now()),
                 ),
               );
         }).toList();
       } else {
-        final currentDate = dateSet ?? DateTime.now();
+        // final currentDate = dateSet ?? DateTime.now();
+        final currentDate =
+            dateSet ?? resolveBusinessDate(DateTime.now());
 
         return departmentReceipts()
             .where(
@@ -732,7 +735,7 @@ class ReceiptsProvider extends ChangeNotifier {
                   !receipt.createdAt.isBefore(
                     fourAm(currentDate),
                   ) &&
-                  !receipt.createdAt.isAfter(
+                  receipt.createdAt.isBefore(
                     fourAmNextDay(currentDate),
                   ),
             )
@@ -749,9 +752,10 @@ class ReceiptsProvider extends ChangeNotifier {
             return !created.isBefore(
                   fourAm(rangeStartDate!),
                 ) &&
-                !created.isAfter(
+                created.isBefore(
                   fourAmNextDay(
-                    rangeEndDate ?? DateTime.now(),
+                    rangeEndDate ??
+                        resolveBusinessDate(DateTime.now()),
                   ),
                 );
           }).toList();
@@ -761,16 +765,18 @@ class ReceiptsProvider extends ChangeNotifier {
             return !created.isBefore(
                   fourAm(rangeStartDate!),
                 ) &&
-                !created.isAfter(
+                created.isBefore(
                   fourAmNextDay(
-                    rangeEndDate ?? DateTime.now(),
+                    rangeEndDate ??
+                        resolveBusinessDate(DateTime.now()),
                   ),
                 ) &&
                 receipt.staffId == currentUser().userId;
           }).toList();
         }
       } else {
-        final currentDate = dateSet ?? DateTime.now();
+        final currentDate =
+            dateSet ?? resolveBusinessDate(DateTime.now());
 
         if (authorization(
           authorized:
@@ -835,9 +841,10 @@ class ReceiptsProvider extends ChangeNotifier {
           return !created.isBefore(
                 fourAm(rangeStartDate!),
               ) &&
-              !created.isAfter(
+              created.isBefore(
                 fourAmNextDay(
-                  rangeEndDate ?? DateTime.now(),
+                  rangeEndDate ??
+                      resolveBusinessDate(DateTime.now()),
                 ),
               );
         }).toList();
@@ -847,9 +854,10 @@ class ReceiptsProvider extends ChangeNotifier {
           return !created.isBefore(
                 fourAm(rangeStartDate!),
               ) &&
-              !created.isAfter(
+              created.isBefore(
                 fourAmNextDay(
-                  rangeEndDate ?? DateTime.now(),
+                  rangeEndDate ??
+                      resolveBusinessDate(DateTime.now()),
                 ),
               ) &&
               record.staffId == currentUser().userId;
@@ -857,7 +865,8 @@ class ReceiptsProvider extends ChangeNotifier {
       }
     }
 
-    var currentDate = dateSet ?? DateTime.now();
+    var currentDate =
+        dateSet ?? resolveBusinessDate(DateTime.now());
     if (authorization(
       authorized:
           Authorizations().viewAllTransactionRecords,
