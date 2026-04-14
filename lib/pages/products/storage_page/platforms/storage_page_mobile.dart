@@ -9,6 +9,8 @@ import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/platforms/product_details_desktop.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
+import 'package:stockall/pages/products/storage_page/components/summary_table_heading_bar.dart';
+import 'package:stockall/pages/products/storage_page/components/table_row_widget.dart';
 import 'package:stockall/pages/report/events_log/platforms/events_log_mobile.dart';
 
 class StoragePageMobile extends StatefulWidget {
@@ -80,65 +82,57 @@ class _StoragePageMobileState
     var theme = returnTheme(context);
     var products =
         searchController.text.isNotEmpty
-            ? returnData(context: context)
-                .productList()
+            ? returnStorageProductProvider(context: context)
+                .storageProductListMain
                 .where(
-                  (pr) =>
-                      pr.name.toLowerCase().contains(
-                        searchController.text.toLowerCase(),
-                      ) ||
-                      pr.barcode == searchController.text,
+                  (pr) => pr.name.toLowerCase().contains(
+                    searchController.text.toLowerCase(),
+                  ),
                 )
                 .toList()
                 .sublist(
                   0,
-                  returnData(context: context)
-                              .productList()
+                  returnStorageProductProvider(
+                                context: context,
+                              ).storageProductListMain
                               .where(
-                                (pr) =>
-                                    pr.name
-                                        .toLowerCase()
-                                        .contains(
-                                          searchController
-                                              .text
-                                              .toLowerCase(),
-                                        ) ||
-                                    pr.barcode ==
-                                        searchController
-                                            .text,
+                                (pr) => pr.name
+                                    .toLowerCase()
+                                    .contains(
+                                      searchController.text
+                                          .toLowerCase(),
+                                    ),
                               )
                               .toList()
                               .length >
                           100
                       ? 100
-                      : returnData(context: context)
-                          .productList()
+                      : returnStorageProductProvider(
+                            context: context,
+                          ).storageProductListMain
                           .where(
-                            (pr) =>
-                                pr.name
-                                    .toLowerCase()
-                                    .contains(
-                                      searchController.text
-                                          .toLowerCase(),
-                                    ) ||
-                                pr.barcode ==
-                                    searchController.text,
+                            (pr) => pr.name
+                                .toLowerCase()
+                                .contains(
+                                  searchController.text
+                                      .toLowerCase(),
+                                ),
                           )
                           .toList()
                           .length,
                 )
-            : returnData(
+            : returnStorageProductProvider(
               context: context,
-            ).productList().sublist(
+            ).storageProductListMain.sublist(
               start,
-              returnData(
+              returnStorageProductProvider(
                         context: context,
-                      ).productList().length >
+                      ).storageProductListMain.length >
                       50
                   ? end
-                  : returnData(
+                  : returnStorageProductProvider(
                     context: context,
-                  ).productList().length,
+                  ).storageProductListMain.length,
             );
 
     return Stack(
@@ -298,163 +292,121 @@ class _StoragePageMobileState
                       ),
                       child: Builder(
                         builder: (context) {
-                          // double tableWidth() {
-                          //   if (products.isEmpty) {
-                          //     return screenWidth(context);
-                          //   } else {
-                          //     if (shop(
-                          //               context,
-                          //             )?.useGroupUnit ==
-                          //             true &&
-                          //         shop(
-                          //               context,
-                          //             )?.wholeSale ==
-                          //             true) {
-                          //       return 1700;
-                          //     } else if (shop(
-                          //               context,
-                          //             )?.useGroupUnit ==
-                          //             true &&
-                          //         shop(
-                          //               context,
-                          //             )?.wholeSale !=
-                          //             true) {
-                          //       return 1500;
-                          //     } else if (shop(
-                          //               context,
-                          //             )?.useGroupUnit !=
-                          //             true &&
-                          //         shop(
-                          //               context,
-                          //             )?.wholeSale ==
-                          //             true) {
-                          //       return 1500;
-                          //     } else {
-                          //       return 1350;
-                          //     }
-                          //   }
-                          // }
-
                           if (sortIndex == 1) {
-                            return ListView(
-                              primary: false,
-                              scrollDirection:
-                                  Axis.horizontal,
-                              children: [
-                                SizedBox(
-                                  width:
-                                      screenWidth(context) -
-                                      50,
-                                  child: RefreshIndicator(
-                                    onRefresh: () {
-                                      return getProducts();
-                                    },
-                                    backgroundColor:
-                                        Colors.white,
-                                    color:
-                                        theme
-                                            .lightModeColor
-                                            .prColor300,
-                                    displacement: 10,
-                                    child: ListView(
-                                      children: [
-                                        // SummaryTableHeadingBar(
-                                        //   isHeading: true,
-                                        //   theme: theme,
-                                        //   product: products,
-                                        // ),
-                                        Builder(
-                                          builder: (
-                                            context,
-                                          ) {
-                                            if (products
-                                                .isEmpty) {
-                                              return Padding(
-                                                padding:
-                                                    const EdgeInsets.only(
-                                                      top:
-                                                          100.0,
-                                                    ),
-                                                child: EmptyWidgetDisplayOnly(
-                                                  title:
-                                                      'Empty List',
-                                                  subText:
-                                                      'No Item has been recorded yet',
-                                                  theme:
-                                                      theme,
-                                                  height:
-                                                      35,
-                                                  icon:
-                                                      Icons
-                                                          .clear,
-                                                ),
-                                              );
-                                            } else {
-                                              return RefreshIndicator(
-                                                onRefresh: () {
-                                                  return getProducts();
-                                                },
-                                                backgroundColor:
-                                                    Colors
-                                                        .white,
-                                                color:
-                                                    theme
-                                                        .lightModeColor
-                                                        .prColor300,
-                                                displacement:
-                                                    10,
-                                                child: SingleChildScrollView(
-                                                  primary:
-                                                      true,
-                                                  child: Column(
-                                                    children: [
-                                                      ListView.builder(
-                                                        shrinkWrap:
-                                                            true,
-                                                        itemCount:
-                                                            products.length,
-                                                        physics:
-                                                            NeverScrollableScrollPhysics(),
-
-                                                        itemBuilder: (
-                                                          context,
-                                                          index,
-                                                        ) {
-                                                          return Container();
-                                                          // var product =
-                                                          //     products[index];
-                                                          // return TableRowRecordWidget(
-                                                          //   theme:
-                                                          //       theme,
-                                                          //   product:
-                                                          //       product,
-                                                          // );
-                                                        },
-                                                      ),
-                                                      // SummaryTableHeadingBar(
-                                                      //   isHeading:
-                                                      //       false,
-                                                      //   theme:
-                                                      //       theme,
-                                                      //   product:
-                                                      //       products,
-                                                      // ),
-                                                      SizedBox(
-                                                        height:
-                                                            20,
-                                                      ),
-                                                    ],
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(
+                                    horizontal: 15.0,
+                                  ),
+                              child: SizedBox(
+                                width:
+                                    screenWidth(context) -
+                                    40,
+                                child: RefreshIndicator(
+                                  onRefresh: () {
+                                    return getProducts();
+                                  },
+                                  backgroundColor:
+                                      Colors.white,
+                                  color:
+                                      theme
+                                          .lightModeColor
+                                          .prColor300,
+                                  displacement: 10,
+                                  child: ListView(
+                                    children: [
+                                      SummaryTableHeadingBar(
+                                        isHeading: true,
+                                        theme: theme,
+                                        product: products,
+                                      ),
+                                      Builder(
+                                        builder: (context) {
+                                          if (products
+                                              .isEmpty) {
+                                            return Padding(
+                                              padding:
+                                                  const EdgeInsets.only(
+                                                    top:
+                                                        100.0,
                                                   ),
+                                              child: EmptyWidgetDisplayOnly(
+                                                title:
+                                                    'Empty List',
+                                                subText:
+                                                    'No Item has been recorded yet',
+                                                theme:
+                                                    theme,
+                                                height: 35,
+                                                icon:
+                                                    Icons
+                                                        .clear,
+                                              ),
+                                            );
+                                          } else {
+                                            return RefreshIndicator(
+                                              onRefresh: () {
+                                                return getProducts();
+                                              },
+                                              backgroundColor:
+                                                  Colors
+                                                      .white,
+                                              color:
+                                                  theme
+                                                      .lightModeColor
+                                                      .prColor300,
+                                              displacement:
+                                                  10,
+                                              child: SingleChildScrollView(
+                                                primary:
+                                                    true,
+                                                child: Column(
+                                                  children: [
+                                                    ListView.builder(
+                                                      shrinkWrap:
+                                                          true,
+                                                      itemCount:
+                                                          products.length,
+                                                      physics:
+                                                          NeverScrollableScrollPhysics(),
+
+                                                      itemBuilder: (
+                                                        context,
+                                                        index,
+                                                      ) {
+                                                        var product =
+                                                            products[index];
+                                                        return TableRowRecordWidget(
+                                                          theme:
+                                                              theme,
+                                                          product:
+                                                              product,
+                                                        );
+                                                      },
+                                                    ),
+                                                    // SummaryTableHeadingBar(
+                                                    //   isHeading:
+                                                    //       false,
+                                                    //   theme:
+                                                    //       theme,
+                                                    //   product:
+                                                    //       products,
+                                                    // ),
+                                                    SizedBox(
+                                                      height:
+                                                          20,
+                                                    ),
+                                                  ],
                                                 ),
-                                              );
-                                            }
-                                          },
-                                        ),
-                                      ],
-                                    ),
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ],
+                              ),
                             );
                           } else if (sortIndex == 2) {
                             return SizedBox(

@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 // import 'package:path/path.dart';
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
-import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/products/compnents/product_tile_main.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
 import 'package:stockall/pages/products/storage_page/storage_details/components.dart';
@@ -29,35 +29,8 @@ class StorageDetailsDesktop extends StatefulWidget {
 
 class _StorageDetailsDesktopState
     extends State<StorageDetailsDesktop> {
-  late Future<TempStorageProducts> productFuture;
-
   bool isLoading = false;
   bool showSuccess = false;
-  bool setDate = false;
-  bool isAddToQuantity = true;
-
-  TextEditingController costController =
-      TextEditingController();
-  TextEditingController sellingController =
-      TextEditingController();
-  TextEditingController wholeSaleController =
-      TextEditingController();
-  TextEditingController quantityController =
-      TextEditingController();
-  TextEditingController discountController =
-      TextEditingController();
-  TextEditingController qttyPerUnitController =
-      TextEditingController();
-
-  @override
-  void dispose() {
-    super.dispose();
-    costController.dispose();
-    sellingController.dispose();
-    quantityController.dispose();
-    discountController.dispose();
-    qttyPerUnitController.dispose();
-  }
 
   final GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>();
@@ -186,50 +159,52 @@ class _StorageDetailsDesktopState
                                       children: [
                                         Row(
                                           spacing:
-                                              // shop(context)
-                                              //             ?.useGroupUnit ==
-                                              //         true
-                                              //     ? 10
-                                              //     :
-                                              0,
+                                              shop(context)
+                                                          ?.useGroupUnit ==
+                                                      true
+                                                  ? 10
+                                                  : 0,
                                           mainAxisAlignment:
                                               MainAxisAlignment
                                                   .center,
                                           children: [
-                                            // Visibility(
-                                            //   visible:
-                                            //       shop(
-                                            //         context,
-                                            //       )?.useGroupUnit ==
-                                            //       true,
-                                            //   child: Expanded(
-                                            //     child: TabContainer(
-                                            //       isMoney:
-                                            //           false,
-                                            //       text:
-                                            //           'Group Quantity',
-                                            //       price:
-                                            //           2000,
-                                            //       theme:
-                                            //           widget
-                                            //               .theme,
-                                            //       backGround:
-                                            //           const Color.fromARGB(
-                                            //             10,
-                                            //             58,
-                                            //             58,
-                                            //             58,
-                                            //           ),
-                                            //       border:
-                                            //           const Color.fromARGB(
-                                            //             31,
-                                            //             30,
-                                            //             30,
-                                            //             32,
-                                            //           ),
-                                            //     ),
-                                            //   ),
-                                            // ),
+                                            Visibility(
+                                              visible:
+                                                  shop(
+                                                    context,
+                                                  )?.useGroupUnit ==
+                                                  true,
+                                              child: Expanded(
+                                                child: TabContainer(
+                                                  isMoney:
+                                                      false,
+                                                  text:
+                                                      'Group Quantity',
+                                                  price:
+                                                      (product.quantity ??
+                                                          1) /
+                                                      (product.qttyPerGroup ??
+                                                          1),
+                                                  theme:
+                                                      widget
+                                                          .theme,
+                                                  backGround:
+                                                      const Color.fromARGB(
+                                                        10,
+                                                        58,
+                                                        58,
+                                                        58,
+                                                      ),
+                                                  border:
+                                                      const Color.fromARGB(
+                                                        31,
+                                                        30,
+                                                        30,
+                                                        32,
+                                                      ),
+                                                ),
+                                              ),
+                                            ),
                                             Expanded(
                                               child: TabContainer(
                                                 isMoney:
@@ -330,273 +305,13 @@ class _StorageDetailsDesktopState
                                           SizedBox(
                                             height: 10,
                                           ),
-                                          Visibility(
-                                            visible:
-                                                returnShopProvider()
-                                                    .userShop()
-                                                    ?.manageDepartments ==
-                                                true,
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .end,
-                                              spacing: 5,
-                                              children: [
-                                                InkWell(
-                                                  onTap: () {
-                                                    List<
-                                                      String
-                                                    >
-                                                    list =
-                                                        [];
-                                                    setState(() {
-                                                      list.addAll(
-                                                        returnData().productListMain
-                                                            .where(
-                                                              (
-                                                                pr,
-                                                              ) =>
-                                                                  pr.storageUuid ==
-                                                                  widget.productUuid,
-                                                            )
-                                                            .map(
-                                                              (
-                                                                pro,
-                                                              ) =>
-                                                                  pro.uuid!,
-                                                            ),
-                                                      );
-                                                    });
-                                                    showDialog(
-                                                      context:
-                                                          context,
-                                                      builder: (
-                                                        firstContext,
-                                                      ) {
-                                                        return StatefulBuilder(
-                                                          builder: (
-                                                            secondContext,
-                                                            setState,
-                                                          ) {
-                                                            return DialogTemplate(
-                                                              theme:
-                                                                  widget.theme,
-                                                              message:
-                                                                  'Select Products that you want to be managed under this Storage',
-                                                              title:
-                                                                  'Select Product(s)',
-                                                              topRightWidget:
-                                                                  returnStorageProductProvider().isLoading
-                                                                      ? SizedBox(
-                                                                        height:
-                                                                            20,
-                                                                        width:
-                                                                            20,
-                                                                        child: CircularProgressIndicator(
-                                                                          color:
-                                                                              widget.theme.lightModeColor.secColor200,
-                                                                          strokeWidth:
-                                                                              1.5,
-                                                                        ),
-                                                                      )
-                                                                      : null,
-                                                              action: () {
-                                                                if (!returnStorageProductProvider().isLoading) {
-                                                                  showDialog(
-                                                                    context:
-                                                                        context,
-                                                                    builder: (
-                                                                      confirmContext,
-                                                                    ) {
-                                                                      return ConfirmationAlert(
-                                                                        theme:
-                                                                            widget.theme,
-                                                                        message:
-                                                                            'You are about to update Add This products to this Storage. Are you sure you want to proceed?',
-                                                                        title:
-                                                                            'Update Storage',
-                                                                        action: () async {
-                                                                          Navigator.of(
-                                                                            confirmContext,
-                                                                          ).pop();
-                                                                          returnStorageProductProvider().toggleIsLoading(
-                                                                            true,
-                                                                          );
-                                                                          setState(
-                                                                            () {},
-                                                                          );
-                                                                          for (var pr in returnData().productListMain.where(
-                                                                            (
-                                                                              pro,
-                                                                            ) => list.contains(
-                                                                              pro.uuid,
-                                                                            ),
-                                                                          )) {
-                                                                            var newPr =
-                                                                                pr.copyWith();
-                                                                            newPr.storageUuid = widget.productUuid;
-                                                                            await returnData().updateProduct(
-                                                                              product:
-                                                                                  newPr,
-                                                                            );
-                                                                          }
-
-                                                                          if (firstContext.mounted) {
-                                                                            Navigator.of(
-                                                                              context,
-                                                                            ).pop();
-                                                                          }
-                                                                        },
-                                                                      );
-                                                                    },
-                                                                  );
-                                                                }
-                                                              },
-                                                              widget: SizedBox(
-                                                                height:
-                                                                    screenHeight(
-                                                                      context,
-                                                                    ) -
-                                                                    300,
-                                                                child: SingleChildScrollView(
-                                                                  child: Padding(
-                                                                    padding: const EdgeInsets.symmetric(
-                                                                      horizontal:
-                                                                          20.0,
-                                                                      vertical:
-                                                                          15,
-                                                                    ),
-                                                                    child: Column(
-                                                                      spacing:
-                                                                          5,
-                                                                      children:
-                                                                          returnData().productListMain
-                                                                              .map(
-                                                                                (
-                                                                                  dept,
-                                                                                ) => Material(
-                                                                                  color:
-                                                                                      Colors.transparent,
-                                                                                  child: InkWell(
-                                                                                    onTap: () {
-                                                                                      setState(
-                                                                                        () {
-                                                                                          if (list.contains(
-                                                                                            dept.uuid,
-                                                                                          )) {
-                                                                                            list.remove(
-                                                                                              dept.uuid,
-                                                                                            );
-                                                                                          } else {
-                                                                                            list.add(
-                                                                                              dept.uuid!,
-                                                                                            );
-                                                                                          }
-                                                                                        },
-                                                                                      );
-                                                                                    },
-                                                                                    child: Padding(
-                                                                                      padding: const EdgeInsets.symmetric(
-                                                                                        vertical:
-                                                                                            9.0,
-                                                                                        horizontal:
-                                                                                            12,
-                                                                                      ),
-                                                                                      child: Row(
-                                                                                        mainAxisAlignment:
-                                                                                            MainAxisAlignment.spaceBetween,
-                                                                                        children: [
-                                                                                          Text(
-                                                                                            style: TextStyle(
-                                                                                              fontSize:
-                                                                                                  widget.theme.mobileTexts.b3.fontSize,
-                                                                                              fontWeight:
-                                                                                                  FontWeight.bold,
-                                                                                            ),
-                                                                                            dept.name,
-                                                                                          ),
-                                                                                          Container(
-                                                                                            padding: EdgeInsets.all(
-                                                                                              2,
-                                                                                            ),
-                                                                                            decoration: BoxDecoration(
-                                                                                              shape:
-                                                                                                  BoxShape.circle,
-                                                                                              border: Border.all(
-                                                                                                color:
-                                                                                                    Colors.grey,
-                                                                                              ),
-                                                                                            ),
-                                                                                            child: Container(
-                                                                                              padding: EdgeInsets.all(
-                                                                                                5,
-                                                                                              ),
-                                                                                              decoration: BoxDecoration(
-                                                                                                shape:
-                                                                                                    BoxShape.circle,
-                                                                                                color:
-                                                                                                    list.contains(
-                                                                                                          dept.uuid,
-                                                                                                        )
-                                                                                                        ? widget.theme.lightModeColor.prColor250
-                                                                                                        : Colors.transparent,
-                                                                                              ),
-                                                                                            ),
-                                                                                          ),
-                                                                                        ],
-                                                                                      ),
-                                                                                    ),
-                                                                                  ),
-                                                                                ),
-                                                                              )
-                                                                              .toList(),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            );
-                                                          },
-                                                        );
-                                                      },
-                                                    ).then((
-                                                      _,
-                                                    ) {
-                                                      returnStorageProductProvider().toggleIsLoading(
-                                                        false,
-                                                      );
-                                                    });
-                                                  },
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                          8.0,
-                                                        ),
-                                                    child: Row(
-                                                      spacing:
-                                                          5,
-                                                      children: [
-                                                        Icon(
-                                                          size:
-                                                              16,
-                                                          color:
-                                                              Colors.grey,
-                                                          Icons.add,
-                                                        ),
-                                                        Text(
-                                                          style: TextStyle(
-                                                            fontSize:
-                                                                widget.theme.mobileTexts.b4.fontSize,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                          ),
-                                                          'Add Product',
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
+                                          ManageProductsStorage(
+                                            productUuid:
+                                                widget
+                                                    .productUuid,
+                                            theme:
+                                                widget
+                                                    .theme,
                                           ),
                                           SizedBox(
                                             height: 5,
@@ -751,21 +466,23 @@ class _StorageDetailsDesktopState
                                     child: EditButton(
                                       text: 'Edit Item',
                                       action: () {
-                                        // Navigator.push(
-                                        //   context,
-                                        //   MaterialPageRoute(
-                                        //     builder: (
-                                        //       context,
-                                        //     ) {
-                                        //       return AddProduct(
-                                        //         product:
-                                        //             product,
-                                        //       );
-                                        //     },
-                                        //   ),
-                                        // ).then((context) {
-                                        //   setState(() {});
-                                        // });
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (
+                                              context,
+                                            ) {
+                                              return AddProduct(
+                                                productStorage:
+                                                    product,
+                                                isStorage:
+                                                    true,
+                                              );
+                                            },
+                                          ),
+                                        ).then((context) {
+                                          setState(() {});
+                                        });
                                       },
                                       theme: returnTheme(
                                         context,

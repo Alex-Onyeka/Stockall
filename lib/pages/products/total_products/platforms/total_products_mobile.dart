@@ -389,7 +389,9 @@ class _TotalProductsMobileState
                       context,
                       MaterialPageRoute(
                         builder: (context) {
-                          return AddProduct();
+                          return AddProduct(
+                            isStorage: false,
+                          );
                         },
                       ),
                     ).then((_) {
@@ -523,7 +525,10 @@ class _TotalProductsMobileState
                                                   builder: (
                                                     context,
                                                   ) {
-                                                    return AddProduct();
+                                                    return AddProduct(
+                                                      isStorage:
+                                                          false,
+                                                    );
                                                   },
                                                 ),
                                               ).then((_) {
@@ -1090,6 +1095,18 @@ class _TotalProductsMobileState
                                                         });
                                                       }
                                                     },
+                                                    longPress: () {
+                                                      returnData().toggleIsSelectProduct(
+                                                        true,
+                                                      );
+                                                      setState(() {
+                                                        filterIndex =
+                                                            0;
+                                                      });
+                                                      returnData().selectProduct(
+                                                        product,
+                                                      );
+                                                    },
                                                     theme:
                                                         theme,
                                                     product:
@@ -1154,33 +1171,64 @@ class _TotalProductsMobileState
                                                       products[index];
 
                                                   return ProductTileMain(
+                                                    isSelectProduct:
+                                                        returnData(
+                                                          context:
+                                                              context,
+                                                        ).isSelectProducts,
+                                                    uuidList:
+                                                        returnData(
+                                                              context:
+                                                                  context,
+                                                            ).selectedProducts
+                                                            .map(
+                                                              (
+                                                                pr,
+                                                              ) =>
+                                                                  pr.uuid!,
+                                                            )
+                                                            .toList(),
                                                     action: () {
-                                                      Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                          builder: (
-                                                            context,
-                                                          ) {
-                                                            return ProductDetailsPage(
-                                                              productUuid:
-                                                                  product.uuid!,
-                                                            );
-                                                          },
-                                                        ),
-                                                      ).then((
-                                                        _,
-                                                      ) {
-                                                        if (context.mounted) {
-                                                          setState(
-                                                            () {
-                                                              // _productsFuture =
-                                                              // getProductList(
-                                                              //   context,
-                                                              // );
+                                                      if (returnData()
+                                                          .isSelectProducts) {
+                                                        returnData().selectProduct(
+                                                          product,
+                                                        );
+                                                      } else {
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (
+                                                              context,
+                                                            ) {
+                                                              return ProductDetailsPage(
+                                                                productUuid:
+                                                                    product.uuid!,
+                                                              );
                                                             },
-                                                          );
-                                                        }
+                                                          ),
+                                                        ).then((
+                                                          _,
+                                                        ) {
+                                                          if (context.mounted) {
+                                                            setState(
+                                                              () {},
+                                                            );
+                                                          }
+                                                        });
+                                                      }
+                                                    },
+                                                    longPress: () {
+                                                      returnData().toggleIsSelectProduct(
+                                                        true,
+                                                      );
+                                                      setState(() {
+                                                        filterIndex =
+                                                            0;
                                                       });
+                                                      returnData().selectProduct(
+                                                        product,
+                                                      );
                                                     },
                                                     theme:
                                                         theme,

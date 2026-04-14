@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
-import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/play_sounds.dart';
@@ -360,53 +359,6 @@ class StoragePageDesktopState
                         ),
                         child: Builder(
                           builder: (context) {
-                            // double tableWidth() {
-                            //   if (products.isEmpty) {
-                            //     if (screenWidth(context) <
-                            //         tabletScreen) {
-                            //       return screenWidth(
-                            //         context,
-                            //       );
-                            //     } else {
-                            //       return screenWidth(
-                            //             context,
-                            //           ) -
-                            //           100;
-                            //     }
-                            //   } else {
-                            //     if (shop(
-                            //               context,
-                            //             )?.useGroupUnit ==
-                            //             true &&
-                            //         shop(
-                            //               context,
-                            //             )?.wholeSale ==
-                            //             true) {
-                            //       return 1400;
-                            //     } else if (shop(
-                            //               context,
-                            //             )?.useGroupUnit ==
-                            //             true &&
-                            //         shop(
-                            //               context,
-                            //             )?.wholeSale !=
-                            //             true) {
-                            //       return 1400;
-                            //     } else if (shop(
-                            //               context,
-                            //             )?.useGroupUnit !=
-                            //             true &&
-                            //         shop(
-                            //               context,
-                            //             )?.wholeSale ==
-                            //             true) {
-                            //       return 1400;
-                            //     } else {
-                            //       return 1300;
-                            //     }
-                            //   }
-                            // }
-
                             if (sortIndex == 1) {
                               return ListView(
                                 primary: false,

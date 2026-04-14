@@ -105,7 +105,7 @@ class _ProductPageMobileState
                 context,
                 MaterialPageRoute(
                   builder: (context) {
-                    return AddProduct();
+                    return AddProduct(isStorage: false);
                   },
                 ),
               ).then((_) {
@@ -394,7 +394,10 @@ class _ProductPageMobileState
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) {
-                                          return AddProduct();
+                                          return AddProduct(
+                                            isStorage:
+                                                false,
+                                          );
                                         },
                                       ),
                                     ).then((_) {

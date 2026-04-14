@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
-import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/products/storage_page/components/quantity_edit_widget.dart';
 import 'package:stockall/pages/products/storage_page/storage_details/storage_details_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -50,6 +48,7 @@ class _TableRowRecordWidgetState
         });
       },
       child: Container(
+        // padding: EdgeInsets.symmetric(vertical: 5),
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(color: Colors.grey),
@@ -61,54 +60,51 @@ class _TableRowRecordWidgetState
           spacing: 0,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Expanded(
-              flex: 2,
-              child: Container(
-                padding: EdgeInsets.all(5),
-                child: Center(
-                  child: Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
-                    children: [
-                      Flexible(
-                        child: Text(
-                          style: TextStyle(
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          (returnStorageProductProvider(
-                                        context: context,
-                                      )
-                                      .storageProductListMain
-                                      .indexWhere(
-                                        (item) =>
-                                            item.uuid ==
-                                            widget
-                                                .product
-                                                .uuid,
-                                      ) +
-                                  1)
-                              .toString(),
+            Container(
+              width: 50,
+              padding: EdgeInsets.all(10),
+              child: Center(
+                child: Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              widget
+                                  .theme
+                                  .mobileTexts
+                                  .b3
+                                  .fontSize,
+                          fontWeight: FontWeight.bold,
                         ),
+                        (returnStorageProductProvider(
+                                      context: context,
+                                    ).storageProductListMain
+                                    .indexWhere(
+                                      (item) =>
+                                          item.uuid ==
+                                          widget
+                                              .product
+                                              .uuid,
+                                    ) +
+                                1)
+                            .toString(),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
             Expanded(
               flex: 9,
               child: Container(
-                padding: EdgeInsets.all(5),
+                padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   border: Border(
                     left: BorderSide(color: Colors.grey),
-                    right: BorderSide(color: Colors.grey),
+                    // right: BorderSide(color: Colors.grey),
                   ),
                 ),
                 child: Center(
@@ -133,113 +129,6 @@ class _TableRowRecordWidgetState
                 ),
               ),
             ),
-            // Visibility(
-            //   visible: shop(context)?.useGroupUnit == true,
-            //   child: Expanded(
-            //     flex: 6,
-            //     child: QuantityEditWidget(
-            //       isGroup: true,
-            //       isTotal: true,
-            //       product: widget.product,
-            //     ),
-            //   ),
-            // ),
-            // Expanded(
-            //   flex: 6,
-            //   child: QuantityEditWidget(
-            //     isGroup: false,
-            //     isTotal: true,
-            //     product: widget.product,
-            //   ),
-            // ),
-            // Visibility(
-            //   visible: shop(context)?.useGroupUnit == true,
-            //   child: Expanded(
-            //     flex: 6,
-            //     child: Container(
-            //       decoration: BoxDecoration(
-            //         border: Border(
-            //           right: BorderSide(color: Colors.grey),
-            //           // left: BorderSide(color: Colors.grey),
-            //         ),
-            //       ),
-            //       padding: EdgeInsets.all(5),
-            //       child: Center(
-            //         child: Row(
-            //           children: [
-            //             Flexible(
-            //               child: Text(
-            //                 style: TextStyle(
-            //                   fontSize:
-            //                       widget
-            //                           .theme
-            //                           .mobileTexts
-            //                           .b3
-            //                           .fontSize,
-            //                   fontWeight: FontWeight.bold,
-            //                 ),
-            //                 formatLargeNumberDouble(
-            //                   // returnData(
-            //                   //   context: context,
-            //                   // ).returnGroupQuantityValue(
-            //                   //   widget.product,
-            //                   // ),
-            //                   2000,
-            //                 ),
-            //               ),
-            //             ),
-            //           ],
-            //         ),
-            //       ),
-            //     ),
-            //   ),
-            // ),
-            // Expanded(
-            //   flex: 6,
-            //   child: QuantityEditWidget(
-            //     isGroup: false,
-            //     isTotal: false,
-            //     product: widget.product,
-            //   ),
-            // ),
-            // Visibility(
-            //   visible: shop(context)?.wholeSale == true,
-            //   child: Expanded(
-            //     flex: 6,
-            //     child: Container(
-            //       decoration: BoxDecoration(
-            //         border: Border(
-            //           right: BorderSide(color: Colors.grey),
-            //           // left: BorderSide(color: Colors.grey),
-            //         ),
-            //       ),
-            //       padding: EdgeInsets.all(5),
-            //       child: Center(
-            //         child: Row(
-            //           children: [
-            //             Flexible(
-            //               child: Text(
-            //                 style: TextStyle(
-            //                   fontSize:
-            //                       widget
-            //                           .theme
-            //                           .mobileTexts
-            //                           .b3
-            //                           .fontSize,
-            //                   fontWeight: FontWeight.bold,
-            //                 ),
-            //                 formatMoneyBig(
-            //                   amount: 2000,
-            //                   context: context,
-            //                 ),
-            //               ),
-            //             ),
-            //           ],
-            //         ),
-            //       ),
-            //     ),
-            //   ),
-            // ),
           ],
         ),
       ),

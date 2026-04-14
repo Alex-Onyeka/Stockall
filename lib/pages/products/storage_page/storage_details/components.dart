@@ -68,7 +68,7 @@ class _StorageQuantityUpdateWidgetState
     extends State<StorageQuantityUpdateWidget> {
   final quantityController = TextEditingController();
   int currentIndex = 0;
-  String? departmentUuid;
+  String? productUuid;
   String? staffUuid;
   @override
   Widget build(BuildContext context) {
@@ -89,7 +89,7 @@ class _StorageQuantityUpdateWidgetState
               action: () {
                 setState(() {
                   currentIndex = 0;
-                  departmentUuid = null;
+                  productUuid = null;
                   staffUuid = null;
                 });
               },
@@ -102,7 +102,7 @@ class _StorageQuantityUpdateWidgetState
               action: () {
                 setState(() {
                   currentIndex = 1;
-                  departmentUuid = null;
+                  productUuid = null;
                   staffUuid = null;
                 });
                 if (((widget.product.quantity ?? 0) -
@@ -126,7 +126,7 @@ class _StorageQuantityUpdateWidgetState
               action: () {
                 setState(() {
                   currentIndex = 2;
-                  departmentUuid = null;
+                  productUuid = null;
                   staffUuid = null;
                 });
               },
@@ -164,156 +164,174 @@ class _StorageQuantityUpdateWidgetState
               SizedBox(height: 5),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                spacing:
-                    returnShopProvider()
-                                .userShop()
-                                ?.manageDepartments ==
-                            true
-                        ? 10
-                        : 0,
+                spacing: 10,
                 children: [
-                  Visibility(
-                    visible:
-                        returnShopProvider()
-                            .userShop()
-                            ?.manageDepartments ==
-                        true,
-                    child: SelectDepartmentButton(
-                      theme: theme,
-                      title:
-                          returnDepartmentProvider()
-                                  .departments
+                  SelectProductButton(
+                    isBold:
+                        returnData().productListMain
+                            .where(
+                              (product) =>
+                                  product.uuid ==
+                                  productUuid,
+                            )
+                            .isNotEmpty,
+                    theme: theme,
+                    title:
+                        returnData().productListMain
+                                .where(
+                                  (product) =>
+                                      product.uuid ==
+                                      productUuid,
+                                )
+                                .isNotEmpty
+                            ? cutLongText(
+                              returnData().productListMain
                                   .where(
-                                    (dept) =>
-                                        dept.uuid ==
-                                        departmentUuid,
+                                    (product) =>
+                                        product.uuid ==
+                                        productUuid,
                                   )
-                                  .isNotEmpty
-                              ? cutLongText(
-                                returnDepartmentProvider()
-                                    .departments
-                                    .where(
-                                      (dept) =>
-                                          dept.uuid ==
-                                          departmentUuid,
-                                    )
-                                    .first
-                                    .name,
-                                10,
-                              )
-                              : 'Department',
-                      action: () {
-                        showDialog(
-                          context: context,
-                          builder: (deptContext) {
-                            return DialogTemplate(
-                              theme: theme,
-                              message:
-                                  'Choose from the List of Departments below',
-                              title: 'Select Department',
-                              action: () {},
-                              showBottomActionButtons:
-                                  false,
-                              widget: SizedBox(
-                                height:
-                                    screenHeight(context) -
-                                    250,
-                                child: Builder(
-                                  builder: (context) {
-                                    if (returnDepartmentProvider()
-                                        .departments
-                                        .isEmpty) {
-                                      return EmptyWidgetDisplayOnly(
-                                        title:
-                                            'No Departments',
-                                        subText:
-                                            'You have not created any departments',
-                                        theme: theme,
-                                        height: 30,
-                                        icon: Icons.clear,
-                                      );
-                                    } else {
-                                      return Column(
-                                        spacing: 5,
-                                        children:
-                                            returnDepartmentProvider()
-                                                .departments
-                                                .map(
-                                                  (
-                                                    dept,
-                                                  ) => InkWell(
-                                                    onTap: () {
-                                                      setState(() {
-                                                        departmentUuid =
-                                                            dept.uuid;
-                                                      });
-                                                      Navigator.of(
-                                                        deptContext,
-                                                      ).pop();
-                                                    },
-                                                    child: Padding(
-                                                      padding: EdgeInsetsGeometry.symmetric(
-                                                        vertical:
-                                                            10,
-                                                        horizontal:
-                                                            10,
-                                                      ),
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment.spaceBetween,
-                                                        spacing:
-                                                            5,
-                                                        children: [
-                                                          Row(
-                                                            spacing:
-                                                                5,
-                                                            children: [
-                                                              Icon(
-                                                                size:
-                                                                    14,
-                                                                color:
-                                                                    theme.lightModeColor.prColor300,
-                                                                Icons.width_normal_rounded,
+                                  .first
+                                  .name,
+                              10,
+                            )
+                            : 'Product',
+                    action: () {
+                      showDialog(
+                        context: context,
+                        builder: (productContext) {
+                          return DialogTemplate(
+                            theme: theme,
+                            message:
+                                'Choose from the List of Products below',
+                            title: 'Select Products',
+                            action: () {},
+                            showBottomActionButtons: false,
+                            widget: SizedBox(
+                              height:
+                                  screenHeight(context) -
+                                  250,
+                              child: Builder(
+                                builder: (context) {
+                                  if (returnData()
+                                      .productListMain
+                                      .where(
+                                        (pro) =>
+                                            pro.storageUuid ==
+                                            widget
+                                                .product
+                                                .uuid,
+                                      )
+                                      .isEmpty) {
+                                    return EmptyWidgetDisplayOnly(
+                                      title: 'No Items',
+                                      subText:
+                                          'You have not created any Items',
+                                      theme: theme,
+                                      height: 30,
+                                      icon: Icons.clear,
+                                    );
+                                  } else {
+                                    return Column(
+                                      spacing: 5,
+                                      children:
+                                          returnData()
+                                              .productListMain
+                                              .where(
+                                                (pro) =>
+                                                    pro.storageUuid ==
+                                                    widget
+                                                        .product
+                                                        .uuid,
+                                              )
+                                              .map(
+                                                (
+                                                  product,
+                                                ) => InkWell(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      if (productUuid ==
+                                                          product.uuid) {
+                                                        productUuid =
+                                                            null;
+                                                      } else {
+                                                        productUuid =
+                                                            product.uuid;
+                                                      }
+                                                    });
+                                                    Navigator.of(
+                                                      productContext,
+                                                    ).pop();
+                                                  },
+                                                  child: Padding(
+                                                    padding: EdgeInsetsGeometry.symmetric(
+                                                      vertical:
+                                                          10,
+                                                      horizontal:
+                                                          10,
+                                                    ),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment.spaceBetween,
+                                                      spacing:
+                                                          5,
+                                                      children: [
+                                                        Row(
+                                                          spacing:
+                                                              5,
+                                                          children: [
+                                                            Icon(
+                                                              size:
+                                                                  14,
+                                                              color:
+                                                                  theme.lightModeColor.prColor300,
+                                                              Icons.width_normal_rounded,
+                                                            ),
+                                                            Text(
+                                                              style: TextStyle(
+                                                                fontSize:
+                                                                    theme.mobileTexts.b4.fontSize,
+                                                                fontWeight:
+                                                                    FontWeight.bold,
                                                               ),
-                                                              Text(
-                                                                style: TextStyle(
-                                                                  fontSize:
-                                                                      theme.mobileTexts.b4.fontSize,
-                                                                  fontWeight:
-                                                                      FontWeight.bold,
-                                                                ),
-                                                                dept.name,
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          Icon(
-                                                            size:
-                                                                16,
-                                                            color:
-                                                                Colors.grey,
-                                                            departmentUuid ==
-                                                                    dept.uuid
-                                                                ? Icons.check
-                                                                : Icons.add,
-                                                          ),
-                                                        ],
-                                                      ),
+                                                              product.name,
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        Icon(
+                                                          size:
+                                                              16,
+                                                          color:
+                                                              Colors.grey,
+                                                          productUuid ==
+                                                                  product.uuid
+                                                              ? Icons.check
+                                                              : Icons.add,
+                                                        ),
+                                                      ],
                                                     ),
                                                   ),
-                                                )
-                                                .toList(),
-                                      );
-                                    }
-                                  },
-                                ),
+                                                ),
+                                              )
+                                              .toList(),
+                                    );
+                                  }
+                                },
                               ),
-                            );
-                          },
-                        );
-                      },
-                    ),
+                            ),
+                          );
+                        },
+                      );
+                    },
                   ),
-                  SelectDepartmentButton(
+                  SelectProductButton(
+                    isBold:
+                        returnUserProviderSingle().usersMain
+                            .where(
+                              (user) =>
+                                  user.userId == staffUuid,
+                            )
+                            .isNotEmpty,
                     theme: theme,
                     title:
                         returnUserProviderSingle().usersMain
@@ -376,8 +394,14 @@ class _StorageQuantityUpdateWidgetState
                                                 ) => InkWell(
                                                   onTap: () {
                                                     setState(() {
-                                                      staffUuid =
-                                                          user.userId;
+                                                      if (staffUuid ==
+                                                          user.userId) {
+                                                        staffUuid =
+                                                            null;
+                                                      } else {
+                                                        staffUuid =
+                                                            user.userId;
+                                                      }
                                                     });
                                                     Navigator.of(
                                                       userContext,
@@ -398,7 +422,7 @@ class _StorageQuantityUpdateWidgetState
                                                       children: [
                                                         Row(
                                                           spacing:
-                                                              5,
+                                                              10,
                                                           children: [
                                                             Icon(
                                                               size:
@@ -530,6 +554,10 @@ class _StorageQuantityUpdateWidgetState
                                         DateTime.now(),
                                     uuid:
                                         widget.product.uuid,
+                                    qttyPerGroup:
+                                        widget
+                                            .product
+                                            .qttyPerGroup,
                                   );
                               Navigator.of(
                                 actionContext,
@@ -588,14 +616,14 @@ class _StorageQuantityUpdateWidgetState
                                 var prs = returnData()
                                     .productListMain
                                     .where((pr) {
-                                      if (departmentUuid !=
+                                      if (productUuid !=
                                           null) {
                                         return pr.storageUuid ==
                                                 widget
                                                     .product
                                                     .uuid &&
-                                            pr.departmentUuid ==
-                                                departmentUuid;
+                                            pr.uuid ==
+                                                productUuid;
                                       } else {
                                         return pr
                                                 .storageUuid ==
@@ -678,17 +706,19 @@ class _StorageQuantityUpdateWidgetState
   }
 }
 
-class SelectDepartmentButton extends StatelessWidget {
-  const SelectDepartmentButton({
+class SelectProductButton extends StatelessWidget {
+  const SelectProductButton({
     super.key,
     required this.theme,
     required this.title,
     this.action,
+    required this.isBold,
   });
 
   final ThemeProvider theme;
   final String title;
   final Function()? action;
+  final bool isBold;
 
   @override
   Widget build(BuildContext context) {
@@ -707,6 +737,8 @@ class SelectDepartmentButton extends StatelessWidget {
               Text(
                 style: TextStyle(
                   fontSize: theme.mobileTexts.b3.fontSize,
+                  fontWeight:
+                      isBold ? FontWeight.bold : null,
                 ),
                 title,
               ),
@@ -782,6 +814,296 @@ class ToggleButton extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class ManageProductsStorage extends StatefulWidget {
+  final String productUuid;
+  final ThemeProvider theme;
+  const ManageProductsStorage({
+    super.key,
+    required this.productUuid,
+    required this.theme,
+  });
+
+  @override
+  State<ManageProductsStorage> createState() =>
+      _ManageProductsStorageState();
+}
+
+class _ManageProductsStorageState
+    extends State<ManageProductsStorage> {
+  @override
+  Widget build(BuildContext context) {
+    return Visibility(
+      visible:
+          returnShopProvider()
+              .userShop()
+              ?.manageDepartments ==
+          true,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        spacing: 5,
+        children: [
+          InkWell(
+            onTap: () {
+              List<String> list = [];
+              List<String> tempList = [];
+              setState(() {
+                list.addAll(
+                  returnData().productListMain
+                      .where(
+                        (pr) =>
+                            pr.storageUuid ==
+                            widget.productUuid,
+                      )
+                      .map((pro) => pro.uuid!),
+                );
+              });
+              showDialog(
+                context: context,
+                builder: (firstContext) {
+                  return StatefulBuilder(
+                    builder: (secondContext, setState) {
+                      return DialogTemplate(
+                        theme: widget.theme,
+                        message:
+                            'Select Products that you want to be managed under this Storage',
+                        title: 'Select Product(s)',
+                        topRightWidget:
+                            returnStorageProductProvider()
+                                    .isLoading
+                                ? SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    color:
+                                        widget
+                                            .theme
+                                            .lightModeColor
+                                            .secColor200,
+                                    strokeWidth: 1.5,
+                                  ),
+                                )
+                                : null,
+                        action: () {
+                          if (!returnStorageProductProvider()
+                              .isLoading) {
+                            showDialog(
+                              context: context,
+                              builder: (confirmContext) {
+                                return ConfirmationAlert(
+                                  theme: widget.theme,
+                                  message:
+                                      'You are about to update Add This products to this Storage. Are you sure you want to proceed?',
+                                  title: 'Update Storage',
+                                  action: () async {
+                                    Navigator.of(
+                                      confirmContext,
+                                    ).pop();
+                                    returnStorageProductProvider()
+                                        .toggleIsLoading(
+                                          true,
+                                        );
+                                    setState(() {});
+                                    for (var pr in returnData()
+                                        .productListMain
+                                        .where(
+                                          (pro) =>
+                                              list.contains(
+                                                pro.uuid,
+                                              ) &&
+                                              pro.storageUuid !=
+                                                  widget
+                                                      .productUuid,
+                                        )) {
+                                      var newPr =
+                                          pr.copyWith();
+                                      newPr.storageUuid =
+                                          widget
+                                              .productUuid;
+                                      await returnData()
+                                          .updateProduct(
+                                            product: newPr,
+                                          );
+                                    }
+
+                                    for (var pr
+                                        in returnData()
+                                            .productListMain
+                                            .where(
+                                              (
+                                                pro,
+                                              ) => tempList
+                                                  .contains(
+                                                    pro.uuid,
+                                                  ),
+                                            )) {
+                                      var newPr =
+                                          pr.copyWith();
+                                      newPr.storageUuid =
+                                          null;
+                                      await returnData()
+                                          .updateProduct(
+                                            product: newPr,
+                                          );
+                                    }
+
+                                    if (firstContext
+                                        .mounted) {
+                                      Navigator.of(
+                                        context,
+                                      ).pop();
+                                    }
+                                  },
+                                );
+                              },
+                            );
+                          }
+                        },
+                        widget: SizedBox(
+                          height:
+                              screenHeight(context) - 300,
+                          child: SingleChildScrollView(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(
+                                    horizontal: 20.0,
+                                    vertical: 15,
+                                  ),
+                              child: Column(
+                                spacing: 5,
+                                children:
+                                    returnData()
+                                        .productListMain
+                                        .map(
+                                          (
+                                            dept,
+                                          ) => Material(
+                                            color:
+                                                Colors
+                                                    .transparent,
+                                            child: InkWell(
+                                              onTap: () {
+                                                setState(() {
+                                                  if (list.contains(
+                                                    dept.uuid,
+                                                  )) {
+                                                    list.remove(
+                                                      dept.uuid,
+                                                    );
+                                                    tempList.add(
+                                                      dept.uuid!,
+                                                    );
+                                                  } else {
+                                                    list.add(
+                                                      dept.uuid!,
+                                                    );
+                                                    tempList.remove(
+                                                      dept.uuid,
+                                                    );
+                                                  }
+                                                });
+                                              },
+                                              child: Padding(
+                                                padding: const EdgeInsets.symmetric(
+                                                  vertical:
+                                                      9.0,
+                                                  horizontal:
+                                                      12,
+                                                ),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            widget.theme.mobileTexts.b3.fontSize,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                      dept.name,
+                                                    ),
+                                                    Container(
+                                                      padding:
+                                                          EdgeInsets.all(
+                                                            2,
+                                                          ),
+                                                      decoration: BoxDecoration(
+                                                        shape:
+                                                            BoxShape.circle,
+                                                        border: Border.all(
+                                                          color:
+                                                              Colors.grey,
+                                                        ),
+                                                      ),
+                                                      child: Container(
+                                                        padding: EdgeInsets.all(
+                                                          5,
+                                                        ),
+                                                        decoration: BoxDecoration(
+                                                          shape:
+                                                              BoxShape.circle,
+                                                          color:
+                                                              list.contains(
+                                                                    dept.uuid,
+                                                                  )
+                                                                  ? widget.theme.lightModeColor.prColor250
+                                                                  : Colors.transparent,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ).then((_) {
+                returnStorageProductProvider()
+                    .toggleIsLoading(false);
+              });
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                spacing: 5,
+                children: [
+                  Icon(
+                    size: 16,
+                    color: Colors.grey,
+                    Icons.add,
+                  ),
+                  Text(
+                    style: TextStyle(
+                      fontSize:
+                          widget
+                              .theme
+                              .mobileTexts
+                              .b4
+                              .fontSize,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    'Manage Products',
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

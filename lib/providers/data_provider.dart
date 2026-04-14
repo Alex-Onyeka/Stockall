@@ -2222,6 +2222,7 @@ class DataProvider extends ChangeNotifier {
                   createdAt: DateTime.now(),
                   uuid: uuidGen(),
                   updatedAt: DateTime.now(),
+                  qttyPerGroup: pr.qttyPerGroup,
                 ),
               );
         }

@@ -554,23 +554,29 @@ class _TotalProductsDesktopState
                               widget.categoryUuid == null,
                           child: FloatingActionButtonMain(
                             action: () {
-                              ItemsAuthAction().numberOfItemsAction(
-                                context: context,
-                                action: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return AddProduct();
-                                      },
-                                    ),
-                                  ).then((_) {
-                                    setState(() {
-                                      // getProductList(context);
-                                    });
-                                  });
-                                },
-                              );
+                              ItemsAuthAction()
+                                  .numberOfItemsAction(
+                                    context: context,
+                                    action: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return AddProduct(
+                                              isStorage:
+                                                  false,
+                                            );
+                                          },
+                                        ),
+                                      ).then((_) {
+                                        setState(() {
+                                          // getProductList(context);
+                                        });
+                                      });
+                                    },
+                                  );
                             },
                             color:
                                 theme
@@ -653,7 +659,10 @@ class _TotalProductsDesktopState
                                                                 builder: (
                                                                   context,
                                                                 ) {
-                                                                  return AddProduct();
+                                                                  return AddProduct(
+                                                                    isStorage:
+                                                                        false,
+                                                                  );
                                                                 },
                                                               ),
                                                             ).then(
@@ -1362,6 +1371,20 @@ class _TotalProductsDesktopState
                                                                       );
                                                                     }
                                                                   },
+                                                                  longPress: () {
+                                                                    returnData().toggleIsSelectProduct(
+                                                                      true,
+                                                                    );
+                                                                    setState(
+                                                                      () {
+                                                                        filterIndex =
+                                                                            0;
+                                                                      },
+                                                                    );
+                                                                    returnData().selectProduct(
+                                                                      product,
+                                                                    );
+                                                                  },
                                                                   theme:
                                                                       theme,
                                                                   product:
@@ -1419,34 +1442,66 @@ class _TotalProductsDesktopState
                                                                     products[index];
 
                                                                 return ProductTileMain(
+                                                                  isSelectProduct:
+                                                                      returnData(
+                                                                        context:
+                                                                            context,
+                                                                      ).isSelectProducts,
+                                                                  uuidList:
+                                                                      returnData(
+                                                                            context:
+                                                                                context,
+                                                                          ).selectedProducts
+                                                                          .map(
+                                                                            (
+                                                                              pr,
+                                                                            ) =>
+                                                                                pr.uuid!,
+                                                                          )
+                                                                          .toList(),
                                                                   action: () {
-                                                                    Navigator.push(
-                                                                      context,
-                                                                      MaterialPageRoute(
-                                                                        builder: (
-                                                                          context,
+                                                                    if (returnData().isSelectProducts) {
+                                                                      returnData().selectProduct(
+                                                                        product,
+                                                                      );
+                                                                    } else {
+                                                                      Navigator.push(
+                                                                        context,
+                                                                        MaterialPageRoute(
+                                                                          builder: (
+                                                                            context,
+                                                                          ) {
+                                                                            return ProductDetailsPage(
+                                                                              productUuid:
+                                                                                  product.uuid!,
+                                                                            );
+                                                                          },
+                                                                        ),
+                                                                      ).then(
+                                                                        (
+                                                                          _,
                                                                         ) {
-                                                                          return ProductDetailsPage(
-                                                                            productUuid:
-                                                                                product.uuid!,
-                                                                          );
+                                                                          if (context.mounted) {
+                                                                            setState(
+                                                                              () {},
+                                                                            );
+                                                                          }
                                                                         },
-                                                                      ),
-                                                                    ).then(
-                                                                      (
-                                                                        _,
-                                                                      ) {
-                                                                        if (context.mounted) {
-                                                                          setState(
-                                                                            () {
-                                                                              // _productsFuture =
-                                                                              // getProductList(
-                                                                              //   context,
-                                                                              // );
-                                                                            },
-                                                                          );
-                                                                        }
+                                                                      );
+                                                                    }
+                                                                  },
+                                                                  longPress: () {
+                                                                    returnData().toggleIsSelectProduct(
+                                                                      true,
+                                                                    );
+                                                                    setState(
+                                                                      () {
+                                                                        filterIndex =
+                                                                            0;
                                                                       },
+                                                                    );
+                                                                    returnData().selectProduct(
+                                                                      product,
                                                                     );
                                                                   },
                                                                   theme:

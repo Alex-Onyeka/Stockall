@@ -28,26 +28,6 @@ DateTime resolveBusinessDate(DateTime now) {
 }
 
 DateTime fourAm(DateTime date) {
-  // var cTime =
-  //     returnShopProvider()
-  //                 .userShop()
-  //                 ?.closeSaleTimeString ==
-  //             null
-  //         ? null
-  //         : parseTimeOfDay(
-  //           returnShopProvider()
-  //               .userShop()!
-  //               .closeSaleTimeString!,
-  //         );
-  // return DateTime(
-  //   date.year,
-  //   date.month,
-  //   date.day,
-  //   cTime?.hour ?? 00,
-  //   cTime?.minute ?? 00,
-  //   00,
-  //   00,
-  // );
   final shop = returnShopProvider().userShop();
 
   final cTime =
@@ -65,34 +45,6 @@ DateTime fourAm(DateTime date) {
 }
 
 DateTime fourAmNextDay(DateTime date) {
-  // var cTime =
-  //     returnShopProvider()
-  //                 .userShop()
-  //                 ?.closeSaleTimeString ==
-  //             null
-  //         ? null
-  //         : parseTimeOfDay(
-  //           returnShopProvider()
-  //               .userShop()!
-  //               .closeSaleTimeString!,
-  //         );
-  // return DateTime(
-  //   date.year,
-  //   date.month,
-  //   cTime != null ? date.day + 1 : date.day,
-  //   cTime != null
-  //       ? (cTime.minute == 00)
-  //           ? (cTime.hour - 1)
-  //           : cTime.hour
-  //       : 23,
-  //   cTime != null
-  //       ? cTime.minute == 00
-  //           ? 59
-  //           : (cTime.minute - 1)
-  //       : 59,
-  //   59,
-  //   999,
-  // );
   return fourAm(date).add(const Duration(days: 1));
 }
 

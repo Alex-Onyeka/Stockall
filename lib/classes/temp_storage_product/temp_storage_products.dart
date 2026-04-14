@@ -31,6 +31,9 @@ class TempStorageProducts {
   @HiveField(8)
   DateTime? updatedAt;
 
+  @HiveField(9)
+  double? qttyPerGroup;
+
   TempStorageProducts({
     this.uuid,
     this.createdAt,
@@ -41,6 +44,7 @@ class TempStorageProducts {
     this.unit,
     this.groupUnit,
     this.updatedAt,
+    this.qttyPerGroup,
   });
 
   factory TempStorageProducts.fromJson(
@@ -65,6 +69,10 @@ class TempStorageProducts {
           json['updated_at'] != null
               ? DateTime.parse(json['updated_at'])
               : null,
+      qttyPerGroup:
+          json['qtty_per_group'] != null
+              ? (json['qtty_per_group'] as num).toDouble()
+              : null,
     );
   }
 
@@ -79,6 +87,7 @@ class TempStorageProducts {
       'single_unit': unit,
       'group_unit': groupUnit,
       'updated_at': updatedAt?.toIso8601String(),
+      'qtty_per_group': qttyPerGroup,
     };
   }
 }

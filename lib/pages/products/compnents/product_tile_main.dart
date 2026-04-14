@@ -9,6 +9,7 @@ class ProductTileMain extends StatefulWidget {
   final TempProductClass product;
   final bool? isSelectProduct;
   final List<String>? uuidList;
+  final Function()? longPress;
   const ProductTileMain({
     super.key,
     required this.theme,
@@ -16,6 +17,7 @@ class ProductTileMain extends StatefulWidget {
     required this.action,
     this.isSelectProduct,
     this.uuidList,
+    this.longPress,
   });
 
   final ThemeProvider theme;
@@ -59,6 +61,7 @@ class _ProductTileMainState extends State<ProductTileMain> {
               child: InkWell(
                 borderRadius: BorderRadius.circular(5),
                 onTap: widget.action,
+                onLongPress: widget.longPress,
                 child: Container(
                   padding: EdgeInsets.symmetric(
                     horizontal: 12,

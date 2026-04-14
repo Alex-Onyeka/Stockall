@@ -1762,7 +1762,10 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) {
-                                          return AddProduct();
+                                          return AddProduct(
+                                            isStorage:
+                                                false,
+                                          );
                                         },
                                       ),
                                     ).then((_) {

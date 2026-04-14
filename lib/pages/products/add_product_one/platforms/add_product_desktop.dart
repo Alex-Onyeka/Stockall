@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_categories/category_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
+import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
@@ -29,6 +30,8 @@ import 'package:stockall/providers/data_provider.dart';
 
 class AddProductDesktop extends StatefulWidget {
   final TempProductClass? product;
+  final TempStorageProducts? storageProduct;
+  final bool isStorage;
   final TextEditingController costController;
   final TextEditingController sellingController;
   final TextEditingController wholeSaleController;
@@ -50,7 +53,9 @@ class AddProductDesktop extends StatefulWidget {
     required this.storageQuantityController,
     required this.qttyPerGroupController,
     required this.wholeSaleController,
+    required this.isStorage,
     this.product,
+    this.storageProduct,
   });
 
   @override
@@ -294,8 +299,6 @@ class _AddProductDesktopState
           title: 'Proceed?',
           action: () async {
             final provider = returnData();
-            final shopProvider = returnShopProvider();
-
             Navigator.of(confirmDialog).pop();
 
             setState(() {
@@ -323,7 +326,7 @@ class _AddProductDesktopState
               return result < 0 ? 0 : result;
             }
 
-            await provider.updateProduct(
+            var res = await provider.updateProduct(
               product: TempProductClass(
                 storageUuid: widget.product?.storageUuid,
                 departmentName:
@@ -419,24 +422,102 @@ class _AddProductDesktopState
               ),
               oldProduct: widget.product!,
             );
-            await provider.getProducts(
-              shopProvider.userShop()!.shopId!,
-            );
+            if (res == null) {
+              setState(() {
+                isLoading = false;
+              });
+            } else {
+              setState(() {
+                isLoading = false;
+                showSuccess = true;
+              });
 
-            setState(() {
-              isLoading = false;
-              showSuccess = true;
-            });
+              if (safeContext.mounted) {
+                provider.clearFields();
+              }
 
-            if (safeContext.mounted) {
-              provider.clearFields();
-            }
-
-            Future.delayed(Duration(seconds: 2), () {
               if (safeContext.mounted) {
                 Navigator.of(safeContext).pop();
               }
+            }
+          },
+        );
+      },
+    );
+  }
+
+  void updateStorageProduct() {
+    final safeContext = context;
+    showDialog(
+      context: safeContext,
+      builder: (context) {
+        var theme = returnTheme(context);
+        return ConfirmationAlert(
+          theme: theme,
+          message:
+              'Are you sure you want to proceed with update?',
+          title: 'Proceed?',
+          action: () async {
+            final provider = returnStorageProductProvider();
+            final dataProvider = returnData();
+            if (safeContext.mounted) {
+              Navigator.of(safeContext).pop();
+            }
+
+            setState(() {
+              isLoading = true;
             });
+            var res = await provider.updateProduct(
+              product: TempStorageProducts(
+                createdAt: widget.storageProduct?.createdAt,
+                updatedAt: DateTime.now(),
+                uuid: widget.storageProduct?.uuid,
+                name: widget.nameController.text,
+                unit: dataProvider.selectedUnit!,
+                groupUnit: dataProvider.selectedGroupUnit,
+                qttyPerGroup:
+                    widget
+                            .qttyPerGroupController
+                            .text
+                            .isNotEmpty
+                        ? double.parse(
+                          widget.qttyPerGroupController.text
+                              .replaceAll(',', ''),
+                        )
+                        : null,
+                quantity:
+                    widget
+                            .quantityController
+                            .text
+                            .isNotEmpty
+                        ? double.parse(
+                          widget.quantityController.text
+                              .replaceAll(',', ''),
+                        )
+                        : null,
+                shopId: userShop!.shopId!,
+              ),
+              // oldProduct: widget.product!,
+            );
+
+            if (res == 0) {
+              setState(() {
+                isLoading = false;
+              });
+            } else {
+              setState(() {
+                isLoading = false;
+                showSuccess = true;
+              });
+
+              if (safeContext.mounted) {
+                dataProvider.clearFields();
+              }
+
+              if (safeContext.mounted) {
+                Navigator.of(safeContext).pop();
+              }
+            }
           },
         );
       },
@@ -573,29 +654,29 @@ class _AddProductDesktopState
                 ),
           )
           : null;
-      // setState(() {
-      //   costDiscount =
-      //       widget.product!.discount != null &&
-      //               widget.product!.sellingPrice != null
-      //           ? widget.product!.sellingPrice! *
-      //               (widget.product!.discount! / 100)
-      //           : 0;
-      //   sellingDiscount =
-      //       widget.product!.discount != null &&
-      //               widget.product!.sellingPrice != null
-      //           ? widget.product!.sellingPrice! -
-      //               (widget.product!.sellingPrice! *
-      //                   (widget.product!.discount! / 100))
-      //           : 0;
-      //   selling =
-      //       double.tryParse(
-      //         widget.sellingController.text.replaceAll(
-      //           ',',
-      //           '',
-      //         ),
-      //       ) ??
-      //       0;
-      // });
+    }
+
+    if (widget.storageProduct != null) {
+      widget.nameController.text =
+          widget.storageProduct?.name ?? '';
+      returnData().selectUnit(
+        widget.storageProduct!.unit ?? 'Others',
+      );
+      returnData().selectGroupUnit(
+        unit: widget.storageProduct!.groupUnit,
+      );
+      widget.qttyPerGroupController.text =
+          widget.storageProduct!.qttyPerGroup != null
+              ? widget.storageProduct!.qttyPerGroup!
+                  .toString()
+              : '';
+      widget.quantityController.text =
+          widget.storageProduct!.quantity == null
+              ? ''
+              : widget.storageProduct!.quantity.toString();
+      setState(() {
+        expand = true;
+      });
     }
   }
 
@@ -607,24 +688,6 @@ class _AddProductDesktopState
       userShop = returnShopProvider().userShop();
     });
   }
-
-  // double cost = 0;
-  // double selling = 0;
-  // double discount = 0;
-
-  // double costDiscount = 0;
-
-  // double sellingDiscount = 0;
-
-  // void checkDiscount() {
-  //   final discountedPrice = selling * (discount / 100);
-  //   final discountedSellingPrice =
-  //       selling - (selling * (discount / 100));
-  //   setState(() {
-  //     costDiscount = discountedPrice;
-  //     sellingDiscount = discountedSellingPrice;
-  //   });
-  // }
 
   @override
   void dispose() {
@@ -716,167 +779,138 @@ class _AddProductDesktopState
                                             .nameController,
                                   ),
                                   SizedBox(height: 10),
-                                  Row(
-                                    spacing: 10,
-                                    children: [
-                                      Expanded(
-                                        child: MoneyTextfield(
-                                          focusNode:
-                                              costFieldNode,
-                                          onSubmitted: (
-                                            value,
-                                          ) {
-                                            FocusScope.of(
-                                              context,
-                                            ).requestFocus(
-                                              sellingFieldNode,
-                                            );
-                                          },
-                                          onChanged: (
-                                            value,
-                                          ) {
-                                            // if (value
-                                            //     .isEmpty) {
-                                            //   cost = 0;
-                                            // } else {
-                                            //   setState(() {
-                                            //     cost =
-                                            //         double.tryParse(
-                                            //           widget.costController.text.replaceAll(
-                                            //             ',',
-                                            //             '',
-                                            //           ),
-                                            //         ) ??
-                                            //         0;
-                                            //   });
-                                            // }
-                                          },
-                                          theme: theme,
-                                          hint:
-                                              'Enter Real Cost',
-                                          title:
-                                              'Cost - Price (Optional)',
-                                          controller:
-                                              widget
-                                                  .costController,
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: MoneyTextfield(
-                                          focusNode:
-                                              sellingFieldNode,
-                                          onSubmitted: (
-                                            value,
-                                          ) {
-                                            returnShopProvider()
-                                                        .userShop()
-                                                        ?.wholeSale ==
-                                                    true
-                                                ? FocusScope.of(
-                                                  context,
-                                                ).requestFocus(
-                                                  wholeSaleFieldNode,
-                                                )
-                                                : FocusScope.of(
-                                                  context,
-                                                ).requestFocus(
-                                                  quantityFieldNode,
-                                                );
-                                          },
-                                          onChanged: (
-                                            value,
-                                          ) {
-                                            // if (value
-                                            //     .isEmpty) {
-                                            //   selling = 0;
-                                            // } else {
-                                            //   setState(() {
-                                            //     selling =
-                                            //         double.tryParse(
-                                            //           widget.sellingController.text.replaceAll(
-                                            //             ',',
-                                            //             '',
-                                            //           ),
-                                            //         ) ??
-                                            //         0;
-                                            //   });
-                                            // }
-                                          },
-                                          theme: theme,
-                                          hint:
-                                              'Enter Sale Price',
-                                          title:
-                                              'Selling-Price (Optional)',
-                                          controller:
-                                              widget
-                                                  .sellingController,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 10),
                                   Visibility(
                                     visible:
-                                        shop(
-                                          context,
-                                        )?.wholeSale ==
-                                        true,
+                                        !widget.isStorage,
                                     child: Column(
                                       children: [
-                                        MoneyTextfield(
-                                          focusNode:
-                                              wholeSaleFieldNode,
-                                          onSubmitted: (
-                                            value,
-                                          ) {
-                                            FocusScope.of(
-                                              context,
-                                            ).requestFocus(
-                                              quantityFieldNode,
-                                            );
-                                          },
-                                          onChanged: (
-                                            value,
-                                          ) {
-                                            // if (value.isEmpty) {
-                                            //   selling = 0;
-                                            // } else {
-                                            //   setState(() {
-                                            //     selling =
-                                            //         double.tryParse(
-                                            //           widget
-                                            //               .sellingController
-                                            //               .text
-                                            //               .replaceAll(
-                                            //                 ',',
-                                            //                 '',
-                                            //               ),
-                                            //         ) ??
-                                            //         0;
-                                            //   });
-                                            // }
-                                          },
-                                          theme: theme,
-                                          hint:
-                                              'Enter Whole Sale Price',
-                                          title:
-                                              'Whole-Sale-Price (Optional)',
-                                          controller:
-                                              widget
-                                                  .wholeSaleController,
+                                        Row(
+                                          spacing: 10,
+                                          children: [
+                                            Expanded(
+                                              child: MoneyTextfield(
+                                                focusNode:
+                                                    costFieldNode,
+                                                onSubmitted: (
+                                                  value,
+                                                ) {
+                                                  FocusScope.of(
+                                                    context,
+                                                  ).requestFocus(
+                                                    sellingFieldNode,
+                                                  );
+                                                },
+                                                onChanged:
+                                                    (
+                                                      value,
+                                                    ) {},
+                                                theme:
+                                                    theme,
+                                                hint:
+                                                    'Enter Real Cost',
+                                                title:
+                                                    'Cost - Price (Optional)',
+                                                controller:
+                                                    widget
+                                                        .costController,
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: MoneyTextfield(
+                                                focusNode:
+                                                    sellingFieldNode,
+                                                onSubmitted: (
+                                                  value,
+                                                ) {
+                                                  returnShopProvider()
+                                                              .userShop()
+                                                              ?.wholeSale ==
+                                                          true
+                                                      ? FocusScope.of(
+                                                        context,
+                                                      ).requestFocus(
+                                                        wholeSaleFieldNode,
+                                                      )
+                                                      : FocusScope.of(
+                                                        context,
+                                                      ).requestFocus(
+                                                        quantityFieldNode,
+                                                      );
+                                                },
+                                                onChanged:
+                                                    (
+                                                      value,
+                                                    ) {},
+                                                theme:
+                                                    theme,
+                                                hint:
+                                                    'Enter Sale Price',
+                                                title:
+                                                    'Selling-Price (Optional)',
+                                                controller:
+                                                    widget
+                                                        .sellingController,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                         SizedBox(
                                           height: 10,
+                                        ),
+                                        Visibility(
+                                          visible:
+                                              shop(
+                                                context,
+                                              )?.wholeSale ==
+                                              true,
+                                          child: Column(
+                                            children: [
+                                              MoneyTextfield(
+                                                focusNode:
+                                                    wholeSaleFieldNode,
+                                                onSubmitted: (
+                                                  value,
+                                                ) {
+                                                  FocusScope.of(
+                                                    context,
+                                                  ).requestFocus(
+                                                    quantityFieldNode,
+                                                  );
+                                                },
+                                                onChanged:
+                                                    (
+                                                      value,
+                                                    ) {},
+                                                theme:
+                                                    theme,
+                                                hint:
+                                                    'Enter Whole Sale Price',
+                                                title:
+                                                    'Whole-Sale-Price (Optional)',
+                                                controller:
+                                                    widget
+                                                        .wholeSaleController,
+                                              ),
+                                              SizedBox(
+                                                height: 10,
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ],
                                     ),
                                   ),
                                   Visibility(
-                                    visible: authorization(
-                                      authorized:
-                                          Authorizations()
-                                              .updateItemQuantity,
-                                    ),
+                                    visible:
+                                        authorization(
+                                          authorized:
+                                              Authorizations()
+                                                  .updateItemQuantity,
+                                        ) &&
+                                        returnShopProvider()
+                                                .userShop()
+                                                ?.manageInventoryStorage !=
+                                            true,
                                     child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment
@@ -997,442 +1031,380 @@ class _AddProductDesktopState
                                       ],
                                     ),
                                   ),
-                                  SizedBox(height: 10),
-                                  Column(
-                                    children: [
-                                      Stack(
-                                        children: [
-                                          Visibility(
-                                            visible:
-                                                kIsWeb ||
-                                                platforms(
-                                                      context,
-                                                    ) ==
-                                                    TargetPlatform
-                                                        .android ||
-                                                platforms(
-                                                      context,
-                                                    ) ==
-                                                    TargetPlatform
-                                                        .iOS,
-                                            child: BarcodeScanner(
-                                              focusNode:
-                                                  barcodeFieldNode,
-                                              controller:
-                                                  barcodeController,
-                                              valueSet:
-                                                  barCodeSet,
-                                              onTap: () async {
-                                                ItemsAuthAction().generateBarcodeAction(
-                                                  context:
-                                                      context,
-                                                  action: () async {
-                                                    String?
-                                                    info = await scanCode(
-                                                      context,
-                                                      'Not Saved',
-                                                    );
-
-                                                    setState(() {
-                                                      barcode =
-                                                          info;
-                                                      barCodeSet =
-                                                          true;
-                                                    });
-                                                  },
-                                                );
-                                              },
-                                              title:
-                                                  'Item Barcode (Optional)',
-                                              hint:
-                                                  barcode ??
-                                                  'Click to Scan Item Barcode',
-                                              theme: theme,
-                                            ),
-                                          ),
-                                          Visibility(
-                                            visible:
-                                                platforms(
-                                                      context,
-                                                    ) ==
-                                                    TargetPlatform
-                                                        .windows ||
-                                                platforms(
-                                                      context,
-                                                    ) ==
-                                                    TargetPlatform
-                                                        .linux ||
-                                                platforms(
-                                                      context,
-                                                    ) ==
-                                                    TargetPlatform
-                                                        .macOS,
-                                            child: Column(
-                                              spacing: 5,
+                                  Visibility(
+                                    visible:
+                                        !widget.isStorage,
+                                    child: Column(
+                                      children: [
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        Column(
+                                          children: [
+                                            Stack(
                                               children: [
-                                                Text(
-                                                  style:
-                                                      theme
-                                                          .mobileTexts
-                                                          .b3
-                                                          .textStyleBold,
-                                                  'Item Barcode (Optional)',
-                                                ),
-                                                TextFormField(
-                                                  focusNode:
-                                                      barcodeFieldNode,
-                                                  controller:
-                                                      barcodeController,
-                                                  onChanged: (
-                                                    value,
-                                                  ) {
-                                                    setState(() {
-                                                      barcode =
-                                                          value;
-                                                      if (value
-                                                          .isEmpty) {
-                                                        barCodeSet =
-                                                            false;
-                                                      } else {
-                                                        barCodeSet =
-                                                            true;
-                                                      }
-                                                    });
-                                                    print(
-                                                      barcode,
-                                                    );
-                                                    print(
-                                                      barCodeSet
-                                                          .toString(),
-                                                    );
-                                                  },
-                                                  enabled:
-                                                      true,
-                                                  decoration: InputDecoration(
-                                                    isCollapsed:
-                                                        true,
-                                                    suffixIcon: Padding(
-                                                      padding: const EdgeInsets.only(
-                                                        right:
-                                                            50.0,
-                                                      ),
-                                                      child: Icon(
-                                                        size:
-                                                            20,
-                                                        color:
-                                                            Colors.grey,
-                                                        Icons.qr_code_scanner_sharp,
-                                                      ),
-                                                    ),
-                                                    suffixIconConstraints: BoxConstraints(
-                                                      maxHeight:
-                                                          20,
-                                                      maxWidth:
-                                                          35,
-                                                    ),
-                                                    contentPadding: EdgeInsets.symmetric(
-                                                      horizontal:
-                                                          20,
-                                                      vertical:
-                                                          8,
-                                                    ),
-                                                    hintText:
+                                                Visibility(
+                                                  visible:
+                                                      kIsWeb ||
+                                                      platforms(
+                                                            context,
+                                                          ) ==
+                                                          TargetPlatform.android ||
+                                                      platforms(
+                                                            context,
+                                                          ) ==
+                                                          TargetPlatform.iOS,
+                                                  child: BarcodeScanner(
+                                                    focusNode:
+                                                        barcodeFieldNode,
+                                                    controller:
+                                                        barcodeController,
+                                                    valueSet:
+                                                        barCodeSet,
+                                                    onTap: () async {
+                                                      ItemsAuthAction().generateBarcodeAction(
+                                                        context:
+                                                            context,
+                                                        action: () async {
+                                                          String?
+                                                          info = await scanCode(
+                                                            context,
+                                                            'Not Saved',
+                                                          );
+
+                                                          setState(
+                                                            () {
+                                                              barcode =
+                                                                  info;
+                                                              barCodeSet =
+                                                                  true;
+                                                            },
+                                                          );
+                                                        },
+                                                      );
+                                                    },
+                                                    title:
+                                                        'Item Barcode (Optional)',
+                                                    hint:
                                                         barcode ??
                                                         'Click to Scan Item Barcode',
-                                                    hintStyle: TextStyle(
-                                                      color:
-                                                          barCodeSet
-                                                              ? Colors.grey.shade700
-                                                              : Colors.grey.shade500,
-                                                      fontSize:
-                                                          theme.mobileTexts.b2.fontSize,
-                                                      fontWeight:
-                                                          barCodeSet
-                                                              ? FontWeight.bold
-                                                              : FontWeight.normal,
-                                                    ),
-                                                    border: OutlineInputBorder(
-                                                      borderSide: BorderSide(
-                                                        color:
-                                                            Colors.grey,
-                                                        width:
-                                                            1,
+                                                    theme:
+                                                        theme,
+                                                  ),
+                                                ),
+                                                Visibility(
+                                                  visible:
+                                                      platforms(
+                                                            context,
+                                                          ) ==
+                                                          TargetPlatform.windows ||
+                                                      platforms(
+                                                            context,
+                                                          ) ==
+                                                          TargetPlatform.linux ||
+                                                      platforms(
+                                                            context,
+                                                          ) ==
+                                                          TargetPlatform.macOS,
+                                                  child: Column(
+                                                    spacing:
+                                                        5,
+                                                    children: [
+                                                      Text(
+                                                        style:
+                                                            theme.mobileTexts.b3.textStyleBold,
+                                                        'Item Barcode (Optional)',
                                                       ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            5,
+                                                      TextFormField(
+                                                        focusNode:
+                                                            barcodeFieldNode,
+                                                        controller:
+                                                            barcodeController,
+                                                        onChanged: (
+                                                          value,
+                                                        ) {
+                                                          setState(
+                                                            () {
+                                                              barcode =
+                                                                  value;
+                                                              if (value.isEmpty) {
+                                                                barCodeSet =
+                                                                    false;
+                                                              } else {
+                                                                barCodeSet =
+                                                                    true;
+                                                              }
+                                                            },
+                                                          );
+                                                          print(
+                                                            barcode,
+                                                          );
+                                                          print(
+                                                            barCodeSet.toString(),
+                                                          );
+                                                        },
+                                                        enabled:
+                                                            true,
+                                                        decoration: InputDecoration(
+                                                          isCollapsed:
+                                                              true,
+                                                          suffixIcon: Padding(
+                                                            padding: const EdgeInsets.only(
+                                                              right:
+                                                                  50.0,
+                                                            ),
+                                                            child: Icon(
+                                                              size:
+                                                                  20,
+                                                              color:
+                                                                  Colors.grey,
+                                                              Icons.qr_code_scanner_sharp,
+                                                            ),
                                                           ),
+                                                          suffixIconConstraints: BoxConstraints(
+                                                            maxHeight:
+                                                                20,
+                                                            maxWidth:
+                                                                35,
+                                                          ),
+                                                          contentPadding: EdgeInsets.symmetric(
+                                                            horizontal:
+                                                                20,
+                                                            vertical:
+                                                                8,
+                                                          ),
+                                                          hintText:
+                                                              barcode ??
+                                                              'Click to Scan Item Barcode',
+                                                          hintStyle: TextStyle(
+                                                            color:
+                                                                barCodeSet
+                                                                    ? Colors.grey.shade700
+                                                                    : Colors.grey.shade500,
+                                                            fontSize:
+                                                                theme.mobileTexts.b2.fontSize,
+                                                            fontWeight:
+                                                                barCodeSet
+                                                                    ? FontWeight.bold
+                                                                    : FontWeight.normal,
+                                                          ),
+                                                          border: OutlineInputBorder(
+                                                            borderSide: BorderSide(
+                                                              color:
+                                                                  Colors.grey,
+                                                              width:
+                                                                  1,
+                                                            ),
+                                                            borderRadius: BorderRadius.circular(
+                                                              5,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .end,
+                                              children: [
+                                                InkWell(
+                                                  onTap: () async {
+                                                    ItemsAuthAction().generateBarcodeAction(
+                                                      context:
+                                                          context,
+                                                      action: () async {
+                                                        String
+                                                        sellingPrice() {
+                                                          if (widget.sellingController.text.isEmpty) {
+                                                            return '';
+                                                          } else {
+                                                            if (widget.sellingController.text
+                                                                    .split(
+                                                                      ',',
+                                                                    )
+                                                                    .length >
+                                                                1) {
+                                                              return widget.sellingController.text
+                                                                      .split(
+                                                                        ',',
+                                                                      )
+                                                                      .first +
+                                                                  widget.sellingController.text
+                                                                      .split(
+                                                                        ',',
+                                                                      )
+                                                                      .last;
+                                                            } else {
+                                                              return widget.sellingController.text;
+                                                            }
+                                                          }
+                                                        }
+
+                                                        wholeSalePrice() {
+                                                          if (widget.wholeSaleController.text.isEmpty) {
+                                                            return '';
+                                                          } else {
+                                                            if (widget.wholeSaleController.text
+                                                                    .split(
+                                                                      ',',
+                                                                    )
+                                                                    .length >
+                                                                1) {
+                                                              return widget.wholeSaleController.text
+                                                                      .split(
+                                                                        ',',
+                                                                      )
+                                                                      .first +
+                                                                  widget.wholeSaleController.text
+                                                                      .split(
+                                                                        ',',
+                                                                      )
+                                                                      .last;
+                                                            } else {
+                                                              return widget.wholeSaleController.text;
+                                                            }
+                                                          }
+                                                        }
+
+                                                        var tempProduct = TempProductClass(
+                                                          storageUuid:
+                                                              widget.product?.storageUuid,
+                                                          departmentName:
+                                                              returnDepartmentProvider().currentDepartment()?.name,
+                                                          departmentUuid:
+                                                              returnDepartmentProvider().currentDepartment()?.name,
+                                                          groupUnit:
+                                                              widget.product?.groupUnit,
+                                                          qttyPerGroup:
+                                                              widget.product?.qttyPerGroup,
+                                                          name:
+                                                              widget.product ==
+                                                                      null
+                                                                  ? widget.nameController.text
+                                                                  : widget.product?.name ??
+                                                                      'Product Name',
+                                                          unit:
+                                                              'Others',
+                                                          isRefundable:
+                                                              false,
+                                                          costPrice:
+                                                              0,
+                                                          shopId:
+                                                              1,
+                                                          setCustomPrice:
+                                                              false,
+                                                          isManaged:
+                                                              false,
+                                                          uuid:
+                                                              widget.product ==
+                                                                      null
+                                                                  ? createdProductUuid
+                                                                  : widget.product?.uuid,
+                                                          sellingPrice:
+                                                              widget.product ==
+                                                                      null
+                                                                  ? double.tryParse(
+                                                                    sellingPrice(),
+                                                                  )
+                                                                  : widget.product?.sellingPrice,
+                                                          wholeSalePrice:
+                                                              widget.product ==
+                                                                      null
+                                                                  ? double.tryParse(
+                                                                    wholeSalePrice(),
+                                                                  )
+                                                                  : widget.product?.wholeSalePrice,
+                                                        );
+
+                                                        if (widget.nameController.text.isNotEmpty) {
+                                                          returnData().addToBarcodeGenerationList(
+                                                            ProductBarcode(
+                                                              product:
+                                                                  tempProduct,
+                                                              number:
+                                                                  1,
+                                                            ),
+                                                          );
+                                                          await generateBarcodeAndPrint(
+                                                            context,
+                                                            returnData().barcodeGenerationList,
+                                                            true,
+                                                          );
+                                                          // if (res) {
+                                                          setState(
+                                                            () {
+                                                              barcode = returnOnlyDigits(
+                                                                widget.product ==
+                                                                        null
+                                                                    ? createdProductUuid!
+                                                                    : widget.product!.uuid!,
+                                                              );
+                                                              barCodeSet =
+                                                                  true;
+                                                            },
+                                                          );
+                                                          // }
+                                                        } else {
+                                                          showDialog(
+                                                            context:
+                                                                context,
+                                                            builder: (
+                                                              context,
+                                                            ) {
+                                                              return InfoAlert(
+                                                                theme:
+                                                                    theme,
+                                                                message:
+                                                                    'Product Name must be set before barcode can be generated.',
+                                                                title:
+                                                                    'Product Name Not Set',
+                                                              );
+                                                            },
+                                                          );
+                                                        }
+                                                      },
+                                                    );
+                                                  },
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                          5.0,
+                                                        ),
+                                                    child: Row(
+                                                      spacing:
+                                                          5,
+                                                      children: [
+                                                        Icon(
+                                                          size:
+                                                              15,
+                                                          color:
+                                                              theme.lightModeColor.secColor200,
+                                                          Icons.qr_code_rounded,
+                                                        ),
+                                                        Text(
+                                                          style: TextStyle(
+                                                            fontSize:
+                                                                theme.mobileTexts.b3.fontSize,
+                                                          ),
+                                                          'Generate Barcode',
+                                                        ),
+                                                      ],
                                                     ),
                                                   ),
                                                 ),
                                               ],
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment
-                                                .end,
-                                        children: [
-                                          InkWell(
-                                            onTap: () async {
-                                              ItemsAuthAction().generateBarcodeAction(
-                                                context:
-                                                    context,
-                                                action: () async {
-                                                  String
-                                                  sellingPrice() {
-                                                    if (widget
-                                                        .sellingController
-                                                        .text
-                                                        .isEmpty) {
-                                                      return '';
-                                                    } else {
-                                                      if (widget.sellingController.text.split(',').length >
-                                                          1) {
-                                                        return widget.sellingController.text
-                                                                .split(
-                                                                  ',',
-                                                                )
-                                                                .first +
-                                                            widget.sellingController.text
-                                                                .split(
-                                                                  ',',
-                                                                )
-                                                                .last;
-                                                      } else {
-                                                        return widget.sellingController.text;
-                                                      }
-                                                    }
-                                                  }
-
-                                                  wholeSalePrice() {
-                                                    if (widget
-                                                        .wholeSaleController
-                                                        .text
-                                                        .isEmpty) {
-                                                      return '';
-                                                    } else {
-                                                      if (widget.wholeSaleController.text.split(',').length >
-                                                          1) {
-                                                        return widget.wholeSaleController.text
-                                                                .split(
-                                                                  ',',
-                                                                )
-                                                                .first +
-                                                            widget.wholeSaleController.text
-                                                                .split(
-                                                                  ',',
-                                                                )
-                                                                .last;
-                                                      } else {
-                                                        return widget.wholeSaleController.text;
-                                                      }
-                                                    }
-                                                  }
-
-                                                  var tempProduct = TempProductClass(
-                                                    storageUuid:
-                                                        widget.product?.storageUuid,
-                                                    departmentName:
-                                                        returnDepartmentProvider().currentDepartment()?.name,
-                                                    departmentUuid:
-                                                        returnDepartmentProvider().currentDepartment()?.name,
-                                                    groupUnit:
-                                                        widget.product?.groupUnit,
-                                                    qttyPerGroup:
-                                                        widget.product?.qttyPerGroup,
-                                                    name:
-                                                        widget.product ==
-                                                                null
-                                                            ? widget.nameController.text
-                                                            : widget.product?.name ??
-                                                                'Product Name',
-                                                    unit:
-                                                        'Others',
-                                                    isRefundable:
-                                                        false,
-                                                    costPrice:
-                                                        0,
-                                                    shopId:
-                                                        1,
-                                                    setCustomPrice:
-                                                        false,
-                                                    isManaged:
-                                                        false,
-                                                    uuid:
-                                                        widget.product ==
-                                                                null
-                                                            ? createdProductUuid
-                                                            : widget.product?.uuid,
-                                                    sellingPrice:
-                                                        widget.product ==
-                                                                null
-                                                            ? double.tryParse(
-                                                              sellingPrice(),
-                                                            )
-                                                            : widget.product?.sellingPrice,
-                                                    wholeSalePrice:
-                                                        widget.product ==
-                                                                null
-                                                            ? double.tryParse(
-                                                              wholeSalePrice(),
-                                                            )
-                                                            : widget.product?.wholeSalePrice,
-                                                  );
-
-                                                  if (widget
-                                                      .nameController
-                                                      .text
-                                                      .isNotEmpty) {
-                                                    returnData().addToBarcodeGenerationList(
-                                                      ProductBarcode(
-                                                        product:
-                                                            tempProduct,
-                                                        number:
-                                                            1,
-                                                      ),
-                                                    );
-                                                    await generateBarcodeAndPrint(
-                                                      context,
-                                                      returnData()
-                                                          .barcodeGenerationList,
-                                                      true,
-                                                    );
-                                                    // if (res) {
-                                                    setState(() {
-                                                      barcode = returnOnlyDigits(
-                                                        widget.product ==
-                                                                null
-                                                            ? createdProductUuid!
-                                                            : widget.product!.uuid!,
-                                                      );
-                                                      barCodeSet =
-                                                          true;
-                                                    });
-                                                    // }
-                                                  } else {
-                                                    showDialog(
-                                                      context:
-                                                          context,
-                                                      builder: (
-                                                        context,
-                                                      ) {
-                                                        return InfoAlert(
-                                                          theme:
-                                                              theme,
-                                                          message:
-                                                              'Product Name must be set before barcode can be generated.',
-                                                          title:
-                                                              'Product Name Not Set',
-                                                        );
-                                                      },
-                                                    );
-                                                  }
-                                                },
-                                              );
-                                            },
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(
-                                                    5.0,
-                                                  ),
-                                              child: Row(
-                                                spacing: 5,
-                                                children: [
-                                                  Icon(
-                                                    size:
-                                                        15,
-                                                    color:
-                                                        theme.lightModeColor.secColor200,
-                                                    Icons
-                                                        .qr_code_rounded,
-                                                  ),
-                                                  Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          theme.mobileTexts.b3.fontSize,
-                                                    ),
-                                                    'Generate Barcode',
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-
-                                  SizedBox(height: 20),
-                                  InkWell(
-                                    onTap: () {
-                                      returnData()
-                                          .toggleIsManaged(
-                                            context:
-                                                context,
-                                          );
-                                      FocusManager
-                                          .instance
-                                          .primaryFocus
-                                          ?.unfocus();
-                                    },
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment
-                                              .spaceBetween,
-                                      children: [
-                                        Flexible(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment
-                                                    .start,
-                                            children: [
-                                              Text(
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      theme
-                                                          .mobileTexts
-                                                          .b1
-                                                          .fontSize,
-                                                  fontWeight:
-                                                      FontWeight
-                                                          .bold,
-                                                ),
-                                                'Allow Stockall to Manage Item Quantity?',
-                                              ),
-                                              Column(
-                                                spacing: 5,
-                                                children: [
-                                                  Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          10,
-                                                    ),
-                                                    'This controls whether Item quantity is automatically deducted after sales, and notifications are sent when item quantity is low or out of stock.',
-                                                  ),
-                                                  // Text(
-                                                  //   'NOTE: if "YES", then cashier can set a custom price during sale, instead of the selling price.',
-                                                  // ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
+                                          ],
                                         ),
-                                        Checkbox(
-                                          activeColor:
-                                              theme
-                                                  .lightModeColor
-                                                  .secColor100,
-                                          value:
-                                              returnData(
-                                                context:
-                                                    context,
-                                              ).isManaged,
-                                          onChanged: (
-                                            value,
-                                          ) {
+                                        SizedBox(
+                                          height: 20,
+                                        ),
+                                        InkWell(
+                                          onTap: () {
                                             returnData()
                                                 .toggleIsManaged(
                                                   context:
@@ -1443,82 +1415,76 @@ class _AddProductDesktopState
                                                 .primaryFocus
                                                 ?.unfocus();
                                           },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(height: 20),
-                                  InkWell(
-                                    onTap: () {
-                                      returnData()
-                                          .toggleSetCustomPrice();
-                                      FocusManager
-                                          .instance
-                                          .primaryFocus
-                                          ?.unfocus();
-                                    },
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment
-                                              .spaceBetween,
-                                      children: [
-                                        Flexible(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment
-                                                    .start,
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .spaceBetween,
                                             children: [
-                                              Text(
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      theme
-                                                          .mobileTexts
-                                                          .b1
-                                                          .fontSize,
-                                                  fontWeight:
-                                                      FontWeight
-                                                          .bold,
+                                              Flexible(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment
+                                                          .start,
+                                                  children: [
+                                                    Text(
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            theme.mobileTexts.b1.fontSize,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                      'Allow Stockall to Manage Item Quantity?',
+                                                    ),
+                                                    Column(
+                                                      spacing:
+                                                          5,
+                                                      children: [
+                                                        Text(
+                                                          style: TextStyle(
+                                                            fontSize:
+                                                                10,
+                                                          ),
+                                                          'This controls whether Item quantity is automatically deducted after sales, and notifications are sent when item quantity is low or out of stock.',
+                                                        ),
+                                                        // Text(
+                                                        //   'NOTE: if "YES", then cashier can set a custom price during sale, instead of the selling price.',
+                                                        // ),
+                                                      ],
+                                                    ),
+                                                  ],
                                                 ),
-                                                'Allow To Set Custom Price?',
                                               ),
-                                              Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment
-                                                        .start,
-                                                spacing: 5,
-                                                children: [
-                                                  Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          10,
-                                                    ),
-                                                    'Allow Cashier to Set custom price during sale? ',
-                                                  ),
-                                                  Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          10,
-                                                    ),
-                                                    'NOTE: if "YES", then cashier can set a custom price during sale, instead of the selling price.',
-                                                  ),
-                                                ],
+                                              Checkbox(
+                                                activeColor:
+                                                    theme
+                                                        .lightModeColor
+                                                        .secColor100,
+                                                value:
+                                                    returnData(
+                                                      context:
+                                                          context,
+                                                    ).isManaged,
+                                                onChanged: (
+                                                  value,
+                                                ) {
+                                                  returnData().toggleIsManaged(
+                                                    context:
+                                                        context,
+                                                  );
+                                                  FocusManager
+                                                      .instance
+                                                      .primaryFocus
+                                                      ?.unfocus();
+                                                },
                                               ),
                                             ],
                                           ),
                                         ),
-                                        Checkbox(
-                                          activeColor:
-                                              theme
-                                                  .lightModeColor
-                                                  .secColor100,
-                                          value:
-                                              returnData(
-                                                context:
-                                                    context,
-                                              ).setCustomPrice,
-                                          onChanged: (
-                                            value,
-                                          ) {
+                                        SizedBox(
+                                          height: 20,
+                                        ),
+                                        InkWell(
+                                          onTap: () {
                                             returnData()
                                                 .toggleSetCustomPrice();
                                             FocusManager
@@ -1526,12 +1492,81 @@ class _AddProductDesktopState
                                                 .primaryFocus
                                                 ?.unfocus();
                                           },
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .spaceBetween,
+                                            children: [
+                                              Flexible(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment
+                                                          .start,
+                                                  children: [
+                                                    Text(
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            theme.mobileTexts.b1.fontSize,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                      'Allow To Set Custom Price?',
+                                                    ),
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment.start,
+                                                      spacing:
+                                                          5,
+                                                      children: [
+                                                        Text(
+                                                          style: TextStyle(
+                                                            fontSize:
+                                                                10,
+                                                          ),
+                                                          'Allow Cashier to Set custom price during sale? ',
+                                                        ),
+                                                        Text(
+                                                          style: TextStyle(
+                                                            fontSize:
+                                                                10,
+                                                          ),
+                                                          'NOTE: if "YES", then cashier can set a custom price during sale, instead of the selling price.',
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Checkbox(
+                                                activeColor:
+                                                    theme
+                                                        .lightModeColor
+                                                        .secColor100,
+                                                value:
+                                                    returnData(
+                                                      context:
+                                                          context,
+                                                    ).setCustomPrice,
+                                                onChanged: (
+                                                  value,
+                                                ) {
+                                                  returnData()
+                                                      .toggleSetCustomPrice();
+                                                  FocusManager
+                                                      .instance
+                                                      .primaryFocus
+                                                      ?.unfocus();
+                                                },
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ],
                                     ),
                                   ),
+
                                   SizedBox(height: 15),
-                                  Divider(),
+                                  Divider(height: 0),
                                   // SizedBox(height: 5),
                                   InkWell(
                                     onTap: () {
@@ -1596,481 +1631,343 @@ class _AddProductDesktopState
                                     ),
                                   ),
                                   // SizedBox(height: 5),
-                                  Divider(),
+                                  Divider(height: 0),
                                   SizedBox(height: 15),
                                   Visibility(
                                     visible: expand,
                                     child: Column(
                                       children: [
-                                        EditCartTextField(
-                                          theme: theme,
-                                          hint:
-                                              'Enter Discount (%)',
-                                          title:
-                                              'Discount Percent (%)',
-                                          controller:
-                                              widget
-                                                  .discountController,
-                                          onChanged: (
-                                            value,
-                                          ) {
-                                            if (value
-                                                .isNotEmpty) {
-                                              if (int.parse(
-                                                    value,
-                                                  ) >
-                                                  100) {
-                                                widget
-                                                    .discountController
-                                                    .text = '100';
-                                              }
-                                            }
-                                          },
-                                        ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
-                                        EditCartTextField(
-                                          theme: theme,
-                                          hint:
-                                              'Enter Limit',
-                                          title:
-                                              'Low Quantity Limit',
-                                          controller:
-                                              widget
-                                                  .lowQttyController,
-                                        ),
                                         Visibility(
                                           visible:
-                                              returnShopProvider()
-                                                      .userShop()
-                                                      ?.manageDepartments ==
-                                                  true &&
-                                              authorization(
-                                                authorized:
-                                                    Authorizations()
-                                                        .viewAllDepartments,
-                                              ) &&
-                                              widget.product !=
-                                                  null,
-                                          child: SizedBox(
-                                            height: 10,
-                                          ),
-                                        ),
-                                        Visibility(
-                                          visible:
-                                              returnShopProvider()
-                                                      .userShop()
-                                                      ?.manageDepartments ==
-                                                  true &&
-                                              authorization(
-                                                authorized:
-                                                    Authorizations()
-                                                        .viewAllDepartments,
-                                              ) &&
-                                              widget.product !=
-                                                  null,
-                                          child: InkWell(
-                                            onTap: () {
-                                              GeneralSettingsAuthAction().manageDeparmtmentsAction(
-                                                context:
-                                                    context,
-                                                action: () {
-                                                  String?
-                                                  selectedDept;
-                                                  setState(() {
-                                                    selectedDept =
-                                                        returnData().departmentUuid;
-                                                  });
-                                                  showDialog(
-                                                    context:
-                                                        context,
-                                                    builder: (
-                                                      firstContext,
-                                                    ) {
-                                                      return StatefulBuilder(
-                                                        builder: (
-                                                          secondContext,
-                                                          setState,
-                                                        ) {
-                                                          return DialogTemplate(
-                                                            theme:
-                                                                theme,
-                                                            message:
-                                                                'Select Department for this Staff',
-                                                            title:
-                                                                'Select Department(s)',
-                                                            action: () {
-                                                              returnData().setDepartment(
-                                                                selectedDept,
-                                                              );
-                                                              Navigator.of(
-                                                                context,
-                                                              ).pop();
-                                                            },
-                                                            widget: SizedBox(
-                                                              height:
-                                                                  screenHeight(
-                                                                    context,
-                                                                  ) -
-                                                                  300,
-                                                              child: SingleChildScrollView(
-                                                                child: Padding(
-                                                                  padding: const EdgeInsets.symmetric(
-                                                                    horizontal:
-                                                                        20.0,
-                                                                    vertical:
-                                                                        15,
-                                                                  ),
-                                                                  child: Column(
-                                                                    spacing:
-                                                                        5,
-                                                                    children:
-                                                                        returnDepartmentProvider().departments
-                                                                            .map(
-                                                                              (
-                                                                                dept,
-                                                                              ) => Material(
-                                                                                color:
-                                                                                    Colors.transparent,
-                                                                                child: InkWell(
-                                                                                  onTap: () {
-                                                                                    setState(
-                                                                                      () {
-                                                                                        if (selectedDept ==
-                                                                                            dept.uuid) {
-                                                                                          selectedDept =
-                                                                                              null;
-                                                                                        } else {
-                                                                                          selectedDept =
-                                                                                              dept.uuid;
-                                                                                        }
-                                                                                      },
-                                                                                    );
-                                                                                  },
-                                                                                  child: Padding(
-                                                                                    padding: const EdgeInsets.symmetric(
-                                                                                      vertical:
-                                                                                          9.0,
-                                                                                      horizontal:
-                                                                                          12,
-                                                                                    ),
-                                                                                    child: Row(
-                                                                                      mainAxisAlignment:
-                                                                                          MainAxisAlignment.spaceBetween,
-                                                                                      children: [
-                                                                                        Text(
-                                                                                          style: TextStyle(
-                                                                                            fontSize:
-                                                                                                theme.mobileTexts.b3.fontSize,
-                                                                                            fontWeight:
-                                                                                                FontWeight.bold,
-                                                                                          ),
-                                                                                          dept.name,
-                                                                                        ),
-                                                                                        Container(
-                                                                                          padding: EdgeInsets.all(
-                                                                                            2,
-                                                                                          ),
-                                                                                          decoration: BoxDecoration(
-                                                                                            shape:
-                                                                                                BoxShape.circle,
-                                                                                            border: Border.all(
-                                                                                              color:
-                                                                                                  Colors.grey,
-                                                                                            ),
-                                                                                          ),
-                                                                                          child: Container(
-                                                                                            padding: EdgeInsets.all(
-                                                                                              5,
-                                                                                            ),
-                                                                                            decoration: BoxDecoration(
-                                                                                              shape:
-                                                                                                  BoxShape.circle,
-                                                                                              color:
-                                                                                                  selectedDept ==
-                                                                                                          dept.uuid
-                                                                                                      ? theme.lightModeColor.prColor250
-                                                                                                      : Colors.transparent,
-                                                                                            ),
-                                                                                          ),
-                                                                                        ),
-                                                                                      ],
-                                                                                    ),
-                                                                                  ),
-                                                                                ),
-                                                                              ),
-                                                                            )
-                                                                            .toList(),
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          );
-                                                        },
-                                                      );
-                                                    },
-                                                  );
-                                                },
-                                              );
-                                            },
-                                            child: Column(
-                                              mainAxisSize:
-                                                  MainAxisSize
-                                                      .min,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .start,
-                                              spacing: 5,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    Text(
-                                                      textAlign:
-                                                          TextAlign.start,
-                                                      style:
-                                                          theme.mobileTexts.b3.textStyleBold,
-                                                      'Set Department',
-                                                    ),
-                                                  ],
-                                                ),
-                                                SubWrapper(
-                                                  isVisible:
-                                                      !GeneralSettingsAuthAction().manageDeparmtmentsAction(
-                                                        context:
-                                                            context,
-                                                      ),
-                                                  mainWidget: Container(
-                                                    padding: EdgeInsets.symmetric(
-                                                      vertical:
-                                                          0,
-                                                      horizontal:
-                                                          5,
-                                                    ),
-                                                    decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                        color:
-                                                            returnData().departmentUuid !=
-                                                                    null
-                                                                ? theme.lightModeColor.prColor300
-                                                                : Colors.grey,
-                                                        width:
-                                                            returnData().departmentUuid !=
-                                                                    null
-                                                                ? 1.3
-                                                                : 1,
-                                                      ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            5,
-                                                          ),
-                                                    ),
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment.spaceBetween,
-                                                      children: [
-                                                        Row(
-                                                          children: [
-                                                            SizedBox(
-                                                              width:
-                                                                  10,
-                                                            ),
-                                                            Text(
-                                                              style: TextStyle(
-                                                                fontSize:
-                                                                    returnData().departmentUuid !=
-                                                                            null
-                                                                        ? theme.mobileTexts.b2.fontSize
-                                                                        : theme.mobileTexts.b2.fontSize,
-                                                                fontWeight:
-                                                                    returnData().departmentUuid !=
-                                                                            null
-                                                                        ? FontWeight.bold
-                                                                        : null,
-                                                                color:
-                                                                    returnData().departmentUuid !=
-                                                                            null
-                                                                        ? null
-                                                                        : Colors.grey.shade500,
-                                                              ),
-                                                              returnData().departmentUuid ==
-                                                                      null
-                                                                  ? 'Select Department'
-                                                                  : returnDepartmentProvider().departments
-                                                                      .firstWhere(
-                                                                        (
-                                                                          dept,
-                                                                        ) =>
-                                                                            dept.uuid ==
-                                                                            returnData().departmentUuid,
-                                                                      )
-                                                                      .name,
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        Ink(
-                                                          child: InkWell(
-                                                            borderRadius: BorderRadius.circular(
-                                                              20,
-                                                            ),
-                                                            onTap: () {
-                                                              returnData().clearDepartment();
-                                                            },
-                                                            child: Container(
-                                                              padding: EdgeInsets.all(
-                                                                7,
-                                                              ),
-                                                              decoration: BoxDecoration(
-                                                                shape:
-                                                                    BoxShape.circle,
-                                                              ),
-                                                              child: Icon(
-                                                                Icons.clear,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
-                                        InkWell(
-                                          onTap: () {
-                                            ItemsAuthAction().setExpiryDateAction(
-                                              context:
-                                                  context,
-                                              action: () {
-                                                myDatePickerAction(
-                                                  theme,
-                                                  context,
-                                                ).then((
+                                              !widget
+                                                  .isStorage,
+                                          child: Column(
+                                            children: [
+                                              EditCartTextField(
+                                                theme:
+                                                    theme,
+                                                hint:
+                                                    'Enter Discount (%)',
+                                                title:
+                                                    'Discount Percent (%)',
+                                                controller:
+                                                    widget
+                                                        .discountController,
+                                                onChanged: (
                                                   value,
                                                 ) {
-                                                  value !=
-                                                          null
-                                                      ? returnData().setExpDate(
-                                                        value,
-                                                      )
-                                                      : {};
-                                                });
-                                              },
-                                            );
-                                          },
-                                          child: Column(
-                                            mainAxisSize:
-                                                MainAxisSize
-                                                    .min,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .start,
-                                            spacing: 5,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Text(
-                                                    textAlign:
-                                                        TextAlign.start,
-                                                    style:
-                                                        theme.mobileTexts.b3.textStyleBold,
-                                                    'Expiry Date (Optional)',
-                                                  ),
-                                                ],
+                                                  if (value
+                                                      .isNotEmpty) {
+                                                    if (int.parse(
+                                                          value,
+                                                        ) >
+                                                        100) {
+                                                      widget
+                                                          .discountController
+                                                          .text = '100';
+                                                    }
+                                                  }
+                                                },
                                               ),
-                                              SubWrapper(
-                                                isVisible:
-                                                    !ItemsAuthAction().setExpiryDateAction(
+                                              SizedBox(
+                                                height: 10,
+                                              ),
+                                              EditCartTextField(
+                                                theme:
+                                                    theme,
+                                                hint:
+                                                    'Enter Limit',
+                                                title:
+                                                    'Low Quantity Limit',
+                                                controller:
+                                                    widget
+                                                        .lowQttyController,
+                                              ),
+                                              Visibility(
+                                                visible:
+                                                    returnShopProvider().userShop()?.manageDepartments ==
+                                                        true &&
+                                                    authorization(
+                                                      authorized:
+                                                          Authorizations().viewAllDepartments,
+                                                    ) &&
+                                                    widget.product !=
+                                                        null,
+                                                child:
+                                                    SizedBox(
+                                                      height:
+                                                          10,
+                                                    ),
+                                              ),
+                                              Visibility(
+                                                visible:
+                                                    returnShopProvider().userShop()?.manageDepartments ==
+                                                        true &&
+                                                    authorization(
+                                                      authorized:
+                                                          Authorizations().viewAllDepartments,
+                                                    ) &&
+                                                    widget.product !=
+                                                        null,
+                                                child: InkWell(
+                                                  onTap: () {
+                                                    GeneralSettingsAuthAction().manageDeparmtmentsAction(
                                                       context:
                                                           context,
-                                                    ),
-                                                mainWidget: Container(
-                                                  padding: EdgeInsets.symmetric(
-                                                    vertical:
-                                                        0,
-                                                    horizontal:
-                                                        5,
-                                                  ),
-                                                  decoration: BoxDecoration(
-                                                    border: Border.all(
-                                                      color:
-                                                          returnData().expiryDate !=
-                                                                  null
-                                                              ? theme.lightModeColor.prColor300
-                                                              : Colors.grey,
-                                                      width:
-                                                          returnData().expiryDate !=
-                                                                  null
-                                                              ? 1.3
-                                                              : 1,
-                                                    ),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          5,
-                                                        ),
-                                                  ),
-                                                  child: Row(
+                                                      action: () {
+                                                        String?
+                                                        selectedDept;
+                                                        setState(() {
+                                                          selectedDept =
+                                                              returnData().departmentUuid;
+                                                        });
+                                                        showDialog(
+                                                          context:
+                                                              context,
+                                                          builder: (
+                                                            firstContext,
+                                                          ) {
+                                                            return StatefulBuilder(
+                                                              builder: (
+                                                                secondContext,
+                                                                setState,
+                                                              ) {
+                                                                return DialogTemplate(
+                                                                  theme:
+                                                                      theme,
+                                                                  message:
+                                                                      'Select Department for this Staff',
+                                                                  title:
+                                                                      'Select Department(s)',
+                                                                  action: () {
+                                                                    returnData().setDepartment(
+                                                                      selectedDept,
+                                                                    );
+                                                                    Navigator.of(
+                                                                      context,
+                                                                    ).pop();
+                                                                  },
+                                                                  widget: SizedBox(
+                                                                    height:
+                                                                        screenHeight(
+                                                                          context,
+                                                                        ) -
+                                                                        300,
+                                                                    child: SingleChildScrollView(
+                                                                      child: Padding(
+                                                                        padding: const EdgeInsets.symmetric(
+                                                                          horizontal:
+                                                                              20.0,
+                                                                          vertical:
+                                                                              15,
+                                                                        ),
+                                                                        child: Column(
+                                                                          spacing:
+                                                                              5,
+                                                                          children:
+                                                                              returnDepartmentProvider().departments
+                                                                                  .map(
+                                                                                    (
+                                                                                      dept,
+                                                                                    ) => Material(
+                                                                                      color:
+                                                                                          Colors.transparent,
+                                                                                      child: InkWell(
+                                                                                        onTap: () {
+                                                                                          setState(
+                                                                                            () {
+                                                                                              if (selectedDept ==
+                                                                                                  dept.uuid) {
+                                                                                                selectedDept =
+                                                                                                    null;
+                                                                                              } else {
+                                                                                                selectedDept =
+                                                                                                    dept.uuid;
+                                                                                              }
+                                                                                            },
+                                                                                          );
+                                                                                        },
+                                                                                        child: Padding(
+                                                                                          padding: const EdgeInsets.symmetric(
+                                                                                            vertical:
+                                                                                                9.0,
+                                                                                            horizontal:
+                                                                                                12,
+                                                                                          ),
+                                                                                          child: Row(
+                                                                                            mainAxisAlignment:
+                                                                                                MainAxisAlignment.spaceBetween,
+                                                                                            children: [
+                                                                                              Text(
+                                                                                                style: TextStyle(
+                                                                                                  fontSize:
+                                                                                                      theme.mobileTexts.b3.fontSize,
+                                                                                                  fontWeight:
+                                                                                                      FontWeight.bold,
+                                                                                                ),
+                                                                                                dept.name,
+                                                                                              ),
+                                                                                              Container(
+                                                                                                padding: EdgeInsets.all(
+                                                                                                  2,
+                                                                                                ),
+                                                                                                decoration: BoxDecoration(
+                                                                                                  shape:
+                                                                                                      BoxShape.circle,
+                                                                                                  border: Border.all(
+                                                                                                    color:
+                                                                                                        Colors.grey,
+                                                                                                  ),
+                                                                                                ),
+                                                                                                child: Container(
+                                                                                                  padding: EdgeInsets.all(
+                                                                                                    5,
+                                                                                                  ),
+                                                                                                  decoration: BoxDecoration(
+                                                                                                    shape:
+                                                                                                        BoxShape.circle,
+                                                                                                    color:
+                                                                                                        selectedDept ==
+                                                                                                                dept.uuid
+                                                                                                            ? theme.lightModeColor.prColor250
+                                                                                                            : Colors.transparent,
+                                                                                                  ),
+                                                                                                ),
+                                                                                              ),
+                                                                                            ],
+                                                                                          ),
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                  )
+                                                                                  .toList(),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                );
+                                                              },
+                                                            );
+                                                          },
+                                                        );
+                                                      },
+                                                    );
+                                                  },
+                                                  child: Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
                                                     mainAxisAlignment:
-                                                        MainAxisAlignment.spaceBetween,
+                                                        MainAxisAlignment.start,
+                                                    spacing:
+                                                        5,
                                                     children: [
                                                       Row(
                                                         children: [
-                                                          SizedBox(
-                                                            width:
-                                                                10,
-                                                          ),
                                                           Text(
-                                                            style: TextStyle(
-                                                              fontSize:
-                                                                  returnData().expiryDate !=
-                                                                          null
-                                                                      ? theme.mobileTexts.b2.fontSize
-                                                                      : theme.mobileTexts.b2.fontSize,
-                                                              fontWeight:
-                                                                  returnData().expiryDate !=
-                                                                          null
-                                                                      ? FontWeight.bold
-                                                                      : null,
-                                                              color:
-                                                                  returnData().expiryDate !=
-                                                                          null
-                                                                      ? null
-                                                                      : Colors.grey.shade500,
-                                                            ),
-                                                            returnData().expiryDate ==
-                                                                    null
-                                                                ? 'Set Expiry Date'
-                                                                : formatDateWithDay(
-                                                                  returnData().expiryDate ??
-                                                                      DateTime.now(),
-                                                                ),
+                                                            textAlign:
+                                                                TextAlign.start,
+                                                            style:
+                                                                theme.mobileTexts.b3.textStyleBold,
+                                                            'Set Department',
                                                           ),
                                                         ],
                                                       ),
-                                                      Ink(
-                                                        child: InkWell(
-                                                          borderRadius: BorderRadius.circular(
-                                                            20,
+                                                      SubWrapper(
+                                                        isVisible:
+                                                            !GeneralSettingsAuthAction().manageDeparmtmentsAction(
+                                                              context:
+                                                                  context,
+                                                            ),
+                                                        mainWidget: Container(
+                                                          padding: EdgeInsets.symmetric(
+                                                            vertical:
+                                                                0,
+                                                            horizontal:
+                                                                5,
                                                           ),
-                                                          onTap: () {
-                                                            returnData().clearExpDate();
-                                                          },
-                                                          child: Container(
-                                                            padding: EdgeInsets.all(
-                                                              7,
+                                                          decoration: BoxDecoration(
+                                                            border: Border.all(
+                                                              color:
+                                                                  returnData().departmentUuid !=
+                                                                          null
+                                                                      ? theme.lightModeColor.prColor300
+                                                                      : Colors.grey,
+                                                              width:
+                                                                  returnData().departmentUuid !=
+                                                                          null
+                                                                      ? 1.3
+                                                                      : 1,
                                                             ),
-                                                            decoration: BoxDecoration(
-                                                              shape:
-                                                                  BoxShape.circle,
+                                                            borderRadius: BorderRadius.circular(
+                                                              5,
                                                             ),
-                                                            child: Icon(
-                                                              Icons.clear,
-                                                            ),
+                                                          ),
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment.spaceBetween,
+                                                            children: [
+                                                              Row(
+                                                                children: [
+                                                                  SizedBox(
+                                                                    width:
+                                                                        10,
+                                                                  ),
+                                                                  Text(
+                                                                    style: TextStyle(
+                                                                      fontSize:
+                                                                          returnData().departmentUuid !=
+                                                                                  null
+                                                                              ? theme.mobileTexts.b2.fontSize
+                                                                              : theme.mobileTexts.b2.fontSize,
+                                                                      fontWeight:
+                                                                          returnData().departmentUuid !=
+                                                                                  null
+                                                                              ? FontWeight.bold
+                                                                              : null,
+                                                                      color:
+                                                                          returnData().departmentUuid !=
+                                                                                  null
+                                                                              ? null
+                                                                              : Colors.grey.shade500,
+                                                                    ),
+                                                                    returnData().departmentUuid ==
+                                                                            null
+                                                                        ? 'Select Department'
+                                                                        : returnDepartmentProvider().departments
+                                                                            .firstWhere(
+                                                                              (
+                                                                                dept,
+                                                                              ) =>
+                                                                                  dept.uuid ==
+                                                                                  returnData().departmentUuid,
+                                                                            )
+                                                                            .name,
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              Ink(
+                                                                child: InkWell(
+                                                                  borderRadius: BorderRadius.circular(
+                                                                    20,
+                                                                  ),
+                                                                  onTap: () {
+                                                                    returnData().clearDepartment();
+                                                                  },
+                                                                  child: Container(
+                                                                    padding: EdgeInsets.all(
+                                                                      7,
+                                                                    ),
+                                                                    decoration: BoxDecoration(
+                                                                      shape:
+                                                                          BoxShape.circle,
+                                                                    ),
+                                                                    child: Icon(
+                                                                      Icons.clear,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
                                                           ),
                                                         ),
                                                       ),
@@ -2078,11 +1975,154 @@ class _AddProductDesktopState
                                                   ),
                                                 ),
                                               ),
+                                              SizedBox(
+                                                height: 10,
+                                              ),
+                                              InkWell(
+                                                onTap: () {
+                                                  ItemsAuthAction().setExpiryDateAction(
+                                                    context:
+                                                        context,
+                                                    action: () {
+                                                      myDatePickerAction(
+                                                        theme,
+                                                        context,
+                                                      ).then((
+                                                        value,
+                                                      ) {
+                                                        value !=
+                                                                null
+                                                            ? returnData().setExpDate(
+                                                              value,
+                                                            )
+                                                            : {};
+                                                      });
+                                                    },
+                                                  );
+                                                },
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize
+                                                          .min,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .start,
+                                                  spacing:
+                                                      5,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        Text(
+                                                          textAlign:
+                                                              TextAlign.start,
+                                                          style:
+                                                              theme.mobileTexts.b3.textStyleBold,
+                                                          'Expiry Date (Optional)',
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    SubWrapper(
+                                                      isVisible:
+                                                          !ItemsAuthAction().setExpiryDateAction(
+                                                            context:
+                                                                context,
+                                                          ),
+                                                      mainWidget: Container(
+                                                        padding: EdgeInsets.symmetric(
+                                                          vertical:
+                                                              0,
+                                                          horizontal:
+                                                              5,
+                                                        ),
+                                                        decoration: BoxDecoration(
+                                                          border: Border.all(
+                                                            color:
+                                                                returnData().expiryDate !=
+                                                                        null
+                                                                    ? theme.lightModeColor.prColor300
+                                                                    : Colors.grey,
+                                                            width:
+                                                                returnData().expiryDate !=
+                                                                        null
+                                                                    ? 1.3
+                                                                    : 1,
+                                                          ),
+                                                          borderRadius: BorderRadius.circular(
+                                                            5,
+                                                          ),
+                                                        ),
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment.spaceBetween,
+                                                          children: [
+                                                            Row(
+                                                              children: [
+                                                                SizedBox(
+                                                                  width:
+                                                                      10,
+                                                                ),
+                                                                Text(
+                                                                  style: TextStyle(
+                                                                    fontSize:
+                                                                        returnData().expiryDate !=
+                                                                                null
+                                                                            ? theme.mobileTexts.b2.fontSize
+                                                                            : theme.mobileTexts.b2.fontSize,
+                                                                    fontWeight:
+                                                                        returnData().expiryDate !=
+                                                                                null
+                                                                            ? FontWeight.bold
+                                                                            : null,
+                                                                    color:
+                                                                        returnData().expiryDate !=
+                                                                                null
+                                                                            ? null
+                                                                            : Colors.grey.shade500,
+                                                                  ),
+                                                                  returnData().expiryDate ==
+                                                                          null
+                                                                      ? 'Set Expiry Date'
+                                                                      : formatDateWithDay(
+                                                                        returnData().expiryDate ??
+                                                                            DateTime.now(),
+                                                                      ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            Ink(
+                                                              child: InkWell(
+                                                                borderRadius: BorderRadius.circular(
+                                                                  20,
+                                                                ),
+                                                                onTap: () {
+                                                                  returnData().clearExpDate();
+                                                                },
+                                                                child: Container(
+                                                                  padding: EdgeInsets.all(
+                                                                    7,
+                                                                  ),
+                                                                  decoration: BoxDecoration(
+                                                                    shape:
+                                                                        BoxShape.circle,
+                                                                  ),
+                                                                  child: Icon(
+                                                                    Icons.clear,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 10,
+                                              ),
                                             ],
                                           ),
-                                        ),
-                                        SizedBox(
-                                          height: 10,
                                         ),
                                         Row(
                                           children: [
@@ -2244,99 +2284,113 @@ class _AddProductDesktopState
                                             ],
                                           ),
                                         ),
-                                        SubWrapper(
-                                          isVisible:
-                                              !ItemsAuthAction()
-                                                  .applyVariationsAction(
-                                                    context:
-                                                        context,
-                                                  ),
-                                          mainWidget: MainDropdown(
-                                            valueSet:
-                                                returnData(
-                                                  context:
-                                                      context,
-                                                ).sizeValueSet,
-                                            onTap: () {
-                                              ItemsAuthAction().applyVariationsAction(
-                                                context:
-                                                    context,
-                                                action: () {
-                                                  sizeTypeBottomSheet(
-                                                    context,
-                                                    () {
-                                                      setState(() {
-                                                        isSizedTypeOpen =
-                                                            !isSizedTypeOpen;
-                                                      });
-                                                    },
-                                                  );
-                                                  setState(() {
-                                                    isSizedTypeOpen =
-                                                        !isSizedTypeOpen;
-                                                  });
-                                                },
-                                              );
-                                            },
-                                            isOpen:
-                                                isSizedTypeOpen,
-                                            title:
-                                                'Size Type (Optional)',
-                                            hint:
-                                                returnData()
-                                                    .selectedSize ??
-                                                'Select Item Size Type',
-                                            theme: theme,
-                                          ),
-                                        ),
+                                        Visibility(
+                                          visible:
+                                              !widget
+                                                  .isStorage,
+                                          child: Column(
+                                            children: [
+                                              SubWrapper(
+                                                isVisible:
+                                                    !ItemsAuthAction().applyVariationsAction(
+                                                      context:
+                                                          context,
+                                                    ),
+                                                mainWidget: MainDropdown(
+                                                  valueSet:
+                                                      returnData(
+                                                        context:
+                                                            context,
+                                                      ).sizeValueSet,
+                                                  onTap: () {
+                                                    ItemsAuthAction().applyVariationsAction(
+                                                      context:
+                                                          context,
+                                                      action: () {
+                                                        sizeTypeBottomSheet(
+                                                          context,
+                                                          () {
+                                                            setState(
+                                                              () {
+                                                                isSizedTypeOpen =
+                                                                    !isSizedTypeOpen;
+                                                              },
+                                                            );
+                                                          },
+                                                        );
+                                                        setState(() {
+                                                          isSizedTypeOpen =
+                                                              !isSizedTypeOpen;
+                                                        });
+                                                      },
+                                                    );
+                                                  },
+                                                  isOpen:
+                                                      isSizedTypeOpen,
+                                                  title:
+                                                      'Size Type (Optional)',
+                                                  hint:
+                                                      returnData()
+                                                          .selectedSize ??
+                                                      'Select Item Size Type',
+                                                  theme:
+                                                      theme,
+                                                ),
+                                              ),
 
-                                        SizedBox(
-                                          height: 10,
-                                        ),
-                                        SubWrapper(
-                                          isVisible:
-                                              !ItemsAuthAction()
-                                                  .applyVariationsAction(
-                                                    context:
-                                                        context,
-                                                  ),
-                                          mainWidget: MainDropdown(
-                                            valueSet:
-                                                returnData(
-                                                  context:
-                                                      context,
-                                                ).catValueSet,
-                                            onTap: () {
-                                              ItemsAuthAction().applyVariationsAction(
-                                                context:
-                                                    context,
-                                                action: () {
-                                                  categoriesBottomSheet(
-                                                    context,
-                                                    () {
-                                                      setState(() {
-                                                        isOpen =
-                                                            false;
-                                                      });
-                                                    },
-                                                  );
-                                                  setState(() {
-                                                    isOpen =
-                                                        !isOpen;
-                                                  });
-                                                },
-                                              );
-                                            },
-                                            isOpen: isOpen,
-                                            title:
-                                                'Category (Optional)',
-                                            hint:
-                                                returnData(
-                                                  context:
-                                                      context,
-                                                ).selectedCategory?.name ??
-                                                'Select Item Category',
-                                            theme: theme,
+                                              SizedBox(
+                                                height: 10,
+                                              ),
+                                              SubWrapper(
+                                                isVisible:
+                                                    !ItemsAuthAction().applyVariationsAction(
+                                                      context:
+                                                          context,
+                                                    ),
+                                                mainWidget: MainDropdown(
+                                                  valueSet:
+                                                      returnData(
+                                                        context:
+                                                            context,
+                                                      ).catValueSet,
+                                                  onTap: () {
+                                                    ItemsAuthAction().applyVariationsAction(
+                                                      context:
+                                                          context,
+                                                      action: () {
+                                                        categoriesBottomSheet(
+                                                          context,
+                                                          () {
+                                                            setState(
+                                                              () {
+                                                                isOpen =
+                                                                    false;
+                                                              },
+                                                            );
+                                                          },
+                                                        );
+                                                        setState(() {
+                                                          isOpen =
+                                                              !isOpen;
+                                                        });
+                                                      },
+                                                    );
+                                                  },
+                                                  isOpen:
+                                                      isOpen,
+                                                  title:
+                                                      'Category (Optional)',
+                                                  hint:
+                                                      returnData(
+                                                        context:
+                                                            context,
+                                                      ).selectedCategory?.name ??
+                                                      'Select Item Category',
+                                                  theme:
+                                                      theme,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                         SizedBox(
@@ -2363,9 +2417,16 @@ class _AddProductDesktopState
                           child: MainButtonP(
                             themeProvider: theme,
                             action: () {
-                              widget.product != null
-                                  ? updateProduct()
-                                  : checkFields();
+                              if (widget.isStorage) {
+                                widget.storageProduct !=
+                                        null
+                                    ? updateStorageProduct()
+                                    : checkFields();
+                              } else {
+                                widget.product != null
+                                    ? updateProduct()
+                                    : checkFields();
+                              }
                             },
                             text:
                                 widget.product != null
@@ -2387,7 +2448,8 @@ class _AddProductDesktopState
               listen: false,
             ).showLoader(
               message:
-                  widget.product != null
+                  widget.product != null ||
+                          widget.storageProduct != null
                       ? 'Updating Item'
                       : 'Creating Item',
             ),
@@ -2398,7 +2460,8 @@ class _AddProductDesktopState
               context,
               listen: false,
             ).showSuccess(
-              widget.product != null
+              widget.product != null ||
+                      widget.storageProduct != null
                   ? 'Item Updated Successfully'
                   : 'Item Created Successfully',
             ),

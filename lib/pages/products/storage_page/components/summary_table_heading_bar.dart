@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
-import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class SummaryTableHeadingBar extends StatefulWidget {
@@ -47,26 +46,20 @@ class _SummaryTableHeadingBarState
         spacing: 0,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Expanded(
-            flex: 2,
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 3,
-                vertical: 10,
-              ),
-              child: Center(
-                child: Text(
-                  style: TextStyle(
-                    fontSize:
-                        widget
-                            .theme
-                            .mobileTexts
-                            .b3
-                            .fontSize,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  widget.isHeading ? 'S/N' : '',
+          Container(
+            width: 50,
+            padding: EdgeInsets.symmetric(
+              horizontal: 10,
+              vertical: 10,
+            ),
+            child: Center(
+              child: Text(
+                style: TextStyle(
+                  fontSize:
+                      widget.theme.mobileTexts.b3.fontSize,
+                  fontWeight: FontWeight.bold,
                 ),
+                widget.isHeading ? 'S/N' : '',
               ),
             ),
           ),
@@ -74,13 +67,13 @@ class _SummaryTableHeadingBarState
             flex: widget.product.isNotEmpty ? 9 : 4,
             child: Container(
               padding: EdgeInsets.symmetric(
-                horizontal: 5,
+                horizontal: 10,
                 vertical: 10,
               ),
               decoration: BoxDecoration(
                 border: Border(
                   left: BorderSide(color: Colors.grey),
-                  right: BorderSide(color: Colors.grey),
+                  // right: BorderSide(color: Colors.grey),
                 ),
               ),
               child: Center(
@@ -111,223 +104,6 @@ class _SummaryTableHeadingBarState
               ),
             ),
           ),
-          // Visibility(
-          //   visible: shop(context)?.useGroupUnit == true,
-          //   child: Expanded(
-          //     flex: 6,
-          //     child: Container(
-          //       padding: EdgeInsets.symmetric(
-          //         horizontal: 5,
-          //         vertical: 10,
-          //       ),
-          //       decoration: BoxDecoration(
-          //         border: Border(
-          //           right: BorderSide(color: Colors.grey),
-          //         ),
-          //       ),
-          //       child: Center(
-          //         child: Row(
-          //           children: [
-          //             Flexible(
-          //               child: Text(
-          //                 style: TextStyle(
-          //                   fontSize:
-          //                       widget
-          //                           .theme
-          //                           .mobileTexts
-          //                           .b3
-          //                           .fontSize,
-          //                   fontWeight: FontWeight.bold,
-          //                 ),
-          //                 widget.isHeading
-          //                     ? 'Group Qtty In Storage'
-          //                     : '',
-          //               ),
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          // Expanded(
-          //   flex: 6,
-          //   child: Container(
-          //     padding: EdgeInsets.symmetric(
-          //       horizontal: 5,
-          //       vertical: 10,
-          //     ),
-          //     decoration: BoxDecoration(
-          //       border: Border(
-          //         right: BorderSide(color: Colors.grey),
-          //       ),
-          //     ),
-          //     child: Center(
-          //       child: Row(
-          //         children: [
-          //           Flexible(
-          //             child: Text(
-          //               style: TextStyle(
-          //                 fontSize:
-          //                     widget
-          //                         .theme
-          //                         .mobileTexts
-          //                         .b3
-          //                         .fontSize,
-          //                 fontWeight: FontWeight.bold,
-          //               ),
-          //               widget.isHeading
-          //                   ? 'Unit Qtty In Storage'
-          //                   : '',
-          //               // formatLargeNumber(
-          //               //   returnData(context: context)
-          //               //       .getTotalQuantityInStorage(
-          //               //         products:
-          //               //             widget.product,
-          //               //       )
-          //               //       .toString(),
-          //               // ),
-          //             ),
-          //           ),
-          //         ],
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          // Visibility(
-          //   visible: shop(context)?.useGroupUnit == true,
-          //   child: Expanded(
-          //     flex: 6,
-          //     child: Container(
-          //       padding: EdgeInsets.symmetric(
-          //         horizontal: 5,
-          //         vertical: 10,
-          //       ),
-          //       decoration: BoxDecoration(
-          //         border: Border(
-          //           right: BorderSide(color: Colors.grey),
-          //         ),
-          //       ),
-          //       child: Center(
-          //         child: Row(
-          //           children: [
-          //             Flexible(
-          //               child: Text(
-          //                 style: TextStyle(
-          //                   fontSize:
-          //                       widget
-          //                           .theme
-          //                           .mobileTexts
-          //                           .b3
-          //                           .fontSize,
-          //                   fontWeight: FontWeight.bold,
-          //                 ),
-          //                 widget.isHeading
-          //                     ? 'Group Qtty in Sales'
-          //                     : '',
-          //               ),
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          // Expanded(
-          //   flex: 6,
-          //   child: Container(
-          //     padding: EdgeInsets.symmetric(
-          //       horizontal: 5,
-          //       vertical: 10,
-          //     ),
-          //     decoration: BoxDecoration(
-          //       border: Border(
-          //         right: BorderSide(color: Colors.grey),
-          //         // left: BorderSide(color: Colors.grey),
-          //       ),
-          //     ),
-          //     child: Center(
-          //       child: Row(
-          //         children: [
-          //           Flexible(
-          //             child: Text(
-          //               style: TextStyle(
-          //                 fontSize:
-          //                     widget
-          //                         .theme
-          //                         .mobileTexts
-          //                         .b3
-          //                         .fontSize,
-          //                 fontWeight: FontWeight.bold,
-          //               ),
-          //               widget.isHeading
-          //                   ? 'Unit Qtty in Sales'
-          //                   : '',
-          //               // formatLargeNumber(
-          //               //   returnData(context: context)
-          //               //       .getTotalQuantity(
-          //               //         products:
-          //               //             widget.product,
-          //               //       )
-          //               //       .toString(),
-          //               // ),
-          //             ),
-          //           ),
-          //         ],
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          // Visibility(
-          //   visible:
-          //       widget.product.isNotEmpty &&
-          //       shop(context)?.wholeSale == true,
-          //   child: Expanded(
-          //     flex: 6,
-          //     child: Container(
-          //       decoration: BoxDecoration(
-          //         border: Border(
-          //           right: BorderSide(color: Colors.grey),
-          //           // left: BorderSide(color: Colors.grey),
-          //         ),
-          //       ),
-          //       padding: EdgeInsets.symmetric(
-          //         horizontal: 5,
-          //         vertical: 10,
-          //       ),
-          //       child: Center(
-          //         child: Row(
-          //           children: [
-          //             Flexible(
-          //               child: Text(
-          //                 style: TextStyle(
-          //                   fontSize:
-          //                       widget
-          //                           .theme
-          //                           .mobileTexts
-          //                           .b3
-          //                           .fontSize,
-          //                   fontWeight: FontWeight.bold,
-          //                 ),
-          //                 widget.isHeading
-          //                     ? 'Whole-Sale-Price'
-          //                     : '',
-          //                 // formatMoneyMid(
-          //                 //   amount: returnData(
-          //                 //     context: context,
-          //                 //   ).getTotalWholeSalePrice(
-          //                 //     products: widget.product,
-          //                 //   ),
-          //                 //   context: context,
-          //                 // ),
-          //               ),
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ),
         ],
       ),
     );

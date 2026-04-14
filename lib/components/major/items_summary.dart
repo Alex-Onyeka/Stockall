@@ -313,7 +313,10 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                                                 builder: (
                                                   context,
                                                 ) {
-                                                  return AddProduct();
+                                                  return AddProduct(
+                                                    isStorage:
+                                                        false,
+                                                  );
                                                 },
                                               ),
                                             );
