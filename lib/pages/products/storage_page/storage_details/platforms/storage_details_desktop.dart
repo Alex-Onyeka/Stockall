@@ -182,7 +182,7 @@ class _StorageDetailsDesktopState
                                                       'Group Quantity',
                                                   price:
                                                       (product.quantity ??
-                                                          1) /
+                                                          0) /
                                                       (product.qttyPerGroup ??
                                                           1),
                                                   theme:

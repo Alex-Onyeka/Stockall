@@ -837,274 +837,266 @@ class _ManageProductsStorageState
     extends State<ManageProductsStorage> {
   @override
   Widget build(BuildContext context) {
-    return Visibility(
-      visible:
-          returnShopProvider()
-              .userShop()
-              ?.manageDepartments ==
-          true,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        spacing: 5,
-        children: [
-          InkWell(
-            onTap: () {
-              List<String> list = [];
-              List<String> tempList = [];
-              setState(() {
-                list.addAll(
-                  returnData().productListMain
-                      .where(
-                        (pr) =>
-                            pr.storageUuid ==
-                            widget.productUuid,
-                      )
-                      .map((pro) => pro.uuid!),
-                );
-              });
-              showDialog(
-                context: context,
-                builder: (firstContext) {
-                  return StatefulBuilder(
-                    builder: (secondContext, setState) {
-                      return DialogTemplate(
-                        theme: widget.theme,
-                        message:
-                            'Select Products that you want to be managed under this Storage',
-                        title: 'Select Product(s)',
-                        topRightWidget:
-                            returnStorageProductProvider()
-                                    .isLoading
-                                ? SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    color:
-                                        widget
-                                            .theme
-                                            .lightModeColor
-                                            .secColor200,
-                                    strokeWidth: 1.5,
-                                  ),
-                                )
-                                : null,
-                        action: () {
-                          if (!returnStorageProductProvider()
-                              .isLoading) {
-                            showDialog(
-                              context: context,
-                              builder: (confirmContext) {
-                                return ConfirmationAlert(
-                                  theme: widget.theme,
-                                  message:
-                                      'You are about to update Add This products to this Storage. Are you sure you want to proceed?',
-                                  title: 'Update Storage',
-                                  action: () async {
-                                    Navigator.of(
-                                      confirmContext,
-                                    ).pop();
-                                    returnStorageProductProvider()
-                                        .toggleIsLoading(
-                                          true,
-                                        );
-                                    setState(() {});
-                                    for (var pr in returnData()
-                                        .productListMain
-                                        .where(
-                                          (pro) =>
-                                              list.contains(
-                                                pro.uuid,
-                                              ) &&
-                                              pro.storageUuid !=
-                                                  widget
-                                                      .productUuid,
-                                        )) {
-                                      var newPr =
-                                          pr.copyWith();
-                                      newPr.storageUuid =
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      spacing: 5,
+      children: [
+        InkWell(
+          onTap: () {
+            List<String> list = [];
+            List<String> tempList = [];
+            setState(() {
+              list.addAll(
+                returnData().productListMain
+                    .where(
+                      (pr) =>
+                          pr.storageUuid ==
+                          widget.productUuid,
+                    )
+                    .map((pro) => pro.uuid!),
+              );
+            });
+            showDialog(
+              context: context,
+              builder: (firstContext) {
+                return StatefulBuilder(
+                  builder: (secondContext, setState) {
+                    return DialogTemplate(
+                      theme: widget.theme,
+                      message:
+                          'Select Products that you want to be managed under this Storage',
+                      title: 'Select Product(s)',
+                      topRightWidget:
+                          returnStorageProductProvider()
+                                  .isLoading
+                              ? SizedBox(
+                                height: 20,
+                                width: 20,
+                                child:
+                                    CircularProgressIndicator(
+                                      color:
                                           widget
-                                              .productUuid;
-                                      await returnData()
-                                          .updateProduct(
-                                            product: newPr,
-                                          );
-                                    }
+                                              .theme
+                                              .lightModeColor
+                                              .secColor200,
+                                      strokeWidth: 1.5,
+                                    ),
+                              )
+                              : null,
+                      action: () {
+                        if (!returnStorageProductProvider()
+                            .isLoading) {
+                          showDialog(
+                            context: context,
+                            builder: (confirmContext) {
+                              return ConfirmationAlert(
+                                theme: widget.theme,
+                                message:
+                                    'You are about to update Add This products to this Storage. Are you sure you want to proceed?',
+                                title: 'Update Storage',
+                                action: () async {
+                                  Navigator.of(
+                                    confirmContext,
+                                  ).pop();
+                                  returnStorageProductProvider()
+                                      .toggleIsLoading(
+                                        true,
+                                      );
+                                  setState(() {});
+                                  for (var pr in returnData()
+                                      .productListMain
+                                      .where(
+                                        (pro) =>
+                                            list.contains(
+                                              pro.uuid,
+                                            ) &&
+                                            pro.storageUuid !=
+                                                widget
+                                                    .productUuid,
+                                      )) {
+                                    var newPr =
+                                        pr.copyWith();
+                                    newPr.storageUuid =
+                                        widget.productUuid;
+                                    await returnData()
+                                        .updateProduct(
+                                          product: newPr,
+                                        );
+                                  }
 
-                                    for (var pr
-                                        in returnData()
-                                            .productListMain
-                                            .where(
-                                              (
-                                                pro,
-                                              ) => tempList
-                                                  .contains(
-                                                    pro.uuid,
-                                                  ),
-                                            )) {
-                                      var newPr =
-                                          pr.copyWith();
-                                      newPr.storageUuid =
-                                          null;
-                                      await returnData()
-                                          .updateProduct(
-                                            product: newPr,
-                                          );
-                                    }
-
-                                    if (firstContext
-                                        .mounted) {
-                                      Navigator.of(
-                                        context,
-                                      ).pop();
-                                    }
-                                  },
-                                );
-                              },
-                            );
-                          }
-                        },
-                        widget: SizedBox(
-                          height:
-                              screenHeight(context) - 300,
-                          child: SingleChildScrollView(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(
-                                    horizontal: 20.0,
-                                    vertical: 15,
-                                  ),
-                              child: Column(
-                                spacing: 5,
-                                children:
-                                    returnData()
-                                        .productListMain
-                                        .map(
-                                          (
-                                            dept,
-                                          ) => Material(
-                                            color:
-                                                Colors
-                                                    .transparent,
-                                            child: InkWell(
-                                              onTap: () {
-                                                setState(() {
-                                                  if (list.contains(
-                                                    dept.uuid,
-                                                  )) {
-                                                    list.remove(
-                                                      dept.uuid,
-                                                    );
-                                                    tempList.add(
-                                                      dept.uuid!,
-                                                    );
-                                                  } else {
-                                                    list.add(
-                                                      dept.uuid!,
-                                                    );
-                                                    tempList.remove(
-                                                      dept.uuid,
-                                                    );
-                                                  }
-                                                });
-                                              },
-                                              child: Padding(
-                                                padding: const EdgeInsets.symmetric(
-                                                  vertical:
-                                                      9.0,
-                                                  horizontal:
-                                                      12,
+                                  for (var pr
+                                      in returnData()
+                                          .productListMain
+                                          .where(
+                                            (
+                                              pro,
+                                            ) => tempList
+                                                .contains(
+                                                  pro.uuid,
                                                 ),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Text(
-                                                      style: TextStyle(
-                                                        fontSize:
-                                                            widget.theme.mobileTexts.b3.fontSize,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                      dept.name,
+                                          )) {
+                                    var newPr =
+                                        pr.copyWith();
+                                    newPr.storageUuid =
+                                        null;
+                                    await returnData()
+                                        .updateProduct(
+                                          product: newPr,
+                                        );
+                                  }
+
+                                  if (firstContext
+                                      .mounted) {
+                                    Navigator.of(
+                                      context,
+                                    ).pop();
+                                  }
+                                },
+                              );
+                            },
+                          );
+                        }
+                      },
+                      widget: SizedBox(
+                        height: screenHeight(context) - 300,
+                        child: SingleChildScrollView(
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(
+                                  horizontal: 20.0,
+                                  vertical: 15,
+                                ),
+                            child: Column(
+                              spacing: 5,
+                              children:
+                                  returnData()
+                                      .productListMain
+                                      .map(
+                                        (dept) => Material(
+                                          color:
+                                              Colors
+                                                  .transparent,
+                                          child: InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                if (list.contains(
+                                                  dept.uuid,
+                                                )) {
+                                                  list.remove(
+                                                    dept.uuid,
+                                                  );
+                                                  tempList.add(
+                                                    dept.uuid!,
+                                                  );
+                                                } else {
+                                                  list.add(
+                                                    dept.uuid!,
+                                                  );
+                                                  tempList.remove(
+                                                    dept.uuid,
+                                                  );
+                                                }
+                                              });
+                                            },
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical:
+                                                        9.0,
+                                                    horizontal:
+                                                        12,
+                                                  ),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          widget.theme.mobileTexts.b3.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                     ),
-                                                    Container(
+                                                    dept.name,
+                                                  ),
+                                                  Container(
+                                                    padding:
+                                                        EdgeInsets.all(
+                                                          2,
+                                                        ),
+                                                    decoration: BoxDecoration(
+                                                      shape:
+                                                          BoxShape.circle,
+                                                      border: Border.all(
+                                                        color:
+                                                            Colors.grey,
+                                                      ),
+                                                    ),
+                                                    child: Container(
                                                       padding:
                                                           EdgeInsets.all(
-                                                            2,
+                                                            5,
                                                           ),
                                                       decoration: BoxDecoration(
                                                         shape:
                                                             BoxShape.circle,
-                                                        border: Border.all(
-                                                          color:
-                                                              Colors.grey,
-                                                        ),
-                                                      ),
-                                                      child: Container(
-                                                        padding: EdgeInsets.all(
-                                                          5,
-                                                        ),
-                                                        decoration: BoxDecoration(
-                                                          shape:
-                                                              BoxShape.circle,
-                                                          color:
-                                                              list.contains(
-                                                                    dept.uuid,
-                                                                  )
-                                                                  ? widget.theme.lightModeColor.prColor250
-                                                                  : Colors.transparent,
-                                                        ),
+                                                        color:
+                                                            list.contains(
+                                                                  dept.uuid,
+                                                                )
+                                                                ? widget.theme.lightModeColor.prColor250
+                                                                : Colors.transparent,
                                                       ),
                                                     ),
-                                                  ],
-                                                ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                           ),
-                                        )
-                                        .toList(),
-                              ),
+                                        ),
+                                      )
+                                      .toList(),
                             ),
                           ),
                         ),
-                      );
-                    },
-                  );
-                },
-              ).then((_) {
-                returnStorageProductProvider()
-                    .toggleIsLoading(false);
-              });
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                spacing: 5,
-                children: [
-                  Icon(
-                    size: 16,
-                    color: Colors.grey,
-                    Icons.add,
+                      ),
+                    );
+                  },
+                );
+              },
+            ).then((_) {
+              returnStorageProductProvider()
+                  .toggleIsLoading(false);
+            });
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              spacing: 5,
+              children: [
+                Icon(
+                  size: 16,
+                  color: Colors.grey,
+                  Icons.add,
+                ),
+                Text(
+                  style: TextStyle(
+                    fontSize:
+                        widget
+                            .theme
+                            .mobileTexts
+                            .b4
+                            .fontSize,
+                    fontWeight: FontWeight.bold,
                   ),
-                  Text(
-                    style: TextStyle(
-                      fontSize:
-                          widget
-                              .theme
-                              .mobileTexts
-                              .b4
-                              .fontSize,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    'Manage Products',
-                  ),
-                ],
-              ),
+                  'Manage Products',
+                ),
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

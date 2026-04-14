@@ -135,7 +135,7 @@ class _StorageDetailsMobileState
                                             'Group Quantity',
                                         price:
                                             (product.quantity ??
-                                                1) /
+                                                0) /
                                             (product.qttyPerGroup ??
                                                 1),
                                         theme: widget.theme,
