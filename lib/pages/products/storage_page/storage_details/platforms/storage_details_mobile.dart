@@ -188,7 +188,7 @@ class _StorageDetailsMobileState
                                 theme: widget.theme,
                                 action: () async {
                                   updateStorageQuantity(
-                                    product: product,
+                                    storageProduct: product,
                                     context: context,
                                     theme: widget.theme,
                                   );

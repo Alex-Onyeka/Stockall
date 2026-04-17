@@ -52,6 +52,12 @@ class TempInventoryUpdateClass {
   @HiveField(15)
   String? departmentNameTwo;
 
+  @HiveField(16)
+  String? itemTwoOldValue;
+
+  @HiveField(17)
+  String? itemTwoNewValue;
+
   TempInventoryUpdateClass({
     this.uuid,
     this.createdAt,
@@ -69,6 +75,8 @@ class TempInventoryUpdateClass {
     this.staffNameTwo,
     this.departmentNameTwo,
     this.departmentUuidTwo,
+    this.itemTwoNewValue,
+    this.itemTwoOldValue,
   });
 
   factory TempInventoryUpdateClass.fromJson(
@@ -84,7 +92,7 @@ class TempInventoryUpdateClass {
       title: json['title'] as String,
       newValue: json['new_value'] as String?,
       itemName: json['item_name'] as String?,
-      itemUuid: json['product_id'] as String?,
+      itemUuid: json['storage_product_id'] as String?,
       oldValue: json['old_value'] as String?,
       staffName: json['staff_name'] as String?,
       staffId: json['staff_id'] as String?,
@@ -93,9 +101,13 @@ class TempInventoryUpdateClass {
       departmentNameTwo:
           json['department_name_two'] as String?,
       departmentUuidTwo:
-          json['department_uuid_two'] as String?,
+          json['department_id_two'] as String?,
       staffNameTwo: json['staff_name_two'] as String?,
-      staffIdTwo: json['staff_uuid_two'] as String?,
+      staffIdTwo: json['staff_id_two'] as String?,
+      itemTwoNewValue:
+          json['item_two_new_value'] as String?,
+      itemTwoOldValue:
+          json['item_two_old_value'] as String?,
     );
   }
 
@@ -108,15 +120,17 @@ class TempInventoryUpdateClass {
       'new_value': newValue,
       'title': title,
       'item_name': itemName,
-      'product_id': itemUuid,
+      'storage_product_id': itemUuid,
       'staff_name': staffName,
       'staff_id': staffId,
       'department_name': departmentName,
       'department_id': departmentUuid,
       'department_name_two': departmentNameTwo,
-      'department_uuid_two': departmentUuidTwo,
+      'department_id_two': departmentUuidTwo,
       'staff_name_two': staffNameTwo,
-      'staff_uuid_two': staffIdTwo,
+      'staff_id_two': staffIdTwo,
+      'item_two_old_value': itemTwoOldValue,
+      'item_two_new_value': itemTwoNewValue,
     };
   }
 }

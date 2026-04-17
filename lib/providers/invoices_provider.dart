@@ -900,11 +900,8 @@ class InvoicesProvider extends ChangeNotifier {
       return departmentInvoices().where((invoice) {
         final created = invoice.createdAt.toLocal();
         return !created.isBefore(fourAm(rangeStartDate!)) &&
-            created.isBefore(
-              fourAmNextDay(
-                rangeEndDate ??
-                    resolveBusinessDate(DateTime.now()),
-              ),
+            !created.isAfter(
+              fourAmNextDay(rangeEndDate ?? DateTime.now()),
             );
       }).toList();
     }
@@ -914,7 +911,7 @@ class InvoicesProvider extends ChangeNotifier {
         final created = invoice.createdAt.toLocal();
         final inRange =
             !created.isBefore(fourAm(dateSet!)) &&
-            created.isBefore(fourAmNextDay(dateSet!));
+            !created.isAfter(fourAmNextDay(dateSet!));
 
         return inRange;
       }).toList();

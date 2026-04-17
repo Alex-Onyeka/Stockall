@@ -410,21 +410,6 @@ class StorageProductProvider extends ChangeNotifier {
         storageProductListMain,
       );
     } else {
-      // storageProductListMain.clear();
-      // int getRange() {
-      //   if ((allowedRangeItems ?? 0) >
-      //       StorageProductsFunc().createStorageProduct().length) {
-      //     return StorageProductsFunc().createStorageProduct().length;
-      //   } else {
-      //     return (allowedRangeItems ?? 0);
-      //   }
-      // }
-
-      // var offlineData =
-      //     StorageProductsFunc()
-      //         .createStorageProduct()
-      //         .getRange(0, getRange())
-      //         .toList();
       print(
         "Offline Data Gotten: ${StorageProductsFunc().getStorageProducts().length}",
       );

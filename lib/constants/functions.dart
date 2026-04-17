@@ -31,9 +31,6 @@ void openWhatsApp() async {
 }
 
 Future<void> launchUrlMain(url) async {
-  // final Uri url = Uri.parse(
-  //   'https://www.stockallapp.com/#/subscription',
-  // );
   if (await canLaunchUrl(Uri.parse(url))) {
     await launchUrl(
       Uri.parse(url),
@@ -42,12 +39,6 @@ Future<void> launchUrlMain(url) async {
   } else {
     print('Could not launch $url');
   }
-  // if (!await launchUrl(
-  //   url,
-  //   mode: LaunchMode.externalApplication,
-  // )) {
-  //   throw Exception('Could not launch $url');
-  // }
 }
 
 void phoneCall() async {
@@ -95,148 +86,6 @@ double screenWidth(BuildContext context) {
 double screenHeight(BuildContext context) {
   return MediaQuery.of(context).size.height;
 }
-
-// List<Map<String, dynamic>> empSetup = employees.toList();
-
-// List<Map<String, dynamic>> employees = [
-//   {
-//     'position': 'Owner',
-//     'auths': [
-//       'Manage Invetory Storage',
-//       'Add Items',
-//       'Update Items',
-//       'Delete Items',
-//       'Add Customers',
-//       'Update Customers',
-//       'Delete Customers',
-//       'Edit Receipt Template',
-//       'Make Sale',
-//       'Make Refund',
-//       'Delete Sales',
-//       'Update Sales',
-//       'Add Employee',
-//       'Employee Page',
-//       'Update Employee',
-//       'Delete Employee',
-//       'Add Expenses',
-//       'Update Expenses',
-//       'Delete Expenses',
-//       'Manage Shop',
-//       'Notifications Page',
-//       'Delete Notification',
-//       'Contact Stockall',
-//       'View Date',
-//       'Switch Stores',
-//       'Delete Shop',
-//       'Create Shop',
-//       'General Discount',
-//       'Generate Barcode',
-//       'Manage VAT',
-//       'View Items Summary',
-//       'View All Transaction Records',
-//       'Toggle Bulk Sale',
-//       'Manage Sub Staff',
-//       'Manage Store Dashboard',
-//       'Others',
-//     ],
-//   },
-//   {
-//     'position': 'General Manager',
-//     'auths': [
-//       'Manage Invetory Storage',
-//       'Add Items',
-//       'Update Items',
-//       'Delete Items',
-//       'Add Customers',
-//       'Update Customers',
-//       'Delete Customers',
-//       'Edit Receipt Template',
-//       'Make Sale',
-//       'Make Refund',
-//       'Delete Sales',
-//       'Update Sales',
-//       'Add Employee',
-//       'Update Employee',
-//       'Employee Page',
-//       'Delete Employee',
-//       'Add Expenses',
-//       'Update Expenses',
-//       'Delete Expenses',
-//       'Notifications Page',
-//       'Contact Stockall',
-//       'View Date',
-//       'General Discount',
-//       'Generate Barcode',
-//       'Manage VAT',
-//       'View Items Summary',
-//       'View All Transaction Records',
-//       'Toggle Bulk Sale',
-//       'Manage Sub Staff',
-//     ],
-//   },
-//   {
-//     'position': 'Manager',
-//     'auths': [
-//       'Add Items',
-//       'Update Items',
-//       'Add Customers',
-//       'Update Customers',
-//       'Delete Customers',
-//       'Make Sale',
-//       'Make Refund',
-//       'Delete Sales',
-//       'Update Sales',
-//       'Add Expenses',
-//       'Update Expenses',
-//       'Notifications Page',
-//       'Delete Expenses',
-//       'Generate Barcode',
-//       'View Date',
-//       'Manage Sub Staff',
-//     ],
-//   },
-//   {
-//     'position': 'Asst. Manager',
-//     'auths': [
-//       'Add Customers',
-//       'Update Customers',
-//       'Delete Customers',
-//       'Make Sale',
-//       'View Daily Sales',
-//       'Add Expenses',
-//       'Update Expenses',
-//       'Delete Expenses',
-//       'Update Sales',
-//       'Manage Sub Staff',
-//     ],
-//   },
-//   {
-//     'position': 'Cashier',
-//     'auths': [
-//       'Add Customers',
-//       'Make Sale',
-//       'View Items',
-//       'View Daily Sales',
-//       'Add Expenses',
-//       'Update Expenses',
-//       'Update Sales',
-//       'Manage Sub Staff',
-//     ],
-//   },
-//   {
-//     'position': 'Store Keeper',
-//     'auths': [
-//       'Manage Invetory Storage',
-//       'Add Items',
-//       'Update Items',
-//       'Delete Items',
-//       'General Discount',
-//       'Generate Barcode',
-//       'View Items Summary',
-//       'View All Transaction Records',
-//     ],
-//   },
-// ];
 
 class Authorizations {
   String addProduct = 'Add Items';

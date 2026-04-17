@@ -241,7 +241,7 @@ class _StorageDetailsDesktopState
                                               widget.theme,
                                           action: () async {
                                             updateStorageQuantity(
-                                              product:
+                                              storageProduct:
                                                   product,
                                               context:
                                                   context,

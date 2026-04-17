@@ -775,8 +775,7 @@ class ReceiptsProvider extends ChangeNotifier {
           }).toList();
         }
       } else {
-        final currentDate =
-            dateSet ?? resolveBusinessDate(DateTime.now());
+        final currentDate = dateSet ?? DateTime.now();
 
         if (authorization(
           authorized:
@@ -865,8 +864,7 @@ class ReceiptsProvider extends ChangeNotifier {
       }
     }
 
-    var currentDate =
-        dateSet ?? resolveBusinessDate(DateTime.now());
+    var currentDate = dateSet ?? DateTime.now();
     if (authorization(
       authorized:
           Authorizations().viewAllTransactionRecords,

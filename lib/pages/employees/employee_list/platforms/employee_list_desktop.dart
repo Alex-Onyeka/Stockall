@@ -45,23 +45,12 @@ class _EmployeeListDesktopState
     await RefreshFunctions(
       context,
     ).refreshEmployees(context);
-    // setState(() {
-
-    // });
   }
 
   bool isLoading = false;
 
   final GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>();
-
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     getEmployees();
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -248,15 +237,21 @@ class _EmployeeListDesktopState
                     body: Builder(
                       builder: (context) {
                         List<TempUserClass> employees =
-                            returnUserProvider(context)
-                                .usersMain
-                                .where(
-                                  (emp) =>
-                                      emp.userId !=
-                                      AuthService()
-                                          .currentUser!,
-                                )
-                                .toList();
+                            returnUserProvider(
+                              context,
+                            ).usersMain.where((emp) {
+                              if (currentUser().userId ==
+                                      currentUser()
+                                          .authUserId &&
+                                  currentUser().role !=
+                                      'Owner') {
+                                return true;
+                              } else {
+                                return emp.userId !=
+                                    AuthService()
+                                        .currentUser!;
+                              }
+                            }).toList();
 
                         return Padding(
                           padding: const EdgeInsets.only(

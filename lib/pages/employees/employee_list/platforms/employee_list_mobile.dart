@@ -112,13 +112,18 @@ class _EmployeeListMobileState
       body: Builder(
         builder: (context) {
           List<TempUserClass> employees =
-              returnUserProvider(context).usersMain
-                  .where(
-                    (emp) =>
-                        emp.userId !=
-                        AuthService().currentUser!,
-                  )
-                  .toList();
+              returnUserProvider(context).usersMain.where((
+                emp,
+              ) {
+                if (currentUser().userId ==
+                        currentUser().authUserId &&
+                    currentUser().role != 'Owner') {
+                  return true;
+                } else {
+                  return emp.userId !=
+                      AuthService().currentUser!;
+                }
+              }).toList();
 
           return Padding(
             padding: const EdgeInsets.only(bottom: 20.0),

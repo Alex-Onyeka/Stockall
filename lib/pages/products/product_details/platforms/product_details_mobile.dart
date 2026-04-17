@@ -732,7 +732,19 @@ class _ProductDetailsMobileState
                                               isMoney:
                                                   false,
                                               text:
-                                                  product.unit !=
+                                                  product.storageUuid !=
+                                                              null &&
+                                                          returnStorageProductProvider().storageProductListMain
+                                                              .where(
+                                                                (
+                                                                  storage,
+                                                                ) =>
+                                                                    storage.uuid ==
+                                                                    product.storageUuid,
+                                                              )
+                                                              .isNotEmpty
+                                                      ? ' Quantity Of ${returnStorageProductProvider().storageProductListMain.where((storage) => storage.uuid == product.storageUuid).first.unit ?? 'Others'}'
+                                                      : product.unit !=
                                                           'Others'
                                                       ? ' Qtty Of ${product.unit}'
                                                       : 'Unit Qtty',
@@ -820,7 +832,19 @@ class _ProductDetailsMobileState
                                                 isMoney:
                                                     false,
                                                 text:
-                                                    product.groupUnit !=
+                                                    product.storageUuid !=
+                                                                null &&
+                                                            returnStorageProductProvider().storageProductListMain
+                                                                .where(
+                                                                  (
+                                                                    storage,
+                                                                  ) =>
+                                                                      storage.uuid ==
+                                                                      product.storageUuid,
+                                                                )
+                                                                .isNotEmpty
+                                                        ? ' Quantity Of ${returnStorageProductProvider().storageProductListMain.where((storage) => storage.uuid == product.storageUuid).first.groupUnit ?? 'Others'}'
+                                                        : product.groupUnit !=
                                                                 null &&
                                                             product.groupUnit !=
                                                                 'Others'
@@ -2495,7 +2519,31 @@ class _ProductDetailsMobileState
                                 BottomInfoSection(
                                   theme: widget.theme,
                                   mainText:
-                                      '${product.unit.substring(0, 1).toUpperCase()}${product.unit.substring(1)}',
+                                      product.storageUuid !=
+                                                  null &&
+                                              returnStorageProductProvider()
+                                                  .storageProductListMain
+                                                  .where(
+                                                    (
+                                                      storage,
+                                                    ) =>
+                                                        storage.uuid ==
+                                                        product.storageUuid,
+                                                  )
+                                                  .isNotEmpty
+                                          ? returnStorageProductProvider()
+                                                  .storageProductListMain
+                                                  .where(
+                                                    (
+                                                      storage,
+                                                    ) =>
+                                                        storage.uuid ==
+                                                        product.storageUuid,
+                                                  )
+                                                  .first
+                                                  .unit ??
+                                              'Others'
+                                          : '${product.unit.substring(0, 1).toUpperCase()}${product.unit.substring(1)}',
                                   text: 'Unit',
                                 ),
                                 Visibility(

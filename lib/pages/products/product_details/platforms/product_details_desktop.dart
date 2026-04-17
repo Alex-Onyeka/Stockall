@@ -1392,7 +1392,29 @@ class _ProductDetailsDesktopState
                                                 widget
                                                     .theme,
                                             mainText:
-                                                '${product.unit.substring(0, 1).toUpperCase()}${product.unit.substring(1)}',
+                                                product.storageUuid !=
+                                                            null &&
+                                                        returnStorageProductProvider().storageProductListMain
+                                                            .where(
+                                                              (
+                                                                storage,
+                                                              ) =>
+                                                                  storage.uuid ==
+                                                                  product.storageUuid,
+                                                            )
+                                                            .isNotEmpty
+                                                    ? returnStorageProductProvider().storageProductListMain
+                                                            .where(
+                                                              (
+                                                                storage,
+                                                              ) =>
+                                                                  storage.uuid ==
+                                                                  product.storageUuid,
+                                                            )
+                                                            .first
+                                                            .unit ??
+                                                        'Others'
+                                                    : '${product.unit.substring(0, 1).toUpperCase()}${product.unit.substring(1)}',
                                             text: 'Unit',
                                           ),
                                           Visibility(
@@ -1659,7 +1681,18 @@ class _ProductDetailsDesktopState
                   child: TabContainer(
                     isMoney: false,
                     text:
-                        product.groupUnit != null &&
+                        product.storageUuid != null &&
+                                returnStorageProductProvider()
+                                    .storageProductListMain
+                                    .where(
+                                      (storage) =>
+                                          storage.uuid ==
+                                          product
+                                              .storageUuid,
+                                    )
+                                    .isNotEmpty
+                            ? ' Quantity Of ${returnStorageProductProvider().storageProductListMain.where((storage) => storage.uuid == product.storageUuid).first.groupUnit ?? 'Others'}'
+                            : product.groupUnit != null &&
                                 product.groupUnit !=
                                     'Others'
                             ? ' Quantity Of ${product.groupUnit}'
@@ -1724,7 +1757,17 @@ class _ProductDetailsDesktopState
                 child: TabContainer(
                   isMoney: false,
                   text:
-                      product.unit != 'Others'
+                      product.storageUuid != null &&
+                              returnStorageProductProvider()
+                                  .storageProductListMain
+                                  .where(
+                                    (storage) =>
+                                        storage.uuid ==
+                                        product.storageUuid,
+                                  )
+                                  .isNotEmpty
+                          ? ' Quantity Of ${returnStorageProductProvider().storageProductListMain.where((storage) => storage.uuid == product.storageUuid).first.unit ?? 'Others'}'
+                          : product.unit != 'Others'
                           ? ' Quantity Of ${product.unit}'
                           : 'Unit Quantity',
                   price: product.quantity ?? 0,

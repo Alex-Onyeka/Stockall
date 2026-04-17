@@ -147,7 +147,7 @@ class InventoryUpdatesProvider with ChangeNotifier {
           notifyListeners();
           return [];
         }
-        var tempUpdates =
+        inventoryUpdates =
             res
                 .map(
                   (m) =>
@@ -155,13 +155,13 @@ class InventoryUpdatesProvider with ChangeNotifier {
                 )
                 .toList();
         await InventoryUpdatesFunc()
-            .insertAllInventoryUpdates(tempUpdates);
+            .insertAllInventoryUpdates(inventoryUpdates);
         print(
           '✅✅ Inventory Updates Gotten Successfully Online',
         );
         notifyListeners();
 
-        return tempUpdates;
+        return inventoryUpdates;
       } catch (e) {
         print(
           '❌❌ Inventory Updates Getting Online Failed: ${e.toString()}',

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_departments_class/department_class.dart';
+import 'package:stockall/classes/temp_inventory_updates/temp_inventory_update_class.dart';
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
+import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
@@ -11,7 +14,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 void updateStorageQuantity({
-  required TempStorageProducts product,
+  required TempStorageProducts storageProduct,
   required BuildContext context,
   required ThemeProvider theme,
   Function()? action,
@@ -44,7 +47,7 @@ void updateStorageQuantity({
               action: () {},
               showBottomActionButtons: false,
               widget: StorageQuantityUpdateWidget(
-                product: product,
+                storageProduct: storageProduct,
               ),
             ),
       );
@@ -53,10 +56,10 @@ void updateStorageQuantity({
 }
 
 class StorageQuantityUpdateWidget extends StatefulWidget {
-  final TempStorageProducts product;
+  final TempStorageProducts storageProduct;
   const StorageQuantityUpdateWidget({
     super.key,
-    required this.product,
+    required this.storageProduct,
   });
 
   @override
@@ -105,7 +108,7 @@ class _StorageQuantityUpdateWidgetState
                   productUuid = null;
                   staffUuid = null;
                 });
-                if (((widget.product.quantity ?? 0) -
+                if (((widget.storageProduct.quantity ?? 0) -
                         ((double.tryParse(
                               (quantityController.text
                                   .replaceAll(',', '')),
@@ -142,7 +145,7 @@ class _StorageQuantityUpdateWidgetState
           showTitle: false,
           onChanged: (value) {
             if (currentIndex == 1) {
-              if (((widget.product.quantity ?? 0) -
+              if (((widget.storageProduct.quantity ?? 0) -
                       (double.parse(
                         (quantityController.text.replaceAll(
                           ',',
@@ -219,7 +222,7 @@ class _StorageQuantityUpdateWidgetState
                                         (pro) =>
                                             pro.storageUuid ==
                                             widget
-                                                .product
+                                                .storageProduct
                                                 .uuid,
                                       )
                                       .isEmpty) {
@@ -241,7 +244,7 @@ class _StorageQuantityUpdateWidgetState
                                                 (pro) =>
                                                     pro.storageUuid ==
                                                     widget
-                                                        .product
+                                                        .storageProduct
                                                         .uuid,
                                               )
                                               .map(
@@ -528,35 +531,44 @@ class _StorageQuantityUpdateWidgetState
                                 'You are about to update the quantity of This item in Storage. Are you sure you want to proceed?',
                             title: 'Update Stock',
                             action: () async {
+                              double? tempQtty;
                               TempStorageProducts
                               newProduct =
                                   TempStorageProducts(
                                     shopId: shopId(),
                                     name:
-                                        widget.product.name,
+                                        widget
+                                            .storageProduct
+                                            .name,
                                     createdAt:
                                         widget
-                                            .product
+                                            .storageProduct
                                             .createdAt,
                                     desc:
-                                        widget.product.desc,
+                                        widget
+                                            .storageProduct
+                                            .desc,
                                     groupUnit:
                                         widget
-                                            .product
+                                            .storageProduct
                                             .groupUnit,
                                     quantity:
                                         widget
-                                            .product
+                                            .storageProduct
                                             .quantity,
                                     unit:
-                                        widget.product.unit,
+                                        widget
+                                            .storageProduct
+                                            .unit,
                                     updatedAt:
                                         DateTime.now(),
                                     uuid:
-                                        widget.product.uuid,
+                                        widget
+                                            .storageProduct
+                                            .uuid,
                                     qttyPerGroup:
                                         widget
-                                            .product
+                                            .storageProduct
                                             .qttyPerGroup,
                                   );
                               Navigator.of(
@@ -565,9 +577,9 @@ class _StorageQuantityUpdateWidgetState
                               returnStorageProductProvider()
                                   .toggleIsLoading(true);
                               if (currentIndex == 0) {
-                                newProduct.quantity =
+                                tempQtty =
                                     ((widget
-                                                .product
+                                                .storageProduct
                                                 .quantity ??
                                             0) +
                                         ((double.tryParse(
@@ -581,9 +593,9 @@ class _StorageQuantityUpdateWidgetState
                                             0)));
                               } else if (currentIndex ==
                                   1) {
-                                newProduct.quantity =
+                                tempQtty =
                                     ((widget
-                                                .product
+                                                .storageProduct
                                                 .quantity ??
                                             0) -
                                         ((double.tryParse(
@@ -596,7 +608,7 @@ class _StorageQuantityUpdateWidgetState
                                             ) ??
                                             0)));
                               } else {
-                                newProduct.quantity =
+                                tempQtty =
                                     (((double.tryParse(
                                           quantityController
                                               .text
@@ -607,52 +619,142 @@ class _StorageQuantityUpdateWidgetState
                                         ) ??
                                         0)));
                               }
+                              newProduct.quantity =
+                                  tempQtty;
                               var res =
                                   await returnStorageProductProvider()
                                       .updateProduct(
                                         product: newProduct,
                                       );
-                              if (currentIndex == 1) {
-                                var prs = returnData()
-                                    .productListMain
-                                    .where((pr) {
-                                      if (productUuid !=
-                                          null) {
-                                        return pr.storageUuid ==
-                                                widget
-                                                    .product
-                                                    .uuid &&
-                                            pr.uuid ==
-                                                productUuid;
-                                      } else {
-                                        return pr
-                                                .storageUuid ==
+                              var prs = returnData()
+                                  .productListMain
+                                  .where((pr) {
+                                    return pr.storageUuid ==
                                             widget
-                                                .product
-                                                .uuid;
-                                      }
-                                    });
-                                if (prs.isNotEmpty) {
-                                  var newPr =
-                                      prs.first.copyWith();
-                                  newPr.quantity =
-                                      ((newPr.quantity ??
-                                              0) +
-                                          ((double.tryParse(
-                                                quantityController
-                                                    .text
-                                                    .replaceAll(
-                                                      ',',
-                                                      '',
-                                                    ),
-                                              ) ??
-                                              0)));
-                                  await returnData()
-                                      .updateProduct(
-                                        product: newPr,
-                                      );
-                                }
+                                                .storageProduct
+                                                .uuid &&
+                                        pr.uuid ==
+                                            productUuid;
+                                  });
+                              final original =
+                                  prs.isNotEmpty
+                                      ? prs.first
+                                      : null;
+
+                              final oldQuantity =
+                                  original?.quantity ?? 0;
+                              final storageOldQty =
+                                  widget
+                                      .storageProduct
+                                      .quantity ??
+                                  0;
+
+                              // final oldPr =
+                              //     original?.copyWith();
+                              final newPr =
+                                  original?.copyWith();
+
+                              final inputQty =
+                                  double.tryParse(
+                                    quantityController.text
+                                        .replaceAll(
+                                          ',',
+                                          '',
+                                        ),
+                                  ) ??
+                                  0;
+
+                              newPr?.quantity =
+                                  (newPr.quantity ?? 0) +
+                                  inputQty;
+
+                              final newQuantity =
+                                  newPr?.quantity ?? 0;
+
+                              if (currentIndex == 1 &&
+                                  newPr != null) {
+                                await returnData()
+                                    .updateProduct(
+                                      product: newPr,
+                                    );
                               }
+                              var depts =
+                                  returnDepartmentProvider()
+                                      .departments
+                                      .where(
+                                        (dept) =>
+                                            dept.uuid ==
+                                            newPr
+                                                ?.departmentUuid,
+                                      );
+
+                              DepartmentClass? department =
+                                  depts.isNotEmpty
+                                      ? depts.first
+                                      : null;
+                              var usersTemp =
+                                  returnUserProviderSingle()
+                                      .usersMain
+                                      .where(
+                                        (user) =>
+                                            user.userId ==
+                                            staffUuid,
+                                      );
+                              TempUserClass? user =
+                                  usersTemp.isNotEmpty
+                                      ? usersTemp.first
+                                      : null;
+                              var newUpdate = TempInventoryUpdateClass(
+                                shopId: shopId(),
+                                title:
+                                    currentIndex == 0
+                                        ? 'Stock In'
+                                        : currentIndex == 1
+                                        ? 'Stock Out'
+                                        : 'Stock Updated',
+                                createdAt: DateTime.now(),
+                                departmentName:
+                                    returnDepartmentProvider()
+                                        .currentDepartment()
+                                        ?.name,
+                                departmentUuid:
+                                    returnDepartmentProvider()
+                                        .currentDepartment()
+                                        ?.uuid,
+                                departmentNameTwo:
+                                    department?.name,
+                                departmentUuidTwo:
+                                    department?.uuid,
+                                itemName:
+                                    widget
+                                        .storageProduct
+                                        .name,
+                                itemUuid:
+                                    widget
+                                        .storageProduct
+                                        .uuid,
+                                staffId:
+                                    currentUser().userId,
+                                staffName:
+                                    currentUser().name,
+                                staffIdTwo: user?.userId,
+                                staffNameTwo: user?.name,
+                                oldValue:
+                                    storageOldQty
+                                        .toString(),
+                                newValue:
+                                    tempQtty.toString(),
+                                uuid: uuidGen(),
+                                itemTwoOldValue:
+                                    oldQuantity.toString(),
+                                itemTwoNewValue:
+                                    newQuantity.toString(),
+                              );
+
+                              await returnInventoryUpdatesProvider()
+                                  .createInventoryUpdate(
+                                    newUpdate,
+                                  );
                               returnStorageProductProvider()
                                   .toggleIsLoading(false);
                               if (res == 0) {

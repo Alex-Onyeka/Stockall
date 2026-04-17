@@ -40,7 +40,7 @@ class _ProductDetailsPageState
     var theme = returnTheme(context);
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth < mobileScreen) {
+        if (constraints.maxWidth < tabletScreenSmall) {
           return ProductDetailsMobile(
             theme: theme,
             productUuid: widget.productUuid,

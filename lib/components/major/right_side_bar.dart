@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:stockall/classes/checkout_response.dart';
-import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
+import 'package:stockall/classes/temp_notification/temp_notification.dart';
+import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/expenses/single_expense/expense_details.dart';
+import 'package:stockall/pages/notifications/notifications_page.dart';
+import 'package:stockall/pages/products/product_details/product_details_page.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
-import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
-import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class RightSideBar extends StatelessWidget {
@@ -214,9 +215,7 @@ class RightSideBar extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                 builder: (context) {
-                                  return TotalSalesPage(
-                                    turnOff: true,
-                                  );
+                                  return NotificationsPage();
                                 },
                               ),
                             );
@@ -252,19 +251,10 @@ class RightSideBar extends StatelessWidget {
                                     fontWeight:
                                         FontWeight.bold,
                                   ),
-                                  screenWidth(context) <=
+                                  screenWidth(context) <
                                           tabletScreenSmall
-                                      ? 'View Sales'
-                                      : returnReceiptProvider(
-                                                context,
-                                              ).dateSet !=
-                                              null ||
-                                          returnReceiptProvider(
-                                                context,
-                                              ).rangeStartDate !=
-                                              null
-                                      ? 'All Sales'
-                                      : 'Todays Sales',
+                                      ? 'Notif'
+                                      : 'Notifications',
                                 ),
                                 Icon(
                                   size:
@@ -290,16 +280,9 @@ class RightSideBar extends StatelessWidget {
                             tabletScreenSmall,
                         child: Builder(
                           builder: (context) {
-                            if (returnReceiptProvider(
-                                      context,
-                                    )
-                                    .returnOwnReceiptsByDayOrWeek()
-                                    .isEmpty ||
-                                returnReceiptProvider(
-                                      context,
-                                    )
-                                    .returnproductsRecordByDayOrWeek()
-                                    .isEmpty) {
+                            if (returnNotificationProvider(
+                              context,
+                            ).notifications().isEmpty) {
                               return Expanded(
                                 child: Material(
                                   color: Colors.transparent,
@@ -310,9 +293,12 @@ class RightSideBar extends StatelessWidget {
                                           MainAxisAlignment
                                               .center,
                                       children: [
-                                        SvgPicture.asset(
-                                          height: 18,
-                                          receiptIconSvg,
+                                        Icon(
+                                          size: 20,
+                                          color:
+                                              Colors.grey,
+                                          Icons
+                                              .notifications_active_outlined,
                                         ),
                                         Row(
                                           mainAxisAlignment:
@@ -328,10 +314,13 @@ class RightSideBar extends StatelessWidget {
                                                           .b3
                                                           .fontSize,
                                                 ),
-                                                'No Sales Recorded for today',
+                                                'No New Notifications',
                                               ),
                                             ),
                                           ],
+                                        ),
+                                        SizedBox(
+                                          height: 20,
                                         ),
                                       ],
                                     ),
@@ -342,57 +331,30 @@ class RightSideBar extends StatelessWidget {
                               return Expanded(
                                 child: ListView.builder(
                                   itemCount:
-                                      returnReceiptProvider(
+                                      returnNotificationProvider(
                                             context,
                                           )
-                                          .returnOwnReceiptsByDayOrWeek()
+                                          .notifications()
                                           .length,
                                   itemBuilder: (
                                     context,
                                     index,
                                   ) {
-                                    var receipts =
-                                        returnReceiptProvider(
-                                          context,
-                                        ).returnOwnReceiptsByDayOrWeek();
-                                    receipts.sort(
-                                      (a, b) => b.createdAt
-                                          .compareTo(
-                                            a.createdAt,
+                                    var notif =
+                                        returnNotificationProvider(
+                                              context,
+                                            )
+                                            .notifications()
+                                            .toList();
+                                    notif.sort(
+                                      (a, b) =>
+                                          b.date.compareTo(
+                                            a.date,
                                           ),
                                     );
-                                    TempMainReceipt? rec =
-                                        receipts[index];
-                                    String itemName =
-                                        returnReceiptProvider(
-                                                  context,
-                                                )
-                                                .produtRecordSalesMain
-                                                .where(
-                                                  (
-                                                    record,
-                                                  ) =>
-                                                      record
-                                                          .receiptUuid ==
-                                                      rec.uuid,
-                                                )
-                                                .toList()
-                                                .isEmpty
-                                            ? 'Item name'
-                                            : returnReceiptProvider(
-                                                  context,
-                                                )
-                                                .produtRecordSalesMain
-                                                .where(
-                                                  (
-                                                    record,
-                                                  ) =>
-                                                      record
-                                                          .receiptUuid ==
-                                                      rec.uuid,
-                                                )
-                                                .first
-                                                .productName;
+                                    TempNotification?
+                                    notification =
+                                        notif[index];
                                     return Padding(
                                       padding:
                                           const EdgeInsets.only(
@@ -404,28 +366,97 @@ class RightSideBar extends StatelessWidget {
                                                 .transparent,
                                         child: InkWell(
                                           onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (
+                                            if (context
+                                                    .mounted &&
+                                                notification
+                                                        .productUuid !=
+                                                    null) {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (
+                                                    context,
+                                                  ) {
+                                                    return ProductDetailsPage(
+                                                      notifId:
+                                                          notification.uuid,
+                                                      productUuid:
+                                                          notification.productUuid!,
+                                                    );
+                                                  },
+                                                ),
+                                              ).then((_) {
+                                                returnNotificationProvider(
                                                   context,
-                                                ) {
-                                                  return ReceiptPage(
-                                                    response: CheckoutResponse(
-                                                      resUuid:
-                                                          rec.uuid!,
-                                                      isReceipt:
-                                                          true,
-                                                    ),
-                                                    isMain:
-                                                        false,
-                                                  );
-                                                },
-                                              ),
-                                            ).then((_) {
-                                              // returnData()
-                                              //     .startBarcodeTimer();
-                                            });
+                                                  listen:
+                                                      false,
+                                                ).refreshState();
+                                              });
+                                            } else if (context
+                                                    .mounted &&
+                                                notification
+                                                        .expensesUuid !=
+                                                    null) {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (
+                                                    context,
+                                                  ) {
+                                                    return ExpenseDetails(
+                                                      notifId:
+                                                          notification.uuid,
+                                                      expenseUuid:
+                                                          notification.expensesUuid ??
+                                                          '0',
+                                                    );
+                                                  },
+                                                ),
+                                              ).then((_) {
+                                                returnNotificationProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).refreshState();
+                                              });
+                                            } else if (notification
+                                                        .expensesUuid ==
+                                                    null &&
+                                                notification
+                                                        .productUuid ==
+                                                    null) {
+                                              if (!notification
+                                                  .isViewed) {
+                                                showDialog(
+                                                  context:
+                                                      context,
+                                                  builder: (
+                                                    confirmDialog,
+                                                  ) {
+                                                    return ConfirmationAlert(
+                                                      theme:
+                                                          theme,
+                                                      message:
+                                                          'Are you sure you want to mark this notification as read?',
+                                                      title:
+                                                          'Mark As Read?',
+                                                      action: () async {
+                                                        Navigator.of(
+                                                          confirmDialog,
+                                                        ).pop();
+                                                        await returnNotificationProvider(
+                                                          context,
+                                                          listen:
+                                                              false,
+                                                        ).updateNotification(
+                                                          notification.uuid!,
+                                                        );
+                                                      },
+                                                    );
+                                                  },
+                                                );
+                                              }
+                                            }
                                           },
                                           child: Padding(
                                             padding:
@@ -441,62 +472,64 @@ class RightSideBar extends StatelessWidget {
                                                   MainAxisAlignment
                                                       .spaceBetween,
                                               children: [
-                                                Row(
-                                                  spacing:
-                                                      10,
-                                                  children: [
-                                                    SvgPicture.asset(
-                                                      salesIconSvg,
-                                                      height:
-                                                          13,
-                                                    ),
-                                                    Text(
-                                                      style: TextStyle(
-                                                        fontSize:
-                                                            theme.mobileTexts.b4.fontSize,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                      cutLongText(
-                                                        itemName,
-                                                        12,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                Row(
-                                                  spacing:
-                                                      5,
-                                                  children: [
-                                                    Text(
-                                                      style: TextStyle(
-                                                        fontSize:
-                                                            theme.mobileTexts.b4.fontSize,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                      cutLongText(
-                                                        formatMoneyMid(
-                                                          amount: returnReceiptProvider(
-                                                            context,
-                                                          ).getTotalMainRevenueReceipt(
-                                                            rec,
-                                                          ),
-                                                          context:
-                                                              context,
-                                                        ),
+                                                Expanded(
+                                                  flex: 7,
+                                                  child: Row(
+                                                    spacing:
                                                         10,
+                                                    children: [
+                                                      SvgPicture.asset(
+                                                        salesIconSvg,
+                                                        height:
+                                                            13,
                                                       ),
-                                                    ),
-                                                    Icon(
-                                                      size:
-                                                          15,
-                                                      color:
-                                                          Colors.grey,
-                                                      Icons
-                                                          .arrow_forward_ios_rounded,
-                                                    ),
-                                                  ],
+                                                      Expanded(
+                                                        child: Text(
+                                                          style: TextStyle(
+                                                            fontSize:
+                                                                theme.mobileTexts.b4.fontSize,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                          cutLongText(
+                                                            notification.title,
+                                                            25,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  flex: 4,
+                                                  child: Row(
+                                                    spacing:
+                                                        5,
+                                                    children: [
+                                                      Expanded(
+                                                        child: Text(
+                                                          style: TextStyle(
+                                                            fontSize:
+                                                                theme.mobileTexts.b4.fontSize,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                          cutLongText(
+                                                            notification.itemName ??
+                                                                '',
+                                                            8,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Icon(
+                                                        size:
+                                                            15,
+                                                        color:
+                                                            Colors.grey,
+                                                        Icons.arrow_forward_ios_rounded,
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
                                               ],
                                             ),

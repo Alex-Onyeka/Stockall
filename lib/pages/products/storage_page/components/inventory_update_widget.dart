@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_inventory_updates/temp_inventory_update_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/products/product_details/product_details_page.dart';
+import 'package:stockall/pages/products/storage_page/storage_details/storage_details_page.dart';
 import 'package:stockall/pages/report/events_log/platforms/events_log_desktop.dart';
 
 class InventoryUpdateWidget extends StatefulWidget {
@@ -96,7 +96,7 @@ class _InventoryUpdateWidgetState
                     ),
                     MyDivider(),
                     Expanded(
-                      flex: 8,
+                      flex: 4,
                       child: Column(
                         spacing: 1,
                         crossAxisAlignment:
@@ -125,7 +125,7 @@ class _InventoryUpdateWidgetState
                     ),
                     MyDivider(),
                     Expanded(
-                      flex: 9,
+                      flex: 8,
                       child: Column(
                         spacing: 1,
                         crossAxisAlignment:
@@ -282,152 +282,418 @@ class _InventoryUpdateWidgetState
                 ),
                 Visibility(
                   visible: isOpen,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 5,
-                      vertical: 3,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment:
-                          MainAxisAlignment.end,
-                      spacing: 10,
-                      children: [
-                        Row(
-                          spacing: 5,
+                  child: Column(
+                    children: [
+                      Visibility(
+                        visible:
+                            widget
+                                .update
+                                .departmentUuidTwo !=
+                            null,
+                        child: Column(
                           children: [
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b4
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              'Creator:',
-                            ),
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b4
-                                        .fontSize,
-                              ),
-                              widget.update.staffName ?? '',
-                            ),
-                          ],
-                        ),
-                        MyDivider(),
-                        Row(
-                          spacing: 5,
-                          children: [
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b4
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              'Date:',
-                            ),
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b4
-                                        .fontSize,
-                              ),
-                              formatDateTimeTime(
-                                widget.update.createdAt ??
-                                    DateTime.now(),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Visibility(
-                          visible:
-                              widget.update.uuid != null &&
-                              returnData()
-                                  .productList()
-                                  .where(
-                                    (pr) =>
-                                        pr.uuid ==
+                            Row(
+                              spacing: 10,
+                              children: [
+                                Icon(
+                                  size: 20,
+                                  color: Colors.grey,
+                                  Icons.person,
+                                ),
+                                MyDivider(),
+                                Expanded(
+                                  flex: 4,
+                                  child: Column(
+                                    spacing: 1,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment
+                                            .start,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize: 8,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        'Staff:',
+                                      ),
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b3
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
                                         widget
-                                            .update
-                                            .itemUuid,
-                                  )
-                                  .isNotEmpty,
-                          child: Material(
-                            type: MaterialType.transparency,
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return ProductDetailsPage(
-                                        productUuid:
-                                            widget
                                                 .update
-                                                .itemUuid!,
-                                        comingFromInventoryUpdatesPage:
-                                            true,
-                                      );
-                                    },
+                                                .staffNameTwo ??
+                                            'Not Set',
+                                      ),
+                                    ],
                                   ),
-                                );
-                              },
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(
-                                      horizontal: 10.0,
-                                      vertical: 5,
-                                    ),
-                                child: Row(
-                                  spacing: 4,
+                                ),
+                                MyDivider(),
+                                Expanded(
+                                  flex: 8,
+                                  child: Column(
+                                    spacing: 1,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment
+                                            .start,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize: 8,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        'Department:',
+                                      ),
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b3
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        widget
+                                                .update
+                                                .departmentNameTwo ??
+                                            '',
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                MyDivider(),
+                                Expanded(
+                                  flex: 3,
+                                  child: Column(
+                                    spacing: 1,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment
+                                            .start,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize: 8,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        'Item-2 Old Value:',
+                                      ),
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b3
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        formatValue(
+                                          widget
+                                                  .update
+                                                  .itemTwoOldValue ??
+                                              '',
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                MyDivider(),
+                                Expanded(
+                                  flex: 3,
+                                  child: Column(
+                                    spacing: 1,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment
+                                            .start,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize: 8,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        'Item-2 New Value:',
+                                      ),
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b3
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        formatValue(
+                                          widget
+                                                  .update
+                                                  .itemTwoNewValue ??
+                                              '',
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                MyDivider(),
+                                Expanded(
+                                  flex: 3,
+                                  child: Column(
+                                    spacing: 1,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment
+                                            .start,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize: 8,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        'Item-2 Change:',
+                                      ),
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b3
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        formatValue(
+                                          valueChange(
+                                            one:
+                                                widget
+                                                    .update
+                                                    .itemTwoOldValue ??
+                                                '',
+
+                                            two:
+                                                widget
+                                                    .update
+                                                    .itemTwoNewValue ??
+                                                '',
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                MyDivider(),
+                                Icon(
+                                  size: 18,
+                                  color:
+                                      Colors.grey.shade500,
+                                  isOpen
+                                      ? Icons
+                                          .keyboard_arrow_up_rounded
+                                      : Icons
+                                          .keyboard_arrow_down_rounded,
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 3),
+                            Divider(
+                              color: Colors.grey.shade300,
+                              height: 20,
+                              thickness: 0.8,
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      Row(
+                        mainAxisAlignment:
+                            MainAxisAlignment.end,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 5,
+                              vertical: 3,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade100,
+                            ),
+                            child: Row(
+                              mainAxisSize:
+                                  MainAxisSize.min,
+                              mainAxisAlignment:
+                                  MainAxisAlignment.end,
+                              spacing: 10,
+                              children: [
+                                Row(
+                                  spacing: 5,
                                   children: [
-                                    MyDivider(),
-                                    SizedBox(width: 10),
                                     Text(
                                       style: TextStyle(
                                         fontSize:
                                             theme
                                                 .mobileTexts
-                                                .b3
+                                                .b4
                                                 .fontSize,
                                         fontWeight:
                                             FontWeight.bold,
                                       ),
-                                      'View Item',
+                                      'Creator:',
                                     ),
-                                    Icon(
-                                      size: 15,
-                                      color:
-                                          const Color.fromARGB(
-                                            255,
-                                            255,
-                                            176,
-                                            7,
-                                          ),
-                                      Icons
-                                          .arrow_forward_ios_rounded,
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b4
+                                                .fontSize,
+                                      ),
+                                      widget
+                                              .update
+                                              .staffName ??
+                                          '',
                                     ),
                                   ],
                                 ),
-                              ),
+                                MyDivider(),
+                                Row(
+                                  spacing: 5,
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b4
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      'Date:',
+                                    ),
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b4
+                                                .fontSize,
+                                      ),
+                                      formatDateTimeTime(
+                                        widget
+                                                .update
+                                                .createdAt ??
+                                            DateTime.now(),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Visibility(
+                                  visible:
+                                      widget.update.uuid !=
+                                          null &&
+                                      returnStorageProductProvider()
+                                          .storageProductListMain
+                                          .where(
+                                            (pr) =>
+                                                pr.uuid ==
+                                                widget
+                                                    .update
+                                                    .itemUuid,
+                                          )
+                                          .isNotEmpty,
+                                  child: Material(
+                                    type:
+                                        MaterialType
+                                            .transparency,
+                                    child: InkWell(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (
+                                              context,
+                                            ) {
+                                              return StorageDetailsPage(
+                                                productUuid:
+                                                    widget
+                                                        .update
+                                                        .itemUuid!,
+                                                // comingFromInventoryUpdatesPage:
+                                                //     true,
+                                              );
+                                            },
+                                          ),
+                                        );
+                                      },
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.symmetric(
+                                              horizontal:
+                                                  10.0,
+                                              vertical: 5,
+                                            ),
+                                        child: Row(
+                                          spacing: 4,
+                                          children: [
+                                            MyDivider(),
+                                            SizedBox(
+                                              width: 10,
+                                            ),
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b3
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              'View Item',
+                                            ),
+                                            Icon(
+                                              size: 15,
+                                              color:
+                                                  const Color.fromARGB(
+                                                    255,
+                                                    255,
+                                                    176,
+                                                    7,
+                                                  ),
+                                              Icons
+                                                  .arrow_forward_ios_rounded,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ],

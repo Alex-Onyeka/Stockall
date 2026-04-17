@@ -10,7 +10,7 @@ class StoragePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth < mobileScreen) {
+        if (constraints.maxWidth < tabletScreenSmall) {
           return StoragePageMobile();
         } else {
           return StoragePageDesktop();
