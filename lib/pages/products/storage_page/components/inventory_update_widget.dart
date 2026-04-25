@@ -286,9 +286,7 @@ class _InventoryUpdateWidgetState
                     children: [
                       Visibility(
                         visible:
-                            widget
-                                .update
-                                .departmentUuidTwo !=
+                            widget.update.itemTwoUuid !=
                             null,
                         child: Column(
                           children: [
@@ -353,7 +351,7 @@ class _InventoryUpdateWidgetState
                                               FontWeight
                                                   .bold,
                                         ),
-                                        'Department:',
+                                        'Item-2 Name:',
                                       ),
                                       Text(
                                         style: TextStyle(
@@ -366,10 +364,28 @@ class _InventoryUpdateWidgetState
                                               FontWeight
                                                   .bold,
                                         ),
-                                        widget
-                                                .update
-                                                .departmentNameTwo ??
-                                            '',
+                                        returnData()
+                                                .productListMain
+                                                .where(
+                                                  (item) =>
+                                                      item.uuid ==
+                                                      widget
+                                                          .update
+                                                          .itemTwoUuid,
+                                                )
+                                                .isNotEmpty
+                                            ? returnData()
+                                                .productListMain
+                                                .where(
+                                                  (item) =>
+                                                      item.uuid ==
+                                                      widget
+                                                          .update
+                                                          .itemTwoUuid,
+                                                )
+                                                .first
+                                                .name
+                                            : 'Not Set',
                                       ),
                                     ],
                                   ),
@@ -525,8 +541,55 @@ class _InventoryUpdateWidgetState
 
                       Row(
                         mainAxisAlignment:
-                            MainAxisAlignment.end,
+                            widget
+                                        .update
+                                        .departmentUuidTwo !=
+                                    null
+                                ? MainAxisAlignment
+                                    .spaceBetween
+                                : MainAxisAlignment.end,
                         children: [
+                          Visibility(
+                            visible:
+                                widget
+                                    .update
+                                    .departmentUuidTwo !=
+                                null,
+                            child: Expanded(
+                              child: Column(
+                                spacing: 1,
+                                crossAxisAlignment:
+                                    CrossAxisAlignment
+                                        .start,
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize: 8,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    'Department:',
+                                  ),
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    widget
+                                            .update
+                                            .departmentNameTwo ??
+                                        '',
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          MyDivider(),
                           Container(
                             padding: EdgeInsets.symmetric(
                               horizontal: 5,
@@ -607,7 +670,9 @@ class _InventoryUpdateWidgetState
                                 ),
                                 Visibility(
                                   visible:
-                                      widget.update.uuid !=
+                                      widget
+                                              .update
+                                              .itemUuid !=
                                           null &&
                                       returnStorageProductProvider()
                                           .storageProductListMain

@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:stockall/classes/temp_categories/category_class.dart';
-import 'package:stockall/classes/temp_inventory_updates/temp_inventory_update_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/created_products/created_products.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/deleted_products/deleted_products.dart';
@@ -1181,62 +1180,62 @@ class DataProvider extends ChangeNotifier {
               2,
             ),
           );
-          if (oldProduct != null) {
-            TempInventoryUpdateClass
-            inventoryUpdate = TempInventoryUpdateClass(
-              shopId: shopId(),
-              title: 'title',
-              createdAt: DateTime.now(),
-              staffId: currentUser().userId,
-              staffName:
-                  "${currentUser().name} ${currentUser().lastName ?? ''}",
-              uuid: uuidGen(),
-              itemName: product.name,
-              itemUuid: product.uuid,
-            );
-            if ((oldProduct.quantity ?? 0) !=
-                (product.quantity ?? 0)) {
-              inventoryUpdate.title =
-                  'Item Sales Quantity Updated';
-              inventoryUpdate.oldValue =
-                  oldProduct.quantity?.toString();
-              inventoryUpdate.newValue =
-                  product.quantity?.toString();
-            } else if ((oldProduct
-                        .totalQttyInStorageDouble ??
-                    0) !=
-                (product.totalQttyInStorageDouble ?? 0)) {
-              inventoryUpdate.title =
-                  'Item Storage Quantity Updated';
-              inventoryUpdate.oldValue =
-                  oldProduct.totalQttyInStorageDouble
-                      ?.toString();
-              inventoryUpdate.newValue =
-                  product.totalQttyInStorageDouble
-                      ?.toString();
-            } else if (oldProduct.isManaged !=
-                product.isManaged) {
-              inventoryUpdate.title =
-                  'Item Is-Managed Updated';
-              if (product.isManaged) {
-                inventoryUpdate.oldValue = 'Un-Managed';
-                inventoryUpdate.newValue = 'Managed';
-              } else {
-                inventoryUpdate.newValue = 'Un-Managed';
-                inventoryUpdate.oldValue = 'Managed';
-              }
-            } else if ((oldProduct.sellingPrice ?? 0) !=
-                (product.sellingPrice ?? 0)) {
-              inventoryUpdate.title =
-                  'Item Selling Price Updated';
-              inventoryUpdate.oldValue =
-                  oldProduct.sellingPrice?.toString();
-              inventoryUpdate.newValue =
-                  product.sellingPrice?.toString();
-            }
-            await returnInventoryUpdatesProvider()
-                .createInventoryUpdate(inventoryUpdate);
-          }
+          // if (oldProduct != null) {
+          //   TempInventoryUpdateClass
+          //   inventoryUpdate = TempInventoryUpdateClass(
+          //     shopId: shopId(),
+          //     title: 'title',
+          //     createdAt: DateTime.now(),
+          //     staffId: currentUser().userId,
+          //     staffName:
+          //         "${currentUser().name} ${currentUser().lastName ?? ''}",
+          //     uuid: uuidGen(),
+          //     itemName: product.name,
+          //     itemUuid: product.uuid,
+          //   );
+          //   if ((oldProduct.quantity ?? 0) !=
+          //       (product.quantity ?? 0)) {
+          //     inventoryUpdate.title =
+          //         'Item Sales Quantity Updated';
+          //     inventoryUpdate.oldValue =
+          //         oldProduct.quantity?.toString();
+          //     inventoryUpdate.newValue =
+          //         product.quantity?.toString();
+          //   } else if ((oldProduct
+          //               .totalQttyInStorageDouble ??
+          //           0) !=
+          //       (product.totalQttyInStorageDouble ?? 0)) {
+          //     inventoryUpdate.title =
+          //         'Item Storage Quantity Updated';
+          //     inventoryUpdate.oldValue =
+          //         oldProduct.totalQttyInStorageDouble
+          //             ?.toString();
+          //     inventoryUpdate.newValue =
+          //         product.totalQttyInStorageDouble
+          //             ?.toString();
+          //   } else if (oldProduct.isManaged !=
+          //       product.isManaged) {
+          //     inventoryUpdate.title =
+          //         'Item Is-Managed Updated';
+          //     if (product.isManaged) {
+          //       inventoryUpdate.oldValue = 'Un-Managed';
+          //       inventoryUpdate.newValue = 'Managed';
+          //     } else {
+          //       inventoryUpdate.newValue = 'Un-Managed';
+          //       inventoryUpdate.oldValue = 'Managed';
+          //     }
+          //   } else if ((oldProduct.sellingPrice ?? 0) !=
+          //       (product.sellingPrice ?? 0)) {
+          //     inventoryUpdate.title =
+          //         'Item Selling Price Updated';
+          //     inventoryUpdate.oldValue =
+          //         oldProduct.sellingPrice?.toString();
+          //     inventoryUpdate.newValue =
+          //         product.sellingPrice?.toString();
+          //   }
+          //   await returnInventoryUpdatesProvider()
+          //       .createInventoryUpdate(inventoryUpdate);
+          // }
           print('Context Mounted');
           await getProducts(
             returnShopProvider().userShop()!.shopId!,

@@ -132,7 +132,12 @@ class _StorageDetailsMobileState
                                       child: TabContainer(
                                         isMoney: false,
                                         text:
-                                            'Group Quantity',
+                                            product.groupUnit ==
+                                                        null ||
+                                                    product.groupUnit ==
+                                                        'Others'
+                                                ? 'Group Quantity'
+                                                : 'Quantity of ${product.groupUnit}',
                                         price:
                                             (product.quantity ??
                                                 0) /
@@ -159,7 +164,13 @@ class _StorageDetailsMobileState
                                   Expanded(
                                     child: TabContainer(
                                       isMoney: false,
-                                      text: 'Unit Quantity',
+                                      text:
+                                          product.unit ==
+                                                      null ||
+                                                  product.unit ==
+                                                      'Others'
+                                              ? 'Unit Quantity'
+                                              : 'Quantity of ${product.unit ?? 'Others'}',
                                       price:
                                           product
                                               .quantity ??

@@ -58,6 +58,9 @@ class TempInventoryUpdateClass {
   @HiveField(17)
   String? itemTwoNewValue;
 
+  @HiveField(18)
+  String? itemTwoUuid;
+
   TempInventoryUpdateClass({
     this.uuid,
     this.createdAt,
@@ -77,6 +80,7 @@ class TempInventoryUpdateClass {
     this.departmentUuidTwo,
     this.itemTwoNewValue,
     this.itemTwoOldValue,
+    required this.itemTwoUuid,
   });
 
   factory TempInventoryUpdateClass.fromJson(
@@ -108,6 +112,7 @@ class TempInventoryUpdateClass {
           json['item_two_new_value'] as String?,
       itemTwoOldValue:
           json['item_two_old_value'] as String?,
+      itemTwoUuid: json['product_uuid'] as String?,
     );
   }
 
@@ -131,6 +136,7 @@ class TempInventoryUpdateClass {
       'staff_id_two': staffIdTwo,
       'item_two_old_value': itemTwoOldValue,
       'item_two_new_value': itemTwoNewValue,
+      'product_uuid': itemTwoUuid,
     };
   }
 }

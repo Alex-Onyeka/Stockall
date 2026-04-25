@@ -346,6 +346,57 @@ class UserProvider extends ChangeNotifier {
       } else {
         user.first.role = newRole;
       }
+
+      if (newRole == 'Owner') {
+        final response =
+            await _supabase.client
+                .from('shops')
+                .select('employees')
+                .eq(
+                  'shop_id',
+                  returnShopProvider()
+                          .userShop()
+                          ?.shopId! ??
+                      0,
+                )
+                .maybeSingle();
+
+        if (response == null) {
+          print('Shop not found');
+          // return;
+        }
+
+        List<String> currentEmployees = [];
+
+        if (response!['employees'] != null) {
+          currentEmployees = List<String>.from(
+            response['employees'],
+          );
+        }
+
+        if (currentEmployees.contains(userId)) {
+          currentEmployees.remove(userId);
+        } else {
+          print(
+            'Error Removing User Id From Shop Employees',
+          );
+        }
+
+        // Step 3: Update the shop's employees field
+        final updateResponse = await _supabase.client
+            .from('shops')
+            .update({'employees': currentEmployees})
+            .eq(
+              'shop_id',
+              returnShopProvider().userShop()?.shopId! ?? 0,
+            );
+
+        if (updateResponse != null) {
+          print('Failed to update shop: $updateResponse');
+        } else {
+          print('Employee added successfully.');
+        }
+      }
       notifyListeners();
       await fetchUsersByShop();
       return null; // success

@@ -8,6 +8,7 @@ import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
+import 'package:stockall/components/toggle_button/my_toggle_button.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
@@ -27,7 +28,8 @@ void updateStorageQuantity({
             (context, setState) => DialogTemplate(
               theme: theme,
               message: 'Enter Details',
-              title: 'Update Unit Quantity',
+              title:
+                  'Update ${returnStorageProductProvider().unitText(storageProduct: storageProduct)} Quantity',
               topRightWidget:
                   returnStorageProductProvider(
                         context: context,
@@ -52,7 +54,11 @@ void updateStorageQuantity({
             ),
       );
     },
-  );
+  ).then((_) {
+    returnStorageProductProvider().toggleGroupUnit(
+      value: false,
+    );
+  });
 }
 
 class StorageQuantityUpdateWidget extends StatefulWidget {
@@ -108,16 +114,40 @@ class _StorageQuantityUpdateWidgetState
                   productUuid = null;
                   staffUuid = null;
                 });
-                if (((widget.storageProduct.quantity ?? 0) -
-                        ((double.tryParse(
-                              (quantityController.text
-                                  .replaceAll(',', '')),
-                            ) ??
-                            0)) <
-                    0)) {
-                  setState(() {
-                    quantityController.text = '0';
-                  });
+                if (!returnStorageProductProvider()
+                    .isGroupUnit) {
+                  if (((widget.storageProduct.quantity ??
+                              0) -
+                          ((double.tryParse(
+                                (quantityController.text
+                                    .replaceAll(',', '')),
+                              ) ??
+                              0)) <
+                      0)) {
+                    setState(() {
+                      quantityController.text = '0';
+                    });
+                  }
+                } else {
+                  if (((widget.storageProduct.quantity ??
+                              0) -
+                          ((double.tryParse(
+                                    (quantityController.text
+                                        .replaceAll(
+                                          ',',
+                                          '',
+                                        )),
+                                  ) ??
+                                  0) *
+                              (widget
+                                      .storageProduct
+                                      .qttyPerGroup ??
+                                  0)) <
+                      0)) {
+                    setState(() {
+                      quantityController.text = '0';
+                    });
+                  }
                 }
               },
             ),
@@ -136,26 +166,160 @@ class _StorageQuantityUpdateWidgetState
             ),
           ],
         ),
-        SizedBox(height: 5),
+        Visibility(
+          visible:
+              returnShopProvider()
+                  .userShop()
+                  ?.useGroupUnit ==
+              true,
+          child: Column(
+            children: [
+              SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20.0,
+                ),
+                child: Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      'Update Group Quantity?',
+                    ),
+                    MyToggleButton(
+                      // isSmall: true,
+                      boolValue:
+                          returnStorageProductProvider()
+                              .isGroupUnit,
+                      toggle: () {
+                        // showDialog(
+                        //   context: context,
+                        //   builder: (context) {
+                        //     return ConfirmationAlert(
+                        //       theme: theme,
+                        //       message:
+                        //           storageProvider.isGroupUnit
+                        //               ? 'This item will not be added to your stock after this sale, are you sure you want to proceed?'
+                        //               : 'This item will be automatically added to your stock after this sale, are you sure you want to proceed?',
+                        //       title:
+                        //           !storageProvider.isGroupUnit
+                        //               ? 'Add to Stock?'
+                        //               : 'Are you Sure?',
+                        //       action: () async {
+                        //         Navigator.of(context).pop();
+
+                        //       },
+                        //     );
+                        //   },
+                        // );
+                        returnStorageProductProvider()
+                            .toggleGroupUnit(
+                              value:
+                                  returnStorageProductProvider()
+                                          .isGroupUnit
+                                      ? false
+                                      : true,
+                            );
+                        if (currentIndex == 1) {
+                          if (!returnStorageProductProvider()
+                              .isGroupUnit) {
+                            if (((widget
+                                            .storageProduct
+                                            .quantity ??
+                                        0) -
+                                    (double.tryParse(
+                                          (quantityController
+                                              .text
+                                              .replaceAll(
+                                                ',',
+                                                '',
+                                              )),
+                                        ) ??
+                                        0) <
+                                0)) {
+                              setState(() {
+                                quantityController.text =
+                                    '0';
+                              });
+                            }
+                          } else {
+                            if (((widget
+                                            .storageProduct
+                                            .quantity ??
+                                        0) -
+                                    (((double.tryParse(
+                                              (quantityController
+                                                  .text
+                                                  .replaceAll(
+                                                    ',',
+                                                    '',
+                                                  )),
+                                            )) ??
+                                            0) *
+                                        (widget
+                                                .storageProduct
+                                                .qttyPerGroup ??
+                                            0)) <
+                                0)) {
+                              setState(() {
+                                quantityController.text =
+                                    '0';
+                              });
+                            }
+                          }
+                        }
+                      },
+                      theme: theme,
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 2),
+            ],
+          ),
+        ),
+
         EditCartTextField(
           title: 'Quantity',
-          hint: 'Enter Quantity',
+          hint:
+              'Enter ${returnStorageProductProvider().unitText(storageProduct: widget.storageProduct)} Quantity',
           controller: quantityController,
           theme: theme,
           showTitle: false,
           onChanged: (value) {
             if (currentIndex == 1) {
-              if (((widget.storageProduct.quantity ?? 0) -
-                      (double.parse(
-                        (quantityController.text.replaceAll(
-                          ',',
-                          '',
-                        )),
-                      )) <
-                  0)) {
-                setState(() {
-                  quantityController.text = '0';
-                });
+              if (!returnStorageProductProvider()
+                  .isGroupUnit) {
+                if (((widget.storageProduct.quantity ?? 0) -
+                        (double.tryParse(
+                              (quantityController.text
+                                  .replaceAll(',', '')),
+                            ) ??
+                            0) <
+                    0)) {
+                  setState(() {
+                    quantityController.text = '0';
+                  });
+                }
+              } else {
+                if (((widget.storageProduct.quantity ?? 0) -
+                        (((double.tryParse(
+                                  (quantityController.text
+                                      .replaceAll(',', '')),
+                                )) ??
+                                0) *
+                            (widget
+                                    .storageProduct
+                                    .qttyPerGroup ??
+                                0)) <
+                    0)) {
+                  setState(() {
+                    quantityController.text = '0';
+                  });
+                }
               }
             }
           },
@@ -522,14 +686,31 @@ class _StorageQuantityUpdateWidgetState
                     if (quantityController
                         .text
                         .isNotEmpty) {
+                      if (currentIndex == 1 &&
+                          productUuid == null) {
+                        showDialog(
+                          // ignore: use_build_context_synchronously
+                          context: context,
+                          builder: (errorContext) {
+                            return InfoAlert(
+                              theme: theme,
+                              message:
+                                  'You have not Selected the item you want to be updated. Please select Item and Try Again.',
+                              title: 'Item Not Selected',
+                            );
+                          },
+                        );
+                        return;
+                      }
                       showDialog(
                         context: context,
                         builder: (actionContext) {
                           return ConfirmationAlert(
                             theme: theme,
                             message:
-                                'You are about to update the quantity of This item in Storage. Are you sure you want to proceed?',
-                            title: 'Update Stock',
+                                'You are about to update the ${returnStorageProductProvider().unitText(storageProduct: widget.storageProduct)} quantity of This item in Storage. Are you sure you want to proceed?',
+                            title:
+                                'Update ${returnStorageProductProvider().unitText(storageProduct: widget.storageProduct)} Stock',
                             action: () async {
                               double? tempQtty;
                               TempStorageProducts
@@ -577,47 +758,109 @@ class _StorageQuantityUpdateWidgetState
                               returnStorageProductProvider()
                                   .toggleIsLoading(true);
                               if (currentIndex == 0) {
-                                tempQtty =
-                                    ((widget
-                                                .storageProduct
-                                                .quantity ??
-                                            0) +
-                                        ((double.tryParse(
-                                              quantityController
-                                                  .text
-                                                  .replaceAll(
-                                                    ',',
-                                                    '',
-                                                  ),
-                                            ) ??
-                                            0)));
+                                if (returnStorageProductProvider()
+                                    .isGroupUnit) {
+                                  tempQtty =
+                                      ((widget
+                                                  .storageProduct
+                                                  .quantity ??
+                                              0) +
+                                          (((double.tryParse(
+                                                    quantityController
+                                                        .text
+                                                        .replaceAll(
+                                                          ',',
+                                                          '',
+                                                        ),
+                                                  ) ??
+                                                  0)) *
+                                              (widget
+                                                      .storageProduct
+                                                      .qttyPerGroup ??
+                                                  1)));
+                                } else {
+                                  tempQtty =
+                                      ((widget
+                                                  .storageProduct
+                                                  .quantity ??
+                                              0) +
+                                          ((double.tryParse(
+                                                quantityController
+                                                    .text
+                                                    .replaceAll(
+                                                      ',',
+                                                      '',
+                                                    ),
+                                              ) ??
+                                              0)));
+                                }
                               } else if (currentIndex ==
                                   1) {
-                                tempQtty =
-                                    ((widget
-                                                .storageProduct
-                                                .quantity ??
-                                            0) -
-                                        ((double.tryParse(
-                                              quantityController
-                                                  .text
-                                                  .replaceAll(
-                                                    ',',
-                                                    '',
-                                                  ),
-                                            ) ??
-                                            0)));
+                                if (returnStorageProductProvider()
+                                    .isGroupUnit) {
+                                  tempQtty =
+                                      ((widget
+                                                  .storageProduct
+                                                  .quantity ??
+                                              0) -
+                                          (((double.tryParse(
+                                                    quantityController
+                                                        .text
+                                                        .replaceAll(
+                                                          ',',
+                                                          '',
+                                                        ),
+                                                  ) ??
+                                                  0)) *
+                                              (widget
+                                                      .storageProduct
+                                                      .qttyPerGroup ??
+                                                  1)));
+                                } else {
+                                  tempQtty =
+                                      ((widget
+                                                  .storageProduct
+                                                  .quantity ??
+                                              0) -
+                                          ((double.tryParse(
+                                                quantityController
+                                                    .text
+                                                    .replaceAll(
+                                                      ',',
+                                                      '',
+                                                    ),
+                                              ) ??
+                                              0)));
+                                }
                               } else {
-                                tempQtty =
-                                    (((double.tryParse(
-                                          quantityController
-                                              .text
-                                              .replaceAll(
-                                                ',',
-                                                '',
-                                              ),
-                                        ) ??
-                                        0)));
+                                if (returnStorageProductProvider()
+                                    .isGroupUnit) {
+                                  tempQtty =
+                                      ((double.tryParse(
+                                            quantityController
+                                                .text
+                                                .replaceAll(
+                                                  ',',
+                                                  '',
+                                                ),
+                                          ) ??
+                                          0)) *
+                                      (widget
+                                              .storageProduct
+                                              .qttyPerGroup ??
+                                          1);
+                                } else {
+                                  tempQtty =
+                                      (((double.tryParse(
+                                            quantityController
+                                                .text
+                                                .replaceAll(
+                                                  ',',
+                                                  '',
+                                                ),
+                                          ) ??
+                                          0)));
+                                }
                               }
                               newProduct.quantity =
                                   tempQtty;
@@ -655,14 +898,30 @@ class _StorageQuantityUpdateWidgetState
                                   original?.copyWith();
 
                               final inputQty =
-                                  double.tryParse(
-                                    quantityController.text
-                                        .replaceAll(
-                                          ',',
-                                          '',
-                                        ),
-                                  ) ??
-                                  0;
+                                  returnStorageProductProvider()
+                                          .isGroupUnit
+                                      ? ((double.tryParse(
+                                                quantityController
+                                                    .text
+                                                    .replaceAll(
+                                                      ',',
+                                                      '',
+                                                    ),
+                                              ) ??
+                                              0) *
+                                          (widget
+                                                  .storageProduct
+                                                  .qttyPerGroup ??
+                                              1))
+                                      : (double.tryParse(
+                                            quantityController
+                                                .text
+                                                .replaceAll(
+                                                  ',',
+                                                  '',
+                                                ),
+                                          ) ??
+                                          0);
 
                               newPr?.quantity =
                                   (newPr.quantity ?? 0) +
@@ -749,6 +1008,7 @@ class _StorageQuantityUpdateWidgetState
                                     oldQuantity.toString(),
                                 itemTwoNewValue:
                                     newQuantity.toString(),
+                                itemTwoUuid: productUuid,
                               );
 
                               await returnInventoryUpdatesProvider()

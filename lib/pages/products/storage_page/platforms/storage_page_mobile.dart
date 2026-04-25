@@ -1349,6 +1349,56 @@ class _InventoryUpdateWidgetMobileState
                           child: Column(
                             children: [
                               Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      spacing: 1,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment
+                                              .start,
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize: 8,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          'Department:',
+                                        ),
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b4
+                                                    .fontSize,
+                                          ),
+                                          widget
+                                                  .update
+                                                  .departmentNameTwo ??
+                                              'Not Set',
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Divider(
+                                color: Colors.grey.shade300,
+                                height: 20,
+                                thickness: 0.8,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Visibility(
+                          visible:
+                              widget.update.itemTwoUuid !=
+                              null,
+                          child: Column(
+                            children: [
+                              Row(
                                 spacing: 10,
                                 mainAxisSize:
                                     MainAxisSize.max,
@@ -1403,7 +1453,7 @@ class _InventoryUpdateWidgetMobileState
                                                 FontWeight
                                                     .bold,
                                           ),
-                                          'Department:',
+                                          'Item-2 Name:',
                                         ),
                                         Text(
                                           style: TextStyle(
@@ -1415,10 +1465,28 @@ class _InventoryUpdateWidgetMobileState
                                             // fontWeight:
                                             //     FontWeight.bold,
                                           ),
-                                          widget
-                                                  .update
-                                                  .departmentNameTwo ??
-                                              'Not Set',
+                                          returnData()
+                                                  .productListMain
+                                                  .where(
+                                                    (
+                                                      item,
+                                                    ) =>
+                                                        item.uuid ==
+                                                        widget.update.itemTwoUuid,
+                                                  )
+                                                  .isNotEmpty
+                                              ? returnData()
+                                                  .productListMain
+                                                  .where(
+                                                    (
+                                                      item,
+                                                    ) =>
+                                                        item.uuid ==
+                                                        widget.update.itemTwoUuid,
+                                                  )
+                                                  .first
+                                                  .name
+                                              : 'Not Set',
                                         ),
                                       ],
                                     ),

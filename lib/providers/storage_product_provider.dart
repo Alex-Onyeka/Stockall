@@ -30,6 +30,21 @@ class StorageProductProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  String unitText({
+    required TempStorageProducts storageProduct,
+  }) {
+    return isGroupUnit
+        ? storageProduct.groupUnit ?? 'Group'
+        : storageProduct.unit ?? 'Unit';
+  }
+
+  bool isGroupUnit = false;
+
+  void toggleGroupUnit({required bool value}) {
+    isGroupUnit = value;
+    notifyListeners();
+  }
+
   final String tableName = 'storage_products';
 
   final supabase = Supabase.instance.client;

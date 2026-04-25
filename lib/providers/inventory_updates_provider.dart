@@ -296,6 +296,7 @@ class InventoryUpdatesProvider with ChangeNotifier {
       createdAt: DateTime.now(),
       itemName: 'A new Item is Created',
       staffName: 'Alex Onyeka',
+      itemTwoUuid: '',
     ),
   ];
 }

@@ -281,8 +281,14 @@ class RightSideBar extends StatelessWidget {
                         child: Builder(
                           builder: (context) {
                             if (returnNotificationProvider(
-                              context,
-                            ).notifications().isEmpty) {
+                                  context,
+                                )
+                                .notifications()
+                                .where(
+                                  (notif) =>
+                                      !notif.isViewed,
+                                )
+                                .isEmpty) {
                               return Expanded(
                                 child: Material(
                                   color: Colors.transparent,
@@ -335,6 +341,11 @@ class RightSideBar extends StatelessWidget {
                                             context,
                                           )
                                           .notifications()
+                                          .where(
+                                            (notif) =>
+                                                !notif
+                                                    .isViewed,
+                                          )
                                           .length,
                                   itemBuilder: (
                                     context,
@@ -345,6 +356,11 @@ class RightSideBar extends StatelessWidget {
                                               context,
                                             )
                                             .notifications()
+                                            .where(
+                                              (notif) =>
+                                                  !notif
+                                                      .isViewed,
+                                            )
                                             .toList();
                                     notif.sort(
                                       (a, b) =>
@@ -479,7 +495,9 @@ class RightSideBar extends StatelessWidget {
                                                         10,
                                                     children: [
                                                       SvgPicture.asset(
-                                                        salesIconSvg,
+                                                        notifIconSvg,
+                                                        color:
+                                                            Colors.grey,
                                                         height:
                                                             13,
                                                       ),
@@ -493,43 +511,20 @@ class RightSideBar extends StatelessWidget {
                                                           ),
                                                           cutLongText(
                                                             notification.title,
-                                                            25,
+                                                            30,
                                                           ),
                                                         ),
                                                       ),
                                                     ],
                                                   ),
                                                 ),
-                                                Expanded(
-                                                  flex: 4,
-                                                  child: Row(
-                                                    spacing:
-                                                        5,
-                                                    children: [
-                                                      Expanded(
-                                                        child: Text(
-                                                          style: TextStyle(
-                                                            fontSize:
-                                                                theme.mobileTexts.b4.fontSize,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                          ),
-                                                          cutLongText(
-                                                            notification.itemName ??
-                                                                '',
-                                                            8,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      Icon(
-                                                        size:
-                                                            15,
-                                                        color:
-                                                            Colors.grey,
-                                                        Icons.arrow_forward_ios_rounded,
-                                                      ),
-                                                    ],
-                                                  ),
+                                                Icon(
+                                                  size: 15,
+                                                  color:
+                                                      Colors
+                                                          .grey,
+                                                  Icons
+                                                      .arrow_forward_ios_rounded,
                                                 ),
                                               ],
                                             ),

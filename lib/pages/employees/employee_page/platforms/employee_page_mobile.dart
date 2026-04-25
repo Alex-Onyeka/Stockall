@@ -36,15 +36,42 @@ class _EmployeePageMobileState
     super.initState();
 
     returnData().toggleFloatingAction(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      List<TempUserClass> employees =
+          returnUserProviderSingle().usersMain
+              .where(
+                (user) => user.userId == widget.employeeId,
+              )
+              .toList();
+      if (employees.isNotEmpty) {
+        setState(() {
+          employee = employees.first;
+        });
+      } else {
+        setState(() {
+          employee = TempUserClass(
+            password: 'password',
+            name: 'name',
+            email: 'email',
+            role: 'role',
+            departmentUuids: [],
+            access: [],
+          );
+        });
+        Navigator.of(context).pop();
+      }
+    });
   }
+
+  TempUserClass? employee;
 
   bool isLoading = false;
   bool showSuccess = false;
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -77,410 +104,505 @@ class _EmployeePageMobileState
                       ),
                       Builder(
                         builder: (context) {
-                          TempUserClass employee =
-                              returnUserProvider(
-                                context,
-                              ).usersMain.firstWhere(
-                                (user) =>
-                                    user.userId ==
-                                    widget.employeeId,
-                              );
-                          return Positioned(
-                            top: 90,
-                            child: DetailsPageContainer(
-                              editAction: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (editDialoge) {
-                                    return DialogTemplate(
-                                      theme: theme,
-                                      message:
-                                          'Select the action you want to perform.',
-                                      title:
-                                          'Select Action',
-                                      action: () {},
-                                      showBottomActionButtons:
-                                          false,
-                                      topRightWidget:
-                                          IconButton(
-                                            onPressed: () {
-                                              Navigator.of(
-                                                editDialoge,
-                                              ).pop();
-                                            },
-                                            icon: Icon(
-                                              Icons.clear,
+                          if (employee == null) {
+                            return Positioned(
+                              top: 100,
+                              child: SizedBox(
+                                height:
+                                    screenHeight(context) -
+                                    200,
+                                width: screenWidth(context),
+                                child: returnCompProvider(
+                                  context,
+                                ).showLoader(
+                                  message: 'Loading',
+                                ),
+                              ),
+                            );
+                          } else {
+                            return Positioned(
+                              top: 90,
+                              child: DetailsPageContainer(
+                                editAction: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (editDialoge) {
+                                      return DialogTemplate(
+                                        theme: theme,
+                                        message:
+                                            'Select the action you want to perform.',
+                                        title:
+                                            'Select Action',
+                                        action: () {},
+                                        showBottomActionButtons:
+                                            false,
+                                        topRightWidget:
+                                            IconButton(
+                                              onPressed: () {
+                                                Navigator.of(
+                                                  editDialoge,
+                                                ).pop();
+                                              },
+                                              icon: Icon(
+                                                Icons.clear,
+                                              ),
                                             ),
-                                          ),
-                                      widget: Column(
-                                        mainAxisSize:
-                                            MainAxisSize
-                                                .min,
-                                        spacing: 10,
-                                        children: [
-                                          SizedBox(
-                                            height: 10,
-                                          ),
-                                          MainButtonP(
-                                            themeProvider:
-                                                theme,
-                                            action: () {
-                                              Navigator.of(
-                                                editDialoge,
-                                              ).pop();
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (
-                                                    context,
-                                                  ) {
-                                                    return CustomizeRolePage(
-                                                      user:
-                                                          employee,
+                                        widget: Column(
+                                          mainAxisSize:
+                                              MainAxisSize
+                                                  .min,
+                                          spacing: 10,
+                                          children: [
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            MainButtonP(
+                                              themeProvider:
+                                                  theme,
+                                              action: () {
+                                                Navigator.of(
+                                                  editDialoge,
+                                                ).pop();
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (
+                                                      context,
+                                                    ) {
+                                                      return CustomizeRolePage(
+                                                        user:
+                                                            employee ??
+                                                            TempUserClass(
+                                                              password:
+                                                                  'password',
+                                                              name:
+                                                                  'name',
+                                                              email:
+                                                                  'email',
+                                                              role:
+                                                                  'role',
+                                                              departmentUuids:
+                                                                  [],
+                                                              access:
+                                                                  [],
+                                                            ),
+                                                      );
+                                                    },
+                                                  ),
+                                                );
+                                              },
+                                              text:
+                                                  'Customize Access',
+                                            ),
+                                            Visibility(
+                                              visible:
+                                                  returnShopProvider()
+                                                      .userShop()
+                                                      ?.manageDepartments ==
+                                                  true,
+                                              child: MainButtonTransparent(
+                                                themeProvider:
+                                                    theme,
+                                                constraints:
+                                                    BoxConstraints(),
+                                                text:
+                                                    'Manage Staff Departments',
+                                                action: () {
+                                                  List<
+                                                    String
+                                                  >
+                                                  list = [];
+                                                  setState(() {
+                                                    list.addAll(
+                                                      employee?.departmentUuids ??
+                                                          [],
                                                     );
-                                                  },
-                                                ),
-                                              );
-                                            },
-                                            text:
-                                                'Customize Access',
-                                          ),
-                                          Visibility(
-                                            visible:
-                                                returnShopProvider()
-                                                    .userShop()
-                                                    ?.manageDepartments ==
-                                                true,
-                                            child: MainButtonTransparent(
+                                                  });
+                                                  showDialog(
+                                                    context:
+                                                        context,
+                                                    builder: (
+                                                      firstContext,
+                                                    ) {
+                                                      return StatefulBuilder(
+                                                        builder: (
+                                                          secondContext,
+                                                          setState,
+                                                        ) {
+                                                          return DialogTemplate(
+                                                            theme:
+                                                                theme,
+                                                            message:
+                                                                'Select Department for this Staff',
+                                                            title:
+                                                                'Select Department',
+                                                            topRightWidget:
+                                                                returnDepartmentsDashboardProvider().isLoading
+                                                                    ? SizedBox(
+                                                                      height:
+                                                                          20,
+                                                                      width:
+                                                                          20,
+                                                                      child: CircularProgressIndicator(
+                                                                        color:
+                                                                            theme.lightModeColor.secColor200,
+                                                                        strokeWidth:
+                                                                            2.5,
+                                                                      ),
+                                                                    )
+                                                                    : null,
+                                                            action: () {
+                                                              if (!returnDepartmentsDashboardProvider().isLoading) {
+                                                                showDialog(
+                                                                  context:
+                                                                      context,
+                                                                  builder: (
+                                                                    confirmContext,
+                                                                  ) {
+                                                                    return ConfirmationAlert(
+                                                                      theme:
+                                                                          theme,
+                                                                      message:
+                                                                          'You are about to update this users Department(s). Are you sure you want to proceed?',
+                                                                      title:
+                                                                          'Update Departments',
+                                                                      action: () async {
+                                                                        Navigator.of(
+                                                                          confirmContext,
+                                                                        ).pop();
+                                                                        returnDepartmentsDashboardProvider().toggleIsLoading(
+                                                                          true,
+                                                                        );
+                                                                        setState(
+                                                                          () {},
+                                                                        );
+                                                                        await returnUserProviderSingle().updateStaffDepartments(
+                                                                          user:
+                                                                              employee ??
+                                                                              TempUserClass(
+                                                                                password:
+                                                                                    'password',
+                                                                                name:
+                                                                                    'name',
+                                                                                email:
+                                                                                    'email',
+                                                                                role:
+                                                                                    'role',
+                                                                                departmentUuids:
+                                                                                    [],
+                                                                                access:
+                                                                                    [],
+                                                                              ),
+                                                                          newDepartments:
+                                                                              list,
+                                                                        );
+                                                                        if (secondContext.mounted) {
+                                                                          Navigator.of(
+                                                                            secondContext,
+                                                                          ).pop();
+                                                                        }
+                                                                        if (firstContext.mounted) {
+                                                                          Navigator.of(
+                                                                            firstContext,
+                                                                          ).pop();
+                                                                        }
+                                                                      },
+                                                                    );
+                                                                  },
+                                                                );
+                                                              }
+                                                            },
+                                                            widget: SizedBox(
+                                                              height:
+                                                                  screenHeight(
+                                                                    context,
+                                                                  ) -
+                                                                  370,
+                                                              child: SingleChildScrollView(
+                                                                child: Padding(
+                                                                  padding: const EdgeInsets.symmetric(
+                                                                    horizontal:
+                                                                        20.0,
+                                                                    vertical:
+                                                                        15,
+                                                                  ),
+                                                                  child: Column(
+                                                                    spacing:
+                                                                        5,
+                                                                    children:
+                                                                        returnDepartmentProvider().departments
+                                                                            .map(
+                                                                              (
+                                                                                dept,
+                                                                              ) => Material(
+                                                                                color:
+                                                                                    Colors.transparent,
+                                                                                child: InkWell(
+                                                                                  onTap: () {
+                                                                                    setState(
+                                                                                      () {
+                                                                                        if (list.contains(
+                                                                                          dept.uuid,
+                                                                                        )) {
+                                                                                          list.remove(
+                                                                                            dept.uuid,
+                                                                                          );
+                                                                                        } else {
+                                                                                          list.add(
+                                                                                            dept.uuid,
+                                                                                          );
+                                                                                        }
+                                                                                      },
+                                                                                    );
+                                                                                  },
+                                                                                  child: Padding(
+                                                                                    padding: const EdgeInsets.symmetric(
+                                                                                      vertical:
+                                                                                          9.0,
+                                                                                      horizontal:
+                                                                                          12,
+                                                                                    ),
+                                                                                    child: Row(
+                                                                                      mainAxisAlignment:
+                                                                                          MainAxisAlignment.spaceBetween,
+                                                                                      children: [
+                                                                                        Text(
+                                                                                          style: TextStyle(
+                                                                                            fontSize:
+                                                                                                theme.mobileTexts.b3.fontSize,
+                                                                                            fontWeight:
+                                                                                                FontWeight.bold,
+                                                                                          ),
+                                                                                          dept.name,
+                                                                                        ),
+                                                                                        Container(
+                                                                                          padding: EdgeInsets.all(
+                                                                                            2,
+                                                                                          ),
+                                                                                          decoration: BoxDecoration(
+                                                                                            shape:
+                                                                                                BoxShape.circle,
+                                                                                            border: Border.all(
+                                                                                              color:
+                                                                                                  Colors.grey,
+                                                                                            ),
+                                                                                          ),
+                                                                                          child: Container(
+                                                                                            padding: EdgeInsets.all(
+                                                                                              5,
+                                                                                            ),
+                                                                                            decoration: BoxDecoration(
+                                                                                              shape:
+                                                                                                  BoxShape.circle,
+                                                                                              color:
+                                                                                                  list.contains(
+                                                                                                        dept.uuid,
+                                                                                                      )
+                                                                                                      ? theme.lightModeColor.prColor250
+                                                                                                      : Colors.transparent,
+                                                                                            ),
+                                                                                          ),
+                                                                                        ),
+                                                                                      ],
+                                                                                    ),
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                            .toList(),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          );
+                                                        },
+                                                      );
+                                                    },
+                                                  ).then((
+                                                    _,
+                                                  ) {
+                                                    returnDepartmentsDashboardProvider().toggleIsLoading(
+                                                      false,
+                                                    );
+                                                  });
+                                                },
+                                              ),
+                                            ),
+                                            MainButtonTransparent(
                                               themeProvider:
                                                   theme,
                                               constraints:
                                                   BoxConstraints(),
                                               text:
-                                                  'Manage Staff Departments',
+                                                  'Select New Role',
                                               action: () {
-                                                List<String>
-                                                list = [];
-                                                setState(() {
-                                                  list.addAll(
-                                                    employee.departmentUuids ??
-                                                        [],
-                                                  );
-                                                });
-                                                showDialog(
-                                                  context:
+                                                Navigator.of(
+                                                  editDialoge,
+                                                ).pop();
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (
                                                       context,
-                                                  builder: (
-                                                    firstContext,
-                                                  ) {
-                                                    return StatefulBuilder(
-                                                      builder: (
-                                                        secondContext,
-                                                        setState,
-                                                      ) {
-                                                        return DialogTemplate(
-                                                          theme:
-                                                              theme,
-                                                          message:
-                                                              'Select Department for this Staff',
-                                                          title:
-                                                              'Select Department',
-                                                          topRightWidget:
-                                                              returnDepartmentsDashboardProvider().isLoading
-                                                                  ? SizedBox(
-                                                                    height:
-                                                                        20,
-                                                                    width:
-                                                                        20,
-                                                                    child: CircularProgressIndicator(
-                                                                      color:
-                                                                          theme.lightModeColor.secColor200,
-                                                                      strokeWidth:
-                                                                          2.5,
-                                                                    ),
-                                                                  )
-                                                                  : null,
-                                                          action: () {
-                                                            if (!returnDepartmentsDashboardProvider().isLoading) {
-                                                              showDialog(
-                                                                context:
-                                                                    context,
-                                                                builder: (
-                                                                  confirmContext,
-                                                                ) {
-                                                                  return ConfirmationAlert(
-                                                                    theme:
-                                                                        theme,
-                                                                    message:
-                                                                        'You are about to update this users Department(s). Are you sure you want to proceed?',
-                                                                    title:
-                                                                        'Update Departments',
-                                                                    action: () async {
-                                                                      Navigator.of(
-                                                                        confirmContext,
-                                                                      ).pop();
-                                                                      returnDepartmentsDashboardProvider().toggleIsLoading(
-                                                                        true,
-                                                                      );
-                                                                      setState(
-                                                                        () {},
-                                                                      );
-                                                                      await returnUserProviderSingle().updateStaffDepartments(
-                                                                        user:
-                                                                            employee,
-                                                                        newDepartments:
-                                                                            list,
-                                                                      );
-                                                                      if (secondContext.mounted) {
-                                                                        Navigator.of(
-                                                                          secondContext,
-                                                                        ).pop();
-                                                                      }
-                                                                      if (firstContext.mounted) {
-                                                                        Navigator.of(
-                                                                          firstContext,
-                                                                        ).pop();
-                                                                      }
-                                                                    },
-                                                                  );
-                                                                },
-                                                              );
-                                                            }
-                                                          },
-                                                          widget: SizedBox(
-                                                            height:
-                                                                screenHeight(
-                                                                  context,
-                                                                ) -
-                                                                370,
-                                                            child: SingleChildScrollView(
-                                                              child: Padding(
-                                                                padding: const EdgeInsets.symmetric(
-                                                                  horizontal:
-                                                                      20.0,
-                                                                  vertical:
-                                                                      15,
-                                                                ),
-                                                                child: Column(
-                                                                  spacing:
-                                                                      5,
-                                                                  children:
-                                                                      returnDepartmentProvider().departments
-                                                                          .map(
-                                                                            (
-                                                                              dept,
-                                                                            ) => Material(
-                                                                              color:
-                                                                                  Colors.transparent,
-                                                                              child: InkWell(
-                                                                                onTap: () {
-                                                                                  setState(
-                                                                                    () {
-                                                                                      if (list.contains(
-                                                                                        dept.uuid,
-                                                                                      )) {
-                                                                                        list.remove(
-                                                                                          dept.uuid,
-                                                                                        );
-                                                                                      } else {
-                                                                                        list.add(
-                                                                                          dept.uuid,
-                                                                                        );
-                                                                                      }
-                                                                                    },
-                                                                                  );
-                                                                                },
-                                                                                child: Padding(
-                                                                                  padding: const EdgeInsets.symmetric(
-                                                                                    vertical:
-                                                                                        9.0,
-                                                                                    horizontal:
-                                                                                        12,
-                                                                                  ),
-                                                                                  child: Row(
-                                                                                    mainAxisAlignment:
-                                                                                        MainAxisAlignment.spaceBetween,
-                                                                                    children: [
-                                                                                      Text(
-                                                                                        style: TextStyle(
-                                                                                          fontSize:
-                                                                                              theme.mobileTexts.b3.fontSize,
-                                                                                          fontWeight:
-                                                                                              FontWeight.bold,
-                                                                                        ),
-                                                                                        dept.name,
-                                                                                      ),
-                                                                                      Container(
-                                                                                        padding: EdgeInsets.all(
-                                                                                          2,
-                                                                                        ),
-                                                                                        decoration: BoxDecoration(
-                                                                                          shape:
-                                                                                              BoxShape.circle,
-                                                                                          border: Border.all(
-                                                                                            color:
-                                                                                                Colors.grey,
-                                                                                          ),
-                                                                                        ),
-                                                                                        child: Container(
-                                                                                          padding: EdgeInsets.all(
-                                                                                            5,
-                                                                                          ),
-                                                                                          decoration: BoxDecoration(
-                                                                                            shape:
-                                                                                                BoxShape.circle,
-                                                                                            color:
-                                                                                                list.contains(
-                                                                                                      dept.uuid,
-                                                                                                    )
-                                                                                                    ? theme.lightModeColor.prColor250
-                                                                                                    : Colors.transparent,
-                                                                                          ),
-                                                                                        ),
-                                                                                      ),
-                                                                                    ],
-                                                                                  ),
-                                                                                ),
-                                                                              ),
-                                                                            ),
-                                                                          )
-                                                                          .toList(),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        );
-                                                      },
-                                                    );
-                                                  },
-                                                ).then((_) {
-                                                  returnDepartmentsDashboardProvider()
-                                                      .toggleIsLoading(
-                                                        false,
+                                                    ) {
+                                                      return AddEmployeePage(
+                                                        employee:
+                                                            employee,
                                                       );
+                                                    },
+                                                  ),
+                                                ).then((_) {
+                                                  WidgetsBinding.instance.addPostFrameCallback((
+                                                    _,
+                                                  ) {
+                                                    List<
+                                                      TempUserClass
+                                                    >
+                                                    employees =
+                                                        returnUserProviderSingle().usersMain
+                                                            .where(
+                                                              (
+                                                                user,
+                                                              ) =>
+                                                                  user.userId ==
+                                                                  widget.employeeId,
+                                                            )
+                                                            .toList();
+                                                    if (employees
+                                                        .isNotEmpty) {
+                                                      setState(() {
+                                                        employee =
+                                                            employees.first;
+                                                      });
+                                                    } else {
+                                                      setState(() {
+                                                        employee = TempUserClass(
+                                                          password:
+                                                              'password',
+                                                          name:
+                                                              'name',
+                                                          email:
+                                                              'email',
+                                                          role:
+                                                              'role',
+                                                          departmentUuids:
+                                                              [],
+                                                          access:
+                                                              [],
+                                                        );
+                                                      });
+                                                      Navigator.of(
+                                                        context,
+                                                      ).pop();
+                                                    }
+                                                  });
                                                 });
                                               },
                                             ),
-                                          ),
-                                          MainButtonTransparent(
-                                            themeProvider:
-                                                theme,
-                                            constraints:
-                                                BoxConstraints(),
-                                            text:
-                                                'Select New Role',
-                                            action: () {
-                                              Navigator.of(
-                                                editDialoge,
-                                              ).pop();
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (
-                                                    context,
-                                                  ) {
-                                                    return AddEmployeePage(
-                                                      employee:
-                                                          employee,
-                                                    );
-                                                  },
-                                                ),
-                                              ).then((_) {
-                                                setState(
-                                                  () {},
-                                                );
-                                              });
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
-                              deleteAction: () async {
-                                var isOnline =
-                                    await returnConnectivityProvider(
-                                      context,
-                                      listen: false,
-                                    ).isOnline();
-                                if (!isOnline) {
-                                  showDialog(
-                                    // ignore: use_build_context_synchronously
-                                    context: context,
-                                    builder: (context) {
-                                      return InfoAlert(
-                                        theme: returnTheme(
-                                          context,
-                                          listen: false,
+                                          ],
                                         ),
-                                        message:
-                                            'Internet connection is not detected, therefore, You cannot delete a Staff.',
-                                        title:
-                                            'No Internet Connection',
                                       );
                                     },
                                   );
-                                  return;
-                                }
-                                final safeContext = context;
-                                final shopProvider =
-                                    returnShopProvider();
-                                showDialog(
-                                  context: safeContext,
-                                  builder: (context) {
-                                    return ConfirmationAlert(
-                                      theme: theme,
-                                      message:
-                                          'You are about to delete your staff, are you sure you want to proceed?',
-                                      title:
-                                          'Are you sure?',
-                                      action: () async {
-                                        if (safeContext
-                                            .mounted) {
-                                          Navigator.of(
-                                            safeContext,
-                                          ).pop();
-                                        }
-                                        setState(() {
-                                          isLoading = true;
-                                        });
-
-                                        await shopProvider
-                                            .removeEmployeeFromShop(
-                                              context:
-                                                  context,
-                                              employeeIdToRemove:
-                                                  widget
-                                                      .employeeId,
-                                            );
-                                        setState(() {
-                                          isLoading = false;
-                                          showSuccess =
-                                              true;
-                                        });
-
-                                        await Future.delayed(
-                                          Duration(
-                                            seconds: 2,
-                                          ),
+                                },
+                                deleteAction: () async {
+                                  var isOnline =
+                                      await returnConnectivityProvider(
+                                        context,
+                                        listen: false,
+                                      ).isOnline();
+                                  if (!isOnline) {
+                                    showDialog(
+                                      // ignore: use_build_context_synchronously
+                                      context: context,
+                                      builder: (context) {
+                                        return InfoAlert(
+                                          theme:
+                                              returnTheme(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ),
+                                          message:
+                                              'Internet connection is not detected, therefore, You cannot delete a Staff.',
+                                          title:
+                                              'No Internet Connection',
                                         );
-
-                                        if (safeContext
-                                            .mounted) {
-                                          Navigator.of(
-                                            safeContext,
-                                          ).pop();
-                                        }
                                       },
                                     );
-                                  },
-                                );
-                              },
-                              theme: theme,
-                              employee: employee,
-                            ),
-                          );
+                                    return;
+                                  }
+                                  final safeContext =
+                                      context;
+                                  final shopProvider =
+                                      returnShopProvider();
+                                  showDialog(
+                                    context: safeContext,
+                                    builder: (context) {
+                                      return ConfirmationAlert(
+                                        theme: theme,
+                                        message:
+                                            'You are about to delete your staff, are you sure you want to proceed?',
+                                        title:
+                                            'Are you sure?',
+                                        action: () async {
+                                          if (safeContext
+                                              .mounted) {
+                                            Navigator.of(
+                                              safeContext,
+                                            ).pop();
+                                          }
+                                          setState(() {
+                                            isLoading =
+                                                true;
+                                          });
+
+                                          await shopProvider
+                                              .removeEmployeeFromShop(
+                                                context:
+                                                    context,
+                                                employeeIdToRemove:
+                                                    widget
+                                                        .employeeId,
+                                              );
+                                          setState(() {
+                                            isLoading =
+                                                false;
+                                            showSuccess =
+                                                true;
+                                          });
+
+                                          await Future.delayed(
+                                            Duration(
+                                              seconds: 2,
+                                            ),
+                                          );
+
+                                          if (safeContext
+                                              .mounted) {
+                                            Navigator.of(
+                                              safeContext,
+                                            ).pop();
+                                          }
+                                        },
+                                      );
+                                    },
+                                  );
+                                },
+                                theme: theme,
+                                employee:
+                                    employee ??
+                                    TempUserClass(
+                                      password: 'password',
+                                      name: 'name',
+                                      email: 'email',
+                                      role: 'role',
+                                      departmentUuids: [],
+                                      access: [],
+                                    ),
+                              ),
+                            );
+                          }
                         },
                       ),
                     ],

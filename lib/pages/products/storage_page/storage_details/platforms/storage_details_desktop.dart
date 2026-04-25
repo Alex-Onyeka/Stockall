@@ -179,7 +179,12 @@ class _StorageDetailsDesktopState
                                                   isMoney:
                                                       false,
                                                   text:
-                                                      'Group Quantity',
+                                                      product.groupUnit ==
+                                                                  null ||
+                                                              product.groupUnit ==
+                                                                  'Others'
+                                                          ? 'Group Quantity'
+                                                          : 'Quantity of ${product.groupUnit}',
                                                   price:
                                                       (product.quantity ??
                                                           0) /
@@ -210,7 +215,12 @@ class _StorageDetailsDesktopState
                                                 isMoney:
                                                     false,
                                                 text:
-                                                    'Unit Quantity',
+                                                    product.unit ==
+                                                                null ||
+                                                            product.unit ==
+                                                                'Others'
+                                                        ? 'Unit Quantity'
+                                                        : 'Quantity of ${product.unit ?? 'Others'}',
                                                 price:
                                                     product
                                                         .quantity ??
