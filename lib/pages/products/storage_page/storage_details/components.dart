@@ -80,6 +80,19 @@ class _StorageQuantityUpdateWidgetState
   String? productUuid;
   String? staffUuid;
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (returnShopProvider().userShop()?.useGroupUnit ==
+          true) {
+        returnStorageProductProvider().toggleGroupUnit(
+          value: true,
+        );
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     return Column(

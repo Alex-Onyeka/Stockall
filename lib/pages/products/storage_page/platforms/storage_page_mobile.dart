@@ -10,6 +10,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/platforms/product_details_desktop.dart';
 import 'package:stockall/pages/products/storage_page/components/summary_table_heading_bar.dart';
 import 'package:stockall/pages/products/storage_page/components/table_row_widget.dart';
+import 'package:stockall/pages/products/storage_page/platforms/storage_page_desktop.dart';
 import 'package:stockall/pages/products/storage_page/storage_details/storage_details_page.dart';
 import 'package:stockall/pages/report/events_log/platforms/events_log_mobile.dart';
 
@@ -24,6 +25,7 @@ class StoragePageMobile extends StatefulWidget {
 class _StoragePageMobileState
     extends State<StoragePageMobile> {
   int sortIndex = 1;
+  bool viewUpdateSummary = false;
 
   Future<void> getProducts() async {
     await RefreshFunctions(
@@ -144,6 +146,8 @@ class _StoragePageMobileState
                 setState(() {
                   sortIndex = 1;
                 });
+                returnInventoryUpdatesProvider()
+                    .clearDate();
               } else {
                 Navigator.of(context).pop();
               }
@@ -172,6 +176,8 @@ class _StoragePageMobileState
                           setState(() {
                             sortIndex = 1;
                           });
+                          returnInventoryUpdatesProvider()
+                              .clearDate();
                         },
                         child: Text(
                           style: TextStyle(
@@ -198,6 +204,8 @@ class _StoragePageMobileState
                           setState(() {
                             sortIndex = 2;
                           });
+                          returnInventoryUpdatesProvider()
+                              .clearDate();
                         },
                         child: Text(
                           style: TextStyle(
@@ -219,6 +227,8 @@ class _StoragePageMobileState
                           setState(() {
                             sortIndex = 3;
                           });
+                          returnInventoryUpdatesProvider()
+                              .clearDate();
                         },
                         child: Text(
                           style: TextStyle(
@@ -248,13 +258,7 @@ class _StoragePageMobileState
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b4
-                                      .fontSize,
-                            ),
+                            style: TextStyle(fontSize: 8),
                             'View:',
                           ),
                           Text(
@@ -262,7 +266,7 @@ class _StoragePageMobileState
                               fontSize:
                                   theme
                                       .mobileTexts
-                                      .b2
+                                      .b4
                                       .fontSize,
                               fontWeight: FontWeight.bold,
                             ),
@@ -286,330 +290,300 @@ class _StoragePageMobileState
               Column(
                 children: [
                   Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10.0,
-                      ),
-                      child: Builder(
-                        builder: (context) {
-                          if (sortIndex == 1) {
-                            return Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(
-                                    horizontal: 15.0,
-                                  ),
-                              child: SizedBox(
-                                width:
-                                    screenWidth(context) -
-                                    40,
-                                child: RefreshIndicator(
-                                  onRefresh: () {
-                                    return getProducts();
-                                  },
-                                  backgroundColor:
-                                      Colors.white,
-                                  color:
-                                      theme
-                                          .lightModeColor
-                                          .prColor300,
-                                  displacement: 10,
-                                  child: ListView(
-                                    children: [
-                                      SummaryTableHeadingBar(
-                                        isHeading: true,
-                                        theme: theme,
-                                        product: products,
+                    child: Stack(
+                      children: [
+                        Padding(
+                          padding:
+                              const EdgeInsets.symmetric(
+                                horizontal: 10.0,
+                              ),
+                          child: Builder(
+                            builder: (context) {
+                              if (sortIndex == 1) {
+                                return Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(
+                                        horizontal: 15.0,
                                       ),
-                                      Builder(
-                                        builder: (context) {
-                                          if (products
-                                              .isEmpty) {
-                                            return Padding(
-                                              padding:
-                                                  const EdgeInsets.only(
-                                                    top:
-                                                        100.0,
+                                  child: SizedBox(
+                                    width:
+                                        screenWidth(
+                                          context,
+                                        ) -
+                                        40,
+                                    child: RefreshIndicator(
+                                      onRefresh: () {
+                                        return getProducts();
+                                      },
+                                      backgroundColor:
+                                          Colors.white,
+                                      color:
+                                          theme
+                                              .lightModeColor
+                                              .prColor300,
+                                      displacement: 10,
+                                      child: ListView(
+                                        children: [
+                                          SummaryTableHeadingBar(
+                                            isHeading: true,
+                                            theme: theme,
+                                            product:
+                                                products,
+                                          ),
+                                          Builder(
+                                            builder: (
+                                              context,
+                                            ) {
+                                              if (products
+                                                  .isEmpty) {
+                                                return Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                        top:
+                                                            100.0,
+                                                      ),
+                                                  child: EmptyWidgetDisplayOnly(
+                                                    title:
+                                                        'Empty List',
+                                                    subText:
+                                                        'No Item has been recorded yet',
+                                                    theme:
+                                                        theme,
+                                                    height:
+                                                        35,
+                                                    icon:
+                                                        Icons.clear,
                                                   ),
-                                              child: EmptyWidgetDisplayOnly(
-                                                title:
-                                                    'Empty List',
-                                                subText:
-                                                    'No Item has been recorded yet',
-                                                theme:
-                                                    theme,
-                                                height: 35,
-                                                icon:
-                                                    Icons
-                                                        .clear,
-                                              ),
-                                            );
-                                          } else {
-                                            return RefreshIndicator(
-                                              onRefresh: () {
-                                                return getProducts();
-                                              },
-                                              backgroundColor:
-                                                  Colors
-                                                      .white,
-                                              color:
-                                                  theme
-                                                      .lightModeColor
-                                                      .prColor300,
-                                              displacement:
-                                                  10,
-                                              child: SingleChildScrollView(
-                                                primary:
-                                                    true,
-                                                child: Column(
-                                                  children: [
-                                                    ListView.builder(
-                                                      shrinkWrap:
-                                                          true,
-                                                      itemCount:
-                                                          products.length,
-                                                      physics:
-                                                          NeverScrollableScrollPhysics(),
-
-                                                      itemBuilder: (
-                                                        context,
-                                                        index,
-                                                      ) {
-                                                        var product =
-                                                            products[index];
-                                                        return TableRowRecordWidget(
-                                                          theme:
-                                                              theme,
-                                                          product:
-                                                              product,
-                                                        );
+                                                );
+                                              } else {
+                                                return RefreshIndicator(
+                                                  onRefresh:
+                                                      () {
+                                                        return getProducts();
                                                       },
+                                                  backgroundColor:
+                                                      Colors
+                                                          .white,
+                                                  color:
+                                                      theme
+                                                          .lightModeColor
+                                                          .prColor300,
+                                                  displacement:
+                                                      10,
+                                                  child: SingleChildScrollView(
+                                                    primary:
+                                                        true,
+                                                    child: Column(
+                                                      children: [
+                                                        ListView.builder(
+                                                          shrinkWrap:
+                                                              true,
+                                                          itemCount:
+                                                              products.length,
+                                                          physics:
+                                                              NeverScrollableScrollPhysics(),
+
+                                                          itemBuilder: (
+                                                            context,
+                                                            index,
+                                                          ) {
+                                                            var product =
+                                                                products[index];
+                                                            return TableRowRecordWidget(
+                                                              theme:
+                                                                  theme,
+                                                              product:
+                                                                  product,
+                                                            );
+                                                          },
+                                                        ),
+                                                        // SummaryTableHeadingBar(
+                                                        //   isHeading:
+                                                        //       false,
+                                                        //   theme:
+                                                        //       theme,
+                                                        //   product:
+                                                        //       products,
+                                                        // ),
+                                                        SizedBox(
+                                                          height:
+                                                              20,
+                                                        ),
+                                                      ],
                                                     ),
-                                                    // SummaryTableHeadingBar(
-                                                    //   isHeading:
-                                                    //       false,
-                                                    //   theme:
-                                                    //       theme,
-                                                    //   product:
-                                                    //       products,
-                                                    // ),
-                                                    SizedBox(
-                                                      height:
-                                                          20,
+                                                  ),
+                                                );
+                                              }
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              } else if (sortIndex == 2) {
+                                return SizedBox(
+                                  child: Column(
+                                    children: [
+                                      Visibility(
+                                        visible:
+                                            !isStoreKeeper(),
+                                        child: Column(
+                                          children: [
+                                            Container(
+                                              width:
+                                                  double
+                                                      .infinity,
+                                              height: 1.5,
+                                              color:
+                                                  Colors
+                                                      .grey
+                                                      .shade200,
+                                            ),
+                                            SizedBox(
+                                              height: 15,
+                                            ),
+                                            Column(
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .center,
+                                                  children: [
+                                                    Text(
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            theme.mobileTexts.b2.fontSize,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                      'FINANCE',
                                                     ),
                                                   ],
                                                 ),
-                                              ),
-                                            );
-                                          }
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          } else if (sortIndex == 2) {
-                            return SizedBox(
-                              child: Column(
-                                children: [
-                                  Visibility(
-                                    visible:
-                                        !isStoreKeeper(),
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          width:
-                                              double
-                                                  .infinity,
-                                          height: 1.5,
-                                          color:
-                                              Colors
-                                                  .grey
-                                                  .shade200,
-                                        ),
-                                        SizedBox(
-                                          height: 15,
-                                        ),
-                                        Column(
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .center,
-                                              children: [
-                                                Text(
-                                                  style: TextStyle(
-                                                    fontSize:
-                                                        theme.mobileTexts.b2.fontSize,
-                                                    fontWeight:
-                                                        FontWeight.bold,
-                                                  ),
-                                                  'FINANCE',
+                                                SizedBox(
+                                                  height: 8,
+                                                ),
+                                                Column(
+                                                  spacing:
+                                                      10,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .center,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        Expanded(
+                                                          child: TabContainer(
+                                                            priceTextSize:
+                                                                theme.mobileTexts.h4.fontSize,
+                                                            isMoney:
+                                                                true,
+                                                            text:
+                                                                'Total Cost Value',
+                                                            price:
+                                                                returnData(
+                                                                  context:
+                                                                      context,
+                                                                ).getTotalCostPrice(),
+                                                            theme:
+                                                                theme,
+                                                            backGround: const Color.fromARGB(
+                                                              11,
+                                                              15,
+                                                              4,
+                                                              114,
+                                                            ),
+                                                            border: const Color.fromARGB(
+                                                              32,
+                                                              45,
+                                                              3,
+                                                              255,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Row(
+                                                      children: [
+                                                        Expanded(
+                                                          child: TabContainer(
+                                                            priceTextSize:
+                                                                theme.mobileTexts.h4.fontSize,
+                                                            isMoney:
+                                                                true,
+                                                            text:
+                                                                'Total Sales Value',
+                                                            price:
+                                                                returnData(
+                                                                  context:
+                                                                      context,
+                                                                ).getTotalSellingPrice(),
+                                                            theme:
+                                                                theme,
+                                                            backGround: const Color.fromARGB(
+                                                              18,
+                                                              2,
+                                                              163,
+                                                              31,
+                                                            ),
+                                                            border: const Color.fromARGB(
+                                                              63,
+                                                              2,
+                                                              163,
+                                                              31,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
                                                 ),
                                               ],
                                             ),
                                             SizedBox(
-                                              height: 8,
-                                            ),
-                                            Column(
-                                              spacing: 10,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .center,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: TabContainer(
-                                                        priceTextSize:
-                                                            theme.mobileTexts.h4.fontSize,
-                                                        isMoney:
-                                                            true,
-                                                        text:
-                                                            'Total Cost Value',
-                                                        price:
-                                                            returnData(
-                                                              context:
-                                                                  context,
-                                                            ).getTotalCostPrice(),
-                                                        theme:
-                                                            theme,
-                                                        backGround: const Color.fromARGB(
-                                                          11,
-                                                          15,
-                                                          4,
-                                                          114,
-                                                        ),
-                                                        border: const Color.fromARGB(
-                                                          32,
-                                                          45,
-                                                          3,
-                                                          255,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: TabContainer(
-                                                        priceTextSize:
-                                                            theme.mobileTexts.h4.fontSize,
-                                                        isMoney:
-                                                            true,
-                                                        text:
-                                                            'Total Sales Value',
-                                                        price:
-                                                            returnData(
-                                                              context:
-                                                                  context,
-                                                            ).getTotalSellingPrice(),
-                                                        theme:
-                                                            theme,
-                                                        backGround: const Color.fromARGB(
-                                                          18,
-                                                          2,
-                                                          163,
-                                                          31,
-                                                        ),
-                                                        border: const Color.fromARGB(
-                                                          63,
-                                                          2,
-                                                          163,
-                                                          31,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
+                                              height: 20,
                                             ),
                                           ],
                                         ),
-                                        SizedBox(
-                                          height: 20,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Container(
-                                    width: double.infinity,
-                                    height: 1.5,
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade200,
-                                  ),
-                                  SizedBox(height: 20),
-                                  Column(
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment
-                                                .center,
-                                        children: [
-                                          Text(
-                                            style: TextStyle(
-                                              fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .b2
-                                                      .fontSize,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
-                                            ),
-                                            'ITEMS',
-                                          ),
-                                        ],
                                       ),
-                                      SizedBox(height: 8),
-                                      Row(
-                                        spacing: 0,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment
-                                                .center,
-                                        children: [
-                                          Expanded(
-                                            child: TabContainer(
-                                              isMoney:
-                                                  false,
-                                              text:
-                                                  'Total Items',
-                                              price:
-                                                  returnData(
-                                                        context:
-                                                            context,
-                                                      )
-                                                      .productList()
-                                                      .length
-                                                      .toDouble(),
-                                              theme: theme,
-                                              backGround:
-                                                  const Color.fromARGB(
-                                                    11,
-                                                    15,
-                                                    4,
-                                                    114,
-                                                  ),
-                                              border:
-                                                  const Color.fromARGB(
-                                                    32,
-                                                    45,
-                                                    3,
-                                                    255,
-                                                  ),
-                                            ),
-                                          ),
-                                        ],
+                                      Container(
+                                        width:
+                                            double.infinity,
+                                        height: 1.5,
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade200,
                                       ),
-                                      SizedBox(height: 10),
+                                      SizedBox(height: 20),
                                       Column(
-                                        spacing: 10,
                                         children: [
                                           Row(
-                                            spacing: 10,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .center,
+                                            children: [
+                                              Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      theme
+                                                          .mobileTexts
+                                                          .b2
+                                                          .fontSize,
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                ),
+                                                'ITEMS',
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: 8,
+                                          ),
+                                          Row(
+                                            spacing: 0,
                                             mainAxisAlignment:
                                                 MainAxisAlignment
                                                     .center,
@@ -619,121 +593,159 @@ class _StoragePageMobileState
                                                   isMoney:
                                                       false,
                                                   text:
-                                                      'In Stock',
+                                                      'Total Items',
                                                   price:
                                                       returnData(
-                                                            context:
-                                                                context,
-                                                          )
-                                                          .productList()
-                                                          .where(
-                                                            (
-                                                              item,
-                                                            ) =>
-                                                                item.quantity !=
-                                                                    null &&
-                                                                item.quantity !=
-                                                                    0,
-                                                          )
-                                                          .length
-                                                          .toDouble(),
+                                                        context:
+                                                            context,
+                                                      ).productList().length.toDouble(),
                                                   theme:
                                                       theme,
                                                   backGround:
                                                       const Color.fromARGB(
-                                                        18,
-                                                        2,
-                                                        163,
-                                                        31,
+                                                        11,
+                                                        15,
+                                                        4,
+                                                        114,
                                                       ),
                                                   border:
                                                       const Color.fromARGB(
-                                                        63,
-                                                        2,
-                                                        163,
-                                                        31,
-                                                      ),
-                                                ),
-                                              ),
-                                              Expanded(
-                                                child: TabContainer(
-                                                  isMoney:
-                                                      false,
-                                                  text:
-                                                      'Out Of Stock',
-                                                  price:
-                                                      returnData(
-                                                            context:
-                                                                context,
-                                                          )
-                                                          .productList()
-                                                          .where(
-                                                            (
-                                                              item,
-                                                            ) =>
-                                                                item.quantity !=
-                                                                    null &&
-                                                                item.quantity ==
-                                                                    0,
-                                                          )
-                                                          .length
-                                                          .toDouble(),
-                                                  theme:
-                                                      theme,
-                                                  backGround:
-                                                      const Color.fromARGB(
-                                                        25,
-                                                        235,
-                                                        150,
+                                                        32,
+                                                        45,
                                                         3,
-                                                      ),
-                                                  border:
-                                                      const Color.fromARGB(
-                                                        74,
-                                                        232,
-                                                        148,
-                                                        3,
+                                                        255,
                                                       ),
                                                 ),
                                               ),
                                             ],
                                           ),
-                                          Row(
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Column(
+                                            spacing: 10,
                                             children: [
-                                              Expanded(
-                                                child: TabContainer(
-                                                  isMoney:
-                                                      false,
-                                                  text:
-                                                      'Un-Managed Items',
-                                                  price:
-                                                      returnData(
-                                                            context:
-                                                                context,
-                                                          )
-                                                          .productList()
-                                                          .where(
-                                                            (
-                                                              item,
-                                                            ) =>
-                                                                !item.isManaged,
-                                                          )
-                                                          .length
-                                                          .toDouble(),
-                                                  theme:
-                                                      theme,
-                                                  backGround:
-                                                      const Color.fromARGB(
+                                              Row(
+                                                spacing: 10,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .center,
+                                                children: [
+                                                  Expanded(
+                                                    child: TabContainer(
+                                                      isMoney:
+                                                          false,
+                                                      text:
+                                                          'In Stock',
+                                                      price:
+                                                          returnData(
+                                                                context:
+                                                                    context,
+                                                              )
+                                                              .productList()
+                                                              .where(
+                                                                (
+                                                                  item,
+                                                                ) =>
+                                                                    item.quantity !=
+                                                                        null &&
+                                                                    item.quantity !=
+                                                                        0,
+                                                              )
+                                                              .length
+                                                              .toDouble(),
+                                                      theme:
+                                                          theme,
+                                                      backGround: const Color.fromARGB(
+                                                        18,
+                                                        2,
+                                                        163,
+                                                        31,
+                                                      ),
+                                                      border: const Color.fromARGB(
+                                                        63,
+                                                        2,
+                                                        163,
+                                                        31,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Expanded(
+                                                    child: TabContainer(
+                                                      isMoney:
+                                                          false,
+                                                      text:
+                                                          'Out Of Stock',
+                                                      price:
+                                                          returnData(
+                                                                context:
+                                                                    context,
+                                                              )
+                                                              .productList()
+                                                              .where(
+                                                                (
+                                                                  item,
+                                                                ) =>
+                                                                    item.quantity !=
+                                                                        null &&
+                                                                    item.quantity ==
+                                                                        0,
+                                                              )
+                                                              .length
+                                                              .toDouble(),
+                                                      theme:
+                                                          theme,
+                                                      backGround: const Color.fromARGB(
+                                                        25,
+                                                        235,
+                                                        150,
+                                                        3,
+                                                      ),
+                                                      border: const Color.fromARGB(
+                                                        74,
+                                                        232,
+                                                        148,
+                                                        3,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: TabContainer(
+                                                      isMoney:
+                                                          false,
+                                                      text:
+                                                          'Un-Managed Items',
+                                                      price:
+                                                          returnData(
+                                                                context:
+                                                                    context,
+                                                              )
+                                                              .productList()
+                                                              .where(
+                                                                (
+                                                                  item,
+                                                                ) =>
+                                                                    !item.isManaged,
+                                                              )
+                                                              .length
+                                                              .toDouble(),
+                                                      theme:
+                                                          theme,
+                                                      backGround: const Color.fromARGB(
                                                         141,
                                                         245,
                                                         245,
                                                         245,
                                                       ),
-                                                  border:
-                                                      Colors
-                                                          .grey
-                                                          .shade300,
-                                                ),
+                                                      border:
+                                                          Colors.grey.shade300,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ],
                                           ),
@@ -741,195 +753,400 @@ class _StoragePageMobileState
                                       ),
                                     ],
                                   ),
-                                ],
-                              ),
-                            );
-                          } else {
-                            return SizedBox(
-                              child: Column(
-                                children: [
-                                  Container(
-                                    width: double.infinity,
-                                    height: 1.5,
-                                    color:
-                                        Colors
-                                            .grey
-                                            .shade200,
-                                  ),
-                                  SizedBox(height: 15),
-                                  Builder(
-                                    builder: (context) {
-                                      if (returnInventoryUpdatesProvider(
-                                            context:
-                                                context,
-                                          )
-                                          .returnInventoryUpdates()
-                                          .isEmpty) {
-                                        return Padding(
-                                          padding:
-                                              EdgeInsetsGeometry.only(
-                                                top: 100,
+                                );
+                              } else {
+                                return SizedBox(
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        width:
+                                            double.infinity,
+                                        height: 1.5,
+                                        color:
+                                            Colors
+                                                .grey
+                                                .shade200,
+                                      ),
+                                      SizedBox(height: 15),
+                                      Builder(
+                                        builder: (context) {
+                                          if (returnInventoryUpdatesProvider(
+                                                context:
+                                                    context,
+                                              )
+                                              .returnInventoryUpdates()
+                                              .where(
+                                                (update) =>
+                                                    update.itemName?.toLowerCase().contains(
+                                                          searchController.text.toLowerCase(),
+                                                        ) ==
+                                                        true ||
+                                                    update
+                                                        .title
+                                                        .toLowerCase()
+                                                        .contains(
+                                                          searchController.text.toLowerCase(),
+                                                        ),
+                                              )
+                                              .isEmpty) {
+                                            return Padding(
+                                              padding:
+                                                  EdgeInsetsGeometry.only(
+                                                    top:
+                                                        100,
+                                                  ),
+                                              child: EmptyWidgetDisplayOnly(
+                                                title:
+                                                    'No History Recorded',
+                                                subText:
+                                                    'No History Has been recorded for this day.',
+                                                theme:
+                                                    theme,
+                                                height: 30,
+                                                altIcon:
+                                                    Icons
+                                                        .refresh,
+                                                altActionText:
+                                                    'Refresh History',
+                                                icon:
+                                                    Icons
+                                                        .clear,
+                                                altAction:
+                                                    () async {
+                                                      await getProducts();
+                                                    },
                                               ),
-                                          child: EmptyWidgetDisplayOnly(
-                                            title:
-                                                'No History Recorded',
-                                            subText:
-                                                'No History Has been recorded for this day.',
-                                            theme: theme,
-                                            height: 30,
-                                            altIcon:
-                                                Icons
-                                                    .refresh,
-                                            altActionText:
-                                                'Refresh History',
-                                            icon:
-                                                Icons.clear,
-                                            altAction:
-                                                () async {
-                                                  await getProducts();
-                                                },
-                                          ),
-                                        );
-                                      }
-                                      return Expanded(
-                                        child: ListView(
-                                          shrinkWrap: true,
-                                          children:
-                                              returnInventoryUpdatesProvider(
-                                                    context:
-                                                        context,
-                                                  )
-                                                  .returnInventoryUpdates()
-                                                  .map(
-                                                    (
-                                                      update,
-                                                    ) => InventoryUpdateWidgetMobile(
-                                                      update:
+                                            );
+                                          }
+                                          return Expanded(
+                                            child: ListView(
+                                              shrinkWrap:
+                                                  true,
+                                              children:
+                                                  returnInventoryUpdatesProvider(
+                                                        context:
+                                                            context,
+                                                      )
+                                                      .returnInventoryUpdates()
+                                                      .where(
+                                                        (
                                                           update,
-                                                    ),
-                                                  )
-                                                  .toList(),
+                                                        ) =>
+                                                            update.itemName?.toLowerCase().contains(
+                                                                  searchController.text.toLowerCase(),
+                                                                ) ==
+                                                                true ||
+                                                            update.title.toLowerCase().contains(
+                                                              searchController.text.toLowerCase(),
+                                                            ),
+                                                      )
+                                                      .map(
+                                                        (
+                                                          update,
+                                                        ) => InventoryUpdateWidgetMobile(
+                                                          update:
+                                                              update,
+                                                        ),
+                                                      )
+                                                      .toList(),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
+                            },
+                          ),
+                        ),
+                        Visibility(
+                          visible: viewUpdateSummary,
+                          child: Align(
+                            alignment: AlignmentGeometry.xy(
+                              0,
+                              1,
+                            ),
+                            child: Container(
+                              margin: EdgeInsets.symmetric(
+                                horizontal: 15,
+                              ),
+                              width: double.infinity,
+                              padding: EdgeInsets.fromLTRB(
+                                20,
+                                10,
+                                20,
+                                20,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      5,
+                                    ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color:
+                                        const Color.fromARGB(
+                                          30,
+                                          0,
+                                          0,
+                                          0,
                                         ),
-                                      );
-                                    },
+                                    offset: Offset(0, 1),
+                                    blurRadius: 10,
                                   ),
                                 ],
                               ),
-                            );
-                          }
-                        },
-                      ),
+                              child: Column(
+                                mainAxisSize:
+                                    MainAxisSize.min,
+                                spacing: 5,
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .center,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .spaceBetween,
+                                    children: [
+                                      Opacity(
+                                        opacity: 0,
+                                        child: IconButton(
+                                          onPressed: () {},
+                                          icon: Icon(
+                                            Icons.clear,
+                                          ),
+                                        ),
+                                      ),
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b1
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        'Update Summary',
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            viewUpdateSummary =
+                                                false;
+                                          });
+                                        },
+                                        icon: Icon(
+                                          size: 20,
+                                          Icons.clear,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Divider(),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .center,
+                                    spacing: 5,
+                                    children: [
+                                      Expanded(
+                                        child: Column(
+                                          spacing: 1,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment
+                                                  .center,
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize: 8,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              'Total Stock In:',
+                                            ),
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b3
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              returnTotalStockIn(
+                                                updates:
+                                                    returnInventoryUpdatesProvider(
+                                                          context:
+                                                              context,
+                                                        )
+                                                        .returnInventoryUpdates()
+                                                        .where(
+                                                          (
+                                                            update,
+                                                          ) =>
+                                                              update.itemName?.toLowerCase().contains(
+                                                                    searchController.text.toLowerCase(),
+                                                                  ) ==
+                                                                  true ||
+                                                              update.title.toLowerCase().contains(
+                                                                searchController.text.toLowerCase(),
+                                                              ),
+                                                        )
+                                                        .toList(),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Column(
+                                          spacing: 1,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment
+                                                  .center,
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize: 8,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              'Total Stock Out:',
+                                            ),
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b3
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              returnTotalStockOut(
+                                                updates:
+                                                    returnInventoryUpdatesProvider(
+                                                          context:
+                                                              context,
+                                                        )
+                                                        .returnInventoryUpdates()
+                                                        .where(
+                                                          (
+                                                            update,
+                                                          ) =>
+                                                              update.itemName?.toLowerCase().contains(
+                                                                    searchController.text.toLowerCase(),
+                                                                  ) ==
+                                                                  true ||
+                                                              update.title.toLowerCase().contains(
+                                                                searchController.text.toLowerCase(),
+                                                              ),
+                                                        )
+                                                        .toList(),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Column(
+                                          spacing: 1,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment
+                                                  .center,
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize: 8,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              'Net:',
+                                            ),
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b3
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              returnNet(
+                                                updates:
+                                                    returnInventoryUpdatesProvider(
+                                                          context:
+                                                              context,
+                                                        )
+                                                        .returnInventoryUpdates()
+                                                        .where(
+                                                          (
+                                                            update,
+                                                          ) =>
+                                                              update.itemName?.toLowerCase().contains(
+                                                                    searchController.text.toLowerCase(),
+                                                                  ) ==
+                                                                  true ||
+                                                              update.title.toLowerCase().contains(
+                                                                searchController.text.toLowerCase(),
+                                                              ),
+                                                        )
+                                                        .toList(),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 10),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   SizedBox(height: 10),
                   Visibility(
-                    visible: sortIndex == 3,
-                    child: Container(
-                      color: Colors.white,
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          right: 20.0,
-                        ),
-                        child: Row(
-                          spacing: 3,
-                          mainAxisAlignment:
-                              MainAxisAlignment.end,
-                          children: [
-                            InkWell(
-                              onTap: () {
-                                returnInventoryUpdatesProvider()
-                                                .dateSet ==
-                                            null &&
-                                        returnInventoryUpdatesProvider()
-                                                .rangeStartDate ==
-                                            null
-                                    ? mainDatePicker(
-                                      context: context,
-                                      theme: theme,
-                                      singleDate: (date) {
-                                        returnInventoryUpdatesProvider()
-                                            .setDate(date!);
-                                      },
-                                      rangeDate: (
-                                        firstDate,
-                                        lastDate,
-                                      ) {
-                                        returnInventoryUpdatesProvider()
-                                            .setRange(
-                                              firstDate!,
-                                              lastDate ??
-                                                  DateTime.now(),
-                                            );
-                                      },
-                                    )
-                                    : returnInventoryUpdatesProvider()
-                                        .clearDate();
-                              },
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.all(
-                                      10.0,
-                                    ),
-                                child: Row(
-                                  spacing: 4,
-                                  children: [
-                                    Icon(
-                                      size: 22,
-                                      color:
-                                          theme
-                                              .lightModeColor
-                                              .secColor200,
-                                      returnInventoryUpdatesProvider(
-                                                    context:
-                                                        context,
-                                                  ).dateSet ==
-                                                  null &&
-                                              returnInventoryUpdatesProvider(
-                                                    context:
-                                                        context,
-                                                  ).rangeStartDate ==
-                                                  null
-                                          ? Icons
-                                              .calendar_month
-                                          : Icons.clear,
-                                    ),
-                                    Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b2
-                                                .fontSize,
-                                      ),
-                                      returnInventoryUpdatesProvider(
-                                                    context:
-                                                        context,
-                                                  ).dateSet !=
-                                                  null ||
-                                              returnInventoryUpdatesProvider(
-                                                    context:
-                                                        context,
-                                                  ).rangeStartDate !=
-                                                  null
-                                          ? 'Clear'
-                                          : 'Set Date',
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: sortIndex == 1,
+                    visible: sortIndex != 2,
                     child: Row(
                       spacing: 5,
                       mainAxisAlignment:
                           MainAxisAlignment.end,
                       children: [
+                        Visibility(
+                          visible: sortIndex == 3,
+                          child: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                viewUpdateSummary =
+                                    !viewUpdateSummary;
+                              });
+                            },
+                            icon: Icon(
+                              viewUpdateSummary
+                                  ? Icons
+                                      .keyboard_arrow_up_outlined
+                                  : Icons
+                                      .keyboard_arrow_down_outlined,
+                            ),
+                          ),
+                        ),
                         SizedBox(
                           height: 30,
                           width: 150,
@@ -1007,125 +1224,235 @@ class _StoragePageMobileState
                             ),
                           ),
                         ),
-                        Opacity(
-                          opacity:
-                              searchController
-                                      .text
-                                      .isNotEmpty
-                                  ? 0
-                                  : 1,
-                          child: Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment.end,
-                            spacing: 0,
-                            children: [
-                              IconButton(
-                                onPressed: () {
-                                  if (start != 0) {
-                                    navigate(
-                                      false,
-                                      returnData()
-                                          .productList()
-                                          .length,
-                                    );
-                                  }
-                                },
-                                icon: Icon(
-                                  size: 16,
-                                  color:
-                                      start == 0
-                                          ? Colors
-                                              .grey
-                                              .shade400
-                                          : Colors
-                                              .grey
-                                              .shade800,
-                                  Icons.arrow_back_sharp,
+                        Visibility(
+                          visible: sortIndex == 1,
+                          child: Opacity(
+                            opacity:
+                                searchController
+                                        .text
+                                        .isNotEmpty
+                                    ? 0
+                                    : 1,
+                            child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.end,
+                              spacing: 0,
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    if (start != 0) {
+                                      navigate(
+                                        false,
+                                        returnData()
+                                            .productList()
+                                            .length,
+                                      );
+                                    }
+                                  },
+                                  icon: Icon(
+                                    size: 16,
+                                    color:
+                                        start == 0
+                                            ? Colors
+                                                .grey
+                                                .shade400
+                                            : Colors
+                                                .grey
+                                                .shade800,
+                                    Icons.arrow_back_sharp,
+                                  ),
                                 ),
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .center,
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .center,
+                                  spacing: 3,
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      count.toString(),
+                                    ),
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                        color: Colors.grey,
+                                      ),
+                                      '/',
+                                    ),
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                        color: Colors.grey,
+                                      ),
+                                      "${returnData(context: context).productList().length > 50 ? (returnData(context: context).productList().length / 50).ceil() : 1}",
+                                    ),
+                                  ],
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    if (end !=
+                                        returnData()
+                                            .productList()
+                                            .length) {
+                                      navigate(
+                                        true,
+                                        returnData()
+                                            .productList()
+                                            .length,
+                                      );
+                                    }
+                                  },
+                                  icon: Icon(
+                                    size: 16,
+                                    color:
+                                        end ==
+                                                    returnData(
+                                                      context:
+                                                          context,
+                                                    ).productList().length ||
+                                                returnData(
+                                                      context:
+                                                          context,
+                                                    ).productList().length <=
+                                                    50
+                                            ? Colors
+                                                .grey
+                                                .shade400
+                                            : Colors
+                                                .grey
+                                                .shade800,
+                                    Icons
+                                        .arrow_forward_sharp,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Visibility(
+                          visible: sortIndex == 3,
+                          child: Container(
+                            color: Colors.white,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(
+                                    right: 20.0,
+                                  ),
+                              child: Row(
                                 spacing: 3,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.end,
                                 children: [
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
+                                  InkWell(
+                                    onTap: () {
+                                      returnInventoryUpdatesProvider()
+                                                      .dateSet ==
+                                                  null &&
+                                              returnInventoryUpdatesProvider()
+                                                      .rangeStartDate ==
+                                                  null
+                                          ? mainDatePicker(
+                                            context:
+                                                context,
+                                            theme: theme,
+                                            singleDate: (
+                                              date,
+                                            ) {
+                                              returnInventoryUpdatesProvider()
+                                                  .setDate(
+                                                    date!,
+                                                  );
+                                            },
+                                            rangeDate: (
+                                              firstDate,
+                                              lastDate,
+                                            ) {
+                                              returnInventoryUpdatesProvider().setRange(
+                                                firstDate!,
+                                                lastDate ??
+                                                    DateTime.now(),
+                                              );
+                                            },
+                                          )
+                                          : returnInventoryUpdatesProvider()
+                                              .clearDate();
+                                    },
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.all(
+                                            10.0,
+                                          ),
+                                      child: Row(
+                                        spacing: 4,
+                                        children: [
+                                          Icon(
+                                            size: 18,
+                                            color:
+                                                theme
+                                                    .lightModeColor
+                                                    .secColor200,
+                                            returnInventoryUpdatesProvider(
+                                                          context:
+                                                              context,
+                                                        ).dateSet ==
+                                                        null &&
+                                                    returnInventoryUpdatesProvider(
+                                                          context:
+                                                              context,
+                                                        ).rangeStartDate ==
+                                                        null
+                                                ? Icons
+                                                    .calendar_month
+                                                : Icons.clear,
+                                          ),
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b3
+                                                      .fontSize,
+                                            ),
+                                            returnInventoryUpdatesProvider(
+                                                          context:
+                                                              context,
+                                                        ).dateSet !=
+                                                        null ||
+                                                    returnInventoryUpdatesProvider(
+                                                          context:
+                                                              context,
+                                                        ).rangeStartDate !=
+                                                        null
+                                                ? 'Clear'
+                                                : 'Set Date',
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                    count.toString(),
-                                  ),
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                      color: Colors.grey,
-                                    ),
-                                    '/',
-                                  ),
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                      color: Colors.grey,
-                                    ),
-                                    "${returnData(context: context).productList().length > 50 ? (returnData(context: context).productList().length / 50).ceil() : 1}",
                                   ),
                                 ],
                               ),
-                              IconButton(
-                                onPressed: () {
-                                  if (end !=
-                                      returnData()
-                                          .productList()
-                                          .length) {
-                                    navigate(
-                                      true,
-                                      returnData()
-                                          .productList()
-                                          .length,
-                                    );
-                                  }
-                                },
-                                icon: Icon(
-                                  size: 16,
-                                  color:
-                                      end ==
-                                                  returnData(
-                                                    context:
-                                                        context,
-                                                  ).productList().length ||
-                                              returnData(
-                                                    context:
-                                                        context,
-                                                  ).productList().length <=
-                                                  50
-                                          ? Colors
-                                              .grey
-                                              .shade400
-                                          : Colors
-                                              .grey
-                                              .shade800,
-                                  Icons.arrow_forward_sharp,
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         ),
                       ],

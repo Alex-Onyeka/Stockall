@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_inventory_updates/temp_inventory_update_class.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
+import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/play_sounds.dart';
@@ -23,6 +25,8 @@ class StoragePageDesktop extends StatefulWidget {
 class StoragePageDesktopState
     extends State<StoragePageDesktop> {
   int sortIndex = 1;
+
+  bool viewUpdateSummary = false;
 
   Future<void> getProducts() async {
     await RefreshFunctions(
@@ -75,7 +79,6 @@ class StoragePageDesktopState
   }
 
   final searchController = TextEditingController();
-  // final searchNode = FocusNode();
 
   @override
   void initState() {
@@ -162,7 +165,11 @@ class StoragePageDesktopState
                 if (sortIndex != 1) {
                   setState(() {
                     sortIndex = 1;
+                    searchController.clear();
+                    viewUpdateSummary = false;
                   });
+                  returnInventoryUpdatesProvider()
+                      .clearDate();
                 } else {
                   Navigator.of(context).pop();
                 }
@@ -230,11 +237,15 @@ class StoragePageDesktopState
                               onTap: () {
                                 setState(() {
                                   sortIndex = 1;
+                                  viewUpdateSummary = false;
                                 });
                                 returnData()
                                     .requestFocusSearchNode();
                                 returnData()
                                     .addSearchNodeListener();
+                                searchController.clear();
+                                returnInventoryUpdatesProvider()
+                                    .clearDate();
                               },
                               child: Text(
                                 style: TextStyle(
@@ -260,7 +271,11 @@ class StoragePageDesktopState
                               onTap: () {
                                 setState(() {
                                   sortIndex = 2;
+                                  viewUpdateSummary = false;
                                 });
+                                searchController.clear();
+                                returnInventoryUpdatesProvider()
+                                    .clearDate();
                               },
                               child: Text(
                                 style: TextStyle(
@@ -281,7 +296,11 @@ class StoragePageDesktopState
                               onTap: () {
                                 setState(() {
                                   sortIndex = 3;
+                                  viewUpdateSummary = false;
                                 });
+                                searchController.clear();
+                                returnInventoryUpdatesProvider()
+                                    .clearDate();
                               },
                               child: Text(
                                 style: TextStyle(
@@ -326,7 +345,7 @@ class StoragePageDesktopState
                                     fontSize:
                                         theme
                                             .mobileTexts
-                                            .b2
+                                            .b3
                                             .fontSize,
                                     fontWeight:
                                         FontWeight.bold,
@@ -353,641 +372,848 @@ class StoragePageDesktopState
                 Column(
                   children: [
                     Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10.0,
-                        ),
-                        child: Builder(
-                          builder: (context) {
-                            if (sortIndex == 1) {
-                              return ListView(
-                                primary: false,
-                                scrollDirection:
-                                    Axis.horizontal,
-                                children: [
-                                  SizedBox(
-                                    width:
-                                        screenWidth(
-                                          context,
-                                        ) -
-                                        120,
-                                    child: RefreshIndicator(
-                                      onRefresh: () {
-                                        return getProducts();
-                                      },
-                                      backgroundColor:
-                                          Colors.white,
-                                      color:
-                                          theme
-                                              .lightModeColor
-                                              .prColor300,
-                                      displacement: 10,
-                                      child: ListView(
-                                        children: [
-                                          SummaryTableHeadingBar(
-                                            isHeading: true,
-                                            theme: theme,
-                                            product:
-                                                products,
-                                          ),
-                                          Builder(
-                                            builder: (
+                      child: Stack(
+                        children: [
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(
+                                  horizontal: 10.0,
+                                ),
+                            child: Builder(
+                              builder: (context) {
+                                if (sortIndex == 1) {
+                                  return ListView(
+                                    primary: false,
+                                    scrollDirection:
+                                        Axis.horizontal,
+                                    children: [
+                                      SizedBox(
+                                        width:
+                                            screenWidth(
                                               context,
-                                            ) {
-                                              if (products
-                                                  .isEmpty) {
-                                                return Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
+                                            ) -
+                                            120,
+                                        child: RefreshIndicator(
+                                          onRefresh: () {
+                                            return getProducts();
+                                          },
+                                          backgroundColor:
+                                              Colors.white,
+                                          color:
+                                              theme
+                                                  .lightModeColor
+                                                  .prColor300,
+                                          displacement: 10,
+                                          child: ListView(
+                                            children: [
+                                              SummaryTableHeadingBar(
+                                                isHeading:
+                                                    true,
+                                                theme:
+                                                    theme,
+                                                product:
+                                                    products,
+                                              ),
+                                              Builder(
+                                                builder: (
+                                                  context,
+                                                ) {
+                                                  if (products
+                                                      .isEmpty) {
+                                                    return Padding(
+                                                      padding: const EdgeInsets.only(
                                                         top:
                                                             100.0,
                                                       ),
-                                                  child: EmptyWidgetDisplayOnly(
-                                                    title:
-                                                        'Empty List',
-                                                    subText:
-                                                        'No Item has been recorded yet',
-                                                    theme:
-                                                        theme,
-                                                    height:
-                                                        35,
-                                                    icon:
-                                                        Icons.clear,
-                                                  ),
-                                                );
-                                              } else {
-                                                return RefreshIndicator(
-                                                  onRefresh:
-                                                      () {
+                                                      child: EmptyWidgetDisplayOnly(
+                                                        title:
+                                                            'Empty List',
+                                                        subText:
+                                                            'No Item has been recorded yet',
+                                                        theme:
+                                                            theme,
+                                                        height:
+                                                            35,
+                                                        icon:
+                                                            Icons.clear,
+                                                      ),
+                                                    );
+                                                  } else {
+                                                    return RefreshIndicator(
+                                                      onRefresh: () {
                                                         return getProducts();
                                                       },
-                                                  backgroundColor:
-                                                      Colors
-                                                          .white,
-                                                  color:
-                                                      theme
-                                                          .lightModeColor
-                                                          .prColor300,
-                                                  displacement:
-                                                      10,
-                                                  child: SingleChildScrollView(
-                                                    primary:
-                                                        true,
-                                                    child: Column(
-                                                      children: [
-                                                        ListView.builder(
-                                                          shrinkWrap:
-                                                              true,
-                                                          itemCount:
-                                                              products.length,
-                                                          physics:
-                                                              NeverScrollableScrollPhysics(),
+                                                      backgroundColor:
+                                                          Colors.white,
+                                                      color:
+                                                          theme.lightModeColor.prColor300,
+                                                      displacement:
+                                                          10,
+                                                      child: SingleChildScrollView(
+                                                        primary:
+                                                            true,
+                                                        child: Column(
+                                                          children: [
+                                                            ListView.builder(
+                                                              shrinkWrap:
+                                                                  true,
+                                                              itemCount:
+                                                                  products.length,
+                                                              physics:
+                                                                  NeverScrollableScrollPhysics(),
 
-                                                          itemBuilder: (
-                                                            context,
-                                                            index,
-                                                          ) {
-                                                            var product =
-                                                                products[index];
-                                                            return TableRowRecordWidget(
+                                                              itemBuilder: (
+                                                                context,
+                                                                index,
+                                                              ) {
+                                                                var product =
+                                                                    products[index];
+                                                                return TableRowRecordWidget(
+                                                                  theme:
+                                                                      theme,
+                                                                  product:
+                                                                      product,
+                                                                );
+                                                              },
+                                                            ),
+                                                            SummaryTableHeadingBar(
+                                                              isHeading:
+                                                                  false,
                                                               theme:
                                                                   theme,
                                                               product:
-                                                                  product,
-                                                            );
-                                                          },
+                                                                  products,
+                                                            ),
+                                                            SizedBox(
+                                                              height:
+                                                                  20,
+                                                            ),
+                                                          ],
                                                         ),
-                                                        SummaryTableHeadingBar(
-                                                          isHeading:
-                                                              false,
+                                                      ),
+                                                    );
+                                                  }
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                } else if (sortIndex == 2) {
+                                  return SizedBox(
+                                    child: Column(
+                                      children: [
+                                        Visibility(
+                                          visible:
+                                              !isStoreKeeper(),
+                                          child: Column(
+                                            children: [
+                                              Container(
+                                                width:
+                                                    double
+                                                        .infinity,
+                                                height: 1.5,
+                                                color:
+                                                    Colors
+                                                        .grey
+                                                        .shade200,
+                                              ),
+                                              SizedBox(
+                                                height: 15,
+                                              ),
+                                              Column(
+                                                children: [
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.center,
+                                                    children: [
+                                                      Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              theme.mobileTexts.b2.fontSize,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                        'Finance',
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  SizedBox(
+                                                    height:
+                                                        8,
+                                                  ),
+                                                  Row(
+                                                    spacing:
+                                                        10,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.center,
+                                                    children: [
+                                                      Expanded(
+                                                        child: TabContainer(
+                                                          priceTextSize:
+                                                              theme.mobileTexts.h3.fontSize,
+                                                          isMoney:
+                                                              true,
+                                                          text:
+                                                              'Total Cost Value',
+                                                          price:
+                                                              returnData(
+                                                                context:
+                                                                    context,
+                                                              ).getTotalCostPrice(),
                                                           theme:
                                                               theme,
-                                                          product:
-                                                              products,
+                                                          backGround: const Color.fromARGB(
+                                                            11,
+                                                            15,
+                                                            4,
+                                                            114,
+                                                          ),
+                                                          border: const Color.fromARGB(
+                                                            32,
+                                                            45,
+                                                            3,
+                                                            255,
+                                                          ),
                                                         ),
-                                                        SizedBox(
-                                                          height:
-                                                              20,
+                                                      ),
+                                                      Expanded(
+                                                        child: TabContainer(
+                                                          priceTextSize:
+                                                              theme.mobileTexts.h3.fontSize,
+                                                          isMoney:
+                                                              true,
+                                                          text:
+                                                              'Total Selling Value',
+                                                          price:
+                                                              returnData(
+                                                                context:
+                                                                    context,
+                                                              ).getTotalSellingPrice(),
+                                                          theme:
+                                                              theme,
+                                                          backGround: const Color.fromARGB(
+                                                            18,
+                                                            2,
+                                                            163,
+                                                            31,
+                                                          ),
+                                                          border: const Color.fromARGB(
+                                                            63,
+                                                            2,
+                                                            163,
+                                                            31,
+                                                          ),
                                                         ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                );
-                                              }
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            } else if (sortIndex == 2) {
-                              return SizedBox(
-                                child: Column(
-                                  children: [
-                                    Visibility(
-                                      visible:
-                                          !isStoreKeeper(),
-                                      child: Column(
-                                        children: [
-                                          Container(
-                                            width:
-                                                double
-                                                    .infinity,
-                                            height: 1.5,
-                                            color:
-                                                Colors
-                                                    .grey
-                                                    .shade200,
-                                          ),
-                                          SizedBox(
-                                            height: 15,
-                                          ),
-                                          Column(
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .center,
-                                                children: [
-                                                  Text(
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          theme.mobileTexts.b2.fontSize,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                    'Finance',
+                                                      ),
+                                                    ],
                                                   ),
                                                 ],
                                               ),
                                               SizedBox(
-                                                height: 8,
-                                              ),
-                                              Row(
-                                                spacing: 10,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .center,
-                                                children: [
-                                                  Expanded(
-                                                    child: TabContainer(
-                                                      priceTextSize:
-                                                          theme.mobileTexts.h3.fontSize,
-                                                      isMoney:
-                                                          true,
-                                                      text:
-                                                          'Total Cost Value',
-                                                      price:
-                                                          returnData(
-                                                            context:
-                                                                context,
-                                                          ).getTotalCostPrice(),
-                                                      theme:
-                                                          theme,
-                                                      backGround: const Color.fromARGB(
-                                                        11,
-                                                        15,
-                                                        4,
-                                                        114,
-                                                      ),
-                                                      border: const Color.fromARGB(
-                                                        32,
-                                                        45,
-                                                        3,
-                                                        255,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Expanded(
-                                                    child: TabContainer(
-                                                      priceTextSize:
-                                                          theme.mobileTexts.h3.fontSize,
-                                                      isMoney:
-                                                          true,
-                                                      text:
-                                                          'Total Selling Value',
-                                                      price:
-                                                          returnData(
-                                                            context:
-                                                                context,
-                                                          ).getTotalSellingPrice(),
-                                                      theme:
-                                                          theme,
-                                                      backGround: const Color.fromARGB(
-                                                        18,
-                                                        2,
-                                                        163,
-                                                        31,
-                                                      ),
-                                                      border: const Color.fromARGB(
-                                                        63,
-                                                        2,
-                                                        163,
-                                                        31,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
+                                                height: 20,
                                               ),
                                             ],
                                           ),
-                                          SizedBox(
-                                            height: 20,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Container(
-                                      width:
-                                          double.infinity,
-                                      height: 1.5,
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade200,
-                                    ),
-                                    SizedBox(height: 20),
-                                    Column(
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .center,
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    theme
-                                                        .mobileTexts
-                                                        .b2
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              'ITEMS',
-                                            ),
-                                          ],
                                         ),
-                                        SizedBox(height: 8),
-                                        Row(
-                                          spacing: 0,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .center,
+                                        Container(
+                                          width:
+                                              double
+                                                  .infinity,
+                                          height: 1.5,
+                                          color:
+                                              Colors
+                                                  .grey
+                                                  .shade200,
+                                        ),
+                                        SizedBox(
+                                          height: 20,
+                                        ),
+                                        Column(
                                           children: [
-                                            Expanded(
-                                              child: TabContainer(
-                                                isMoney:
-                                                    false,
-                                                text:
-                                                    'Total Items',
-                                                price:
-                                                    returnData(
-                                                      context:
-                                                          context,
-                                                    ).productList().length.toDouble(),
-                                                theme:
-                                                    theme,
-                                                backGround:
-                                                    const Color.fromARGB(
-                                                      11,
-                                                      15,
-                                                      4,
-                                                      114,
-                                                    ),
-                                                border:
-                                                    const Color.fromARGB(
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .center,
+                                              children: [
+                                                Text(
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        theme.mobileTexts.b2.fontSize,
+                                                    fontWeight:
+                                                        FontWeight.bold,
+                                                  ),
+                                                  'ITEMS',
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: 8,
+                                            ),
+                                            Row(
+                                              spacing: 0,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .center,
+                                              children: [
+                                                Expanded(
+                                                  child: TabContainer(
+                                                    isMoney:
+                                                        false,
+                                                    text:
+                                                        'Total Items',
+                                                    price:
+                                                        returnData(
+                                                          context:
+                                                              context,
+                                                        ).productList().length.toDouble(),
+                                                    theme:
+                                                        theme,
+                                                    backGround:
+                                                        const Color.fromARGB(
+                                                          11,
+                                                          15,
+                                                          4,
+                                                          114,
+                                                        ),
+                                                    border: const Color.fromARGB(
                                                       32,
                                                       45,
                                                       3,
                                                       255,
                                                     ),
-                                              ),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
-                                        Row(
-                                          spacing: 10,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .center,
-                                          children: [
-                                            Expanded(
-                                              child: TabContainer(
-                                                isMoney:
-                                                    false,
-                                                text:
-                                                    'In Stock',
-                                                price:
-                                                    returnData(
-                                                          context:
-                                                              context,
-                                                        )
-                                                        .productList()
-                                                        .where(
-                                                          (
-                                                            item,
-                                                          ) =>
-                                                              item.quantity !=
-                                                                  null &&
-                                                              item.quantity !=
-                                                                  0,
-                                                        )
-                                                        .length
-                                                        .toDouble(),
-                                                theme:
-                                                    theme,
-                                                backGround:
-                                                    const Color.fromARGB(
-                                                      18,
-                                                      2,
-                                                      163,
-                                                      31,
-                                                    ),
-                                                border:
-                                                    const Color.fromARGB(
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            Row(
+                                              spacing: 10,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .center,
+                                              children: [
+                                                Expanded(
+                                                  child: TabContainer(
+                                                    isMoney:
+                                                        false,
+                                                    text:
+                                                        'In Stock',
+                                                    price:
+                                                        returnData(
+                                                              context:
+                                                                  context,
+                                                            )
+                                                            .productList()
+                                                            .where(
+                                                              (
+                                                                item,
+                                                              ) =>
+                                                                  item.quantity !=
+                                                                      null &&
+                                                                  item.quantity !=
+                                                                      0,
+                                                            )
+                                                            .length
+                                                            .toDouble(),
+                                                    theme:
+                                                        theme,
+                                                    backGround:
+                                                        const Color.fromARGB(
+                                                          18,
+                                                          2,
+                                                          163,
+                                                          31,
+                                                        ),
+                                                    border: const Color.fromARGB(
                                                       63,
                                                       2,
                                                       163,
                                                       31,
                                                     ),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: TabContainer(
-                                                isMoney:
-                                                    false,
-                                                text:
-                                                    'Out Of Stock',
-                                                price:
-                                                    returnData(
-                                                          context:
-                                                              context,
-                                                        )
-                                                        .productList()
-                                                        .where(
-                                                          (
-                                                            item,
-                                                          ) =>
-                                                              item.quantity !=
-                                                                  null &&
-                                                              item.quantity ==
-                                                                  0,
-                                                        )
-                                                        .length
-                                                        .toDouble(),
-                                                theme:
-                                                    theme,
-                                                backGround:
-                                                    const Color.fromARGB(
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  child: TabContainer(
+                                                    isMoney:
+                                                        false,
+                                                    text:
+                                                        'Out Of Stock',
+                                                    price:
+                                                        returnData(
+                                                              context:
+                                                                  context,
+                                                            )
+                                                            .productList()
+                                                            .where(
+                                                              (
+                                                                item,
+                                                              ) =>
+                                                                  item.quantity !=
+                                                                      null &&
+                                                                  item.quantity ==
+                                                                      0,
+                                                            )
+                                                            .length
+                                                            .toDouble(),
+                                                    theme:
+                                                        theme,
+                                                    backGround: const Color.fromARGB(
                                                       25,
                                                       235,
                                                       150,
                                                       3,
                                                     ),
-                                                border:
-                                                    const Color.fromARGB(
+                                                    border: const Color.fromARGB(
                                                       74,
                                                       232,
                                                       148,
                                                       3,
                                                     ),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: TabContainer(
-                                                isMoney:
-                                                    false,
-                                                text:
-                                                    'Un-Managed Items',
-                                                price:
-                                                    returnData(
-                                                          context:
-                                                              context,
-                                                        )
-                                                        .productList()
-                                                        .where(
-                                                          (
-                                                            item,
-                                                          ) =>
-                                                              !item.isManaged,
-                                                        )
-                                                        .length
-                                                        .toDouble(),
-                                                theme:
-                                                    theme,
-                                                backGround:
-                                                    const Color.fromARGB(
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  child: TabContainer(
+                                                    isMoney:
+                                                        false,
+                                                    text:
+                                                        'Un-Managed Items',
+                                                    price:
+                                                        returnData(
+                                                              context:
+                                                                  context,
+                                                            )
+                                                            .productList()
+                                                            .where(
+                                                              (
+                                                                item,
+                                                              ) =>
+                                                                  !item.isManaged,
+                                                            )
+                                                            .length
+                                                            .toDouble(),
+                                                    theme:
+                                                        theme,
+                                                    backGround: const Color.fromARGB(
                                                       141,
                                                       245,
                                                       245,
                                                       245,
                                                     ),
-                                                border:
-                                                    Colors
-                                                        .grey
-                                                        .shade300,
-                                              ),
+                                                    border:
+                                                        Colors.grey.shade300,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ],
                                         ),
                                       ],
                                     ),
-                                  ],
-                                ),
-                              );
-                            } else {
-                              return SizedBox(
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      width:
-                                          double.infinity,
-                                      height: 1.5,
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade200,
-                                    ),
-                                    SizedBox(height: 15),
-                                    Expanded(
-                                      child: Builder(
-                                        builder: (context) {
-                                          if (returnInventoryUpdatesProvider(
-                                                context:
-                                                    context,
-                                              )
-                                              .returnInventoryUpdates()
-                                              .isEmpty) {
-                                            return Padding(
-                                              padding:
-                                                  EdgeInsetsGeometry.only(
-                                                    top:
-                                                        100,
-                                                  ),
-                                              child: EmptyWidgetDisplayOnly(
-                                                title:
-                                                    'No History Recorded',
-                                                subText:
-                                                    'No History Has been recorded for this day.',
-                                                theme:
-                                                    theme,
-                                                height: 30,
-                                                altIcon:
-                                                    Icons
-                                                        .refresh,
-                                                altActionText:
-                                                    'Refresh History',
-                                                icon:
-                                                    Icons
-                                                        .clear,
-                                                altAction:
-                                                    () async {
-                                                      await getProducts();
-                                                    },
-                                              ),
-                                            );
-                                          }
-                                          return ListView(
-                                            shrinkWrap:
-                                                true,
-                                            children:
-                                                returnInventoryUpdatesProvider(
-                                                      context:
-                                                          context,
-                                                    )
-                                                    .returnInventoryUpdates()
-                                                    .map(
-                                                      (
-                                                        update,
-                                                      ) => InventoryUpdateWidget(
-                                                        update:
-                                                            update,
+                                  );
+                                } else {
+                                  return SizedBox(
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          width:
+                                              double
+                                                  .infinity,
+                                          height: 1.5,
+                                          color:
+                                              Colors
+                                                  .grey
+                                                  .shade200,
+                                        ),
+                                        SizedBox(
+                                          height: 15,
+                                        ),
+                                        Expanded(
+                                          child: Builder(
+                                            builder: (
+                                              context,
+                                            ) {
+                                              if (returnInventoryUpdatesProvider(
+                                                    context:
+                                                        context,
+                                                  )
+                                                  .returnInventoryUpdates()
+                                                  .where(
+                                                    (
+                                                      update,
+                                                    ) =>
+                                                        update.itemName?.toLowerCase().contains(
+                                                              searchController.text.toLowerCase(),
+                                                            ) ==
+                                                            true ||
+                                                        update.title.toLowerCase().contains(
+                                                          searchController.text.toLowerCase(),
+                                                        ),
+                                                  )
+                                                  .isEmpty) {
+                                                return Padding(
+                                                  padding:
+                                                      EdgeInsetsGeometry.only(
+                                                        top:
+                                                            100,
                                                       ),
-                                                    )
-                                                    .toList(),
-                                          );
-                                        },
+                                                  child: EmptyWidgetDisplayOnly(
+                                                    title:
+                                                        'No History Recorded',
+                                                    subText:
+                                                        'No History Has been recorded for this day.',
+                                                    theme:
+                                                        theme,
+                                                    height:
+                                                        30,
+                                                    altIcon:
+                                                        Icons.refresh,
+                                                    altActionText:
+                                                        'Refresh History',
+                                                    icon:
+                                                        Icons.clear,
+                                                    altAction:
+                                                        () async {
+                                                          await getProducts();
+                                                        },
+                                                  ),
+                                                );
+                                              }
+                                              return ListView(
+                                                shrinkWrap:
+                                                    true,
+                                                children:
+                                                    returnInventoryUpdatesProvider(
+                                                          context:
+                                                              context,
+                                                        )
+                                                        .returnInventoryUpdates()
+                                                        .where(
+                                                          (
+                                                            update,
+                                                          ) =>
+                                                              update.itemName?.toLowerCase().contains(
+                                                                    searchController.text.toLowerCase(),
+                                                                  ) ==
+                                                                  true ||
+                                                              update.title.toLowerCase().contains(
+                                                                searchController.text.toLowerCase(),
+                                                              ),
+                                                        )
+                                                        .map(
+                                                          (
+                                                            update,
+                                                          ) => InventoryUpdateWidget(
+                                                            update:
+                                                                update,
+                                                          ),
+                                                        )
+                                                        .toList(),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+                          Visibility(
+                            visible: viewUpdateSummary,
+                            child: Align(
+                              alignment:
+                                  AlignmentGeometry.xy(
+                                    0,
+                                    1,
+                                  ),
+                              child: Container(
+                                width: double.infinity,
+                                padding:
+                                    EdgeInsets.fromLTRB(
+                                      20,
+                                      10,
+                                      20,
+                                      20,
+                                    ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius:
+                                      BorderRadius.circular(
+                                        5,
                                       ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          const Color.fromARGB(
+                                            30,
+                                            0,
+                                            0,
+                                            0,
+                                          ),
+                                      offset: Offset(0, 1),
+                                      blurRadius: 10,
                                     ),
                                   ],
                                 ),
-                              );
-                            }
-                          },
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Visibility(
-                      visible: sortIndex == 3,
-                      child: Container(
-                        color: Colors.white,
-                        child: Row(
-                          spacing: 3,
-                          mainAxisAlignment:
-                              MainAxisAlignment.end,
-                          children: [
-                            InkWell(
-                              onTap: () {
-                                returnInventoryUpdatesProvider()
-                                                .dateSet ==
-                                            null &&
-                                        returnInventoryUpdatesProvider()
-                                                .rangeStartDate ==
-                                            null
-                                    ? mainDatePicker(
-                                      context: context,
-                                      theme: theme,
-                                      singleDate: (date) {
-                                        returnInventoryUpdatesProvider()
-                                            .setDate(date!);
-                                      },
-                                      rangeDate: (
-                                        firstDate,
-                                        lastDate,
-                                      ) {
-                                        returnInventoryUpdatesProvider()
-                                            .setRange(
-                                              firstDate!,
-                                              lastDate ??
-                                                  DateTime.now(),
-                                            );
-                                      },
-                                    )
-                                    : returnInventoryUpdatesProvider()
-                                        .clearDate();
-                              },
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.all(
-                                      10.0,
-                                    ),
-                                child: Row(
-                                  spacing: 4,
+                                child: Column(
+                                  mainAxisSize:
+                                      MainAxisSize.min,
+                                  spacing: 5,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .center,
                                   children: [
-                                    Icon(
-                                      size: 22,
-                                      color:
-                                          theme
-                                              .lightModeColor
-                                              .secColor200,
-                                      returnInventoryUpdatesProvider(
-                                                    context:
-                                                        context,
-                                                  ).dateSet ==
-                                                  null &&
-                                              returnInventoryUpdatesProvider(
-                                                    context:
-                                                        context,
-                                                  ).rangeStartDate ==
-                                                  null
-                                          ? Icons
-                                              .calendar_month
-                                          : Icons.clear,
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment
+                                              .spaceBetween,
+                                      children: [
+                                        Opacity(
+                                          opacity: 0,
+                                          child: IconButton(
+                                            onPressed:
+                                                () {},
+                                            icon: Icon(
+                                              Icons.clear,
+                                            ),
+                                          ),
+                                        ),
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b1
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          'Update Summary',
+                                        ),
+                                        IconButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              viewUpdateSummary =
+                                                  false;
+                                            });
+                                          },
+                                          icon: Icon(
+                                            size: 20,
+                                            Icons.clear,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b2
-                                                .fontSize,
-                                      ),
-                                      returnInventoryUpdatesProvider(
-                                                    context:
-                                                        context,
-                                                  ).dateSet !=
-                                                  null ||
-                                              returnInventoryUpdatesProvider(
-                                                    context:
-                                                        context,
-                                                  ).rangeStartDate !=
-                                                  null
-                                          ? 'Clear'
-                                          : 'Set Date',
+                                    Divider(),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment
+                                              .center,
+                                      spacing: 5,
+                                      children: [
+                                        Expanded(
+                                          child: Column(
+                                            spacing: 1,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment
+                                                    .center,
+                                            children: [
+                                              Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      8,
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                ),
+                                                'Total Stock In:',
+                                              ),
+                                              Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      theme
+                                                          .mobileTexts
+                                                          .b3
+                                                          .fontSize,
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                ),
+                                                returnTotalStockIn(
+                                                  updates:
+                                                      returnInventoryUpdatesProvider(
+                                                            context:
+                                                                context,
+                                                          )
+                                                          .returnInventoryUpdates()
+                                                          .where(
+                                                            (
+                                                              update,
+                                                            ) =>
+                                                                update.itemName?.toLowerCase().contains(
+                                                                      searchController.text.toLowerCase(),
+                                                                    ) ==
+                                                                    true ||
+                                                                update.title.toLowerCase().contains(
+                                                                  searchController.text.toLowerCase(),
+                                                                ),
+                                                          )
+                                                          .toList(),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Column(
+                                            spacing: 1,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment
+                                                    .center,
+                                            children: [
+                                              Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      8,
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                ),
+                                                'Total Stock Out:',
+                                              ),
+                                              Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      theme
+                                                          .mobileTexts
+                                                          .b3
+                                                          .fontSize,
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                ),
+                                                returnTotalStockOut(
+                                                  updates:
+                                                      returnInventoryUpdatesProvider(
+                                                            context:
+                                                                context,
+                                                          )
+                                                          .returnInventoryUpdates()
+                                                          .where(
+                                                            (
+                                                              update,
+                                                            ) =>
+                                                                update.itemName?.toLowerCase().contains(
+                                                                      searchController.text.toLowerCase(),
+                                                                    ) ==
+                                                                    true ||
+                                                                update.title.toLowerCase().contains(
+                                                                  searchController.text.toLowerCase(),
+                                                                ),
+                                                          )
+                                                          .toList(),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Column(
+                                            spacing: 1,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment
+                                                    .center,
+                                            children: [
+                                              Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      8,
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                ),
+                                                'Net:',
+                                              ),
+                                              Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      theme
+                                                          .mobileTexts
+                                                          .b3
+                                                          .fontSize,
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                ),
+                                                returnNet(
+                                                  updates:
+                                                      returnInventoryUpdatesProvider(
+                                                            context:
+                                                                context,
+                                                          )
+                                                          .returnInventoryUpdates()
+                                                          .where(
+                                                            (
+                                                              update,
+                                                            ) =>
+                                                                update.itemName?.toLowerCase().contains(
+                                                                      searchController.text.toLowerCase(),
+                                                                    ) ==
+                                                                    true ||
+                                                                update.title.toLowerCase().contains(
+                                                                  searchController.text.toLowerCase(),
+                                                                ),
+                                                          )
+                                                          .toList(),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
                                     ),
+                                    SizedBox(height: 20),
                                   ],
                                 ),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
+                    SizedBox(height: 10),
                     Visibility(
-                      visible: sortIndex == 1,
+                      visible: sortIndex != 2,
                       child: Row(
                         spacing: 5,
                         mainAxisAlignment:
                             MainAxisAlignment.end,
                         children: [
+                          Visibility(
+                            visible: sortIndex == 3,
+                            child: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  viewUpdateSummary =
+                                      !viewUpdateSummary;
+                                });
+                              },
+                              icon: Icon(
+                                viewUpdateSummary
+                                    ? Icons
+                                        .keyboard_arrow_up_outlined
+                                    : Icons
+                                        .keyboard_arrow_down_outlined,
+                              ),
+                            ),
+                          ),
                           SizedBox(
                             height: 30,
                             width: 200,
@@ -996,40 +1222,45 @@ class StoragePageDesktopState
                                   returnData().searchNode,
                               controller: searchController,
                               onChanged: (value) async {
-                                if (value.isNotEmpty) {
-                                  if (value.length > 20) {
-                                    searchController
-                                        .clear();
-                                  } else {
-                                    var allPrs =
-                                        returnData()
-                                            .productList()
-                                            .where(
-                                              (pr) =>
-                                                  pr.barcode ==
-                                                  searchController
-                                                      .text,
-                                            )
-                                            .toList();
-                                    if (allPrs.isNotEmpty) {
-                                      await playBeep();
+                                if (sortIndex == 1) {
+                                  if (value.isNotEmpty) {
+                                    if (value.length > 20) {
+                                      searchController
+                                          .clear();
+                                    } else {
+                                      var allPrs =
+                                          returnData()
+                                              .productList()
+                                              .where(
+                                                (pr) =>
+                                                    pr.barcode ==
+                                                    searchController
+                                                        .text,
+                                              )
+                                              .toList();
+                                      if (allPrs
+                                          .isNotEmpty) {
+                                        await playBeep();
+                                      }
                                     }
                                   }
+                                  setState(() {
+                                    start = 0;
+                                    end =
+                                        returnData()
+                                                    .productList()
+                                                    .length >
+                                                50
+                                            ? 50
+                                            : returnData()
+                                                .productList()
+                                                .length;
+                                    count = 1;
+                                  });
+                                  // setState(() {});
+                                } else {
+                                  setState(() {});
                                 }
-                                setState(() {
-                                  start = 0;
-                                  end =
-                                      returnData()
-                                                  .productList()
-                                                  .length >
-                                              50
-                                          ? 50
-                                          : returnData()
-                                              .productList()
-                                              .length;
-                                  count = 1;
-                                });
-                                // setState(() {});
                               },
                               style: TextStyle(
                                 fontSize: 12,
@@ -1053,7 +1284,9 @@ class StoragePageDesktopState
                                   ),
                                 ),
                                 hintText:
-                                    'Search Name or Scan',
+                                    sortIndex == 1
+                                        ? 'Search Name or Scan'
+                                        : 'Search Event or Item Name',
                                 contentPadding:
                                     EdgeInsets.symmetric(
                                       vertical: 5,
@@ -1091,126 +1324,235 @@ class StoragePageDesktopState
                               ),
                             ),
                           ),
-                          Opacity(
-                            opacity:
-                                searchController
-                                        .text
-                                        .isNotEmpty
-                                    ? 0
-                                    : 1,
-                            child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.end,
-                              spacing: 0,
-                              children: [
-                                IconButton(
-                                  onPressed: () {
-                                    if (start != 0) {
-                                      navigate(
-                                        false,
-                                        returnData()
-                                            .productList()
-                                            .length,
-                                      );
-                                    }
-                                  },
-                                  icon: Icon(
-                                    size: 20,
-                                    color:
-                                        start == 0
-                                            ? Colors
-                                                .grey
-                                                .shade400
-                                            : Colors
-                                                .grey
-                                                .shade800,
-                                    Icons.arrow_back_sharp,
+                          Visibility(
+                            visible: sortIndex == 1,
+                            child: Opacity(
+                              opacity:
+                                  searchController
+                                          .text
+                                          .isNotEmpty
+                                      ? 0
+                                      : 1,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.end,
+                                spacing: 0,
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      if (start != 0) {
+                                        navigate(
+                                          false,
+                                          returnData()
+                                              .productList()
+                                              .length,
+                                        );
+                                      }
+                                    },
+                                    icon: Icon(
+                                      size: 20,
+                                      color:
+                                          start == 0
+                                              ? Colors
+                                                  .grey
+                                                  .shade400
+                                              : Colors
+                                                  .grey
+                                                  .shade800,
+                                      Icons
+                                          .arrow_back_sharp,
+                                    ),
                                   ),
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment
-                                          .center,
-                                  spacing: 3,
-                                  children: [
-                                    Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b2
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .center,
+                                    spacing: 3,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b2
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        count.toString(),
                                       ),
-                                      count.toString(),
-                                    ),
-                                    Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b2
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
-                                        color: Colors.grey,
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b2
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                          color:
+                                              Colors.grey,
+                                        ),
+                                        '/',
                                       ),
-                                      '/',
-                                    ),
-                                    Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b2
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
-                                        color: Colors.grey,
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b2
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                          color:
+                                              Colors.grey,
+                                        ),
+                                        "${returnData(context: context).productList().length > 50 ? (returnData(context: context).productList().length / 50).ceil() : 1}",
                                       ),
-                                      "${returnData(context: context).productList().length > 50 ? (returnData(context: context).productList().length / 50).ceil() : 1}",
-                                    ),
-                                  ],
-                                ),
-                                IconButton(
-                                  onPressed: () {
-                                    if (end !=
-                                        returnData()
-                                            .productList()
-                                            .length) {
-                                      navigate(
-                                        true,
-                                        returnData()
-                                            .productList()
-                                            .length,
-                                      );
-                                    }
-                                  },
-                                  icon: Icon(
-                                    size: 20,
-                                    color:
-                                        end ==
-                                                    returnData(
-                                                      context:
-                                                          context,
-                                                    ).productList().length ||
-                                                returnData(
-                                                      context:
-                                                          context,
-                                                    ).productList().length <=
-                                                    50
-                                            ? Colors
-                                                .grey
-                                                .shade400
-                                            : Colors
-                                                .grey
-                                                .shade800,
-                                    Icons
-                                        .arrow_forward_sharp,
+                                    ],
                                   ),
-                                ),
-                              ],
+                                  IconButton(
+                                    onPressed: () {
+                                      if (end !=
+                                          returnData()
+                                              .productList()
+                                              .length) {
+                                        navigate(
+                                          true,
+                                          returnData()
+                                              .productList()
+                                              .length,
+                                        );
+                                      }
+                                    },
+                                    icon: Icon(
+                                      size: 20,
+                                      color:
+                                          end ==
+                                                      returnData(
+                                                        context:
+                                                            context,
+                                                      ).productList().length ||
+                                                  returnData(
+                                                        context:
+                                                            context,
+                                                      ).productList().length <=
+                                                      50
+                                              ? Colors
+                                                  .grey
+                                                  .shade400
+                                              : Colors
+                                                  .grey
+                                                  .shade800,
+                                      Icons
+                                          .arrow_forward_sharp,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Visibility(
+                            visible: sortIndex == 3,
+                            child: Container(
+                              color: Colors.white,
+                              child: Row(
+                                spacing: 3,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.end,
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      returnInventoryUpdatesProvider()
+                                                      .dateSet ==
+                                                  null &&
+                                              returnInventoryUpdatesProvider()
+                                                      .rangeStartDate ==
+                                                  null
+                                          ? mainDatePicker(
+                                            context:
+                                                context,
+                                            theme: theme,
+                                            singleDate: (
+                                              date,
+                                            ) {
+                                              returnInventoryUpdatesProvider()
+                                                  .setDate(
+                                                    date!,
+                                                  );
+                                            },
+                                            rangeDate: (
+                                              firstDate,
+                                              lastDate,
+                                            ) {
+                                              returnInventoryUpdatesProvider().setRange(
+                                                firstDate!,
+                                                lastDate ??
+                                                    DateTime.now(),
+                                              );
+                                            },
+                                          )
+                                          : returnInventoryUpdatesProvider()
+                                              .clearDate();
+                                    },
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.all(
+                                            10.0,
+                                          ),
+                                      child: Row(
+                                        spacing: 4,
+                                        children: [
+                                          Icon(
+                                            size: 22,
+                                            color:
+                                                theme
+                                                    .lightModeColor
+                                                    .secColor200,
+                                            returnInventoryUpdatesProvider(
+                                                          context:
+                                                              context,
+                                                        ).dateSet ==
+                                                        null &&
+                                                    returnInventoryUpdatesProvider(
+                                                          context:
+                                                              context,
+                                                        ).rangeStartDate ==
+                                                        null
+                                                ? Icons
+                                                    .calendar_month
+                                                : Icons.clear,
+                                          ),
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b2
+                                                      .fontSize,
+                                            ),
+                                            returnInventoryUpdatesProvider(
+                                                          context:
+                                                              context,
+                                                        ).dateSet !=
+                                                        null ||
+                                                    returnInventoryUpdatesProvider(
+                                                          context:
+                                                              context,
+                                                        ).rangeStartDate !=
+                                                        null
+                                                ? 'Clear'
+                                                : 'Set Date',
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ],
@@ -1234,4 +1576,59 @@ class StoragePageDesktopState
       ],
     );
   }
+}
+
+String returnTotalStockIn({
+  required List<TempInventoryUpdateClass> updates,
+}) {
+  List<TempInventoryUpdateClass> tempUpdates = [];
+  for (var up in updates) {
+    if ((double.tryParse(up.oldValue ?? '0') ?? 0) <=
+        (double.tryParse(up.newValue ?? '0') ?? 0)) {
+      tempUpdates.add(up);
+    }
+  }
+  double tempTotal = 0;
+  for (var temp in tempUpdates) {
+    tempTotal +=
+        double.parse((temp.newValue ?? '0')) -
+        double.parse((temp.oldValue ?? '0'));
+  }
+  return formatLargeNumberDouble(tempTotal);
+}
+
+String returnTotalStockOut({
+  required List<TempInventoryUpdateClass> updates,
+}) {
+  List<TempInventoryUpdateClass> tempUpdates = [];
+  for (var up in updates) {
+    if ((double.tryParse(up.oldValue ?? '0') ?? 0) >
+        (double.tryParse(up.newValue ?? '0') ?? 0)) {
+      tempUpdates.add(up);
+    }
+  }
+  double tempTotal = 0;
+  for (var temp in tempUpdates) {
+    tempTotal +=
+        double.parse((temp.newValue ?? '0')) -
+        double.parse((temp.oldValue ?? '0'));
+  }
+  return formatLargeNumberDouble(tempTotal);
+}
+
+String returnNet({
+  required List<TempInventoryUpdateClass> updates,
+}) {
+  return formatLargeNumberDouble(
+    ((double.tryParse(
+              returnTotalStockIn(updates: updates),
+            ) ??
+            0) -
+        (double.tryParse(
+              returnTotalStockOut(
+                updates: updates,
+              ).replaceAll('-', ''),
+            ) ??
+            0)),
+  );
 }
