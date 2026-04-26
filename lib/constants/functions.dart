@@ -127,6 +127,7 @@ class Authorizations {
   String toggleUseGroupUnit = 'Toggle Use Group Unit';
   String viewAllDepartments = 'View All Departments';
   String updateItemQuantity = 'Update Item Quantity';
+  String viewItemQuantity = 'View Item Quantity';
 }
 
 bool authorization({required String authorized}) {

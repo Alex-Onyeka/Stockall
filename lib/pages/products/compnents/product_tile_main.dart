@@ -337,13 +337,52 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                     ),
                                   ],
                                 ),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.only(
-                                        right: 0.0,
-                                      ),
-                                  child: Container(
-                                    decoration: BoxDecoration(
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color:
+                                        isManaged()
+                                            ? getDayDifference(
+                                                          widget.product.expiryDate ??
+                                                              DateTime.now(),
+                                                        ) <
+                                                        1 &&
+                                                    widget.product.expiryDate !=
+                                                        null
+                                                ? const Color.fromARGB(
+                                                  255,
+                                                  255,
+                                                  232,
+                                                  231,
+                                                )
+                                                : widget.product.quantity !=
+                                                        0 &&
+                                                    (widget.product.quantity ??
+                                                            0) >
+                                                        widget.product.lowQtty!
+                                                ? Colors
+                                                    .grey
+                                                    .shade100
+                                                : widget.product.quantity !=
+                                                        0 &&
+                                                    (widget.product.quantity ??
+                                                            0) <=
+                                                        widget.product.lowQtty!
+                                                ? const Color.fromARGB(
+                                                  255,
+                                                  255,
+                                                  249,
+                                                  227,
+                                                )
+                                                : const Color.fromARGB(
+                                                  255,
+                                                  255,
+                                                  232,
+                                                  231,
+                                                )
+                                            : Colors
+                                                .grey
+                                                .shade100,
+                                    border: Border.all(
                                       color:
                                           isManaged()
                                               ? getDayDifference(
@@ -356,8 +395,8 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                   ? const Color.fromARGB(
                                                     255,
                                                     255,
-                                                    232,
-                                                    231,
+                                                    142,
+                                                    134,
                                                   )
                                                   : widget.product.quantity !=
                                                           0 &&
@@ -366,7 +405,7 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                           widget.product.lowQtty!
                                                   ? Colors
                                                       .grey
-                                                      .shade100
+                                                      .shade700
                                                   : widget.product.quantity !=
                                                           0 &&
                                                       (widget.product.quantity ??
@@ -375,19 +414,40 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                   ? const Color.fromARGB(
                                                     255,
                                                     255,
-                                                    249,
-                                                    227,
+                                                    229,
+                                                    62,
                                                   )
                                                   : const Color.fromARGB(
                                                     255,
                                                     255,
-                                                    232,
-                                                    231,
+                                                    142,
+                                                    134,
                                                   )
                                               : Colors
                                                   .grey
-                                                  .shade100,
-                                      border: Border.all(
+                                                  .shade700,
+                                    ),
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                          20,
+                                        ),
+                                  ),
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(
+                                          horizontal: 8.0,
+                                          vertical: 3,
+                                        ),
+                                    child: Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            widget
+                                                .theme
+                                                .mobileTexts
+                                                .b4
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
                                         color:
                                             isManaged()
                                                 ? getDayDifference(
@@ -418,9 +478,9 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                             widget.product.lowQtty!
                                                     ? const Color.fromARGB(
                                                       255,
-                                                      255,
-                                                      229,
-                                                      62,
+                                                      132,
+                                                      115,
+                                                      1,
                                                     )
                                                     : const Color.fromARGB(
                                                       255,
@@ -432,101 +492,47 @@ class _ProductTileMainState extends State<ProductTileMain> {
                                                     .grey
                                                     .shade700,
                                       ),
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                            20,
-                                          ),
-                                    ),
-                                    child: Padding(
-                                      padding:
-                                          const EdgeInsets.symmetric(
-                                            horizontal: 8.0,
-                                            vertical: 3,
-                                          ),
-                                      child: Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              widget
-                                                  .theme
-                                                  .mobileTexts
-                                                  .b4
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
-                                          color:
-                                              isManaged()
-                                                  ? getDayDifference(
-                                                                widget.product.expiryDate ??
-                                                                    DateTime.now(),
-                                                              ) <
-                                                              1 &&
-                                                          widget.product.expiryDate !=
-                                                              null
-                                                      ? const Color.fromARGB(
-                                                        255,
-                                                        255,
-                                                        142,
-                                                        134,
-                                                      )
-                                                      : widget.product.quantity !=
-                                                              0 &&
-                                                          (widget.product.quantity ??
-                                                                  0) >
-                                                              widget.product.lowQtty!
-                                                      ? Colors
-                                                          .grey
-                                                          .shade700
-                                                      : widget.product.quantity !=
-                                                              0 &&
-                                                          (widget.product.quantity ??
-                                                                  0) <=
-                                                              widget.product.lowQtty!
-                                                      ? const Color.fromARGB(
-                                                        255,
-                                                        132,
-                                                        115,
-                                                        1,
-                                                      )
-                                                      : const Color.fromARGB(
-                                                        255,
-                                                        255,
-                                                        142,
-                                                        134,
-                                                      )
-                                                  : Colors
-                                                      .grey
-                                                      .shade700,
-                                        ),
-                                        widget
-                                                    .product
-                                                    .expiryDate !=
-                                                null
-                                            ? getDayDifference(
-                                                      widget.product.expiryDate ??
-                                                          DateTime.now(),
-                                                    ) >=
-                                                    1
-                                                ? widget.product.quantity ==
-                                                        0
-                                                    ? 'Out of Stock'
-                                                    : widget.product.quantity ==
-                                                        null
-                                                    ? 'Qtty Not Set'
-                                                    : '${formatLargeNumberDouble((widget.product.quantity ?? 0))} in Stock'
-                                                : 'Item Expired'
-                                            : widget
-                                                    .product
-                                                    .quantity ==
-                                                0
-                                            ? 'Out of Stock'
-                                            : widget
-                                                    .product
-                                                    .quantity ==
-                                                null
-                                            ? 'Qtty Not Set'
-                                            : '${formatLargeNumberDouble((widget.product.quantity ?? 0))} in Stock',
-                                      ),
+                                      widget
+                                                  .product
+                                                  .expiryDate !=
+                                              null
+                                          ? getDayDifference(
+                                                    widget.product.expiryDate ??
+                                                        DateTime.now(),
+                                                  ) >=
+                                                  1
+                                              ? widget.product.quantity ==
+                                                      0
+                                                  ? 'Out of Stock'
+                                                  : widget
+                                                          .product
+                                                          .quantity ==
+                                                      null
+                                                  ? 'Qtty Not Set'
+                                                  : authorization(
+                                                    authorized:
+                                                        Authorizations().viewItemQuantity,
+                                                  )
+                                                  ? '${formatLargeNumberDouble((widget.product.quantity ?? 0))} in Stock'
+                                                  : 'Restricted'
+                                              : 'Item Expired'
+                                          : widget
+                                                  .product
+                                                  .quantity ==
+                                              0
+                                          ? 'Out of Stock'
+                                          : widget
+                                                  .product
+                                                  .quantity ==
+                                              null
+                                          ? 'Qtty Not Set'
+                                          : authorization(
+                                            authorized:
+                                                Authorizations()
+                                                    .viewItemQuantity,
+                                          )
+                                          ? '${formatLargeNumberDouble((widget.product.quantity ?? 0))} in Stock'
+                                          : 'Restricted',
                                     ),
                                   ),
                                 ),

@@ -241,7 +241,7 @@ class _ProductDetailsMobileState
                                         .center,
                                 children: [
                                   Expanded(
-                                    child: TabContainer(
+                                    child: TabContainerMobile(
                                       isMoney: true,
                                       text: 'Cost Price',
                                       price:
@@ -264,7 +264,7 @@ class _ProductDetailsMobileState
                                     ),
                                   ),
                                   Expanded(
-                                    child: TabContainer(
+                                    child: TabContainerMobile(
                                       isMoney: true,
                                       text: 'Selling Price',
                                       price:
@@ -302,7 +302,7 @@ class _ProductDetailsMobileState
                                     Row(
                                       children: [
                                         Expanded(
-                                          child: TabContainer(
+                                          child: TabContainerMobile(
                                             isMoney: true,
                                             text:
                                                 'Whole Sale Price',
@@ -728,7 +728,7 @@ class _ProductDetailsMobileState
                                                 .center,
                                         children: [
                                           Expanded(
-                                            child: TabContainer(
+                                            child: TabContainerMobile(
                                               isMoney:
                                                   false,
                                               text:
@@ -828,7 +828,7 @@ class _ProductDetailsMobileState
                                                     )?.useGroupUnit ==
                                                     true,
                                             child: Expanded(
-                                              child: TabContainer(
+                                              child: TabContainerMobile(
                                                 isMoney:
                                                     false,
                                                 text:
@@ -2807,8 +2807,8 @@ class EditButton extends StatelessWidget {
   }
 }
 
-class TabContainer extends StatelessWidget {
-  const TabContainer({
+class TabContainerMobile extends StatelessWidget {
+  const TabContainerMobile({
     super.key,
     required this.theme,
     required this.backGround,
@@ -2857,7 +2857,11 @@ class TabContainer extends StatelessWidget {
                   fontSize: theme.mobileTexts.b2.fontSize,
                   fontWeight: FontWeight.bold,
                 ),
-                '${isMoney ? currencySymbol(context: context) : ''}${formatLargeNumberDouble(price)}${isDiscount != null ? '%' : ''}',
+                '${isMoney ? currencySymbol(context: context) : ''}${isMoney
+                    ? formatLargeNumberDouble(price)
+                    : authorization(authorized: Authorizations().viewItemQuantity)
+                    ? formatLargeNumberDouble(price)
+                    : 'Restricted'}${isDiscount != null ? '%' : ''}',
               ),
             ],
           ),

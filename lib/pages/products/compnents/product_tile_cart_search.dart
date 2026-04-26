@@ -442,7 +442,13 @@ class _ProductTileCartSearchState
                                                         .quantity ==
                                                     null
                                                 ? 'Qtty Not Set'
-                                                : '${formatLargeNumberDouble(widget.product.quantity ?? 0)} in Stock'
+                                                : authorization(
+                                                  authorized:
+                                                      Authorizations()
+                                                          .viewItemQuantity,
+                                                )
+                                                ? '${formatLargeNumberDouble(widget.product.quantity ?? 0)} in Stock'
+                                                : 'Restricted'
                                             : 'Item Expired'
                                         : widget
                                                 .product
@@ -454,7 +460,13 @@ class _ProductTileCartSearchState
                                                 .quantity ==
                                             null
                                         ? 'Qtty Not Set'
-                                        : '${formatLargeNumberDouble(widget.product.quantity ?? 0)} in Stock',
+                                        : authorization(
+                                          authorized:
+                                              Authorizations()
+                                                  .viewItemQuantity,
+                                        )
+                                        ? '${formatLargeNumberDouble(widget.product.quantity ?? 0)} in Stock'
+                                        : 'Restricted',
                                   ),
                                 ),
                               ),

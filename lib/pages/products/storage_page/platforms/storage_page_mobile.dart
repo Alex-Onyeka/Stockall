@@ -148,6 +148,7 @@ class _StoragePageMobileState
                 });
                 returnInventoryUpdatesProvider()
                     .clearDate();
+                searchController.clear();
               } else {
                 Navigator.of(context).pop();
               }
@@ -176,6 +177,7 @@ class _StoragePageMobileState
                           setState(() {
                             sortIndex = 1;
                           });
+                          searchController.clear();
                           returnInventoryUpdatesProvider()
                               .clearDate();
                         },
@@ -204,6 +206,7 @@ class _StoragePageMobileState
                           setState(() {
                             sortIndex = 2;
                           });
+                          searchController.clear();
                           returnInventoryUpdatesProvider()
                               .clearDate();
                         },
@@ -227,6 +230,7 @@ class _StoragePageMobileState
                           setState(() {
                             sortIndex = 3;
                           });
+                          searchController.clear();
                           returnInventoryUpdatesProvider()
                               .clearDate();
                         },
