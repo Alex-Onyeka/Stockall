@@ -143,8 +143,6 @@ class _AddProductMobileState
               });
 
               final dataProvider = returnData();
-              final shopId =
-                  returnShopProvider().userShop()!.shopId;
 
               await dataProvider.createProduct(
                 TempProductClass(
@@ -252,8 +250,6 @@ class _AddProductMobileState
                   uuid: createdProductUuid,
                 ),
               );
-
-              await dataProvider.getProducts(shopId!);
 
               setState(() {
                 isLoading = false;

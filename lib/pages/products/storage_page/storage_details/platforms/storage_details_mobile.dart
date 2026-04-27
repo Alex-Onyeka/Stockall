@@ -5,9 +5,9 @@ import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/products/compnents/product_tile_main.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
+import 'package:stockall/pages/products/storage_page/add_storage_item/add_storage_item.dart';
 import 'package:stockall/pages/products/storage_page/storage_details/components.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -375,9 +375,8 @@ class _StorageDetailsMobileState
                               context,
                               MaterialPageRoute(
                                 builder: (context) {
-                                  return AddProduct(
+                                  return AddStorageItem(
                                     productStorage: product,
-                                    isStorage: true,
                                   );
                                 },
                               ),

@@ -149,8 +149,6 @@ class _AddProductDesktopState
               });
 
               final dataProvider = returnData();
-              final shopId =
-                  returnShopProvider().userShop()!.shopId;
 
               await dataProvider.createProduct(
                 TempProductClass(
@@ -258,8 +256,6 @@ class _AddProductDesktopState
                           ?.uuid,
                 ),
               );
-
-              await dataProvider.getProducts(shopId!);
 
               setState(() {
                 isLoading = false;

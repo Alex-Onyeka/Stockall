@@ -8,6 +8,7 @@ import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/components/text_fields/main_dropdown.dart';
 import 'package:stockall/constants/bottom_sheet_widgets.dart';
+import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
@@ -54,11 +55,13 @@ class AddStorageItemMobileState
       );
     } else {
       final safeContext = context;
-      var samePro = returnData().productList().where(
-        (pr) =>
-            pr.name.toLowerCase() ==
-            widget.nameController.text.toLowerCase(),
-      );
+      var samePro = returnStorageProductProvider()
+          .storageProductListMain
+          .where(
+            (pr) =>
+                pr.name.toLowerCase() ==
+                widget.nameController.text.toLowerCase(),
+          );
 
       showDialog(
         context: safeContext,
@@ -80,11 +83,27 @@ class AddStorageItemMobileState
                 isLoading = true;
               });
 
-              final dataProvider = returnData();
-              final shopId =
-                  returnShopProvider().userShop()!.shopId;
+              final dataProvider =
+                  returnStorageProductProvider();
+              var product = TempStorageProducts(
+                shopId: shopId(),
+                name: widget.nameController.text.trim(),
+                createdAt: DateTime.now(),
+                groupUnit: returnData().selectedGroupUnit,
+                qttyPerGroup: double.tryParse(
+                  widget.qttyPerGroupController.text,
+                ),
+                quantity: double.tryParse(
+                  widget.quantityController.text,
+                ),
+                unit: returnData().selectedUnit,
+                updatedAt: DateTime.now(),
+                uuid: uuidGen(),
+              );
 
-              await dataProvider.getProducts(shopId!);
+              await dataProvider.createStorageProduct(
+                product,
+              );
 
               setState(() {
                 isLoading = false;
@@ -93,7 +112,7 @@ class AddStorageItemMobileState
 
               // Clear data before popping
               if (safeContext.mounted) {
-                dataProvider.clearFields();
+                returnData().clearFields();
               }
 
               Future.delayed(Duration(seconds: 2), () {
@@ -112,83 +131,101 @@ class AddStorageItemMobileState
   }
 
   void updateStorageProduct() {
-    final safeContext = context;
-    showDialog(
-      context: safeContext,
-      builder: (context) {
-        var theme = returnTheme(context);
-        return ConfirmationAlert(
-          theme: theme,
-          message:
-              'Are you sure you want to proceed with update?',
-          title: 'Proceed?',
-          action: () async {
-            final provider = returnStorageProductProvider();
-            final dataProvider = returnData();
-            if (safeContext.mounted) {
-              Navigator.of(safeContext).pop();
-            }
-
-            setState(() {
-              isLoading = true;
-            });
-            var res = await provider.updateProduct(
-              product: TempStorageProducts(
-                createdAt: widget.storageProduct?.createdAt,
-                updatedAt: DateTime.now(),
-                uuid: widget.storageProduct?.uuid,
-                name: widget.nameController.text,
-                unit: dataProvider.selectedUnit!,
-                groupUnit: dataProvider.selectedGroupUnit,
-                qttyPerGroup:
-                    widget
-                            .qttyPerGroupController
-                            .text
-                            .isNotEmpty
-                        ? double.parse(
-                          widget.qttyPerGroupController.text
-                              .replaceAll(',', ''),
-                        )
-                        : null,
-                quantity:
-                    widget
-                            .quantityController
-                            .text
-                            .isNotEmpty
-                        ? double.parse(
-                          widget.quantityController.text
-                              .replaceAll(',', ''),
-                        )
-                        : null,
-                shopId: userShop!.shopId!,
-              ),
-              // oldProduct: widget.storageProduct!,
-            );
-            if (res == 0) {
-              setState(() {
-                isLoading = false;
-              });
-            } else {
-              setState(() {
-                isLoading = false;
-                showSuccess = true;
-              });
-
-              if (safeContext.mounted) {
-                dataProvider.clearFields();
-              }
-
+    if (widget.nameController.text.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          var theme = returnTheme(context);
+          return InfoAlert(
+            theme: theme,
+            message:
+                'Item Name Must be set before item can be created',
+            title: 'Empty Input',
+          );
+        },
+      );
+    } else {
+      final safeContext = context;
+      showDialog(
+        context: safeContext,
+        builder: (context) {
+          var theme = returnTheme(context);
+          return ConfirmationAlert(
+            theme: theme,
+            message:
+                'Are you sure you want to proceed with update?',
+            title: 'Proceed?',
+            action: () async {
+              final provider =
+                  returnStorageProductProvider();
+              final dataProvider = returnData();
               if (safeContext.mounted) {
                 Navigator.of(safeContext).pop();
               }
-            }
-          },
-        );
-      },
-    );
-  }
 
-  String? createdProductUuid;
+              setState(() {
+                isLoading = true;
+              });
+              var res = await provider.updateProduct(
+                product: TempStorageProducts(
+                  createdAt:
+                      widget.storageProduct?.createdAt,
+                  updatedAt: DateTime.now(),
+                  uuid: widget.storageProduct?.uuid,
+                  name: widget.nameController.text.trim(),
+                  unit: dataProvider.selectedUnit!,
+                  groupUnit: dataProvider.selectedGroupUnit,
+                  qttyPerGroup:
+                      widget
+                              .qttyPerGroupController
+                              .text
+                              .isNotEmpty
+                          ? double.parse(
+                            widget
+                                .qttyPerGroupController
+                                .text
+                                .replaceAll(',', ''),
+                          )
+                          : null,
+                  quantity:
+                      widget
+                              .quantityController
+                              .text
+                              .isNotEmpty
+                          ? double.parse(
+                            widget.quantityController.text
+                                .replaceAll(',', ''),
+                          )
+                          : null,
+                  shopId: userShop!.shopId!,
+                ),
+                // oldProduct: widget.product!,
+              );
+
+              if (res == 0) {
+                setState(() {
+                  isLoading = false;
+                });
+              } else {
+                setState(() {
+                  isLoading = false;
+                  showSuccess = true;
+                });
+
+                if (safeContext.mounted) {
+                  dataProvider.clearFields();
+                }
+
+                if (safeContext.mounted) {
+                  Navigator.of(safeContext).pop();
+                }
+              }
+            },
+          );
+        },
+      );
+    }
+  }
 
   //
   @override
@@ -205,15 +242,6 @@ class AddStorageItemMobileState
     await Future.delayed(Duration(microseconds: 500), () {
       if (context.mounted) {
         returnData().clearFields(setIsManaged: false);
-      }
-      var res = ItemsAuthAction()
-          .allowStockallToManageItemAction(
-            context: context,
-          );
-      if (res) {
-        returnData().toggleIsManagedTemp(true);
-      } else {
-        returnData().toggleIsManagedTemp(false);
       }
     });
     if (widget.storageProduct != null) {
@@ -244,11 +272,6 @@ class AddStorageItemMobileState
     setState(() {
       userShop = returnShopProvider().userShop();
     });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   //
@@ -311,49 +334,6 @@ class AddStorageItemMobileState
                                 controller:
                                     widget.nameController,
                               ),
-                              SizedBox(height: 10),
-                              // Visibility(
-                              //   visible:
-                              //       shop(
-                              //             context,
-                              //           )?.wholeSale ==
-                              //           true &&
-                              //       !widget.isStorage,
-                              //   child: Column(
-                              //     children: [
-                              //       SizedBox(height: 10),
-                              //       MoneyTextfield(
-                              //         theme: theme,
-                              //         hint:
-                              //             'Enter Whole Sale Price',
-                              //         title:
-                              //             'Whole-Sale-Price (Optional)',
-                              //         controller:
-                              //             widget
-                              //                 .wholeSaleController,
-                              //       ),
-                              //     ],
-                              //   ),
-                              // ),
-                              Column(
-                                children: [
-                                  SizedBox(height: 10),
-                                  EditCartTextField(
-                                    theme: theme,
-                                    hint: 'Enter Quantity',
-                                    title:
-                                        'Quantity (Optional)',
-                                    controller:
-                                        widget
-                                            .quantityController,
-                                    onChanged: (value) {},
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 15),
-                              Divider(),
-                              // SizedBox(height: 5),
-                              Divider(),
                               SizedBox(height: 15),
                               Column(
                                 children: [
@@ -513,7 +493,14 @@ class AddStorageItemMobileState
                       ),
                       child: MainButtonP(
                         themeProvider: theme,
-                        action: () {},
+                        action: () {
+                          if (widget.storageProduct !=
+                              null) {
+                            updateStorageProduct();
+                          } else {
+                            checkFields();
+                          }
+                        },
                         text:
                             widget.storageProduct != null
                                 ? 'Update Item'

@@ -137,81 +137,100 @@ class _AddStorageItemDesktopState
   }
 
   void updateStorageProduct() {
-    final safeContext = context;
-    showDialog(
-      context: safeContext,
-      builder: (context) {
-        var theme = returnTheme(context);
-        return ConfirmationAlert(
-          theme: theme,
-          message:
-              'Are you sure you want to proceed with update?',
-          title: 'Proceed?',
-          action: () async {
-            final provider = returnStorageProductProvider();
-            final dataProvider = returnData();
-            if (safeContext.mounted) {
-              Navigator.of(safeContext).pop();
-            }
-
-            setState(() {
-              isLoading = true;
-            });
-            var res = await provider.updateProduct(
-              product: TempStorageProducts(
-                createdAt: widget.storageProduct?.createdAt,
-                updatedAt: DateTime.now(),
-                uuid: widget.storageProduct?.uuid,
-                name: widget.nameController.text,
-                unit: dataProvider.selectedUnit!,
-                groupUnit: dataProvider.selectedGroupUnit,
-                qttyPerGroup:
-                    widget
-                            .qttyPerGroupController
-                            .text
-                            .isNotEmpty
-                        ? double.parse(
-                          widget.qttyPerGroupController.text
-                              .replaceAll(',', ''),
-                        )
-                        : null,
-                quantity:
-                    widget
-                            .quantityController
-                            .text
-                            .isNotEmpty
-                        ? double.parse(
-                          widget.quantityController.text
-                              .replaceAll(',', ''),
-                        )
-                        : null,
-                shopId: userShop!.shopId!,
-              ),
-              // oldProduct: widget.product!,
-            );
-
-            if (res == 0) {
-              setState(() {
-                isLoading = false;
-              });
-            } else {
-              setState(() {
-                isLoading = false;
-                showSuccess = true;
-              });
-
-              if (safeContext.mounted) {
-                dataProvider.clearFields();
-              }
-
+    if (widget.nameController.text.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          var theme = returnTheme(context);
+          return InfoAlert(
+            theme: theme,
+            message:
+                'Item Name Must be set before item can be created',
+            title: 'Empty Input',
+          );
+        },
+      );
+    } else {
+      final safeContext = context;
+      showDialog(
+        context: safeContext,
+        builder: (context) {
+          var theme = returnTheme(context);
+          return ConfirmationAlert(
+            theme: theme,
+            message:
+                'Are you sure you want to proceed with update?',
+            title: 'Proceed?',
+            action: () async {
+              final provider =
+                  returnStorageProductProvider();
+              final dataProvider = returnData();
               if (safeContext.mounted) {
                 Navigator.of(safeContext).pop();
               }
-            }
-          },
-        );
-      },
-    );
+
+              setState(() {
+                isLoading = true;
+              });
+              var res = await provider.updateProduct(
+                product: TempStorageProducts(
+                  createdAt:
+                      widget.storageProduct?.createdAt,
+                  updatedAt: DateTime.now(),
+                  uuid: widget.storageProduct?.uuid,
+                  name: widget.nameController.text.trim(),
+                  unit: dataProvider.selectedUnit!,
+                  groupUnit: dataProvider.selectedGroupUnit,
+                  qttyPerGroup:
+                      widget
+                              .qttyPerGroupController
+                              .text
+                              .isNotEmpty
+                          ? double.parse(
+                            widget
+                                .qttyPerGroupController
+                                .text
+                                .replaceAll(',', ''),
+                          )
+                          : null,
+                  quantity:
+                      widget
+                              .quantityController
+                              .text
+                              .isNotEmpty
+                          ? double.parse(
+                            widget.quantityController.text
+                                .replaceAll(',', ''),
+                          )
+                          : null,
+                  shopId: userShop!.shopId!,
+                ),
+                // oldProduct: widget.product!,
+              );
+
+              if (res == 0) {
+                setState(() {
+                  isLoading = false;
+                });
+              } else {
+                setState(() {
+                  isLoading = false;
+                  showSuccess = true;
+                });
+
+                if (safeContext.mounted) {
+                  dataProvider.clearFields();
+                }
+
+                if (safeContext.mounted) {
+                  Navigator.of(safeContext).pop();
+                }
+              }
+            },
+          );
+        },
+      );
+    }
   }
 
   @override
@@ -228,15 +247,6 @@ class _AddStorageItemDesktopState
     await Future.delayed(Duration(microseconds: 500), () {
       if (context.mounted) {
         returnData().clearFields(setIsManaged: false);
-      }
-      var res = ItemsAuthAction()
-          .allowStockallToManageItemAction(
-            context: context,
-          );
-      if (res) {
-        returnData().toggleIsManagedTemp(true);
-      } else {
-        returnData().toggleIsManagedTemp(false);
       }
     });
     if (widget.storageProduct != null) {
@@ -528,7 +538,12 @@ class _AddStorageItemDesktopState
                           child: MainButtonP(
                             themeProvider: theme,
                             action: () {
-                              checkFields();
+                              if (widget.storageProduct !=
+                                  null) {
+                                updateStorageProduct();
+                              } else {
+                                checkFields();
+                              }
                             },
                             text:
                                 widget.storageProduct !=
@@ -551,8 +566,7 @@ class _AddStorageItemDesktopState
               listen: false,
             ).showLoader(
               message:
-                  widget.storageProduct != null ||
-                          widget.storageProduct != null
+                  widget.storageProduct != null
                       ? 'Updating Item'
                       : 'Creating Item',
             ),
@@ -563,8 +577,7 @@ class _AddStorageItemDesktopState
               context,
               listen: false,
             ).showSuccess(
-              widget.storageProduct != null ||
-                      widget.storageProduct != null
+              widget.storageProduct != null
                   ? 'Item Updated Successfully'
                   : 'Item Created Successfully',
             ),
