@@ -895,7 +895,7 @@ class InvoicesProvider extends ChangeNotifier {
         .toList();
   }
 
-  List<TempInvoice> returnInvoicesByDayOrWeekAll() {
+  List<TempInvoice> returnInvoicesBasedOnPaymentMethod() {
     if (rangeStartDate != null) {
       return departmentInvoices().where((invoice) {
         final created = invoice.createdAt.toLocal();
@@ -917,6 +917,28 @@ class InvoicesProvider extends ChangeNotifier {
       }).toList();
     }
     return departmentInvoices();
+  }
+
+  List<TempInvoice> returnInvoicesByDayOrWeekAll() {
+    if (returnReceiptProviderSingle().paymentMethod == 3) {
+      return returnInvoicesBasedOnPaymentMethod()
+          .where((rec) => rec.paymentMethod == 'Split')
+          .toList();
+    } else if (returnReceiptProviderSingle()
+            .paymentMethod ==
+        1) {
+      return returnInvoicesBasedOnPaymentMethod()
+          .where((rec) => rec.paymentMethod == 'Cash')
+          .toList();
+    } else if (returnReceiptProviderSingle()
+            .paymentMethod ==
+        2) {
+      return returnInvoicesBasedOnPaymentMethod()
+          .where((rec) => rec.paymentMethod == 'Bank')
+          .toList();
+    } else {
+      return returnInvoicesBasedOnPaymentMethod().toList();
+    }
   }
 
   double getTotalRevenueForSelectedDayAll({

@@ -261,7 +261,7 @@ class _AddExpensesDesktopState
       returnData().selectedUnit = widget.expenses!.unit;
     } else {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        returnData().clearExpenseUnit();
+        returnData().clearUnit();
       });
     }
   }

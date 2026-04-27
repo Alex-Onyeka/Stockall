@@ -34,6 +34,7 @@ import 'package:stockall/providers/nav_provider.dart';
 import 'package:stockall/providers/notifications_provider.dart';
 import 'package:stockall/providers/permission_provider.dart';
 import 'package:stockall/providers/pos_printer/device_service.dart';
+import 'package:stockall/providers/purchase_provider.dart';
 // import 'package:stockall/providers/product_suggestions_provider.dart';
 import 'package:stockall/providers/receipts_provider.dart';
 import 'package:stockall/providers/report_provider.dart';
@@ -44,6 +45,7 @@ import 'package:stockall/providers/storage_product_provider.dart';
 import 'package:stockall/providers/sub_payment_provider.dart';
 import 'package:stockall/providers/sub_staff_provider.dart';
 import 'package:stockall/providers/subscription_provider.dart';
+import 'package:stockall/providers/suppliers_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/providers/user_provider.dart';
 import 'package:stockall/providers/validate_input_provider.dart';
@@ -463,6 +465,26 @@ DepartmentProvider returnDepartmentProvider({
   }
 }
 
+PurchaseProvider returnPurchaseProvider({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return PurchaseProvider();
+  } else {
+    return Provider.of<PurchaseProvider>(context);
+  }
+}
+
+SuppliersProvider returnSuppliersProvider({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return SuppliersProvider();
+  } else {
+    return Provider.of<SuppliersProvider>(context);
+  }
+}
+
 Widget colorWidget(
   Widget widget,
   bool isPrimary,
@@ -594,6 +616,12 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => StorageProductProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => SuppliersProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => PurchaseProvider(),
         ),
       ],
       child: MaterialApp(

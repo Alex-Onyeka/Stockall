@@ -65,7 +65,7 @@ class _ReceiptPageDesktopState
 
     TempMainReceipt mainReceipt = returnReceiptProvider(
       context,
-    ).returnOwnReceiptsByDayOrWeek().firstWhere(
+    ).receipts.firstWhere(
       (rec) => rec.uuid! == widget.response.resUuid,
       orElse:
           () => TempMainReceipt(

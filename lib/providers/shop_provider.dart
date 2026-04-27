@@ -1258,7 +1258,8 @@ class ShopProvider extends ChangeNotifier {
         }
 
         if (userShop()!.manageDepartments!) {
-          returnDepartmentProvider().selectDepartment();
+          await returnDepartmentProvider()
+              .clearDepartments();
         }
         var shops = await getUserShops();
         setShops(shops);
@@ -1269,7 +1270,8 @@ class ShopProvider extends ChangeNotifier {
       } else {
         try {
           if (userShop()!.manageDepartments!) {
-            returnDepartmentProvider().selectDepartment();
+            await returnDepartmentProvider()
+                .clearDepartments();
           }
           userShop()!.updatedAt = DateTime.now();
           userShop()!.manageDepartments =

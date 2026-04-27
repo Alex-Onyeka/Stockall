@@ -81,8 +81,7 @@ class _ProductDetailsDesktopState
   Widget build(BuildContext context) {
     final shopI = returnShopProvider().userShop()!.shopId!;
     List<TempProductClass>? productList =
-        returnData(context: context)
-            .productList()
+        returnData(context: context).productListMain
             .where(
               (product) =>
                   product.uuid! == widget.productUuid,

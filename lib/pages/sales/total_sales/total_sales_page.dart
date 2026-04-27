@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/main.dart';
 import 'package:stockall/pages/sales/total_sales/platforms/total_sales_desktop.dart';
 import 'package:stockall/pages/sales/total_sales/platforms/total_sales_mobile.dart';
 
-class TotalSalesPage extends StatelessWidget {
+class TotalSalesPage extends StatefulWidget {
   final String? id;
   final bool? turnOff;
   final String? customerUuid;
@@ -19,22 +20,36 @@ class TotalSalesPage extends StatelessWidget {
   });
 
   @override
+  State<TotalSalesPage> createState() =>
+      _TotalSalesPageState();
+}
+
+class _TotalSalesPageState extends State<TotalSalesPage> {
+  @override
+  void dispose() {
+    super.dispose();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      returnReceiptProviderSingle().selectPaymentMethod(0);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth < mobileScreen) {
           return TotalSalesMobile(
-            id: id,
-            customerUuid: customerUuid,
-            subStaffId: subStaffId,
+            id: widget.id,
+            customerUuid: widget.customerUuid,
+            subStaffId: widget.subStaffId,
             // isInvoice: isInvoice,
           );
         } else {
           return TotalSalesDesktop(
-            customerUuid: customerUuid,
-            turnOff: turnOff,
-            subStaffId: subStaffId,
-            id: id,
+            customerUuid: widget.customerUuid,
+            turnOff: widget.turnOff,
+            subStaffId: widget.subStaffId,
+            id: widget.id,
             // isInvoice: isInvoice,
           );
         }

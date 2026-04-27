@@ -11,6 +11,7 @@ import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/invoices/invoice_list/platforms/invoice_list_mobile.dart';
+import 'package:stockall/pages/products/compnents/product_filter_button.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 
@@ -130,7 +131,7 @@ class _TotalSalesMobileState
                   Text(
                     style: TextStyle(
                       fontSize:
-                          theme.mobileTexts.b2.fontSize,
+                          theme.mobileTexts.b3.fontSize,
                       fontWeight: FontWeight.bold,
                     ),
                     !returnInvoice
@@ -275,107 +276,182 @@ class _TotalSalesMobileState
                                 ),
                             child: SizedBox(height: 20),
                           ),
-                          Visibility(
-                            visible: authorization(
-                              authorized:
-                                  Authorizations().viewDate,
-                            ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(
+                                  vertical: 6.0,
+                                ),
                             child: Row(
                               mainAxisAlignment:
                                   MainAxisAlignment
                                       .spaceBetween,
                               children: [
-                                Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b1
-                                            .fontSize,
+                                Visibility(
+                                  visible: authorization(
+                                    authorized:
+                                        Authorizations()
+                                            .viewDate,
                                   ),
-                                  returnReceiptProvider(
+                                  child: Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    returnReceiptProvider(
+                                                  context,
+                                                ).dateSet !=
+                                                null ||
+                                            returnReceiptProvider(
+                                                  context,
+                                                ).rangeStartDate !=
+                                                null
+                                        ? 'All'
+                                        : 'Today',
+                                  ),
+                                ),
+                                SizedBox(width: 5),
+                                Expanded(
+                                  child: Center(
+                                    child: SingleChildScrollView(
+                                      scrollDirection:
+                                          Axis.horizontal,
+                                      child: Row(
+                                        spacing: 6,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .center,
+                                        children: [
+                                          ProductsFilterButton(
+                                            action: () {
+                                              returnReceiptProviderSingle()
+                                                  .selectPaymentMethod(
+                                                    0,
+                                                  );
+                                            },
+                                            currentSelected:
+                                                returnReceiptProvider(
+                                                  context,
+                                                ).paymentMethod,
+                                            number: 0,
+                                            title: 'All',
+                                            theme: theme,
+                                          ),
+                                          ProductsFilterButton(
+                                            action: () {
+                                              returnReceiptProviderSingle()
+                                                  .selectPaymentMethod(
+                                                    1,
+                                                  );
+                                            },
+                                            currentSelected:
+                                                returnReceiptProvider(
+                                                  context,
+                                                ).paymentMethod,
+                                            number: 1,
+                                            title: 'Cash',
+                                            theme: theme,
+                                          ),
+                                          ProductsFilterButton(
+                                            action: () {
+                                              returnReceiptProviderSingle()
+                                                  .selectPaymentMethod(
+                                                    2,
+                                                  );
+                                            },
+                                            currentSelected:
+                                                returnReceiptProvider(
+                                                  context,
+                                                ).paymentMethod,
+                                            number: 2,
+                                            title: 'Bank',
+                                            theme: theme,
+                                          ),
+                                          ProductsFilterButton(
+                                            currentSelected:
+                                                returnReceiptProvider(
+                                                  context,
+                                                ).paymentMethod,
+                                            action: () {
+                                              returnReceiptProviderSingle()
+                                                  .selectPaymentMethod(
+                                                    3,
+                                                  );
+                                            },
+                                            number: 3,
+                                            title: 'Split',
+                                            theme: theme,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 5),
+                                Visibility(
+                                  visible: authorization(
+                                    authorized:
+                                        Authorizations()
+                                            .viewDate,
+                                  ),
+                                  child: InkWell(
+                                    onTap: () {
+                                      if (returnReceiptProvider(
                                                 context,
+                                                listen:
+                                                    false,
                                               ).dateSet !=
                                               null ||
                                           returnReceiptProvider(
                                                 context,
+                                                listen:
+                                                    false,
                                               ).rangeStartDate !=
-                                              null
-                                      ? 'All Sales'
-                                      : 'For Today',
-                                ),
-                                MaterialButton(
-                                  onPressed: () {
-                                    if (returnReceiptProvider(
+                                              null) {
+                                        returnReceiptProvider(
+                                          context,
+                                          listen: false,
+                                        ).clearDate();
+                                      } else {
+                                        mainDatePicker(
+                                          context: context,
+                                          theme: theme,
+                                          singleDate: (
+                                            date,
+                                          ) {
+                                            returnReceiptProvider(
                                               context,
                                               listen: false,
-                                            ).dateSet !=
-                                            null ||
-                                        returnReceiptProvider(
+                                            ).setDate(
+                                              date!,
+                                            );
+                                          },
+                                          rangeDate: (
+                                            firstDate,
+                                            lastDate,
+                                          ) {
+                                            returnReceiptProvider(
                                               context,
                                               listen: false,
-                                            ).rangeStartDate !=
-                                            null) {
-                                      returnReceiptProvider(
-                                        context,
-                                        listen: false,
-                                      ).clearDate();
-                                    } else {
-                                      mainDatePicker(
-                                        context: context,
-                                        theme: theme,
-                                        singleDate: (date) {
-                                          returnReceiptProvider(
-                                            context,
-                                            listen: false,
-                                          ).setDate(date!);
-                                        },
-                                        rangeDate: (
-                                          firstDate,
-                                          lastDate,
-                                        ) {
-                                          returnReceiptProvider(
-                                            context,
-                                            listen: false,
-                                          ).setRange(
-                                            firstDate!,
-                                            lastDate ??
-                                                DateTime.now(),
-                                          );
-                                        },
-                                      );
-                                    }
-                                  },
-                                  child: Row(
-                                    spacing: 3,
-                                    children: [
-                                      Text(
-                                        style: TextStyle(
-                                          fontSize:
-                                              theme
-                                                  .mobileTexts
-                                                  .b2
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .bold,
-                                          color:
-                                              Colors
-                                                  .grey
-                                                  .shade700,
-                                        ),
-                                        returnReceiptProvider(
-                                                      context,
-                                                    ).dateSet !=
-                                                    null ||
-                                                returnReceiptProvider(
-                                                      context,
-                                                    ).rangeStartDate !=
-                                                    null
-                                            ? 'Clear'
-                                            : 'Set Date',
-                                      ),
-                                      Icon(
+                                            ).setRange(
+                                              firstDate!,
+                                              lastDate ??
+                                                  DateTime.now(),
+                                            );
+                                          },
+                                        );
+                                      }
+                                    },
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.all(
+                                            4.0,
+                                          ),
+                                      child: Icon(
                                         size: 20,
                                         color:
                                             theme
@@ -393,7 +469,7 @@ class _TotalSalesMobileState
                                             : Icons
                                                 .date_range_outlined,
                                       ),
-                                    ],
+                                    ),
                                   ),
                                 ),
                               ],

@@ -1,0 +1,556 @@
+import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
+import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
+import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/info_alert.dart';
+import 'package:stockall/components/buttons/main_button_p.dart';
+import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
+import 'package:stockall/components/text_fields/general_textfield.dart';
+import 'package:stockall/components/text_fields/main_dropdown.dart';
+import 'package:stockall/constants/bottom_sheet_widgets.dart';
+import 'package:stockall/constants/subscription/items_auth.dart';
+import 'package:stockall/constants/subscription/subscription_func.dart';
+import 'package:stockall/main.dart';
+
+class AddStorageItemMobile extends StatefulWidget {
+  final TempStorageProducts? storageProduct;
+  final TextEditingController nameController;
+  final TextEditingController quantityController;
+  final TextEditingController qttyPerGroupController;
+
+  const AddStorageItemMobile({
+    super.key,
+    required this.nameController,
+    required this.quantityController,
+    required this.qttyPerGroupController,
+    this.storageProduct,
+  });
+
+  @override
+  State<AddStorageItemMobile> createState() =>
+      AddStorageItemMobileState();
+}
+
+class AddStorageItemMobileState
+    extends State<AddStorageItemMobile> {
+  bool isLoading = false;
+  bool showSuccess = false;
+  bool isOpenUnit = false;
+  bool isOpenGroupUnit = false;
+
+  void checkFields() async {
+    if (widget.nameController.text.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          var theme = returnTheme(context);
+          return InfoAlert(
+            theme: theme,
+            message:
+                'Item Name Must be set before item can be created',
+            title: 'Empty Input',
+          );
+        },
+      );
+    } else {
+      final safeContext = context;
+      var samePro = returnData().productList().where(
+        (pr) =>
+            pr.name.toLowerCase() ==
+            widget.nameController.text.toLowerCase(),
+      );
+
+      showDialog(
+        context: safeContext,
+        builder: (confirmDialog) {
+          return ConfirmationAlert(
+            theme: returnTheme(safeContext),
+            message:
+                samePro.isNotEmpty
+                    ? 'Item with the name  ${widget.nameController.text.toUpperCase()}  already Exists in your Inventory. Are you sure you want to proceed to create a duplicate Item?'
+                    : 'You are about to add a new item to your stock, are you sure you want to proceed?',
+            title:
+                samePro.isNotEmpty
+                    ? 'Item Already Exists'
+                    : 'Are you sure?',
+            action: () async {
+              Navigator.of(confirmDialog).pop();
+
+              setState(() {
+                isLoading = true;
+              });
+
+              final dataProvider = returnData();
+              final shopId =
+                  returnShopProvider().userShop()!.shopId;
+
+              await dataProvider.getProducts(shopId!);
+
+              setState(() {
+                isLoading = false;
+                showSuccess = true;
+              });
+
+              // Clear data before popping
+              if (safeContext.mounted) {
+                dataProvider.clearFields();
+              }
+
+              Future.delayed(Duration(seconds: 2), () {
+                // Pop current screen
+                if (safeContext.mounted) {
+                  Navigator.of(
+                    safeContext,
+                  ).pop(); // pop current page
+                }
+              });
+            },
+          );
+        },
+      );
+    }
+  }
+
+  void updateStorageProduct() {
+    final safeContext = context;
+    showDialog(
+      context: safeContext,
+      builder: (context) {
+        var theme = returnTheme(context);
+        return ConfirmationAlert(
+          theme: theme,
+          message:
+              'Are you sure you want to proceed with update?',
+          title: 'Proceed?',
+          action: () async {
+            final provider = returnStorageProductProvider();
+            final dataProvider = returnData();
+            if (safeContext.mounted) {
+              Navigator.of(safeContext).pop();
+            }
+
+            setState(() {
+              isLoading = true;
+            });
+            var res = await provider.updateProduct(
+              product: TempStorageProducts(
+                createdAt: widget.storageProduct?.createdAt,
+                updatedAt: DateTime.now(),
+                uuid: widget.storageProduct?.uuid,
+                name: widget.nameController.text,
+                unit: dataProvider.selectedUnit!,
+                groupUnit: dataProvider.selectedGroupUnit,
+                qttyPerGroup:
+                    widget
+                            .qttyPerGroupController
+                            .text
+                            .isNotEmpty
+                        ? double.parse(
+                          widget.qttyPerGroupController.text
+                              .replaceAll(',', ''),
+                        )
+                        : null,
+                quantity:
+                    widget
+                            .quantityController
+                            .text
+                            .isNotEmpty
+                        ? double.parse(
+                          widget.quantityController.text
+                              .replaceAll(',', ''),
+                        )
+                        : null,
+                shopId: userShop!.shopId!,
+              ),
+              // oldProduct: widget.storageProduct!,
+            );
+            if (res == 0) {
+              setState(() {
+                isLoading = false;
+              });
+            } else {
+              setState(() {
+                isLoading = false;
+                showSuccess = true;
+              });
+
+              if (safeContext.mounted) {
+                dataProvider.clearFields();
+              }
+
+              if (safeContext.mounted) {
+                Navigator.of(safeContext).pop();
+              }
+            }
+          },
+        );
+      },
+    );
+  }
+
+  String? createdProductUuid;
+
+  //
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((context) {
+      clearFields();
+    });
+    setShop();
+  }
+
+  Future<void> clearFields() async {
+    await Future.delayed(Duration(microseconds: 500), () {
+      if (context.mounted) {
+        returnData().clearFields(setIsManaged: false);
+      }
+      var res = ItemsAuthAction()
+          .allowStockallToManageItemAction(
+            context: context,
+          );
+      if (res) {
+        returnData().toggleIsManagedTemp(true);
+      } else {
+        returnData().toggleIsManagedTemp(false);
+      }
+    });
+    if (widget.storageProduct != null) {
+      widget.nameController.text =
+          widget.storageProduct?.name ?? '';
+      returnData().selectUnit(
+        widget.storageProduct!.unit ?? 'Others',
+      );
+      returnData().selectGroupUnit(
+        unit: widget.storageProduct!.groupUnit,
+      );
+      widget.qttyPerGroupController.text =
+          widget.storageProduct!.qttyPerGroup != null
+              ? widget.storageProduct!.qttyPerGroup!
+                  .toString()
+              : '';
+      widget.quantityController.text =
+          widget.storageProduct!.quantity == null
+              ? ''
+              : widget.storageProduct!.quantity.toString();
+    }
+  }
+
+  TempShopClass? userShop;
+  void setShop() async {
+    await returnShopProvider().getUserShops();
+
+    setState(() {
+      userShop = returnShopProvider().userShop();
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  //
+  //
+  @override
+  Widget build(BuildContext context) {
+    var theme = returnTheme(context);
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(
+            scrolledUnderElevation: 0,
+            centerTitle: true,
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  style: TextStyle(
+                    fontSize: theme.mobileTexts.h4.fontSize,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  widget.storageProduct != null
+                      ? 'Edit Item'
+                      : 'New Item',
+                ),
+                SizedBox(height: 5),
+                Text(
+                  style: TextStyle(
+                    fontSize: theme.mobileTexts.b2.fontSize,
+                  ),
+                  widget.storageProduct != null
+                      ? 'Edit item details'
+                      : 'Add a new item to your store.',
+                ),
+              ],
+            ),
+          ),
+          body: Stack(
+            children: [
+              Column(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0,
+                      ),
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                            top: 10.0,
+                          ),
+                          child: Column(
+                            children: [
+                              GeneralTextField(
+                                theme: theme,
+                                hint: 'Enter Item Name',
+                                lines: 1,
+                                title: 'Item Name',
+                                controller:
+                                    widget.nameController,
+                              ),
+                              SizedBox(height: 10),
+                              // Visibility(
+                              //   visible:
+                              //       shop(
+                              //             context,
+                              //           )?.wholeSale ==
+                              //           true &&
+                              //       !widget.isStorage,
+                              //   child: Column(
+                              //     children: [
+                              //       SizedBox(height: 10),
+                              //       MoneyTextfield(
+                              //         theme: theme,
+                              //         hint:
+                              //             'Enter Whole Sale Price',
+                              //         title:
+                              //             'Whole-Sale-Price (Optional)',
+                              //         controller:
+                              //             widget
+                              //                 .wholeSaleController,
+                              //       ),
+                              //     ],
+                              //   ),
+                              // ),
+                              Column(
+                                children: [
+                                  SizedBox(height: 10),
+                                  EditCartTextField(
+                                    theme: theme,
+                                    hint: 'Enter Quantity',
+                                    title:
+                                        'Quantity (Optional)',
+                                    controller:
+                                        widget
+                                            .quantityController,
+                                    onChanged: (value) {},
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 15),
+                              Divider(),
+                              // SizedBox(height: 5),
+                              Divider(),
+                              SizedBox(height: 15),
+                              Column(
+                                children: [
+                                  Column(
+                                    children: [
+                                      SubWrapper(
+                                        isVisible:
+                                            !ItemsAuthAction()
+                                                .applyVariationsAction(
+                                                  context:
+                                                      context,
+                                                ),
+                                        mainWidget: MainDropdown(
+                                          valueSet:
+                                              returnData(
+                                                context:
+                                                    context,
+                                              ).unitValueSet,
+                                          onTap: () {
+                                            ItemsAuthAction().applyVariationsAction(
+                                              context:
+                                                  context,
+                                              action: () {
+                                                unitsBottomSheet(
+                                                  context,
+                                                  () {
+                                                    setState(() {
+                                                      isOpenUnit =
+                                                          !isOpenUnit;
+                                                    });
+                                                  },
+                                                );
+                                                setState(() {
+                                                  isOpenUnit =
+                                                      !isOpenUnit;
+                                                });
+                                              },
+                                            );
+                                          },
+                                          isOpen:
+                                              isOpenUnit,
+                                          title:
+                                              'Item Unit (Optional)',
+                                          hint:
+                                              returnData(
+                                                context:
+                                                    context,
+                                              ).selectedUnit ??
+                                              'Select Item Unit',
+                                          theme: theme,
+                                        ),
+                                      ),
+                                      SizedBox(height: 10),
+                                      Visibility(
+                                        visible:
+                                            returnShopProvider(
+                                                  context:
+                                                      context,
+                                                )
+                                                .userShop()
+                                                ?.useGroupUnit ==
+                                            true,
+                                        child: SubWrapper(
+                                          isVisible:
+                                              !ItemsAuthAction()
+                                                  .useGroupUnitAction(
+                                                    context:
+                                                        context,
+                                                  ),
+                                          mainWidget: MainDropdown(
+                                            valueSet:
+                                                returnData(
+                                                  context:
+                                                      context,
+                                                ).groupUnitValueSet,
+                                            onTap: () {
+                                              ItemsAuthAction().useGroupUnitAction(
+                                                context:
+                                                    context,
+                                                action: () {
+                                                  groupUnitsBottomSheet(
+                                                    context,
+                                                    () {
+                                                      setState(() {
+                                                        isOpenGroupUnit =
+                                                            !isOpenGroupUnit;
+                                                      });
+                                                    },
+                                                  );
+                                                  setState(() {
+                                                    isOpenGroupUnit =
+                                                        !isOpenGroupUnit;
+                                                  });
+                                                },
+                                              );
+                                            },
+                                            isOpen:
+                                                isOpenGroupUnit,
+                                            title:
+                                                'Item Group Unit (Optional)',
+                                            hint:
+                                                returnData(
+                                                  context:
+                                                      context,
+                                                ).selectedGroupUnit ??
+                                                'Select Item Group Unit',
+                                            theme: theme,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(height: 10),
+                                      Visibility(
+                                        visible:
+                                            returnShopProvider(
+                                                  context:
+                                                      context,
+                                                )
+                                                .userShop()
+                                                ?.useGroupUnit ==
+                                            true,
+                                        child: Column(
+                                          children: [
+                                            EditCartTextField(
+                                              theme: theme,
+                                              hint:
+                                                  'Enter Item Quantity in Group',
+                                              title:
+                                                  'Quantity in Group (Optional)',
+                                              controller:
+                                                  widget
+                                                      .qttyPerGroupController,
+                                            ),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    color: Colors.white,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        bottom: 30.0,
+                        top: 20,
+                        left: 30,
+                        right: 30,
+                      ),
+                      child: MainButtonP(
+                        themeProvider: theme,
+                        action: () {},
+                        text:
+                            widget.storageProduct != null
+                                ? 'Update Item'
+                                : 'Create Item',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+
+        Visibility(
+          visible: isLoading,
+          child: returnCompProvider(
+            context,
+            listen: false,
+          ).showLoader(
+            message:
+                widget.storageProduct != null
+                    ? 'Updating Item'
+                    : 'Creating Item',
+          ),
+        ),
+        Visibility(
+          visible: showSuccess,
+          child: returnCompProvider(
+            context,
+            listen: false,
+          ).showSuccess(
+            widget.storageProduct != null
+                ? 'Item Updated Successfully'
+                : 'Item Created Successfully',
+          ),
+        ),
+      ],
+    );
+  }
+}

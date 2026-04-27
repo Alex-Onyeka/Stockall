@@ -4,12 +4,14 @@ import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/play_sounds.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/products/product_details/platforms/product_details_desktop.dart';
+import 'package:stockall/pages/products/storage_page/add_storage_item/add_storage_item.dart';
 import 'package:stockall/pages/products/storage_page/components/inventory_update_widget.dart';
 import 'package:stockall/pages/products/storage_page/components/summary_table_heading_bar.dart';
 import 'package:stockall/pages/products/storage_page/components/table_row_widget.dart';
@@ -1197,6 +1199,78 @@ class StoragePageDesktopState
                             MainAxisAlignment.end,
                         children: [
                           Visibility(
+                            visible: sortIndex == 1,
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      3,
+                                    ),
+                                onTap: () {
+                                  if (screenWidth(context) >
+                                      mobileScreen) {
+                                    returnData()
+                                        .unFocusSearchNode();
+                                    returnData()
+                                        .removeSearchNodeListener();
+                                  }
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return AddStorageItem();
+                                      },
+                                    ),
+                                  ).then((_) {
+                                    if (screenWidth(
+                                          context,
+                                        ) >
+                                        mobileScreen) {
+                                      returnData()
+                                          .requestFocusSearchNode();
+                                      returnData()
+                                          .addSearchNodeListener();
+                                    }
+                                  });
+                                },
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.all(
+                                        7.0,
+                                      ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .center,
+                                    mainAxisSize:
+                                        MainAxisSize.min,
+                                    spacing: 3,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b3
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        'Add New',
+                                      ),
+                                      Icon(
+                                        size: 18,
+                                        Icons.add,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Visibility(
                             visible: sortIndex == 3,
                             child: IconButton(
                               onPressed: () {
@@ -1343,8 +1417,8 @@ class StoragePageDesktopState
                                       if (start != 0) {
                                         navigate(
                                           false,
-                                          returnData()
-                                              .productList()
+                                          returnStorageProductProvider()
+                                              .storageProductListMain
                                               .length,
                                         );
                                       }
@@ -1410,20 +1484,20 @@ class StoragePageDesktopState
                                           color:
                                               Colors.grey,
                                         ),
-                                        "${returnData(context: context).productList().length > 50 ? (returnData(context: context).productList().length / 50).ceil() : 1}",
+                                        "${returnStorageProductProvider(context: context).storageProductListMain.length > 50 ? (returnStorageProductProvider(context: context).storageProductListMain.length / 50).ceil() : 1}",
                                       ),
                                     ],
                                   ),
                                   IconButton(
                                     onPressed: () {
                                       if (end !=
-                                          returnData()
-                                              .productList()
+                                          returnStorageProductProvider()
+                                              .storageProductListMain
                                               .length) {
                                         navigate(
                                           true,
-                                          returnData()
-                                              .productList()
+                                          returnStorageProductProvider()
+                                              .storageProductListMain
                                               .length,
                                         );
                                       }
@@ -1432,14 +1506,14 @@ class StoragePageDesktopState
                                       size: 20,
                                       color:
                                           end ==
-                                                      returnData(
+                                                      returnStorageProductProvider(
                                                         context:
                                                             context,
-                                                      ).productList().length ||
-                                                  returnData(
+                                                      ).storageProductListMain.length ||
+                                                  returnStorageProductProvider(
                                                         context:
                                                             context,
-                                                      ).productList().length <=
+                                                      ).storageProductListMain.length <=
                                                       50
                                               ? Colors
                                                   .grey

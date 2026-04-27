@@ -100,9 +100,7 @@ class StorageProductProvider extends ChangeNotifier {
     );
   }
 
-  Future<void> createStorageProductsSync(
-    BuildContext context,
-  ) async {
+  Future<void> createStorageProductsSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
       // Prepare batch payload
@@ -135,17 +133,13 @@ class StorageProductProvider extends ChangeNotifier {
       print('Batch insert failed ❌: $e');
     }
 
-    if (context.mounted) {
-      print('Mounted, refreshing Storage Products ✅');
-      await getStorageProducts(
-        returnShopProvider().userShop()!.shopId!,
-      );
-    }
+    print('Mounted, refreshing Storage Products ✅');
+    await getStorageProducts(
+      returnShopProvider().userShop()!.shopId!,
+    );
   }
 
-  Future<void> deleteStorageProductsSync(
-    BuildContext context,
-  ) async {
+  Future<void> deleteStorageProductsSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
 
@@ -181,17 +175,13 @@ class StorageProductProvider extends ChangeNotifier {
       print('Batch delete failed ❌: $e');
     }
 
-    if (context.mounted) {
-      print('Mounted, refreshing Storage Products ✅');
-      await getStorageProducts(
-        returnShopProvider().userShop()!.shopId!,
-      );
-    }
+    print('Mounted, refreshing Storage Products ✅');
+    await getStorageProducts(
+      returnShopProvider().userShop()!.shopId!,
+    );
   }
 
-  Future<void> updateStorageProductsSync(
-    BuildContext context,
-  ) async {
+  Future<void> updateStorageProductsSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
       print(
@@ -286,12 +276,10 @@ class StorageProductProvider extends ChangeNotifier {
       print('Batch update failed ❌: $e');
     }
 
-    if (context.mounted) {
-      print('Mounted, refreshing products ✅');
-      await getStorageProducts(
-        returnShopProvider().userShop()!.shopId!,
-      );
-    }
+    print('Mounted, refreshing products ✅');
+    await getStorageProducts(
+      returnShopProvider().userShop()!.shopId!,
+    );
   }
 
   //

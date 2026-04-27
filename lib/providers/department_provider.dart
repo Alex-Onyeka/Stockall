@@ -102,8 +102,7 @@ class DepartmentProvider with ChangeNotifier {
                           departmentClass.uuid,
                     ),
                   )
-              : await CurrentDepartmentFunc()
-                  .clearCurrentDepartment();
+              : await clearDepartments();
       if (res == 1) {
         print(
           'Current Department set: ${CurrentDepartmentFunc().getCurrentDepartment()?.currentDepartmentId}',
@@ -119,10 +118,12 @@ class DepartmentProvider with ChangeNotifier {
     }
   }
 
-  void clearDepartments() {
+  Future<int> clearDepartments() async {
     departments.clear();
     print('Departments Cleared');
     notifyListeners();
+    return await CurrentDepartmentFunc()
+        .clearCurrentDepartment();
   }
 
   Future<int> createDepartment(

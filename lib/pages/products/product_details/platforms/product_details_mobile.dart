@@ -74,8 +74,7 @@ class _ProductDetailsMobileState
   Widget build(BuildContext context) {
     // final shopI = returnShopProvider().userShop()!.shopId!;
     List<TempProductClass>? productList =
-        returnData()
-            .productList()
+        returnData().productListMain
             .where(
               (product) =>
                   product.uuid! == widget.productUuid,

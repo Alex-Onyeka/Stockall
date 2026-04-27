@@ -41,11 +41,20 @@ import 'package:stockall/local_database/products/unsync_funcs/created_products%2
 import 'package:stockall/local_database/products/unsync_funcs/created_products/created_product_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/deleted_products/deleted_products_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/updated_products/updated_products_func.dart';
+import 'package:stockall/local_database/purchases/unsync_funcs/created/created_purchases_func.dart';
+import 'package:stockall/local_database/purchases/unsync_funcs/deleted/deleted_purchases_func.dart';
+import 'package:stockall/local_database/purchases/unsync_funcs/updated/updated_purchases_func.dart';
 import 'package:stockall/local_database/shop/updated_shop/updated_shop_func.dart';
 import 'package:stockall/local_database/shop_logos/created_shop_logo/created_shop_logos_func.dart';
+import 'package:stockall/local_database/storage_product/unsync_funcs/created/created_storage_products_func.dart';
+import 'package:stockall/local_database/storage_product/unsync_funcs/deleted/deleted_storage_products_func.dart';
+import 'package:stockall/local_database/storage_product/unsync_funcs/updated/updated_storage_products_func.dart';
 import 'package:stockall/local_database/sub_staff/unsync_funcs/created/created_sub_staff_func.dart';
 import 'package:stockall/local_database/sub_staff/unsync_funcs/deleted/deleted_sub_staff_func.dart';
 import 'package:stockall/local_database/sub_staff/unsync_funcs/updated/updated_sub_staff_func.dart';
+import 'package:stockall/local_database/suppliers_func/unsync_funcs/created/created_supplier_func.dart';
+import 'package:stockall/local_database/suppliers_func/unsync_funcs/deleted/deleted_supplier_func.dart';
+import 'package:stockall/local_database/suppliers_func/unsync_funcs/updated/updated_supplier_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/providers/department_provider.dart';
@@ -748,6 +757,92 @@ class DataProvider extends ChangeNotifier {
               print('Finished Syncing Deleted Categories');
               setSyncProgress(31);
             }
+            if (CreatedSupplierFunc()
+                    .getSuppliers()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnSuppliersProvider()
+                  .createSupplierSync();
+              print('Finished Syncing Created Suppliers');
+              setSyncProgress(32);
+            }
+            if (UpdatedSupplierFunc()
+                    .getSuppliers()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnSuppliersProvider()
+                  .updateSuppliersSync();
+              print('Finished Syncing Updated Suppliers');
+              setSyncProgress(33);
+            }
+            if (DeletedSupplierFunc()
+                    .getSupplierIds()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnSuppliersProvider()
+                  .deletedSuppliersSync();
+              print('Finished Syncing Deleted Suppliers');
+              setSyncProgress(34);
+            }
+            if (CreatedPurchasesFunc()
+                    .getPurchases()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnPurchaseProvider()
+                  .createPurchasesSync();
+              print('Finished Syncing Created Purchasess');
+              setSyncProgress(35);
+            }
+            if (DeletedPurchasesFunc()
+                    .getPurchaseIds()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnPurchaseProvider()
+                  .deletePurchasesSync();
+              print('Finished Syncing Deleted Purchasess');
+              setSyncProgress(36);
+            }
+            if (CreatedStorageProductsFunc()
+                    .getStorageProducts()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnStorageProductProvider()
+                  .createStorageProductsSync();
+              print(
+                'Finished Syncing Created StorageProductss',
+              );
+              setSyncProgress(37);
+            }
+            if (UpdatedStorageProductsFunc()
+                    .getStorageProductIds()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnStorageProductProvider()
+                  .updateStorageProductsSync();
+              print(
+                'Finished Syncing Updated StorageProductss',
+              );
+              setSyncProgress(38);
+            }
+            if (DeletedStorageProductsFunc()
+                    .getStorageProductIds()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnStorageProductProvider()
+                  .deleteStorageProductsSync();
+              print(
+                'Finished Syncing Deleted StorageProductss',
+              );
+              setSyncProgress(39);
+            }
             await clearTotalCache();
             toggleSyncing(false);
           }
@@ -794,7 +889,7 @@ class DataProvider extends ChangeNotifier {
   bool isSyncing = false;
   double syncProgress = 0;
   void setSyncProgress(int value) {
-    syncProgress = (value / 31) * 100;
+    syncProgress = (value / 39) * 100;
     notifyListeners();
   }
 
@@ -854,12 +949,24 @@ class DataProvider extends ChangeNotifier {
               .getCreateCategories()
               .isEmpty &&
           UpdatedCategoriesFunc().getCategories().isEmpty &&
-          DeletedCategoriesFunc().getCategoryIds().isEmpty
-      // && DeletedRecordsFunc().getRecordIds().isEmpty &&
-      // IncrementedProductsFunc()
-      //     .getIncrementedProducts()
-      //     .isEmpty
-      ) {
+          DeletedCategoriesFunc()
+              .getCategoryIds()
+              .isEmpty &&
+          CreatedSupplierFunc().getSuppliers().isEmpty &&
+          UpdatedSupplierFunc().getSuppliers().isEmpty &&
+          DeletedSupplierFunc().getSupplierIds().isEmpty &&
+          CreatedPurchasesFunc().getPurchases().isEmpty &&
+          UpdatedPurchasesFunc().getPurchaseIds().isEmpty &&
+          DeletedPurchasesFunc().getPurchaseIds().isEmpty &&
+          CreatedStorageProductsFunc()
+              .getStorageProducts()
+              .isEmpty &&
+          UpdatedStorageProductsFunc()
+              .getStorageProductIds()
+              .isEmpty &&
+          DeletedStorageProductsFunc()
+              .getStorageProductIds()
+              .isEmpty) {
         return 1;
       } else {
         return 0;
@@ -899,6 +1006,18 @@ class DataProvider extends ChangeNotifier {
     await CreatedCategoriesFunc().clearCategories();
     await UpdatedCategoriesFunc().clearUpdatedCategory();
     await DeletedCategoriesFunc().clearDeletedCategories();
+    await CreatedSupplierFunc().clearSuppliers();
+    await UpdatedSupplierFunc().clearUpdatedSuppliers();
+    await DeletedSupplierFunc().clearDeletedSupplier();
+    await CreatedPurchasesFunc().clearPurchases();
+    await UpdatedPurchasesFunc().clearUpdatedPurchases();
+    await DeletedPurchasesFunc().clearDeletedPurchases();
+    await CreatedStorageProductsFunc()
+        .clearCreatedStorageProducts();
+    await UpdatedStorageProductsFunc()
+        .clearUpdatedStorageProduct();
+    await DeletedStorageProductsFunc()
+        .clearDeletedStorageProduct();
   }
 
   String? departmentUuid;
@@ -1507,7 +1626,7 @@ class DataProvider extends ChangeNotifier {
     clearGroupUnit();
     clearExpDate();
     clearDepartment();
-    clearExpenseUnit();
+    clearUnit();
     notifyListeners();
   }
 
@@ -1682,7 +1801,7 @@ class DataProvider extends ChangeNotifier {
 
   String? selectedUnit;
 
-  void clearExpenseUnit() {
+  void clearUnit() {
     selectedUnit = null;
     notifyListeners();
   }

@@ -16,6 +16,7 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/compnents/product_filter_button.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -501,15 +502,16 @@ class _InvoiceListBodyDesktopState
                   padding: const EdgeInsets.symmetric(
                     vertical: 10.0,
                   ),
-                  child: Visibility(
-                    visible: authorization(
-                      authorized: Authorizations().viewDate,
-                    ),
-                    child: Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
+                  child: Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                    children: [
+                      Visibility(
+                        visible: authorization(
+                          authorized:
+                              Authorizations().viewDate,
+                        ),
+                        child: Text(
                           style: TextStyle(
                             fontSize:
                                 theme
@@ -519,7 +521,93 @@ class _InvoiceListBodyDesktopState
                           ),
                           'All Invoice',
                         ),
-                        MaterialButton(
+                      ),
+                      SizedBox(width: 20),
+                      SizedBox(
+                        width: 250,
+                        child: Row(
+                          spacing: 6,
+                          mainAxisAlignment:
+                              MainAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: ProductsFilterButton(
+                                action: () {
+                                  returnReceiptProviderSingle()
+                                      .selectPaymentMethod(
+                                        0,
+                                      );
+                                },
+                                currentSelected:
+                                    returnReceiptProvider(
+                                      context,
+                                    ).paymentMethod,
+                                number: 0,
+                                title: 'All',
+                                theme: theme,
+                              ),
+                            ),
+                            Expanded(
+                              child: ProductsFilterButton(
+                                action: () {
+                                  returnReceiptProviderSingle()
+                                      .selectPaymentMethod(
+                                        1,
+                                      );
+                                },
+                                currentSelected:
+                                    returnReceiptProvider(
+                                      context,
+                                    ).paymentMethod,
+                                number: 1,
+                                title: 'Cash',
+                                theme: theme,
+                              ),
+                            ),
+                            Expanded(
+                              child: ProductsFilterButton(
+                                action: () {
+                                  returnReceiptProviderSingle()
+                                      .selectPaymentMethod(
+                                        2,
+                                      );
+                                },
+                                currentSelected:
+                                    returnReceiptProvider(
+                                      context,
+                                    ).paymentMethod,
+                                number: 2,
+                                title: 'Bank',
+                                theme: theme,
+                              ),
+                            ),
+                            Expanded(
+                              child: ProductsFilterButton(
+                                currentSelected:
+                                    returnReceiptProvider(
+                                      context,
+                                    ).paymentMethod,
+                                action: () {
+                                  returnReceiptProviderSingle()
+                                      .selectPaymentMethod(
+                                        3,
+                                      );
+                                },
+                                number: 3,
+                                title: 'Split',
+                                theme: theme,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: 20),
+                      Visibility(
+                        visible: authorization(
+                          authorized:
+                              Authorizations().viewDate,
+                        ),
+                        child: MaterialButton(
                           onPressed: () {
                             if (returnInvoicesProvider()
                                         .dateSet !=
@@ -602,8 +690,8 @@ class _InvoiceListBodyDesktopState
                             ],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ],

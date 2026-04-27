@@ -77,6 +77,14 @@ class _HomeState extends State<Home> {
     userFuture = getUser();
     shopFuture = getUserShop();
     listPrinters();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (returnShopProvider()
+              .userShop()
+              ?.manageDepartments !=
+          true) {
+        returnDepartmentProvider().clearDepartments();
+      }
+    });
   }
 
   @override

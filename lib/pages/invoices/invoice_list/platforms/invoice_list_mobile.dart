@@ -10,6 +10,7 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/products/compnents/product_filter_button.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 
@@ -298,100 +299,162 @@ class _InvoiceListBodyMobileState
                       ),
                   child: SizedBox(height: 20),
                 ),
-                Visibility(
-                  visible: authorization(
-                    authorized: Authorizations().viewDate,
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10.0,
                   ),
                   child: Row(
                     mainAxisAlignment:
                         MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b1.fontSize,
+                      Visibility(
+                        visible: authorization(
+                          authorized:
+                              Authorizations().viewDate,
                         ),
-                        'All Invoice',
+                        child: Text(
+                          style: TextStyle(
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          'All',
+                        ),
                       ),
-                      MaterialButton(
-                        onPressed: () {
-                          if (returnInvoicesProvider()
-                                      .dateSet !=
-                                  null ||
+                      SizedBox(width: 5),
+                      Expanded(
+                        child: Center(
+                          child: SingleChildScrollView(
+                            scrollDirection:
+                                Axis.horizontal,
+                            child: Row(
+                              spacing: 6,
+                              mainAxisAlignment:
+                                  MainAxisAlignment.center,
+                              children: [
+                                ProductsFilterButton(
+                                  action: () {
+                                    returnReceiptProviderSingle()
+                                        .selectPaymentMethod(
+                                          0,
+                                        );
+                                  },
+                                  currentSelected:
+                                      returnReceiptProvider(
+                                        context,
+                                      ).paymentMethod,
+                                  number: 0,
+                                  title: 'All',
+                                  theme: theme,
+                                ),
+                                ProductsFilterButton(
+                                  action: () {
+                                    returnReceiptProviderSingle()
+                                        .selectPaymentMethod(
+                                          1,
+                                        );
+                                  },
+                                  currentSelected:
+                                      returnReceiptProvider(
+                                        context,
+                                      ).paymentMethod,
+                                  number: 1,
+                                  title: 'Cash',
+                                  theme: theme,
+                                ),
+                                ProductsFilterButton(
+                                  action: () {
+                                    returnReceiptProviderSingle()
+                                        .selectPaymentMethod(
+                                          2,
+                                        );
+                                  },
+                                  currentSelected:
+                                      returnReceiptProvider(
+                                        context,
+                                      ).paymentMethod,
+                                  number: 2,
+                                  title: 'Bank',
+                                  theme: theme,
+                                ),
+                                ProductsFilterButton(
+                                  currentSelected:
+                                      returnReceiptProvider(
+                                        context,
+                                      ).paymentMethod,
+                                  action: () {
+                                    returnReceiptProviderSingle()
+                                        .selectPaymentMethod(
+                                          3,
+                                        );
+                                  },
+                                  number: 3,
+                                  title: 'Split',
+                                  theme: theme,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 5),
+                      Visibility(
+                        visible: authorization(
+                          authorized:
+                              Authorizations().viewDate,
+                        ),
+                        child: InkWell(
+                          onTap: () {
+                            if (returnInvoicesProvider()
+                                        .dateSet !=
+                                    null ||
+                                returnInvoicesProvider()
+                                        .rangeStartDate !=
+                                    null) {
                               returnInvoicesProvider()
-                                      .rangeStartDate !=
-                                  null) {
-                            returnInvoicesProvider()
-                                .clearDate();
-                          } else {
-                            mainDatePicker(
-                              context: context,
-                              theme: theme,
-                              singleDate: (date) {
-                                returnInvoicesProvider()
-                                    .setDate(date!);
-                              },
-                              rangeDate: (
-                                firstDate,
-                                lastDate,
-                              ) {
-                                returnInvoicesProvider()
-                                    .setRange(
-                                      firstDate!,
-                                      lastDate ??
-                                          DateTime.now(),
-                                    );
-                              },
-                            );
-                          }
-                        },
-                        child: Row(
-                          spacing: 3,
-                          children: [
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b2
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey.shade700,
-                              ),
-                              returnInvoicesProvider(
-                                            context:
-                                                context,
-                                          ).dateSet !=
-                                          null ||
-                                      returnInvoicesProvider(
-                                            context:
-                                                context,
-                                          ).rangeStartDate !=
-                                          null
-                                  ? 'Clear Date'
-                                  : 'Set Date',
-                            ),
-                            Icon(
-                              size: 20,
-                              color:
-                                  theme
-                                      .lightModeColor
-                                      .secColor100,
-                              returnInvoicesProvider(
-                                            context:
-                                                context,
-                                          ).dateSet !=
-                                          null ||
-                                      returnInvoicesProvider(
-                                            context:
-                                                context,
-                                          ).rangeStartDate !=
-                                          null
-                                  ? Icons.clear
-                                  : Icons
-                                      .date_range_outlined,
-                            ),
-                          ],
+                                  .clearDate();
+                            } else {
+                              mainDatePicker(
+                                context: context,
+                                theme: theme,
+                                singleDate: (date) {
+                                  returnInvoicesProvider()
+                                      .setDate(date!);
+                                },
+                                rangeDate: (
+                                  firstDate,
+                                  lastDate,
+                                ) {
+                                  returnInvoicesProvider()
+                                      .setRange(
+                                        firstDate!,
+                                        lastDate ??
+                                            DateTime.now(),
+                                      );
+                                },
+                              );
+                            }
+                          },
+                          child: Icon(
+                            size: 20,
+                            color:
+                                theme
+                                    .lightModeColor
+                                    .secColor100,
+                            returnInvoicesProvider(
+                                          context: context,
+                                        ).dateSet !=
+                                        null ||
+                                    returnInvoicesProvider(
+                                          context: context,
+                                        ).rangeStartDate !=
+                                        null
+                                ? Icons.clear
+                                : Icons.date_range_outlined,
+                          ),
                         ),
                       ),
                     ],

@@ -1247,8 +1247,8 @@ class _StoragePageMobileState
                                     if (start != 0) {
                                       navigate(
                                         false,
-                                        returnData()
-                                            .productList()
+                                        returnStorageProductProvider()
+                                            .storageProductListMain
                                             .length,
                                       );
                                     }
@@ -1308,20 +1308,20 @@ class _StoragePageMobileState
                                             FontWeight.bold,
                                         color: Colors.grey,
                                       ),
-                                      "${returnData(context: context).productList().length > 50 ? (returnData(context: context).productList().length / 50).ceil() : 1}",
+                                      "${returnStorageProductProvider(context: context).storageProductListMain.length > 50 ? (returnStorageProductProvider(context: context).storageProductListMain.length / 50).ceil() : 1}",
                                     ),
                                   ],
                                 ),
                                 IconButton(
                                   onPressed: () {
                                     if (end !=
-                                        returnData()
-                                            .productList()
+                                        returnStorageProductProvider()
+                                            .storageProductListMain
                                             .length) {
                                       navigate(
                                         true,
-                                        returnData()
-                                            .productList()
+                                        returnStorageProductProvider()
+                                            .storageProductListMain
                                             .length,
                                       );
                                     }
@@ -1330,14 +1330,14 @@ class _StoragePageMobileState
                                     size: 16,
                                     color:
                                         end ==
-                                                    returnData(
+                                                    returnStorageProductProvider(
                                                       context:
                                                           context,
-                                                    ).productList().length ||
-                                                returnData(
+                                                    ).storageProductListMain.length ||
+                                                returnStorageProductProvider(
                                                       context:
                                                           context,
-                                                    ).productList().length <=
+                                                    ).storageProductListMain.length <=
                                                     50
                                             ? Colors
                                                 .grey
@@ -1967,9 +1967,7 @@ class _InventoryUpdateWidgetMobileState
                         ),
                         Visibility(
                           visible:
-                              widget
-                                  .update
-                                  .departmentUuidTwo !=
+                              widget.update.itemTwoUuid !=
                               null,
                           child: Column(
                             children: [
@@ -2001,15 +1999,12 @@ class _InventoryUpdateWidgetMobileState
                                                     .mobileTexts
                                                     .b4
                                                     .fontSize,
-                                            // fontWeight:
-                                            //     FontWeight.bold,
                                           ),
                                           formatValue(
                                             widget
                                                     .update
                                                     .itemTwoOldValue ??
                                                 '',
-                                            // widget.update.title,
                                           ),
                                         ),
                                       ],

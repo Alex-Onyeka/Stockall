@@ -706,7 +706,36 @@ class ReceiptsProvider extends ChangeNotifier {
     }
   }
 
-  List<TempMainReceipt> returnOwnReceiptsByDayOrWeek() {
+  int paymentMethod = 0;
+
+  void selectPaymentMethod(int index) {
+    paymentMethod = index;
+    notifyListeners();
+  }
+
+  String paymentMethodText() {
+    String tempMeth = 'All';
+    switch (paymentMethod) {
+      case 0:
+        tempMeth = 'All';
+        break;
+      case 1:
+        tempMeth = 'Cash';
+        break;
+      case 2:
+        tempMeth = 'Bank';
+        break;
+      case 3:
+        tempMeth = 'Split';
+        break;
+      default:
+        tempMeth = 'All';
+    }
+    return tempMeth;
+  }
+
+  List<TempMainReceipt>
+  returnReceiptsBasedOnPaymentMethod() {
     if (returnShopProvider()
             .userShop()
             ?.manageDepartments ==
@@ -807,6 +836,24 @@ class ReceiptsProvider extends ChangeNotifier {
               .toList();
         }
       }
+    }
+  }
+
+  List<TempMainReceipt> returnOwnReceiptsByDayOrWeek() {
+    if (paymentMethod == 3) {
+      return returnReceiptsBasedOnPaymentMethod()
+          .where((rec) => rec.paymentMethod == 'Split')
+          .toList();
+    } else if (paymentMethod == 1) {
+      return returnReceiptsBasedOnPaymentMethod()
+          .where((rec) => rec.paymentMethod == 'Cash')
+          .toList();
+    } else if (paymentMethod == 2) {
+      return returnReceiptsBasedOnPaymentMethod()
+          .where((rec) => rec.paymentMethod == 'Bank')
+          .toList();
+    } else {
+      return returnReceiptsBasedOnPaymentMethod().toList();
     }
   }
 

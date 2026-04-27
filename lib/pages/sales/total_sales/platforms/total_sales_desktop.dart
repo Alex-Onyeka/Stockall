@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/checkout_response.dart';
-import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/buttons/floating_action_butto.dart';
 import 'package:stockall/components/list_tiles/main_receipt_tile.dart';
 import 'package:stockall/components/major/desktop_page_container.dart';
-import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widget_desktop.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
-import 'package:stockall/components/major/drawer_widget/my_drawer_widget.dart';
-import 'package:stockall/components/major/right_side_bar.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -17,9 +13,9 @@ import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/invoices/invoice_list/platforms/invoice_list_desktop.dart';
+import 'package:stockall/pages/products/compnents/product_filter_button.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
-import 'package:stockall/services/auth_service.dart';
 
 class TotalSalesDesktop extends StatefulWidget {
   final String? id;
@@ -85,103 +81,21 @@ class _TotalSalesDesktopState
     var theme = returnTheme(context);
     return Scaffold(
       key: _scaffoldKey,
-      drawer: MyDrawerWidgetDesktopMain(
-        action: () {
-          var safeContext = context;
-          showDialog(
-            context: context,
-            builder: (context) {
-              return ConfirmationAlert(
-                theme: theme,
-                message: 'You are about to Logout',
-                title: 'Are you Sure?',
-                action: () async {
-                  Navigator.of(context).pop();
-                  setState(() {
-                    isLoading = true;
-                  });
-                  if (safeContext.mounted) {
-                    var res = await AuthService().signOut(
-                      context: safeContext,
-                      allowLogout: false,
-                    );
-                    if (res == 0 && safeContext.mounted) {
-                      setState(() {
-                        isLoading = false;
-                      });
-                    }
-                  }
-                },
-              );
-            },
-          );
-        },
-        theme: theme,
-        notifications:
-            returnNotificationProvider(
-                  context,
-                ).notifications().isEmpty
-                ? []
-                : returnNotificationProvider(
-                  context,
-                ).notifications(),
-        globalKey: _scaffoldKey,
-      ),
       body: Stack(
         children: [
           Row(
             spacing: 15,
             children: [
-              Visibility(
-                visible:
-                    widget.id == null &&
-                    widget.customerUuid == null &&
-                    widget.subStaffId == null,
-                child: MyDrawerWidget(
-                  globalKey: _scaffoldKey,
-                  action: () {
-                    var safeContext = context;
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return ConfirmationAlert(
-                          theme: theme,
-                          message:
-                              'You are about to Logout',
-                          title: 'Are you Sure?',
-                          action: () async {
-                            Navigator.of(context).pop();
-                            setState(() {
-                              isLoading = true;
-                            });
-                            if (safeContext.mounted) {
-                              var res = await AuthService()
-                                  .signOut(
-                                    context: safeContext,
-                                    allowLogout: false,
-                                  );
-                              if (res == 0 &&
-                                  safeContext.mounted) {
-                                setState(() {
-                                  isLoading = false;
-                                });
-                              }
-                            }
-                          },
-                        );
-                      },
-                    );
-                  },
-                  theme: theme,
-                  notifications:
-                      returnNotificationProvider(
-                            context,
-                          ).notifications().isEmpty
-                          ? []
-                          : returnNotificationProvider(
-                            context,
-                          ).notifications(),
-                ),
+              Container(
+                width:
+                    screenWidth(context) < tabletScreenSmall
+                        ? 50
+                        : (screenWidth(context) >
+                                tabletScreenSmall &&
+                            screenWidth(context) <
+                                tabletScreen + 100)
+                        ? 100
+                        : 230,
               ),
               Expanded(
                 child: DesktopPageContainer(
@@ -316,7 +230,7 @@ class _TotalSalesDesktopState
                                       fontSize:
                                           theme
                                               .mobileTexts
-                                              .b2
+                                              .b3
                                               .fontSize,
                                       fontWeight:
                                           FontWeight.bold,
@@ -476,35 +390,25 @@ class _TotalSalesDesktopState
                                           ),
                                         ],
                                       ),
-                                      Visibility(
-                                        visible:
-                                            !authorization(
-                                              authorized:
-                                                  Authorizations()
-                                                      .viewDate,
-                                            ),
-                                        child: SizedBox(
-                                          height: 20,
-                                        ),
-                                      ),
+                                      // SizedBox(height: 20),
                                       Padding(
                                         padding:
                                             const EdgeInsets.symmetric(
                                               vertical:
                                                   10.0,
                                             ),
-                                        child: Visibility(
-                                          visible: authorization(
-                                            authorized:
-                                                Authorizations()
-                                                    .viewDate,
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .spaceBetween,
-                                            children: [
-                                              Text(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment
+                                                  .spaceBetween,
+                                          children: [
+                                            Visibility(
+                                              visible: authorization(
+                                                authorized:
+                                                    Authorizations()
+                                                        .viewDate,
+                                              ),
+                                              child: Text(
                                                 style: TextStyle(
                                                   fontSize:
                                                       theme
@@ -519,7 +423,107 @@ class _TotalSalesDesktopState
                                                     ? 'All Sales'
                                                     : 'For Today',
                                               ),
-                                              MaterialButton(
+                                            ),
+                                            SizedBox(
+                                              width: 20,
+                                            ),
+                                            SizedBox(
+                                              width: 250,
+                                              child: Row(
+                                                spacing: 6,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .center,
+                                                children: [
+                                                  Expanded(
+                                                    child: ProductsFilterButton(
+                                                      action: () {
+                                                        returnReceiptProviderSingle().selectPaymentMethod(
+                                                          0,
+                                                        );
+                                                      },
+                                                      currentSelected:
+                                                          returnReceiptProvider(
+                                                            context,
+                                                          ).paymentMethod,
+                                                      number:
+                                                          0,
+                                                      title:
+                                                          'All',
+                                                      theme:
+                                                          theme,
+                                                    ),
+                                                  ),
+                                                  Expanded(
+                                                    child: ProductsFilterButton(
+                                                      action: () {
+                                                        returnReceiptProviderSingle().selectPaymentMethod(
+                                                          1,
+                                                        );
+                                                      },
+                                                      currentSelected:
+                                                          returnReceiptProvider(
+                                                            context,
+                                                          ).paymentMethod,
+                                                      number:
+                                                          1,
+                                                      title:
+                                                          'Cash',
+                                                      theme:
+                                                          theme,
+                                                    ),
+                                                  ),
+                                                  Expanded(
+                                                    child: ProductsFilterButton(
+                                                      action: () {
+                                                        returnReceiptProviderSingle().selectPaymentMethod(
+                                                          2,
+                                                        );
+                                                      },
+                                                      currentSelected:
+                                                          returnReceiptProvider(
+                                                            context,
+                                                          ).paymentMethod,
+                                                      number:
+                                                          2,
+                                                      title:
+                                                          'Bank',
+                                                      theme:
+                                                          theme,
+                                                    ),
+                                                  ),
+                                                  Expanded(
+                                                    child: ProductsFilterButton(
+                                                      currentSelected:
+                                                          returnReceiptProvider(
+                                                            context,
+                                                          ).paymentMethod,
+                                                      action: () {
+                                                        returnReceiptProviderSingle().selectPaymentMethod(
+                                                          3,
+                                                        );
+                                                      },
+                                                      number:
+                                                          3,
+                                                      title:
+                                                          'Split',
+                                                      theme:
+                                                          theme,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 20,
+                                            ),
+                                            Visibility(
+                                              visible: authorization(
+                                                authorized:
+                                                    Authorizations()
+                                                        .viewDate,
+                                              ),
+                                              child: MaterialButton(
                                                 onPressed: () {
                                                   if (returnReceiptProvider(
                                                             context,
@@ -615,8 +619,8 @@ class _TotalSalesDesktopState
                                                   ],
                                                 ),
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],
@@ -859,12 +863,16 @@ class _TotalSalesDesktopState
                   ),
                 ),
               ),
-              Visibility(
-                visible:
-                    widget.id == null &&
-                    widget.customerUuid == null &&
-                    widget.subStaffId == null,
-                child: RightSideBar(theme: theme),
+              Container(
+                width:
+                    screenWidth(context) < tabletScreenSmall
+                        ? 50
+                        : (screenWidth(context) >
+                                tabletScreenSmall &&
+                            screenWidth(context) <
+                                tabletScreen + 100)
+                        ? 100
+                        : 230,
               ),
             ],
           ),

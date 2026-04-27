@@ -16,12 +16,14 @@ import 'package:stockall/local_database/events_log/events_log_func.dart';
 import 'package:stockall/local_database/expenses/expenses_func.dart';
 import 'package:stockall/local_database/inventory_updates/inventory_updates_func.dart';
 import 'package:stockall/local_database/invoices/invoices_func.dart';
+import 'package:stockall/local_database/item_purchase_func.dart%20copy/item_purchase_func.dart';
 import 'package:stockall/local_database/logged_in_user/logged_in_user_func.dart';
 import 'package:stockall/local_database/main_receipt/main_receipt_func.dart';
 import 'package:stockall/local_database/notification/notification_func.dart';
 import 'package:stockall/local_database/permission/permission_func.dart';
 import 'package:stockall/local_database/product_record_func.dart/product_record_func.dart';
 import 'package:stockall/local_database/products/products_func.dart';
+import 'package:stockall/local_database/purchases/purchase_func.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';
 import 'package:stockall/local_database/shop_current/current_shop_func.dart';
 import 'package:stockall/local_database/shop_logos/shop_logos_func.dart';
@@ -29,6 +31,7 @@ import 'package:stockall/local_database/shop_owner/shop_owner_func.dart';
 import 'package:stockall/local_database/storage_product/storage_products_func.dart';
 import 'package:stockall/local_database/sub_staff/sub_staff_func.dart';
 import 'package:stockall/local_database/subscription/subscription_func.dart';
+import 'package:stockall/local_database/suppliers_func/suppliers_func.dart';
 import 'package:stockall/local_database/users/user_func.dart';
 import 'package:stockall/local_database/visibility_box/visibility_box.dart';
 import 'package:stockall/main.dart';
@@ -80,8 +83,11 @@ class MainDatabase extends ChangeNotifier {
     await CurrentDepartmentFunc().init();
     await StorageProductsFunc().init();
     await CartFunc().init();
+    await PurchaseFunc().init();
+    await ItemPurchaseFunc().init();
+    await SuppliersFunc().init();
     print('init Complete');
   }
 }
 
-int highestHiveClassIndex = 72;
+int highestHiveClassIndex = 82;
