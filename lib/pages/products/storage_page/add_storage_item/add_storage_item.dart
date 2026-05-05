@@ -22,6 +22,10 @@ class _AddStorageItemState extends State<AddStorageItem> {
       TextEditingController();
   TextEditingController qttyPerGroupController =
       TextEditingController();
+  TextEditingController costPriceController =
+      TextEditingController();
+  TextEditingController sellingPriceController =
+      TextEditingController();
 
   @override
   void dispose() {
@@ -52,19 +56,23 @@ class _AddStorageItemState extends State<AddStorageItem> {
           builder: (context, constraints) {
             if (constraints.maxWidth < mobileScreen) {
               return AddStorageItemMobile(
-                quantityController: quantityController,
                 nameController: nameController,
                 qttyPerGroupController:
                     qttyPerGroupController,
                 storageProduct: widget.productStorage,
+                costPriceController: costPriceController,
+                sellingPriceController:
+                    sellingPriceController,
               );
             } else {
               return AddStorageItemDesktop(
-                quantityController: quantityController,
                 nameController: nameController,
                 qttyPerGroupController:
                     qttyPerGroupController,
                 storageProduct: widget.productStorage,
+                costPriceController: costPriceController,
+                sellingPriceController:
+                    sellingPriceController,
               );
             }
           },

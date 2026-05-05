@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_categories/category_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
+import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
 // import 'package:stockall/classes/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
@@ -27,7 +28,814 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/categories/categories_page.dart';
 import 'package:stockall/pages/products/compnents/product_tile_cart_search.dart';
 import 'package:stockall/providers/data_provider.dart';
+import 'package:stockall/providers/purchase_action_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
+
+void selectProductPurchase({
+  TempProductClass? product,
+  TempStorageProducts? storageProduct,
+  required Function() closeAction,
+  required TextEditingController priceController,
+  required TextEditingController quantityController,
+  required BuildContext context,
+  PurchaseListItem? purchaseItem,
+}) {
+  var theme = returnTheme(context, listen: false);
+  bool setCustomPrice = false;
+  bool isGroupTemp = false;
+
+  if (purchaseItem != null) {
+    print('Beans and Beans');
+    isGroupTemp = purchaseItem.isGroup;
+    if (purchaseItem.customPrice != null) {
+      priceController.text =
+          '${purchaseItem.customPrice ?? ''}';
+      setCustomPrice = true;
+    }
+    quantityController.text =
+        (purchaseItem.quantity).toString();
+  } else {
+    if (returnShopProvider().userShop()?.useGroupUnit ==
+        true) {
+      isGroupTemp = true;
+    } else {
+      isGroupTemp = false;
+    }
+  }
+  double amount() {
+    if (purchaseItem == null) {
+      if (setCustomPrice) {
+        return (double.tryParse(
+              priceController.text.replaceAll(',', ''),
+            ) ??
+            0);
+      } else {
+        if (returnShopProvider()
+                .userShop()
+                ?.manageInventoryStorage ==
+            true) {
+          return isGroupTemp
+              ? ((storageProduct?.costPrice ?? 0) *
+                  (double.tryParse(
+                        quantityController.text.replaceAll(
+                          ',',
+                          '',
+                        ),
+                      ) ??
+                      0) *
+                  (storageProduct?.qttyPerGroup ?? 1))
+              : (storageProduct?.costPrice ?? 0) *
+                  (double.tryParse(
+                        quantityController.text.replaceAll(
+                          ',',
+                          '',
+                        ),
+                      ) ??
+                      0);
+        } else {
+          return isGroupTemp
+              ? ((product?.costPrice ?? 0) *
+                  (double.tryParse(
+                        quantityController.text.replaceAll(
+                          ',',
+                          '',
+                        ),
+                      ) ??
+                      0) *
+                  (product?.qttyPerGroup ?? 1))
+              : (product?.costPrice ?? 0) *
+                  (double.tryParse(
+                        quantityController.text.replaceAll(
+                          ',',
+                          '',
+                        ),
+                      ) ??
+                      0);
+        }
+      }
+    } else {
+      if (setCustomPrice) {
+        return (double.tryParse(
+              priceController.text.replaceAll(',', ''),
+            ) ??
+            0);
+      } else {
+        return isGroupTemp
+            ? ((purchaseItem.originalPrice ?? 0) *
+                (double.tryParse(
+                      quantityController.text.replaceAll(
+                        ',',
+                        '',
+                      ),
+                    ) ??
+                    0) *
+                (purchaseItem.qttyPerGroup ?? 1))
+            : (purchaseItem.originalPrice ?? 0) *
+                (double.tryParse(
+                      quantityController.text.replaceAll(
+                        ',',
+                        '',
+                      ),
+                    ) ??
+                    0);
+      }
+    }
+  }
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return GestureDetector(
+        onTap:
+            () =>
+                FocusManager.instance.primaryFocus
+                    ?.unfocus(),
+        child: StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              insetPadding: EdgeInsets.symmetric(
+                horizontal: 15,
+              ),
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 15,
+                vertical: 20,
+              ),
+              backgroundColor: Colors.white,
+              title: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Enter Item Purchase Details',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize:
+                          theme.mobileTexts.h4.fontSize,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Divider(color: Colors.grey.shade300),
+                ],
+              ),
+
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      width: 450,
+                      child: EditCartTextField(
+                        title: 'Enter Item Quantity',
+                        hint: 'Quantity',
+                        controller: quantityController,
+                        theme: theme,
+                        onChanged: (value) {
+                          setState(() {});
+                        },
+                      ),
+                    ),
+                    Visibility(
+                      visible:
+                          returnShopProvider()
+                              .userShop()
+                              ?.useGroupUnit ==
+                          true,
+                      child: Column(
+                        children: [
+                          SizedBox(height: 20),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(
+                                  horizontal: 20.0,
+                                ),
+                            child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment
+                                      .spaceBetween,
+                              children: [
+                                Text(
+                                  style: TextStyle(
+                                    fontWeight:
+                                        FontWeight.bold,
+                                  ),
+                                  'Use Group Quantity?',
+                                ),
+                                MyToggleButton(
+                                  boolValue: isGroupTemp,
+                                  toggle: () {
+                                    setState(() {
+                                      isGroupTemp =
+                                          !isGroupTemp;
+                                    });
+                                  },
+                                  theme: theme,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Builder(
+                      builder: (context) {
+                        if (setCustomPrice) {
+                          return Column(
+                            children: [
+                              Row(
+                                spacing: 10,
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.end,
+                                children: [
+                                  Expanded(
+                                    child: MoneyTextfield(
+                                      title: 'Custom Price',
+                                      hint: 'Enter Price',
+                                      controller:
+                                          priceController,
+                                      theme: theme,
+                                      onChanged: (value) {
+                                        setState(() {});
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 20),
+                            ],
+                          );
+                        } else {
+                          return Container();
+                        }
+                      },
+                    ),
+                    // SizedBox(height: 20),
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          setCustomPrice = !setCustomPrice;
+                        });
+                        priceController.clear();
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 5,
+                          horizontal: 10,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment:
+                              MainAxisAlignment.center,
+                          spacing: 5,
+                          children: [
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b1
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              setCustomPrice
+                                  ? 'Cancel Custom Price'
+                                  : 'Set Custom Price',
+                            ),
+                            Stack(
+                              children: [
+                                Visibility(
+                                  visible:
+                                      setCustomPrice ==
+                                      false,
+                                  child: SvgPicture.asset(
+                                    editIconSvg,
+                                    height: 20,
+                                  ),
+                                ),
+                                Visibility(
+                                  visible:
+                                      setCustomPrice ==
+                                      true,
+                                  child: Icon(Icons.clear),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(
+                          10,
+                        ),
+                        color: Colors.grey.shade100,
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0,
+                        vertical: 10,
+                      ),
+                      child: Row(
+                        mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b1
+                                      .fontSize,
+                            ),
+                            'Total',
+                          ),
+                          Text(
+                            style: TextStyle(
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b1
+                                      .fontSize,
+                              fontWeight:
+                                  theme
+                                      .mobileTexts
+                                      .b1
+                                      .fontWeightBold,
+                            ),
+                            formatMoneyMid(
+                              amount: amount(),
+                              context: context,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.center,
+                      spacing: 5,
+                      children: [
+                        MaterialButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text('Cancel'),
+                        ),
+                        SmallButtonMain(
+                          theme: theme,
+                          action: () {
+                            if (quantityController
+                                .text
+                                .isNotEmpty) {
+                              if (!setCustomPrice ||
+                                  (setCustomPrice &&
+                                      priceController
+                                          .text
+                                          .isNotEmpty)) {
+                                if (purchaseItem != null) {
+                                  returnPurchaseActionProvider().updateItem(
+                                    item: PurchaseListItem(
+                                      qttyPerGroup:
+                                          product
+                                              ?.qttyPerGroup ??
+                                          storageProduct
+                                              ?.qttyPerGroup,
+                                      storageItemUuid:
+                                          purchaseItem
+                                              .storageItemUuid,
+                                      originalPrice:
+                                          purchaseItem
+                                              .originalPrice,
+                                      itemName:
+                                          purchaseItem
+                                              .itemName,
+                                      customPrice:
+                                          double.tryParse(
+                                            priceController
+                                                .text
+                                                .replaceAll(
+                                                  ',',
+                                                  '',
+                                                ),
+                                          ),
+                                      itemUuid:
+                                          purchaseItem
+                                              .itemUuid,
+                                      totalPrice: amount(),
+                                      quantity:
+                                          (double.tryParse(
+                                                quantityController
+                                                    .text
+                                                    .replaceAll(
+                                                      ',',
+                                                      '',
+                                                    ),
+                                              ) ??
+                                              0),
+                                      isGroup: isGroupTemp,
+                                    ),
+                                  );
+                                } else {
+                                  returnPurchaseActionProvider().addItemToList(
+                                    item: PurchaseListItem(
+                                      qttyPerGroup:
+                                          product
+                                              ?.qttyPerGroup ??
+                                          storageProduct
+                                              ?.qttyPerGroup,
+                                      originalPrice:
+                                          product
+                                              ?.costPrice ??
+                                          storageProduct
+                                              ?.costPrice,
+                                      itemName:
+                                          returnShopProvider()
+                                                      .userShop()
+                                                      ?.manageInventoryStorage ==
+                                                  true
+                                              ? storageProduct
+                                                      ?.name ??
+                                                  'Item Name'
+                                              : product
+                                                      ?.name ??
+                                                  'Item Name',
+                                      customPrice:
+                                          double.tryParse(
+                                            priceController
+                                                .text
+                                                .replaceAll(
+                                                  ',',
+                                                  '',
+                                                ),
+                                          ),
+                                      itemUuid:
+                                          product?.uuid,
+                                      storageItemUuid:
+                                          storageProduct
+                                              ?.uuid,
+                                      totalPrice: amount(),
+                                      quantity:
+                                          (double.tryParse(
+                                                quantityController
+                                                    .text
+                                                    .replaceAll(
+                                                      ',',
+                                                      '',
+                                                    ),
+                                              ) ??
+                                              0),
+                                      isGroup: isGroupTemp,
+                                    ),
+                                  );
+                                  Navigator.of(
+                                    context,
+                                  ).pop();
+                                }
+                                Navigator.of(context).pop();
+                              }
+                            }
+                          },
+                          buttonText: 'Add Item',
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      );
+    },
+  ).then((value) {
+    quantityController.clear();
+    priceController.clear();
+  });
+}
+
+void selectProductsForPurchaseBottomSheet({
+  required BuildContext context,
+  Function()? action,
+  required TextEditingController searchController,
+  required TextEditingController priceController,
+  required TextEditingController quantityController,
+}) async {
+  await showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(20),
+      ),
+    ),
+    backgroundColor: Colors.white,
+    builder: (BuildContext context) {
+      return DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.95,
+        maxChildSize: 0.95,
+        minChildSize: 0.3,
+        builder: (context, scrollController) {
+          List<TempProductClass> products = [];
+          List<TempStorageProducts> storageProducts = [];
+          if (returnShopProvider()
+                  .userShop()
+                  ?.manageInventoryStorage !=
+              true) {
+            products =
+                returnData(
+                  context: context,
+                ).productListMain.where((item) {
+                  if (returnPurchaseActionProvider()
+                      .purchaseListItems
+                      .where(
+                        (purch) =>
+                            purch.itemUuid == item.uuid,
+                      )
+                      .isEmpty) {
+                    return true;
+                  } else {
+                    return false;
+                  }
+                }).toList();
+            products.sort(
+              (a, b) => a.name.toLowerCase().compareTo(
+                b.name.toLowerCase(),
+              ),
+            );
+          } else {
+            storageProducts =
+                returnStorageProductProvider()
+                    .storageProductListMain
+                    .where((item) {
+                      if (returnPurchaseActionProvider()
+                          .purchaseListItems
+                          .where(
+                            (purch) =>
+                                purch.storageItemUuid ==
+                                item.uuid,
+                          )
+                          .isEmpty) {
+                        return true;
+                      } else {
+                        return false;
+                      }
+                    })
+                    .toList();
+
+            storageProducts.sort(
+              (a, b) => a.name.toLowerCase().compareTo(
+                b.name.toLowerCase(),
+              ),
+            );
+          }
+
+          return StatefulBuilder(
+            builder:
+                (context, setState) => Container(
+                  padding: const EdgeInsets.fromLTRB(
+                    30,
+                    15,
+                    30,
+                    45,
+                  ),
+                  child: Column(
+                    children: [
+                      Center(
+                        child: Container(
+                          height: 4,
+                          width: 70,
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.circular(5),
+                            color: Colors.grey.shade400,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 30),
+                      Row(
+                        mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'Select Items',
+                              style: TextStyle(
+                                fontSize:
+                                    returnTheme(context)
+                                        .mobileTexts
+                                        .b1
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: SizedBox(
+                              height: 30,
+                              width: 200,
+                              child: GeneralTextfieldOnly(
+                                onChanged: (value) {
+                                  setState(() {});
+                                },
+                                hint: 'Search Name',
+                                controller:
+                                    searchController,
+                                lines: 1,
+                                theme: returnTheme(
+                                  context,
+                                  listen: false,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.end,
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    Navigator.of(
+                                      context,
+                                    ).pop();
+                                    FocusScope.of(
+                                      context,
+                                    ).unfocus();
+                                  },
+                                  icon: Icon(Icons.check),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.circular(10),
+                            border: Border.all(
+                              color: Colors.grey.shade300,
+                            ),
+                          ),
+                          child: ListView(
+                            controller: scrollController,
+                            children:
+                                returnShopProvider()
+                                            .userShop()
+                                            ?.manageInventoryStorage ==
+                                        true
+                                    ? storageProducts
+                                        .where(
+                                          (prod) => prod
+                                              .name
+                                              .toLowerCase()
+                                              .contains(
+                                                searchController
+                                                    .text
+                                                    .toLowerCase(),
+                                              ),
+                                        )
+                                        .map(
+                                          (
+                                            pro,
+                                          ) => Container(
+                                            decoration: BoxDecoration(
+                                              border: Border(
+                                                top: BorderSide(
+                                                  color:
+                                                      Colors
+                                                          .grey
+                                                          .shade300,
+                                                ),
+                                              ),
+                                            ),
+                                            child: Material(
+                                              color:
+                                                  Colors
+                                                      .white,
+                                              child: ListTile(
+                                                title: Text(
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        returnTheme(
+                                                          context,
+                                                          listen:
+                                                              false,
+                                                        ).mobileTexts.b2.fontSize,
+                                                    fontWeight:
+                                                        FontWeight.bold,
+                                                  ),
+                                                  pro.name,
+                                                ),
+                                                onTap: () {
+                                                  selectProductPurchase(
+                                                    storageProduct:
+                                                        pro,
+                                                    closeAction:
+                                                        () {},
+                                                    priceController:
+                                                        priceController,
+                                                    quantityController:
+                                                        quantityController,
+                                                    context:
+                                                        context,
+                                                  );
+                                                },
+                                                trailing: Icon(
+                                                  size: 18,
+                                                  Icons.add,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                        .toList()
+                                    : products
+                                        .where(
+                                          (prod) => prod
+                                              .name
+                                              .toLowerCase()
+                                              .contains(
+                                                searchController
+                                                    .text
+                                                    .toLowerCase(),
+                                              ),
+                                        )
+                                        .map(
+                                          (
+                                            pro,
+                                          ) => Container(
+                                            decoration: BoxDecoration(
+                                              border: Border(
+                                                top: BorderSide(
+                                                  color:
+                                                      Colors
+                                                          .grey
+                                                          .shade300,
+                                                ),
+                                              ),
+                                            ),
+                                            child: Material(
+                                              color:
+                                                  Colors
+                                                      .white,
+                                              child: ListTile(
+                                                title: Text(
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        returnTheme(
+                                                          context,
+                                                          listen:
+                                                              false,
+                                                        ).mobileTexts.b2.fontSize,
+                                                    fontWeight:
+                                                        FontWeight.bold,
+                                                  ),
+                                                  pro.name,
+                                                ),
+                                                onTap: () {
+                                                  selectProductPurchase(
+                                                    product:
+                                                        pro,
+                                                    closeAction:
+                                                        () {},
+                                                    priceController:
+                                                        priceController,
+                                                    quantityController:
+                                                        quantityController,
+                                                    context:
+                                                        context,
+                                                  );
+                                                },
+                                                trailing: Icon(
+                                                  size: 18,
+                                                  Icons.add,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+          );
+        },
+      );
+    },
+  ).then((_) {
+    searchController.clear();
+  });
+  action!();
+}
 
 void unitsBottomSheet(
   BuildContext context,

@@ -834,7 +834,8 @@ class _ReceiptDetailsContainerState
                                           staff?.name ??
                                               widget
                                                   .mainReceipt
-                                                  .staffName,
+                                                  .staffName ??
+                                              'Not Set',
                                         ),
                                       ],
                                     ),
@@ -1844,7 +1845,8 @@ class _ReceiptDetailsContainerState
                                           staff?.name ??
                                           widget
                                               .mainReceipt
-                                              .staffName,
+                                              .staffName ??
+                                          'Not Set',
                                       filename:
                                           'Stockall_Receipt_${DateTime.now().millisecondsSinceEpoch}.pdf',
                                       context: safeContext,
@@ -1863,7 +1865,8 @@ class _ReceiptDetailsContainerState
                                           staff?.name ??
                                           widget
                                               .mainReceipt
-                                              .staffName,
+                                              .staffName ??
+                                          'Not Set',
                                       context: safeContext,
                                       receipt:
                                           widget
@@ -2138,7 +2141,8 @@ class _ReceiptDetailsContainerState
                                             staff?.name ??
                                             widget
                                                 .mainReceipt
-                                                .staffName,
+                                                .staffName ??
+                                            "Not Set",
                                         filename:
                                             'Stockall_Receipt_${DateTime.now().millisecondsSinceEpoch}.pdf',
                                         context:
@@ -2190,7 +2194,8 @@ class _ReceiptDetailsContainerState
                                             staff?.name ??
                                             widget
                                                 .mainReceipt
-                                                .staffName,
+                                                .staffName ??
+                                            "Not Set",
                                         context:
                                             safeContext,
                                         receipt:

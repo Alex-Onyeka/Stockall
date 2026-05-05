@@ -220,7 +220,7 @@ class _InvoiceListBodyMobileState
                     ValueSummaryTabSmall(
                       color: Colors.amber,
                       isMoney: true,
-                      title: 'Total Revenue',
+                      title: 'Unpaid Balance',
                       value: returnInvoicesProvider(
                         context: context,
                       ).getTotalRevenueForSelectedDayAll(
@@ -285,7 +285,7 @@ class _InvoiceListBodyMobileState
                                   .toList()
                                   .length
                                   .toDouble(),
-                      title: 'Sales Number',
+                      title: 'Invoice Number',
                       color: Colors.green,
                       isMoney: false,
                     ),

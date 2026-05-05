@@ -27,11 +27,11 @@ class SuppliersProvider extends ChangeNotifier {
   final SupabaseClient supabase = Supabase.instance.client;
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
-  List<SuppliersClass> _suppliers = [];
+  List<SuppliersClass> suppliers = [];
   final String tableName = 'suppliers';
 
   void clearSuppliers() {
-    _suppliers.clear();
+    suppliers.clear();
     print('Suppliers Cleared');
     notifyListeners();
   }
@@ -44,7 +44,7 @@ class SuppliersProvider extends ChangeNotifier {
       if (!authorization(
         authorized: Authorizations().viewAllDepartments,
       )) {
-        return _suppliers.where((cat) {
+        return suppliers.where((cat) {
           if (cat.departmentId == null) {
             return true;
           } else {
@@ -59,9 +59,9 @@ class SuppliersProvider extends ChangeNotifier {
                 .currentDepartment()
                 ?.uuid ==
             null) {
-          return _suppliers;
+          return suppliers;
         } else {
-          return _suppliers.where((cat) {
+          return suppliers.where((cat) {
             if (cat.departmentId == null) {
               return true;
             } else {
@@ -74,11 +74,11 @@ class SuppliersProvider extends ChangeNotifier {
         }
       }
     } else {
-      return _suppliers;
+      return suppliers;
     }
   }
 
-  /// Fetch all customers by shop ID
+  /// Fetch all Suppliers by shop ID
   Future<List<SuppliersClass>> fetchSuppliers(
     int shopId,
   ) async {
@@ -91,21 +91,21 @@ class SuppliersProvider extends ChangeNotifier {
           .order('name', ascending: true);
       print(data.length.toString());
 
-      _suppliers =
+      suppliers =
           (data as List)
               .map((json) => SuppliersClass.fromJson(json))
               .toList();
 
-      await SuppliersFunc().insertAllSuppliers(_suppliers);
+      await SuppliersFunc().insertAllSuppliers(suppliers);
     } else {
-      _suppliers = SuppliersFunc().getSuppliers();
+      suppliers = SuppliersFunc().getSuppliers();
     }
     notifyListeners();
-    return _suppliers;
+    return suppliers;
   }
 
-  /// Add a new customer
-  Future<void> addCustomerMain(
+  /// Add a new Supplier
+  Future<void> addSupplierMain(
     SuppliersClass supplier,
     final BuildContext context,
   ) async {
@@ -154,12 +154,12 @@ class SuppliersProvider extends ChangeNotifier {
         },
       );
     }
-    // _suppliers.insert(0, newSupplier);
+    // suppliers.insert(0, newSupplier);
     await fetchSuppliers(shopProvider.userShop()!.shopId!);
     notifyListeners();
   }
 
-  /// Update a customer by ID
+  /// Update a Supplier by ID
   Future<void> updateSupplierrMain(
     SuppliersClass supplier,
     BuildContext context,
@@ -178,7 +178,7 @@ class SuppliersProvider extends ChangeNotifier {
       //   returnEventsLogProvider(
       //     // ignore: use_build_context_synchronously
       //     // ignore: use_build_context_synchronously
-      //   ).customerAdapter(customer, 2),
+      //   ).SupplierAdapter(Supplier, 2),
       //   // ignore: use_build_context_synchronously
       // );
     } else {
@@ -205,7 +205,7 @@ class SuppliersProvider extends ChangeNotifier {
       //   returnEventsLogProvider(
       //     // ignore: use_build_context_synchronously
       //     // ignore: use_build_context_synchronously
-      //   ).customerAdapter(customer, 1),
+      //   ).SupplierAdapter(Supplier, 1),
       //   // ignore: use_build_context_synchronously
       // );
     }
@@ -213,7 +213,7 @@ class SuppliersProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Delete a customer by ID
+  /// Delete a Supplier by ID
   Future<void> deleteSupplierMain(
     SuppliersClass supplier,
     BuildContext context,
@@ -232,13 +232,13 @@ class SuppliersProvider extends ChangeNotifier {
       //   returnEventsLogProvider(
       //     // ignore: use_build_context_synchronously
       //     // ignore: use_build_context_synchronously
-      //   ).customerAdapter(customer, 3),
+      //   ).SupplierAdapter(Supplier, 3),
       //   // ignore: use_build_context_synchronously
       // );
       // if (res == 1) {
-      //   print('Customer Delete Logged');
+      //   print('Supplier Delete Logged');
       // } else {
-      //   print('Customer Delete Log Failed');
+      //   print('Supplier Delete Log Failed');
       // }
     } else {
       var containsCreated =
@@ -278,7 +278,7 @@ class SuppliersProvider extends ChangeNotifier {
       //   returnEventsLogProvider(
       //     // ignore: use_build_context_synchronously
       //     // ignore: use_build_context_synchronously
-      //   ).customerAdapter(customer, 3),
+      //   ).SupplierAdapter(Supplier, 3),
       //   // ignore: use_build_context_synchronously
       // );
     }
@@ -287,37 +287,37 @@ class SuppliersProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Get single customer by ID
+  /// Get single Supplier by ID
   SuppliersClass? getSupplierByIdMain(String uuid) {
     try {
-      return _suppliers.firstWhere((c) => c.uuid == uuid);
+      return suppliers.firstWhere((c) => c.uuid == uuid);
     } catch (e) {
       return null;
     }
   }
 
   // void clearSelectedSupplier(BuildContext context) {
-  //   returnSalesProvider().currentCart().selectedCustomer =
+  //   returnSalesProvider().currentCart().selectedSupplier =
   //       null;
   //   returnSalesProvider()
   //       .currentCart()
-  //       .selectedCustomerName = null;
+  //       .selectedSupplierName = null;
   //   CartFunc().updateMainCart(
   //     returnSalesProvider().currentMainCart(),
   //   );
   //   notifyListeners();
   // }
 
-  // void selectCustomer({
+  // void selectSupplier({
   //   required String id,
   //   required String name,
   //   required BuildContext context,
   // }) {
-  //   returnSalesProvider().currentCart().selectedCustomer =
+  //   returnSalesProvider().currentCart().selectedSupplier =
   //       id;
   //   returnSalesProvider()
   //       .currentCart()
-  //       .selectedCustomerName = name;
+  //       .selectedSupplierName = name;
   //   notifyListeners();
   //   CartFunc().updateMainCart(
   //     returnSalesProvider().currentMainCart(),

@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_item_purchase_record/temp_item_purchase_record.dart';
 import 'package:stockall/local_database/item_purchase_func.dart%20copy/unsync_funcs/created/created_item_purchase_func.dart';
+import 'package:stockall/local_database/item_purchase_func.dart%20copy/unsync_funcs/deleted/deleted_item_purchase_func.dart';
 import 'package:stockall/local_database/product_record_func.dart/unsync_funcs/created/created_records_func.dart';
 
 class ItemPurchaseFunc {
@@ -18,6 +19,7 @@ class ItemPurchaseFunc {
       itemPurchaseRecordsBoxName,
     );
     await CreatedItemPurchaseFunc().init();
+    await DeletedItemPurchaseFunc().init();
     print('Item Purchase Record Box Initialized');
   }
 

@@ -15,7 +15,7 @@ class _ReportPageState extends State<ReportPage> {
   @override
   void initState() {
     super.initState();
-    returnNavProvider(context, listen: false).navigate(6);
+    returnNavProvider(context, listen: false).navigate(8);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await returnNavProvider(
         context,

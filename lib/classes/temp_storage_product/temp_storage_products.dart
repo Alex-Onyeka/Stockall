@@ -34,6 +34,12 @@ class TempStorageProducts {
   @HiveField(9)
   double? qttyPerGroup;
 
+  @HiveField(10)
+  double? costPrice;
+
+  @HiveField(11)
+  double? sellingPrice;
+
   TempStorageProducts({
     this.uuid,
     this.createdAt,
@@ -45,6 +51,8 @@ class TempStorageProducts {
     this.groupUnit,
     this.updatedAt,
     this.qttyPerGroup,
+    required this.costPrice,
+    required this.sellingPrice,
   });
 
   factory TempStorageProducts.fromJson(
@@ -73,6 +81,14 @@ class TempStorageProducts {
           json['qtty_per_group'] != null
               ? (json['qtty_per_group'] as num).toDouble()
               : null,
+      costPrice:
+          json['cost_price'] != null
+              ? (json['cost_price'] as num).toDouble()
+              : null,
+      sellingPrice:
+          json['selling_price'] != null
+              ? (json['selling_price'] as num).toDouble()
+              : null,
     );
   }
 
@@ -88,6 +104,38 @@ class TempStorageProducts {
       'group_unit': groupUnit,
       'updated_at': updatedAt?.toIso8601String(),
       'qtty_per_group': qttyPerGroup,
+      'cost_price': costPrice,
+      'selling_price': sellingPrice,
     };
+  }
+
+  TempStorageProducts copyWith({
+    String? uuid,
+    DateTime? createdAt,
+    int? shopId,
+    String? name,
+    String? desc,
+    double? quantity,
+    String? unit,
+    String? groupUnit,
+    DateTime? updatedAt,
+    double? qttyPerGroup,
+    double? costPrice,
+    double? sellingPrice,
+  }) {
+    return TempStorageProducts(
+      uuid: uuid ?? this.uuid,
+      createdAt: createdAt ?? this.createdAt,
+      shopId: shopId ?? this.shopId,
+      name: name ?? this.name,
+      desc: desc ?? this.desc,
+      quantity: quantity ?? this.quantity,
+      unit: unit ?? this.unit,
+      groupUnit: groupUnit ?? this.groupUnit,
+      updatedAt: updatedAt ?? this.updatedAt,
+      qttyPerGroup: qttyPerGroup ?? this.qttyPerGroup,
+      costPrice: costPrice ?? this.costPrice,
+      sellingPrice: sellingPrice ?? this.sellingPrice,
+    );
   }
 }

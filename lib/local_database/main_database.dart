@@ -84,10 +84,11 @@ class MainDatabase extends ChangeNotifier {
     await StorageProductsFunc().init();
     await CartFunc().init();
     await PurchaseFunc().init();
+    // await PurchasePaymentsFunc().init();
     await ItemPurchaseFunc().init();
     await SuppliersFunc().init();
     print('init Complete');
   }
 }
 
-int highestHiveClassIndex = 82;
+int highestHiveClassIndex = 84;

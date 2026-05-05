@@ -34,6 +34,24 @@ class TempItemPurchaseRecord {
   @HiveField(9)
   String? purchaseId;
 
+  @HiveField(10)
+  String? itemName;
+
+  @HiveField(11)
+  double? originalPrice;
+
+  @HiveField(12)
+  double? customPrice;
+
+  @HiveField(13)
+  String? storageItemId;
+
+  @HiveField(14)
+  bool? isGroup;
+
+  @HiveField(15)
+  double? qttyPerGroup;
+
   TempItemPurchaseRecord({
     required this.createdAt,
     required this.shopId,
@@ -45,6 +63,12 @@ class TempItemPurchaseRecord {
     this.supplierId,
     this.total,
     this.purchaseId,
+    this.itemName,
+    required this.originalPrice,
+    required this.customPrice,
+    required this.storageItemId,
+    required this.isGroup,
+    required this.qttyPerGroup,
   });
 
   factory TempItemPurchaseRecord.fromJson(
@@ -56,13 +80,22 @@ class TempItemPurchaseRecord {
       ),
       shopId: json['shop_id'] as int,
       staffId: json['staff_id'] as String?,
-      quantity: (json['quantity'] as num).toDouble(),
+      quantity: (json['quantity'] as num?)?.toDouble(),
       uuid: json['uuid'] as String?,
       departmentId: json['department_id'] as String?,
       itemId: json['item_id'] as String?,
       purchaseId: json['purchase_id'] as String?,
       supplierId: json['supplier_id'] as String?,
-      total: (json['total'] as num).toDouble(),
+      total: (json['total'] as num?)?.toDouble(),
+      itemName: json['item_name'] as String?,
+      originalPrice:
+          (json['original_price'] as num?)?.toDouble(),
+      customPrice:
+          (json['custom_price'] as num?)?.toDouble(),
+      storageItemId: json['storage_item_uuid'] as String?,
+      isGroup: json['is_group'] as bool?,
+      qttyPerGroup:
+          (json['qtty_per_group'] as num?)?.toDouble(),
     );
   }
 
@@ -78,6 +111,12 @@ class TempItemPurchaseRecord {
       'purchase_id': purchaseId,
       'supplier_id': supplierId,
       'total': total,
+      'item_name': itemName,
+      'original_price': originalPrice,
+      'custom_price': customPrice,
+      'storage_item_uuid': storageItemId,
+      'is_group': isGroup,
+      'qtty_per_group': qttyPerGroup,
     };
   }
 
@@ -92,8 +131,15 @@ class TempItemPurchaseRecord {
     String? purchaseId,
     String? supplierId,
     String? itemId,
+    double? originalPrice,
+    double? customPrice,
+    String? storageItemId,
+    String? itemName,
+    bool? isGroup,
+    double? qttyPerGroup,
   }) {
     return TempItemPurchaseRecord(
+      uuid: uuid ?? this.uuid,
       createdAt: createdAt ?? this.createdAt,
       shopId: shopId ?? this.shopId,
       staffId: staffId ?? this.staffId,
@@ -103,6 +149,12 @@ class TempItemPurchaseRecord {
       itemId: itemId ?? this.itemId,
       purchaseId: purchaseId ?? this.purchaseId,
       departmentId: departmentId ?? this.departmentId,
+      customPrice: customPrice ?? this.customPrice,
+      originalPrice: originalPrice ?? this.originalPrice,
+      storageItemId: storageItemId ?? this.storageItemId,
+      itemName: itemName ?? this.itemName,
+      isGroup: isGroup ?? this.isGroup,
+      qttyPerGroup: qttyPerGroup ?? this.qttyPerGroup,
     );
   }
 }

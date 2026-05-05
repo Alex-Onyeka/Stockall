@@ -34,6 +34,7 @@ import 'package:stockall/providers/nav_provider.dart';
 import 'package:stockall/providers/notifications_provider.dart';
 import 'package:stockall/providers/permission_provider.dart';
 import 'package:stockall/providers/pos_printer/device_service.dart';
+import 'package:stockall/providers/purchase_action_provider.dart';
 import 'package:stockall/providers/purchase_provider.dart';
 // import 'package:stockall/providers/product_suggestions_provider.dart';
 import 'package:stockall/providers/receipts_provider.dart';
@@ -485,6 +486,16 @@ SuppliersProvider returnSuppliersProvider({
   }
 }
 
+PurchaseActionProvider returnPurchaseActionProvider({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return PurchaseActionProvider();
+  } else {
+    return Provider.of<PurchaseActionProvider>(context);
+  }
+}
+
 Widget colorWidget(
   Widget widget,
   bool isPrimary,
@@ -622,6 +633,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => PurchaseProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => PurchaseActionProvider(),
         ),
       ],
       child: MaterialApp(

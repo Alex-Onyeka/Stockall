@@ -960,7 +960,6 @@ class ReceiptBuilder {
 void scanBluetoothPrintersinvoice({
   required TempInvoice invoice,
   required List<TempProductSaleRecord> records,
-  // required TempMainReceipt receipt,
   required TempShopClass shop,
   required BuildContext context,
 }) async {

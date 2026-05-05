@@ -1764,13 +1764,14 @@ class _InvoicePageDesktopState
                                                         invoice,
                                                   )) {
                                                 paymentController
-                                                        .text =
-                                                    returnInvoicesProvider()
-                                                        .getBalance(
-                                                          invoice:
-                                                              invoice,
-                                                        )
-                                                        .toString();
+                                                    .text = returnInvoicesProvider()
+                                                    .getBalance(
+                                                      invoice:
+                                                          invoice,
+                                                    )
+                                                    .toStringAsFixed(
+                                                      0,
+                                                    );
                                                 setState(() {
                                                   paymentSelected =
                                                       2;

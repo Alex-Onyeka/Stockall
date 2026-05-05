@@ -2715,7 +2715,6 @@ class _ProductDetailsMobileState
                                   builder: (context) {
                                     return AddProduct(
                                       product: product,
-                                      isStorage: false,
                                     );
                                   },
                                 ),

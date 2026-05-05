@@ -155,10 +155,10 @@ class SalesProductFunc {
     try {
       print(salesProductsBox.containsKey(uuid).toString());
       await salesProductsBox.delete(uuid);
-      print('Product Updated');
+      print('Product Deleted');
       return 1;
     } catch (e) {
-      print('Product Update Failed: ${e.toString()}');
+      print('Product Delete Failed: ${e.toString()}');
       return 0;
     }
   }

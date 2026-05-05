@@ -1813,10 +1813,7 @@ class _MakeSalesDesktopState
                                                     builder: (
                                                       context,
                                                     ) {
-                                                      return AddProduct(
-                                                        isStorage:
-                                                            false,
-                                                      );
+                                                      return AddProduct();
                                                     },
                                                   ),
                                                 ).then((_) {

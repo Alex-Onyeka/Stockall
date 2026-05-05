@@ -389,9 +389,7 @@ class _TotalProductsMobileState
                       context,
                       MaterialPageRoute(
                         builder: (context) {
-                          return AddProduct(
-                            isStorage: false,
-                          );
+                          return AddProduct();
                         },
                       ),
                     ).then((_) {
@@ -525,10 +523,7 @@ class _TotalProductsMobileState
                                                   builder: (
                                                     context,
                                                   ) {
-                                                    return AddProduct(
-                                                      isStorage:
-                                                          false,
-                                                    );
+                                                    return AddProduct();
                                                   },
                                                 ),
                                               ).then((_) {

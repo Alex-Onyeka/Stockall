@@ -103,10 +103,14 @@ class CreatedProductFunc {
         createdProduct.product.uuid,
         createdProduct,
       );
-      print('Product Deleted');
+      print(
+        'Offline Created Product Updated Successfully ✅',
+      );
       return 1;
     } catch (e) {
-      print('Product Delete Failed: ${e.toString()}');
+      print(
+        '❌Offline Created Product Update Failed: ${e.toString()}',
+      );
       return 0;
     }
   }

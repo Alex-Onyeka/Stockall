@@ -17,10 +17,10 @@ class TempMainReceipt extends HiveObject {
   int shopId;
 
   @HiveField(4)
-  String staffId;
+  String? staffId;
 
   @HiveField(5)
-  String staffName;
+  String? staffName;
 
   @HiveField(6)
   int? customerId;
@@ -116,8 +116,8 @@ class TempMainReceipt extends HiveObject {
       createdAt:
           DateTime.parse(json['created_at']).toLocal(),
       shopId: json['shop_id'],
-      staffId: json['staff_id'],
-      staffName: json['staff_name'],
+      staffId: json['staff_id'] as String?,
+      staffName: json['staff_name'] as String?,
       customerId: json['customer_id'],
       customerName: json['customer_name'] as String?,
       paymentMethod: json['payment_method'],

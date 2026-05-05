@@ -444,69 +444,6 @@ class StorageProductProvider extends ChangeNotifier {
                 .maybeSingle();
         if (res != null) {
           print('${product.uuid}');
-          // await returnEventsLogProvider().createLog(
-          //   returnEventsLogProvider().productAdapter(
-          //     product,
-          //     2,
-          //   ),
-          // );
-          // if (oldProduct != null) {
-          //   TempInventoryUpdateClass
-          //   inventoryUpdate = TempInventoryUpdateClass(
-          //     shopId: shopId(),
-          //     title: 'title',
-          //     createdAt: DateTime.now(),
-          //     staffId: currentUser().userId,
-          //     staffName:
-          //         "${currentUser().name} ${currentUser().lastName ?? ''}",
-          //     uuid: uuidGen(),
-          //     itemName: product.name,
-          //     itemUuid: product.uuid,
-          //   );
-          //   if ((oldProduct.quantity ?? 0) !=
-          //       (product.quantity ?? 0)) {
-          //     inventoryUpdate.title =
-          //         'Item Sales Quantity Updated';
-          //     inventoryUpdate.oldValue =
-          //         oldProduct.quantity?.toString();
-          //     inventoryUpdate.newValue =
-          //         product.quantity?.toString();
-          //   } else if ((oldProduct
-          //               .totalQttyInStorageDouble ??
-          //           0) !=
-          //       (product.totalQttyInStorageDouble ?? 0)) {
-          //     inventoryUpdate.title =
-          //         'Item Storage Quantity Updated';
-          //     inventoryUpdate.oldValue =
-          //         oldProduct.totalQttyInStorageDouble
-          //             ?.toString();
-          //     inventoryUpdate.newValue =
-          //         product.totalQttyInStorageDouble
-          //             ?.toString();
-          //   } else if (oldProduct.isManaged !=
-          //       product.isManaged) {
-          //     inventoryUpdate.title =
-          //         'Item Is-Managed Updated';
-          //     if (product.isManaged) {
-          //       inventoryUpdate.oldValue = 'Un-Managed';
-          //       inventoryUpdate.newValue = 'Managed';
-          //     } else {
-          //       inventoryUpdate.newValue = 'Un-Managed';
-          //       inventoryUpdate.oldValue = 'Managed';
-          //     }
-          //   } else if ((oldProduct.sellingPrice ?? 0) !=
-          //       (product.sellingPrice ?? 0)) {
-          //     inventoryUpdate.title =
-          //         'Item Selling Price Updated';
-          //     inventoryUpdate.oldValue =
-          //         oldProduct.sellingPrice?.toString();
-          //     inventoryUpdate.newValue =
-          //         product.sellingPrice?.toString();
-          //   }
-          //   await returnInventoryUpdatesProvider()
-          //       .createInventoryUpdate(inventoryUpdate);
-          // }
-          // print('Context Mounted');
           await getStorageProducts(
             returnShopProvider().userShop()!.shopId!,
           );
@@ -549,20 +486,11 @@ class StorageProductProvider extends ChangeNotifier {
           }
           print(product.updatedAt.toString());
           print('${product.uuid}');
-          // await returnEventsLogProvider().createLog(
-          //   returnEventsLogProvider(
-          //     // ignore: use_build_context_synchronously
-          //   ).productAdapter(product, 2),
-          //   // ignore: use_build_context_synchronously
-          // );
           print('Context Mounted');
           await getStorageProducts(
             returnShopProvider().userShop()!.shopId!,
           );
           notifyListeners();
-          // StorageProductsFunc().createStorageProduct(
-          //   uuid: product.uuid!,
-          // );
           return 1;
         } else {
           notifyListeners();

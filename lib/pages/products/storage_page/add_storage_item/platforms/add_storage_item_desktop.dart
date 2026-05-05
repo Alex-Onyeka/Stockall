@@ -8,6 +8,7 @@ import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/components/text_fields/main_dropdown.dart';
+import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/bottom_sheet_widgets.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
@@ -17,14 +18,16 @@ import 'package:stockall/main.dart';
 class AddStorageItemDesktop extends StatefulWidget {
   final TempStorageProducts? storageProduct;
   final TextEditingController nameController;
-  final TextEditingController quantityController;
   final TextEditingController qttyPerGroupController;
+  final TextEditingController costPriceController;
+  final TextEditingController sellingPriceController;
 
   const AddStorageItemDesktop({
     super.key,
     required this.nameController,
-    required this.quantityController,
     required this.qttyPerGroupController,
+    required this.costPriceController,
+    required this.sellingPriceController,
     this.storageProduct,
   });
 
@@ -97,14 +100,21 @@ class _AddStorageItemDesktopState
                 createdAt: DateTime.now(),
                 groupUnit: returnData().selectedGroupUnit,
                 qttyPerGroup: double.tryParse(
-                  widget.qttyPerGroupController.text,
+                  widget.qttyPerGroupController.text
+                      .replaceAll(',', ''),
                 ),
-                quantity: double.tryParse(
-                  widget.quantityController.text,
-                ),
+                quantity: null,
                 unit: returnData().selectedUnit,
                 updatedAt: DateTime.now(),
                 uuid: uuidGen(),
+                costPrice: double.tryParse(
+                  widget.costPriceController.text
+                      .replaceAll(',', ''),
+                ),
+                sellingPrice: double.tryParse(
+                  widget.sellingPriceController.text
+                      .replaceAll(',', ''),
+                ),
               );
 
               await dataProvider.createStorageProduct(
@@ -193,13 +203,26 @@ class _AddStorageItemDesktopState
                                 .replaceAll(',', ''),
                           )
                           : null,
-                  quantity:
+                  quantity: widget.storageProduct?.quantity,
+                  costPrice:
                       widget
-                              .quantityController
+                              .costPriceController
                               .text
                               .isNotEmpty
                           ? double.parse(
-                            widget.quantityController.text
+                            widget.costPriceController.text
+                                .replaceAll(',', ''),
+                          )
+                          : null,
+                  sellingPrice:
+                      widget
+                              .sellingPriceController
+                              .text
+                              .isNotEmpty
+                          ? double.parse(
+                            widget
+                                .sellingPriceController
+                                .text
                                 .replaceAll(',', ''),
                           )
                           : null,
@@ -263,10 +286,16 @@ class _AddStorageItemDesktopState
               ? widget.storageProduct!.qttyPerGroup!
                   .toString()
               : '';
-      widget.quantityController.text =
-          widget.storageProduct!.quantity == null
+      widget.costPriceController.text =
+          widget.storageProduct!.costPrice == null
               ? ''
-              : widget.storageProduct!.quantity.toString();
+              : widget.storageProduct!.costPrice.toString();
+
+      widget.sellingPriceController.text =
+          widget.storageProduct!.sellingPrice == null
+              ? ''
+              : widget.storageProduct!.sellingPrice
+                  .toString();
     }
   }
 
@@ -348,6 +377,28 @@ class _AddStorageItemDesktopState
                                     controller:
                                         widget
                                             .nameController,
+                                  ),
+                                  SizedBox(height: 5),
+                                  MoneyTextfield(
+                                    theme: theme,
+                                    hint:
+                                        'Enter Cost Price',
+                                    title:
+                                        'Cost Price (Optional)',
+                                    controller:
+                                        widget
+                                            .costPriceController,
+                                  ),
+                                  SizedBox(height: 5),
+                                  MoneyTextfield(
+                                    theme: theme,
+                                    hint:
+                                        'Enter Selling Price',
+                                    title:
+                                        'Selling Price (Optional)',
+                                    controller:
+                                        widget
+                                            .sellingPriceController,
                                   ),
                                   SizedBox(height: 15),
                                   Column(

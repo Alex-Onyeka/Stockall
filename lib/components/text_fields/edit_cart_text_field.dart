@@ -64,27 +64,32 @@ class _EditCartTextFieldState
       _rawValue = normalized;
 
       final String amount =
-          _rawValue.isEmpty ? '0' : _rawValue;
+          _rawValue.isEmpty ? '' : _rawValue;
       print('Amount: $amount');
       String formatted = '';
-      if (amount == '0') {
-        formatted = '';
-      } else {
-        if (amount.contains('.')) {
-          final part = amount.split('.');
-          if (part[1].isNotEmpty && part[1].length > 3) {
-            formatted =
-                "${_formatter.format((double.tryParse(part[0].replaceAll(',', '')) ?? 0))}.${part[1].substring(0, (part[1].length - 1))}";
-          } else {
-            formatted =
-                "${_formatter.format((double.tryParse(part[0].replaceAll(',', '')) ?? 0))}.${part[1]}";
-          }
+      if (amount.isEmpty) {
+        _isEditing = true;
+        widget.controller.value = const TextEditingValue(
+          text: '',
+          selection: TextSelection.collapsed(offset: 0),
+        );
+        _isEditing = false;
+        return;
+      }
+
+      if (amount.contains('.')) {
+        final part = amount.split('.');
+        if (part[1].isNotEmpty && part[1].length > 3) {
+          formatted =
+              "${_formatter.format((double.tryParse(part[0]) ?? 0))}.${part[1].substring(0, part[1].length - 1)}";
         } else {
-          formatted = _formatter.format(
-            (double.tryParse(amount.replaceAll(',', '')) ??
-                0),
-          );
+          formatted =
+              "${_formatter.format((double.tryParse(part[0]) ?? 0))}.${part[1]}";
         }
+      } else {
+        formatted = _formatter.format(
+          double.tryParse(amount) ?? 0,
+        );
       }
 
       print('Formatted: $formatted');

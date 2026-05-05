@@ -14,8 +14,10 @@ import 'package:stockall/pages/expenses/expenses_page.dart';
 import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
+import 'package:stockall/pages/purchases/purchase_list/purchase_list.dart';
 import 'package:stockall/pages/report/report_page.dart';
 import 'package:stockall/pages/settings/settings_page.dart';
+import 'package:stockall/pages/suppliers/supplier_list/supplier_list.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -193,21 +195,18 @@ class _MyDrawerWidgetDesktopMainState
                                 action: () {
                                   var safeContext = context;
 
-                                  if (Navigator.of(
+                                  Navigator.pushAndRemoveUntil(
                                     context,
-                                  ).canPop()) {
-                                    Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return Home();
-                                        },
-                                      ),
-                                      (route) {
-                                        return false;
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return Home();
                                       },
-                                    );
-                                  }
+                                    ),
+                                    (route) {
+                                      return false;
+                                    },
+                                  );
+
                                   returnNavProvider(
                                     safeContext,
                                     listen: false,
@@ -316,6 +315,7 @@ class _MyDrawerWidgetDesktopMainState
                                   itemIndex: 3,
                                   height: 14,
                                   action: () {
+                                    checkNavigate(context);
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -335,6 +335,49 @@ class _MyDrawerWidgetDesktopMainState
                                   itemIndex: 4,
                                   height: 14,
                                   action: () {
+                                    checkNavigate(context);
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return SupplierList();
+                                        },
+                                      ),
+                                    );
+                                  },
+                                  title: 'Suppliers',
+                                  icon: Icons.person,
+                                ),
+                              ),
+                              Visibility(
+                                visible: !isStoreKeeper(),
+                                child: NavListTileDesktopAlt(
+                                  itemIndex: 5,
+                                  height: 14,
+                                  action: () {
+                                    checkNavigate(context);
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return PurchaseList();
+                                        },
+                                      ),
+                                    );
+                                  },
+                                  title: 'Purchases',
+                                  icon:
+                                      Icons
+                                          .account_balance_wallet_outlined,
+                                ),
+                              ),
+                              Visibility(
+                                visible: !isStoreKeeper(),
+                                child: NavListTileDesktopAlt(
+                                  itemIndex: 6,
+                                  height: 14,
+                                  action: () {
+                                    checkNavigate(context);
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -357,9 +400,10 @@ class _MyDrawerWidgetDesktopMainState
                               Visibility(
                                 visible: !isStoreKeeper(),
                                 child: NavListTileDesktopAlt(
-                                  itemIndex: 5,
+                                  itemIndex: 7,
                                   height: 14,
                                   action: () {
+                                    checkNavigate(context);
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -378,9 +422,10 @@ class _MyDrawerWidgetDesktopMainState
                                 ),
                               ),
                               NavListTileDesktopAlt(
-                                itemIndex: 6,
+                                itemIndex: 8,
                                 height: 14,
                                 action: () {
+                                  checkNavigate(context);
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -400,9 +445,10 @@ class _MyDrawerWidgetDesktopMainState
                                           .employeePage,
                                 ),
                                 child: NavListTileDesktopAlt(
-                                  itemIndex: 7,
+                                  itemIndex: 9,
                                   height: 14,
                                   action: () {
+                                    checkNavigate(context);
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -435,6 +481,7 @@ class _MyDrawerWidgetDesktopMainState
                                 visible: !isStoreKeeper(),
                                 child: InkWell(
                                   onTap: () {
+                                    checkNavigate(context);
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -453,7 +500,7 @@ class _MyDrawerWidgetDesktopMainState
                                           returnNavProvider(
                                                     context,
                                                   ).currentIndex ==
-                                                  8
+                                                  10
                                               ? const Color.fromARGB(
                                                 36,
                                                 255,
@@ -486,7 +533,7 @@ class _MyDrawerWidgetDesktopMainState
                                                           returnNavProvider(
                                                                     context,
                                                                   ).currentIndex ==
-                                                                  8
+                                                                  10
                                                               ? Colors.grey.shade900
                                                               : Colors.grey.shade400,
                                                       size:
@@ -511,7 +558,7 @@ class _MyDrawerWidgetDesktopMainState
                                                         returnNavProvider(
                                                                   context,
                                                                 ).currentIndex ==
-                                                                8
+                                                                10
                                                             ? FontWeight.bold
                                                             : FontWeight.normal,
                                                   ),
@@ -528,6 +575,9 @@ class _MyDrawerWidgetDesktopMainState
                                                   children: [
                                                     InkWell(
                                                       onTap: () {
+                                                        checkNavigate(
+                                                          context,
+                                                        );
                                                         Navigator.push(
                                                           context,
                                                           MaterialPageRoute(
@@ -624,7 +674,7 @@ class _MyDrawerWidgetDesktopMainState
                                                       returnNavProvider(
                                                         context,
                                                       ).currentIndex ==
-                                                      8,
+                                                      10,
                                                   child: SizedBox(
                                                     width:
                                                         15,
@@ -635,7 +685,7 @@ class _MyDrawerWidgetDesktopMainState
                                                       returnNavProvider(
                                                         context,
                                                       ).currentIndex ==
-                                                      8,
+                                                      10,
                                                   child: Padding(
                                                     padding:
                                                         const EdgeInsets.fromLTRB(
@@ -666,11 +716,11 @@ class _MyDrawerWidgetDesktopMainState
                                   ),
                                 ),
                               ),
-
                               NavListTileDesktopAlt(
-                                itemIndex: 9,
+                                itemIndex: 11,
                                 height: 18,
                                 action: () {
+                                  checkNavigate(context);
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -796,6 +846,28 @@ class _MyDrawerWidgetDesktopMainState
         ),
       ),
     );
+  }
+}
+
+void checkNavigate(BuildContext context) {
+  if (returnNavProvider(
+            context,
+            listen: false,
+          ).currentIndex !=
+          0 ||
+      returnNavProvider(
+            context,
+            listen: false,
+          ).currentIndex !=
+          1 ||
+      returnNavProvider(
+            context,
+            listen: false,
+          ).currentIndex !=
+          2) {
+    if (Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+    }
   }
 }
 

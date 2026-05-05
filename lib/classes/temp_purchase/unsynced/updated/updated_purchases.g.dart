@@ -17,7 +17,7 @@ class UpdatedPurchasesAdapter extends TypeAdapter<UpdatedPurchases> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return UpdatedPurchases(
-      purchaseUuid: fields[0] as String,
+      purchase: fields[0] as TempPurchase,
     );
   }
 
@@ -26,7 +26,7 @@ class UpdatedPurchasesAdapter extends TypeAdapter<UpdatedPurchases> {
     writer
       ..writeByte(1)
       ..writeByte(0)
-      ..write(obj.purchaseUuid);
+      ..write(obj.purchase);
   }
 
   @override

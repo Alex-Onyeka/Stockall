@@ -732,7 +732,8 @@ class _ReceiptDetailsContainerState
                                           staff?.name ??
                                               widget
                                                   .mainReceipt
-                                                  .staffName,
+                                                  .staffName ??
+                                              "Not Set",
                                         ),
                                       ],
                                     ),
@@ -1711,7 +1712,8 @@ class _ReceiptDetailsContainerState
                                   staff?.name ??
                                   widget
                                       .mainReceipt
-                                      .staffName,
+                                      .staffName ??
+                                  "Not Set",
                               context: safeContext,
                               receipt: widget.mainReceipt,
                               records: records,
@@ -1743,7 +1745,8 @@ class _ReceiptDetailsContainerState
                                             staff?.name ??
                                             widget
                                                 .mainReceipt
-                                                .staffName,
+                                                .staffName ??
+                                            "Not Set",
                                         filename:
                                             'Stockall_Receipt_${widget.mainReceipt.uuid}.pdf',
                                         context:

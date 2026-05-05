@@ -23,17 +23,17 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      returnNavProvider(context, listen: false).navigate(5);
+      returnNavProvider(context, listen: false).navigate(7);
       returnInvoicesProvider().loadInvoices(shopId());
     });
   }
 
   @override
   void dispose() {
-    super.dispose();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       returnInvoicesProvider().clearDate();
     });
+    super.dispose();
   }
 
   @override

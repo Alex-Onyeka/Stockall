@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
-import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
@@ -9,14 +8,7 @@ import 'package:stockall/pages/products/add_product_one/platforms/add_product_mo
 
 class AddProduct extends StatefulWidget {
   final TempProductClass? product;
-  final TempStorageProducts? productStorage;
-  final bool isStorage;
-  const AddProduct({
-    super.key,
-    this.product,
-    this.productStorage,
-    required this.isStorage,
-  });
+  const AddProduct({super.key, this.product});
 
   @override
   State<AddProduct> createState() => _AddProductState();
@@ -91,8 +83,6 @@ class _AddProductState extends State<AddProduct> {
                 qttyPerGroupController:
                     qttyPerGroupController,
                 wholeSaleController: wholeSaleController,
-                isStorage: widget.isStorage,
-                storageProduct: widget.productStorage,
               );
             } else {
               return AddProductDesktop(
@@ -108,8 +98,6 @@ class _AddProductState extends State<AddProduct> {
                 qttyPerGroupController:
                     qttyPerGroupController,
                 wholeSaleController: wholeSaleController,
-                isStorage: widget.isStorage,
-                storageProduct: widget.productStorage,
               );
             }
           },

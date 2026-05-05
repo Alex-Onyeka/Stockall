@@ -28,13 +28,19 @@ class TempItemPurchaseRecordAdapter
       supplierId: fields[6] as String?,
       total: fields[8] as double?,
       purchaseId: fields[9] as String?,
+      itemName: fields[10] as String?,
+      originalPrice: fields[11] as double?,
+      customPrice: fields[12] as double?,
+      storageItemId: fields[13] as String?,
+      isGroup: fields[14] as bool?,
+      qttyPerGroup: fields[15] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempItemPurchaseRecord obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(16)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -54,7 +60,19 @@ class TempItemPurchaseRecordAdapter
       ..writeByte(8)
       ..write(obj.total)
       ..writeByte(9)
-      ..write(obj.purchaseId);
+      ..write(obj.purchaseId)
+      ..writeByte(10)
+      ..write(obj.itemName)
+      ..writeByte(11)
+      ..write(obj.originalPrice)
+      ..writeByte(12)
+      ..write(obj.customPrice)
+      ..writeByte(13)
+      ..write(obj.storageItemId)
+      ..writeByte(14)
+      ..write(obj.isGroup)
+      ..writeByte(15)
+      ..write(obj.qttyPerGroup);
   }
 
   @override

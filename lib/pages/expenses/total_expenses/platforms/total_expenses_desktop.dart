@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/buttons/floating_action_butto.dart';
 import 'package:stockall/components/major/desktop_page_container.dart';
-import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widget_desktop.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
-import 'package:stockall/components/major/drawer_widget/my_drawer_widget.dart';
-import 'package:stockall/components/major/right_side_bar.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -17,7 +13,6 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/expenses/add_expenses/add_expenses.dart';
 import 'package:stockall/pages/expenses/components/expenses_tile.dart';
 import 'package:stockall/pages/expenses/single_expense/expense_details.dart';
-import 'package:stockall/services/auth_service.dart';
 
 class TotalExpensesDesktop extends StatefulWidget {
   const TotalExpensesDesktop({super.key});
@@ -69,97 +64,109 @@ class TotalExpensesDesktopState
       },
       child: Scaffold(
         key: _scaffoldKey,
-        drawer: MyDrawerWidgetDesktopMain(
-          action: () {
-            var safeContext = context;
-            showDialog(
-              context: context,
-              builder: (context) {
-                return ConfirmationAlert(
-                  theme: theme,
-                  message: 'You are about to Logout',
-                  title: 'Are you Sure?',
-                  action: () async {
-                    Navigator.of(context).pop();
-                    setState(() {
-                      isLoading = true;
-                    });
-                    if (safeContext.mounted) {
-                      var res = await AuthService().signOut(
-                        context: safeContext,
-                        allowLogout: false,
-                      );
-                      if (res == 0 && safeContext.mounted) {
-                        setState(() {
-                          isLoading = false;
-                        });
-                      }
-                    }
-                  },
-                );
-              },
-            );
-          },
-          theme: theme,
-          notifications:
-              returnNotificationProvider(
-                    context,
-                  ).notifications().isEmpty
-                  ? []
-                  : returnNotificationProvider(
-                    context,
-                  ).notifications(),
-          globalKey: _scaffoldKey,
-        ),
+        // drawer: MyDrawerWidgetDesktopMain(
+        //   action: () {
+        //     var safeContext = context;
+        //     showDialog(
+        //       context: context,
+        //       builder: (context) {
+        //         return ConfirmationAlert(
+        //           theme: theme,
+        //           message: 'You are about to Logout',
+        //           title: 'Are you Sure?',
+        //           action: () async {
+        //             Navigator.of(context).pop();
+        //             setState(() {
+        //               isLoading = true;
+        //             });
+        //             if (safeContext.mounted) {
+        //               var res = await AuthService().signOut(
+        //                 context: safeContext,
+        //                 allowLogout: false,
+        //               );
+        //               if (res == 0 && safeContext.mounted) {
+        //                 setState(() {
+        //                   isLoading = false;
+        //                 });
+        //               }
+        //             }
+        //           },
+        //         );
+        //       },
+        //     );
+        //   },
+        //   theme: theme,
+        //   notifications:
+        //       returnNotificationProvider(
+        //             context,
+        //           ).notifications().isEmpty
+        //           ? []
+        //           : returnNotificationProvider(
+        //             context,
+        //           ).notifications(),
+        //   globalKey: _scaffoldKey,
+        // ),
         body: Stack(
           children: [
             Row(
               spacing: 15,
               children: [
-                MyDrawerWidget(
-                  globalKey: _scaffoldKey,
-                  action: () {
-                    var safeContext = context;
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return ConfirmationAlert(
-                          theme: theme,
-                          message:
-                              'You are about to Logout',
-                          title: 'Are you Sure?',
-                          action: () async {
-                            Navigator.of(context).pop();
-                            setState(() {
-                              isLoading = true;
-                            });
-                            if (safeContext.mounted) {
-                              var res = await AuthService()
-                                  .signOut(
-                                    context: safeContext,
-                                    allowLogout: false,
-                                  );
-                              if (res == 0 &&
-                                  safeContext.mounted) {
-                                setState(() {
-                                  isLoading = false;
-                                });
-                              }
-                            }
-                          },
-                        );
-                      },
-                    );
-                  },
-                  theme: theme,
-                  notifications:
-                      returnNotificationProvider(
-                            context,
-                          ).notifications().isEmpty
-                          ? []
-                          : returnNotificationProvider(
-                            context,
-                          ).notifications(),
+                // MyDrawerWidget(
+                //   globalKey: _scaffoldKey,
+                //   action: () {
+                //     var safeContext = context;
+                //     showDialog(
+                //       context: context,
+                //       builder: (context) {
+                //         return ConfirmationAlert(
+                //           theme: theme,
+                //           message:
+                //               'You are about to Logout',
+                //           title: 'Are you Sure?',
+                //           action: () async {
+                //             Navigator.of(context).pop();
+                //             setState(() {
+                //               isLoading = true;
+                //             });
+                //             if (safeContext.mounted) {
+                //               var res = await AuthService()
+                //                   .signOut(
+                //                     context: safeContext,
+                //                     allowLogout: false,
+                //                   );
+                //               if (res == 0 &&
+                //                   safeContext.mounted) {
+                //                 setState(() {
+                //                   isLoading = false;
+                //                 });
+                //               }
+                //             }
+                //           },
+                //         );
+                //       },
+                //     );
+                //   },
+                //   theme: theme,
+                //   notifications:
+                //       returnNotificationProvider(
+                //             context,
+                //           ).notifications().isEmpty
+                //           ? []
+                //           : returnNotificationProvider(
+                //             context,
+                //           ).notifications(),
+                // ),
+                Container(
+                  width:
+                      screenWidth(context) <
+                              tabletScreenSmall
+                          ? 50
+                          : (screenWidth(context) >
+                                  tabletScreenSmall &&
+                              screenWidth(context) <
+                                  tabletScreen + 100)
+                          ? 100
+                          : 230,
                 ),
                 Expanded(
                   child: DesktopPageContainer(
@@ -525,7 +532,19 @@ class TotalExpensesDesktopState
                     ),
                   ),
                 ),
-                RightSideBar(theme: theme),
+                Container(
+                  width:
+                      screenWidth(context) <
+                              tabletScreenSmall
+                          ? 50
+                          : (screenWidth(context) >
+                                  tabletScreenSmall &&
+                              screenWidth(context) <
+                                  tabletScreen + 100)
+                          ? 100
+                          : 230,
+                ),
+                // RightSideBar(theme: theme),
               ],
             ),
             Visibility(

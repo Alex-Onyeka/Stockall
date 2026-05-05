@@ -15,6 +15,7 @@ import 'package:stockall/providers/events_log_provider.dart';
 import 'package:stockall/providers/expenses_provider.dart';
 import 'package:stockall/providers/invoices_provider.dart';
 import 'package:stockall/providers/notifications_provider.dart';
+import 'package:stockall/providers/purchase_provider.dart';
 import 'package:stockall/providers/receipts_provider.dart';
 import 'package:stockall/providers/shop_provider.dart';
 import 'package:stockall/providers/user_provider.dart';
@@ -30,6 +31,7 @@ class RefreshFunctions {
   late final DataProvider dataProvider;
   late final AppVersionProvider appVersionP;
   late final EventsLogProvider eventLogProvider;
+  late final PurchaseProvider purchaseProvider;
 
   // Keep a reference to context
   final BuildContext context;
@@ -60,6 +62,7 @@ class RefreshFunctions {
     );
     dataProvider = returnData();
     eventLogProvider = returnEventsLogProvider();
+    purchaseProvider = returnPurchaseProvider();
   }
 
   Future<bool> checkOnline() async {
@@ -593,6 +596,9 @@ class RefreshFunctions {
                 // await getProducts();
                 await fetchNotifications();
                 await getCustomers();
+                await purchaseProvider.loadPurchases(
+                  shopId(),
+                );
               },
             );
           },
@@ -633,6 +639,7 @@ class RefreshFunctions {
         await fetchNotifications();
         await getCustomers();
         await returnDepartmentProvider().getDepartments();
+        await purchaseProvider.loadPurchases(shopId());
       }
     }
 

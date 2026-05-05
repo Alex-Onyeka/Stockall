@@ -303,7 +303,7 @@ class _MainReceiptTileMobileState
                                 .secColor200,
                       ),
 
-                      "Customer: ${cutLongText2(customer != null ? (customer?.name.split(' ').first ?? '') : 'Not Set')}",
+                      "Customer: ${cutLongText2(customer != null ? (customer?.name ?? '') : 'Not Set')}",
                     ),
                     SizedBox(width: 10),
                     Text(
@@ -313,7 +313,7 @@ class _MainReceiptTileMobileState
                         fontWeight: FontWeight.bold,
                         color: Colors.grey.shade700,
                       ),
-                      'Cashier: ${cutLongText2(widget.mainReceipt.staffName.split(' ')[0])}',
+                      'Cashier: ${cutLongText2(widget.mainReceipt.staffName == null || widget.mainReceipt.staffName!.isEmpty ? 'Not Set' : widget.mainReceipt.staffName ?? 'Not Set')}',
                     ),
                   ],
                 ),
@@ -530,7 +530,7 @@ class _MainReceiptTileDesktopState
                         flex: 3,
                         subTitle: 'Cashier',
                         title:
-                            'Cashier: ${cutLongText2(widget.mainReceipt.staffName.split(' ')[0])}',
+                            'Cashier: ${cutLongText2(widget.mainReceipt.staffName == null || widget.mainReceipt.staffName!.isEmpty ? 'Not Set' : widget.mainReceipt.staffName ?? 'Not Set')}',
                         theme: theme,
                       ),
                     ],

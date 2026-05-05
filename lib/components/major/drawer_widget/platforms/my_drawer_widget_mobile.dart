@@ -13,9 +13,11 @@ import 'package:stockall/pages/expenses/expenses_page.dart';
 import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
+import 'package:stockall/pages/purchases/purchase_list/purchase_list.dart';
 import 'package:stockall/pages/report/report_page.dart';
 import 'package:stockall/pages/settings/settings_page.dart';
 import 'package:stockall/pages/shop_setup/shop_page/shop_page.dart';
+import 'package:stockall/pages/suppliers/supplier_list/supplier_list.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -161,6 +163,44 @@ class _MyDrawerWidgetMobileState
                                 },
                                 title: 'Customers',
                                 svg: custBookIconSvg,
+                              ),
+                            ),
+                            Visibility(
+                              visible: !isStoreKeeper(),
+                              child: NavListTileAlt(
+                                height: 14,
+                                action: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return SupplierList();
+                                      },
+                                    ),
+                                  );
+                                },
+                                title: 'Suppliers',
+                                icon: Icons.person,
+                              ),
+                            ),
+                            Visibility(
+                              visible: !isStoreKeeper(),
+                              child: NavListTileAlt(
+                                height: 14,
+                                action: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return PurchaseList();
+                                      },
+                                    ),
+                                  );
+                                },
+                                title: 'Purchases',
+                                icon:
+                                    Icons
+                                        .account_balance_wallet_outlined,
                               ),
                             ),
                             Visibility(

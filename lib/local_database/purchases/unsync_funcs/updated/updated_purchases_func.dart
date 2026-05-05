@@ -51,11 +51,13 @@ class UpdatedPurchasesFunc {
   }
 
   Future<int> createUpdatedPurchase(
-    String purchaseUuid,
+    UpdatedPurchases updatedPurchase,
   ) async {
     try {
       updatedPurchasesBox.add(
-        UpdatedPurchases(purchaseUuid: purchaseUuid),
+        UpdatedPurchases(
+          purchase: updatedPurchase.purchase,
+        ),
       );
       print(
         'Offline Updated Purchase inserted successfully ✅',

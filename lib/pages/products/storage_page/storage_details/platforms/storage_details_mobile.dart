@@ -108,6 +108,61 @@ class _StorageDetailsMobileState
                             ],
                           ),
                           SizedBox(height: 20),
+                          Row(
+                            spacing: 10,
+                            children: [
+                              Expanded(
+                                child: TabContainer(
+                                  isMoney: true,
+                                  text: 'Cost Price',
+                                  price:
+                                      product.costPrice ??
+                                      0,
+                                  theme: widget.theme,
+                                  backGround:
+                                      const Color.fromARGB(
+                                        24,
+                                        240,
+                                        206,
+                                        104,
+                                      ),
+                                  border:
+                                      const Color.fromARGB(
+                                        71,
+                                        228,
+                                        225,
+                                        41,
+                                      ),
+                                ),
+                              ),
+                              Expanded(
+                                child: TabContainer(
+                                  isMoney: true,
+                                  text: 'Selling Price',
+                                  price:
+                                      product
+                                          .sellingPrice ??
+                                      0,
+                                  theme: widget.theme,
+                                  backGround:
+                                      const Color.fromARGB(
+                                        24,
+                                        240,
+                                        206,
+                                        104,
+                                      ),
+                                  border:
+                                      const Color.fromARGB(
+                                        71,
+                                        228,
+                                        225,
+                                        41,
+                                      ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 10),
                           Column(
                             children: [
                               Row(

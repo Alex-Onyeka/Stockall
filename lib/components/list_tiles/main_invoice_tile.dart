@@ -302,7 +302,7 @@ class _MainInvoiceTileMobileState
                                 .secColor200,
                       ),
 
-                      "Customer: ${cutLongText2(customer != null ? customer!.name.split(' ').first : 'Not Set')}",
+                      "Customer: ${cutLongText2(customer != null ? customer!.name : 'Not Set')}",
                     ),
                     SizedBox(width: 10),
                     Text(
@@ -312,7 +312,7 @@ class _MainInvoiceTileMobileState
                         fontWeight: FontWeight.bold,
                         color: Colors.grey.shade700,
                       ),
-                      'Cashier: ${cutLongText2(widget.invoice.staffName.split(' ')[0])} ${widget.invoice.staffName.split(' ').length > 1 ? widget.invoice.staffName.split(' ')[1].split('')[0] : ''}.',
+                      'Cashier: ${cutLongText2(widget.invoice.staffName.isNotEmpty ? widget.invoice.staffName : 'Not Set')}.',
                     ),
                   ],
                 ),
@@ -525,7 +525,7 @@ class _MainInvoiceTileDesktopState
                         flex: 3,
                         subTitle: 'Cashier',
                         title:
-                            '${cutLongText2(widget.invoice.staffName.split(' ')[0])} ${widget.invoice.staffName.split(' ').length > 1 ? widget.invoice.staffName.split(' ')[1].split('')[0] : ''}.',
+                            '${cutLongText2(widget.invoice.staffName.isNotEmpty ? widget.invoice.staffName : 'Not Set')}.',
                         theme: theme,
                       ),
                     ],

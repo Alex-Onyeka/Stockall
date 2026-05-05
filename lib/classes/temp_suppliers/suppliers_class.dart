@@ -54,7 +54,7 @@ class SuppliersClass extends HiveObject {
     required this.createdAt,
     required this.shopId,
     this.departmentName,
-    required this.departmentId,
+    this.departmentId,
     this.uuid,
     this.updatedAt,
   });
@@ -85,7 +85,7 @@ class SuppliersClass extends HiveObject {
   Map<String, dynamic> toJson() {
     return {
       // 'id': id,
-      'date_added': createdAt.toIso8601String(),
+      'created_at': createdAt.toIso8601String(),
       'shop_id': shopId,
       'country': country,
       'name': name,
@@ -94,7 +94,7 @@ class SuppliersClass extends HiveObject {
       'address': address,
       'city': city,
       'state': state,
-      'department_uuid': departmentId,
+      'department_id': departmentId,
       'department_name': departmentName,
       'uuid': uuid,
       'updated_at': updatedAt?.toIso8601String(),

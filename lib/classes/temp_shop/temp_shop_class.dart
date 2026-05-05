@@ -204,7 +204,7 @@ class TempShopClass {
     this.fixedDiscount,
     this.isAllowedBySubscription,
     this.applyVAT,
-    this.manageInventoryStorage,
+    required this.manageInventoryStorage,
     this.bulkSale,
     required this.useGroupUnit,
     required this.wholeSale,

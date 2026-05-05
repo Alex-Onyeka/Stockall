@@ -208,26 +208,6 @@ class _StorageQuantityUpdateWidgetState
                           returnStorageProductProvider()
                               .isGroupUnit,
                       toggle: () {
-                        // showDialog(
-                        //   context: context,
-                        //   builder: (context) {
-                        //     return ConfirmationAlert(
-                        //       theme: theme,
-                        //       message:
-                        //           storageProvider.isGroupUnit
-                        //               ? 'This item will not be added to your stock after this sale, are you sure you want to proceed?'
-                        //               : 'This item will be automatically added to your stock after this sale, are you sure you want to proceed?',
-                        //       title:
-                        //           !storageProvider.isGroupUnit
-                        //               ? 'Add to Stock?'
-                        //               : 'Are you Sure?',
-                        //       action: () async {
-                        //         Navigator.of(context).pop();
-
-                        //       },
-                        //     );
-                        //   },
-                        // );
                         returnStorageProductProvider()
                             .toggleGroupUnit(
                               value:
@@ -314,7 +294,7 @@ class _StorageQuantityUpdateWidgetState
                             0) <
                     0)) {
                   setState(() {
-                    quantityController.text = '0';
+                    quantityController.text = '';
                   });
                 }
               } else {
@@ -330,7 +310,7 @@ class _StorageQuantityUpdateWidgetState
                                 0)) <
                     0)) {
                   setState(() {
-                    quantityController.text = '0';
+                    quantityController.text = '';
                   });
                 }
               }
@@ -697,8 +677,9 @@ class _StorageQuantityUpdateWidgetState
                 child: InkWell(
                   onTap: () {
                     if (quantityController
-                        .text
-                        .isNotEmpty) {
+                            .text
+                            .isNotEmpty ||
+                        currentIndex == 2) {
                       if (currentIndex == 1 &&
                           productUuid == null) {
                         showDialog(
@@ -721,9 +702,9 @@ class _StorageQuantityUpdateWidgetState
                           return ConfirmationAlert(
                             theme: theme,
                             message:
-                                'You are about to update the ${returnStorageProductProvider().unitText(storageProduct: widget.storageProduct)} quantity of This item in Storage. Are you sure you want to proceed?',
+                                'You are about to ${quantityController.text.isEmpty || quantityController.text == '0' ? 'Clear' : 'Update'} the ${returnStorageProductProvider().unitText(storageProduct: widget.storageProduct)} quantity of This item in Storage. Are you sure you want to proceed?',
                             title:
-                                'Update ${returnStorageProductProvider().unitText(storageProduct: widget.storageProduct)} Stock',
+                                '${quantityController.text.isEmpty || quantityController.text == '0' ? 'Clear' : 'Update'} ${returnStorageProductProvider().unitText(storageProduct: widget.storageProduct)} Stock',
                             action: () async {
                               double? tempQtty;
                               TempStorageProducts
@@ -764,6 +745,14 @@ class _StorageQuantityUpdateWidgetState
                                         widget
                                             .storageProduct
                                             .qttyPerGroup,
+                                    costPrice:
+                                        widget
+                                            .storageProduct
+                                            .costPrice,
+                                    sellingPrice:
+                                        widget
+                                            .storageProduct
+                                            .sellingPrice,
                                   );
                               Navigator.of(
                                 actionContext,
@@ -1346,6 +1335,14 @@ class _ManageProductsStorageState
                               children:
                                   returnData()
                                       .productListMain
+                                      .where(
+                                        (item) =>
+                                            item.storageUuid ==
+                                                null ||
+                                            item.storageUuid ==
+                                                widget
+                                                    .productUuid,
+                                      )
                                       .map(
                                         (dept) => Material(
                                           color:

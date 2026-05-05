@@ -188,7 +188,7 @@ class _ShopSetupTwoDesktopState
                 });
                 await shopProvider.createShop(
                   TempShopClass(
-                    // closeSaleTime: null,
+                    manageInventoryStorage: false,
                     closeSaleTimeString: null,
                     isVerified: false,
                     currency: selectedCurrency!,

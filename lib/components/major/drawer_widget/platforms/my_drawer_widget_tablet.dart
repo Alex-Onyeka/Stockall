@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:stockall/classes/temp_notification/temp_notification.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widget_desktop.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
@@ -13,8 +14,10 @@ import 'package:stockall/pages/expenses/expenses_page.dart';
 import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/pages/invoices/invoice_list/invoice_list_page.dart';
 import 'package:stockall/pages/notifications/notifications_page.dart';
+import 'package:stockall/pages/purchases/purchase_list/purchase_list.dart';
 import 'package:stockall/pages/report/report_page.dart';
 import 'package:stockall/pages/settings/settings_page.dart';
+import 'package:stockall/pages/suppliers/supplier_list/supplier_list.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -252,6 +255,7 @@ class _MyDrawerWidgetTabletState
                                   itemIndex: 3,
                                   height: 14,
                                   action: () {
+                                    checkNavigate(context);
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -271,6 +275,49 @@ class _MyDrawerWidgetTabletState
                                   itemIndex: 4,
                                   height: 14,
                                   action: () {
+                                    checkNavigate(context);
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return SupplierList();
+                                        },
+                                      ),
+                                    );
+                                  },
+                                  title: 'Suppliers',
+                                  icon: Icons.person,
+                                ),
+                              ),
+                              Visibility(
+                                visible: !isStoreKeeper(),
+                                child: NavListTileDesktopAlt(
+                                  itemIndex: 5,
+                                  height: 14,
+                                  action: () {
+                                    checkNavigate(context);
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return PurchaseList();
+                                        },
+                                      ),
+                                    );
+                                  },
+                                  title: 'Purchases',
+                                  icon:
+                                      Icons
+                                          .account_balance_wallet_outlined,
+                                ),
+                              ),
+                              Visibility(
+                                visible: !isStoreKeeper(),
+                                child: NavListTileDesktopAlt(
+                                  itemIndex: 6,
+                                  height: 14,
+                                  action: () {
+                                    checkNavigate(context);
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -293,9 +340,10 @@ class _MyDrawerWidgetTabletState
                               Visibility(
                                 visible: !isStoreKeeper(),
                                 child: NavListTileDesktopAlt(
-                                  itemIndex: 5,
+                                  itemIndex: 7,
                                   height: 14,
                                   action: () {
+                                    checkNavigate(context);
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -314,9 +362,10 @@ class _MyDrawerWidgetTabletState
                                 ),
                               ),
                               NavListTileDesktopAlt(
-                                itemIndex: 6,
+                                itemIndex: 8,
                                 height: 14,
                                 action: () {
+                                  checkNavigate(context);
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -336,9 +385,10 @@ class _MyDrawerWidgetTabletState
                                           .employeePage,
                                 ),
                                 child: NavListTileDesktopAlt(
-                                  itemIndex: 7,
+                                  itemIndex: 9,
                                   height: 14,
                                   action: () {
+                                    checkNavigate(context);
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -371,6 +421,7 @@ class _MyDrawerWidgetTabletState
                                 visible: !isStoreKeeper(),
                                 child: InkWell(
                                   onTap: () {
+                                    checkNavigate(context);
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -387,7 +438,7 @@ class _MyDrawerWidgetTabletState
                                         returnNavProvider(
                                                   context,
                                                 ).currentIndex ==
-                                                8
+                                                10
                                             ? const Color.fromARGB(
                                               36,
                                               255,
@@ -408,6 +459,9 @@ class _MyDrawerWidgetTabletState
                                           children: [
                                             InkWell(
                                               onTap: () {
+                                                checkNavigate(
+                                                  context,
+                                                );
                                                 Navigator.of(
                                                   context,
                                                 ).pop();
@@ -506,7 +560,7 @@ class _MyDrawerWidgetTabletState
                                               returnNavProvider(
                                                 context,
                                               ).currentIndex ==
-                                              8,
+                                              10,
                                           child: SizedBox(
                                             width: 15,
                                           ),
@@ -516,7 +570,7 @@ class _MyDrawerWidgetTabletState
                                               returnNavProvider(
                                                 context,
                                               ).currentIndex ==
-                                              8,
+                                              10,
                                           child: Padding(
                                             padding:
                                                 const EdgeInsets.fromLTRB(
@@ -547,9 +601,10 @@ class _MyDrawerWidgetTabletState
                                 ),
                               ),
                               NavListTileDesktopAlt(
-                                itemIndex: 9,
+                                itemIndex: 11,
                                 height: 18,
                                 action: () {
+                                  checkNavigate(context);
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(

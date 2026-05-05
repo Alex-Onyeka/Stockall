@@ -3,11 +3,8 @@ import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/floating_action_butto.dart';
-import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widget_desktop.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
-import 'package:stockall/components/major/drawer_widget/my_drawer_widget.dart';
-import 'package:stockall/components/major/right_side_bar.dart';
 import 'package:stockall/components/text_fields/text_field_barcode.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -21,7 +18,6 @@ import 'package:stockall/pages/products/compnents/product_filter_button_category
 import 'package:stockall/pages/products/compnents/product_tile_main.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
-import 'package:stockall/services/auth_service.dart';
 
 class TotalProductsDesktop extends StatefulWidget {
   const TotalProductsDesktop({
@@ -173,96 +169,107 @@ class _TotalProductsDesktopState
 
     return Scaffold(
       key: _scaffoldKey,
-      drawer: MyDrawerWidgetDesktopMain(
-        action: () {
-          var safeContext = context;
-          showDialog(
-            context: context,
-            builder: (context) {
-              return ConfirmationAlert(
-                theme: theme,
-                message: 'You are about to Logout',
-                title: 'Are you Sure?',
-                action: () async {
-                  Navigator.of(context).pop();
-                  setState(() {
-                    isLoading = true;
-                  });
-                  if (safeContext.mounted) {
-                    var res = await AuthService().signOut(
-                      context: safeContext,
-                      allowLogout: false,
-                    );
-                    if (res == 0 && safeContext.mounted) {
-                      setState(() {
-                        isLoading = false;
-                      });
-                    }
-                  }
-                },
-              );
-            },
-          );
-        },
-        theme: theme,
-        notifications:
-            returnNotificationProvider(
-                  context,
-                ).notifications().isEmpty
-                ? []
-                : returnNotificationProvider(
-                  context,
-                ).notifications(),
-        globalKey: _scaffoldKey,
-      ),
+      // drawer: MyDrawerWidgetDesktopMain(
+      //   action: () {
+      //     var safeContext = context;
+      //     showDialog(
+      //       context: context,
+      //       builder: (context) {
+      //         return ConfirmationAlert(
+      //           theme: theme,
+      //           message: 'You are about to Logout',
+      //           title: 'Are you Sure?',
+      //           action: () async {
+      //             Navigator.of(context).pop();
+      //             setState(() {
+      //               isLoading = true;
+      //             });
+      //             if (safeContext.mounted) {
+      //               var res = await AuthService().signOut(
+      //                 context: safeContext,
+      //                 allowLogout: false,
+      //               );
+      //               if (res == 0 && safeContext.mounted) {
+      //                 setState(() {
+      //                   isLoading = false;
+      //                 });
+      //               }
+      //             }
+      //           },
+      //         );
+      //       },
+      //     );
+      //   },
+      //   theme: theme,
+      //   notifications:
+      //       returnNotificationProvider(
+      //             context,
+      //           ).notifications().isEmpty
+      //           ? []
+      //           : returnNotificationProvider(
+      //             context,
+      //           ).notifications(),
+      //   globalKey: _scaffoldKey,
+      // ),
       body: Stack(
         children: [
           Row(
             spacing: 15,
             children: [
-              MyDrawerWidget(
-                globalKey: _scaffoldKey,
-                action: () {
-                  var safeContext = context;
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return ConfirmationAlert(
-                        theme: theme,
-                        message: 'You are about to Logout',
-                        title: 'Are you Sure?',
-                        action: () async {
-                          Navigator.of(context).pop();
-                          setState(() {
-                            isLoading = true;
-                          });
-                          if (safeContext.mounted) {
-                            var res = await AuthService()
-                                .signOut(
-                                  context: safeContext,
-                                  allowLogout: false,
-                                );
-                            if (res == 0 &&
-                                safeContext.mounted) {
-                              setState(() {
-                                isLoading = false;
-                              });
-                            }
-                          }
-                        },
-                      );
-                    },
-                  );
-                },
-                theme: theme,
-                notifications:
-                    returnNotificationProvider(
-                          context,
-                        ).notifications().isEmpty
-                        ? []
-                        : returnNotificationProvider(
-                          context,
-                        ).notifications(),
+              // MyDrawerWidget(
+              //   globalKey: _scaffoldKey,
+              //   action: () {
+              //     var safeContext = context;
+              //     showDialog(
+              //       context: context,
+              //       builder: (context) {
+              //         return ConfirmationAlert(
+              //           theme: theme,
+              //           message: 'You are about to Logout',
+              //           title: 'Are you Sure?',
+              //           action: () async {
+              //             Navigator.of(context).pop();
+              //             setState(() {
+              //               isLoading = true;
+              //             });
+              //             if (safeContext.mounted) {
+              //               var res = await AuthService()
+              //                   .signOut(
+              //                     context: safeContext,
+              //                     allowLogout: false,
+              //                   );
+              //               if (res == 0 &&
+              //                   safeContext.mounted) {
+              //                 setState(() {
+              //                   isLoading = false;
+              //                 });
+              //               }
+              //             }
+              //           },
+              //         );
+              //       },
+              //     );
+              //   },
+              //   theme: theme,
+              //   notifications:
+              //       returnNotificationProvider(
+              //             context,
+              //           ).notifications().isEmpty
+              //           ? []
+              //           : returnNotificationProvider(
+              //             context,
+              //           ).notifications(),
+              // ),
+              Container(
+                width:
+                    screenWidth(context) < tabletScreenSmall
+                        ? 50
+                        : (screenWidth(context) >
+                                tabletScreenSmall &&
+                            screenWidth(context) <
+                                tabletScreen + 100)
+                        ? 100
+                        : 230,
               ),
               Expanded(
                 child: Stack(
@@ -554,29 +561,23 @@ class _TotalProductsDesktopState
                               widget.categoryUuid == null,
                           child: FloatingActionButtonMain(
                             action: () {
-                              ItemsAuthAction()
-                                  .numberOfItemsAction(
-                                    context: context,
-                                    action: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (
-                                            context,
-                                          ) {
-                                            return AddProduct(
-                                              isStorage:
-                                                  false,
-                                            );
-                                          },
-                                        ),
-                                      ).then((_) {
-                                        setState(() {
-                                          // getProductList(context);
-                                        });
-                                      });
-                                    },
-                                  );
+                              ItemsAuthAction().numberOfItemsAction(
+                                context: context,
+                                action: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return AddProduct();
+                                      },
+                                    ),
+                                  ).then((_) {
+                                    setState(() {
+                                      // getProductList(context);
+                                    });
+                                  });
+                                },
+                              );
                             },
                             color:
                                 theme
@@ -659,10 +660,7 @@ class _TotalProductsDesktopState
                                                                 builder: (
                                                                   context,
                                                                 ) {
-                                                                  return AddProduct(
-                                                                    isStorage:
-                                                                        false,
-                                                                  );
+                                                                  return AddProduct();
                                                                 },
                                                               ),
                                                             ).then(
@@ -1570,7 +1568,18 @@ class _TotalProductsDesktopState
                   ],
                 ),
               ),
-              RightSideBar(theme: theme),
+              Container(
+                width:
+                    screenWidth(context) < tabletScreenSmall
+                        ? 50
+                        : (screenWidth(context) >
+                                tabletScreenSmall &&
+                            screenWidth(context) <
+                                tabletScreen + 100)
+                        ? 100
+                        : 230,
+              ),
+              // RightSideBar(theme: theme),
             ],
           ),
           Visibility(

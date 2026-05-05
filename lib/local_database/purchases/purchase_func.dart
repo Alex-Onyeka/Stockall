@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/classes/temp_purchase/purchase_payments.dart';
 import 'package:stockall/classes/temp_purchase/temp_purchase.dart';
 import 'package:stockall/local_database/purchases/unsync_funcs/created/created_purchases_func.dart';
 import 'package:stockall/local_database/purchases/unsync_funcs/deleted/deleted_purchases_func.dart';
@@ -13,6 +14,7 @@ class PurchaseFunc {
   final String purchasesBoxName = 'purchasesBoxStockall';
 
   Future<void> init() async {
+    Hive.registerAdapter(PurchasePaymentsAdapter());
     Hive.registerAdapter(TempPurchaseAdapter());
     purchasesBox = await Hive.openBox(purchasesBoxName);
     await CreatedPurchasesFunc().init();
@@ -67,30 +69,6 @@ class PurchaseFunc {
       return 0;
     }
   }
-
-  // Future<int> payCredit(String uuid) async {
-  //   try {
-  //     var Purchase = purchasesBox.get(uuid);
-  //     if (Purchase != null) {
-  //       Purchase.isInvoice = false;
-  //       Purchase.createdAt = DateTime.now();
-
-  //       // Save back into Hive explicitly
-  //       await purchasesBox.put(uuid, Purchase);
-
-  //       print('Offline Purchase Sale Updated Successfully');
-  //       return 1;
-  //     } else {
-  //       print('Purchase not found in box ❌');
-  //       return 0;
-  //     }
-  //   } catch (e) {
-  //     print(
-  //       'Offline Purchase Sale Update Failed: ${e.toString()}',
-  //     );
-  //     return 0;
-  //   }
-  // }
 
   Future<int> clearPurchases() async {
     try {

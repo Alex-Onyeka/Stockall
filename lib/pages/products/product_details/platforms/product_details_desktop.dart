@@ -5,9 +5,6 @@ import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
-import 'package:stockall/components/major/drawer_widget/my_drawer_widget.dart';
-import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widget_desktop.dart';
-import 'package:stockall/components/major/right_side_bar.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/app_bar.dart';
@@ -18,13 +15,11 @@ import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dart';
 import 'package:stockall/pages/barcode_printing_page/barcode_printing_page.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/providers/data_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
-import 'package:stockall/services/auth_service.dart';
 
 class ProductDetailsDesktop extends StatefulWidget {
   final ThemeProvider theme;
@@ -98,100 +93,111 @@ class _ProductDetailsDesktopState
       TempProductClass product = productList.first;
       return Scaffold(
         key: _scaffoldKey,
-        drawer: MyDrawerWidgetDesktopMain(
-          action: () {
-            var safeContext = context;
-            showDialog(
-              context: context,
-              builder: (context) {
-                return ConfirmationAlert(
-                  theme: widget.theme,
-                  message: 'You are about to Logout',
-                  title: 'Are you Sure?',
-                  action: () async {
-                    Navigator.of(context).pop();
-                    setState(() {
-                      isLoading = true;
-                    });
-                    if (safeContext.mounted) {
-                      var res = await AuthService().signOut(
-                        context: safeContext,
-                        allowLogout: false,
-                      );
-                      if (res == 0 && safeContext.mounted) {
-                        setState(() {
-                          isLoading = false;
-                        });
-                      }
-                    }
-                  },
-                );
-              },
-            );
-          },
-          theme: widget.theme,
-          notifications:
-              returnNotificationProvider(
-                    context,
-                  ).notifications().isEmpty
-                  ? []
-                  : returnNotificationProvider(
-                    context,
-                  ).notifications(),
-          globalKey: _scaffoldKey,
-        ),
+        // drawer: MyDrawerWidgetDesktopMain(
+        //   action: () {
+        //     var safeContext = context;
+        //     showDialog(
+        //       context: context,
+        //       builder: (context) {
+        //         return ConfirmationAlert(
+        //           theme: widget.theme,
+        //           message: 'You are about to Logout',
+        //           title: 'Are you Sure?',
+        //           action: () async {
+        //             Navigator.of(context).pop();
+        //             setState(() {
+        //               isLoading = true;
+        //             });
+        //             if (safeContext.mounted) {
+        //               var res = await AuthService().signOut(
+        //                 context: safeContext,
+        //                 allowLogout: false,
+        //               );
+        //               if (res == 0 && safeContext.mounted) {
+        //                 setState(() {
+        //                   isLoading = false;
+        //                 });
+        //               }
+        //             }
+        //           },
+        //         );
+        //       },
+        //     );
+        //   },
+        //   theme: widget.theme,
+        //   notifications:
+        //       returnNotificationProvider(
+        //             context,
+        //           ).notifications().isEmpty
+        //           ? []
+        //           : returnNotificationProvider(
+        //             context,
+        //           ).notifications(),
+        //   globalKey: _scaffoldKey,
+        // ),
         body: Row(
           spacing: 15,
           children: [
-            Visibility(
-              visible:
-                  screenWidth(context) > mobileScreen &&
-                  widget.comingFromInventoryUpdatesPage ==
-                      null,
-              child: MyDrawerWidget(
-                globalKey: _scaffoldKey,
-                action: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return ConfirmationAlert(
-                        theme: widget.theme,
-                        message: 'You are about to Logout',
-                        title: 'Are you Sure?',
-                        action: () async {
-                          var res = await AuthService()
-                              .signOut(
-                                context: context,
-                                allowLogout: false,
-                              );
-                          if (res == 1) {
-                            if (context.mounted) {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return AuthScreensPage();
-                                  },
-                                ),
-                              );
-                              returnNavProvider(
-                                context,
-                                listen: false,
-                              ).navigate(0);
-                            }
-                          }
-                        },
-                      );
-                    },
-                  );
-                },
-                theme: widget.theme,
-                notifications:
-                    returnNotificationProvider(
-                      context,
-                    ).notifications(),
-              ),
+            Container(
+              width:
+                  screenWidth(context) < tabletScreenSmall
+                      ? 50
+                      : (screenWidth(context) >
+                              tabletScreenSmall &&
+                          screenWidth(context) <
+                              tabletScreen + 100)
+                      ? 100
+                      : 230,
             ),
+            // Visibility(
+            //   visible:
+            //       screenWidth(context) > mobileScreen &&
+            //       widget.comingFromInventoryUpdatesPage ==
+            //           null,
+            //   child: MyDrawerWidget(
+            //     globalKey: _scaffoldKey,
+            //     action: () {
+            //       showDialog(
+            //         context: context,
+            //         builder: (context) {
+            //           return ConfirmationAlert(
+            //             theme: widget.theme,
+            //             message: 'You are about to Logout',
+            //             title: 'Are you Sure?',
+            //             action: () async {
+            //               var res = await AuthService()
+            //                   .signOut(
+            //                     context: context,
+            //                     allowLogout: false,
+            //                   );
+            //               if (res == 1) {
+            //                 if (context.mounted) {
+            //                   Navigator.pushReplacement(
+            //                     context,
+            //                     MaterialPageRoute(
+            //                       builder: (context) {
+            //                         return AuthScreensPage();
+            //                       },
+            //                     ),
+            //                   );
+            //                   returnNavProvider(
+            //                     context,
+            //                     listen: false,
+            //                   ).navigate(0);
+            //                 }
+            //               }
+            //             },
+            //           );
+            //         },
+            //       );
+            //     },
+            //     theme: widget.theme,
+            //     notifications:
+            //         returnNotificationProvider(
+            //           context,
+            //         ).notifications(),
+            //   ),
+            // ),
             Expanded(
               child: Container(
                 margin: EdgeInsets.symmetric(vertical: 15),
@@ -1616,8 +1622,6 @@ class _ProductDetailsDesktopState
                                               return AddProduct(
                                                 product:
                                                     product,
-                                                isStorage:
-                                                    false,
                                               );
                                             },
                                           ),
@@ -1649,12 +1653,23 @@ class _ProductDetailsDesktopState
                 ),
               ),
             ),
-            Visibility(
-              visible:
-                  widget.comingFromInventoryUpdatesPage ==
-                  null,
-              child: RightSideBar(theme: widget.theme),
+            Container(
+              width:
+                  screenWidth(context) < tabletScreenSmall
+                      ? 50
+                      : (screenWidth(context) >
+                              tabletScreenSmall &&
+                          screenWidth(context) <
+                              tabletScreen + 100)
+                      ? 100
+                      : 230,
             ),
+            // Visibility(
+            //   visible:
+            //       widget.comingFromInventoryUpdatesPage ==
+            //       null,
+            //   child: RightSideBar(theme: widget.theme),
+            // ),
           ],
         ),
       );
