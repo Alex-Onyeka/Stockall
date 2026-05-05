@@ -49,6 +49,7 @@ class PurchaseActionProvider extends ChangeNotifier {
       temp.first.quantity = item.quantity;
       temp.first.totalPrice = item.totalPrice;
       temp.first.customPrice = item.customPrice;
+      temp.first.isGroup = item.isGroup;
     }
     notifyListeners();
   }

@@ -6,6 +6,7 @@ import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/purchases/purchase_list/purchase_list.dart';
 import 'package:stockall/pages/suppliers/add_supplier/add_supplier.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -217,17 +218,17 @@ class DetailsPageContainer extends StatelessWidget {
                         text: 'Purchases',
                         theme: theme,
                         action: () {
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (context) {
-                          //       return TotalSalesPage(
-                          //         customerUuid:
-                          //             supplier.uuid!,
-                          //       );
-                          //     },
-                          //   ),
-                          // );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return PurchaseList(
+                                  supplierUuid:
+                                      supplier.uuid!,
+                                );
+                              },
+                            ),
+                          );
                         },
                       ),
                     ),

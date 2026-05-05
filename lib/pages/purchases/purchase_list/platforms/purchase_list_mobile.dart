@@ -101,7 +101,7 @@ class _PurchaseListMobileState
                                 ? FontWeight.bold
                                 : null,
                       ),
-                      'Paid',
+                      'Fully Paid',
                     ),
                   ),
                   PopupMenuItem(
@@ -138,7 +138,7 @@ class _PurchaseListMobileState
                     paidPurchaseIndex == 1
                         ? 'All'
                         : paidPurchaseIndex == 2
-                        ? 'Paid'
+                        ? 'Fully Paid'
                         : 'UnPaid',
                   ),
                   Icon(Icons.more_vert_rounded),

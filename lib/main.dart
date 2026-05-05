@@ -50,6 +50,7 @@ import 'package:stockall/providers/suppliers_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/providers/user_provider.dart';
 import 'package:stockall/providers/validate_input_provider.dart';
+import 'package:stockall/providers/waybill_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:stockall/services/payment_result_page.dart/payment_result_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -496,6 +497,16 @@ PurchaseActionProvider returnPurchaseActionProvider({
   }
 }
 
+WaybillProvider returnWaybillProvider({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return WaybillProvider();
+  } else {
+    return Provider.of<WaybillProvider>(context);
+  }
+}
+
 Widget colorWidget(
   Widget widget,
   bool isPrimary,
@@ -636,6 +647,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => PurchaseActionProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => WaybillProvider(),
         ),
       ],
       child: MaterialApp(

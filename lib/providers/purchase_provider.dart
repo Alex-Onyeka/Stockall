@@ -15,6 +15,8 @@ import 'package:stockall/classes/temp_storage_product/unsynced/created_storage_p
 import 'package:stockall/classes/temp_storage_product/unsynced/updated/updated_storage_product.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/local_database/item_purchase_func.dart%20copy/item_purchase_func.dart';
+import 'package:stockall/local_database/item_purchase_func.dart%20copy/unsync_funcs/created/created_item_purchase_func.dart';
 import 'package:stockall/local_database/item_purchase_func.dart%20copy/unsync_funcs/deleted/deleted_item_purchase_func.dart';
 import 'package:stockall/local_database/products/products_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/created_products/created_product_func.dart';
@@ -29,9 +31,6 @@ import 'package:stockall/local_database/storage_product/unsync_funcs/updated/upd
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
-import '../local_database/item_purchase_func.dart copy/item_purchase_func.dart';
-import '../local_database/item_purchase_func.dart copy/unsync_funcs/created/created_item_purchase_func.dart';
 
 class PurchaseProvider extends ChangeNotifier {
   static final PurchaseProvider _instance =

@@ -36,7 +36,7 @@ class _SupplierListMobileState
     }
   }
 
-  String searchResult = '';
+  // String searchResult = '';
 
   TextEditingController searchController =
       TextEditingController();
@@ -152,144 +152,60 @@ class _SupplierListMobileState
                       lines: 1,
                       theme: theme,
                       onChanged: (value) {
-                        setState(() {
-                          searchResult = value;
-                        });
+                        setState(() {});
                       },
                     ),
                     SizedBox(height: 15),
                     Expanded(
                       child: Builder(
                         builder: (context) {
-                          if (searchResult != '') {
-                            return Builder(
-                              builder: (context) {
-                                if (suppliers
-                                    .where(
-                                      (supplier) => supplier
-                                          .name
-                                          .toLowerCase()
-                                          .contains(
-                                            widget
-                                                .searchController
-                                                .text
-                                                .toLowerCase(),
-                                          ),
-                                    )
-                                    .isNotEmpty) {
-                                  return ListView.builder(
-                                    itemCount:
-                                        suppliers
-                                            .where(
-                                              (
-                                                supplier,
-                                              ) => supplier
-                                                  .name
-                                                  .toLowerCase()
-                                                  .contains(
-                                                    widget
-                                                        .searchController
-                                                        .text
-                                                        .toLowerCase(),
-                                                  ),
-                                            )
-                                            .length,
-                                    itemBuilder: (
-                                      context,
-                                      index,
-                                    ) {
-                                      SuppliersClass
-                                      supplier =
-                                          suppliers
-                                              .where(
-                                                (
-                                                  supplier,
-                                                ) => supplier
-                                                    .name
-                                                    .toLowerCase()
-                                                    .contains(
-                                                      widget
-                                                          .searchController
-                                                          .text
-                                                          .toLowerCase(),
-                                                    ),
-                                              )
-                                              .toList()[index];
-
-                                      return SupplierMainTile(
-                                        action: () {
-                                          if (widget
-                                                  .isPurchase !=
-                                              null) {
-                                            returnPurchaseActionProvider()
-                                                .selectSupplier(
-                                                  supplier:
-                                                      supplier,
-                                                );
-                                            Navigator.of(
-                                              context,
-                                            ).pop(context);
-                                          } else {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (
-                                                  context,
-                                                ) {
-                                                  return SupplierPage(
-                                                    uuid:
-                                                        supplier.uuid!,
-                                                  );
-                                                },
-                                              ),
-                                            );
-                                          }
-                                        },
-                                        theme: theme,
-                                        supplier: supplier,
-                                        isPurchase:
-                                            widget
-                                                .isPurchase,
-                                      );
-                                    },
-                                  );
-                                } else {
-                                  return Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment
-                                            .start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Text(
-                                            style: TextStyle(
-                                              fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .b1
-                                                      .fontSize,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
-                                            ),
-                                            'Returned 0 Supplier',
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  );
-                                }
-                              },
-                            );
-                          } else {
+                          if (suppliers
+                              .where(
+                                (supplier) => supplier.name
+                                    .toLowerCase()
+                                    .contains(
+                                      widget
+                                          .searchController
+                                          .text
+                                          .toLowerCase(),
+                                    ),
+                              )
+                              .isNotEmpty) {
                             return ListView.builder(
-                              itemCount: suppliers.length,
+                              itemCount:
+                                  suppliers
+                                      .where(
+                                        (
+                                          supplier,
+                                        ) => supplier.name
+                                            .toLowerCase()
+                                            .contains(
+                                              widget
+                                                  .searchController
+                                                  .text
+                                                  .toLowerCase(),
+                                            ),
+                                      )
+                                      .length,
                               itemBuilder: (
                                 context,
                                 index,
                               ) {
                                 SuppliersClass supplier =
-                                    suppliers[index];
+                                    suppliers
+                                        .where(
+                                          (
+                                            supplier,
+                                          ) => supplier.name
+                                              .toLowerCase()
+                                              .contains(
+                                                widget
+                                                    .searchController
+                                                    .text
+                                                    .toLowerCase(),
+                                              ),
+                                        )
+                                        .toList()[index];
 
                                 return SupplierMainTile(
                                   action: () {
@@ -304,10 +220,6 @@ class _SupplierListMobileState
                                         context,
                                       ).pop(context);
                                     } else {
-                                      returnCompProvider(
-                                        context,
-                                        listen: false,
-                                      ).swtichTab(0);
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -321,9 +233,7 @@ class _SupplierListMobileState
                                             );
                                           },
                                         ),
-                                      ).then((_) {
-                                        setState(() {});
-                                      });
+                                      );
                                     }
                                   },
                                   theme: theme,
@@ -332,6 +242,29 @@ class _SupplierListMobileState
                                       widget.isPurchase,
                                 );
                               },
+                            );
+                          } else {
+                            return Column(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b1
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      'Returned 0 Supplier',
+                                    ),
+                                  ],
+                                ),
+                              ],
                             );
                           }
                         },

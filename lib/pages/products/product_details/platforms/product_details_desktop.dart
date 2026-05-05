@@ -7,6 +7,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
+import 'package:stockall/components/toggle_button/my_toggle_button.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -44,7 +45,6 @@ class _ProductDetailsDesktopState
   bool isLoading = false;
   bool showSuccess = false;
   bool setDate = false;
-  bool isAddToQuantity = true;
 
   TextEditingController costController =
       TextEditingController();
@@ -93,48 +93,6 @@ class _ProductDetailsDesktopState
       TempProductClass product = productList.first;
       return Scaffold(
         key: _scaffoldKey,
-        // drawer: MyDrawerWidgetDesktopMain(
-        //   action: () {
-        //     var safeContext = context;
-        //     showDialog(
-        //       context: context,
-        //       builder: (context) {
-        //         return ConfirmationAlert(
-        //           theme: widget.theme,
-        //           message: 'You are about to Logout',
-        //           title: 'Are you Sure?',
-        //           action: () async {
-        //             Navigator.of(context).pop();
-        //             setState(() {
-        //               isLoading = true;
-        //             });
-        //             if (safeContext.mounted) {
-        //               var res = await AuthService().signOut(
-        //                 context: safeContext,
-        //                 allowLogout: false,
-        //               );
-        //               if (res == 0 && safeContext.mounted) {
-        //                 setState(() {
-        //                   isLoading = false;
-        //                 });
-        //               }
-        //             }
-        //           },
-        //         );
-        //       },
-        //     );
-        //   },
-        //   theme: widget.theme,
-        //   notifications:
-        //       returnNotificationProvider(
-        //             context,
-        //           ).notifications().isEmpty
-        //           ? []
-        //           : returnNotificationProvider(
-        //             context,
-        //           ).notifications(),
-        //   globalKey: _scaffoldKey,
-        // ),
         body: Row(
           spacing: 15,
           children: [
@@ -149,55 +107,6 @@ class _ProductDetailsDesktopState
                       ? 100
                       : 230,
             ),
-            // Visibility(
-            //   visible:
-            //       screenWidth(context) > mobileScreen &&
-            //       widget.comingFromInventoryUpdatesPage ==
-            //           null,
-            //   child: MyDrawerWidget(
-            //     globalKey: _scaffoldKey,
-            //     action: () {
-            //       showDialog(
-            //         context: context,
-            //         builder: (context) {
-            //           return ConfirmationAlert(
-            //             theme: widget.theme,
-            //             message: 'You are about to Logout',
-            //             title: 'Are you Sure?',
-            //             action: () async {
-            //               var res = await AuthService()
-            //                   .signOut(
-            //                     context: context,
-            //                     allowLogout: false,
-            //                   );
-            //               if (res == 1) {
-            //                 if (context.mounted) {
-            //                   Navigator.pushReplacement(
-            //                     context,
-            //                     MaterialPageRoute(
-            //                       builder: (context) {
-            //                         return AuthScreensPage();
-            //                       },
-            //                     ),
-            //                   );
-            //                   returnNavProvider(
-            //                     context,
-            //                     listen: false,
-            //                   ).navigate(0);
-            //                 }
-            //               }
-            //             },
-            //           );
-            //         },
-            //       );
-            //     },
-            //     theme: widget.theme,
-            //     notifications:
-            //         returnNotificationProvider(
-            //           context,
-            //         ).notifications(),
-            //   ),
-            // ),
             Expanded(
               child: Container(
                 margin: EdgeInsets.symmetric(vertical: 15),
@@ -1372,26 +1281,6 @@ class _ProductDetailsDesktopState
                                             text:
                                                 'Discount',
                                           ),
-                                          // Visibility(
-                                          //   visible:
-                                          //       product
-                                          //           .endDate !=
-                                          //       null,
-                                          //   child: BottomInfoSection(
-                                          //     theme:
-                                          //         widget
-                                          //             .theme,
-                                          //     mainText:
-                                          //         product.endDate !=
-                                          //                 null
-                                          //             ? formatDateTime(
-                                          //               product.endDate!,
-                                          //             )
-                                          //             : 'Not Set',
-                                          //     text:
-                                          //         'Discount End',
-                                          //   ),
-                                          // ),
                                           BottomInfoSection(
                                             theme:
                                                 widget
@@ -1486,14 +1375,6 @@ class _ProductDetailsDesktopState
                                             text:
                                                 'Low Quantity Limit',
                                           ),
-                                          // BottomInfoSection(
-                                          //   theme: widget.theme,
-                                          //   mainText:
-                                          //       product.isRefundable
-                                          //           ? 'True'
-                                          //           : 'False',
-                                          //   text: 'Is Refundable?',
-                                          // ),
                                           BottomInfoSection(
                                             theme:
                                                 widget
@@ -1854,1203 +1735,691 @@ class _ProductDetailsDesktopState
                   child: EditButton(
                     theme: widget.theme,
                     action: () {
-                      showGeneralDialog(
-                        context: context,
-                        pageBuilder: (
-                          context,
-                          animation,
-                          secondaryAnimation,
-                        ) {
-                          bool isEditQuantityLoading =
-                              false;
-                          return StatefulBuilder(
-                            builder:
-                                (
-                                  context,
-                                  setState,
-                                ) => Material(
-                                  color: Colors.transparent,
-                                  child: GestureDetector(
-                                    onTap:
-                                        () =>
-                                            FocusManager
-                                                .instance
-                                                .primaryFocus
-                                                ?.unfocus(),
-                                    child: Container(
-                                      decoration:
-                                          BoxDecoration(
-                                            color:
-                                                Colors
-                                                    .white,
-                                          ),
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(
-                                              left: 30.0,
-                                              top: 40,
-                                              right: 30,
-                                            ),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .center,
-                                          children: [
-                                            Container(
-                                              padding:
-                                                  EdgeInsets.all(
-                                                    40,
-                                                  ),
-                                              margin:
-                                                  EdgeInsets.only(
-                                                    bottom:
-                                                        100,
-                                                  ),
-                                              decoration: BoxDecoration(
-                                                color:
-                                                    Colors
-                                                        .white,
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                      15,
-                                                    ),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color:
-                                                        const Color.fromARGB(
-                                                          39,
-                                                          4,
-                                                          1,
-                                                          41,
-                                                        ),
-                                                    blurRadius:
-                                                        10,
-                                                  ),
-                                                ],
-                                              ),
-                                              width: 500,
-                                              child: Column(
-                                                children: [
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.spaceBetween,
-                                                    children: [
-                                                      Opacity(
-                                                        opacity:
-                                                            0,
-                                                        child: IconButton(
-                                                          onPressed:
-                                                              () {},
-                                                          icon: Icon(
-                                                            Icons.clear,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              widget.theme.mobileTexts.b1.fontSize,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
-                                                        'Edit Quantity',
-                                                      ),
-                                                      Builder(
-                                                        builder: (
-                                                          context,
-                                                        ) {
-                                                          if (isEditQuantityLoading ==
-                                                              true) {
-                                                            return SizedBox(
-                                                              height:
-                                                                  20,
-                                                              width:
-                                                                  20,
-                                                              child: CircularProgressIndicator(
-                                                                color:
-                                                                    widget.theme.lightModeColor.secColor200,
-                                                                strokeWidth:
-                                                                    1.5,
-                                                              ),
-                                                            );
-                                                          } else {
-                                                            return IconButton(
-                                                              onPressed: () {
-                                                                Navigator.of(
-                                                                  context,
-                                                                ).pop();
-                                                              },
-                                                              icon: Icon(
-                                                                Icons.clear,
-                                                              ),
-                                                            );
-                                                          }
-                                                        },
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  SizedBox(
-                                                    height:
-                                                        15,
-                                                  ),
-                                                  Column(
-                                                    spacing:
-                                                        20,
-                                                    children: [
-                                                      Text(
-                                                        style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontSize:
-                                                              widget.theme.mobileTexts.b1.fontSize,
-                                                        ),
-                                                        product.quantity ==
-                                                                null
-                                                            ? 'Quantity Not Set'
-                                                            : 'Current Quantity Amount : ${formatLargeNumberDouble(product.quantity!)}',
-                                                      ),
-                                                      EditCartTextField(
-                                                        onChanged: (
-                                                          value,
-                                                        ) {
-                                                          if (value.isEmpty) {
-                                                            setState(
-                                                              () {
-                                                                quantityController.text = '0';
-                                                              },
-                                                            );
-                                                          } else if (value.toString()[0] ==
-                                                              '0') {
-                                                            setState(
-                                                              () {
-                                                                quantityController.text = value.substring(
-                                                                  1,
-                                                                );
-                                                              },
-                                                            );
-                                                          } else if (isAddToQuantity) {
-                                                            if (product.isManaged &&
-                                                                returnShopProvider().userShop()?.manageInventoryStorage ==
-                                                                    true) {
-                                                              if (((double.tryParse(
-                                                                            value.replaceAll(
-                                                                              ',',
-                                                                              '',
-                                                                            ),
-                                                                          ) ??
-                                                                          0) +
-                                                                      (double.tryParse(
-                                                                            product.quantity?.toString() ??
-                                                                                '0',
-                                                                          ) ??
-                                                                          0)) >
-                                                                  ((product.totalQttyInStorageDouble ??
-                                                                          0) +
-                                                                      (double.tryParse(
-                                                                            product.quantity?.toString() ??
-                                                                                '0',
-                                                                          ) ??
-                                                                          0))) {
-                                                                quantityController.text = '0';
-                                                              }
-                                                            }
-                                                          } else if (!isAddToQuantity) {
-                                                            if (product.isManaged &&
-                                                                returnShopProvider().userShop()?.manageInventoryStorage ==
-                                                                    true) {
-                                                              if (((double.tryParse(
-                                                                        value.replaceAll(
-                                                                          ',',
-                                                                          '',
-                                                                        ),
-                                                                      ) ??
-                                                                      0)) >
-                                                                  ((product.totalQttyInStorageDouble ??
-                                                                          0) +
-                                                                      (double.tryParse(
-                                                                            product.quantity?.toString() ??
-                                                                                '0',
-                                                                          ) ??
-                                                                          0))) {
-                                                                quantityController.text = '0';
-                                                              }
-                                                            }
-                                                          }
-                                                        },
-                                                        title:
-                                                            'Quantity',
-                                                        hint:
-                                                            'Enter Quantity Amount',
-                                                        controller:
-                                                            quantityController,
-                                                        theme:
-                                                            widget.theme,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  SizedBox(
-                                                    height:
-                                                        20,
-                                                  ),
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.center,
-                                                    spacing:
-                                                        10,
-                                                    children: [
-                                                      Material(
-                                                        color:
-                                                            Colors.transparent,
-                                                        child: InkWell(
-                                                          onTap: () {
-                                                            setState(
-                                                              () {
-                                                                isAddToQuantity =
-                                                                    true;
-                                                              },
-                                                            );
-                                                          },
-                                                          child: Container(
-                                                            padding: EdgeInsets.symmetric(
-                                                              horizontal:
-                                                                  10,
-                                                              vertical:
-                                                                  10,
-                                                            ),
-                                                            child: Row(
-                                                              spacing:
-                                                                  10,
-                                                              children: [
-                                                                Container(
-                                                                  decoration: BoxDecoration(
-                                                                    border: Border.all(
-                                                                      color:
-                                                                          !isAddToQuantity
-                                                                              ? Colors.grey
-                                                                              : Colors.transparent,
-                                                                    ),
-                                                                    color:
-                                                                        isAddToQuantity
-                                                                            ? widget.theme.lightModeColor.prColor250
-                                                                            : Colors.transparent,
-                                                                    shape:
-                                                                        BoxShape.circle,
-                                                                  ),
-                                                                  child: Icon(
-                                                                    size:
-                                                                        16,
-                                                                    color:
-                                                                        Colors.white,
-                                                                    Icons.check,
-                                                                  ),
-                                                                ),
-                                                                Text(
-                                                                  style: TextStyle(
-                                                                    fontSize:
-                                                                        widget.theme.mobileTexts.b3.fontSize,
-                                                                    fontWeight:
-                                                                        FontWeight.bold,
-                                                                  ),
-                                                                  'Add to Quantity',
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      Material(
-                                                        color:
-                                                            Colors.transparent,
-                                                        child: InkWell(
-                                                          onTap: () {
-                                                            setState(
-                                                              () {
-                                                                isAddToQuantity =
-                                                                    false;
-                                                              },
-                                                            );
-                                                          },
-                                                          child: Container(
-                                                            padding: EdgeInsets.symmetric(
-                                                              vertical:
-                                                                  10,
-                                                              horizontal:
-                                                                  10,
-                                                            ),
-                                                            child: Row(
-                                                              spacing:
-                                                                  5,
-                                                              children: [
-                                                                Container(
-                                                                  decoration: BoxDecoration(
-                                                                    border: Border.all(
-                                                                      color:
-                                                                          isAddToQuantity
-                                                                              ? Colors.grey
-                                                                              : Colors.transparent,
-                                                                    ),
-                                                                    color:
-                                                                        !isAddToQuantity
-                                                                            ? widget.theme.lightModeColor.prColor250
-                                                                            : Colors.transparent,
-                                                                    shape:
-                                                                        BoxShape.circle,
-                                                                  ),
-                                                                  child: Icon(
-                                                                    size:
-                                                                        16,
-                                                                    color:
-                                                                        Colors.white,
-                                                                    Icons.check,
-                                                                  ),
-                                                                ),
-                                                                Text(
-                                                                  style: TextStyle(
-                                                                    fontSize:
-                                                                        widget.theme.mobileTexts.b3.fontSize,
-                                                                    fontWeight:
-                                                                        FontWeight.bold,
-                                                                  ),
-                                                                  'Replace Quantity',
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  SizedBox(
-                                                    height:
-                                                        15,
-                                                  ),
-                                                  MainButtonP(
-                                                    themeProvider:
-                                                        widget.theme,
-                                                    action: () {
-                                                      final safeContext =
-                                                          context;
-
-                                                      final dataProvider =
-                                                          returnData();
-
-                                                      if (isEditQuantityLoading ==
-                                                          false) {
-                                                        showDialog(
-                                                          context:
-                                                              safeContext,
-                                                          builder: (
-                                                            confirmDialog,
-                                                          ) {
-                                                            return ConfirmationAlert(
-                                                              theme:
-                                                                  widget.theme,
-                                                              message:
-                                                                  quantityController.text.isEmpty &&
-                                                                          !isAddToQuantity
-                                                                      ? 'You are about to empty your entire product stock, are you sure?'
-                                                                      : 'Are you sure you want to proceed?',
-                                                              title:
-                                                                  quantityController.text.isEmpty &&
-                                                                          !isAddToQuantity
-                                                                      ? "Empty Stock?"
-                                                                      : 'Proceed?',
-                                                              action: () async {
-                                                                Navigator.of(
-                                                                  confirmDialog,
-                                                                ).pop();
-                                                                setState(
-                                                                  () {
-                                                                    isEditQuantityLoading =
-                                                                        true;
-                                                                  },
-                                                                );
-                                                                double totalQttyInStorageCalc() {
-                                                                  final total =
-                                                                      product.totalQttyInStorageDouble ??
-                                                                      0;
-                                                                  final qty =
-                                                                      double.tryParse(
-                                                                        quantityController.text.replaceAll(
-                                                                          ',',
-                                                                          '',
-                                                                        ),
-                                                                      ) ??
-                                                                      0;
-                                                                  final currentQty =
-                                                                      product.quantity ??
-                                                                      0;
-
-                                                                  double result;
-                                                                  if (isAddToQuantity) {
-                                                                    result =
-                                                                        total -
-                                                                        qty;
-                                                                  } else {
-                                                                    result =
-                                                                        (total -
-                                                                                (qty -
-                                                                                    currentQty))
-                                                                            .toDouble();
-                                                                  }
-
-                                                                  return result <
-                                                                          0
-                                                                      ? 0
-                                                                      : result;
-                                                                }
-
-                                                                await dataProvider.updateProduct(
-                                                                  product: TempProductClass(
-                                                                    storageUuid:
-                                                                        product.storageUuid,
-                                                                    departmentName:
-                                                                        product.departmentName,
-                                                                    departmentUuid:
-                                                                        product.departmentUuid,
-                                                                    groupUnit:
-                                                                        product.groupUnit,
-                                                                    qttyPerGroup:
-                                                                        product.qttyPerGroup,
-                                                                    updatedAt:
-                                                                        DateTime.now(),
-                                                                    setCustomPrice:
-                                                                        product.setCustomPrice,
-                                                                    totalQttyInStorageDouble:
-                                                                        totalQttyInStorageCalc(),
-                                                                    isManaged:
-                                                                        product.isManaged,
-                                                                    // id:
-                                                                    //     product.id,
-                                                                    name:
-                                                                        product.name,
-                                                                    unit:
-                                                                        product.unit,
-                                                                    isRefundable:
-                                                                        product.isRefundable,
-                                                                    costPrice:
-                                                                        product.costPrice,
-                                                                    sellingPrice:
-                                                                        product.sellingPrice,
-                                                                    wholeSalePrice:
-                                                                        product.wholeSalePrice,
-                                                                    quantity:
-                                                                        quantityController.text.isEmpty &&
-                                                                                !isAddToQuantity &&
-                                                                                product.isManaged
-                                                                            ? 0
-                                                                            : quantityController.text.isEmpty &&
-                                                                                !isAddToQuantity &&
-                                                                                !product.isManaged
-                                                                            ? null
-                                                                            : quantityController.text.isNotEmpty &&
-                                                                                !isAddToQuantity
-                                                                            ? double.parse(
-                                                                              quantityController.text.replaceAll(
-                                                                                ',',
-                                                                                '',
-                                                                              ),
-                                                                            )
-                                                                            : quantityController.text.isNotEmpty &&
-                                                                                isAddToQuantity
-                                                                            ? double.parse(
-                                                                                  quantityController.text.replaceAll(
-                                                                                    ',',
-                                                                                    '',
-                                                                                  ),
-                                                                                ) +
-                                                                                (product.quantity ??
-                                                                                    0)
-                                                                            : product.quantity,
-                                                                    shopId:
-                                                                        product.shopId,
-                                                                    barcode:
-                                                                        product.barcode,
-                                                                    categoryUuid:
-                                                                        product.categoryUuid,
-                                                                    createdAt:
-                                                                        product.createdAt,
-                                                                    discount:
-                                                                        product.discount,
-                                                                    endDate:
-                                                                        product.endDate,
-                                                                    expiryDate:
-                                                                        product.expiryDate,
-                                                                    lowQtty:
-                                                                        product.lowQtty,
-                                                                    sizeType:
-                                                                        product.sizeType,
-                                                                    startDate:
-                                                                        product.startDate,
-                                                                    uuid:
-                                                                        product.uuid,
-                                                                  ),
-                                                                  oldProduct:
-                                                                      product,
-                                                                );
-
-                                                                // setState(
-                                                                //   () {
-                                                                //     isLoading =
-                                                                //         false;
-                                                                //     showSuccess =
-                                                                //         true;
-                                                                //   },
-                                                                // );
-                                                                // if (safeContext.mounted) {
-                                                                //   await dataProvider.getProducts(
-                                                                //     shopI,
-                                                                //   );
-                                                                // }
-                                                                // if (safeContext.mounted) {
-                                                                //   await dataProvider.getProducts(
-                                                                //     shopI,
-                                                                //   );
-                                                                // }
-
-                                                                if (safeContext.mounted) {
-                                                                  Navigator.of(
-                                                                    safeContext,
-                                                                  ).pop();
-                                                                  setState(
-                                                                    () {
-                                                                      // productFuture =
-                                                                      //     getProduct();
-                                                                    },
-                                                                  );
-                                                                }
-
-                                                                // setState(
-                                                                //   () {
-                                                                //     showSuccess =
-                                                                //         false;
-                                                                //   },
-                                                                // );
-                                                              },
-                                                            );
-                                                          },
-                                                        );
-                                                      }
-                                                    },
-                                                    text:
-                                                        'Update Quantity',
-                                                  ),
-                                                  SizedBox(
-                                                    height:
-                                                        15,
-                                                  ),
-                                                  Material(
-                                                    color:
-                                                        Colors.transparent,
-                                                    child: EditButton(
-                                                      text:
-                                                          'Cancel',
-                                                      action: () {
-                                                        Navigator.of(
-                                                          context,
-                                                        ).pop();
-                                                      },
-                                                      theme:
-                                                          widget.theme,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                          );
-                        },
-                      ).then((context) {
-                        setState(() {
-                          quantityController.clear();
-                          isAddToQuantity = true;
-                        });
-                      });
+                      updateItemQuantity(context, product);
                     },
                     text: 'Edit Unit Qtty',
                   ),
                 ),
-                // Visibility(
-                //   visible:
-                //       shop(
-                //             context,
-                //           )?.manageInventoryStorage !=
-                //           true &&
-                //       shop(context)?.useGroupUnit == true &&
-                //       authorization(
-                //         authorized:
-                //             Authorizations()
-                //                 .updateItemQuantity,
-                //       ),
-                //   child: SizedBox(width: 10),
-                // ),
-                // Visibility(
-                //   visible:
-                //       shop(
-                //             context,
-                //           )?.manageInventoryStorage !=
-                //           true &&
-                //       shop(context)?.useGroupUnit == true &&
-                //       authorization(
-                //         authorized:
-                //             Authorizations()
-                //                 .updateItemQuantity,
-                //       ),
-                //   child: Expanded(
-                //     child: EditButton(
-                //       theme: widget.theme,
-                //       action: () {
-                //         bool isEditQuantityLoading = false;
-                //         showGeneralDialog(
-                //           context: context,
-                //           pageBuilder: (
-                //             context,
-                //             animation,
-                //             secondaryAnimation,
-                //           ) {
-                //             return StatefulBuilder(
-                //               builder:
-                //                   (
-                //                     context,
-                //                     setState,
-                //                   ) => Material(
-                //                     color:
-                //                         Colors.transparent,
-                //                     child: GestureDetector(
-                //                       onTap:
-                //                           () =>
-                //                               FocusManager
-                //                                   .instance
-                //                                   .primaryFocus
-                //                                   ?.unfocus(),
-                //                       child: Container(
-                //                         decoration:
-                //                             BoxDecoration(
-                //                               color:
-                //                                   Colors
-                //                                       .white,
-                //                             ),
-                //                         child: Padding(
-                //                           padding:
-                //                               const EdgeInsets.only(
-                //                                 left: 30.0,
-                //                                 top: 40,
-                //                                 right: 30,
-                //                               ),
-                //                           child: Column(
-                //                             mainAxisAlignment:
-                //                                 MainAxisAlignment
-                //                                     .center,
-                //                             children: [
-                //                               Container(
-                //                                 padding:
-                //                                     EdgeInsets.all(
-                //                                       40,
-                //                                     ),
-                //                                 margin:
-                //                                     EdgeInsets.only(
-                //                                       bottom:
-                //                                           100,
-                //                                     ),
-                //                                 decoration: BoxDecoration(
-                //                                   color:
-                //                                       Colors
-                //                                           .white,
-                //                                   borderRadius:
-                //                                       BorderRadius.circular(
-                //                                         15,
-                //                                       ),
-                //                                   boxShadow: [
-                //                                     BoxShadow(
-                //                                       color: const Color.fromARGB(
-                //                                         39,
-                //                                         4,
-                //                                         1,
-                //                                         41,
-                //                                       ),
-                //                                       blurRadius:
-                //                                           10,
-                //                                     ),
-                //                                   ],
-                //                                 ),
-                //                                 width: 500,
-                //                                 child: Column(
-                //                                   children: [
-                //                                     Row(
-                //                                       mainAxisAlignment:
-                //                                           MainAxisAlignment.spaceBetween,
-                //                                       children: [
-                //                                         Opacity(
-                //                                           opacity:
-                //                                               0,
-                //                                           child: IconButton(
-                //                                             onPressed:
-                //                                                 () {},
-                //                                             icon: Icon(
-                //                                               Icons.clear,
-                //                                             ),
-                //                                           ),
-                //                                         ),
-                //                                         Text(
-                //                                           style: TextStyle(
-                //                                             fontSize:
-                //                                                 widget.theme.mobileTexts.b1.fontSize,
-                //                                             fontWeight:
-                //                                                 FontWeight.bold,
-                //                                           ),
-                //                                           'Edit ${product.groupUnit != null && product.groupUnit != 'Others' ? '${product.groupUnit}' : 'Group'} Quantity',
-                //                                         ),
-                //                                         Builder(
-                //                                           builder: (
-                //                                             context,
-                //                                           ) {
-                //                                             if (isEditQuantityLoading ==
-                //                                                 true) {
-                //                                               return SizedBox(
-                //                                                 height:
-                //                                                     20,
-                //                                                 width:
-                //                                                     20,
-                //                                                 child: CircularProgressIndicator(
-                //                                                   color:
-                //                                                       widget.theme.lightModeColor.secColor200,
-                //                                                   strokeWidth:
-                //                                                       1.5,
-                //                                                 ),
-                //                                               );
-                //                                             } else {
-                //                                               return IconButton(
-                //                                                 onPressed: () {
-                //                                                   Navigator.of(
-                //                                                     context,
-                //                                                   ).pop();
-                //                                                 },
-                //                                                 icon: Icon(
-                //                                                   Icons.clear,
-                //                                                 ),
-                //                                               );
-                //                                             }
-                //                                           },
-                //                                         ),
-                //                                       ],
-                //                                     ),
-                //                                     SizedBox(
-                //                                       height:
-                //                                           15,
-                //                                     ),
-                //                                     Column(
-                //                                       spacing:
-                //                                           20,
-                //                                       children: [
-                //                                         Text(
-                //                                           style: TextStyle(
-                //                                             fontWeight:
-                //                                                 FontWeight.bold,
-                //                                             fontSize:
-                //                                                 widget.theme.mobileTexts.b1.fontSize,
-                //                                           ),
-                //                                           product.quantity ==
-                //                                                   null
-                //                                               ? 'Quantity Not Set'
-                //                                               : 'Current Quantity Amount : ${formatLargeNumberDouble(returnData().returnGroupQuantityValue(product))}',
-                //                                         ),
-                //                                         EditCartTextField(
-                //                                           onChanged: (
-                //                                             value,
-                //                                           ) {
-                //                                             if (value.isEmpty) {
-                //                                               setState(
-                //                                                 () {
-                //                                                   qttyPerUnitController.text = '0';
-                //                                                 },
-                //                                               );
-                //                                             } else if (value.toString()[0] ==
-                //                                                 '0') {
-                //                                               setState(
-                //                                                 () {
-                //                                                   qttyPerUnitController.text = value.substring(
-                //                                                     1,
-                //                                                   );
-                //                                                 },
-                //                                               );
-                //                                             }
-                //                                           },
-                //                                           title:
-                //                                               'Quantity',
-                //                                           hint:
-                //                                               'Enter Quantity Amount',
-                //                                           controller:
-                //                                               qttyPerUnitController,
-                //                                           theme:
-                //                                               widget.theme,
-                //                                         ),
-                //                                       ],
-                //                                     ),
-                //                                     SizedBox(
-                //                                       height:
-                //                                           20,
-                //                                     ),
-                //                                     Row(
-                //                                       mainAxisAlignment:
-                //                                           MainAxisAlignment.center,
-                //                                       spacing:
-                //                                           10,
-                //                                       children: [
-                //                                         Material(
-                //                                           color:
-                //                                               Colors.transparent,
-                //                                           child: InkWell(
-                //                                             onTap: () {
-                //                                               setState(
-                //                                                 () {
-                //                                                   isAddToQuantity =
-                //                                                       true;
-                //                                                 },
-                //                                               );
-                //                                             },
-                //                                             child: Container(
-                //                                               padding: EdgeInsets.symmetric(
-                //                                                 horizontal:
-                //                                                     10,
-                //                                                 vertical:
-                //                                                     10,
-                //                                               ),
-                //                                               child: Row(
-                //                                                 spacing:
-                //                                                     10,
-                //                                                 children: [
-                //                                                   Container(
-                //                                                     decoration: BoxDecoration(
-                //                                                       border: Border.all(
-                //                                                         color:
-                //                                                             !isAddToQuantity
-                //                                                                 ? Colors.grey
-                //                                                                 : Colors.transparent,
-                //                                                       ),
-                //                                                       color:
-                //                                                           isAddToQuantity
-                //                                                               ? widget.theme.lightModeColor.prColor250
-                //                                                               : Colors.transparent,
-                //                                                       shape:
-                //                                                           BoxShape.circle,
-                //                                                     ),
-                //                                                     child: Icon(
-                //                                                       size:
-                //                                                           16,
-                //                                                       color:
-                //                                                           Colors.white,
-                //                                                       Icons.check,
-                //                                                     ),
-                //                                                   ),
-                //                                                   Text(
-                //                                                     style: TextStyle(
-                //                                                       fontSize:
-                //                                                           widget.theme.mobileTexts.b3.fontSize,
-                //                                                       fontWeight:
-                //                                                           FontWeight.bold,
-                //                                                     ),
-                //                                                     'Add to Quantity',
-                //                                                   ),
-                //                                                 ],
-                //                                               ),
-                //                                             ),
-                //                                           ),
-                //                                         ),
-                //                                         Material(
-                //                                           color:
-                //                                               Colors.transparent,
-                //                                           child: InkWell(
-                //                                             onTap: () {
-                //                                               setState(
-                //                                                 () {
-                //                                                   isAddToQuantity =
-                //                                                       false;
-                //                                                 },
-                //                                               );
-                //                                             },
-                //                                             child: Container(
-                //                                               padding: EdgeInsets.symmetric(
-                //                                                 vertical:
-                //                                                     10,
-                //                                                 horizontal:
-                //                                                     10,
-                //                                               ),
-                //                                               child: Row(
-                //                                                 spacing:
-                //                                                     5,
-                //                                                 children: [
-                //                                                   Container(
-                //                                                     decoration: BoxDecoration(
-                //                                                       border: Border.all(
-                //                                                         color:
-                //                                                             isAddToQuantity
-                //                                                                 ? Colors.grey
-                //                                                                 : Colors.transparent,
-                //                                                       ),
-                //                                                       color:
-                //                                                           !isAddToQuantity
-                //                                                               ? widget.theme.lightModeColor.prColor250
-                //                                                               : Colors.transparent,
-                //                                                       shape:
-                //                                                           BoxShape.circle,
-                //                                                     ),
-                //                                                     child: Icon(
-                //                                                       size:
-                //                                                           16,
-                //                                                       color:
-                //                                                           Colors.white,
-                //                                                       Icons.check,
-                //                                                     ),
-                //                                                   ),
-                //                                                   Text(
-                //                                                     style: TextStyle(
-                //                                                       fontSize:
-                //                                                           widget.theme.mobileTexts.b3.fontSize,
-                //                                                       fontWeight:
-                //                                                           FontWeight.bold,
-                //                                                     ),
-                //                                                     'Replace Quantity',
-                //                                                   ),
-                //                                                 ],
-                //                                               ),
-                //                                             ),
-                //                                           ),
-                //                                         ),
-                //                                       ],
-                //                                     ),
-                //                                     SizedBox(
-                //                                       height:
-                //                                           15,
-                //                                     ),
-                //                                     MainButtonP(
-                //                                       themeProvider:
-                //                                           widget.theme,
-                //                                       action: () {
-                //                                         final safeContext =
-                //                                             context;
-
-                //                                         final dataProvider =
-                //                                             returnData();
-
-                //                                         if (isEditQuantityLoading ==
-                //                                             false) {
-                //                                           showDialog(
-                //                                             context:
-                //                                                 safeContext,
-                //                                             builder: (
-                //                                               confirmDialog,
-                //                                             ) {
-                //                                               return ConfirmationAlert(
-                //                                                 theme:
-                //                                                     widget.theme,
-                //                                                 message:
-                //                                                     qttyPerUnitController.text.isEmpty &&
-                //                                                             !isAddToQuantity
-                //                                                         ? 'You are about to empty your entire product stock, are you sure?'
-                //                                                         : 'Are you sure you want to proceed?',
-                //                                                 title:
-                //                                                     qttyPerUnitController.text.isEmpty &&
-                //                                                             !isAddToQuantity
-                //                                                         ? "Empty Stock?"
-                //                                                         : 'Proceed?',
-                //                                                 action: () async {
-                //                                                   Navigator.of(
-                //                                                     confirmDialog,
-                //                                                   ).pop();
-                //                                                   setState(
-                //                                                     () {
-                //                                                       isEditQuantityLoading =
-                //                                                           true;
-                //                                                     },
-                //                                                   );
-
-                //                                                   await dataProvider.updateProduct(
-                //                                                     product: TempProductClass(
-                //                                                       storageUuid:
-                //                                                           product.storageUuid,
-                //                                                       departmentName:
-                //                                                           product.departmentName,
-                //                                                       departmentUuid:
-                //                                                           product.departmentUuid,
-                //                                                       groupUnit:
-                //                                                           product.groupUnit,
-                //                                                       qttyPerGroup:
-                //                                                           product.qttyPerGroup,
-                //                                                       updatedAt:
-                //                                                           DateTime.now(),
-                //                                                       setCustomPrice:
-                //                                                           product.setCustomPrice,
-                //                                                       totalQttyInStorageDouble:
-                //                                                           product.totalQttyInStorageDouble,
-                //                                                       isManaged:
-                //                                                           product.isManaged,
-                //                                                       // id:
-                //                                                       //     product.id,
-                //                                                       name:
-                //                                                           product.name,
-                //                                                       unit:
-                //                                                           product.unit,
-                //                                                       isRefundable:
-                //                                                           product.isRefundable,
-                //                                                       costPrice:
-                //                                                           product.costPrice,
-                //                                                       sellingPrice:
-                //                                                           product.sellingPrice,
-                //                                                       wholeSalePrice:
-                //                                                           product.wholeSalePrice,
-                //                                                       quantity:
-                //                                                           qttyPerUnitController.text.isEmpty &&
-                //                                                                   !isAddToQuantity &&
-                //                                                                   product.isManaged
-                //                                                               ? 0
-                //                                                               : qttyPerUnitController.text.isEmpty &&
-                //                                                                   !isAddToQuantity &&
-                //                                                                   !product.isManaged
-                //                                                               ? null
-                //                                                               : qttyPerUnitController.text.isNotEmpty &&
-                //                                                                   !isAddToQuantity
-                //                                                               ? (double.parse(
-                //                                                                     qttyPerUnitController.text.replaceAll(
-                //                                                                       ',',
-                //                                                                       '',
-                //                                                                     ),
-                //                                                                   ) *
-                //                                                                   (product.qttyPerGroup ??
-                //                                                                       0))
-                //                                                               : qttyPerUnitController.text.isNotEmpty &&
-                //                                                                   isAddToQuantity
-                //                                                               ? (double.parse(
-                //                                                                         qttyPerUnitController.text.replaceAll(
-                //                                                                           ',',
-                //                                                                           '',
-                //                                                                         ),
-                //                                                                       ) *
-                //                                                                       (product.qttyPerGroup ??
-                //                                                                           0)) +
-                //                                                                   (product.quantity ??
-                //                                                                       0)
-                //                                                               : product.quantity,
-                //                                                       shopId:
-                //                                                           product.shopId,
-                //                                                       barcode:
-                //                                                           product.barcode,
-                //                                                       categoryUuid:
-                //                                                           product.categoryUuid,
-                //                                                       createdAt:
-                //                                                           product.createdAt,
-                //                                                       discount:
-                //                                                           product.discount,
-                //                                                       endDate:
-                //                                                           product.endDate,
-                //                                                       expiryDate:
-                //                                                           product.expiryDate,
-                //                                                       lowQtty:
-                //                                                           product.lowQtty,
-                //                                                       sizeType:
-                //                                                           product.sizeType,
-                //                                                       startDate:
-                //                                                           product.startDate,
-                //                                                       uuid:
-                //                                                           product.uuid,
-                //                                                     ),
-                //                                                     oldProduct:
-                //                                                         product,
-                //                                                   );
-
-                //                                                   setState(
-                //                                                     () {
-                //                                                       // isEditQuantityLoading =
-                //                                                       //     false;
-                //                                                       // showSuccess =
-                //                                                       //     true;
-                //                                                     },
-                //                                                   );
-                //                                                   // if (safeContext.mounted) {
-                //                                                   //   await dataProvider.getProducts(
-                //                                                   //     shopI,
-                //                                                   //   );
-                //                                                   // }
-                //                                                   // if (safeContext.mounted) {
-                //                                                   //   await dataProvider.getProducts(
-                //                                                   //     shopI,
-                //                                                   //   );
-                //                                                   // }
-
-                //                                                   if (safeContext.mounted) {
-                //                                                     Navigator.of(
-                //                                                       safeContext,
-                //                                                     ).pop();
-                //                                                     setState(
-                //                                                       () {},
-                //                                                     );
-                //                                                   }
-
-                //                                                   // setState(
-                //                                                   //   () {
-                //                                                   //     showSuccess =
-                //                                                   //         false;
-                //                                                   //   },
-                //                                                   // );
-                //                                                 },
-                //                                               );
-                //                                             },
-                //                                           );
-                //                                         }
-                //                                       },
-                //                                       text:
-                //                                           'Update Quantity',
-                //                                     ),
-                //                                     SizedBox(
-                //                                       height:
-                //                                           15,
-                //                                     ),
-                //                                     Material(
-                //                                       color:
-                //                                           Colors.transparent,
-                //                                       child: EditButton(
-                //                                         text:
-                //                                             'Cancel',
-                //                                         action: () {
-                //                                           Navigator.of(
-                //                                             context,
-                //                                           ).pop();
-                //                                         },
-                //                                         theme:
-                //                                             widget.theme,
-                //                                       ),
-                //                                     ),
-                //                                   ],
-                //                                 ),
-                //                               ),
-                //                             ],
-                //                           ),
-                //                         ),
-                //                       ),
-                //                     ),
-                //                   ),
-                //             );
-                //           },
-                //         ).then((context) {
-                //           setState(() {
-                //             qttyPerUnitController.clear();
-                //             isAddToQuantity = true;
-                //           });
-                //         });
-                //       },
-                //       text:
-                //           'Edit ${product.groupUnit != null && product.groupUnit != 'Others' ? '${product.groupUnit}' : 'Group'} Qtty',
-                //     ),
-                //   ),
-                // ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+Future<Object?> updateItemQuantity(
+  BuildContext context,
+  TempProductClass product,
+) {
+  return showGeneralDialog(
+    context: context,
+    pageBuilder: (context, animation, secondaryAnimation) {
+      return UpdateItemQuantityWidget(product: product);
+    },
+  );
+}
+
+class UpdateItemQuantityWidget extends StatefulWidget {
+  final TempProductClass product;
+  const UpdateItemQuantityWidget({
+    super.key,
+    required this.product,
+  });
+
+  @override
+  State<UpdateItemQuantityWidget> createState() =>
+      _UpdateItemQuantityWidgetState();
+}
+
+class _UpdateItemQuantityWidgetState
+    extends State<UpdateItemQuantityWidget> {
+  bool isEditQuantityLoading = false;
+  final quantityController = TextEditingController();
+  bool isAddToQuantity = true;
+  bool updateGroup = false;
+  @override
+  Widget build(BuildContext context) {
+    var theme = returnTheme(context);
+    return Scaffold(
+      body: Center(
+        child: GestureDetector(
+          onTap:
+              () =>
+                  FocusManager.instance.primaryFocus
+                      ?.unfocus(),
+          child: Container(
+            decoration: BoxDecoration(color: Colors.white),
+            child: Padding(
+              padding: const EdgeInsets.only(
+                left: 30.0,
+                top: 40,
+                right: 30,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(40),
+                    margin: EdgeInsets.only(bottom: 100),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(
+                        15,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color.fromARGB(
+                            39,
+                            4,
+                            1,
+                            41,
+                          ),
+                          blurRadius: 10,
+                        ),
+                      ],
+                    ),
+                    width: 500,
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceBetween,
+                          children: [
+                            Opacity(
+                              opacity: 0,
+                              child: IconButton(
+                                onPressed: () {},
+                                icon: Icon(Icons.clear),
+                              ),
+                            ),
+                            Text(
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b1
+                                        .fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              'Edit Quantity',
+                            ),
+                            Builder(
+                              builder: (context) {
+                                if (isEditQuantityLoading ==
+                                    true) {
+                                  return SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      color:
+                                          theme
+                                              .lightModeColor
+                                              .secColor200,
+                                      strokeWidth: 1.5,
+                                    ),
+                                  );
+                                } else {
+                                  return IconButton(
+                                    onPressed: () {
+                                      Navigator.of(
+                                        context,
+                                      ).pop();
+                                    },
+                                    icon: Icon(Icons.clear),
+                                  );
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 15),
+                        Column(
+                          spacing: 20,
+                          children: [
+                            Text(
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b1
+                                        .fontSize,
+                              ),
+                              widget.product.quantity ==
+                                      null
+                                  ? 'Quantity Not Set'
+                                  : 'Current Quantity Amount : ${formatLargeNumberDouble(widget.product.quantity!)}',
+                            ),
+                            EditCartTextField(
+                              onChanged: (value) {
+                                if (value.isEmpty) {
+                                  setState(() {
+                                    quantityController
+                                        .text = '0';
+                                  });
+                                } else if (value
+                                        .toString()[0] ==
+                                    '0') {
+                                  setState(() {
+                                    quantityController
+                                        .text = value
+                                        .substring(1);
+                                  });
+                                } else if (isAddToQuantity) {
+                                  if (widget
+                                          .product
+                                          .isManaged &&
+                                      returnShopProvider()
+                                              .userShop()
+                                              ?.manageInventoryStorage ==
+                                          true) {
+                                    if (((double.tryParse(
+                                                  value
+                                                      .replaceAll(
+                                                        ',',
+                                                        '',
+                                                      ),
+                                                ) ??
+                                                0) +
+                                            (double.tryParse(
+                                                  widget.product.quantity
+                                                          ?.toString() ??
+                                                      '0',
+                                                ) ??
+                                                0)) >
+                                        ((widget
+                                                    .product
+                                                    .totalQttyInStorageDouble ??
+                                                0) +
+                                            (double.tryParse(
+                                                  widget.product.quantity
+                                                          ?.toString() ??
+                                                      '0',
+                                                ) ??
+                                                0))) {
+                                      quantityController
+                                          .text = '0';
+                                    }
+                                  }
+                                } else if (!isAddToQuantity) {
+                                  if (widget
+                                          .product
+                                          .isManaged &&
+                                      returnShopProvider()
+                                              .userShop()
+                                              ?.manageInventoryStorage ==
+                                          true) {
+                                    if (((double.tryParse(
+                                              value
+                                                  .replaceAll(
+                                                    ',',
+                                                    '',
+                                                  ),
+                                            ) ??
+                                            0)) >
+                                        ((widget
+                                                    .product
+                                                    .totalQttyInStorageDouble ??
+                                                0) +
+                                            (double.tryParse(
+                                                  widget.product.quantity
+                                                          ?.toString() ??
+                                                      '0',
+                                                ) ??
+                                                0))) {
+                                      quantityController
+                                          .text = '0';
+                                    }
+                                  }
+                                }
+                              },
+                              title: 'Quantity',
+                              hint: 'Enter Quantity Amount',
+                              controller:
+                                  quantityController,
+                              theme: theme,
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                        Padding(
+                          padding:
+                              const EdgeInsets.symmetric(
+                                horizontal: 20.0,
+                              ),
+                          child: Row(
+                            mainAxisAlignment:
+                                MainAxisAlignment
+                                    .spaceBetween,
+                            children: [
+                              Text(
+                                style: TextStyle(
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+                                'Update Group Quantity?',
+                              ),
+                              MyToggleButton(
+                                // isSmall: true,
+                                boolValue: updateGroup,
+                                toggle: () {
+                                  setState(() {
+                                    updateGroup =
+                                        !updateGroup;
+                                    quantityController
+                                        .clear();
+                                  });
+                                },
+                                theme: theme,
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment.center,
+                          spacing: 10,
+                          children: [
+                            Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    isAddToQuantity = true;
+                                  });
+                                },
+                                child: Container(
+                                  padding:
+                                      EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 10,
+                                      ),
+                                  child: Row(
+                                    spacing: 10,
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color:
+                                                !isAddToQuantity
+                                                    ? Colors
+                                                        .grey
+                                                    : Colors
+                                                        .transparent,
+                                          ),
+                                          color:
+                                              isAddToQuantity
+                                                  ? theme
+                                                      .lightModeColor
+                                                      .prColor250
+                                                  : Colors
+                                                      .transparent,
+                                          shape:
+                                              BoxShape
+                                                  .circle,
+                                        ),
+                                        child: Icon(
+                                          size: 16,
+                                          color:
+                                              Colors.white,
+                                          Icons.check,
+                                        ),
+                                      ),
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b3
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        'Add to Quantity',
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    isAddToQuantity = false;
+                                  });
+                                },
+                                child: Container(
+                                  padding:
+                                      EdgeInsets.symmetric(
+                                        vertical: 10,
+                                        horizontal: 10,
+                                      ),
+                                  child: Row(
+                                    spacing: 5,
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color:
+                                                isAddToQuantity
+                                                    ? Colors
+                                                        .grey
+                                                    : Colors
+                                                        .transparent,
+                                          ),
+                                          color:
+                                              !isAddToQuantity
+                                                  ? theme
+                                                      .lightModeColor
+                                                      .prColor250
+                                                  : Colors
+                                                      .transparent,
+                                          shape:
+                                              BoxShape
+                                                  .circle,
+                                        ),
+                                        child: Icon(
+                                          size: 16,
+                                          color:
+                                              Colors.white,
+                                          Icons.check,
+                                        ),
+                                      ),
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b3
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        'Replace Quantity',
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 15),
+                        MainButtonP(
+                          themeProvider: theme,
+                          action: () {
+                            final safeContext = context;
+
+                            final dataProvider =
+                                returnData();
+
+                            if (isEditQuantityLoading ==
+                                false) {
+                              showDialog(
+                                context: safeContext,
+                                builder: (confirmDialog) {
+                                  return ConfirmationAlert(
+                                    theme: theme,
+                                    message:
+                                        quantityController
+                                                    .text
+                                                    .isEmpty &&
+                                                !isAddToQuantity
+                                            ? 'You are about to empty your entire product stock, are you sure?'
+                                            : 'Are you sure you want to proceed?',
+                                    title:
+                                        quantityController
+                                                    .text
+                                                    .isEmpty &&
+                                                !isAddToQuantity
+                                            ? "Empty Stock?"
+                                            : 'Proceed?',
+                                    action: () async {
+                                      Navigator.of(
+                                        confirmDialog,
+                                      ).pop();
+                                      setState(() {
+                                        isEditQuantityLoading =
+                                            true;
+                                      });
+                                      double
+                                      totalQttyInStorageCalc() {
+                                        final total =
+                                            widget
+                                                .product
+                                                .totalQttyInStorageDouble ??
+                                            0;
+                                        final qty =
+                                            double.tryParse(
+                                              quantityController
+                                                  .text
+                                                  .replaceAll(
+                                                    ',',
+                                                    '',
+                                                  ),
+                                            ) ??
+                                            0;
+                                        final currentQty =
+                                            widget
+                                                .product
+                                                .quantity ??
+                                            0;
+
+                                        double result;
+                                        if (isAddToQuantity) {
+                                          result =
+                                              total - qty;
+                                        } else {
+                                          result =
+                                              (total -
+                                                      (qty -
+                                                          currentQty))
+                                                  .toDouble();
+                                        }
+
+                                        return result < 0
+                                            ? 0
+                                            : result;
+                                      }
+
+                                      await dataProvider.updateProduct(
+                                        product: TempProductClass(
+                                          storageUuid:
+                                              widget
+                                                  .product
+                                                  .storageUuid,
+                                          departmentName:
+                                              widget
+                                                  .product
+                                                  .departmentName,
+                                          departmentUuid:
+                                              widget
+                                                  .product
+                                                  .departmentUuid,
+                                          groupUnit:
+                                              widget
+                                                  .product
+                                                  .groupUnit,
+                                          qttyPerGroup:
+                                              widget
+                                                  .product
+                                                  .qttyPerGroup,
+                                          updatedAt:
+                                              DateTime.now(),
+                                          setCustomPrice:
+                                              widget
+                                                  .product
+                                                  .setCustomPrice,
+                                          totalQttyInStorageDouble:
+                                              totalQttyInStorageCalc(),
+                                          isManaged:
+                                              widget
+                                                  .product
+                                                  .isManaged,
+                                          // id:
+                                          //     widget.product.id,
+                                          name:
+                                              widget
+                                                  .product
+                                                  .name,
+                                          unit:
+                                              widget
+                                                  .product
+                                                  .unit,
+                                          isRefundable:
+                                              widget
+                                                  .product
+                                                  .isRefundable,
+                                          costPrice:
+                                              widget
+                                                  .product
+                                                  .costPrice,
+                                          sellingPrice:
+                                              widget
+                                                  .product
+                                                  .sellingPrice,
+                                          wholeSalePrice:
+                                              widget
+                                                  .product
+                                                  .wholeSalePrice,
+                                          quantity:
+                                              quantityController
+                                                          .text
+                                                          .isEmpty &&
+                                                      !isAddToQuantity &&
+                                                      widget
+                                                          .product
+                                                          .isManaged
+                                                  ? 0
+                                                  : quantityController
+                                                          .text
+                                                          .isEmpty &&
+                                                      !isAddToQuantity &&
+                                                      !widget
+                                                          .product
+                                                          .isManaged
+                                                  ? null
+                                                  : quantityController
+                                                          .text
+                                                          .isNotEmpty &&
+                                                      !isAddToQuantity
+                                                  ? double.parse(
+                                                    quantityController
+                                                        .text
+                                                        .replaceAll(
+                                                          ',',
+                                                          '',
+                                                        ),
+                                                  )
+                                                  : quantityController
+                                                          .text
+                                                          .isNotEmpty &&
+                                                      isAddToQuantity
+                                                  ? double.parse(
+                                                        quantityController.text.replaceAll(
+                                                          ',',
+                                                          '',
+                                                        ),
+                                                      ) +
+                                                      (widget.product.quantity ??
+                                                          0)
+                                                  : widget
+                                                      .product
+                                                      .quantity,
+                                          shopId:
+                                              widget
+                                                  .product
+                                                  .shopId,
+                                          barcode:
+                                              widget
+                                                  .product
+                                                  .barcode,
+                                          categoryUuid:
+                                              widget
+                                                  .product
+                                                  .categoryUuid,
+                                          createdAt:
+                                              widget
+                                                  .product
+                                                  .createdAt,
+                                          discount:
+                                              widget
+                                                  .product
+                                                  .discount,
+                                          endDate:
+                                              widget
+                                                  .product
+                                                  .endDate,
+                                          expiryDate:
+                                              widget
+                                                  .product
+                                                  .expiryDate,
+                                          lowQtty:
+                                              widget
+                                                  .product
+                                                  .lowQtty,
+                                          sizeType:
+                                              widget
+                                                  .product
+                                                  .sizeType,
+                                          startDate:
+                                              widget
+                                                  .product
+                                                  .startDate,
+                                          uuid:
+                                              widget
+                                                  .product
+                                                  .uuid,
+                                        ),
+                                        oldProduct:
+                                            widget.product,
+                                      );
+
+                                      if (safeContext
+                                          .mounted) {
+                                        Navigator.of(
+                                          safeContext,
+                                        ).pop();
+                                        setState(() {
+                                          // productFuture =
+                                          //     getProduct();
+                                        });
+                                      }
+                                    },
+                                  );
+                                },
+                              );
+                            }
+                          },
+                          text: 'Update Quantity',
+                        ),
+                        SizedBox(height: 15),
+                        Material(
+                          color: Colors.transparent,
+                          child: EditButton(
+                            text: 'Cancel',
+                            action: () {
+                              Navigator.of(context).pop();
+                            },
+                            theme: theme,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

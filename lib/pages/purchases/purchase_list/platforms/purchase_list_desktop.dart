@@ -298,7 +298,7 @@ class _PurchaseListDesktopState
                                                     .bold
                                                 : null,
                                       ),
-                                      'Paid',
+                                      'Fully Paid',
                                     ),
                                   ),
                                   PopupMenuItem(
@@ -351,7 +351,7 @@ class _PurchaseListDesktopState
                                         ? 'All'
                                         : paidPurchaseIndex ==
                                             2
-                                        ? 'Paid'
+                                        ? 'Fully Paid'
                                         : 'UnPaid',
                                   ),
                                   Icon(
