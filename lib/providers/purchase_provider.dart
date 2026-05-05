@@ -71,6 +71,9 @@ class PurchaseProvider extends ChangeNotifier {
     print('Inner Purchase Creation Started');
     bool isOnline = await connectivity.isOnline();
     if (isOnline) {
+      purchase.createdAt = DateTime.now().subtract(
+        Duration(hours: 1),
+      );
       try {
         final res =
             await supabase

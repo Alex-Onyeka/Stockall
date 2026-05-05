@@ -1976,10 +1976,14 @@ class _AddProductDesktopState
                                         ),
                                         Visibility(
                                           visible:
+                                              returnShopProvider()
+                                                      .userShop()
+                                                      ?.manageInventoryStorage !=
+                                                  true ||
                                               widget
-                                                  .product
-                                                  ?.storageUuid ==
-                                              null,
+                                                      .product
+                                                      ?.storageUuid ==
+                                                  null,
                                           child: Column(
                                             children: [
                                               Row(

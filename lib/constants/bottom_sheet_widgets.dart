@@ -2106,63 +2106,10 @@ class _CustomBottomPanelState
                     Divider(color: Colors.grey.shade300),
                   ],
                 ),
-
                 content: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Visibility(
-                        visible:
-                            returnSalesProviderContext(
-                              context,
-                            ).isSetCustomPrice() &&
-                            (cartItem.item.setCustomPrice ||
-                                cartItem
-                                        .item
-                                        .sellingPrice ==
-                                    null) &&
-                            !cartItem.useWholeSalePrice,
-                        child: Row(
-                          spacing: 10,
-                          crossAxisAlignment:
-                              CrossAxisAlignment.end,
-                          children: [
-                            Expanded(
-                              child: ToggleTotalPriceWidget(
-                                theme: theme,
-                              ),
-                            ),
-                            Expanded(
-                              child: MoneyTextfield(
-                                title:
-                                    returnSalesProviderContext(
-                                          context,
-                                        ).setTotalPrice
-                                        ? 'Total Price'
-                                        : 'Individual Price',
-                                hint: 'Enter Price',
-                                controller: priceController,
-                                theme: theme,
-                                onChanged: (value) {
-                                  if (value.isNotEmpty) {
-                                    cartItem.setCustomPrice =
-                                        true;
-                                  } else {
-                                    cartItem.setCustomPrice =
-                                        false;
-                                  }
-                                  print(
-                                    cartItem.setCustomPrice,
-                                  );
-                                  setState(() {});
-                                },
-                              ),
-                            ),
-                            SizedBox(height: 20),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 20),
                       SizedBox(
                         width: 450,
                         child: EditCartTextField(
@@ -2322,10 +2269,123 @@ class _CustomBottomPanelState
                       ),
                       Visibility(
                         visible:
-                            cartItem.item.setCustomPrice &&
-                            !cartItem.useWholeSalePrice,
-                        child: SizedBox(height: 20),
+                            returnShopProvider()
+                                .userShop()
+                                ?.useGroupUnit ==
+                            true,
+                        child: Column(
+                          children: [
+                            SizedBox(height: 20),
+                            ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxWidth: 230,
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .spaceBetween,
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontWeight:
+                                          FontWeight.bold,
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b2
+                                              .fontSize,
+                                    ),
+                                    'Use Group Quantity?',
+                                  ),
+                                  MyToggleButton(
+                                    // isSmall:
+                                    //     screenWidth(
+                                    //       context,
+                                    //     ) <=
+                                    //     mobileScreen,
+                                    boolValue:
+                                        cartItem
+                                            .useGroupQuantity ??
+                                        false,
+                                    toggle: () {
+                                      var salesProvider =
+                                          returnSalesProvider();
+                                      salesProvider
+                                          .toggleGroupQuantity(
+                                            cartItem:
+                                                cartItem,
+                                            context:
+                                                context,
+                                          );
+                                    },
+                                    theme: theme,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
+                      Visibility(
+                        visible:
+                            returnSalesProviderContext(
+                              context,
+                            ).isSetCustomPrice() &&
+                            (cartItem.item.setCustomPrice ||
+                                cartItem
+                                        .item
+                                        .sellingPrice ==
+                                    null) &&
+                            !cartItem.useWholeSalePrice,
+                        child: Column(
+                          children: [
+                            SizedBox(height: 30),
+                            Row(
+                              spacing: 10,
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.end,
+                              children: [
+                                Expanded(
+                                  child:
+                                      ToggleTotalPriceWidget(
+                                        theme: theme,
+                                      ),
+                                ),
+                                Expanded(
+                                  child: MoneyTextfield(
+                                    title:
+                                        returnSalesProviderContext(
+                                              context,
+                                            ).setTotalPrice
+                                            ? 'Total Price'
+                                            : 'Individual Price',
+                                    hint: 'Enter Price',
+                                    controller:
+                                        priceController,
+                                    theme: theme,
+                                    onChanged: (value) {
+                                      if (value
+                                          .isNotEmpty) {
+                                        cartItem.setCustomPrice =
+                                            true;
+                                      } else {
+                                        cartItem.setCustomPrice =
+                                            false;
+                                      }
+                                      print(
+                                        cartItem
+                                            .setCustomPrice,
+                                      );
+                                      setState(() {});
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 20),
                       Visibility(
                         visible:
                             cartItem.item.setCustomPrice &&
@@ -2452,15 +2512,14 @@ class _CustomBottomPanelState
                                 .userShop()
                                 ?.wholeSale ==
                             true,
-                        child: Column(
-                          children: [
-                            SizedBox(height: 20),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(
-                                    horizontal: 20.0,
-                                  ),
-                              child: Row(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: 230,
+                          ),
+                          child: Column(
+                            children: [
+                              SizedBox(height: 20),
+                              Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment
                                         .spaceBetween,
@@ -2495,8 +2554,8 @@ class _CustomBottomPanelState
                                   ),
                                 ],
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                       SizedBox(height: 20),
@@ -3249,6 +3308,18 @@ class _CustomBottomPanelState
                                                     theme:
                                                         theme,
                                                     cartItem: TempCartItem(
+                                                      useGroupQuantity:
+                                                          returnSalesProvider()
+                                                              .currentCart()
+                                                              .cartItems
+                                                              .firstWhere(
+                                                                (
+                                                                  item,
+                                                                ) =>
+                                                                    item.item.uuid! ==
+                                                                    product.uuid!,
+                                                              )
+                                                              .useGroupQuantity,
                                                       setTotalPrice:
                                                           returnSalesProvider().setTotalPrice,
                                                       useWholeSalePrice:
@@ -3292,6 +3363,8 @@ class _CustomBottomPanelState
                                                     theme:
                                                         theme,
                                                     cartItem: TempCartItem(
+                                                      useGroupQuantity:
+                                                          false,
                                                       setTotalPrice:
                                                           returnSalesProvider().setTotalPrice,
                                                       useWholeSalePrice:
@@ -3359,6 +3432,18 @@ class _CustomBottomPanelState
                                                     theme:
                                                         theme,
                                                     cartItem: TempCartItem(
+                                                      useGroupQuantity:
+                                                          returnSalesProvider()
+                                                              .currentCart()
+                                                              .cartItems
+                                                              .firstWhere(
+                                                                (
+                                                                  item,
+                                                                ) =>
+                                                                    item.item.uuid! ==
+                                                                    product.uuid!,
+                                                              )
+                                                              .useGroupQuantity,
                                                       setTotalPrice:
                                                           returnSalesProvider().setTotalPrice,
                                                       useWholeSalePrice:
@@ -3402,6 +3487,8 @@ class _CustomBottomPanelState
                                                     theme:
                                                         theme,
                                                     cartItem: TempCartItem(
+                                                      useGroupQuantity:
+                                                          false,
                                                       setTotalPrice:
                                                           returnSalesProvider().setTotalPrice,
                                                       useWholeSalePrice:
@@ -3518,6 +3605,18 @@ class _CustomBottomPanelState
                                                     theme:
                                                         theme,
                                                     cartItem: TempCartItem(
+                                                      useGroupQuantity:
+                                                          returnSalesProvider()
+                                                              .currentCart()
+                                                              .cartItems
+                                                              .firstWhere(
+                                                                (
+                                                                  item,
+                                                                ) =>
+                                                                    item.item.uuid! ==
+                                                                    product.uuid!,
+                                                              )
+                                                              .useGroupQuantity,
                                                       setTotalPrice:
                                                           returnSalesProvider().setTotalPrice,
                                                       useWholeSalePrice:
@@ -3561,6 +3660,8 @@ class _CustomBottomPanelState
                                                     theme:
                                                         theme,
                                                     cartItem: TempCartItem(
+                                                      useGroupQuantity:
+                                                          false,
                                                       setTotalPrice:
                                                           returnSalesProvider().setTotalPrice,
                                                       useWholeSalePrice:
@@ -3628,6 +3729,18 @@ class _CustomBottomPanelState
                                                     theme:
                                                         theme,
                                                     cartItem: TempCartItem(
+                                                      useGroupQuantity:
+                                                          returnSalesProvider()
+                                                              .currentCart()
+                                                              .cartItems
+                                                              .firstWhere(
+                                                                (
+                                                                  item,
+                                                                ) =>
+                                                                    item.item.uuid! ==
+                                                                    product.uuid!,
+                                                              )
+                                                              .useGroupQuantity,
                                                       setTotalPrice:
                                                           returnSalesProvider().setTotalPrice,
                                                       useWholeSalePrice:
@@ -3671,6 +3784,8 @@ class _CustomBottomPanelState
                                                     theme:
                                                         theme,
                                                     cartItem: TempCartItem(
+                                                      useGroupQuantity:
+                                                          false,
                                                       setTotalPrice:
                                                           returnSalesProvider().setTotalPrice,
                                                       useWholeSalePrice:

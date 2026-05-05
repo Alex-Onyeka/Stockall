@@ -661,6 +661,21 @@ class SalesProvider extends ChangeNotifier {
     );
   }
 
+  void toggleGroupQuantity({
+    required BuildContext context,
+    required TempCartItem cartItem,
+  }) {
+    ItemsAuthAction().toggleSetWholeSaleAction(
+      context: context,
+      action: () async {
+        cartItem.useGroupQuantity =
+            !(cartItem.useGroupQuantity ?? false);
+        await CartFunc().updateMainCart(currentMainCart());
+        notifyListeners();
+      },
+    );
+  }
+
   // void offInvoice() {
   //   currentCart().isInvoice = false;
   //   notifyListeners();
@@ -1144,6 +1159,8 @@ class SalesProvider extends ChangeNotifier {
                 );
 
                 return TempProductSaleRecord(
+                  useGroupQuantity:
+                      cartItem.useGroupQuantity,
                   customPriceSet: cartItem.setCustomPrice,
                   useWholeSalePrice:
                       cartItem.useWholeSalePrice,
@@ -1204,6 +1221,8 @@ class SalesProvider extends ChangeNotifier {
                 print('Sales Record about to be Created');
 
                 return TempProductSaleRecord(
+                  useGroupQuantity:
+                      cartItem.useGroupQuantity,
                   customPriceSet: cartItem.setCustomPrice,
                   useWholeSalePrice:
                       cartItem.useWholeSalePrice,
@@ -1483,6 +1502,8 @@ class SalesProvider extends ChangeNotifier {
                 print('Sales Record about to be Created');
 
                 return TempProductSaleRecord(
+                  useGroupQuantity:
+                      cartItem.useGroupQuantity,
                   customPriceSet: cartItem.setCustomPrice,
                   useWholeSalePrice:
                       cartItem.useWholeSalePrice,
@@ -2111,6 +2132,7 @@ class SalesProvider extends ChangeNotifier {
       setTotalPrice: record.setTotalPrice ?? false,
       salesRecordId: record.uuid,
       useWholeSalePrice: record.useWholeSalePrice ?? false,
+      useGroupQuantity: record.useGroupQuantity ?? false,
     );
   }
 

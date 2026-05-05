@@ -1706,6 +1706,8 @@ class _MakeSalesDesktopState
                                               ).pop();
                                             },
                                             cartItem: TempCartItem(
+                                              useGroupQuantity:
+                                                  false,
                                               useWholeSalePrice:
                                                   false,
                                               setTotalPrice:
@@ -1835,6 +1837,8 @@ class _MakeSalesDesktopState
                                                     ).pop();
                                                   },
                                                   cartItem: TempCartItem(
+                                                    useGroupQuantity:
+                                                        false,
                                                     useWholeSalePrice:
                                                         false,
                                                     setTotalPrice:
@@ -2012,6 +2016,8 @@ class _MakeSalesDesktopState
                                                                           ).pop();
                                                                         },
                                                                         cartItem: TempCartItem(
+                                                                          useGroupQuantity:
+                                                                              false,
                                                                           useWholeSalePrice:
                                                                               false,
                                                                           setTotalPrice:
@@ -2494,6 +2500,8 @@ class _MakeSalesDesktopState
                                                     context:
                                                         context,
                                                     newItem: TempCartItem(
+                                                      useGroupQuantity:
+                                                          false,
                                                       useWholeSalePrice:
                                                           false,
                                                       setCustomPrice:
@@ -2653,6 +2661,8 @@ class _MakeSalesDesktopState
                                                           ).pop();
                                                         },
                                                         cartItem: TempCartItem(
+                                                          useGroupQuantity:
+                                                              false,
                                                           useWholeSalePrice:
                                                               false,
                                                           setTotalPrice:

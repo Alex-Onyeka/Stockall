@@ -62,7 +62,8 @@ class TempPurchase extends HiveObject {
 
   factory TempPurchase.fromJson(Map<String, dynamic> json) {
     return TempPurchase(
-      createdAt: DateTime.parse(json['created_at']),
+      createdAt:
+          DateTime.parse(json['created_at']).toLocal(),
       shopId: json['shop_id'],
       staffId: json['staff_id'] as String?,
       staffName: json['staff_name'] as String?,

@@ -1759,10 +1759,14 @@ class _AddProductMobileState
                                     SizedBox(height: 10),
                                     Visibility(
                                       visible:
+                                          returnShopProvider()
+                                                  .userShop()
+                                                  ?.manageInventoryStorage !=
+                                              true ||
                                           widget
-                                              .product
-                                              ?.storageUuid ==
-                                          null,
+                                                  .product
+                                                  ?.storageUuid ==
+                                              null,
                                       child: Column(
                                         children: [
                                           SubWrapper(

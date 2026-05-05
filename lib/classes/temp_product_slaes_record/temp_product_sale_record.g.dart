@@ -47,13 +47,14 @@ class TempProductSaleRecordAdapter extends TypeAdapter<TempProductSaleRecord> {
       fixedDiscount: fields[27] as double?,
       unit: fields[28] as String?,
       useWholeSalePrice: fields[29] as bool?,
+      useGroupQuantity: fields[30] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempProductSaleRecord obj) {
     writer
-      ..writeByte(30)
+      ..writeByte(31)
       ..writeByte(0)
       ..write(obj.productRecordId)
       ..writeByte(1)
@@ -113,7 +114,9 @@ class TempProductSaleRecordAdapter extends TypeAdapter<TempProductSaleRecord> {
       ..writeByte(28)
       ..write(obj.unit)
       ..writeByte(29)
-      ..write(obj.useWholeSalePrice);
+      ..write(obj.useWholeSalePrice)
+      ..writeByte(30)
+      ..write(obj.useGroupQuantity);
   }
 
   @override

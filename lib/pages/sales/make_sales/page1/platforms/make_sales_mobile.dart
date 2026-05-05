@@ -1593,6 +1593,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                     ).pop();
                                   },
                                   cartItem: TempCartItem(
+                                    useGroupQuantity: false,
                                     useWholeSalePrice:
                                         false,
                                     setTotalPrice:
@@ -1675,6 +1676,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                   ).pop();
                                 },
                                 cartItem: TempCartItem(
+                                  useGroupQuantity: false,
                                   useWholeSalePrice: false,
                                   setTotalPrice:
                                       returnSalesProvider()
@@ -1782,6 +1784,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         ).pop();
                                       },
                                       cartItem: TempCartItem(
+                                        useGroupQuantity:
+                                            false,
                                         useWholeSalePrice:
                                             false,
                                         setTotalPrice:
@@ -1872,6 +1876,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                   ).pop();
                                 },
                                 cartItem: TempCartItem(
+                                  useGroupQuantity: false,
                                   useWholeSalePrice: false,
                                   setTotalPrice:
                                       returnSalesProvider()
@@ -2032,6 +2037,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                         ).pop();
                                                       },
                                                       cartItem: TempCartItem(
+                                                        useGroupQuantity:
+                                                            false,
                                                         useWholeSalePrice:
                                                             false,
                                                         setTotalPrice:
@@ -2305,6 +2312,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                                 context:
                                                                     context,
                                                                 newItem: TempCartItem(
+                                                                  useGroupQuantity:
+                                                                      false,
                                                                   useWholeSalePrice:
                                                                       false,
                                                                   setCustomPrice:
@@ -2552,6 +2561,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                               ).pop();
                                                             },
                                                             cartItem: TempCartItem(
+                                                              useGroupQuantity:
+                                                                  false,
                                                               useWholeSalePrice:
                                                                   false,
                                                               setTotalPrice:
