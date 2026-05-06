@@ -204,13 +204,25 @@ class AltDisplayState extends State<AltDisplay> {
     } else {
       double tempTotalDiscount = 0;
       for (var item in cartClass!.cartItems) {
-        if (item.item.discount != null &&
-            item.customPrice == null) {
-          double discountPerUnit =
-              (item.item.sellingPrice ?? 0) *
-              (item.item.discount! / 100);
-          tempTotalDiscount +=
-              discountPerUnit * item.quantity;
+        if (item.useGroupQuantity == true) {
+          if (item.item.discount != null &&
+              item.customPrice == null) {
+            double discountPerUnit =
+                (item.item.sellingPrice ?? 0) *
+                (item.item.discount! / 100);
+            tempTotalDiscount +=
+                discountPerUnit *
+                (item.quantity * item.getQttyPerGroup());
+          }
+        } else {
+          if (item.item.discount != null &&
+              item.customPrice == null) {
+            double discountPerUnit =
+                (item.item.sellingPrice ?? 0) *
+                (item.item.discount! / 100);
+            tempTotalDiscount +=
+                discountPerUnit * item.quantity;
+          }
         }
       }
       return tempTotalDiscount;

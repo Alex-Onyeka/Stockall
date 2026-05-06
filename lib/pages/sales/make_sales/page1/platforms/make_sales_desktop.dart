@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
@@ -69,551 +68,6 @@ class _MakeSalesDesktopState
 
   double currentValue = 0;
   double qqty = 0;
-  bool useWholeSalePriceTemp = false;
-  void editCartItem({
-    required double productQuantity,
-    required BuildContext context,
-    required Function()? updateAction,
-    required TempCartItem cartItem,
-  }) {
-    setState(() {
-      useWholeSalePriceTemp = cartItem.useWholeSalePrice;
-    });
-    returnSalesProvider().removeListenerScanBarcode();
-    qttyNode.requestFocus();
-    var theme = returnTheme(context, listen: false);
-    quantityController.text = cartItem.quantity.toString();
-    double qqty = cartItem.quantity.toDouble();
-    cartItem.setCustomPrice
-        ? priceController.text =
-            cartItem.customPrice.toString()
-        : priceController.text = "";
-
-    returnSalesProvider().toggleSetTotalPrice(
-      cartItem.setTotalPrice,
-    );
-    showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              insetPadding: EdgeInsets.symmetric(
-                horizontal: 15,
-              ),
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: 15,
-                vertical: 20,
-              ),
-              backgroundColor: Colors.white,
-              title: Text(
-                'Edit Cart Item',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: theme.mobileTexts.h4.fontSize,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              content: SingleChildScrollView(
-                child: SizedBox(
-                  width:
-                      screenWidth(context) > 450
-                          ? 450
-                          : null,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Visibility(
-                        visible:
-                            (returnSalesProviderContext(
-                                  context,
-                                ).isSetCustomPrice() ||
-                                cartItem.setCustomPrice) &&
-                            (cartItem.item.setCustomPrice ||
-                                cartItem
-                                        .item
-                                        .sellingPrice ==
-                                    null) &&
-                            !useWholeSalePriceTemp,
-                        child: Row(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.end,
-                          spacing: 10,
-                          children: [
-                            Expanded(
-                              child: ToggleTotalPriceWidget(
-                                theme: theme,
-                              ),
-                            ),
-                            Expanded(
-                              child: SizedBox(
-                                width: 450,
-                                child: MoneyTextfield(
-                                  title:
-                                      returnSalesProviderContext(
-                                            context,
-                                          ).setTotalPrice
-                                          ? 'Total Price'
-                                          : 'Individual Price',
-                                  hint: 'Enter Price',
-                                  controller:
-                                      priceController,
-                                  theme: theme,
-                                  onChanged: (p0) {
-                                    setState(() {});
-                                  },
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      SizedBox(
-                        width: 450,
-                        child: EditCartTextField(
-                          focusNode: qttyNode,
-                          onSubmitted: (_) {
-                            if (quantityController
-                                    .text
-                                    .isEmpty ||
-                                qqty == 0) {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return InfoAlert(
-                                    theme: theme,
-                                    message:
-                                        'Item quantity cannot be set to (0)',
-                                    title:
-                                        'Invalid Quantity',
-                                  );
-                                },
-                              ).then((context) {
-                                qttyNode.requestFocus();
-                              });
-                            } else {
-                              updateAction!();
-                            }
-                          },
-                          onChanged: (value) {
-                            final parsedValue =
-                                double.tryParse(
-                                  value.replaceAll(',', ''),
-                                ) ??
-                                0;
-                            if (cartItem.item.isManaged) {
-                              if (parsedValue >
-                                  (cartItem.item.quantity ??
-                                      0)) {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return InfoAlert(
-                                      theme: theme,
-                                      message:
-                                          "Only (${cartItem.item.quantity}) items available in stock.",
-                                      title:
-                                          'Quantity Limit Reached',
-                                    );
-                                  },
-                                );
-                                // Optionally reset to max or previous value
-                                setState(() {
-                                  quantityController.text =
-                                      qqty.toString();
-                                });
-                              } else {
-                                setState(() {
-                                  qqty = parsedValue;
-                                });
-                              }
-                            } else {
-                              setState(() {
-                                qqty = parsedValue;
-                              });
-                            }
-                          },
-
-                          title: 'Enter Item Quantity',
-                          hint: 'Quantity',
-                          controller: quantityController,
-                          theme: theme,
-                        ),
-                      ),
-                      Visibility(
-                        visible:
-                            !cartItem.setCustomPrice &&
-                            cartItem.item.setCustomPrice &&
-                            !useWholeSalePriceTemp,
-                        child: Column(
-                          children: [
-                            SizedBox(height: 20),
-                            InkWell(
-                              onTap: () {
-                                returnSalesProvider()
-                                    .toggleSetCustomPrice();
-                                priceController.clear();
-                              },
-                              child: Container(
-                                padding:
-                                    EdgeInsets.symmetric(
-                                      vertical: 5,
-                                      horizontal: 10,
-                                    ),
-                                child: Row(
-                                  mainAxisSize:
-                                      MainAxisSize.min,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment
-                                          .center,
-                                  spacing: 5,
-                                  children: [
-                                    Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b1
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
-                                      ),
-                                      returnSalesProviderContext(
-                                            context,
-                                          ).isSetCustomPrice()
-                                          ? 'Cancel Custom Price'
-                                          : 'Set Custom Price',
-                                    ),
-                                    Stack(
-                                      children: [
-                                        Visibility(
-                                          visible:
-                                              returnSalesProviderContext(
-                                                context,
-                                              ).isSetCustomPrice() ==
-                                              false,
-                                          child:
-                                              SvgPicture.asset(
-                                                editIconSvg,
-                                                height: 20,
-                                              ),
-                                        ),
-                                        Visibility(
-                                          visible:
-                                              returnSalesProviderContext(
-                                                context,
-                                              ).isSetCustomPrice() ==
-                                              true,
-                                          child: Icon(
-                                            Icons.clear,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(10),
-                          color: Colors.grey.shade100,
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20.0,
-                          vertical: 10,
-                        ),
-                        child: Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
-                          children: [
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b1
-                                        .fontSize,
-                              ),
-                              'Total',
-                            ),
-                            Text(
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b1
-                                        .fontSize,
-                                fontWeight:
-                                    theme
-                                        .mobileTexts
-                                        .b1
-                                        .fontWeightBold,
-                              ),
-                              formatMoneyMid(
-                                amount: double.parse(
-                                  useWholeSalePriceTemp
-                                      ? (qqty *
-                                              (cartItem
-                                                      .item
-                                                      .wholeSalePrice ??
-                                                  0))
-                                          .toString()
-                                      : priceController
-                                          .text
-                                          .isNotEmpty
-                                      ? returnSalesProviderContext(
-                                            context,
-                                          ).setTotalPrice
-                                          ? priceController
-                                              .text
-                                              .replaceAll(
-                                                ',',
-                                                '',
-                                              )
-                                          : (double.parse(
-                                                    priceController.text.isNotEmpty
-                                                        ? priceController.text.replaceAll(
-                                                          ',',
-                                                          '',
-                                                        )
-                                                        : '0',
-                                                  ) *
-                                                  qqty.toDouble())
-                                              .toString()
-                                      : (qqty *
-                                              (cartItem
-                                                      .item
-                                                      .sellingPrice ??
-                                                  0))
-                                          .toString(),
-                                ),
-                                context: context,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Visibility(
-                        visible:
-                            returnShopProvider()
-                                .userShop()
-                                ?.wholeSale ==
-                            true,
-                        child: Column(
-                          children: [
-                            SizedBox(height: 20),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(
-                                    horizontal: 20.0,
-                                  ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .spaceBetween,
-                                children: [
-                                  Text(
-                                    style: TextStyle(
-                                      fontWeight:
-                                          FontWeight.bold,
-                                    ),
-                                    'Use Whole Sale Price?',
-                                  ),
-                                  MyToggleButton(
-                                    boolValue:
-                                        useWholeSalePriceTemp,
-                                    toggle: () {
-                                      setState(() {
-                                        useWholeSalePriceTemp =
-                                            !useWholeSalePriceTemp;
-                                      });
-                                    },
-                                    theme: theme,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20.0,
-                        ),
-                        child: Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.center,
-                          spacing: 15,
-                          children: [
-                            Ink(
-                              decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      5,
-                                    ),
-                                color: Colors.grey.shade100,
-                              ),
-                              child: InkWell(
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      5,
-                                    ),
-                                onTap: () {
-                                  setState(() {
-                                    if (qqty > 0) qqty--;
-                                    quantityController
-                                            .text =
-                                        qqty.toString();
-                                  });
-                                },
-                                child: SizedBox(
-                                  height: 30,
-                                  width: 50,
-                                  child: Icon(Icons.remove),
-                                ),
-                              ),
-                            ),
-                            Text(
-                              formatLargeNumberDouble(qqty),
-                              style: TextStyle(
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .h4
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Ink(
-                              decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      5,
-                                    ),
-                                color: Colors.grey.shade100,
-                              ),
-                              child: InkWell(
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      5,
-                                    ),
-                                onTap: () {
-                                  if (cartItem
-                                      .item
-                                      .isManaged) {
-                                    if (qqty >=
-                                        (cartItem
-                                                .item
-                                                .quantity ??
-                                            0)) {
-                                      showDialog(
-                                        context: context,
-                                        builder:
-                                            (
-                                              _,
-                                            ) => InfoAlert(
-                                              title:
-                                                  "Quantity Limit Reached",
-                                              message:
-                                                  "Only (${cartItem.item.quantity}) items available in stock.",
-                                              theme: theme,
-                                            ),
-                                      );
-                                      return;
-                                    }
-                                  }
-                                  setState(() {
-                                    qqty++;
-                                    quantityController
-                                            .text =
-                                        qqty.toString();
-                                  });
-                                },
-
-                                child: SizedBox(
-                                  height: 30,
-                                  width: 50,
-                                  child: Center(
-                                    child: Icon(Icons.add),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.center,
-                        spacing: 5,
-                        children: [
-                          MaterialButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                              quantityController.clear();
-                              qqty = 0;
-                            },
-                            child: Text('Cancel'),
-                          ),
-                          SmallButtonMain(
-                            theme: theme,
-                            action: () {
-                              if (quantityController
-                                      .text
-                                      .isEmpty ||
-                                  qqty == 0) {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return InfoAlert(
-                                      theme: theme,
-                                      message:
-                                          'Item quantity cannot be set to (0)',
-                                      title:
-                                          'Invalid Quantity',
-                                    );
-                                  },
-                                ).then((_) {
-                                  qttyNode.requestFocus();
-                                });
-                              } else {
-                                updateAction!();
-                              }
-                            },
-                            buttonText: 'Update Item',
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        );
-      },
-    ).then((value) {
-      qqty = 0;
-      quantityController.text = '';
-      returnSalesProvider().addListenerScanBarcode();
-      // nameController.text = '';
-      priceController.text = '';
-      if (context.mounted) {
-        returnSalesProvider().closeCustomPrice();
-        returnSalesProvider().toggleSetTotalPrice(false);
-      }
-    });
-  }
 
   TextEditingController pName = TextEditingController();
   TextEditingController pQuantity = TextEditingController();
@@ -1706,6 +1160,8 @@ class _MakeSalesDesktopState
                                               ).pop();
                                             },
                                             cartItem: TempCartItem(
+                                              qttyPerGroup:
+                                                  null,
                                               useGroupQuantity:
                                                   false,
                                               useWholeSalePrice:
@@ -1837,6 +1293,8 @@ class _MakeSalesDesktopState
                                                     ).pop();
                                                   },
                                                   cartItem: TempCartItem(
+                                                    qttyPerGroup:
+                                                        null,
                                                     useGroupQuantity:
                                                         false,
                                                     useWholeSalePrice:
@@ -2016,6 +1474,8 @@ class _MakeSalesDesktopState
                                                                           ).pop();
                                                                         },
                                                                         cartItem: TempCartItem(
+                                                                          qttyPerGroup:
+                                                                              null,
                                                                           useGroupQuantity:
                                                                               false,
                                                                           useWholeSalePrice:
@@ -2127,8 +1587,8 @@ class _MakeSalesDesktopState
                                                                       );
                                                                     },
                                                                     editAction: () {
-                                                                      var salesProvider =
-                                                                          returnSalesProvider();
+                                                                      // var salesProvider =
+                                                                      //     returnSalesProvider();
 
                                                                       if (returnData()
                                                                           .productList()
@@ -2140,37 +1600,25 @@ class _MakeSalesDesktopState
                                                                                 items[index].item.uuid,
                                                                           )
                                                                           .isNotEmpty) {
-                                                                        editCartItem(
-                                                                          productQuantity:
-                                                                              items[index].quantity,
+                                                                        selectProductSales(
+                                                                          isEdit:
+                                                                              true,
+                                                                          theme:
+                                                                              theme,
+                                                                          closeAction:
+                                                                              () {},
+                                                                          priceController:
+                                                                              priceController,
+                                                                          qttyNode:
+                                                                              qttyNode,
+                                                                          quantityController:
+                                                                              quantityController,
+                                                                          searchController:
+                                                                              widget.searchController,
+                                                                          // productQuantity:
+                                                                          //     items[index].quantity,
                                                                           context:
                                                                               context,
-                                                                          updateAction: () {
-                                                                            items[index].useWholeSalePrice = useWholeSalePriceTemp;
-                                                                            salesProvider.editCartItemQuantity(
-                                                                              setTotalPrice:
-                                                                                  returnSalesProvider().setTotalPrice,
-                                                                              cartItem:
-                                                                                  items[index],
-                                                                              number: double.parse(
-                                                                                quantityController.text.replaceAll(
-                                                                                  ',',
-                                                                                  '',
-                                                                                ),
-                                                                              ),
-                                                                              customPrice: double.tryParse(
-                                                                                priceController.text.replaceAll(
-                                                                                  ',',
-                                                                                  '',
-                                                                                ),
-                                                                              ),
-                                                                              setCustomPrice:
-                                                                                  priceController.text.isNotEmpty,
-                                                                            );
-                                                                            Navigator.of(
-                                                                              context,
-                                                                            ).pop();
-                                                                          },
                                                                           cartItem:
                                                                               items[index],
                                                                         );
@@ -2500,6 +1948,8 @@ class _MakeSalesDesktopState
                                                     context:
                                                         context,
                                                     newItem: TempCartItem(
+                                                      qttyPerGroup:
+                                                          null,
                                                       useGroupQuantity:
                                                           false,
                                                       useWholeSalePrice:
@@ -2661,6 +2111,8 @@ class _MakeSalesDesktopState
                                                           ).pop();
                                                         },
                                                         cartItem: TempCartItem(
+                                                          qttyPerGroup:
+                                                              null,
                                                           useGroupQuantity:
                                                               false,
                                                           useWholeSalePrice:

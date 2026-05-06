@@ -506,6 +506,7 @@ class InvoicesProvider extends ChangeNotifier {
                 unit: record.unit,
                 useWholeSalePrice: record.useWholeSalePrice,
                 useGroupQuantity: record.useGroupQuantity,
+                qttyPerGroup: record.qttyPerGroup,
                 // invoiceUuid: invoice.uuid,
               );
             }).toList();
@@ -671,6 +672,7 @@ class InvoicesProvider extends ChangeNotifier {
       salesRecordId: record.uuid,
       useWholeSalePrice: record.useWholeSalePrice ?? false,
       useGroupQuantity: record.useGroupQuantity ?? false,
+      qttyPerGroup: record.qttyPerGroup,
     );
   }
 

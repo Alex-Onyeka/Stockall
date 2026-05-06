@@ -1053,4 +1053,10 @@ class ReceiptsProvider extends ChangeNotifier {
 
     return total;
   }
+
+  // String unitText({required TempProductSaleRecord record}){
+  //   if (record.useGroupQuantity == true) {
+
+  //   }
+  // }
 }

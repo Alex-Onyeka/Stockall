@@ -1112,7 +1112,7 @@ class SalesProvider extends ChangeNotifier {
             paymentMethod: paymentMethod,
             bank: partPaymentValue('Bank') ?? bank,
             cashAlt: partPaymentValue('Cash') ?? cashAlt,
-            isInvoice: true, //salesCartItem.isInvoice,
+            isInvoice: true,
             customerName: customerName(),
             customerUuid: customerUuid(),
             invoiceUuid: invoiceRes?.uuid,
@@ -1159,6 +1159,7 @@ class SalesProvider extends ChangeNotifier {
                 );
 
                 return TempProductSaleRecord(
+                  qttyPerGroup: cartItem.qttyPerGroup,
                   useGroupQuantity:
                       cartItem.useGroupQuantity,
                   customPriceSet: cartItem.setCustomPrice,
@@ -1197,7 +1198,7 @@ class SalesProvider extends ChangeNotifier {
                   uuid: cartItem.salesRecordId ?? uuidGen(),
                   isProductManaged: cartItem.item.isManaged,
                   setTotalPrice: cartItem.setTotalPrice,
-                  unit: cartItem.item.unit,
+                  unit: cartItem.getUnit(),
                   // invoiceUuid: invoiceRes?.uuid,
                 );
               }).toList();
@@ -1221,6 +1222,7 @@ class SalesProvider extends ChangeNotifier {
                 print('Sales Record about to be Created');
 
                 return TempProductSaleRecord(
+                  qttyPerGroup: cartItem.qttyPerGroup,
                   useGroupQuantity:
                       cartItem.useGroupQuantity,
                   customPriceSet: cartItem.setCustomPrice,
@@ -1253,7 +1255,7 @@ class SalesProvider extends ChangeNotifier {
                   isProductManaged: cartItem.item.isManaged,
                   setTotalPrice: cartItem.setTotalPrice,
                   invoiceUuid: invoiceRes?.uuid,
-                  unit: cartItem.item.unit,
+                  unit: cartItem.getUnit(),
                 );
               }).toList();
 
@@ -1502,6 +1504,7 @@ class SalesProvider extends ChangeNotifier {
                 print('Sales Record about to be Created');
 
                 return TempProductSaleRecord(
+                  qttyPerGroup: cartItem.qttyPerGroup,
                   useGroupQuantity:
                       cartItem.useGroupQuantity,
                   customPriceSet: cartItem.setCustomPrice,
@@ -1533,7 +1536,7 @@ class SalesProvider extends ChangeNotifier {
                   uuid: cartItem.salesRecordId ?? uuidGen(),
                   isProductManaged: cartItem.item.isManaged,
                   setTotalPrice: cartItem.setTotalPrice,
-                  unit: cartItem.item.unit,
+                  unit: cartItem.getUnit(),
                 );
               }).toList();
 
@@ -1820,6 +1823,10 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // void notifyListenersLocal() {
+  //   notifyListeners();
+  // }
+
   // bool useWholeSalePriceTempEdit = false;
 
   // bool isSetWholeSalePrice(TempCartItem cartItem) {
@@ -1901,7 +1908,11 @@ class SalesProvider extends ChangeNotifier {
         item.quantity = newItem.quantity;
         item.setCustomPrice = newItem.setCustomPrice;
         item.setTotalPrice = newItem.setTotalPrice;
+        item.useWholeSalePrice = newItem.useWholeSalePrice;
+        item.useGroupQuantity = newItem.useGroupQuantity;
+        item.qttyPerGroup = newItem.qttyPerGroup;
         item.item.unit = newItem.item.unit;
+
         await returnMultiDisplayProvider().updateWindow(
           cartClass: AltCartClass(
             cartId: currentCart().id!,
@@ -2133,6 +2144,7 @@ class SalesProvider extends ChangeNotifier {
       salesRecordId: record.uuid,
       useWholeSalePrice: record.useWholeSalePrice ?? false,
       useGroupQuantity: record.useGroupQuantity ?? false,
+      qttyPerGroup: record.qttyPerGroup,
     );
   }
 

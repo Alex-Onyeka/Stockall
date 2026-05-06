@@ -28,13 +28,14 @@ class TempCartItemAdapter extends TypeAdapter<TempCartItem> {
       useWholeSalePrice: fields[6] as bool,
       salesRecordId: fields[9] as String?,
       useGroupQuantity: fields[10] as bool?,
+      qttyPerGroup: fields[11] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempCartItem obj) {
     writer
-      ..writeByte(11)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.item)
       ..writeByte(1)
@@ -56,7 +57,9 @@ class TempCartItemAdapter extends TypeAdapter<TempCartItem> {
       ..writeByte(9)
       ..write(obj.salesRecordId)
       ..writeByte(10)
-      ..write(obj.useGroupQuantity);
+      ..write(obj.useGroupQuantity)
+      ..writeByte(11)
+      ..write(obj.qttyPerGroup);
   }
 
   @override

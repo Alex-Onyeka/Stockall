@@ -40,6 +40,9 @@ class TempCartItem extends HiveObject {
   @HiveField(10)
   bool? useGroupQuantity;
 
+  @HiveField(11)
+  double? qttyPerGroup;
+
   TempCartItem({
     required this.item,
     required this.quantity,
@@ -52,6 +55,7 @@ class TempCartItem extends HiveObject {
     required this.useWholeSalePrice,
     this.salesRecordId,
     required this.useGroupQuantity,
+    required this.qttyPerGroup,
   });
 
   Map<String, dynamic> toJson() => {
@@ -66,6 +70,7 @@ class TempCartItem extends HiveObject {
     'salesRecordId': salesRecordId,
     'use_whole_sale_price': useWholeSalePrice,
     'sell_group': useGroupQuantity,
+    'qtty_per_group': qttyPerGroup,
   };
 
   factory TempCartItem.fromJson(Map<String, dynamic> json) {
@@ -81,6 +86,7 @@ class TempCartItem extends HiveObject {
       fixedDiscount: json['fixed_discount'],
       useWholeSalePrice: json['use_whole_sale_price'],
       useGroupQuantity: json['sell_group'],
+      qttyPerGroup: json['qtty_per_group'],
     );
   }
 
@@ -106,20 +112,41 @@ class TempCartItem extends HiveObject {
   }
 
   double totalCost() {
-    if (useWholeSalePrice) {
-      return item.wholeSalePrice != null
-          ? item.wholeSalePrice! * quantity
-          : 0;
-    } else if (customPrice != null) {
-      if (setTotalPrice) {
-        return customPrice!;
+    if (useGroupQuantity == true) {
+      if (useWholeSalePrice) {
+        return item.wholeSalePrice != null
+            ? item.wholeSalePrice! *
+                (quantity * getQttyPerGroup())
+            : 0;
+      } else if (customPrice != null) {
+        if (setTotalPrice) {
+          return customPrice!;
+        } else {
+          return customPrice! *
+              (quantity * getQttyPerGroup());
+        }
       } else {
-        return customPrice! * quantity;
+        return item.sellingPrice != null
+            ? item.sellingPrice! *
+                (quantity * getQttyPerGroup())
+            : 0;
       }
     } else {
-      return item.sellingPrice != null
-          ? item.sellingPrice! * quantity
-          : 0;
+      if (useWholeSalePrice) {
+        return item.wholeSalePrice != null
+            ? item.wholeSalePrice! * quantity
+            : 0;
+      } else if (customPrice != null) {
+        if (setTotalPrice) {
+          return customPrice!;
+        } else {
+          return customPrice! * quantity;
+        }
+      } else {
+        return item.sellingPrice != null
+            ? item.sellingPrice! * quantity
+            : 0;
+      }
     }
   }
 
@@ -133,28 +160,83 @@ class TempCartItem extends HiveObject {
   }
 
   double? costPrice() {
-    return item.costPrice == 0
-        ? null
-        : item.costPrice * quantity;
+    if (useGroupQuantity == true) {
+      return item.costPrice == 0
+          ? null
+          : item.costPrice * (quantity * getQttyPerGroup());
+    } else {
+      return item.costPrice == 0
+          ? null
+          : item.costPrice * quantity;
+    }
   }
 
   double getItemDiscountedRemainingCost() {
-    if (item.discount != null) {
-      if (useWholeSalePrice) {
-        return (((item.wholeSalePrice ?? 0) -
-                ((item.wholeSalePrice ?? 0) *
-                    (item.discount ?? 0) /
-                    100)) *
-            quantity);
+    if (useGroupQuantity == true) {
+      if (item.discount != null) {
+        if (useWholeSalePrice) {
+          return (((item.wholeSalePrice ?? 0) -
+                  ((item.wholeSalePrice ?? 0) *
+                      (item.discount ?? 0) /
+                      100)) *
+              (quantity * getQttyPerGroup()));
+        } else {
+          return (((item.sellingPrice ?? 0) -
+                  ((item.sellingPrice ?? 0) *
+                      (item.discount ?? 0) /
+                      100)) *
+              (quantity * getQttyPerGroup()));
+        }
       } else {
-        return (((item.sellingPrice ?? 0) -
-                ((item.sellingPrice ?? 0) *
-                    (item.discount ?? 0) /
-                    100)) *
-            quantity);
+        return totalCost();
       }
     } else {
-      return totalCost();
+      if (item.discount != null) {
+        if (useWholeSalePrice) {
+          return (((item.wholeSalePrice ?? 0) -
+                  ((item.wholeSalePrice ?? 0) *
+                      (item.discount ?? 0) /
+                      100)) *
+              quantity);
+        } else {
+          return (((item.sellingPrice ?? 0) -
+                  ((item.sellingPrice ?? 0) *
+                      (item.discount ?? 0) /
+                      100)) *
+              quantity);
+        }
+      } else {
+        return totalCost();
+      }
+    }
+  }
+
+  double getQttyPerGroup() {
+    return item.qttyPerGroup ?? 1;
+  }
+
+  double unitTogetQttyPerGroup() {
+    return quantity / getQttyPerGroup();
+  }
+
+  double groupToUnitQuantity() {
+    return quantity * getQttyPerGroup();
+  }
+
+  String getUnit() {
+    if (useGroupQuantity == true) {
+      if (item.groupUnit == 'Others' ||
+          item.groupUnit == null) {
+        return "Group(s)";
+      } else {
+        return item.groupUnit!;
+      }
+    } else {
+      if (item.unit == 'Others') {
+        return "Unit(s)";
+      } else {
+        return item.unit;
+      }
     }
   }
 
@@ -170,6 +252,7 @@ class TempCartItem extends HiveObject {
     bool? addToStock,
     String? salesRecordId,
     bool? useGroupQuantity,
+    double? qttyPerGroup,
   }) {
     return TempCartItem(
       item: item ?? this.item,
@@ -185,6 +268,7 @@ class TempCartItem extends HiveObject {
       salesRecordId: salesRecordId ?? this.salesRecordId,
       useGroupQuantity:
           useGroupQuantity ?? this.useGroupQuantity,
+      qttyPerGroup: qttyPerGroup ?? this.qttyPerGroup,
     );
   }
 
