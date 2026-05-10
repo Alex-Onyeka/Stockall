@@ -298,7 +298,7 @@ class _SubscriptionPageState
                                         fontWeight:
                                             FontWeight.bold,
                                       ),
-                                      '(₦)Naira',
+                                      '(₦) NGN Naira',
                                     ),
                                   ],
                                 ),
@@ -365,7 +365,7 @@ class _SubscriptionPageState
                                         fontWeight:
                                             FontWeight.bold,
                                       ),
-                                      '(\$)Dollar',
+                                      '(\$) US Dollar',
                                     ),
                                   ],
                                 ),
