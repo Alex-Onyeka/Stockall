@@ -13,10 +13,12 @@ import 'package:stockall/pages/customers/customer_page/customer_page.dart';
 class CustomerListMobile extends StatefulWidget {
   final TextEditingController searchController;
   final bool? isSales;
+  final bool? isWaybill;
   const CustomerListMobile({
     super.key,
     required this.searchController,
     this.isSales,
+    this.isWaybill,
   });
 
   @override
@@ -97,7 +99,8 @@ class _CustomerListMobileState
                 fontSize: theme.mobileTexts.h4.fontSize,
                 fontWeight: FontWeight.bold,
               ),
-              widget.isSales == null
+              widget.isSales == null &&
+                      widget.isWaybill == null
                   ? 'Your Customers'
                   : 'Select Customer',
             ),
@@ -242,6 +245,17 @@ class _CustomerListMobileState
                                             Navigator.of(
                                               context,
                                             ).pop(context);
+                                          } else if (widget
+                                                  .isWaybill !=
+                                              null) {
+                                            returnWaybillProvider()
+                                                .selectCustomer(
+                                                  customer:
+                                                      customer,
+                                                );
+                                            Navigator.of(
+                                              context,
+                                            ).pop(context);
                                           } else {
                                             Navigator.push(
                                               context,
@@ -261,7 +275,10 @@ class _CustomerListMobileState
                                         theme: theme,
                                         customer: customer,
                                         isSales:
-                                            widget.isSales,
+                                            widget
+                                                .isSales ??
+                                            widget
+                                                .isWaybill,
                                       );
                                     },
                                   );
@@ -318,11 +335,18 @@ class _CustomerListMobileState
                                       Navigator.of(
                                         context,
                                       ).pop(context);
-                                    } else {
-                                      returnCompProvider(
+                                    } else if (widget
+                                            .isWaybill !=
+                                        null) {
+                                      returnWaybillProvider()
+                                          .selectCustomer(
+                                            customer:
+                                                customer,
+                                          );
+                                      Navigator.of(
                                         context,
-                                        listen: false,
-                                      ).swtichTab(0);
+                                      ).pop(context);
+                                    } else {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -336,14 +360,14 @@ class _CustomerListMobileState
                                             );
                                           },
                                         ),
-                                      ).then((_) {
-                                        setState(() {});
-                                      });
+                                      );
                                     }
                                   },
                                   theme: theme,
                                   customer: customer,
-                                  isSales: widget.isSales,
+                                  isSales:
+                                      widget.isSales ??
+                                      widget.isWaybill,
                                 );
                               },
                             );

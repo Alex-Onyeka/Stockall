@@ -19,6 +19,7 @@ import 'package:stockall/providers/purchase_provider.dart';
 import 'package:stockall/providers/receipts_provider.dart';
 import 'package:stockall/providers/shop_provider.dart';
 import 'package:stockall/providers/user_provider.dart';
+import 'package:stockall/providers/utility_constant_provider.dart';
 
 class RefreshFunctions {
   late final ShopProvider shopProvider;
@@ -30,6 +31,8 @@ class RefreshFunctions {
   late final UserProvider userProvider;
   late final DataProvider dataProvider;
   late final AppVersionProvider appVersionP;
+  late final UtilityConstantProvider
+  utilityConstantProvider;
   late final EventsLogProvider eventLogProvider;
   late final PurchaseProvider purchaseProvider;
 
@@ -60,6 +63,8 @@ class RefreshFunctions {
       context,
       listen: false,
     );
+    utilityConstantProvider =
+        returnUtilityConstantProvider();
     dataProvider = returnData();
     eventLogProvider = returnEventsLogProvider();
     purchaseProvider = returnPurchaseProvider();
@@ -136,7 +141,6 @@ class RefreshFunctions {
   Future<void> refreshInvoices(context) async {
     var safeContext = context;
     bool isOnline = await checkOnline();
-    await appVersionP.getAppVersion(context);
     if (isOnline && isSynced() == 0) {
       showDialog(
         context: context,
@@ -564,6 +568,8 @@ class RefreshFunctions {
                     listen: false,
                   ).fetchCurrentUser(safeContext);
                 }
+                await utilityConstantProvider
+                    .getUtilityConstants();
 
                 // await getProductSalesRecord();
                 var subs = await loadSubscription();
@@ -579,6 +585,7 @@ class RefreshFunctions {
                 print(
                   "Allowed Items RefreshAll: ${dataProvider.allowedRangeItems}",
                 );
+
                 await returnDepartmentProvider()
                     .getDepartments();
                 if (safeContext.mounted) {
@@ -605,6 +612,7 @@ class RefreshFunctions {
         );
       } else {
         await getUserShop();
+        await utilityConstantProvider.getUtilityConstants();
         // await getProductSalesRecord();
         var subs = await loadSubscription();
         print(

@@ -14,7 +14,6 @@ import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
-import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/local_database/category/unsync_funcs/created_categories/created_categories_func.dart';
 import 'package:stockall/local_database/category/unsync_funcs/deleted_categories/deleted_categories_func.dart';
 import 'package:stockall/local_database/category/unsync_funcs/updated_categories/updated_categories_func.dart';
@@ -57,6 +56,9 @@ import 'package:stockall/local_database/sub_staff/unsync_funcs/updated/updated_s
 import 'package:stockall/local_database/suppliers_func/unsync_funcs/created/created_supplier_func.dart';
 import 'package:stockall/local_database/suppliers_func/unsync_funcs/deleted/deleted_supplier_func.dart';
 import 'package:stockall/local_database/suppliers_func/unsync_funcs/updated/updated_supplier_func.dart';
+import 'package:stockall/local_database/waybills/unsync_funcs/created/created_waybills_func.dart';
+import 'package:stockall/local_database/waybills/unsync_funcs/deleted/deleted_waybills_func.dart';
+import 'package:stockall/local_database/waybills/unsync_funcs/updated/updated_waybills_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/providers/department_provider.dart';
@@ -881,6 +883,37 @@ class DataProvider extends ChangeNotifier {
               setSyncProgress(42);
             }
 
+            if (CreatedWaybillsFunc()
+                    .getWaybills()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnWaybillProvider()
+                  .createWaybillsSync();
+              print('Finished Syncing Created Waybills');
+              setSyncProgress(43);
+            }
+            if (UpdatedWaybillsFunc()
+                    .getWaybillIds()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnWaybillProvider()
+                  .updateWaybillSync();
+              print('Finished Syncing Updated Waybills');
+              setSyncProgress(44);
+            }
+            if (DeletedWaybillsFunc()
+                    .getWaybillIds()
+                    .isNotEmpty &&
+                context.mounted &&
+                isOnline) {
+              await returnWaybillProvider()
+                  .deleteWaybillsSync();
+              print('Finished Syncing Deleted Waybills');
+              setSyncProgress(45);
+            }
+
             await clearTotalCache();
             toggleSyncing(false);
           }
@@ -929,7 +962,7 @@ class DataProvider extends ChangeNotifier {
   bool isSyncing = false;
   double syncProgress = 0;
   void setSyncProgress(int value) {
-    syncProgress = (value / 42) * 100;
+    syncProgress = (value / 45) * 100;
     notifyListeners();
   }
 
@@ -1010,7 +1043,10 @@ class DataProvider extends ChangeNotifier {
               .isEmpty &&
           DeletedStorageProductsFunc()
               .getStorageProductIds()
-              .isEmpty) {
+              .isEmpty &&
+          CreatedWaybillsFunc().getWaybills().isEmpty &&
+          UpdatedWaybillsFunc().getWaybillIds().isEmpty &&
+          DeletedWaybillsFunc().getWaybillIds().isEmpty) {
         return 1;
       } else {
         return 0;
@@ -1066,6 +1102,9 @@ class DataProvider extends ChangeNotifier {
         .clearUpdatedStorageProduct();
     await DeletedStorageProductsFunc()
         .clearDeletedStorageProduct();
+    await CreatedWaybillsFunc().clearWaybills();
+    await UpdatedWaybillsFunc().clearUpdatedWaybills();
+    await DeletedWaybillsFunc().clearDeletedWaybills();
   }
 
   String? departmentUuid;
@@ -1150,7 +1189,7 @@ class DataProvider extends ChangeNotifier {
     allowedRangeItems =
         plan == 3
             ? null
-            : subPlans
+            : returnSubPaymentProvider().subPlans
                 .firstWhere((sub) => sub.plan == plan)
                 .itemsAuth
                 .numberOfItems;
@@ -2011,11 +2050,16 @@ class DataProvider extends ChangeNotifier {
             .userShop()
             ?.manageInventoryStorage ==
         true) {
+      var storageProducts =
+          returnStorageProductProvider()
+              .storageProductListMain;
       for (var item in (products ?? productListMain)) {
         tempTotal +=
-            ((item.sellingPrice ?? 0) *
-                ((item.quantity ?? 0) +
-                    (item.totalQttyInStorageDouble ?? 0)));
+            (item.sellingPrice ?? 0) * (item.quantity ?? 0);
+      }
+      for (var item in storageProducts) {
+        tempTotal +=
+            (item.sellingPrice ?? 0) * (item.quantity ?? 0);
       }
     } else {
       for (var item in (products ?? productListMain)) {
@@ -2035,11 +2079,15 @@ class DataProvider extends ChangeNotifier {
             .userShop()
             ?.manageInventoryStorage ==
         true) {
+      var storageProducts =
+          returnStorageProductProvider()
+              .storageProductListMain;
       for (var item in (products ?? productListMain)) {
+        tempTotal += item.costPrice * (item.quantity ?? 0);
+      }
+      for (var item in storageProducts) {
         tempTotal +=
-            item.costPrice *
-            ((item.quantity ?? 0) +
-                (item.totalQttyInStorageDouble ?? 0));
+            (item.costPrice ?? 0) * (item.quantity ?? 0);
       }
     } else {
       for (var item in (products ?? productListMain)) {

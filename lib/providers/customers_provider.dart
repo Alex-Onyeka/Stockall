@@ -28,10 +28,10 @@ class CustomersProvider extends ChangeNotifier {
   final SupabaseClient supabase = Supabase.instance.client;
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
-  List<TempCustomersClass> _customers = [];
+  List<TempCustomersClass> customers = [];
 
   void clearCustomers() {
-    _customers.clear();
+    customers.clear();
     print('Customers Cleared');
     notifyListeners();
   }
@@ -44,7 +44,7 @@ class CustomersProvider extends ChangeNotifier {
       if (!authorization(
         authorized: Authorizations().viewAllDepartments,
       )) {
-        return _customers.where((cat) {
+        return customers.where((cat) {
           if (cat.departmentUuid == null) {
             return true;
           } else {
@@ -59,9 +59,9 @@ class CustomersProvider extends ChangeNotifier {
                 .currentDepartment()
                 ?.uuid ==
             null) {
-          return _customers;
+          return customers;
         } else {
-          return _customers.where((cat) {
+          return customers.where((cat) {
             if (cat.departmentUuid == null) {
               return true;
             } else {
@@ -74,7 +74,7 @@ class CustomersProvider extends ChangeNotifier {
         }
       }
     } else {
-      return _customers;
+      return customers;
     }
   }
 
@@ -91,19 +91,19 @@ class CustomersProvider extends ChangeNotifier {
           .order('name', ascending: true);
       print(data.length.toString());
 
-      _customers =
+      customers =
           (data as List)
               .map(
                 (json) => TempCustomersClass.fromJson(json),
               )
               .toList();
 
-      await CustomerFunc().insertAllCustomers(_customers);
+      await CustomerFunc().insertAllCustomers(customers);
     } else {
-      _customers = CustomerFunc().getCustomers();
+      customers = CustomerFunc().getCustomers();
     }
     notifyListeners();
-    return _customers;
+    return customers;
   }
 
   /// Add a new customer
@@ -156,7 +156,7 @@ class CustomersProvider extends ChangeNotifier {
         },
       );
     }
-    // _customers.insert(0, newCustomer);
+    // customers.insert(0, newCustomer);
     await fetchCustomers(shopProvider.userShop()!.shopId!);
     notifyListeners();
   }
@@ -296,7 +296,7 @@ class CustomersProvider extends ChangeNotifier {
   /// Get single customer by ID
   TempCustomersClass? getCustomerByIdMain(String uuid) {
     try {
-      return _customers.firstWhere((c) => c.uuid == uuid);
+      return customers.firstWhere((c) => c.uuid == uuid);
     } catch (e) {
       return null;
     }

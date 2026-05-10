@@ -68,6 +68,12 @@ class TempWayBills {
   @HiveField(20)
   String? courierPhone;
 
+  @HiveField(21)
+  String? customerName;
+
+  @HiveField(22)
+  bool? isCustomPriceSet;
+
   TempWayBills({
     required this.uuid,
     required this.createdAt,
@@ -90,6 +96,8 @@ class TempWayBills {
     required this.courierName,
     required this.courierPhone,
     required this.items,
+    required this.customerName,
+    required this.isCustomPriceSet,
   });
 
   /// FROM JSON
@@ -121,7 +129,7 @@ class TempWayBills {
               ? DateTime.parse(json['updated_at'])
               : null,
       items:
-          (json['payments'] as List<dynamic>? ?? [])
+          (json['items'] as List<dynamic>? ?? [])
               .map(
                 (e) => WaybillItems.fromJson(
                   e as Map<String, dynamic>,
@@ -131,6 +139,8 @@ class TempWayBills {
       deliveryLocation: json['delivery_location'],
       courierName: json['courier_name'],
       courierPhone: json['courier_phone'],
+      customerName: json['customer_name'],
+      isCustomPriceSet: json['is_custom_price_set'],
     );
   }
 
@@ -158,6 +168,8 @@ class TempWayBills {
       'delivery_location': deliveryLocation,
       'courier_name': courierName,
       'courier_phone': courierPhone,
+      'customer_name': customerName,
+      'is_custom_price_set': isCustomPriceSet,
     };
   }
 
@@ -184,6 +196,8 @@ class TempWayBills {
     String? deliveryLocation,
     String? courierName,
     String? courierPhone,
+    String? customerName,
+    bool? isCustomPriceSet,
   }) {
     return TempWayBills(
       uuid: uuid ?? this.uuid,
@@ -213,6 +227,9 @@ class TempWayBills {
           deliveryLocation ?? this.deliveryLocation,
       courierName: courierName ?? this.courierName,
       courierPhone: courierPhone ?? this.courierPhone,
+      customerName: customerName ?? this.customerName,
+      isCustomPriceSet:
+          isCustomPriceSet ?? this.isCustomPriceSet,
     );
   }
 }

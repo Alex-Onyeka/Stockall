@@ -91,6 +91,9 @@ class NavProvider extends ChangeNotifier {
       listen: false,
     );
 
+    final utilityConstants =
+        returnUtilityConstantProvider();
+
     final userShop = await shopProvider.getUserShops();
     if (!context.mounted) {
       return;
@@ -102,6 +105,7 @@ class NavProvider extends ChangeNotifier {
       return;
     }
     await appVersionP.getAppVersion(context);
+    await utilityConstants.getUtilityConstants();
 
     if (isOnline) {
       var userOffline = AuthService().currentUserOffline;

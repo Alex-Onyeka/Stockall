@@ -150,7 +150,9 @@ const String appDesc =
 const String appVersionMobile = '1.1.0+27';
 const String appVersionDesktop = '1.1.27.0';
 
-const double vat = 7.5;
+double vat =
+    returnUtilityConstantProvider().utilityConstants?.vat ??
+    7.5;
 
 const double mobileScreenSmall = 520;
 

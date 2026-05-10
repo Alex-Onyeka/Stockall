@@ -5,7 +5,6 @@ import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
-import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/subscription_page/components/comparison_section_widget.dart';
 import 'package:stockall/pages/subscription_page/components/faq_section.dart';
@@ -22,10 +21,7 @@ class SubscriptionPage extends StatefulWidget {
 class _SubscriptionPageState
     extends State<SubscriptionPage> {
   void selectDuration(int duration) {
-    returnSubPaymentProvider(
-      context,
-      listen: false,
-    ).selectDuration(duration);
+    returnSubPaymentProvider().selectDuration(duration);
   }
 
   final GlobalKey fullComparisonSection = GlobalKey();
@@ -34,17 +30,14 @@ class _SubscriptionPageState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      returnSubPaymentProvider(
-        context,
-        listen: false,
-      ).selectDuration(1);
+      returnSubPaymentProvider().selectDuration(1);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     SubplanClass? plan =
-        subPlans
+        returnSubPaymentProvider().subPlans
             .where(
               (pl) =>
                   pl.plan ==
@@ -239,6 +232,148 @@ class _SubscriptionPageState
                           ],
                         ),
                       ),
+                      SizedBox(height: 15),
+                      Row(
+                        mainAxisAlignment:
+                            MainAxisAlignment.center,
+                        spacing: 5,
+                        children: [
+                          Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                returnSubPaymentProvider()
+                                    .selectCurrency(0);
+                              },
+                              child: Container(
+                                padding:
+                                    EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                      vertical: 6,
+                                    ),
+                                child: Row(
+                                  spacing: 6,
+                                  children: [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color:
+                                              returnSubPaymentProvider(
+                                                        context:
+                                                            context,
+                                                      ).currencyIndex ==
+                                                      0
+                                                  ? Colors
+                                                      .transparent
+                                                  : Colors
+                                                      .grey,
+                                        ),
+                                        color:
+                                            returnSubPaymentProvider(
+                                                      context:
+                                                          context,
+                                                    ).currencyIndex ==
+                                                    0
+                                                ? theme
+                                                    .lightModeColor
+                                                    .prColor250
+                                                : Colors
+                                                    .transparent,
+                                        shape:
+                                            BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        size: 14,
+                                        color: Colors.white,
+                                        Icons.check,
+                                      ),
+                                    ),
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b4
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      '(₦)Naira',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                returnSubPaymentProvider()
+                                    .selectCurrency(1);
+                              },
+                              child: Container(
+                                padding:
+                                    EdgeInsets.symmetric(
+                                      vertical: 6,
+                                      horizontal: 6,
+                                    ),
+                                child: Row(
+                                  spacing: 5,
+                                  children: [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color:
+                                              returnSubPaymentProvider(
+                                                        context:
+                                                            context,
+                                                      ).currencyIndex ==
+                                                      1
+                                                  ? Colors
+                                                      .transparent
+                                                  : Colors
+                                                      .grey,
+                                        ),
+                                        color:
+                                            returnSubPaymentProvider(
+                                                      context:
+                                                          context,
+                                                    ).currencyIndex ==
+                                                    1
+                                                ? theme
+                                                    .lightModeColor
+                                                    .prColor250
+                                                : Colors
+                                                    .transparent,
+                                        shape:
+                                            BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        size: 14,
+                                        color: Colors.white,
+                                        Icons.check,
+                                      ),
+                                    ),
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b4
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      '(\$)Dollar',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                       SizedBox(height: 30),
                       PricingSectionWidget(
                         fullComparisonSection:
@@ -315,7 +450,7 @@ class DurationSelectionButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(3),
             color:
                 returnSubPaymentProvider(
-                          context,
+                          context: context,
                         ).currentDuration ==
                         myIndex
                     ? theme.lightModeColor.secColor200
@@ -336,7 +471,7 @@ class DurationSelectionButton extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                   color:
                       returnSubPaymentProvider(
-                                context,
+                                context: context,
                               ).currentDuration ==
                               myIndex
                           ? Colors.white

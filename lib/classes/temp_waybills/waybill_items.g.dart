@@ -18,18 +18,22 @@ class WaybillItemsAdapter extends TypeAdapter<WaybillItems> {
     };
     return WaybillItems(
       uuid: fields[0] as String,
-      waybillId: fields[1] as String,
+      waybillId: fields[1] as String?,
       quantity: fields[3] as double,
       amount: fields[2] as double,
       itemName: fields[5] as String,
       itemUuid: fields[4] as String,
+      isGroup: fields[6] as bool?,
+      qttyPerGroup: fields[7] as double?,
+      customPrice: fields[8] as double?,
+      originalCost: fields[9] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, WaybillItems obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -41,7 +45,15 @@ class WaybillItemsAdapter extends TypeAdapter<WaybillItems> {
       ..writeByte(4)
       ..write(obj.itemUuid)
       ..writeByte(5)
-      ..write(obj.itemName);
+      ..write(obj.itemName)
+      ..writeByte(6)
+      ..write(obj.isGroup)
+      ..writeByte(7)
+      ..write(obj.qttyPerGroup)
+      ..writeByte(8)
+      ..write(obj.customPrice)
+      ..writeByte(9)
+      ..write(obj.originalCost);
   }
 
   @override

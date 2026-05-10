@@ -20,10 +20,12 @@ import 'package:stockall/services/auth_service.dart';
 class CustomerListDesktop extends StatefulWidget {
   final TextEditingController searchController;
   final bool? isSales;
+  final bool? isWaybill;
   const CustomerListDesktop({
     super.key,
     required this.searchController,
     this.isSales,
+    this.isWaybill,
   });
 
   @override
@@ -111,7 +113,10 @@ class _CustomerListDesktopState
             spacing: 15,
             children: [
               Visibility(
-                visible: widget.isSales == null,
+                visible:
+                    widget.isSales == null &&
+                    widget.isWaybill == null &&
+                    widget.isWaybill == null,
                 child: MyDrawerWidget(
                   globalKey: _scaffoldKey,
                   action: () {
@@ -186,10 +191,14 @@ class _CustomerListDesktopState
                       toolbarHeight: 60,
                       leading: Opacity(
                         opacity:
-                            widget.isSales == null ? 0 : 1,
+                            widget.isSales == null &&
+                                    widget.isWaybill == null
+                                ? 0
+                                : 1,
                         child: IconButton(
                           onPressed: () {
-                            widget.isSales == null
+                            widget.isSales == null &&
+                                    widget.isWaybill == null
                                 ? {}
                                 : Navigator.of(
                                   context,
@@ -222,7 +231,8 @@ class _CustomerListDesktopState
                                       .fontSize,
                               fontWeight: FontWeight.bold,
                             ),
-                            widget.isSales == null
+                            widget.isSales == null &&
+                                    widget.isWaybill == null
                                 ? 'Your Customers'
                                 : 'Select Customer',
                           ),
@@ -408,6 +418,17 @@ class _CustomerListDesktopState
                                                           ).pop(
                                                             context,
                                                           );
+                                                        } else if (widget.isWaybill !=
+                                                            null) {
+                                                          returnWaybillProvider().selectCustomer(
+                                                            customer:
+                                                                customer,
+                                                          );
+                                                          Navigator.of(
+                                                            context,
+                                                          ).pop(
+                                                            context,
+                                                          );
                                                         } else {
                                                           Navigator.push(
                                                             context,
@@ -429,7 +450,8 @@ class _CustomerListDesktopState
                                                       customer:
                                                           customer,
                                                       isSales:
-                                                          widget.isSales,
+                                                          widget.isSales ??
+                                                          widget.isWaybill,
                                                     );
                                                   },
                                                 );
@@ -492,14 +514,19 @@ class _CustomerListDesktopState
                                                     ).pop(
                                                       context,
                                                     );
-                                                  } else {
-                                                    returnCompProvider(
-                                                      context,
-                                                      listen:
-                                                          false,
-                                                    ).swtichTab(
-                                                      0,
+                                                  } else if (widget
+                                                          .isWaybill !=
+                                                      null) {
+                                                    returnWaybillProvider().selectCustomer(
+                                                      customer:
+                                                          customer,
                                                     );
+                                                    Navigator.of(
+                                                      context,
+                                                    ).pop(
+                                                      context,
+                                                    );
+                                                  } else {
                                                     Navigator.push(
                                                       context,
                                                       MaterialPageRoute(
@@ -512,13 +539,7 @@ class _CustomerListDesktopState
                                                           );
                                                         },
                                                       ),
-                                                    ).then((
-                                                      _,
-                                                    ) {
-                                                      setState(
-                                                        () {},
-                                                      );
-                                                    });
+                                                    );
                                                   }
                                                 },
                                                 theme:
@@ -527,7 +548,9 @@ class _CustomerListDesktopState
                                                     customer,
                                                 isSales:
                                                     widget
-                                                        .isSales,
+                                                        .isSales ??
+                                                    widget
+                                                        .isWaybill,
                                               );
                                             },
                                           );
@@ -546,7 +569,9 @@ class _CustomerListDesktopState
                 ),
               ),
               Visibility(
-                visible: widget.isSales == null,
+                visible:
+                    widget.isSales == null &&
+                    widget.isWaybill == null,
                 child: RightSideBar(theme: theme),
               ),
             ],

@@ -6,7 +6,6 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/plan_pricing_class.dart';
-import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_landing/auth_landing.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -98,7 +97,7 @@ class _PricingContainerWidgetState
       await returnSubcsription(
         context,
         listen: false,
-      ).subscribe(plan: 0, context: context);
+      ).subscribe(context: context);
       // ignore: use_build_context_synchronously
       Navigator.of(context).pop();
     }
@@ -115,63 +114,77 @@ class _PricingContainerWidgetState
   @override
   Widget build(BuildContext context) {
     PlanPricingClass pricingClass = PlanPricingClass(
+      currencyIndex:
+          returnSubPaymentProvider(
+            context: context,
+          ).currencyIndex,
+      dollarRate:
+          returnUtilityConstantProvider(
+            context: context,
+          ).utilityConstants?.dollarRate ??
+          1300,
       dataStorageDuration:
-          subPlans
+          returnSubPaymentProvider().subPlans
               .firstWhere((pl) => pl.plan == widget.plan)
               .onlineDataBackupDuration,
       plan: widget.plan,
       planName:
-          subPlans
+          returnSubPaymentProvider().subPlans
               .firstWhere((pl) => pl.plan == widget.plan)
               .planName,
       planDesc:
-          subPlans
+          returnSubPaymentProvider().subPlans
               .firstWhere((pl) => pl.plan == widget.plan)
               .planDesc,
-      discount: returnSubPaymentProvider(context).discount,
+      discount:
+          returnSubPaymentProvider(
+            context: context,
+          ).discount,
       price:
-          subPlans
+          returnSubPaymentProvider().subPlans
               .firstWhere((pl) => pl.plan == widget.plan)
               .price,
       duration:
-          returnSubPaymentProvider(context).currentDuration,
+          returnSubPaymentProvider(
+            context: context,
+          ).currentDuration,
       numberOfItems:
-          subPlans
+          returnSubPaymentProvider().subPlans
               .firstWhere((pl) => pl.plan == widget.plan)
               .itemsAuth
               .numberOfItems,
       barcode:
-          subPlans
+          returnSubPaymentProvider().subPlans
               .firstWhere((pl) => pl.plan == widget.plan)
               .itemsAuth
               .useOfBarcode,
       invoiceManagement:
-          subPlans
+          returnSubPaymentProvider().subPlans
               .firstWhere((pl) => pl.plan == widget.plan)
               .salesAuth
               .invoiceManagement,
       receiptManagement:
-          subPlans
+          returnSubPaymentProvider().subPlans
               .firstWhere((pl) => pl.plan == widget.plan)
               .salesAuth
               .printReceipt,
       useCalculator:
-          subPlans
+          returnSubPaymentProvider().subPlans
               .firstWhere((pl) => pl.plan == widget.plan)
               .calculatorAuth
               .useCalculator,
       numberOfStaffs:
-          subPlans
+          returnSubPaymentProvider().subPlans
               .firstWhere((pl) => pl.plan == widget.plan)
               .employeesAuth
               .numberOfEmployees,
       useOffline:
-          subPlans
+          returnSubPaymentProvider().subPlans
               .firstWhere((pl) => pl.plan == widget.plan)
               .generalSettingsAuth
               .allowOfflineUse,
       numberOfBranches:
-          subPlans
+          returnSubPaymentProvider().subPlans
               .firstWhere((pl) => pl.plan == widget.plan)
               .multipleStoresAuth
               .numberOfStores,
@@ -225,9 +238,12 @@ class _PricingContainerWidgetState
                   fontSize: theme.mobileTexts.h1.fontSize,
                   fontWeight: FontWeight.bold,
                 ),
-                formatMoney(
-                  pricingClass.totalPrice(),
-                  context,
+                formatMoneyAlt(
+                  amount: pricingClass.totalPrice(),
+                  currency:
+                      returnSubPaymentProvider(
+                        context: context,
+                      ).currencySymbol(),
                 ),
               ),
               Text(
@@ -249,7 +265,7 @@ class _PricingContainerWidgetState
           Visibility(
             visible:
                 returnSubPaymentProvider(
-                  context,
+                  context: context,
                 ).discount !=
                 null,
             child: Row(
@@ -262,12 +278,16 @@ class _PricingContainerWidgetState
                     decoration: TextDecoration.lineThrough,
                   ),
                   returnSubPaymentProvider(
-                            context,
+                            context: context,
                           ).discount !=
                           null
-                      ? formatMoney(
-                        pricingClass.originalPrice(),
-                        context,
+                      ? formatMoneyAlt(
+                        amount:
+                            pricingClass.originalPrice(),
+                        currency:
+                            returnSubPaymentProvider(
+                              context: context,
+                            ).currencySymbol(),
                       )
                       : '',
                 ),
@@ -278,10 +298,10 @@ class _PricingContainerWidgetState
                     // decoration: TextDecoration.lineThrough,
                   ),
                   returnSubPaymentProvider(
-                            context,
+                            context: context,
                           ).discount !=
                           null
-                      ? '(${(returnSubPaymentProvider(context).discount ?? 0) * 100}%)'
+                      ? '(${(returnSubPaymentProvider(context: context).discount ?? 0) * 100}%)'
                       : '',
                 ),
               ],
@@ -363,7 +383,8 @@ class _PricingContainerWidgetState
                                 AuthService()
                                     .currentUserEmail!,
                                 pricingClass.plan,
-                                pricingClass.totalPrice(),
+                                pricingClass
+                                    .totalPriceMain(),
                                 pricingClass.duration,
                               );
                               if (context.mounted) {

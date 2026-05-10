@@ -25,7 +25,7 @@ class CalculatorAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
         .firstWhere((pl) => pl.plan == plan)
         .calculatorAuth
         .useCalculator) {

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/classes/temp_waybills/temp_way_bills.dart';
 import 'package:stockall/classes/temp_waybills/unsynced/created_waybills/created_waybills.dart';
 import 'package:stockall/classes/temp_waybills/unsynced/deleted_waybills/deleted_waybills.dart';
 import 'package:stockall/classes/temp_waybills/unsynced/updated/updated_waybills.dart';
+import 'package:stockall/classes/temp_waybills/waybill_items.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/waybills/unsync_funcs/created/created_waybills_func.dart';
@@ -36,7 +38,7 @@ class WaybillProvider extends ChangeNotifier {
   List<TempWayBills> _waybills = [];
   List<TempWayBills> get waybills => _waybills;
 
-  final String tableName = 'waybills';
+  final String tableName = 'way_bills';
 
   void clearWaybills() {
     _waybills.clear();
@@ -45,58 +47,84 @@ class WaybillProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // CREATE a new receipt
-  Future<TempWayBills?> createWaybill(
-    TempWayBills waybill,
-  ) async {
-    print('Inner Waybill Creation Started');
-    bool isOnline = await connectivity.isOnline();
-    if (isOnline) {
-      try {
-        final res =
-            await supabase
-                .from(tableName)
-                .upsert(
-                  waybill.toJson(),
-                  onConflict: 'uuid',
-                )
-                .select()
-                .single();
-        final newWaybill = TempWayBills.fromJson(res);
-        notifyListeners();
-        // await loadWaybills(shopId());
-        return newWaybill;
-      } catch (e) {
-        print(
-          '❌❌ Create Waybill Error Online: ${e.toString()}',
-        );
-        return null;
-      }
+  void clearAllAfterCreatingWaybill() {
+    waybillItemsTemp.clear();
+    tempCustomer = null;
+    customTotalAmount = null;
+    notifyListeners();
+  }
+
+  List<WaybillItems> waybillItemsTemp = [];
+
+  List<WaybillItems> waybillItemsReversed() {
+    return waybillItemsTemp.reversed.toList();
+  }
+
+  void addToItems({required WaybillItems item}) {
+    if (waybillItemsTemp.contains(item)) {
+      waybillItemsTemp.remove(item);
     } else {
-      try {
-        waybill.createdAt = DateTime.now();
-        await WaybillsFunc().createWaybill(waybill);
-        await CreatedWaybillsFunc().createWaybills(
-          CreatedWaybills(waybill: waybill),
-        );
-        notifyListeners();
-        // await loadWaybills(shopId());
-        return waybill;
-      } catch (e) {
-        print(
-          '❌❌ Create Waybill Error Offline: ${e.toString()}',
-        );
-        return null;
-      }
+      waybillItemsTemp.add(item);
+    }
+    notifyListeners();
+  }
+
+  void updateItem({required WaybillItems waybillItem}) {
+    var temp =
+        waybillItemsTemp.where((item) {
+          return waybillItem.uuid == item.uuid;
+        }).toList();
+    if (temp.isNotEmpty) {
+      temp.first.quantity = waybillItem.quantity;
+      temp.first.amount = waybillItem.amount;
+      temp.first.customPrice = waybillItem.customPrice;
+      temp.first.isGroup = waybillItem.isGroup;
+    }
+    notifyListeners();
+  }
+
+  TempCustomersClass? tempCustomer;
+
+  void selectCustomer({TempCustomersClass? customer}) {
+    tempCustomer = customer;
+    notifyListeners();
+  }
+
+  double? customTotalAmount;
+
+  void setCustomTotalAmount(double? total) {
+    customTotalAmount = total;
+    notifyListeners();
+  }
+
+  double totalWaybillAmount() {
+    if (customTotalAmount != null) {
+      return customTotalAmount ?? 0;
+    } else {
+      return waybillItemsTemp
+          .map((item) => item.amount)
+          .fold(0.0, (a, b) => a + b);
     }
   }
 
   // CREATE a new receipt
-  Future<TempWayBills?> updateWaybill(
-    TempWayBills waybill,
-  ) async {
-    print('Inner Waybill Update Started');
+  Future<TempWayBills?> createWaybill({
+    required TempWayBills waybill,
+  }) async {
+    print('Inner Waybill Creation Started');
     bool isOnline = await connectivity.isOnline();
+    var newUuid = uuidGen();
+    waybill.uuid = newUuid;
+    try {
+      for (var item in waybillItemsTemp) {
+        item.waybillId = newUuid;
+      }
+    } catch (e) {
+      print('Error Setting Waybill Item Waybill Uuid');
+      return null;
+    }
+    waybill.items = waybillItemsTemp;
+    waybill.createdAt = DateTime.now();
     waybill.updatedAt = DateTime.now();
     if (isOnline) {
       try {
@@ -112,6 +140,93 @@ class WaybillProvider extends ChangeNotifier {
         final newWaybill = TempWayBills.fromJson(res);
         notifyListeners();
         await loadWaybills(shopId());
+        clearAllAfterCreatingWaybill();
+        return newWaybill;
+      } catch (e) {
+        print(
+          '❌❌ Create Waybill Error Online: ${e.toString()}',
+        );
+        return null;
+      }
+    } else {
+      try {
+        await WaybillsFunc().createWaybill(waybill);
+        await CreatedWaybillsFunc().createWaybills(
+          CreatedWaybills(waybill: waybill),
+        );
+        notifyListeners();
+        await loadWaybills(shopId());
+        clearAllAfterCreatingWaybill();
+        return waybill;
+      } catch (e) {
+        print(
+          '❌❌ Create Waybill Error Offline: ${e.toString()}',
+        );
+        return null;
+      }
+    }
+  }
+
+  void initUpdateWaybill({
+    required TempWayBills waybill,
+    required BuildContext context,
+  }) {
+    waybillItemsTemp.clear();
+    for (var item in waybill.items) {
+      waybillItemsTemp.add(item.copyWith());
+    }
+    tempCustomer =
+        returnCustomers(context, listen: false).customers
+                .where(
+                  (cust) => cust.uuid == waybill.customerId,
+                )
+                .isNotEmpty
+            ? returnCustomers(context, listen: false)
+                .customers
+                .where(
+                  (cust) => cust.uuid == waybill.customerId,
+                )
+                .first
+            : null;
+    customTotalAmount =
+        waybill.isCustomPriceSet == true
+            ? waybill.totalAmount
+            : null;
+    notifyListeners();
+  }
+
+  // CREATE a new receipt
+  Future<TempWayBills?> updateWaybill({
+    required TempWayBills waybill,
+  }) async {
+    print('Inner Waybill Update Started');
+    bool isOnline = await connectivity.isOnline();
+    waybill.updatedAt = DateTime.now();
+    try {
+      for (var item in waybillItemsTemp) {
+        item.waybillId = waybill.uuid;
+      }
+    } catch (e) {
+      print('Error Setting Waybill Item Waybill Uuid');
+      return null;
+    }
+    waybill.items = waybillItemsTemp;
+    waybill.createdAt = DateTime.now();
+    if (isOnline) {
+      try {
+        final res =
+            await supabase
+                .from(tableName)
+                .upsert(
+                  waybill.toJson(),
+                  onConflict: 'uuid',
+                )
+                .select()
+                .single();
+        final newWaybill = TempWayBills.fromJson(res);
+        notifyListeners();
+        await loadWaybills(shopId());
+        clearAllAfterCreatingWaybill();
         return newWaybill;
       } catch (e) {
         print(
@@ -152,6 +267,7 @@ class WaybillProvider extends ChangeNotifier {
           return null;
         }
         await loadWaybills(shopId());
+        clearAllAfterCreatingWaybill();
         return waybill;
       } catch (e) {
         print(
@@ -639,64 +755,84 @@ class WaybillProvider extends ChangeNotifier {
     }
   }
 
-  // List<TempWayBills> returnOwnWaybillsByDayOrWeek({
-  //   required int index,
-  // }) {
-  //   if (index == 1) {
-  //     return returnWaybillsByDateForIndex();
-  //   } else if (index == 2) {
-  //     return returnWaybillsByDateForIndex().where((purch) {
-  //       if (getWaybillPaymentBalance(purch) == 0) {
-  //         return true;
-  //       } else {
-  //         return false;
-  //       }
-  //     }).toList();
-  //   } else {
-  //     return returnWaybillsByDateForIndex().where((purch) {
-  //       if (getWaybillPaymentBalance(purch) != 0) {
-  //         return true;
-  //       } else {
-  //         return false;
-  //       }
-  //     }).toList();
-  //   }
-  // }
+  List<TempWayBills> returnOwnWaybillsByDayOrWeek({
+    required int index,
+  }) {
+    if (index == 2) {
+      return returnWaybillsByDateForIndex().where((
+        waybill,
+      ) {
+        return waybill.status == 'not-sent';
+      }).toList();
+    } else if (index == 3) {
+      return returnWaybillsByDateForIndex().where((
+        waybill,
+      ) {
+        return waybill.status == 'en-route';
+      }).toList();
+    } else if (index == 4) {
+      return returnWaybillsByDateForIndex().where((
+        waybill,
+      ) {
+        return waybill.status == 'delivered';
+      }).toList();
+    } else if (index == 5) {
+      return returnWaybillsByDateForIndex().where((
+        waybill,
+      ) {
+        return waybill.status == 'pick-up';
+      }).toList();
+    } else {
+      return returnWaybillsByDateForIndex();
+    }
+  }
 
-  // double getTotalRevenueForSelectedDayAll({
-  //   String? staffId,
-  //   String? customerId,
-  //   required int index,
-  // }) {
-  //   double tempTotalRevenue = 0;
+  double getTotalRevenueForSelectedDayAll({
+    String? staffId,
+    String? customerUuid,
+    required int index,
+  }) {
+    double tempTotalRevenue = 0;
 
-  //   for (var waybill
-  //       in (staffId != null
-  //           ? returnOwnWaybillsByDayOrWeek(
-  //             index: index,
-  //           ).where((rec) => rec.staffId == staffId)
-  //           : customerId != null
-  //           ? returnOwnWaybillsByDayOrWeek(
-  //             index: index,
-  //           ).where((rec) => rec.customerId == customerId)
-  //           : returnOwnWaybillsByDayOrWeek(index: index))) {
-  //     tempTotalRevenue += getTotalMainRevenueWaybill(
-  //       waybill,
-  //     );
-  //   }
+    for (var waybill
+        in (staffId != null
+            ? returnOwnWaybillsByDayOrWeek(
+              index: index,
+            ).where((rec) => rec.staffId == staffId)
+            : customerUuid != null
+            ? returnOwnWaybillsByDayOrWeek(
+              index: index,
+            ).where((rec) => rec.customerId == customerUuid)
+            : returnOwnWaybillsByDayOrWeek(index: index))) {
+      tempTotalRevenue += getTotalMainRevenueWaybill(
+        waybill,
+      );
+    }
 
-  //   return tempTotalRevenue;
-  // }
+    return tempTotalRevenue;
+  }
 
-  String getWaybillStatus(TempWayBills waybill) {
+  String getWaybillText(TempWayBills waybill) {
     if (waybill.status == 'delivered') {
       return 'Delivered';
-    } else if (waybill.status == 'delivering') {
-      return 'Delivering';
-    } else if (waybill.status == 'picked') {
+    } else if (waybill.status == 'en-route') {
+      return 'En-Route';
+    } else if (waybill.status == 'picked-up') {
       return 'Picked Up';
     } else {
-      return 'Cancelled';
+      return 'Not Sent';
+    }
+  }
+
+  int getWaybillStatus(TempWayBills waybill) {
+    if (waybill.status == 'delivered') {
+      return 2;
+    } else if (waybill.status == 'en-route') {
+      return 1;
+    } else if (waybill.status == 'picked-up') {
+      return 3;
+    } else {
+      return 0;
     }
   }
 
@@ -705,4 +841,31 @@ class WaybillProvider extends ChangeNotifier {
 
     return total;
   }
+
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+
+  //
+  //
+  //
+  ///
+  //////
+  /////
+  /////
+  ///
+  /////
+  ///
+  ///
+  //
+  //
+  //
+  //
+  //
+  //
 }

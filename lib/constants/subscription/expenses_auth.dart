@@ -38,7 +38,7 @@ class ExpensesAuthAction {
             )
             .length;
 
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
             .firstWhere((pl) => pl.plan == plan)
             .expensesAuth
             .numberOfDailyExpenses >
@@ -70,7 +70,7 @@ class ExpensesAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
         .firstWhere((pl) => pl.plan == plan)
         .expensesAuth
         .deleteAndEditExpenses) {

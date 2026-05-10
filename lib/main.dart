@@ -49,9 +49,12 @@ import 'package:stockall/providers/subscription_provider.dart';
 import 'package:stockall/providers/suppliers_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/providers/user_provider.dart';
+import 'package:stockall/providers/utility_constant_provider.dart';
+import 'package:stockall/providers/utility_widget_provider.dart';
 import 'package:stockall/providers/validate_input_provider.dart';
 import 'package:stockall/providers/waybill_provider.dart';
 import 'package:stockall/services/auth_service.dart';
+import 'package:stockall/services/navigation_service.dart';
 import 'package:stockall/services/payment_result_page.dart/payment_result_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:window_manager/window_manager.dart';
@@ -417,14 +420,14 @@ ConnectivityProvider returnConnectivityProvider(
   );
 }
 
-SubPaymentProvider returnSubPaymentProvider(
-  BuildContext context, {
-  bool listen = true,
+SubPaymentProvider returnSubPaymentProvider({
+  BuildContext? context,
 }) {
-  return Provider.of<SubPaymentProvider>(
-    context,
-    listen: listen,
-  );
+  if (context == null) {
+    return SubPaymentProvider();
+  } else {
+    return Provider.of<SubPaymentProvider>(context);
+  }
 }
 
 AppVersionProvider returnAppVersionProvider(
@@ -504,6 +507,26 @@ WaybillProvider returnWaybillProvider({
     return WaybillProvider();
   } else {
     return Provider.of<WaybillProvider>(context);
+  }
+}
+
+UtilityWidgetProvider returnUtilityWidgetProvider({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return UtilityWidgetProvider();
+  } else {
+    return Provider.of<UtilityWidgetProvider>(context);
+  }
+}
+
+UtilityConstantProvider returnUtilityConstantProvider({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return UtilityConstantProvider();
+  } else {
+    return Provider.of<UtilityConstantProvider>(context);
   }
 }
 
@@ -651,15 +674,28 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => WaybillProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => UtilityWidgetProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => UtilityConstantProvider(),
+        ),
       ],
       child: MaterialApp(
+        navigatorKey: navigatorKey,
         title: 'Stockall Business Dashboard',
+
+        // builder: (context, child) {
+        //   return GlobalFloatingBubble(
+        //     bubble: const SizedBox(),
+        //     newContext: context,
+        //     child: child!,
+        //   );
+        // },
         initialRoute: "/",
         routes: {
           '/': (context) => home,
           '/launch': (context) => LaunchScreen(),
-          // '/forgot-password':
-          //     (context) => ForgotPasswordPage(),
           '/login': (context) => LoginPage(),
           '/splash': (context) => SplashScreen(),
           '/reset-password':
@@ -671,7 +707,9 @@ class MyApp extends StatelessWidget {
           '/subscription-page':
               (context) => SubscriptionPage(),
         },
+
         debugShowCheckedModeBanner: false,
+
         theme: ThemeData(
           appBarTheme: AppBarTheme(
             systemOverlayStyle: SystemUiOverlayStyle(
@@ -682,8 +720,11 @@ class MyApp extends StatelessWidget {
             elevation: 0,
             toolbarHeight: 80,
           ),
+
           scaffoldBackgroundColor: Colors.white,
+
           fontFamily: 'Plus Jakarta Sans',
+
           primaryColor: const Color.fromRGBO(
             25,
             43,

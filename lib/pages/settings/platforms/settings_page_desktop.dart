@@ -272,6 +272,7 @@ class _SettingsPageDesktopState
                             ToggleWholeSaleSwitch(),
                             ManageDepartmentsToggleSwitch(),
                             TogglePrintSalesDocket(),
+                            // FloatingButtonToggleSwitch(),
                             SetClosingTime(),
                             Visibility(
                               visible:
@@ -407,7 +408,8 @@ class _SettingsPageDesktopState
                                         Authorizations()
                                             .manageSubStaff,
                                   ) &&
-                                  subPlans
+                                  returnSubPaymentProvider()
+                                      .subPlans
                                       .firstWhere(
                                         (plan) =>
                                             plan.plan ==
@@ -1227,211 +1229,21 @@ class _SettingsPageDesktopState
                                 ),
                               ),
                             ),
+                            //
 
                             // NavListTileDesktopAlt(
                             //   height: 18,
                             //   action: () {
-                            //     returnSubcsription(
+                            //     Navigator.push(
                             //       context,
-                            //       listen: false,
-                            //     ).select(
-                            //       returnSubcsription(
-                            //                 context,
-                            //                 listen: false,
-                            //               )
-                            //               .subscription
-                            //               ?.plan ??
-                            //           0,
+                            //       MaterialPageRoute(
+                            //         builder: (context) {
+                            //           return WaybillList();
+                            //         },
+                            //       ),
                             //     );
-                            //     showDialog(
-                            //       context: context,
-                            //       builder: (confirmDialog) {
-                            //         return StatefulBuilder(
-                            //           builder:
-                            //               (
-                            //                 context,
-                            //                 setState,
-                            //               ) => DialogTemplate(
-                            //                 theme: theme,
-                            //                 message:
-                            //                     'Select Another Subcription Plan',
-                            //                 title:
-                            //                     'Select Plan',
-                            //                 action: () async {
-                            //                   if (!isChangePlanLoading) {
-                            //                     setState(() {
-                            //                       isChangePlanLoading =
-                            //                           true;
-                            //                     });
-                            //                     await returnSubcsription(
-                            //                       context,
-                            //                       listen:
-                            //                           false,
-                            //                     ).subscribe(
-                            //                       plan:
-                            //                           returnSubcsription(
-                            //                             context,
-                            //                             listen:
-                            //                                 false,
-                            //                           ).selected!,
-                            //                       context:
-                            //                           context,
-                            //                     );
-                            //                     returnData(
-                            //                       // ignore: use_build_context_synchronously
-                            //                       context,
-                            //                       listen:
-                            //                           false,
-                            //                     ).setAllowedRange(
-                            //                       // ignore: use_build_context_synchronously
-                            //                       context:
-                            //                           context,
-                            //                       plan:
-                            //                           returnSubcsription(
-                            //                             // ignore: use_build_context_synchronously
-                            //                             context,
-                            //                             listen:
-                            //                                 false,
-                            //                           ).subscription?.plan,
-                            //                     );
-                            //                     if (confirmDialog
-                            //                         .mounted) {
-                            //                       Navigator.of(
-                            //                         confirmDialog,
-                            //                       ).pop();
-                            //                     }
-                            //                   }
-                            //                 },
-                            //                 widget: Column(
-                            //                   spacing: 5,
-                            //                   mainAxisSize:
-                            //                       MainAxisSize
-                            //                           .min,
-                            //                   children:
-                            //                       returnSubcsription(
-                            //                         context,
-                            //                       ).subs.map((
-                            //                         sub,
-                            //                       ) {
-                            //                         return Material(
-                            //                           type:
-                            //                               MaterialType.transparency,
-                            //                           child: InkWell(
-                            //                             onTap: () {
-                            //                               returnSubcsription(
-                            //                                 context,
-                            //                                 listen:
-                            //                                     false,
-                            //                               ).select(
-                            //                                 sub.plan,
-                            //                               );
-                            //                             },
-                            //                             child: Container(
-                            //                               decoration: BoxDecoration(
-                            //                                 border: Border(
-                            //                                   bottom: BorderSide(
-                            //                                     color:
-                            //                                         Colors.grey.shade100,
-                            //                                   ),
-                            //                                 ),
-                            //                               ),
-                            //                               child: Padding(
-                            //                                 padding: const EdgeInsets.symmetric(
-                            //                                   horizontal:
-                            //                                       20.0,
-                            //                                   vertical:
-                            //                                       10,
-                            //                                 ),
-                            //                                 child: Column(
-                            //                                   mainAxisSize:
-                            //                                       MainAxisSize.min,
-                            //                                   children: [
-                            //                                     Row(
-                            //                                       mainAxisAlignment:
-                            //                                           MainAxisAlignment.spaceBetween,
-                            //                                       children: [
-                            //                                         Text(
-                            //                                           style: TextStyle(
-                            //                                             fontSize:
-                            //                                                 theme.mobileTexts.b2.fontSize,
-                            //                                           ),
-                            //                                           sub.planName,
-                            //                                         ),
-                            //                                         Stack(
-                            //                                           children: [
-                            //                                             Visibility(
-                            //                                               visible:
-                            //                                                   !isChangePlanLoading,
-                            //                                               child: Container(
-                            //                                                 padding: EdgeInsets.all(
-                            //                                                   2,
-                            //                                                 ),
-                            //                                                 decoration: BoxDecoration(
-                            //                                                   shape:
-                            //                                                       BoxShape.circle,
-                            //                                                   border: Border.all(
-                            //                                                     color:
-                            //                                                         Colors.grey.shade300,
-                            //                                                   ),
-                            //                                                 ),
-                            //                                                 child: Container(
-                            //                                                   padding: EdgeInsets.all(
-                            //                                                     6,
-                            //                                                   ),
-                            //                                                   decoration: BoxDecoration(
-                            //                                                     shape:
-                            //                                                         BoxShape.circle,
-                            //                                                     color:
-                            //                                                         returnSubcsription(
-                            //                                                                   context,
-                            //                                                                 ).selected ==
-                            //                                                                 sub.plan
-                            //                                                             ? theme.lightModeColor.prColor250
-                            //                                                             : Colors.transparent,
-                            //                                                   ),
-                            //                                                 ),
-                            //                                               ),
-                            //                                             ),
-                            //                                             Visibility(
-                            //                                               visible:
-                            //                                                   isChangePlanLoading,
-                            //                                               child: SizedBox(
-                            //                                                 height:
-                            //                                                     17,
-                            //                                                 width:
-                            //                                                     17,
-                            //                                                 child: CircularProgressIndicator(
-                            //                                                   strokeWidth:
-                            //                                                       2,
-                            //                                                   color:
-                            //                                                       theme.lightModeColor.secColor200,
-                            //                                                 ),
-                            //                                               ),
-                            //                                             ),
-                            //                                           ],
-                            //                                         ),
-                            //                                       ],
-                            //                                     ),
-                            //                                   ],
-                            //                                 ),
-                            //                               ),
-                            //                             ),
-                            //                           ),
-                            //                         );
-                            //                       }).toList(),
-                            //                 ),
-                            //               ),
-                            //         );
-                            //       },
-                            //     ).then((_) {
-                            //       setState(() {
-                            //         isChangePlanLoading =
-                            //             false;
-                            //       });
-                            //     });
                             //   },
-                            //   title:
-                            //       'Change Subscription Plan',
+                            //   title: 'Waybill',
                             //   icon:
                             //       Icons
                             //           .earbuds_battery_outlined,

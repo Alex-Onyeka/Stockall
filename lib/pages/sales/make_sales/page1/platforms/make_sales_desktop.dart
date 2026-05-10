@@ -2974,7 +2974,7 @@ class _SubStaffSelectionWidgetState
                 context: context,
               ).userShop()?.bulkSale ==
               true &&
-          subPlans
+          returnSubPaymentProvider().subPlans
               .firstWhere(
                 (pl) =>
                     pl.plan ==

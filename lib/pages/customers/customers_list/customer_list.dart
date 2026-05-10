@@ -6,7 +6,12 @@ import 'package:stockall/pages/customers/customers_list/platforms/customer_list_
 
 class CustomerList extends StatefulWidget {
   final bool? isSales;
-  const CustomerList({super.key, this.isSales});
+  final bool? isWaybill;
+  const CustomerList({
+    super.key,
+    this.isSales,
+    this.isWaybill,
+  });
 
   @override
   State<CustomerList> createState() => _CustomerListState();
@@ -43,11 +48,13 @@ class _CustomerListState extends State<CustomerList> {
             return CustomerListMobile(
               searchController: searchContoller,
               isSales: widget.isSales,
+              isWaybill: widget.isWaybill,
             );
           } else {
             return CustomerListDesktop(
               searchController: searchContoller,
               isSales: widget.isSales,
+              isWaybill: widget.isWaybill,
             );
           }
         },

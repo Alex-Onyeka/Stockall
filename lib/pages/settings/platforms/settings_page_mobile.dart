@@ -1022,6 +1022,7 @@ class _SettingsPageMobileState
                         UseGroupUnitToggle(),
                         ToggleWholeSaleSwitch(),
                         ManageDepartmentsToggleSwitch(),
+                        // FloatingButtonToggleSwitch(),
                         SetClosingTime(),
                         Visibility(
                           visible:
@@ -1109,7 +1110,8 @@ class _SettingsPageMobileState
                                     Authorizations()
                                         .manageSubStaff,
                               ) &&
-                              subPlans
+                              returnSubPaymentProvider()
+                                  .subPlans
                                   .firstWhere(
                                     (plan) =>
                                         plan.plan ==

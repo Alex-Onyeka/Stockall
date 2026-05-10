@@ -199,17 +199,8 @@ String formatMoneyAlt({
   bool? isR,
 }) {
   if (amount < 100000000) {
-    // return NumberFormat.currency(
-    //   locale: 'en_NG',
-    //   symbol: currency,
-    //   decimalDigits: 1,
-    // ).format(amount);
     return "$currency${formatLargeNumberDouble(amount)}";
   } else {
-    // String symbol = currencySymbol(
-    //   context: context,
-    //   isR: isR,
-    // );
     String suffix = '';
     double value = amount.toDouble();
 

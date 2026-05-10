@@ -10,6 +10,7 @@ class GeneralSettingsAuth {
   final bool manageDepartments;
   final int numberOfDepartments;
   final bool useCloseSale;
+  final bool useFloatingButton;
 
   GeneralSettingsAuth({
     required this.addSocials,
@@ -19,6 +20,7 @@ class GeneralSettingsAuth {
     required this.manageDepartments,
     required this.numberOfDepartments,
     required this.useCloseSale,
+    required this.useFloatingButton,
   });
 }
 
@@ -35,7 +37,7 @@ class GeneralSettingsAuthAction {
     if (plan == null) {
       return false;
     }
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
         .firstWhere((pl) => pl.plan == plan)
         .generalSettingsAuth
         .addSocials) {
@@ -62,10 +64,37 @@ class GeneralSettingsAuthAction {
     if (plan == null) {
       return false;
     }
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
         .firstWhere((pl) => pl.plan == plan)
         .generalSettingsAuth
         .useCloseSale) {
+      action == null ? {} : action();
+      return true;
+    } else {
+      if (action != null) {
+        showUnauthorizedDialog(context);
+      }
+      return false;
+    }
+    // }
+  }
+
+  bool useFloatingButtonAction({
+    required BuildContext context,
+    Function()? action,
+  }) {
+    var plan =
+        returnSubcsription(
+          context,
+          listen: false,
+        ).subscription?.plan;
+    if (plan == null) {
+      return false;
+    }
+    if (returnSubPaymentProvider().subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .generalSettingsAuth
+        .useFloatingButton) {
       action == null ? {} : action();
       return true;
     } else {
@@ -89,7 +118,7 @@ class GeneralSettingsAuthAction {
     if (plan == null) {
       return false;
     }
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
         .firstWhere((pl) => pl.plan == plan)
         .generalSettingsAuth
         .customizeReceiptTemplate) {
@@ -115,7 +144,7 @@ class GeneralSettingsAuthAction {
     if (plan == null) {
       return false;
     }
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
         .firstWhere((pl) => pl.plan == plan)
         .generalSettingsAuth
         .allowOfflineUse) {
@@ -141,7 +170,7 @@ class GeneralSettingsAuthAction {
     if (plan == null) {
       return false;
     }
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
         .firstWhere((pl) => pl.plan == plan)
         .generalSettingsAuth
         .manageVAT) {
@@ -167,7 +196,7 @@ class GeneralSettingsAuthAction {
     if (plan == null) {
       return false;
     }
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
         .firstWhere((pl) => pl.plan == plan)
         .generalSettingsAuth
         .manageDepartments) {
@@ -195,7 +224,7 @@ class GeneralSettingsAuthAction {
     }
     var currentNumberOfItems =
         returnDepartmentProvider().departments.length;
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
             .firstWhere((pl) => pl.plan == plan)
             .generalSettingsAuth
             .numberOfDepartments >

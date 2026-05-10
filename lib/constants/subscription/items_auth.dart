@@ -45,7 +45,7 @@ class ItemsAuthAction {
     // } else {
     var currentNumberOfItems =
         returnData().productList().length;
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
             .firstWhere((pl) => pl.plan == plan)
             .itemsAuth
             .numberOfItems >
@@ -74,7 +74,7 @@ class ItemsAuthAction {
     if (plan == null) {
       return false;
     }
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
         .firstWhere((pl) => pl.plan == plan)
         .itemsAuth
         .manageInventoryStorage) {
@@ -105,7 +105,7 @@ class ItemsAuthAction {
     if (plan == null) {
       return false;
     }
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
         .firstWhere((pl) => pl.plan == plan)
         .itemsAuth
         .setWholeSale) {
@@ -140,7 +140,7 @@ class ItemsAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
         .firstWhere((pl) => pl.plan == plan)
         .itemsAuth
         .useGroupUnit) {
@@ -175,7 +175,7 @@ class ItemsAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
         .firstWhere((pl) => pl.plan == plan)
         .itemsAuth
         .useOfBarcode) {
@@ -209,7 +209,7 @@ class ItemsAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
         .firstWhere((pl) => pl.plan == plan)
         .itemsAuth
         .applyVariationToItems) {
@@ -240,7 +240,7 @@ class ItemsAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
         .firstWhere((pl) => pl.plan == plan)
         .itemsAuth
         .setexpiryDate) {
@@ -272,7 +272,7 @@ class ItemsAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
         .firstWhere((pl) => pl.plan == plan)
         .itemsAuth
         .allowStockallToManageInventory) {
@@ -306,7 +306,7 @@ class ItemsAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
         .firstWhere((pl) => pl.plan == plan)
         .itemsAuth
         .generateItemBarcode) {

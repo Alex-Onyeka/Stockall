@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
-import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/subscription_page/components/comparison_row.dart';
 
@@ -17,6 +16,21 @@ class ComparisonSectionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double calcPrice(double price) {
+      if (returnSubPaymentProvider(
+            context: context,
+          ).currencyIndex ==
+          0) {
+        return price;
+      } else {
+        return price /
+            (returnUtilityConstantProvider()
+                    .utilityConstants
+                    ?.dollarRate ??
+                0);
+      }
+    }
+
     var theme = returnTheme(context);
     return SizedBox(
       height:
@@ -197,66 +211,97 @@ class ComparisonSectionWidget extends StatelessWidget {
                     SizedBox(height: 15),
                     ComparisonRow(
                       title: 'Monthly Price',
-                      freePlanString: formatMoneyMid(
-                        context: context,
-                        amount:
-                            subPlans
-                                .firstWhere(
-                                  (pl) => pl.plan == 0,
-                                )
-                                .price,
+                      freePlanString: formatMoneyAlt(
+                        currency:
+                            returnSubPaymentProvider(
+                              context: context,
+                            ).currencySymbol(),
+                        amount: calcPrice(
+                          returnSubPaymentProvider()
+                              .subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 0,
+                              )
+                              .price,
+                        ),
                       ),
-                      basicPlanString: formatMoneyMid(
-                        amount:
-                            subPlans
-                                .firstWhere(
-                                  (pl) => pl.plan == 1,
-                                )
-                                .price,
-                        context: context,
+                      basicPlanString: formatMoneyAlt(
+                        amount: calcPrice(
+                          returnSubPaymentProvider(
+                                context: context,
+                              ).subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 1,
+                              )
+                              .price,
+                        ),
+                        currency:
+                            returnSubPaymentProvider(
+                              context: context,
+                            ).currencySymbol(),
                       ),
-                      standardPlanString: formatMoneyMid(
-                        context: context,
-                        amount:
-                            subPlans
-                                .firstWhere(
-                                  (pl) => pl.plan == 2,
-                                )
-                                .price,
+                      standardPlanString: formatMoneyAlt(
+                        currency:
+                            returnSubPaymentProvider(
+                              context: context,
+                            ).currencySymbol(),
+                        amount: calcPrice(
+                          returnSubPaymentProvider()
+                              .subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 2,
+                              )
+                              .price,
+                        ),
                       ),
 
-                      premiumPlanString: formatMoneyMid(
-                        context: context,
-                        amount:
-                            subPlans
-                                .firstWhere(
-                                  (pl) => pl.plan == 3,
-                                )
-                                .price,
+                      premiumPlanString: formatMoneyAlt(
+                        currency:
+                            returnSubPaymentProvider(
+                              context: context,
+                            ).currencySymbol(),
+                        amount: calcPrice(
+                          returnSubPaymentProvider()
+                              .subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 3,
+                              )
+                              .price,
+                        ),
                       ),
-                      silverPlanString: formatMoneyMid(
-                        context: context,
-                        amount:
-                            subPlans
-                                .firstWhere(
-                                  (pl) => pl.plan == 4,
-                                )
-                                .price,
+                      silverPlanString: formatMoneyAlt(
+                        currency:
+                            returnSubPaymentProvider(
+                              context: context,
+                            ).currencySymbol(),
+                        amount: calcPrice(
+                          returnSubPaymentProvider()
+                              .subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 4,
+                              )
+                              .price,
+                        ),
                       ),
-                      goldPlanString: formatMoneyMid(
-                        context: context,
-                        amount:
-                            subPlans
-                                .firstWhere(
-                                  (pl) => pl.plan == 5,
-                                )
-                                .price,
+                      goldPlanString: formatMoneyAlt(
+                        currency:
+                            returnSubPaymentProvider(
+                              context: context,
+                            ).currencySymbol(),
+                        amount: calcPrice(
+                          returnSubPaymentProvider()
+                              .subPlans
+                              .firstWhere(
+                                (pl) => pl.plan == 5,
+                              )
+                              .price,
+                        ),
                       ),
                     ),
                     ComparisonRow(
                       title: 'Maximum Number of Inventory',
                       freePlanString: formatLargeNumber(
-                        subPlans
+                        returnSubPaymentProvider().subPlans
                             .firstWhere(
                               (pl) => pl.plan == 0,
                             )
@@ -265,7 +310,7 @@ class ComparisonSectionWidget extends StatelessWidget {
                             .toString(),
                       ),
                       basicPlanString: formatLargeNumber(
-                        subPlans
+                        returnSubPaymentProvider().subPlans
                             .firstWhere(
                               (pl) => pl.plan == 1,
                             )
@@ -274,7 +319,7 @@ class ComparisonSectionWidget extends StatelessWidget {
                             .toString(),
                       ),
                       standardPlanString: formatLargeNumber(
-                        subPlans
+                        returnSubPaymentProvider().subPlans
                             .firstWhere(
                               (pl) => pl.plan == 2,
                             )
@@ -284,7 +329,7 @@ class ComparisonSectionWidget extends StatelessWidget {
                       ),
 
                       premiumPlanString: formatLargeNumber(
-                        subPlans
+                        returnSubPaymentProvider().subPlans
                             .firstWhere(
                               (pl) => pl.plan == 3,
                             )
@@ -293,7 +338,7 @@ class ComparisonSectionWidget extends StatelessWidget {
                             .toString(),
                       ),
                       silverPlanString: formatLargeNumber(
-                        subPlans
+                        returnSubPaymentProvider().subPlans
                             .firstWhere(
                               (pl) => pl.plan == 4,
                             )
@@ -302,7 +347,7 @@ class ComparisonSectionWidget extends StatelessWidget {
                             .toString(),
                       ),
                       goldPlanString: formatLargeNumber(
-                        subPlans
+                        returnSubPaymentProvider().subPlans
                             .firstWhere(
                               (pl) => pl.plan == 5,
                             )
@@ -324,42 +369,48 @@ class ComparisonSectionWidget extends StatelessWidget {
                     ComparisonRow(
                       title: 'Generate And Print Barcode',
                       freePlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 0,
                               )
                               .itemsAuth
                               .generateItemBarcode,
                       basicPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 1,
                               )
                               .itemsAuth
                               .generateItemBarcode,
                       standardPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 2,
                               )
                               .itemsAuth
                               .generateItemBarcode,
                       premiumPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 3,
                               )
                               .itemsAuth
                               .generateItemBarcode,
                       silverPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 4,
                               )
                               .itemsAuth
                               .generateItemBarcode,
                       goldPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 5,
                               )
@@ -370,42 +421,48 @@ class ComparisonSectionWidget extends StatelessWidget {
                       title:
                           'Apply Variations and Categories to Items',
                       freePlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 0,
                               )
                               .itemsAuth
                               .applyVariationToItems,
                       basicPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 1,
                               )
                               .itemsAuth
                               .applyVariationToItems,
                       standardPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 2,
                               )
                               .itemsAuth
                               .applyVariationToItems,
                       premiumPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 3,
                               )
                               .itemsAuth
                               .applyVariationToItems,
                       silverPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 4,
                               )
                               .itemsAuth
                               .applyVariationToItems,
                       goldPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 5,
                               )
@@ -416,42 +473,48 @@ class ComparisonSectionWidget extends StatelessWidget {
                       title:
                           'Manage Expiring Dates for Inventories',
                       freePlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 0,
                               )
                               .itemsAuth
                               .setexpiryDate,
                       basicPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 1,
                               )
                               .itemsAuth
                               .setexpiryDate,
                       standardPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 2,
                               )
                               .itemsAuth
                               .setexpiryDate,
                       premiumPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 3,
                               )
                               .itemsAuth
                               .setexpiryDate,
                       silverPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 4,
                               )
                               .itemsAuth
                               .setexpiryDate,
                       goldPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 5,
                               )
@@ -462,42 +525,48 @@ class ComparisonSectionWidget extends StatelessWidget {
                       title:
                           'Get Notifications for Low quantities Items',
                       freePlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 0,
                               )
                               .itemsAuth
                               .allowStockallToManageInventory,
                       basicPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 1,
                               )
                               .itemsAuth
                               .allowStockallToManageInventory,
                       standardPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 2,
                               )
                               .itemsAuth
                               .allowStockallToManageInventory,
                       premiumPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 3,
                               )
                               .itemsAuth
                               .allowStockallToManageInventory,
                       silverPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 4,
                               )
                               .itemsAuth
                               .allowStockallToManageInventory,
                       goldPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 5,
                               )
@@ -508,42 +577,48 @@ class ComparisonSectionWidget extends StatelessWidget {
                       title:
                           'Use Of Barcode For Sales and Inventory',
                       freePlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 0,
                               )
                               .salesAuth
                               .useOfBarcode,
                       basicPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 1,
                               )
                               .salesAuth
                               .useOfBarcode,
                       standardPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 2,
                               )
                               .salesAuth
                               .useOfBarcode,
                       premiumPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 3,
                               )
                               .salesAuth
                               .useOfBarcode,
                       silverPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 4,
                               )
                               .salesAuth
                               .useOfBarcode,
                       goldPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 5,
                               )
@@ -554,7 +629,8 @@ class ComparisonSectionWidget extends StatelessWidget {
                       title:
                           'Number of Simulatneous sales/cart processing',
                       freePlanString:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 0,
                               )
@@ -562,7 +638,8 @@ class ComparisonSectionWidget extends StatelessWidget {
                               .numberOfCarts
                               .toString(),
                       basicPlanString:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 1,
                               )
@@ -570,7 +647,8 @@ class ComparisonSectionWidget extends StatelessWidget {
                               .numberOfCarts
                               .toString(),
                       standardPlanString:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 2,
                               )
@@ -578,7 +656,8 @@ class ComparisonSectionWidget extends StatelessWidget {
                               .numberOfCarts
                               .toString(),
                       premiumPlanString:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 3,
                               )
@@ -586,7 +665,8 @@ class ComparisonSectionWidget extends StatelessWidget {
                               .numberOfCarts
                               .toString(),
                       silverPlanString:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 4,
                               )
@@ -594,7 +674,8 @@ class ComparisonSectionWidget extends StatelessWidget {
                               .numberOfCarts
                               .toString(),
                       goldPlanString:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 5,
                               )
@@ -606,42 +687,48 @@ class ComparisonSectionWidget extends StatelessWidget {
                       title:
                           'Apply And Manage Sales Discounts',
                       freePlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 0,
                               )
                               .salesAuth
                               .applyDiscount,
                       basicPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 1,
                               )
                               .salesAuth
                               .applyDiscount,
                       standardPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 2,
                               )
                               .salesAuth
                               .applyDiscount,
                       premiumPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 3,
                               )
                               .salesAuth
                               .applyDiscount,
                       silverPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 4,
                               )
                               .salesAuth
                               .applyDiscount,
                       goldPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 5,
                               )
@@ -651,42 +738,48 @@ class ComparisonSectionWidget extends StatelessWidget {
                     ComparisonRow(
                       title: 'Create and Manage Invoices',
                       freePlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 0,
                               )
                               .salesAuth
                               .invoiceManagement,
                       basicPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 1,
                               )
                               .salesAuth
                               .invoiceManagement,
                       standardPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 2,
                               )
                               .salesAuth
                               .invoiceManagement,
                       premiumPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 3,
                               )
                               .salesAuth
                               .invoiceManagement,
                       silverPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 4,
                               )
                               .salesAuth
                               .invoiceManagement,
                       goldPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 5,
                               )
@@ -697,42 +790,48 @@ class ComparisonSectionWidget extends StatelessWidget {
                       title:
                           'Receive Payments from Multiple Channels',
                       freePlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 0,
                               )
                               .salesAuth
                               .paymentMethodSelection,
                       basicPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 1,
                               )
                               .salesAuth
                               .paymentMethodSelection,
                       standardPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 2,
                               )
                               .salesAuth
                               .paymentMethodSelection,
                       premiumPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 3,
                               )
                               .salesAuth
                               .paymentMethodSelection,
                       silverPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 4,
                               )
                               .salesAuth
                               .paymentMethodSelection,
                       goldPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 5,
                               )
@@ -743,42 +842,48 @@ class ComparisonSectionWidget extends StatelessWidget {
                       title:
                           'Add Customer to Sales Receipt',
                       freePlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 0,
                               )
                               .salesAuth
                               .addCustomerToSell,
                       basicPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 1,
                               )
                               .salesAuth
                               .addCustomerToSell,
                       standardPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 2,
                               )
                               .salesAuth
                               .addCustomerToSell,
                       premiumPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 3,
                               )
                               .salesAuth
                               .addCustomerToSell,
                       silverPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 4,
                               )
                               .salesAuth
                               .addCustomerToSell,
                       goldPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 5,
                               )
@@ -788,42 +893,48 @@ class ComparisonSectionWidget extends StatelessWidget {
                     ComparisonRow(
                       title: 'Download Sales Receipt',
                       freePlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 0,
                               )
                               .salesAuth
                               .downloadReceipt,
                       basicPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 1,
                               )
                               .salesAuth
                               .downloadReceipt,
                       standardPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 2,
                               )
                               .salesAuth
                               .downloadReceipt,
                       premiumPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 3,
                               )
                               .salesAuth
                               .downloadReceipt,
                       silverPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 4,
                               )
                               .salesAuth
                               .downloadReceipt,
                       goldPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 5,
                               )
@@ -834,42 +945,48 @@ class ComparisonSectionWidget extends StatelessWidget {
                       title:
                           'Manage Returns/Refunds and Sales Edit',
                       freePlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 0,
                               )
                               .salesAuth
                               .editReceipt,
                       basicPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 1,
                               )
                               .salesAuth
                               .editReceipt,
                       standardPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 2,
                               )
                               .salesAuth
                               .editReceipt,
                       premiumPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 3,
                               )
                               .salesAuth
                               .editReceipt,
                       silverPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 4,
                               )
                               .salesAuth
                               .editReceipt,
                       goldPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 5,
                               )
@@ -879,42 +996,48 @@ class ComparisonSectionWidget extends StatelessWidget {
                     ComparisonRow(
                       title: 'Print Receipts',
                       freePlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 0,
                               )
                               .salesAuth
                               .printReceipt,
                       basicPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 1,
                               )
                               .salesAuth
                               .printReceipt,
                       standardPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 2,
                               )
                               .salesAuth
                               .printReceipt,
                       premiumPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 3,
                               )
                               .salesAuth
                               .printReceipt,
                       silverPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 4,
                               )
                               .salesAuth
                               .printReceipt,
                       goldPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 5,
                               )
@@ -925,42 +1048,48 @@ class ComparisonSectionWidget extends StatelessWidget {
                       title:
                           'Add Item to Stock After Custom Sale',
                       freePlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 0,
                               )
                               .salesAuth
                               .addItemToStockAfterCustomSale,
                       basicPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 1,
                               )
                               .salesAuth
                               .addItemToStockAfterCustomSale,
                       standardPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 2,
                               )
                               .salesAuth
                               .addItemToStockAfterCustomSale,
                       premiumPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 3,
                               )
                               .salesAuth
                               .addItemToStockAfterCustomSale,
                       silverPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 4,
                               )
                               .salesAuth
                               .addItemToStockAfterCustomSale,
                       goldPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 5,
                               )
@@ -970,42 +1099,48 @@ class ComparisonSectionWidget extends StatelessWidget {
                     ComparisonRow(
                       title: 'Add Custom Item to Cart',
                       freePlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 0,
                               )
                               .salesAuth
                               .addCustomItemToCart,
                       basicPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 1,
                               )
                               .salesAuth
                               .addCustomItemToCart,
                       standardPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 2,
                               )
                               .salesAuth
                               .addCustomItemToCart,
                       premiumPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 3,
                               )
                               .salesAuth
                               .addCustomItemToCart,
                       silverPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 4,
                               )
                               .salesAuth
                               .addCustomItemToCart,
                       goldPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 5,
                               )
@@ -1016,42 +1151,48 @@ class ComparisonSectionWidget extends StatelessWidget {
                       title:
                           'Use In-App Standard Calculator',
                       freePlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 0,
                               )
                               .calculatorAuth
                               .useCalculator,
                       basicPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 1,
                               )
                               .calculatorAuth
                               .useCalculator,
                       standardPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 2,
                               )
                               .calculatorAuth
                               .useCalculator,
                       premiumPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 3,
                               )
                               .calculatorAuth
                               .useCalculator,
                       silverPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 4,
                               )
                               .calculatorAuth
                               .useCalculator,
                       goldPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 5,
                               )
@@ -1061,42 +1202,48 @@ class ComparisonSectionWidget extends StatelessWidget {
                     ComparisonRow(
                       title: 'Create and Manage Customers',
                       freePlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 0,
                               )
                               .customerAuth
                               .createCustomer,
                       basicPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 1,
                               )
                               .customerAuth
                               .createCustomer,
                       standardPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 2,
                               )
                               .customerAuth
                               .createCustomer,
                       premiumPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 3,
                               )
                               .customerAuth
                               .createCustomer,
                       silverPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 4,
                               )
                               .customerAuth
                               .createCustomer,
                       goldPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 5,
                               )
@@ -1106,42 +1253,48 @@ class ComparisonSectionWidget extends StatelessWidget {
                     ComparisonRow(
                       title: 'Create and Manage Staffs',
                       freePlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 0,
                               )
                               .employeesAuth
                               .addAndManageEmployees,
                       basicPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 1,
                               )
                               .employeesAuth
                               .addAndManageEmployees,
                       standardPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 2,
                               )
                               .employeesAuth
                               .addAndManageEmployees,
                       premiumPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 3,
                               )
                               .employeesAuth
                               .addAndManageEmployees,
                       silverPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 4,
                               )
                               .employeesAuth
                               .addAndManageEmployees,
                       goldPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 5,
                               )
@@ -1151,7 +1304,8 @@ class ComparisonSectionWidget extends StatelessWidget {
                     ComparisonRow(
                       title: 'Maximum Number of Staffs',
                       freePlanString:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 0,
                               )
@@ -1159,7 +1313,8 @@ class ComparisonSectionWidget extends StatelessWidget {
                               .numberOfEmployees
                               .toString(),
                       basicPlanString:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 1,
                               )
@@ -1167,7 +1322,8 @@ class ComparisonSectionWidget extends StatelessWidget {
                               .numberOfEmployees
                               .toString(),
                       standardPlanString:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 2,
                               )
@@ -1175,7 +1331,8 @@ class ComparisonSectionWidget extends StatelessWidget {
                               .numberOfEmployees
                               .toString(),
                       premiumPlanString:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 3,
                               )
@@ -1183,7 +1340,8 @@ class ComparisonSectionWidget extends StatelessWidget {
                               .numberOfEmployees
                               .toString(),
                       silverPlanString:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 4,
                               )
@@ -1191,7 +1349,8 @@ class ComparisonSectionWidget extends StatelessWidget {
                               .numberOfEmployees
                               .toString(),
                       goldPlanString:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 5,
                               )
@@ -1203,42 +1362,48 @@ class ComparisonSectionWidget extends StatelessWidget {
                       title:
                           'Create and Manage Manage Expenses',
                       freePlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 0,
                               )
                               .expensesAuth
                               .deleteAndEditExpenses,
                       basicPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 1,
                               )
                               .expensesAuth
                               .deleteAndEditExpenses,
                       standardPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 2,
                               )
                               .expensesAuth
                               .deleteAndEditExpenses,
                       premiumPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 3,
                               )
                               .expensesAuth
                               .deleteAndEditExpenses,
                       silverPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 4,
                               )
                               .expensesAuth
                               .deleteAndEditExpenses,
                       goldPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 5,
                               )
@@ -1249,7 +1414,8 @@ class ComparisonSectionWidget extends StatelessWidget {
                       title:
                           'Maximum Numbers of Daily Expenses',
                       freePlanString:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 0,
                               )
@@ -1257,7 +1423,8 @@ class ComparisonSectionWidget extends StatelessWidget {
                               .numberOfDailyExpenses
                               .toString(),
                       basicPlanString:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 1,
                               )
@@ -1265,7 +1432,8 @@ class ComparisonSectionWidget extends StatelessWidget {
                               .numberOfDailyExpenses
                               .toString(),
                       standardPlanString:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 2,
                               )
@@ -1273,7 +1441,8 @@ class ComparisonSectionWidget extends StatelessWidget {
                               .numberOfDailyExpenses
                               .toString(),
                       premiumPlanString:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 3,
                               )
@@ -1281,7 +1450,8 @@ class ComparisonSectionWidget extends StatelessWidget {
                               .numberOfDailyExpenses
                               .toString(),
                       silverPlanString:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 4,
                               )
@@ -1289,7 +1459,8 @@ class ComparisonSectionWidget extends StatelessWidget {
                               .numberOfDailyExpenses
                               .toString(),
                       goldPlanString:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 5,
                               )
@@ -1301,42 +1472,48 @@ class ComparisonSectionWidget extends StatelessWidget {
                       title:
                           'Add Social Handles to Receipt',
                       freePlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 0,
                               )
                               .generalSettingsAuth
                               .addSocials,
                       basicPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 1,
                               )
                               .generalSettingsAuth
                               .addSocials,
                       standardPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 2,
                               )
                               .generalSettingsAuth
                               .addSocials,
                       premiumPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 3,
                               )
                               .generalSettingsAuth
                               .addSocials,
                       silverPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 4,
                               )
                               .generalSettingsAuth
                               .addSocials,
                       goldPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 5,
                               )
@@ -1346,42 +1523,48 @@ class ComparisonSectionWidget extends StatelessWidget {
                     ComparisonRow(
                       title: 'Customize Receipt Template',
                       freePlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 0,
                               )
                               .generalSettingsAuth
                               .customizeReceiptTemplate,
                       basicPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 1,
                               )
                               .generalSettingsAuth
                               .customizeReceiptTemplate,
                       standardPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 2,
                               )
                               .generalSettingsAuth
                               .customizeReceiptTemplate,
                       premiumPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 3,
                               )
                               .generalSettingsAuth
                               .customizeReceiptTemplate,
                       silverPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 4,
                               )
                               .generalSettingsAuth
                               .customizeReceiptTemplate,
                       goldPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 5,
                               )
@@ -1391,42 +1574,48 @@ class ComparisonSectionWidget extends StatelessWidget {
                     ComparisonRow(
                       title: 'Use Application Offline',
                       freePlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 0,
                               )
                               .generalSettingsAuth
                               .allowOfflineUse,
                       basicPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 1,
                               )
                               .generalSettingsAuth
                               .allowOfflineUse,
                       standardPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 2,
                               )
                               .generalSettingsAuth
                               .allowOfflineUse,
                       premiumPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 3,
                               )
                               .generalSettingsAuth
                               .allowOfflineUse,
                       silverPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 4,
                               )
                               .generalSettingsAuth
                               .allowOfflineUse,
                       goldPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 5,
                               )
@@ -1437,42 +1626,48 @@ class ComparisonSectionWidget extends StatelessWidget {
                       title:
                           'Create/Manage Multiple Store/Branches',
                       freePlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 0,
                               )
                               .multipleStoresAuth
                               .createMultipleStores,
                       basicPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 1,
                               )
                               .multipleStoresAuth
                               .createMultipleStores,
                       standardPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 2,
                               )
                               .multipleStoresAuth
                               .createMultipleStores,
                       premiumPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 3,
                               )
                               .multipleStoresAuth
                               .createMultipleStores,
                       silverPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 4,
                               )
                               .multipleStoresAuth
                               .createMultipleStores,
                       goldPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 5,
                               )
@@ -1482,7 +1677,8 @@ class ComparisonSectionWidget extends StatelessWidget {
                     ComparisonRow(
                       title: 'Number of Stores',
                       freePlanString:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 0,
                               )
@@ -1490,7 +1686,8 @@ class ComparisonSectionWidget extends StatelessWidget {
                               .numberOfStores
                               .toString(),
                       basicPlanString:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 1,
                               )
@@ -1498,7 +1695,8 @@ class ComparisonSectionWidget extends StatelessWidget {
                               .numberOfStores
                               .toString(),
                       standardPlanString:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 2,
                               )
@@ -1506,7 +1704,8 @@ class ComparisonSectionWidget extends StatelessWidget {
                               .numberOfStores
                               .toString(),
                       premiumPlanString:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 3,
                               )
@@ -1514,7 +1713,8 @@ class ComparisonSectionWidget extends StatelessWidget {
                               .numberOfStores
                               .toString(),
                       silverPlanString:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 4,
                               )
@@ -1522,7 +1722,8 @@ class ComparisonSectionWidget extends StatelessWidget {
                               .numberOfStores
                               .toString(),
                       goldPlanString:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 5,
                               )
@@ -1534,42 +1735,48 @@ class ComparisonSectionWidget extends StatelessWidget {
                       title:
                           'View Full Business Report Information',
                       freePlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 0,
                               )
                               .reportAuth
                               .viewItemsGeneralReport,
                       basicPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 1,
                               )
                               .reportAuth
                               .viewItemsGeneralReport,
                       standardPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 2,
                               )
                               .reportAuth
                               .viewItemsGeneralReport,
                       premiumPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 3,
                               )
                               .reportAuth
                               .viewItemsGeneralReport,
                       silverPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 4,
                               )
                               .reportAuth
                               .viewItemsGeneralReport,
                       goldPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 5,
                               )
@@ -1580,42 +1787,48 @@ class ComparisonSectionWidget extends StatelessWidget {
                       title:
                           'Print/Download Business Report Info',
                       freePlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 0,
                               )
                               .reportAuth
                               .printGeneralReport,
                       basicPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 1,
                               )
                               .reportAuth
                               .printGeneralReport,
                       standardPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 2,
                               )
                               .reportAuth
                               .printGeneralReport,
                       premiumPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 3,
                               )
                               .reportAuth
                               .printGeneralReport,
                       silverPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 4,
                               )
                               .reportAuth
                               .printGeneralReport,
                       goldPlanBool:
-                          subPlans
+                          returnSubPaymentProvider()
+                              .subPlans
                               .firstWhere(
                                 (pl) => pl.plan == 5,
                               )

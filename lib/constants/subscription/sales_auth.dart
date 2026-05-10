@@ -58,7 +58,7 @@ class SalesAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
         .firstWhere((pl) => pl.plan == plan)
         .salesAuth
         .useOfBarcode) {
@@ -93,7 +93,7 @@ class SalesAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
         .firstWhere((pl) => pl.plan == plan)
         .salesAuth
         .bulkSale) {
@@ -133,12 +133,12 @@ class SalesAuthAction {
             .cartQueue
             .length;
     if (cartsNum <
-        subPlans
+        returnSubPaymentProvider().subPlans
             .firstWhere((pl) => pl.plan == plan)
             .salesAuth
             .numberOfCarts) {
       print(
-        subPlans
+        returnSubPaymentProvider().subPlans
             .firstWhere((pl) => pl.plan == plan)
             .salesAuth
             .numberOfCarts,
@@ -148,7 +148,7 @@ class SalesAuthAction {
     } else {
       if (action != null) {
         print(
-          subPlans
+          returnSubPaymentProvider().subPlans
               .firstWhere((pl) => pl.plan == plan)
               .salesAuth
               .numberOfCarts,
@@ -179,12 +179,12 @@ class SalesAuthAction {
     var mainCartsNum =
         returnSalesProvider().mainCartQueue.length;
     if (mainCartsNum <
-        subPlans
+        returnSubPaymentProvider().subPlans
             .firstWhere((pl) => pl.plan == plan)
             .salesAuth
             .numberOfCarts) {
       print(
-        subPlans
+        returnSubPaymentProvider().subPlans
             .firstWhere((pl) => pl.plan == plan)
             .salesAuth
             .numberOfCarts,
@@ -194,7 +194,7 @@ class SalesAuthAction {
     } else {
       if (action != null) {
         print(
-          subPlans
+          returnSubPaymentProvider().subPlans
               .firstWhere((pl) => pl.plan == plan)
               .salesAuth
               .numberOfCarts,
@@ -222,7 +222,7 @@ class SalesAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
         .firstWhere((pl) => pl.plan == plan)
         .salesAuth
         .applyDiscount) {
@@ -253,7 +253,7 @@ class SalesAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
         .firstWhere((pl) => pl.plan == plan)
         .salesAuth
         .invoiceManagement) {
@@ -284,7 +284,7 @@ class SalesAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
         .firstWhere((pl) => pl.plan == plan)
         .salesAuth
         .paymentMethodSelection) {
@@ -315,7 +315,7 @@ class SalesAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
         .firstWhere((pl) => pl.plan == plan)
         .salesAuth
         .addCustomerToSell) {
@@ -346,7 +346,7 @@ class SalesAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
         .firstWhere((pl) => pl.plan == plan)
         .salesAuth
         .downloadReceipt) {
@@ -377,7 +377,7 @@ class SalesAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
         .firstWhere((pl) => pl.plan == plan)
         .salesAuth
         .editReceipt) {
@@ -408,7 +408,7 @@ class SalesAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
         .firstWhere((pl) => pl.plan == plan)
         .salesAuth
         .printReceipt) {
@@ -439,7 +439,7 @@ class SalesAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
         .firstWhere((pl) => pl.plan == plan)
         .salesAuth
         .addItemToStockAfterCustomSale) {
@@ -470,7 +470,7 @@ class SalesAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
         .firstWhere((pl) => pl.plan == plan)
         .salesAuth
         .addCustomItemToCart) {
@@ -501,7 +501,7 @@ class SalesAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (subPlans
+    if (returnSubPaymentProvider().subPlans
         .firstWhere((pl) => pl.plan == plan)
         .salesAuth
         .addStockallNameOnReceipt) {

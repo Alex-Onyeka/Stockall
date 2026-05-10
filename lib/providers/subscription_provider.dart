@@ -154,54 +154,51 @@ class SubscriptionProvider extends ChangeNotifier {
     }
   }
 
-  List<TempSub> subs = [
-    TempSub(planName: 'Free', plan: 0),
-    TempSub(planName: 'Basic', plan: 1),
-    TempSub(planName: 'Standard', plan: 2),
-    TempSub(planName: 'Premium', plan: 3),
-  ];
+  // List<TempSub> subs = [
+  //   TempSub(planName: 'Free', plan: 0),
+  //   TempSub(planName: 'Basic', plan: 1),
+  //   TempSub(planName: 'Standard', plan: 2),
+  //   TempSub(planName: 'Premium', plan: 3),
+  // ];
 
-  int? selected;
+  // int? selected;
 
-  void select(int sub) {
-    selected = sub;
-    notifyListeners();
-  }
+  // void select(int sub) {
+  //   selected = sub;
+  //   notifyListeners();
+  // }
 
-  double? subscriptionAmount(int plan) {
-    if (plan == 0) {
-      return null;
-    } else if (plan == 1) {
-      return 2500;
-    } else if (plan == 2) {
-      return 3500;
-    } else {
-      return 5000;
-    }
-  }
+  //   double? subscriptionAmount(int plan) {
+  //     if (plan == 0) {
+  //       return null;
+  //     } else if (plan == 1) {
+  //       return 2500;
+  //     } else if (plan == 2) {
+  //       return 3500;
+  //     } else {
+  //       return 5000;
+  //     }
+  //   }
 
   Future<int> subscribe({
-    required int plan,
+    // required int plan,
     required BuildContext context,
   }) async {
     var shop = await userShop(context);
-    var nextPayment =
-        plan == 0
-            ? null
-            : DateTime.now().add(Duration(days: 30));
+    // var nextPayment = null;
+    // : DateTime.now().add(Duration(days: 30));
     try {
       var res =
           await supabase
               .from('subscription')
               .update({
-                'next_payment':
-                    nextPayment?.toUtc().toIso8601String(),
+                'next_payment': null,
                 'last_payment':
                     DateTime.now()
                         .toUtc()
                         .toIso8601String(),
-                'plan': plan,
-                'amount': subscriptionAmount(plan),
+                'plan': 0,
+                'amount': 0,
               })
               .eq('user_id', shop.userId)
               .select()
@@ -237,56 +234,56 @@ class SubscriptionProvider extends ChangeNotifier {
                           subPayment.userId == shop.userId,
                     )
                     .first;
-            var nextPayment =
-                plan == 0
-                    ? null
-                    : DateTime.now().add(
-                      Duration(days: 30),
-                    );
+            // var nextPayment =
+            //     plan == 0
+            //         ? null
+            //         : DateTime.now().add(
+            //           Duration(days: 30),
+            //         );
             // tempP.plan == plan;
             // tempP.amount == subscriptionAmount(plan);
             await supabase
                 .from('subscription_payments')
                 .update({
-                  'plan': plan,
-                  'amount':
-                      subscriptionAmount(plan)?.toInt(),
-                  'next_payment':
-                      nextPayment
-                          ?.toUtc()
+                  'plan': 0,
+                  'amount': 0,
+                  'last_payment':
+                      DateTime.now()
+                          .toUtc()
                           .toIso8601String(),
+                  'next_payment': null,
                 })
                 .eq('payments_id', tempP.paymentsId!);
           } else {
             print("Store Subcription Does not Exists");
-            var nextPayment =
-                plan == 0
-                    ? null
-                    : DateTime.now().add(
-                      Duration(days: 30),
-                    );
+            // var nextPayment =
+            //     plan == 0
+            //         ? null
+            //         : DateTime.now().add(
+            //           Duration(days: 30),
+            //         );
             var tempP = TempSubPaymentClass(
               userId: shop.userId,
               duration: 200,
-              amount: subscriptionAmount(plan)?.toInt(),
-              plan: plan,
-              nextPayment: nextPayment?.toUtc(),
+              amount: 0,
+              plan: 0,
+              nextPayment: null,
             );
             await supabase
                 .from('subscription_payments')
                 .insert(tempP.toJson());
           }
         } else {
-          var nextPayment =
-              plan == 0
-                  ? null
-                  : DateTime.now().add(Duration(days: 30));
+          // var nextPayment =
+          //     plan == 0
+          //         ? null
+          //         : DateTime.now().add(Duration(days: 30));
           var tempP = TempSubPaymentClass(
             userId: shop.userId,
             duration: 200,
-            amount: subscriptionAmount(plan)?.toInt(),
-            plan: plan,
-            nextPayment: nextPayment?.toUtc(),
+            amount: 0,
+            plan: 0,
+            nextPayment: null,
           );
           await supabase
               .from('subscription_payments')

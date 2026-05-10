@@ -91,7 +91,6 @@ class DepartmentProvider with ChangeNotifier {
     DepartmentClass? departmentClass,
   }) async {
     try {
-      // var safeContext = context;
       print('Department Selection Started');
       var res =
           departmentClass != null
@@ -102,7 +101,8 @@ class DepartmentProvider with ChangeNotifier {
                           departmentClass.uuid,
                     ),
                   )
-              : await clearDepartments();
+              : /*await clearDepartments()*/ await CurrentDepartmentFunc()
+                  .clearCurrentDepartment();
       if (res == 1) {
         print(
           'Current Department set: ${CurrentDepartmentFunc().getCurrentDepartment()?.currentDepartmentId}',
@@ -218,6 +218,7 @@ class DepartmentProvider with ChangeNotifier {
         await DepartmentsFunc().insertAllDepartment(
           departments,
         );
+        notifyListeners();
       } else {
         departments = DepartmentsFunc().getDepartment();
         if (returnShopProvider()
@@ -241,13 +242,14 @@ class DepartmentProvider with ChangeNotifier {
                     .toList();
           }
         }
+        notifyListeners();
       }
 
       departments.sort((a, b) => a.name.compareTo(b.name));
-      print('Staffs Departments: ${departments.length}');
-      print(
-        'Current Department: ${returnDepartmentProvider().currentDepartment()?.name}',
-      );
+      // print('Staffs Departments: ${departments.length}');
+      // print(
+      //   'Current Department: ${returnDepartmentProvider().currentDepartment()?.name}',
+      // );
       notifyListeners();
       return departments;
     } catch (e) {

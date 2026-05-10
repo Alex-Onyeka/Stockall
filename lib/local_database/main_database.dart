@@ -14,6 +14,7 @@ import 'package:stockall/local_database/department_current/current_department_fu
 import 'package:stockall/local_database/department_func/departments_func.dart';
 import 'package:stockall/local_database/events_log/events_log_func.dart';
 import 'package:stockall/local_database/expenses/expenses_func.dart';
+import 'package:stockall/local_database/floating_button_visibility_box/floating_button_visibility_box.dart';
 import 'package:stockall/local_database/inventory_updates/inventory_updates_func.dart';
 import 'package:stockall/local_database/invoices/invoices_func.dart';
 import 'package:stockall/local_database/item_purchase_func.dart%20copy/item_purchase_func.dart';
@@ -33,7 +34,9 @@ import 'package:stockall/local_database/sub_staff/sub_staff_func.dart';
 import 'package:stockall/local_database/subscription/subscription_func.dart';
 import 'package:stockall/local_database/suppliers_func/suppliers_func.dart';
 import 'package:stockall/local_database/users/user_func.dart';
+import 'package:stockall/local_database/utility_constants/utility_constants_func.dart';
 import 'package:stockall/local_database/visibility_box/visibility_box.dart';
+import 'package:stockall/local_database/waybills/waybills_func.dart';
 import 'package:stockall/main.dart';
 
 class MainDatabase extends ChangeNotifier {
@@ -57,6 +60,8 @@ class MainDatabase extends ChangeNotifier {
     await ShopFunc().init();
     await PermissionFunc().init();
     await AppVersionFunc().init();
+    await UtilityConstantsFunc().init();
+    await FloatingButtonVisibilityBox().init();
     await VisibilityBox().init();
     await CustomerFunc().init();
     await ExpensesFunc().init();
@@ -87,8 +92,9 @@ class MainDatabase extends ChangeNotifier {
     // await PurchasePaymentsFunc().init();
     await ItemPurchaseFunc().init();
     await SuppliersFunc().init();
+    await WaybillsFunc().init();
     print('init Complete');
   }
 }
 
-int highestHiveClassIndex = 89;
+int highestHiveClassIndex = 90;

@@ -243,197 +243,8 @@ class _DashboardTotalSalesBannerState
                             borderRadius:
                                 BorderRadius.circular(5),
                             onTap: () {
-                              GeneralSettingsAuthAction().manageDeparmtmentsAction(
+                              setDepartment(
                                 context: context,
-                                action: () {
-                                  String? selectedDept;
-                                  setState(() {
-                                    selectedDept =
-                                        returnDepartmentProvider()
-                                            .currentDepartment()
-                                            ?.uuid;
-                                  });
-                                  showDialog(
-                                    context: context,
-                                    builder: (
-                                      firstContext,
-                                    ) {
-                                      return StatefulBuilder(
-                                        builder: (
-                                          secondContext,
-                                          setState,
-                                        ) {
-                                          return DialogTemplate(
-                                            theme:
-                                                widget
-                                                    .theme,
-                                            message:
-                                                'Select Your Current Department',
-                                            title:
-                                                'Select Department',
-                                            action: () {
-                                              returnDepartmentProvider().selectDepartment(
-                                                departmentClass:
-                                                    returnDepartmentProvider().departments
-                                                            .where(
-                                                              (
-                                                                dept,
-                                                              ) =>
-                                                                  dept.uuid ==
-                                                                  selectedDept,
-                                                            )
-                                                            .isEmpty
-                                                        ? null
-                                                        : returnDepartmentProvider().departments
-                                                            .where(
-                                                              (
-                                                                dept,
-                                                              ) =>
-                                                                  dept.uuid ==
-                                                                  selectedDept,
-                                                            )
-                                                            .first,
-                                              );
-                                              Navigator.of(
-                                                context,
-                                              ).pop();
-                                            },
-                                            widget: SizedBox(
-                                              height:
-                                                  screenHeight(
-                                                    context,
-                                                  ) -
-                                                  300,
-                                              child: SingleChildScrollView(
-                                                child: Padding(
-                                                  padding: const EdgeInsets.symmetric(
-                                                    horizontal:
-                                                        20.0,
-                                                    vertical:
-                                                        15,
-                                                  ),
-                                                  child: Builder(
-                                                    builder: (
-                                                      context,
-                                                    ) {
-                                                      if (returnDepartmentProvider()
-                                                          .departments
-                                                          .isEmpty) {
-                                                        return SizedBox(
-                                                          height:
-                                                              400,
-                                                          child: EmptyWidgetDisplayOnly(
-                                                            title:
-                                                                'No Department Found',
-                                                            subText:
-                                                                'You have not been added to any departments.',
-                                                            theme:
-                                                                widget.theme,
-                                                            height:
-                                                                30,
-                                                            altAction: () {
-                                                              returnDepartmentProvider().getDepartments();
-                                                            },
-                                                            altActionText:
-                                                                'Refresh',
-                                                            icon:
-                                                                Icons.clear,
-                                                          ),
-                                                        );
-                                                      } else {
-                                                        return Column(
-                                                          spacing:
-                                                              5,
-                                                          children:
-                                                              returnDepartmentProvider().departments
-                                                                  .map(
-                                                                    (
-                                                                      dept,
-                                                                    ) => Material(
-                                                                      color:
-                                                                          Colors.transparent,
-                                                                      child: InkWell(
-                                                                        onTap: () {
-                                                                          setState(
-                                                                            () {
-                                                                              if (selectedDept ==
-                                                                                  dept.uuid) {
-                                                                                selectedDept =
-                                                                                    null;
-                                                                              } else {
-                                                                                selectedDept =
-                                                                                    dept.uuid;
-                                                                              }
-                                                                            },
-                                                                          );
-                                                                        },
-                                                                        child: Padding(
-                                                                          padding: const EdgeInsets.symmetric(
-                                                                            vertical:
-                                                                                9.0,
-                                                                            horizontal:
-                                                                                12,
-                                                                          ),
-                                                                          child: Row(
-                                                                            mainAxisAlignment:
-                                                                                MainAxisAlignment.spaceBetween,
-                                                                            children: [
-                                                                              Text(
-                                                                                style: TextStyle(
-                                                                                  fontSize:
-                                                                                      widget.theme.mobileTexts.b3.fontSize,
-                                                                                  fontWeight:
-                                                                                      FontWeight.bold,
-                                                                                ),
-                                                                                dept.name,
-                                                                              ),
-                                                                              Container(
-                                                                                padding: EdgeInsets.all(
-                                                                                  2,
-                                                                                ),
-                                                                                decoration: BoxDecoration(
-                                                                                  shape:
-                                                                                      BoxShape.circle,
-                                                                                  border: Border.all(
-                                                                                    color:
-                                                                                        Colors.grey,
-                                                                                  ),
-                                                                                ),
-                                                                                child: Container(
-                                                                                  padding: EdgeInsets.all(
-                                                                                    5,
-                                                                                  ),
-                                                                                  decoration: BoxDecoration(
-                                                                                    shape:
-                                                                                        BoxShape.circle,
-                                                                                    color:
-                                                                                        selectedDept ==
-                                                                                                dept.uuid
-                                                                                            ? widget.theme.lightModeColor.prColor250
-                                                                                            : Colors.transparent,
-                                                                                  ),
-                                                                                ),
-                                                                              ),
-                                                                            ],
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  )
-                                                                  .toList(),
-                                                        );
-                                                      }
-                                                    },
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    },
-                                  );
-                                },
                               );
                             },
                             child: Padding(
@@ -526,35 +337,6 @@ class _DashboardTotalSalesBannerState
 
                                   setNameUser(),
                                 ),
-                                // Text(
-                                //   style: TextStyle(
-                                //     fontWeight:
-                                //         FontWeight.bold,
-                                //     color:
-                                //         const Color.fromARGB(
-                                //           241,
-                                //           255,
-                                //           255,
-                                //           255,
-                                //         ),
-                                //     fontSize:
-                                //         widget
-                                //             .theme
-                                //             .mobileTexts
-                                //             .b3
-                                //             .fontSize,
-                                //   ),
-
-                                //   visible.returnMoney(
-                                //     formatMoneyMid(
-                                //       amount:
-                                //           widget
-                                //               .userValue ??
-                                //           0,
-                                //       context: context,
-                                //     ),
-                                //   ),
-                                // ),
                               ],
                             ),
                             Icon(
@@ -895,4 +677,179 @@ class ExpensesAndProfitValues extends StatelessWidget {
       ],
     );
   }
+}
+
+void setDepartment({required BuildContext context}) {
+  var theme = returnTheme(context, listen: false);
+  GeneralSettingsAuthAction().manageDeparmtmentsAction(
+    context: context,
+    action: () {
+      String? selectedDept;
+      // setState(() {
+      selectedDept =
+          returnDepartmentProvider()
+              .currentDepartment()
+              ?.uuid;
+      // });
+      showDialog(
+        context: context,
+        builder: (firstContext) {
+          return StatefulBuilder(
+            builder: (secondContext, setState) {
+              return DialogTemplate(
+                theme: theme,
+                message: 'Select Your Current Department',
+                title: 'Select Department',
+                action: () {
+                  returnDepartmentProvider()
+                      .selectDepartment(
+                        departmentClass:
+                            returnDepartmentProvider()
+                                    .departments
+                                    .where(
+                                      (dept) =>
+                                          dept.uuid ==
+                                          selectedDept,
+                                    )
+                                    .isEmpty
+                                ? null
+                                : returnDepartmentProvider()
+                                    .departments
+                                    .where(
+                                      (dept) =>
+                                          dept.uuid ==
+                                          selectedDept,
+                                    )
+                                    .first,
+                      );
+                  Navigator.of(context).pop();
+                },
+                widget: SizedBox(
+                  height: screenHeight(context) - 300,
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0,
+                        vertical: 15,
+                      ),
+                      child: Builder(
+                        builder: (context) {
+                          if (returnDepartmentProvider()
+                              .departments
+                              .isEmpty) {
+                            return SizedBox(
+                              height: 400,
+                              child: EmptyWidgetDisplayOnly(
+                                title:
+                                    'No Department Found',
+                                subText:
+                                    'You have not been added to any departments.',
+                                theme: theme,
+                                height: 30,
+                                altAction: () async {
+                                  await returnDepartmentProvider()
+                                      .getDepartments();
+                                  setState(() {});
+                                },
+                                altActionText: 'Refresh',
+                                icon: Icons.clear,
+                              ),
+                            );
+                          } else {
+                            return Column(
+                              spacing: 5,
+                              children:
+                                  returnDepartmentProvider(
+                                        context: context,
+                                      ).departments
+                                      .map(
+                                        (dept) => Material(
+                                          color:
+                                              Colors
+                                                  .transparent,
+                                          child: InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                if (selectedDept ==
+                                                    dept.uuid) {
+                                                  selectedDept =
+                                                      null;
+                                                } else {
+                                                  selectedDept =
+                                                      dept.uuid;
+                                                }
+                                              });
+                                            },
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical:
+                                                        9.0,
+                                                    horizontal:
+                                                        12,
+                                                  ),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          theme.mobileTexts.b3.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    dept.name,
+                                                  ),
+                                                  Container(
+                                                    padding:
+                                                        EdgeInsets.all(
+                                                          2,
+                                                        ),
+                                                    decoration: BoxDecoration(
+                                                      shape:
+                                                          BoxShape.circle,
+                                                      border: Border.all(
+                                                        color:
+                                                            Colors.grey,
+                                                      ),
+                                                    ),
+                                                    child: Container(
+                                                      padding:
+                                                          EdgeInsets.all(
+                                                            5,
+                                                          ),
+                                                      decoration: BoxDecoration(
+                                                        shape:
+                                                            BoxShape.circle,
+                                                        color:
+                                                            selectedDept ==
+                                                                    dept.uuid
+                                                                ? theme.lightModeColor.prColor250
+                                                                : Colors.transparent,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                      .toList(),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      );
+    },
+  );
 }

@@ -283,7 +283,42 @@ class _StorageQuantityUpdateWidgetState
           theme: theme,
           showTitle: false,
           onChanged: (value) {
-            if (currentIndex == 1) {
+            if (currentIndex == 0 && productUuid != null) {
+              var tempProducts = returnData()
+                  .productListMain
+                  .where((pro) => pro.uuid == productUuid);
+              if (tempProducts.isNotEmpty) {
+                var pro = tempProducts.first;
+                if (!returnStorageProductProvider()
+                    .isGroupUnit) {
+                  if ((pro.quantity ?? 0) <
+                      (double.tryParse(
+                            (quantityController.text
+                                .replaceAll(',', '')),
+                          ) ??
+                          0)) {
+                    setState(() {
+                      quantityController.text = '';
+                    });
+                  }
+                } else {
+                  if ((pro.quantity ?? 0) <
+                      (((double.tryParse(
+                                (quantityController.text
+                                    .replaceAll(',', '')),
+                              )) ??
+                              0) *
+                          (widget
+                                  .storageProduct
+                                  .qttyPerGroup ??
+                              0))) {
+                    setState(() {
+                      quantityController.text = '';
+                    });
+                  }
+                }
+              }
+            } else if (currentIndex == 1) {
               if (!returnStorageProductProvider()
                   .isGroupUnit) {
                 if (((widget.storageProduct.quantity ?? 0) -
@@ -318,7 +353,7 @@ class _StorageQuantityUpdateWidgetState
           },
         ),
         Visibility(
-          visible: currentIndex == 1,
+          visible: currentIndex != 2,
           child: Column(
             children: [
               SizedBox(height: 5),
@@ -327,6 +362,16 @@ class _StorageQuantityUpdateWidgetState
                 spacing: 10,
                 children: [
                   SelectProductButton(
+                    icon:
+                        returnData().productListMain
+                                .where(
+                                  (product) =>
+                                      product.uuid ==
+                                      productUuid,
+                                )
+                                .isNotEmpty
+                            ? Icons.clear
+                            : Icons.add,
                     isBold:
                         returnData().productListMain
                             .where(
@@ -357,134 +402,209 @@ class _StorageQuantityUpdateWidgetState
                             )
                             : 'Product',
                     action: () {
-                      showDialog(
-                        context: context,
-                        builder: (productContext) {
-                          return DialogTemplate(
-                            theme: theme,
-                            message:
-                                'Choose from the List of Products below',
-                            title: 'Select Products',
-                            action: () {},
-                            showBottomActionButtons: false,
-                            widget: SizedBox(
-                              height:
-                                  screenHeight(context) -
-                                  250,
-                              child: Builder(
-                                builder: (context) {
-                                  if (returnData()
-                                      .productListMain
-                                      .where(
-                                        (pro) =>
-                                            pro.storageUuid ==
-                                            widget
-                                                .storageProduct
-                                                .uuid,
-                                      )
-                                      .isEmpty) {
-                                    return EmptyWidgetDisplayOnly(
-                                      title: 'No Items',
-                                      subText:
-                                          'You have not created any Items',
-                                      theme: theme,
-                                      height: 30,
-                                      icon: Icons.clear,
-                                    );
-                                  } else {
-                                    return Column(
-                                      spacing: 5,
-                                      children:
-                                          returnData()
-                                              .productListMain
-                                              .where(
-                                                (pro) =>
-                                                    pro.storageUuid ==
-                                                    widget
-                                                        .storageProduct
-                                                        .uuid,
-                                              )
-                                              .map(
-                                                (
-                                                  product,
-                                                ) => InkWell(
-                                                  onTap: () {
-                                                    setState(() {
-                                                      if (productUuid ==
-                                                          product.uuid) {
-                                                        productUuid =
-                                                            null;
-                                                      } else {
-                                                        productUuid =
-                                                            product.uuid;
-                                                      }
-                                                    });
-                                                    Navigator.of(
-                                                      productContext,
-                                                    ).pop();
-                                                  },
-                                                  child: Padding(
-                                                    padding: EdgeInsetsGeometry.symmetric(
-                                                      vertical:
-                                                          10,
-                                                      horizontal:
-                                                          10,
-                                                    ),
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment.spaceBetween,
-                                                      spacing:
-                                                          5,
-                                                      children: [
-                                                        Row(
+                      returnData().productListMain
+                              .where(
+                                (product) =>
+                                    product.uuid ==
+                                    productUuid,
+                              )
+                              .isNotEmpty
+                          ? setState(() {
+                            productUuid = null;
+                          })
+                          : showDialog(
+                            context: context,
+                            builder: (productContext) {
+                              return DialogTemplate(
+                                theme: theme,
+                                message:
+                                    'Choose from the List of Products below',
+                                title: 'Select Products',
+                                action: () {},
+                                showBottomActionButtons:
+                                    false,
+                                widget: SizedBox(
+                                  height:
+                                      screenHeight(
+                                        context,
+                                      ) -
+                                      250,
+                                  child: Builder(
+                                    builder: (context) {
+                                      if (returnData()
+                                          .productListMain
+                                          .where(
+                                            (pro) =>
+                                                pro.storageUuid ==
+                                                widget
+                                                    .storageProduct
+                                                    .uuid,
+                                          )
+                                          .isEmpty) {
+                                        return EmptyWidgetDisplayOnly(
+                                          title: 'No Items',
+                                          subText:
+                                              'You have not created any Items',
+                                          theme: theme,
+                                          height: 30,
+                                          icon: Icons.clear,
+                                        );
+                                      } else {
+                                        return Column(
+                                          spacing: 5,
+                                          children:
+                                              returnData()
+                                                  .productListMain
+                                                  .where(
+                                                    (pro) =>
+                                                        pro.storageUuid ==
+                                                        widget.storageProduct.uuid,
+                                                  )
+                                                  .map(
+                                                    (
+                                                      product,
+                                                    ) => InkWell(
+                                                      onTap: () {
+                                                        setState(() {
+                                                          if (productUuid ==
+                                                              product.uuid) {
+                                                            productUuid =
+                                                                null;
+                                                          } else {
+                                                            productUuid =
+                                                                product.uuid;
+                                                          }
+                                                        });
+                                                        Navigator.of(
+                                                          productContext,
+                                                        ).pop();
+                                                      },
+                                                      child: Padding(
+                                                        padding: EdgeInsetsGeometry.symmetric(
+                                                          vertical:
+                                                              10,
+                                                          horizontal:
+                                                              10,
+                                                        ),
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment.spaceBetween,
                                                           spacing:
                                                               5,
                                                           children: [
+                                                            Row(
+                                                              spacing:
+                                                                  5,
+                                                              children: [
+                                                                Icon(
+                                                                  size:
+                                                                      14,
+                                                                  color:
+                                                                      theme.lightModeColor.prColor300,
+                                                                  Icons.width_normal_rounded,
+                                                                ),
+                                                                Text(
+                                                                  style: TextStyle(
+                                                                    fontSize:
+                                                                        theme.mobileTexts.b4.fontSize,
+                                                                    fontWeight:
+                                                                        FontWeight.bold,
+                                                                  ),
+                                                                  product.name,
+                                                                ),
+                                                              ],
+                                                            ),
                                                             Icon(
                                                               size:
-                                                                  14,
+                                                                  16,
                                                               color:
-                                                                  theme.lightModeColor.prColor300,
-                                                              Icons.width_normal_rounded,
-                                                            ),
-                                                            Text(
-                                                              style: TextStyle(
-                                                                fontSize:
-                                                                    theme.mobileTexts.b4.fontSize,
-                                                                fontWeight:
-                                                                    FontWeight.bold,
-                                                              ),
-                                                              product.name,
+                                                                  Colors.grey,
+                                                              productUuid ==
+                                                                      product.uuid
+                                                                  ? Icons.check
+                                                                  : Icons.add,
                                                             ),
                                                           ],
                                                         ),
-                                                        Icon(
-                                                          size:
-                                                              16,
-                                                          color:
-                                                              Colors.grey,
-                                                          productUuid ==
-                                                                  product.uuid
-                                                              ? Icons.check
-                                                              : Icons.add,
-                                                        ),
-                                                      ],
+                                                      ),
                                                     ),
-                                                  ),
-                                                ),
-                                              )
-                                              .toList(),
-                                    );
+                                                  )
+                                                  .toList(),
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ),
+                              );
+                            },
+                          ).then((_) {
+                            if (currentIndex == 0 &&
+                                productUuid != null) {
+                              var tempProducts =
+                                  returnData()
+                                      .productListMain
+                                      .where(
+                                        (pro) =>
+                                            pro.uuid ==
+                                            productUuid,
+                                      );
+                              if (tempProducts.isNotEmpty) {
+                                var pro =
+                                    tempProducts.first;
+                                if (!returnStorageProductProvider()
+                                    .isGroupUnit) {
+                                  if ((pro.quantity ?? 0) <
+                                      (double.tryParse(
+                                            (quantityController
+                                                .text
+                                                .replaceAll(
+                                                  ',',
+                                                  '',
+                                                )),
+                                          ) ??
+                                          0)) {
+                                    setState(() {
+                                      quantityController
+                                          .text = '';
+                                    });
                                   }
-                                },
-                              ),
-                            ),
-                          );
-                        },
-                      );
+                                } else {
+                                  if ((pro.quantity ?? 0) <
+                                      (((double.tryParse(
+                                                (quantityController
+                                                    .text
+                                                    .replaceAll(
+                                                      ',',
+                                                      '',
+                                                    )),
+                                              )) ??
+                                              0) *
+                                          (widget
+                                                  .storageProduct
+                                                  .qttyPerGroup ??
+                                              0))) {
+                                    setState(() {
+                                      quantityController
+                                          .text = '';
+                                    });
+                                  }
+                                }
+                              }
+                            }
+                          });
                     },
                   ),
                   SelectProductButton(
+                    icon:
+                        returnUserProviderSingle().usersMain
+                                .where(
+                                  (user) =>
+                                      user.userId ==
+                                      staffUuid,
+                                )
+                                .isNotEmpty
+                            ? Icons.clear
+                            : Icons.add,
                     isBold:
                         returnUserProviderSingle().usersMain
                             .where(
@@ -515,117 +635,131 @@ class _StorageQuantityUpdateWidgetState
                             )
                             : 'Staff',
                     action: () {
-                      showDialog(
-                        context: context,
-                        builder: (userContext) {
-                          return DialogTemplate(
-                            theme: theme,
-                            message:
-                                'Choose from the List of Staffs below',
-                            title: 'Select Staff',
-                            action: () {},
-                            showBottomActionButtons: false,
-                            widget: SizedBox(
-                              height:
-                                  screenHeight(context) -
-                                  250,
-                              child: Builder(
-                                builder: (context) {
-                                  if (returnUserProviderSingle()
-                                      .usersMain
-                                      .isEmpty) {
-                                    return EmptyWidgetDisplayOnly(
-                                      title: 'No Staffs',
-                                      subText:
-                                          'You have not created any Staffs',
-                                      theme: theme,
-                                      height: 30,
-                                      icon: Icons.clear,
-                                    );
-                                  } else {
-                                    return Column(
-                                      spacing: 5,
-                                      children:
-                                          returnUserProviderSingle()
-                                              .usersMain
-                                              .map(
-                                                (
-                                                  user,
-                                                ) => InkWell(
-                                                  onTap: () {
-                                                    setState(() {
-                                                      if (staffUuid ==
-                                                          user.userId) {
-                                                        staffUuid =
-                                                            null;
-                                                      } else {
-                                                        staffUuid =
-                                                            user.userId;
-                                                      }
-                                                    });
-                                                    Navigator.of(
-                                                      userContext,
-                                                    ).pop();
-                                                  },
-                                                  child: Padding(
-                                                    padding: EdgeInsetsGeometry.symmetric(
-                                                      vertical:
-                                                          10,
-                                                      horizontal:
-                                                          10,
-                                                    ),
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment.spaceBetween,
-                                                      spacing:
-                                                          5,
-                                                      children: [
-                                                        Row(
-                                                          spacing:
+                      returnUserProviderSingle().usersMain
+                              .where(
+                                (user) =>
+                                    user.userId ==
+                                    staffUuid,
+                              )
+                              .isNotEmpty
+                          ? setState(() {
+                            staffUuid = null;
+                          })
+                          : showDialog(
+                            context: context,
+                            builder: (userContext) {
+                              return DialogTemplate(
+                                theme: theme,
+                                message:
+                                    'Choose from the List of Staffs below',
+                                title: 'Select Staff',
+                                action: () {},
+                                showBottomActionButtons:
+                                    false,
+                                widget: SizedBox(
+                                  height:
+                                      screenHeight(
+                                        context,
+                                      ) -
+                                      250,
+                                  child: Builder(
+                                    builder: (context) {
+                                      if (returnUserProviderSingle()
+                                          .usersMain
+                                          .isEmpty) {
+                                        return EmptyWidgetDisplayOnly(
+                                          title:
+                                              'No Staffs',
+                                          subText:
+                                              'You have not created any Staffs',
+                                          theme: theme,
+                                          height: 30,
+                                          icon: Icons.clear,
+                                        );
+                                      } else {
+                                        return Column(
+                                          spacing: 5,
+                                          children:
+                                              returnUserProviderSingle()
+                                                  .usersMain
+                                                  .map(
+                                                    (
+                                                      user,
+                                                    ) => InkWell(
+                                                      onTap: () {
+                                                        setState(() {
+                                                          if (staffUuid ==
+                                                              user.userId) {
+                                                            staffUuid =
+                                                                null;
+                                                          } else {
+                                                            staffUuid =
+                                                                user.userId;
+                                                          }
+                                                        });
+                                                        Navigator.of(
+                                                          userContext,
+                                                        ).pop();
+                                                      },
+                                                      child: Padding(
+                                                        padding: EdgeInsetsGeometry.symmetric(
+                                                          vertical:
                                                               10,
+                                                          horizontal:
+                                                              10,
+                                                        ),
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment.spaceBetween,
+                                                          spacing:
+                                                              5,
                                                           children: [
+                                                            Row(
+                                                              spacing:
+                                                                  10,
+                                                              children: [
+                                                                Icon(
+                                                                  size:
+                                                                      14,
+                                                                  color:
+                                                                      theme.lightModeColor.prColor300,
+                                                                  Icons.width_normal_rounded,
+                                                                ),
+                                                                Text(
+                                                                  style: TextStyle(
+                                                                    fontSize:
+                                                                        theme.mobileTexts.b4.fontSize,
+                                                                    fontWeight:
+                                                                        FontWeight.bold,
+                                                                  ),
+                                                                  user.name,
+                                                                ),
+                                                              ],
+                                                            ),
                                                             Icon(
                                                               size:
-                                                                  14,
+                                                                  16,
                                                               color:
-                                                                  theme.lightModeColor.prColor300,
-                                                              Icons.width_normal_rounded,
-                                                            ),
-                                                            Text(
-                                                              style: TextStyle(
-                                                                fontSize:
-                                                                    theme.mobileTexts.b4.fontSize,
-                                                                fontWeight:
-                                                                    FontWeight.bold,
-                                                              ),
-                                                              user.name,
+                                                                  Colors.grey,
+                                                              staffUuid ==
+                                                                      user.userId
+                                                                  ? Icons.check
+                                                                  : Icons.add,
                                                             ),
                                                           ],
                                                         ),
-                                                        Icon(
-                                                          size:
-                                                              16,
-                                                          color:
-                                                              Colors.grey,
-                                                          staffUuid ==
-                                                                  user.userId
-                                                              ? Icons.check
-                                                              : Icons.add,
-                                                        ),
-                                                      ],
+                                                      ),
                                                     ),
-                                                  ),
-                                                ),
-                                              )
-                                              .toList(),
-                                    );
-                                  }
-                                },
-                              ),
-                            ),
+                                                  )
+                                                  .toList(),
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ),
+                              );
+                            },
                           );
-                        },
-                      );
                     },
                   ),
                 ],
@@ -894,8 +1028,6 @@ class _StorageQuantityUpdateWidgetState
                                       .quantity ??
                                   0;
 
-                              // final oldPr =
-                              //     original?.copyWith();
                               final newPr =
                                   original?.copyWith();
 
@@ -926,13 +1058,20 @@ class _StorageQuantityUpdateWidgetState
                                           0);
 
                               newPr?.quantity =
-                                  (newPr.quantity ?? 0) +
-                                  inputQty;
+                                  (currentIndex == 0 &&
+                                          productUuid !=
+                                              null)
+                                      ? (newPr.quantity ??
+                                              0) -
+                                          inputQty
+                                      : (newPr.quantity ??
+                                              0) +
+                                          inputQty;
 
                               final newQuantity =
                                   newPr?.quantity ?? 0;
 
-                              if (currentIndex == 1 &&
+                              if ((currentIndex != 2) &&
                                   newPr != null) {
                                 await returnData()
                                     .updateProduct(
@@ -968,7 +1107,14 @@ class _StorageQuantityUpdateWidgetState
                               var newUpdate = TempInventoryUpdateClass(
                                 shopId: shopId(),
                                 title:
-                                    currentIndex == 0
+                                    currentIndex == 0 &&
+                                            productUuid !=
+                                                null
+                                        ? 'Return Item'
+                                        : currentIndex ==
+                                                0 &&
+                                            productUuid ==
+                                                null
                                         ? 'Stock In'
                                         : currentIndex == 1
                                         ? 'Stock Out'
@@ -1077,12 +1223,14 @@ class SelectProductButton extends StatelessWidget {
     required this.title,
     this.action,
     required this.isBold,
+    required this.icon,
   });
 
   final ThemeProvider theme;
   final String title;
   final Function()? action;
   final bool isBold;
+  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
@@ -1097,7 +1245,7 @@ class SelectProductButton extends StatelessWidget {
           child: Row(
             spacing: 5,
             children: [
-              Icon(size: 16, color: Colors.grey, Icons.add),
+              Icon(size: 16, color: Colors.grey, icon),
               Text(
                 style: TextStyle(
                   fontSize: theme.mobileTexts.b3.fontSize,

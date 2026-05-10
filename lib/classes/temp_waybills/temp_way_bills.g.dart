@@ -38,13 +38,15 @@ class TempWayBillsAdapter extends TypeAdapter<TempWayBills> {
       courierName: fields[19] as String?,
       courierPhone: fields[20] as String?,
       items: (fields[17] as List).cast<WaybillItems>(),
+      customerName: fields[21] as String?,
+      isCustomPriceSet: fields[22] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempWayBills obj) {
     writer
-      ..writeByte(21)
+      ..writeByte(23)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -86,7 +88,11 @@ class TempWayBillsAdapter extends TypeAdapter<TempWayBills> {
       ..writeByte(19)
       ..write(obj.courierName)
       ..writeByte(20)
-      ..write(obj.courierPhone);
+      ..write(obj.courierPhone)
+      ..writeByte(21)
+      ..write(obj.customerName)
+      ..writeByte(22)
+      ..write(obj.isCustomPriceSet);
   }
 
   @override
