@@ -785,14 +785,8 @@ class InvoicesProvider extends ChangeNotifier {
                 await returnSalesProvider().addNewCart(
                   context,
                   TempCart(
-                    departmentName:
-                        returnDepartmentProvider()
-                            .currentDepartment()
-                            ?.name,
-                    departmentUuid:
-                        returnDepartmentProvider()
-                            .currentDepartment()
-                            ?.uuid,
+                    departmentName: null,
+                    departmentUuid: null,
                     cartItems: [],
                     isInvoice: false,
                     staffId: currentUser().userId,

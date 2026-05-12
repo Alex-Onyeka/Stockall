@@ -148,6 +148,10 @@ class _TotalProductsMobileState
           return products
               .where((p) => p.quantity == null)
               .toList();
+        case 5:
+          return products
+              .where((p) => p.departmentUuid == null)
+              .toList();
         case 0:
         default:
           return products;
@@ -861,6 +865,8 @@ class _TotalProductsMobileState
                                                         MainAxisAlignment.center,
                                                     children: [
                                                       ProductsFilterButton(
+                                                        length:
+                                                            filterProducts().length,
                                                         action: () {
                                                           setState(
                                                             () {
@@ -880,6 +886,8 @@ class _TotalProductsMobileState
                                                             theme,
                                                       ),
                                                       ProductsFilterButton(
+                                                        length:
+                                                            filterProducts().length,
                                                         action: () {
                                                           setState(
                                                             () {
@@ -899,6 +907,8 @@ class _TotalProductsMobileState
                                                             theme,
                                                       ),
                                                       ProductsFilterButton(
+                                                        length:
+                                                            filterProducts().length,
                                                         action: () {
                                                           setState(
                                                             () {
@@ -918,6 +928,8 @@ class _TotalProductsMobileState
                                                             theme,
                                                       ),
                                                       ProductsFilterButton(
+                                                        length:
+                                                            filterProducts().length,
                                                         currentSelected:
                                                             currentSelect,
                                                         action: () {
@@ -937,6 +949,8 @@ class _TotalProductsMobileState
                                                             theme,
                                                       ),
                                                       ProductsFilterButton(
+                                                        length:
+                                                            filterProducts().length,
                                                         currentSelected:
                                                             currentSelect,
                                                         action: () {
@@ -954,6 +968,32 @@ class _TotalProductsMobileState
                                                             'UnManaged',
                                                         theme:
                                                             theme,
+                                                      ),
+                                                      Visibility(
+                                                        visible:
+                                                            returnShopProvider().userShop()?.manageDepartments !=
+                                                            null,
+                                                        child: ProductsFilterButton(
+                                                          length:
+                                                              filterProducts().length,
+                                                          currentSelected:
+                                                              currentSelect,
+                                                          action: () {
+                                                            setState(
+                                                              () {
+                                                                changeSelected(
+                                                                  5,
+                                                                );
+                                                              },
+                                                            );
+                                                          },
+                                                          number:
+                                                              5,
+                                                          title:
+                                                              'No Department',
+                                                          theme:
+                                                              theme,
+                                                        ),
                                                       ),
                                                     ],
                                                   ),

@@ -14,7 +14,6 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
-import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/local_database/cart_func/cart_func.dart';
@@ -77,46 +76,46 @@ class SalesProvider extends ChangeNotifier {
           cartIdCache =
               mainCartQueue.first.cartQueue.first.id!;
         }
-        if (returnShopProvider()
-                .userShop()
-                ?.manageDepartments ==
-            true) {
-          if (!authorization(
-            authorized: Authorizations().viewAllDepartments,
-          )) {
-            if (returnDepartmentProvider()
-                    .currentDepartment() ==
-                null) {
-              if (returnUserProviderSingle()
-                          .currentUserMain
-                          ?.departmentUuids
-                          ?.isNotEmpty !=
-                      null &&
-                  returnUserProviderSingle()
-                      .currentUserMain!
-                      .departmentUuids!
-                      .isNotEmpty) {
-                returnDepartmentProvider().selectDepartment(
-                  departmentClass:
-                      returnDepartmentProvider()
-                          .departments
-                          .first,
-                );
-              }
-            }
-          }
-        }
+        // if (returnShopProvider()
+        //         .userShop()
+        //         ?.manageDepartments ==
+        //     true) {
+        //   if (!authorization(
+        //     authorized: Authorizations().viewAllDepartments,
+        //   )) {
+        //     if (returnDepartmentProvider()
+        //             .currentDepartment() ==
+        //         null) {
+        //       if (returnUserProviderSingle()
+        //                   .currentUserMain
+        //                   ?.departmentUuids
+        //                   ?.isNotEmpty !=
+        //               null &&
+        //           returnUserProviderSingle()
+        //               .currentUserMain!
+        //               .departmentUuids!
+        //               .isNotEmpty) {
+        //         returnDepartmentProvider().selectDepartment(
+        //           departmentClass:
+        //               returnDepartmentProvider()
+        //                   .departments
+        //                   .first,
+        //         );
+        //       }
+        //     }
+        //   }
+        // }
 
-        if (currentCart().receiptUuidEdit == null) {
-          currentCart().departmentUuid =
-              returnDepartmentProvider()
-                  .currentDepartment()
-                  ?.uuid;
-          currentCart().departmentName =
-              returnDepartmentProvider()
-                  .currentDepartment()
-                  ?.name;
-        }
+        // if (currentCart().receiptUuidEdit == null) {
+        //   currentCart().departmentUuid =
+        //       returnDepartmentProvider()
+        //           .currentDepartment()
+        //           ?.uuid;
+        //   currentCart().departmentName =
+        //       returnDepartmentProvider()
+        //           .currentDepartment()
+        //           ?.name;
+        // }
         notifyListeners();
         return cartIdCache;
         // }
@@ -125,7 +124,7 @@ class SalesProvider extends ChangeNotifier {
       }
     } catch (e) {
       print('Error Fetching Main Cart: ${e.toString()}');
-      await CartFunc().clearMainCart();
+      // await CartFunc().clearMainCart();
       notifyListeners();
       return await initCart();
     }
@@ -154,14 +153,8 @@ class SalesProvider extends ChangeNotifier {
         TempMainCart(
           cartQueue: [
             TempCart(
-              departmentName:
-                  returnDepartmentProvider()
-                      .currentDepartment()
-                      ?.name,
-              departmentUuid:
-                  returnDepartmentProvider()
-                      .currentDepartment()
-                      ?.uuid,
+              departmentName: null,
+              departmentUuid: null,
               staffId: currentUser().userId,
               staffName:
                   "${currentUser().name} ${currentUser().lastName}",
@@ -270,14 +263,8 @@ class SalesProvider extends ChangeNotifier {
               .cartQueue
               .add(
                 TempCart(
-                  departmentName:
-                      returnDepartmentProvider()
-                          .currentDepartment()
-                          ?.name,
-                  departmentUuid:
-                      returnDepartmentProvider()
-                          .currentDepartment()
-                          ?.uuid,
+                  departmentName: null,
+                  departmentUuid: null,
                   staffId: currentUser().userId,
                   staffName:
                       "${currentUser().name} ${currentUser().lastName}",
@@ -470,14 +457,8 @@ class SalesProvider extends ChangeNotifier {
       await addNewCart(
         context,
         TempCart(
-          departmentName:
-              returnDepartmentProvider()
-                  .currentDepartment()
-                  ?.name,
-          departmentUuid:
-              returnDepartmentProvider()
-                  .currentDepartment()
-                  ?.uuid,
+          departmentName: null,
+          departmentUuid: null,
           staffId: currentUser().userId,
           staffName:
               "${currentUser().name} ${currentUser().lastName}",
@@ -535,16 +516,16 @@ class SalesProvider extends ChangeNotifier {
       cartIndex: (getIndexOfCartItem(cartId) + 1),
     );
     notifyListeners();
-    if (currentCart().receiptUuidEdit == null) {
-      currentCart().departmentUuid =
-          returnDepartmentProvider()
-              .currentDepartment()
-              ?.uuid;
-      currentCart().departmentName =
-          returnDepartmentProvider()
-              .currentDepartment()
-              ?.name;
-    }
+    // if (currentCart().receiptUuidEdit == null) {
+    //   currentCart().departmentUuid =
+    //       returnDepartmentProvider()
+    //           .currentDepartment()
+    //           ?.uuid;
+    //   currentCart().departmentName =
+    //       returnDepartmentProvider()
+    //           .currentDepartment()
+    //           ?.name;
+    // }
     // }
     print(returnMultiDisplayProvider().windows.length);
     notifyListeners();
@@ -2340,14 +2321,8 @@ class SalesProvider extends ChangeNotifier {
                 await addNewCart(
                   context,
                   TempCart(
-                    departmentName:
-                        returnDepartmentProvider()
-                            .currentDepartment()
-                            ?.name,
-                    departmentUuid:
-                        returnDepartmentProvider()
-                            .currentDepartment()
-                            ?.uuid,
+                    departmentName: null,
+                    departmentUuid: null,
                     cartItems: [],
                     isInvoice: false,
                     staffId: currentUser().userId,

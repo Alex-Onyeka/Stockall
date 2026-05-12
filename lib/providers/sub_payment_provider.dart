@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/subplan_class.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/calculator_auth.dart';
 import 'package:stockall/constants/subscription/employee_auth.dart';
 import 'package:stockall/constants/subscription/expenses_auth.dart';
@@ -56,6 +57,90 @@ class SubPaymentProvider extends ChangeNotifier {
       return "₦";
     } else {
       return "\$";
+    }
+  }
+
+  // int country = 0;
+
+  // void selectCountry(int index) {
+  //   country = index;
+  //   notifyListeners();
+  // }
+
+  Future<void> nonNigerianSubscription({
+    required int plan,
+    required int duration,
+  }) async {
+    if (plan == 1) {
+      if (duration == 1) {
+        await launchUrlMain(
+          "https://flutterwave.com/pay/basic-plan-one-month",
+        );
+      } else if (duration == 6) {
+        await launchUrlMain(
+          "https://flutterwave.com/pay/basic-plan-six-months",
+        );
+      } else {
+        await launchUrlMain(
+          "https://flutterwave.com/pay/basic-plan-one-year",
+        );
+      }
+    } else if (plan == 2) {
+      if (duration == 1) {
+        await launchUrlMain(
+          "https://flutterwave.com/pay/standard-plan-one-month",
+        );
+      } else if (duration == 6) {
+        await launchUrlMain(
+          "https://flutterwave.com/pay/standard-plan-six-months",
+        );
+      } else {
+        await launchUrlMain(
+          "https://flutterwave.com/pay/standard-plan-one-year",
+        );
+      }
+    } else if (plan == 3) {
+      if (duration == 1) {
+        await launchUrlMain(
+          "https://flutterwave.com/pay/premium-plan-one-month",
+        );
+      } else if (duration == 6) {
+        await launchUrlMain(
+          "https://flutterwave.com/pay/premium-plan-six-months",
+        );
+      } else {
+        await launchUrlMain(
+          "https://flutterwave.com/pay/premium-plan-one-year",
+        );
+      }
+    } else if (plan == 4) {
+      if (duration == 1) {
+        await launchUrlMain(
+          "https://flutterwave.com/pay/silver-plan-one-month",
+        );
+      } else if (duration == 6) {
+        await launchUrlMain(
+          "https://flutterwave.com/pay/silver-plan-six-months",
+        );
+      } else {
+        await launchUrlMain(
+          "https://flutterwave.com/pay/silver-plan-one-year",
+        );
+      }
+    } else if (plan == 5) {
+      if (duration == 1) {
+        await launchUrlMain(
+          "https://flutterwave.com/pay/gold-plan-one-month",
+        );
+      } else if (duration == 6) {
+        await launchUrlMain(
+          "https://flutterwave.com/pay/gold-plan-six-months",
+        );
+      } else {
+        await launchUrlMain(
+          "https://flutterwave.com/pay/gold-plan-one-year",
+        );
+      }
     }
   }
 

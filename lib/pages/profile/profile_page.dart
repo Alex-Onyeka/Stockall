@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/constants/constants_main.dart';
-import 'package:stockall/main.dart';
 import 'package:stockall/pages/profile/platforms/profile_page_desktop.dart';
 import 'package:stockall/pages/profile/platforms/profile_page_mobile.dart';
 
@@ -16,15 +15,15 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await returnNavProvider(
-        context,
-        listen: false,
-      ).validate(context);
-      setState(() {
-        // stillLoading = false;
-      });
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) async {
+    //   await returnNavProvider(
+    //     context,
+    //     listen: false,
+    //   ).validate(context);
+    //   setState(() {
+    //     // stillLoading = false;
+    //   });
+    // });
   }
 
   @override

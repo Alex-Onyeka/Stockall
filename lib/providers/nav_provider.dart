@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/functions.dart';
-import 'package:stockall/local_database/shop/shop_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/restricted_page/restricted_page.dart';
-import 'package:stockall/pages/shop_setup/banner_screen/shop_banner_screen.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class NavProvider extends ChangeNotifier {
@@ -94,7 +92,7 @@ class NavProvider extends ChangeNotifier {
     final utilityConstants =
         returnUtilityConstantProvider();
 
-    final userShop = await shopProvider.getUserShops();
+    await shopProvider.getUserShops();
     if (!context.mounted) {
       return;
     }
@@ -129,14 +127,14 @@ class NavProvider extends ChangeNotifier {
       return;
     }
 
-    if (userShop.isEmpty) {
-      NavProvider().nullShop(
-        logoutAction: () {
-          navPush(context);
-        },
-      );
-      return;
-    }
+    // if (userShop.isEmpty) {
+    //   NavProvider().nullShop(
+    //     logoutAction: () {
+    //       navPush(context);
+    //     },
+    //   );
+    //   return;
+    // }
     if (returnDepartmentProvider().currentDepartment() ==
             null &&
         !authorization(
@@ -210,18 +208,18 @@ class NavProvider extends ChangeNotifier {
   }
 
   void nullShop({Function()? logoutAction}) async {
-    await ShopFunc().clearShop();
-    await navigate(0);
-    logoutAction != null ? logoutAction() : {};
+    // await ShopFunc().clearShop();
+    // await navigate(0);
+    // logoutAction != null ? logoutAction() : {};
   }
 
   void navPush(BuildContext context) {
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ShopBannerScreen(),
-      ),
-      (route) => false,
-    );
+    // Navigator.pushAndRemoveUntil(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => ShopBannerScreen(),
+    //   ),
+    //   (route) => false,
+    // );
   }
 }

@@ -50,48 +50,56 @@ class _PricingContainerWidgetState
     int duration,
   ) async {
     print('Payment Process Begins');
-    final paymentService = PaymentService(
-      'https://jlwizkdhjazpbllpvtgo.functions.supabase.co/initiate-subscription-payment',
-    );
-
-    final callbackUrl = Uri.parse(
-      'https://stockallapp.com/#/payment-result',
-    );
 
     if (plan != 0) {
-      final authorizationUrl = await paymentService
-          .initiatePayment(
-            userId: userId,
-            email: email,
-            plan: plan,
-            amount: amount,
-            duration: duration,
-            callbackUrl: callbackUrl,
-          );
+      if (returnSubPaymentProvider().currencyIndex == 0) {
+        final paymentService = PaymentService(
+          'https://jlwizkdhjazpbllpvtgo.functions.supabase.co/initiate-subscription-payment',
+        );
 
-      if (authorizationUrl == null) {
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to start payment'),
-          ),
+        final callbackUrl = Uri.parse(
+          'https://stockallapp.com/#/payment-result',
         );
-        return;
-      }
-      if (kIsWeb) {
-        print('Platform is Web');
-        launchUrlMain(authorizationUrl.authorizationUrl);
+        final authorizationUrl = await paymentService
+            .initiatePayment(
+              userId: userId,
+              email: email,
+              plan: plan,
+              amount: amount,
+              duration: duration,
+              callbackUrl: callbackUrl,
+            );
+
+        if (authorizationUrl == null) {
+          // ignore: use_build_context_synchronously
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to start payment'),
+            ),
+          );
+          return;
+        }
+        if (kIsWeb) {
+          print('Platform is Web');
+          launchUrlMain(authorizationUrl.authorizationUrl);
+        } else {
+          Navigator.push<bool>(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (_) => PaystackCheckoutPage(
+                    authorizationUrl: authorizationUrl,
+                    callbackUrl: callbackUrl,
+                  ),
+            ),
+          );
+        }
       } else {
-        Navigator.push<bool>(
-          context,
-          MaterialPageRoute(
-            builder:
-                (_) => PaystackCheckoutPage(
-                  authorizationUrl: authorizationUrl,
-                  callbackUrl: callbackUrl,
-                ),
-          ),
-        );
+        await returnSubPaymentProvider()
+            .nonNigerianSubscription(
+              plan: plan,
+              duration: duration,
+            );
       }
     } else {
       await returnSubcsription(

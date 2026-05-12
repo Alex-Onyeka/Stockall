@@ -152,6 +152,10 @@ class _TotalProductsDesktopState
           return products
               .where((p) => !p.isManaged)
               .toList();
+        case 5:
+          return products
+              .where((p) => p.departmentUuid == null)
+              .toList();
         case 0:
         default:
           return products;
@@ -999,6 +1003,8 @@ class _TotalProductsDesktopState
                                                                             MainAxisAlignment.center,
                                                                         children: [
                                                                           ProductsFilterButton(
+                                                                            length:
+                                                                                filterProducts().length,
                                                                             action: () {
                                                                               setState(
                                                                                 () {
@@ -1018,6 +1024,8 @@ class _TotalProductsDesktopState
                                                                                 theme,
                                                                           ),
                                                                           ProductsFilterButton(
+                                                                            length:
+                                                                                filterProducts().length,
                                                                             action: () {
                                                                               setState(
                                                                                 () {
@@ -1037,6 +1045,8 @@ class _TotalProductsDesktopState
                                                                                 theme,
                                                                           ),
                                                                           ProductsFilterButton(
+                                                                            length:
+                                                                                filterProducts().length,
                                                                             action: () {
                                                                               setState(
                                                                                 () {
@@ -1056,6 +1066,8 @@ class _TotalProductsDesktopState
                                                                                 theme,
                                                                           ),
                                                                           ProductsFilterButton(
+                                                                            length:
+                                                                                filterProducts().length,
                                                                             currentSelected:
                                                                                 currentSelect,
                                                                             action: () {
@@ -1075,6 +1087,8 @@ class _TotalProductsDesktopState
                                                                                 theme,
                                                                           ),
                                                                           ProductsFilterButton(
+                                                                            length:
+                                                                                filterProducts().length,
                                                                             currentSelected:
                                                                                 currentSelect,
                                                                             action: () {
@@ -1092,6 +1106,32 @@ class _TotalProductsDesktopState
                                                                                 'UnManaged',
                                                                             theme:
                                                                                 theme,
+                                                                          ),
+                                                                          Visibility(
+                                                                            visible:
+                                                                                returnShopProvider().userShop()?.manageDepartments !=
+                                                                                null,
+                                                                            child: ProductsFilterButton(
+                                                                              length:
+                                                                                  filterProducts().length,
+                                                                              currentSelected:
+                                                                                  currentSelect,
+                                                                              action: () {
+                                                                                setState(
+                                                                                  () {
+                                                                                    changeSelected(
+                                                                                      5,
+                                                                                    );
+                                                                                  },
+                                                                                );
+                                                                              },
+                                                                              number:
+                                                                                  5,
+                                                                              title:
+                                                                                  'No Department',
+                                                                              theme:
+                                                                                  theme,
+                                                                            ),
                                                                           ),
                                                                         ],
                                                                       ),
@@ -1146,6 +1186,8 @@ class _TotalProductsDesktopState
                                                                       MainAxisAlignment.center,
                                                                   children: [
                                                                     ProductsFilterButton(
+                                                                      length:
+                                                                          filterProducts().length,
                                                                       action: () {
                                                                         setState(
                                                                           () {
@@ -1165,6 +1207,8 @@ class _TotalProductsDesktopState
                                                                           theme,
                                                                     ),
                                                                     ProductsFilterButton(
+                                                                      length:
+                                                                          filterProducts().length,
                                                                       action: () {
                                                                         setState(
                                                                           () {
@@ -1184,6 +1228,8 @@ class _TotalProductsDesktopState
                                                                           theme,
                                                                     ),
                                                                     ProductsFilterButton(
+                                                                      length:
+                                                                          filterProducts().length,
                                                                       action: () {
                                                                         setState(
                                                                           () {
@@ -1203,6 +1249,8 @@ class _TotalProductsDesktopState
                                                                           theme,
                                                                     ),
                                                                     ProductsFilterButton(
+                                                                      length:
+                                                                          filterProducts().length,
                                                                       currentSelected:
                                                                           currentSelect,
                                                                       action: () {
@@ -1222,6 +1270,8 @@ class _TotalProductsDesktopState
                                                                           theme,
                                                                     ),
                                                                     ProductsFilterButton(
+                                                                      length:
+                                                                          filterProducts().length,
                                                                       currentSelected:
                                                                           currentSelect,
                                                                       action: () {
@@ -1239,6 +1289,32 @@ class _TotalProductsDesktopState
                                                                           'UnManaged',
                                                                       theme:
                                                                           theme,
+                                                                    ),
+                                                                    Visibility(
+                                                                      visible:
+                                                                          returnShopProvider().userShop()?.manageDepartments !=
+                                                                          null,
+                                                                      child: ProductsFilterButton(
+                                                                        length:
+                                                                            filterProducts().length,
+                                                                        currentSelected:
+                                                                            currentSelect,
+                                                                        action: () {
+                                                                          setState(
+                                                                            () {
+                                                                              changeSelected(
+                                                                                5,
+                                                                              );
+                                                                            },
+                                                                          );
+                                                                        },
+                                                                        number:
+                                                                            5,
+                                                                        title:
+                                                                            'No Department',
+                                                                        theme:
+                                                                            theme,
+                                                                      ),
                                                                     ),
                                                                   ],
                                                                 );

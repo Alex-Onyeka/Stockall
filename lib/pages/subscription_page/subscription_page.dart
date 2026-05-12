@@ -31,6 +31,7 @@ class _SubscriptionPageState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       returnSubPaymentProvider().selectDuration(1);
+      returnSubPaymentProvider().selectCurrency(0);
     });
   }
 
@@ -59,7 +60,6 @@ class _SubscriptionPageState
               theme: theme,
               bottomSpace: 50,
               topSpace: 20,
-              iconData: Icons.attach_money_rounded,
               isMain: true,
             ),
             SizedBox(height: 30),
@@ -233,6 +233,29 @@ class _SubscriptionPageState
                         ),
                       ),
                       SizedBox(height: 15),
+                      Row(
+                        mainAxisAlignment:
+                            MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b4
+                                        .fontSize,
+                                fontWeight:
+                                    FontWeight.normal,
+                                color: Colors.redAccent,
+                              ),
+                              'Nigerian Naira Payment is Currently Unavailable in Non-Nigerian Countries. Please Select NGN Naira If You are Currently in Nigeria, if not, Please Select US Dollar.',
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 5),
                       Row(
                         mainAxisAlignment:
                             MainAxisAlignment.center,

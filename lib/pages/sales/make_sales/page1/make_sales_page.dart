@@ -50,10 +50,10 @@ class _MakeSalesPageState extends State<MakeSalesPage> {
           );
         }
       }
-      await returnNavProvider(
-        context,
-        listen: false,
-      ).validate(context);
+      // await returnNavProvider(
+      //   context,
+      //   listen: false,
+      // ).validate(context);
 
       setState(() {
         // stillLoading = false;

@@ -840,9 +840,9 @@ class _MakeSalesDesktopTwoState
                                                     context,
                                                     TempCart(
                                                       departmentName:
-                                                          returnDepartmentProvider().currentDepartment()?.name,
+                                                          null,
                                                       departmentUuid:
-                                                          returnDepartmentProvider().currentDepartment()?.uuid,
+                                                          null,
                                                       staffId:
                                                           currentUser().userId,
                                                       staffName:

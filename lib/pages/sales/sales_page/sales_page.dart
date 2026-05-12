@@ -22,16 +22,16 @@ class _SalesPageState extends State<SalesPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await returnNavProvider(
-        context,
-        listen: false,
-      ).validate(context);
+    // WidgetsBinding.instance.addPostFrameCallback((_) async {
+    //   await returnNavProvider(
+    //     context,
+    //     listen: false,
+    //   ).validate(context);
 
-      setState(() {
-        // stillLoading = false;
-      });
-    });
+    //   setState(() {
+    //     // stillLoading = false;
+    //   });
+    // });
   }
 
   @override

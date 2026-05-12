@@ -92,7 +92,7 @@ class DepartmentProvider with ChangeNotifier {
   }) async {
     try {
       print('Department Selection Started');
-      var res =
+      int res =
           departmentClass != null
               ? await CurrentDepartmentFunc()
                   .createCurrentDepartment(

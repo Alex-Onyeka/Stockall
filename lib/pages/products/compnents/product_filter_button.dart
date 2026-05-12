@@ -6,6 +6,7 @@ class ProductsFilterButton extends StatelessWidget {
   final int currentSelected;
   final int number;
   final Function()? action;
+  final int? length;
   const ProductsFilterButton({
     super.key,
     required this.theme,
@@ -13,6 +14,7 @@ class ProductsFilterButton extends StatelessWidget {
     required this.number,
     required this.currentSelected,
     required this.action,
+    this.length,
   });
 
   final ThemeProvider theme;
@@ -45,19 +47,63 @@ class ProductsFilterButton extends StatelessWidget {
             ),
 
             child: Center(
-              child: Text(
-                style: TextStyle(
-                  color:
-                      currentSelected == number
-                          ? Colors.white
-                          : theme.lightModeColor.prColor300,
-                  fontWeight: FontWeight.normal,
-                  fontSize:
-                      currentSelected == number
-                          ? theme.mobileTexts.b4.fontSize
-                          : theme.mobileTexts.b4.fontSize,
-                ),
-                title,
+              child: Row(
+                children: [
+                  Text(
+                    style: TextStyle(
+                      color:
+                          currentSelected == number
+                              ? Colors.white
+                              : theme
+                                  .lightModeColor
+                                  .prColor300,
+                      fontWeight: FontWeight.normal,
+                      fontSize:
+                          currentSelected == number
+                              ? theme
+                                  .mobileTexts
+                                  .b4
+                                  .fontSize
+                              : theme
+                                  .mobileTexts
+                                  .b4
+                                  .fontSize,
+                    ),
+                    title,
+                  ),
+                  Visibility(
+                    visible:
+                        length != null &&
+                        currentSelected == number,
+                    child: Row(
+                      children: [
+                        SizedBox(width: 5),
+                        Text(
+                          style: TextStyle(
+                            color:
+                                currentSelected == number
+                                    ? Colors.white
+                                    : theme
+                                        .lightModeColor
+                                        .prColor300,
+                            fontWeight: FontWeight.bold,
+                            fontSize:
+                                currentSelected == number
+                                    ? theme
+                                        .mobileTexts
+                                        .b4
+                                        .fontSize
+                                    : theme
+                                        .mobileTexts
+                                        .b4
+                                        .fontSize,
+                          ),
+                          "(${length.toString()})",
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

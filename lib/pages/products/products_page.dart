@@ -15,16 +15,16 @@ class _ProductsPageState extends State<ProductsPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (mounted) {
-        await returnNavProvider(
-          context,
-          listen: false,
-        ).validate(context);
+    // WidgetsBinding.instance.addPostFrameCallback((_) async {
+    //   if (mounted) {
+    //     await returnNavProvider(
+    //       context,
+    //       listen: false,
+    //     ).validate(context);
 
-        setState(() {});
-      }
-    });
+    //     setState(() {});
+    //   }
+    // });
   }
 
   @override

@@ -22,15 +22,15 @@ class _ExpensesPageState extends State<ExpensesPage> {
   void initState() {
     super.initState();
     returnNavProvider(context, listen: false).navigate(6);
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await returnNavProvider(
-        context,
-        listen: false,
-      ).validate(context);
-      setState(() {
-        // stillLoading = false;
-      });
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) async {
+    //   await returnNavProvider(
+    //     context,
+    //     listen: false,
+    //   ).validate(context);
+    //   setState(() {
+    //     // stillLoading = false;
+    //   });
+    // });
   }
 
   @override

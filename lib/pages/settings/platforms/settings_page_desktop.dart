@@ -1376,7 +1376,7 @@ class _SettingsPageDesktopState
                                   "https://stockallsolution.com",
                                 );
                               },
-                              title: 'Go to Wesbite.',
+                              title: 'Go to Website.',
                               icon: Icons.language_rounded,
                             ),
                             Visibility(
