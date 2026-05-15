@@ -14,6 +14,7 @@ import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
+import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/local_database/category/unsync_funcs/created_categories/created_categories_func.dart';
 import 'package:stockall/local_database/category/unsync_funcs/deleted_categories/deleted_categories_func.dart';
 import 'package:stockall/local_database/category/unsync_funcs/updated_categories/updated_categories_func.dart';
@@ -1189,7 +1190,7 @@ class DataProvider extends ChangeNotifier {
     allowedRangeItems =
         plan == 3
             ? null
-            : returnSubPaymentProvider().subPlans
+            : subPlans
                 .firstWhere((sub) => sub.plan == plan)
                 .itemsAuth
                 .numberOfItems;

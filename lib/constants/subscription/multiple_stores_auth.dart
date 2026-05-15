@@ -31,7 +31,7 @@ class MultipleStoresAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (returnSubPaymentProvider().subPlans
+    if (subPlans
         .firstWhere((pl) => pl.plan == plan)
         .multipleStoresAuth
         .createMultipleStores) {
@@ -62,7 +62,7 @@ class MultipleStoresAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (returnSubPaymentProvider().subPlans
+    if (subPlans
         .firstWhere((pl) => pl.plan == plan)
         .multipleStoresAuth
         .manageShopDashboard) {
@@ -96,7 +96,7 @@ class MultipleStoresAuthAction {
     var currentNumberofStores =
         returnShopProvider().userShops.length;
     if (currentNumberofStores <
-        returnSubPaymentProvider().subPlans
+        subPlans
             .firstWhere((pl) => pl.plan == plan)
             .multipleStoresAuth
             .numberOfStores) {

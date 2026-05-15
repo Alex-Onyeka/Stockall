@@ -66,70 +66,93 @@ class ShopProvider extends ChangeNotifier {
     print('Subscription Result: $response');
     if (response == null) {
       print('Subscription is Null');
-      var sub = await returnSubcsription(
-        // ignore: use_build_context_synchronously
-        context,
-        listen: false,
-        // ignore: use_build_context_synchronously
-      ).createSubscription(context);
-      if (sub != null) {
-        print('Subscription Created');
-        MultipleStoresAuthAction().numberOfStoresAction(
+      try {
+        var sub = await returnSubcsription(
           // ignore: use_build_context_synchronously
-          context: context,
-          action: () async {
-            shop.updatedAt = DateTime.now();
-            if (tempRole != 'Owner') {
-              shop.employees!.add(
-                AuthService().currentUser!,
-              );
-            }
-            print('Creating Shop');
-            print('App State Role: $tempRole');
-            // Insert the shop
-            shop.refCode?.toLowerCase();
-            var createdShop =
-                await supabase
-                    .from('shops')
-                    .insert(shop.toJson())
-                    .select()
-                    .maybeSingle();
-
-            if (createdShop != null) {
-              print(
-                'Created Shop Name: ${createdShop['name']}',
-              );
-              print('Updating User Role');
-              var user =
+          context,
+          listen: false,
+          // ignore: use_build_context_synchronously
+        ).createSubscription(context);
+        if (sub != null) {
+          print('Subscription Created');
+          MultipleStoresAuthAction().numberOfStoresAction(
+            // ignore: use_build_context_synchronously
+            context: context,
+            action: () async {
+              shop.updatedAt = DateTime.now();
+              shop.employees = [];
+              if (tempRole != 'Owner') {
+                print('User is not Owner');
+                shop.employees!.add(
+                  AuthService().currentUser ??
+                      returnUserProviderSingle()
+                          .currentUserMain
+                          ?.userId ??
+                      '',
+                );
+              }
+              print('Creating Shop');
+              print('App State Role: $tempRole');
+              // Insert the shop
+              shop.refCode?.toLowerCase();
+              var createdShop =
                   await supabase
-                      .from('users')
-                      .update({'role': tempRole})
-                      .eq(
-                        'user_id',
-                        AuthService().currentUser!,
-                      )
+                      .from('shops')
+                      .insert(shop.toJson())
                       .select()
                       .maybeSingle();
-              print('User Role Updated: $user');
-              if (user != null) {
-                print(user['name']);
+
+              if (createdShop != null) {
+                print(
+                  'Created Shop Name: ${createdShop['name']}',
+                );
+                print('Updating User Role');
+                var user =
+                    await supabase
+                        .from('users')
+                        .update({'role': tempRole})
+                        .eq(
+                          'user_id',
+                          AuthService().currentUser ??
+                              returnUserProviderSingle()
+                                  .currentUserMain
+                                  ?.userId ??
+                              '',
+                        )
+                        .select()
+                        .maybeSingle();
+                print('User Role Updated: $user');
+                if (user != null) {
+                  print(user['name']);
+                }
               }
-            }
 
-            // Fetch All Shops
-            final response = await getUserShops();
+              // Fetch All Shops
+              final response = await getUserShops();
 
-            if (response.isNotEmpty) {
-              setShops(response);
-            }
-          },
-        );
+              if (response.isNotEmpty) {
+                setShops(response);
+              }
+            },
+          );
+        }
+      } catch (e) {
+        print('Error Creating Shop Fresh: ${e.toString()}');
       }
     } else {
-      MultipleStoresAuthAction().numberOfStoresAction(
-        // ignore: use_build_context_synchronously
-        context: context,
-        action: () async {
+      print('Starting Not Afresh');
+
+      try {
+        await returnSubcsription(
+          context,
+          listen: false,
+        ).getSubscription(context);
+        // MultipleStoresAuthAction().numberOfStoresAction(
+        //   // ignore: use_build_context_synchronously
+        //   context: context,
+        //   action: () async {
+        print('Starting Not Afresh 1');
+        try {
           shop.updatedAt = DateTime.now();
           shop.isHeadQuarters = false;
           shop.refCode?.toLowerCase();
@@ -163,8 +186,18 @@ class ShopProvider extends ChangeNotifier {
           if (response.isNotEmpty) {
             setShops(response);
           }
-        },
-      );
+        } catch (e) {
+          print(
+            'Error Creating Shop Not Afresh: ${e.toString()}',
+          );
+        }
+        //   },
+        // );
+      } catch (e) {
+        print(
+          'Error Checking Number of Stores when Creating Stores not Afresh: ${e.toString()}',
+        );
+      }
     }
     // setRole('Owner');
   }
@@ -320,7 +353,12 @@ class ShopProvider extends ChangeNotifier {
             await supabase
                 .from('users')
                 .select()
-                .eq('user_id', userShop()!.userId)
+                .eq(
+                  'user_id',
+                  userShop()?.userId ??
+                      AuthService().currentUser ??
+                      '',
+                )
                 .maybeSingle();
 
         if (res == null) {

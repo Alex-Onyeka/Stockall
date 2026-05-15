@@ -37,7 +37,7 @@ class GeneralSettingsAuthAction {
     if (plan == null) {
       return false;
     }
-    if (returnSubPaymentProvider().subPlans
+    if (subPlans
         .firstWhere((pl) => pl.plan == plan)
         .generalSettingsAuth
         .addSocials) {
@@ -64,7 +64,7 @@ class GeneralSettingsAuthAction {
     if (plan == null) {
       return false;
     }
-    if (returnSubPaymentProvider().subPlans
+    if (subPlans
         .firstWhere((pl) => pl.plan == plan)
         .generalSettingsAuth
         .useCloseSale) {
@@ -91,7 +91,7 @@ class GeneralSettingsAuthAction {
     if (plan == null) {
       return false;
     }
-    if (returnSubPaymentProvider().subPlans
+    if (subPlans
         .firstWhere((pl) => pl.plan == plan)
         .generalSettingsAuth
         .useFloatingButton) {
@@ -118,7 +118,7 @@ class GeneralSettingsAuthAction {
     if (plan == null) {
       return false;
     }
-    if (returnSubPaymentProvider().subPlans
+    if (subPlans
         .firstWhere((pl) => pl.plan == plan)
         .generalSettingsAuth
         .customizeReceiptTemplate) {
@@ -144,7 +144,7 @@ class GeneralSettingsAuthAction {
     if (plan == null) {
       return false;
     }
-    if (returnSubPaymentProvider().subPlans
+    if (subPlans
         .firstWhere((pl) => pl.plan == plan)
         .generalSettingsAuth
         .allowOfflineUse) {
@@ -170,7 +170,7 @@ class GeneralSettingsAuthAction {
     if (plan == null) {
       return false;
     }
-    if (returnSubPaymentProvider().subPlans
+    if (subPlans
         .firstWhere((pl) => pl.plan == plan)
         .generalSettingsAuth
         .manageVAT) {
@@ -196,7 +196,7 @@ class GeneralSettingsAuthAction {
     if (plan == null) {
       return false;
     }
-    if (returnSubPaymentProvider().subPlans
+    if (subPlans
         .firstWhere((pl) => pl.plan == plan)
         .generalSettingsAuth
         .manageDepartments) {
@@ -224,7 +224,7 @@ class GeneralSettingsAuthAction {
     }
     var currentNumberOfItems =
         returnDepartmentProvider().departments.length;
-    if (returnSubPaymentProvider().subPlans
+    if (subPlans
             .firstWhere((pl) => pl.plan == plan)
             .generalSettingsAuth
             .numberOfDepartments >

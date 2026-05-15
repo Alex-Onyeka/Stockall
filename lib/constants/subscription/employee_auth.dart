@@ -29,7 +29,7 @@ class EmployeesAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (returnSubPaymentProvider().subPlans
+    if (subPlans
         .firstWhere((pl) => pl.plan == plan)
         .employeesAuth
         .addAndManageEmployees) {
@@ -65,7 +65,7 @@ class EmployeesAuthAction {
           context,
           listen: false,
         ).usersMain.length;
-    if (returnSubPaymentProvider().subPlans
+    if (subPlans
             .firstWhere((pl) => pl.plan == plan)
             .employeesAuth
             .numberOfEmployees >

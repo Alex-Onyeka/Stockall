@@ -1110,8 +1110,7 @@ class _SettingsPageMobileState
                                     Authorizations()
                                         .manageSubStaff,
                               ) &&
-                              returnSubPaymentProvider()
-                                  .subPlans
+                              subPlans
                                   .firstWhere(
                                     (plan) =>
                                         plan.plan ==

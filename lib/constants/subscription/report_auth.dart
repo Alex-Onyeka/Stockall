@@ -52,7 +52,7 @@ class ReportAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (returnSubPaymentProvider().subPlans
+    if (subPlans
         .firstWhere((pl) => pl.plan == plan)
         .reportAuth
         .printGeneralReport) {
@@ -75,7 +75,7 @@ class ReportAuthAction {
     if (plan == null) {
       return false;
     }
-    if (returnSubPaymentProvider().subPlans
+    if (subPlans
         .firstWhere((pl) => pl.plan == plan)
         .reportAuth
         .viewEventLogs) {
@@ -105,7 +105,7 @@ class ReportAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (returnSubPaymentProvider().subPlans
+    if (subPlans
         .firstWhere((pl) => pl.plan == plan)
         .reportAuth
         .viewSalesReport) {
@@ -136,7 +136,7 @@ class ReportAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (returnSubPaymentProvider().subPlans
+    if (subPlans
         .firstWhere((pl) => pl.plan == plan)
         .reportAuth
         .printSalesReport) {
@@ -167,7 +167,7 @@ class ReportAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (returnSubPaymentProvider().subPlans
+    if (subPlans
         .firstWhere((pl) => pl.plan == plan)
         .reportAuth
         .viewItemsGeneralReport) {
@@ -198,7 +198,7 @@ class ReportAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (returnSubPaymentProvider().subPlans
+    if (subPlans
         .firstWhere((pl) => pl.plan == plan)
         .reportAuth
         .viewItemsAnalysisReport) {
@@ -229,7 +229,7 @@ class ReportAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (returnSubPaymentProvider().subPlans
+    if (subPlans
         .firstWhere((pl) => pl.plan == plan)
         .reportAuth
         .printItemsReport) {
@@ -260,7 +260,7 @@ class ReportAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (returnSubPaymentProvider().subPlans
+    if (subPlans
         .firstWhere((pl) => pl.plan == plan)
         .reportAuth
         .viewCustomersReport) {
@@ -291,7 +291,7 @@ class ReportAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (returnSubPaymentProvider().subPlans
+    if (subPlans
         .firstWhere((pl) => pl.plan == plan)
         .reportAuth
         .printCustomersReport) {
@@ -322,7 +322,7 @@ class ReportAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (returnSubPaymentProvider().subPlans
+    if (subPlans
         .firstWhere((pl) => pl.plan == plan)
         .reportAuth
         .viewEmployeesReport) {
@@ -353,7 +353,7 @@ class ReportAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (returnSubPaymentProvider().subPlans
+    if (subPlans
         .firstWhere((pl) => pl.plan == plan)
         .reportAuth
         .printEmployeesReport) {
@@ -384,7 +384,7 @@ class ReportAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (returnSubPaymentProvider().subPlans
+    if (subPlans
         .firstWhere((pl) => pl.plan == plan)
         .reportAuth
         .viewExpensesReport) {
@@ -415,7 +415,7 @@ class ReportAuthAction {
     //   action == null ? {} : action();
     //   return true;
     // } else {
-    if (returnSubPaymentProvider().subPlans
+    if (subPlans
         .firstWhere((pl) => pl.plan == plan)
         .reportAuth
         .printExpensesReport) {

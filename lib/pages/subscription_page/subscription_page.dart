@@ -5,6 +5,7 @@ import 'package:stockall/components/major/top_banner.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/subscription_page/components/comparison_section_widget.dart';
 import 'package:stockall/pages/subscription_page/components/faq_section.dart';
@@ -38,7 +39,7 @@ class _SubscriptionPageState
   @override
   Widget build(BuildContext context) {
     SubplanClass? plan =
-        returnSubPaymentProvider().subPlans
+        subPlans
             .where(
               (pl) =>
                   pl.plan ==

@@ -191,10 +191,15 @@ class _ShopSetupTwoDesktopState
                     manageInventoryStorage: false,
                     closeSaleTimeString: null,
                     isVerified: false,
-                    currency: selectedCurrency!,
+                    currency: selectedCurrency ?? 'N',
                     employees: [],
                     createdAt: DateTime.now(),
-                    userId: AuthService().currentUser!,
+                    userId:
+                        AuthService().currentUser ??
+                        returnUserProviderSingle()
+                            .currentUserMain
+                            ?.userId ??
+                        '',
                     email: shopProvider.email,
                     name: shopProvider.name,
                     state: selectedStateName,

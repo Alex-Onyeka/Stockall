@@ -6,6 +6,7 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/plan_pricing_class.dart';
+import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/auth_landing/auth_landing.dart';
 import 'package:stockall/services/auth_service.dart';
@@ -132,16 +133,16 @@ class _PricingContainerWidgetState
           ).utilityConstants?.dollarRate ??
           1300,
       dataStorageDuration:
-          returnSubPaymentProvider().subPlans
+          subPlans
               .firstWhere((pl) => pl.plan == widget.plan)
               .onlineDataBackupDuration,
       plan: widget.plan,
       planName:
-          returnSubPaymentProvider().subPlans
+          subPlans
               .firstWhere((pl) => pl.plan == widget.plan)
               .planName,
       planDesc:
-          returnSubPaymentProvider().subPlans
+          subPlans
               .firstWhere((pl) => pl.plan == widget.plan)
               .planDesc,
       discount:
@@ -149,7 +150,7 @@ class _PricingContainerWidgetState
             context: context,
           ).discount,
       price:
-          returnSubPaymentProvider().subPlans
+          subPlans
               .firstWhere((pl) => pl.plan == widget.plan)
               .price,
       duration:
@@ -157,42 +158,42 @@ class _PricingContainerWidgetState
             context: context,
           ).currentDuration,
       numberOfItems:
-          returnSubPaymentProvider().subPlans
+          subPlans
               .firstWhere((pl) => pl.plan == widget.plan)
               .itemsAuth
               .numberOfItems,
       barcode:
-          returnSubPaymentProvider().subPlans
+          subPlans
               .firstWhere((pl) => pl.plan == widget.plan)
               .itemsAuth
               .useOfBarcode,
       invoiceManagement:
-          returnSubPaymentProvider().subPlans
+          subPlans
               .firstWhere((pl) => pl.plan == widget.plan)
               .salesAuth
               .invoiceManagement,
       receiptManagement:
-          returnSubPaymentProvider().subPlans
+          subPlans
               .firstWhere((pl) => pl.plan == widget.plan)
               .salesAuth
               .printReceipt,
       useCalculator:
-          returnSubPaymentProvider().subPlans
+          subPlans
               .firstWhere((pl) => pl.plan == widget.plan)
               .calculatorAuth
               .useCalculator,
       numberOfStaffs:
-          returnSubPaymentProvider().subPlans
+          subPlans
               .firstWhere((pl) => pl.plan == widget.plan)
               .employeesAuth
               .numberOfEmployees,
       useOffline:
-          returnSubPaymentProvider().subPlans
+          subPlans
               .firstWhere((pl) => pl.plan == widget.plan)
               .generalSettingsAuth
               .allowOfflineUse,
       numberOfBranches:
-          returnSubPaymentProvider().subPlans
+          subPlans
               .firstWhere((pl) => pl.plan == widget.plan)
               .multipleStoresAuth
               .numberOfStores,

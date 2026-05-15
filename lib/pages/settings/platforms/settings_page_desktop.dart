@@ -408,8 +408,7 @@ class _SettingsPageDesktopState
                                         Authorizations()
                                             .manageSubStaff,
                                   ) &&
-                                  returnSubPaymentProvider()
-                                      .subPlans
+                                  subPlans
                                       .firstWhere(
                                         (plan) =>
                                             plan.plan ==

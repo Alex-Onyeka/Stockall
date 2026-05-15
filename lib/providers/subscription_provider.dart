@@ -59,15 +59,15 @@ class SubscriptionProvider extends ChangeNotifier {
     }
   }
 
-  Future<TempShopClass> userShop(
+  Future<TempShopClass?> userShop(
     BuildContext context,
   ) async {
     var shopP = returnShopProvider();
     if (shopP.userShop() == null) {
       await shopP.getUserShops();
-      return shopP.userShop()!;
+      return shopP.userShop();
     } else {
-      return shopP.userShop()!;
+      return shopP.userShop();
     }
   }
 
@@ -113,6 +113,7 @@ class SubscriptionProvider extends ChangeNotifier {
     BuildContext context,
   ) async {
     var isOnline = await connectivity.isOnline();
+    print('Getting Subscription Inside');
     // ignore: use_build_context_synchronously
     var shop = await userShop(context);
     if (isOnline) {
@@ -121,7 +122,11 @@ class SubscriptionProvider extends ChangeNotifier {
             await supabase
                 .from('subscription')
                 .select()
-                .eq('user_id', shop.userId)
+                .eq(
+                  'user_id',
+                  shop?.userId ??
+                      AuthService().currentUser!,
+                )
                 .maybeSingle();
         if (response == null) {
           print('No Subscription Found');
@@ -200,7 +205,7 @@ class SubscriptionProvider extends ChangeNotifier {
                 'plan': 0,
                 'amount': 0,
               })
-              .eq('user_id', shop.userId)
+              .eq('user_id', shop!.userId)
               .select()
               .maybeSingle();
 

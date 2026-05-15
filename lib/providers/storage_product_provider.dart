@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart
 import 'package:stockall/classes/temp_storage_product/unsynced/created_storage_products/created_storage_products.dart';
 import 'package:stockall/classes/temp_storage_product/unsynced/deleted_storage_products/deleted_storage_product.dart';
 import 'package:stockall/classes/temp_storage_product/unsynced/updated/updated_storage_product.dart';
+import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/local_database/storage_product/storage_products_func.dart';
 import 'package:stockall/local_database/storage_product/unsync_funcs/created/created_storage_products_func.dart';
 import 'package:stockall/local_database/storage_product/unsync_funcs/deleted/deleted_storage_products_func.dart';
@@ -305,7 +306,7 @@ class StorageProductProvider extends ChangeNotifier {
     allowedRangeItems =
         plan == 3
             ? null
-            : returnSubPaymentProvider().subPlans
+            : subPlans
                 .firstWhere((sub) => sub.plan == plan)
                 .itemsAuth
                 .numberOfItems;
