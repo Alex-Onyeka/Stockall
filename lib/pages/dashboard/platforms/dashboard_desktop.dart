@@ -626,14 +626,24 @@ class _DashboardDesktopState
                                                   children: [
                                                     Row(
                                                       children: [
-                                                        Text(
-                                                          style: TextStyle(
-                                                            fontSize:
-                                                                theme.mobileTexts.b1.fontSize,
-                                                            fontWeight:
-                                                                theme.mobileTexts.b1.fontWeightBold,
+                                                        InkWell(
+                                                          onTap: () async {
+                                                            bool
+                                                            res =
+                                                                await returnCountryProvider().isUserInNigeria();
+                                                            print(
+                                                              res,
+                                                            );
+                                                          },
+                                                          child: Text(
+                                                            style: TextStyle(
+                                                              fontSize:
+                                                                  theme.mobileTexts.b1.fontSize,
+                                                              fontWeight:
+                                                                  theme.mobileTexts.b1.fontWeightBold,
+                                                            ),
+                                                            'Quick Actions',
                                                           ),
-                                                          'Quick Actions',
                                                         ),
                                                       ],
                                                     ),

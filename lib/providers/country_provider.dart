@@ -21,6 +21,7 @@ class CountryProvider extends ChangeNotifier {
     selectedCurrency = null;
     selectedState = null;
     selectedCity = null;
+    isLoading = false;
     notifyListeners();
   }
 
@@ -135,23 +136,23 @@ class CountryProvider extends ChangeNotifier {
       notifyListeners();
 
       // prevent unnecessary API calls
-      if (CountriesFunc().getCountryModel().isNotEmpty) {
-        countries = CountriesFunc().getCountryModel();
+      // if (CountriesFunc().getCountryModel().isNotEmpty) {
+      //   countries = CountriesFunc().getCountryModel();
 
-        isLoading = false;
-        notifyListeners();
-        print(
-          'Countrys Gotten Successfully Offline: ${countries.length}',
-        );
+      //   isLoading = false;
+      //   notifyListeners();
+      //   print(
+      //     'Countrys Gotten Successfully Offline: ${countries.length}',
+      //   );
 
-        return;
-      }
+      //   return;
+      // }
 
       final response = await http.get(
         Uri.https('api.geocoded.me', '/countries', {
           'fields':
               'name,iso2,currency,currencyName,currencySymbol',
-          'limit': '250',
+          'limit': '300',
           'offset': '0',
         }),
       );
@@ -294,6 +295,36 @@ class CountryProvider extends ChangeNotifier {
     } finally {
       isLoading = false;
       notifyListeners();
+    }
+  }
+
+  void toggleLoading(bool value) {
+    isLoading = value;
+    notifyListeners();
+  }
+
+  Future<bool> isUserInNigeria() async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://ip-api.com/json/'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        print('Printed data: $data');
+
+        return data['countryCode'] == 'NG';
+      } else {
+        print(
+          "Response Status Code: ${response.statusCode}",
+        );
+        return false;
+      }
+    } catch (e) {
+      print(
+        'Error Occoured when Checking Users Country: ${e.toString()}',
+      );
+      return true;
     }
   }
 }

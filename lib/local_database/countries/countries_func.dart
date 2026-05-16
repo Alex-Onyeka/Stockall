@@ -8,14 +8,14 @@ class CountriesFunc {
   CountriesFunc._internal();
   late Box<CountryModel> countrysBox;
   final String countrysBoxName = 'countrysBoxStockall';
-  final String locationBoxName = 'locationBoxStockall';
+  // final String locationBoxName = 'locationBoxStockall';
 
   Future<void> init() async {
-    try {
-      await Hive.deleteBoxFromDisk(locationBoxName);
-    } catch (e) {
-      print('Error Deleting Location Box: ${e.toString()}');
-    }
+    // try {
+    //   await Hive.deleteBoxFromDisk(locationBoxName);
+    // } catch (e) {
+    //   print('Error Deleting Location Box: ${e.toString()}');
+    // }
     Hive.registerAdapter(CountryModelAdapter());
     countrysBox = await Hive.openBox(countrysBoxName);
     print('✅Countries Box Initialized');

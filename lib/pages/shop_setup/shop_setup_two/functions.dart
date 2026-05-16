@@ -507,9 +507,21 @@ void selectCountry({
                         Expanded(
                           child: Builder(
                             builder: (context) {
-                              if (returnCountryProvider()
-                                  .countries
-                                  .isEmpty) {
+                              if (returnCountryProvider(
+                                context: context,
+                              ).isLoading) {
+                                return Center(
+                                  child: returnCompProvider(
+                                    context,
+                                    listen: false,
+                                  ).showLoader(
+                                    message:
+                                        'Loading Countries',
+                                  ),
+                                );
+                              } else if (returnCountryProvider(
+                                context: context,
+                              ).countries.isEmpty) {
                                 return Scaffold(
                                   body: EmptyWidgetDisplay(
                                     title:
@@ -530,8 +542,9 @@ void selectCountry({
                                 );
                               } else {
                                 List<CountryModel> main =
-                                    returnCountryProvider()
-                                        .getCountries();
+                                    returnCountryProvider(
+                                      context: context,
+                                    ).getCountries();
                                 List<CountryModel> items =
                                     main
                                         .where(
@@ -987,8 +1000,9 @@ void selectState({
                             child: Builder(
                               builder: (context) {
                                 List<StateModel> main =
-                                    returnCountryProvider()
-                                        .getStates();
+                                    returnCountryProvider(
+                                      context: context,
+                                    ).getStates();
                                 // main.sort();
                                 List<StateModel> items =
                                     main
@@ -1003,8 +1017,19 @@ void selectState({
                                               ),
                                         )
                                         .toList();
-
-                                if (items.isEmpty) {
+                                if (returnCountryProvider(
+                                  context: context,
+                                ).isLoading) {
+                                  return Center(
+                                    child: returnCompProvider(
+                                      context,
+                                      listen: false,
+                                    ).showLoader(
+                                      message:
+                                          'Loading States',
+                                    ),
+                                  );
+                                } else if (items.isEmpty) {
                                   return Scaffold(
                                     body: Row(
                                       mainAxisAlignment:
@@ -1411,8 +1436,21 @@ void selectCity({
                           Expanded(
                             child: Builder(
                               builder: (context) {
-                                if (returnCountryProvider()
-                                        .selectedState ==
+                                if (returnCountryProvider(
+                                  context: context,
+                                ).isLoading) {
+                                  return Center(
+                                    child: returnCompProvider(
+                                      context,
+                                      listen: false,
+                                    ).showLoader(
+                                      message:
+                                          'Loading Cities',
+                                    ),
+                                  );
+                                } else if (returnCountryProvider(
+                                      context: context,
+                                    ).selectedState ==
                                     null) {
                                   return Scaffold(
                                     body: Row(
@@ -1482,9 +1520,9 @@ void selectCity({
                                       ],
                                     ),
                                   );
-                                } else if (returnCountryProvider()
-                                    .cities
-                                    .isEmpty) {
+                                } else if (returnCountryProvider(
+                                  context: context,
+                                ).cities.isEmpty) {
                                   return Scaffold(
                                     body: EmptyWidgetDisplay(
                                       title:
@@ -1508,8 +1546,10 @@ void selectCity({
                                   );
                                 } else {
                                   var items =
-                                      returnCountryProvider()
-                                          .cities
+                                      returnCountryProvider(
+                                            context:
+                                                context,
+                                          ).cities
                                           .where(
                                             (city) => city
                                                 .toLowerCase()
@@ -1641,6 +1681,8 @@ void selectCity({
               ),
         );
       },
-    );
+    ).then((_) {
+      returnCountryProvider().toggleLoading(false);
+    });
   }
 }
