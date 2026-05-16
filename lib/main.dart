@@ -29,6 +29,7 @@ import 'package:stockall/providers/events_log_provider.dart';
 import 'package:stockall/providers/expenses_provider.dart';
 import 'package:stockall/providers/inventory_updates_provider.dart';
 import 'package:stockall/providers/invoices_provider.dart';
+import 'package:stockall/providers/country_provider.dart';
 import 'package:stockall/providers/multi_display_provider.dart';
 import 'package:stockall/providers/nav_provider.dart';
 import 'package:stockall/providers/notifications_provider.dart';
@@ -530,6 +531,16 @@ UtilityConstantProvider returnUtilityConstantProvider({
   }
 }
 
+CountryProvider returnCountryProvider({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return CountryProvider();
+  } else {
+    return Provider.of<CountryProvider>(context);
+  }
+}
+
 Widget colorWidget(
   Widget widget,
   bool isPrimary,
@@ -679,6 +690,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => UtilityConstantProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => CountryProvider(),
         ),
       ],
       child: MaterialApp(

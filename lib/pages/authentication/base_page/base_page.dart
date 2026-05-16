@@ -49,6 +49,7 @@ class _BasePageState extends State<BasePage> {
           null) {
         await getUser();
       }
+      await returnCountryProvider().fetchCountries();
       var cartId =
           await returnSalesProvider().fetchMainCart();
       await returnMultiDisplayProvider().createWindow(
