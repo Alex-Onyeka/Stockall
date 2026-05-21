@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
@@ -1276,10 +1277,10 @@ Future<Uint8List> _buildPdfRollInvoice({
           printerType == 1
               ? PdfPageFormat.roll57
               : PdfPageFormat.roll80,
-      margin: const pw.EdgeInsets.only(
-        left: 0,
-        top: 15,
-        right: 25,
+      margin: pw.EdgeInsets.only(
+        left: kIsWeb ? 2 : 0,
+        top: 5,
+        right: kIsWeb ? 15 : 25,
         bottom: 10,
       ),
 

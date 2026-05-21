@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
@@ -150,11 +151,11 @@ Future<Uint8List> _buildPdfRoll({
           returnShopProvider().userShop()?.printType == 1
               ? PdfPageFormat.roll57
               : PdfPageFormat.roll80,
-      margin: const pw.EdgeInsets.only(
-        left: 0,
+      margin: pw.EdgeInsets.only(
+        left: kIsWeb ? 2 : 0,
         top: 5,
-        right: 20,
-        bottom: 5,
+        right: kIsWeb ? 15 : 20,
+        bottom: 10,
       ),
 
       // 🔹 HEADER
