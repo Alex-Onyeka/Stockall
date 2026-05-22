@@ -15,6 +15,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/customers/customers_list/customer_list.dart';
 import 'package:stockall/pages/sales/make_sales/page1/platforms/make_sales_desktop.dart';
 import 'package:stockall/pages/sales/make_sales/page1/platforms/make_sales_mobile.dart';
+import 'package:stockall/pages/sales/make_sales/page2/platforms/make_sales_desktop_two.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -306,6 +307,7 @@ class _MakeSalesMobileTwoState
                           },
                         ),
                         SizedBox(height: 10),
+                        SetCustomReceiptCreatedDateWidget(),
                         Divider(
                           color: Colors.grey.shade300,
                         ),

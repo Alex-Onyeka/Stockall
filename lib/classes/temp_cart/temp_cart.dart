@@ -65,6 +65,9 @@ class TempCart extends HiveObject {
   @HiveField(19)
   String? departmentName;
 
+  @HiveField(20)
+  DateTime? customDate;
+
   TempCart({
     required this.cartItems,
     required this.isInvoice,
@@ -86,5 +89,12 @@ class TempCart extends HiveObject {
     required this.staffId,
     required this.departmentName,
     required this.departmentUuid,
+    required this.customDate,
   });
+
+  DateTime returnDate() {
+    return customDate?.toUtc() ??
+        createdDate?.toUtc() ??
+        DateTime.now().toUtc();
+  }
 }

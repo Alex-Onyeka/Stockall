@@ -129,6 +129,8 @@ class Authorizations {
   String viewAllDepartments = 'View All Departments';
   String updateItemQuantity = 'Update Item Quantity';
   String viewItemQuantity = 'View Item Quantity';
+  String setCustomReceiptCreatedDate =
+      'Set Custom Receipt Created Date';
 }
 
 bool authorization({required String authorized}) {

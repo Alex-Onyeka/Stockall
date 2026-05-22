@@ -1861,6 +1861,8 @@ class _MakeSalesDesktopState
                                                       await returnSalesProvider().addNewCart(
                                                         context,
                                                         TempCart(
+                                                          customDate:
+                                                              null,
                                                           departmentName:
                                                               null,
                                                           departmentUuid:

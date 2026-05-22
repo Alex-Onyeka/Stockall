@@ -153,6 +153,7 @@ class SalesProvider extends ChangeNotifier {
         TempMainCart(
           cartQueue: [
             TempCart(
+              customDate: null,
               departmentName: null,
               departmentUuid: null,
               staffId: currentUser().userId,
@@ -263,6 +264,7 @@ class SalesProvider extends ChangeNotifier {
               .cartQueue
               .add(
                 TempCart(
+                  customDate: null,
                   departmentName: null,
                   departmentUuid: null,
                   staffId: currentUser().userId,
@@ -328,6 +330,17 @@ class SalesProvider extends ChangeNotifier {
       (car) => car.id == id,
     );
     cart.cartName = name.isNotEmpty ? name : null;
+    await CartFunc().updateMainCart(currentMainCart());
+    notifyListeners();
+  }
+
+  Future<void> updateReceiptCreatedDate(
+  // String id,
+  {DateTime? createdDate}) async {
+    var cart = currentMainCart().cartQueue.firstWhere(
+      (car) => car.id == currentCart().id,
+    );
+    cart.customDate = createdDate;
     await CartFunc().updateMainCart(currentMainCart());
     notifyListeners();
   }
@@ -457,6 +470,7 @@ class SalesProvider extends ChangeNotifier {
       await addNewCart(
         context,
         TempCart(
+          customDate: null,
           departmentName: null,
           departmentUuid: null,
           staffId: currentUser().userId,
@@ -986,9 +1000,7 @@ class SalesProvider extends ChangeNotifier {
     // String? customerName,
   }) async {
     bool isOnline = await connectivity.isOnline();
-    final createdAt =
-        currentCart().createdDate?.toUtc() ??
-        DateTime.now().toUtc();
+    final createdAt = currentCart().returnDate();
 
     if (currentCart().isInvoice) {
       print('Current Sale is Invoice');
@@ -2247,6 +2259,7 @@ class SalesProvider extends ChangeNotifier {
             .isEmpty) {
           var newId = uuidGen();
           var tempCart = TempCart(
+            customDate: null,
             departmentName: receipt.departmentName,
             departmentUuid: receipt.departmentUuidNew,
             subStaffUuid: receipt.subStaffUuid,
@@ -2321,6 +2334,7 @@ class SalesProvider extends ChangeNotifier {
                 await addNewCart(
                   context,
                   TempCart(
+                    customDate: null,
                     departmentName: null,
                     departmentUuid: null,
                     cartItems: [],
