@@ -76,6 +76,8 @@ class _CartItemMainState extends State<CartItemMain> {
                       Row(
                         mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
+                        // crossAxisAlignment:
+                        //     CrossAxisAlignment.end,
                         children: [
                           Flexible(
                             child: Row(
@@ -103,51 +105,69 @@ class _CartItemMainState extends State<CartItemMain> {
                                             .item
                                             .name,
                                       ),
-                                      Text(
-                                        [
-                                          if (widget
-                                                  .cartItem
-                                                  .item
-                                                  .color !=
-                                              null)
+                                      Visibility(
+                                        visible:
                                             widget
-                                                .cartItem
-                                                .item
-                                                .color,
-                                          if (widget
-                                                  .cartItem
-                                                  .item
-                                                  .sizeType !=
-                                              null)
+                                                    .cartItem
+                                                    .item
+                                                    .color !=
+                                                null ||
                                             widget
-                                                .cartItem
-                                                .item
-                                                .sizeType,
-                                          if (widget
-                                                  .cartItem
-                                                  .item
-                                                  .size !=
-                                              null)
+                                                    .cartItem
+                                                    .item
+                                                    .sizeType !=
+                                                null ||
                                             widget
-                                                .cartItem
-                                                .item
-                                                .size,
-                                        ].join('  |  '),
-                                        style: TextStyle(
-                                          fontSize:
+                                                    .cartItem
+                                                    .item
+                                                    .size !=
+                                                null,
+                                        child: Text(
+                                          [
+                                            if (widget
+                                                    .cartItem
+                                                    .item
+                                                    .color !=
+                                                null)
                                               widget
-                                                  .theme
-                                                  .mobileTexts
-                                                  .b3
-                                                  .fontSize,
-                                          fontWeight:
-                                              FontWeight
-                                                  .w600,
-                                          color:
+                                                  .cartItem
+                                                  .item
+                                                  .color,
+                                            if (widget
+                                                    .cartItem
+                                                    .item
+                                                    .sizeType !=
+                                                null)
                                               widget
-                                                  .theme
-                                                  .lightModeColor
-                                                  .secColor200,
+                                                  .cartItem
+                                                  .item
+                                                  .sizeType,
+                                            if (widget
+                                                    .cartItem
+                                                    .item
+                                                    .size !=
+                                                null)
+                                              widget
+                                                  .cartItem
+                                                  .item
+                                                  .size,
+                                          ].join('  |  '),
+                                          style: TextStyle(
+                                            fontSize:
+                                                widget
+                                                    .theme
+                                                    .mobileTexts
+                                                    .b3
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .w600,
+                                            color:
+                                                widget
+                                                    .theme
+                                                    .lightModeColor
+                                                    .secColor200,
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -170,9 +190,12 @@ class _CartItemMainState extends State<CartItemMain> {
                           ),
                         ],
                       ),
+                      SizedBox(height: 10),
                       Row(
                         mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
                         children: [
                           Row(
                             spacing: 5,
@@ -279,6 +302,10 @@ class _CartItemMainState extends State<CartItemMain> {
                                     child: Row(
                                       spacing: 10,
                                       children: [
+                                        SvgPicture.asset(
+                                          height: 16,
+                                          editIconSvg,
+                                        ),
                                         Center(
                                           child: Text(
                                             style: TextStyle(
@@ -297,10 +324,6 @@ class _CartItemMainState extends State<CartItemMain> {
                                                   .quantity,
                                             ),
                                           ),
-                                        ),
-                                        SvgPicture.asset(
-                                          height: 16,
-                                          editIconSvg,
                                         ),
                                       ],
                                     ),

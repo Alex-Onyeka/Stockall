@@ -841,6 +841,10 @@ class _MakeSalesDesktopTwoState
                                                   returnSalesProvider().addNewCart(
                                                     context,
                                                     TempCart(
+                                                      hasPrintedDocket:
+                                                          false,
+                                                      subStaffName:
+                                                          null,
                                                       customDate:
                                                           null,
                                                       departmentName:

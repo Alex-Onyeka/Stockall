@@ -126,6 +126,8 @@ class Authorizations {
   String manageSubStaff = 'Manage Sub Staff';
   String manageShopDashboard = 'Manage Store Dashboard';
   String toggleUseGroupUnit = 'Toggle Use Group Unit';
+  String toggleOnScreenKeyboard =
+      'Toggle On Screen Keyboard';
   String viewAllDepartments = 'View All Departments';
   String updateItemQuantity = 'Update Item Quantity';
   String viewItemQuantity = 'View Item Quantity';
@@ -787,75 +789,169 @@ Future<Uint8List> _buildPdf(
                   pw.Builder(
                     builder: (context) {
                       if (shop.showFirst!) {
-                        return pw.Row(
-                          mainAxisAlignment:
-                              pw
-                                  .MainAxisAlignment
-                                  .spaceEvenly,
+                        return pw.Column(
                           children: [
-                            pw.Expanded(
-                              child: pw.Column(
-                                crossAxisAlignment:
-                                    pw
-                                        .CrossAxisAlignment
-                                        .start,
-                                children: [
-                                  pw.Text(
-                                    style: pw.TextStyle(
-                                      font: fontRegular,
-                                      fontSize: 9,
-                                    ),
-                                    'Staff Name:',
-                                  ),
-                                  pw.SizedBox(height: 5),
-                                  pw.Text(
-                                    style: pw.TextStyle(
-                                      font: fontBold,
-                                      fontSize: 10,
-                                    ),
-                                    staffName,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            pw.Builder(
-                              builder: (context) {
-                                if (receipt.customerUuid !=
-                                    null) {
-                                  return pw.Expanded(
-                                    child: pw.Column(
-                                      crossAxisAlignment:
-                                          pw
-                                              .CrossAxisAlignment
-                                              .start,
-                                      children: [
-                                        pw.Text(
-                                          style: pw.TextStyle(
-                                            font:
-                                                fontRegular,
-                                            fontSize: 9,
-                                          ),
-                                          'Customer Name:',
+                            pw.Row(
+                              mainAxisAlignment:
+                                  pw
+                                      .MainAxisAlignment
+                                      .spaceEvenly,
+                              children: [
+                                pw.Expanded(
+                                  child: pw.Column(
+                                    crossAxisAlignment:
+                                        pw
+                                            .CrossAxisAlignment
+                                            .start,
+                                    children: [
+                                      pw.Text(
+                                        style: pw.TextStyle(
+                                          font: fontRegular,
+                                          fontSize: 9,
                                         ),
-                                        pw.SizedBox(
-                                          height: 5,
+                                        'Staff Name:',
+                                      ),
+                                      pw.SizedBox(
+                                        height: 5,
+                                      ),
+                                      pw.Text(
+                                        style: pw.TextStyle(
+                                          font: fontBold,
+                                          fontSize: 10,
                                         ),
-                                        pw.Text(
-                                          style:
-                                              pw.TextStyle(
+                                        staffName,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                pw.Builder(
+                                  builder: (context) {
+                                    if (receipt
+                                            .customerUuid !=
+                                        null) {
+                                      return pw.Expanded(
+                                        child: pw.Column(
+                                          crossAxisAlignment:
+                                              pw
+                                                  .CrossAxisAlignment
+                                                  .start,
+                                          children: [
+                                            pw.Text(
+                                              style: pw.TextStyle(
+                                                font:
+                                                    fontRegular,
+                                                fontSize: 9,
+                                              ),
+                                              'Customer Name:',
+                                            ),
+                                            pw.SizedBox(
+                                              height: 5,
+                                            ),
+                                            pw.Text(
+                                              style: pw.TextStyle(
                                                 font:
                                                     fontBold,
                                                 fontSize:
                                                     10,
                                               ),
-                                          receipt.customerName ??
-                                              'Not Set',
+                                              receipt.customerName ??
+                                                  'Not Set',
+                                            ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
+                                      );
+                                    } else {
+                                      return pw.Container();
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                            pw.Builder(
+                              builder: (beansContext) {
+                                if (receipt.subStaffName !=
+                                    null) {
+                                  return pw.Column(
+                                    children: [
+                                      pw.SizedBox(
+                                        height: 10,
+                                      ),
+                                      pw.Row(
+                                        mainAxisAlignment:
+                                            pw
+                                                .MainAxisAlignment
+                                                .spaceEvenly,
+                                        children: [
+                                          pw.Expanded(
+                                            child: pw.Column(
+                                              crossAxisAlignment:
+                                                  pw
+                                                      .CrossAxisAlignment
+                                                      .start,
+                                              children: [
+                                                pw.Text(
+                                                  style: pw.TextStyle(
+                                                    font:
+                                                        fontRegular,
+                                                    fontSize:
+                                                        9,
+                                                  ),
+                                                  'Waiter:',
+                                                ),
+                                                pw.SizedBox(
+                                                  height: 5,
+                                                ),
+                                                pw.Text(
+                                                  style: pw.TextStyle(
+                                                    font:
+                                                        fontBold,
+                                                    fontSize:
+                                                        10,
+                                                  ),
+                                                  receipt.subStaffName ??
+                                                      'Not Set',
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          pw.Expanded(
+                                            child: pw.Column(
+                                              crossAxisAlignment:
+                                                  pw
+                                                      .CrossAxisAlignment
+                                                      .start,
+                                              children: [
+                                                pw.Text(
+                                                  style: pw.TextStyle(
+                                                    font:
+                                                        fontRegular,
+                                                    fontSize:
+                                                        9,
+                                                  ),
+                                                  'Receipt Id:',
+                                                ),
+                                                pw.SizedBox(
+                                                  height: 5,
+                                                ),
+                                                pw.Text(
+                                                  style: pw.TextStyle(
+                                                    font:
+                                                        fontBold,
+                                                    fontSize:
+                                                        10,
+                                                  ),
+                                                  receipt.cartName ??
+                                                      'Not Set',
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   );
                                 } else {
-                                  return pw.Container();
+                                  return pw.SizedBox();
                                 }
                               },
                             ),
@@ -923,29 +1019,61 @@ Future<Uint8List> _buildPdf(
                                       pw.SizedBox(
                                         height: 5,
                                       ),
-                                      pw.Column(
-                                        crossAxisAlignment:
-                                            pw
-                                                .CrossAxisAlignment
-                                                .start,
-                                        children: [
-                                          pw.Text(
-                                            style: pw.TextStyle(
-                                              font:
-                                                  fontRegular,
-                                              fontSize: 8,
-                                            ),
-                                            'Cash: ${formatMoneyMid(amount: receipt.cashAlt, context: context)}',
-                                          ),
-                                          pw.Text(
-                                            style: pw.TextStyle(
-                                              font:
-                                                  fontRegular,
-                                              fontSize: 8,
-                                            ),
-                                            'Bank: ${formatMoneyMid(amount: receipt.bank, context: context)}',
-                                          ),
-                                        ],
+                                      pw.Builder(
+                                        builder: (
+                                          beansContext,
+                                        ) {
+                                          if (receipt
+                                                  .bank ==
+                                              0) {
+                                            return pw.Text(
+                                              style: pw.TextStyle(
+                                                font:
+                                                    fontRegular,
+                                                fontSize: 8,
+                                              ),
+                                              'Cash: ${formatMoneyMid(amount: receipt.cashAlt, context: context)}',
+                                            );
+                                          } else if (receipt
+                                                  .cashAlt ==
+                                              0) {
+                                            return pw.Text(
+                                              style: pw.TextStyle(
+                                                font:
+                                                    fontRegular,
+                                                fontSize: 8,
+                                              ),
+                                              'Bank: ${formatMoneyMid(amount: receipt.bank, context: context)}',
+                                            );
+                                          } else {
+                                            return pw.Column(
+                                              crossAxisAlignment:
+                                                  pw
+                                                      .CrossAxisAlignment
+                                                      .start,
+                                              children: [
+                                                pw.Text(
+                                                  style: pw.TextStyle(
+                                                    font:
+                                                        fontRegular,
+                                                    fontSize:
+                                                        8,
+                                                  ),
+                                                  'Cash: ${formatMoneyMid(amount: receipt.cashAlt, context: context)}',
+                                                ),
+                                                pw.Text(
+                                                  style: pw.TextStyle(
+                                                    font:
+                                                        fontRegular,
+                                                    fontSize:
+                                                        8,
+                                                  ),
+                                                  'Bank: ${formatMoneyMid(amount: receipt.bank, context: context)}',
+                                                ),
+                                              ],
+                                            );
+                                          }
+                                        },
                                       ),
                                     ],
                                   ),
@@ -1751,7 +1879,7 @@ Future<Uint8List> _buildPdfRoll(
                 ),
                 pw.SizedBox(height: 2),
                 pw.Builder(
-                  builder: (pw.Context pdfContext) {
+                  builder: (context) {
                     if (shop.showFirst!) {
                       return pw.Column(
                         children: [
@@ -1787,7 +1915,7 @@ Future<Uint8List> _buildPdfRoll(
                                 ),
                               ),
                               pw.Builder(
-                                builder: (pdfContext) {
+                                builder: (context) {
                                   if (receipt
                                           .customerUuid !=
                                       null) {
@@ -1829,6 +1957,92 @@ Future<Uint8List> _buildPdfRoll(
                                 },
                               ),
                             ],
+                          ),
+                          pw.Builder(
+                            builder: (beansContext) {
+                              if (receipt.subStaffName !=
+                                  null) {
+                                return pw.Column(
+                                  children: [
+                                    pw.SizedBox(height: 3),
+                                    pw.Row(
+                                      mainAxisAlignment:
+                                          pw
+                                              .MainAxisAlignment
+                                              .spaceEvenly,
+                                      children: [
+                                        pw.Expanded(
+                                          child: pw.Column(
+                                            crossAxisAlignment:
+                                                pw
+                                                    .CrossAxisAlignment
+                                                    .start,
+                                            children: [
+                                              pw.Text(
+                                                style: pw.TextStyle(
+                                                  font:
+                                                      fontRegular,
+                                                  fontSize:
+                                                      parText,
+                                                ),
+                                                'Waiter:',
+                                              ),
+                                              pw.SizedBox(
+                                                height: 1,
+                                              ),
+                                              pw.Text(
+                                                style: pw.TextStyle(
+                                                  font:
+                                                      fontBold,
+                                                  fontSize:
+                                                      parText,
+                                                ),
+                                                receipt.subStaffName ??
+                                                    'Not Set',
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        pw.Expanded(
+                                          child: pw.Column(
+                                            crossAxisAlignment:
+                                                pw
+                                                    .CrossAxisAlignment
+                                                    .start,
+                                            children: [
+                                              pw.Text(
+                                                style: pw.TextStyle(
+                                                  font:
+                                                      fontRegular,
+                                                  fontSize:
+                                                      parText,
+                                                ),
+                                                'Receipt Id:',
+                                              ),
+                                              pw.SizedBox(
+                                                height: 1,
+                                              ),
+                                              pw.Text(
+                                                style: pw.TextStyle(
+                                                  font:
+                                                      fontBold,
+                                                  fontSize:
+                                                      parText,
+                                                ),
+                                                receipt.cartName ??
+                                                    'Not Set',
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                );
+                              } else {
+                                return pw.SizedBox();
+                              }
+                            },
                           ),
                         ],
                       );
@@ -1889,31 +2103,62 @@ Future<Uint8List> _buildPdfRoll(
                                       'Amount(s):',
                                     ),
                                     pw.SizedBox(height: 1),
-                                    pw.Column(
-                                      crossAxisAlignment:
-                                          pw
-                                              .CrossAxisAlignment
-                                              .start,
-                                      children: [
-                                        pw.Text(
-                                          style: pw.TextStyle(
-                                            font:
-                                                fontRegular,
-                                            fontSize:
-                                                parTextAlt,
-                                          ),
-                                          'Cash: ${formatMoneyMid(amount: receipt.cashAlt, context: context)}',
-                                        ),
-                                        pw.Text(
-                                          style: pw.TextStyle(
-                                            font:
-                                                fontRegular,
-                                            fontSize:
-                                                parTextAlt,
-                                          ),
-                                          'Bank: ${formatMoneyMid(amount: receipt.bank, context: context)}',
-                                        ),
-                                      ],
+                                    pw.Builder(
+                                      builder: (
+                                        beansContext,
+                                      ) {
+                                        if (receipt.bank ==
+                                            0) {
+                                          return pw.Text(
+                                            style: pw.TextStyle(
+                                              font:
+                                                  fontRegular,
+                                              fontSize:
+                                                  parTextAlt,
+                                            ),
+                                            'Cash: ${formatMoneyMid(amount: receipt.cashAlt, context: context)}',
+                                          );
+                                        } else if (receipt
+                                                .cashAlt ==
+                                            0) {
+                                          return pw.Text(
+                                            style: pw.TextStyle(
+                                              font:
+                                                  fontRegular,
+                                              fontSize:
+                                                  parTextAlt,
+                                            ),
+                                            'Bank: ${formatMoneyMid(amount: receipt.bank, context: context)}',
+                                          );
+                                        } else {
+                                          return pw.Column(
+                                            crossAxisAlignment:
+                                                pw
+                                                    .CrossAxisAlignment
+                                                    .start,
+                                            children: [
+                                              pw.Text(
+                                                style: pw.TextStyle(
+                                                  font:
+                                                      fontRegular,
+                                                  fontSize:
+                                                      parTextAlt,
+                                                ),
+                                                'Cash: ${formatMoneyMid(amount: receipt.cashAlt, context: context)}',
+                                              ),
+                                              pw.Text(
+                                                style: pw.TextStyle(
+                                                  font:
+                                                      fontRegular,
+                                                  fontSize:
+                                                      parTextAlt,
+                                                ),
+                                                'Bank: ${formatMoneyMid(amount: receipt.bank, context: context)}',
+                                              ),
+                                            ],
+                                          );
+                                        }
+                                      },
                                     ),
                                   ],
                                 ),

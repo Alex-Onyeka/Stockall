@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/constants/bottom_sheet_widgets.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -46,6 +47,14 @@ class _GeneralTextfieldOnlyState
     return Form(
       key: widget.formState,
       child: TextFormField(
+        onTap: () {
+          if (returnShopProvider()
+                  .userShop()
+                  ?.useScreenKeyboard ==
+              true) {
+            showOnScreenKeyboard();
+          }
+        },
         validator: (value) {
           if (widget.formState != null &&
               value != null &&

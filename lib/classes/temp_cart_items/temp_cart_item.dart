@@ -223,6 +223,14 @@ class TempCartItem extends HiveObject {
     return quantity * getQttyPerGroup();
   }
 
+  double getRealQuantity() {
+    if (useGroupQuantity == true) {
+      return quantity * getQttyPerGroup();
+    } else {
+      return quantity;
+    }
+  }
+
   String getUnit() {
     if (useGroupQuantity == true) {
       if (item.groupUnit == 'Others' ||

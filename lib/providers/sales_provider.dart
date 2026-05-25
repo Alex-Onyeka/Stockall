@@ -153,6 +153,8 @@ class SalesProvider extends ChangeNotifier {
         TempMainCart(
           cartQueue: [
             TempCart(
+              hasPrintedDocket: false,
+              subStaffName: null,
               customDate: null,
               departmentName: null,
               departmentUuid: null,
@@ -264,6 +266,8 @@ class SalesProvider extends ChangeNotifier {
               .cartQueue
               .add(
                 TempCart(
+                  hasPrintedDocket: false,
+                  subStaffName: null,
                   customDate: null,
                   departmentName: null,
                   departmentUuid: null,
@@ -330,6 +334,15 @@ class SalesProvider extends ChangeNotifier {
       (car) => car.id == id,
     );
     cart.cartName = name.isNotEmpty ? name : null;
+    await CartFunc().updateMainCart(currentMainCart());
+    notifyListeners();
+  }
+
+  Future<void> updateCurrentCartIsPrintedDocket() async {
+    var cart = currentMainCart().cartQueue.firstWhere(
+      (car) => car.id == currentCart().id,
+    );
+    cart.hasPrintedDocket = true;
     await CartFunc().updateMainCart(currentMainCart());
     notifyListeners();
   }
@@ -470,6 +483,8 @@ class SalesProvider extends ChangeNotifier {
       await addNewCart(
         context,
         TempCart(
+          hasPrintedDocket: false,
+          subStaffName: null,
           customDate: null,
           departmentName: null,
           departmentUuid: null,
@@ -1005,6 +1020,9 @@ class SalesProvider extends ChangeNotifier {
     if (currentCart().isInvoice) {
       print('Current Sale is Invoice');
       TempInvoice invoice = TempInvoice(
+        subStaffName:
+            currentCart().subStaffName ??
+            currentMainCart().subStaff?.staffName,
         departmentName: departmentName(),
         departmentUuidNew: departmentUuid(),
         createdAt: createdAt,
@@ -1096,6 +1114,9 @@ class SalesProvider extends ChangeNotifier {
           receiptUuid = uuidGen();
 
           TempMainReceipt receipt = TempMainReceipt(
+            subStaffName:
+                currentCart().subStaffName ??
+                currentMainCart().subStaff?.staffName,
             departmentName: departmentName(),
             departmentUuidNew: departmentUuid(),
             createdAt: createdAt,
@@ -1412,6 +1433,9 @@ class SalesProvider extends ChangeNotifier {
           currentCart().id ??
           uuidGen();
       TempMainReceipt receipt = TempMainReceipt(
+        subStaffName:
+            currentCart().subStaffName ??
+            currentMainCart().subStaff?.staffName,
         departmentName: departmentName(),
         departmentUuidNew: departmentUuid(),
         createdAt: createdAt,
@@ -1842,22 +1866,42 @@ class SalesProvider extends ChangeNotifier {
   //
 
   bool canAddProductToCart({
-    required TempProductClass product,
+    required TempCartItem newCartItem,
     required double quantityToAdd,
   }) {
     double totalInAllCarts = 0;
-    for (final cart in currentMainCart().cartQueue) {
-      for (final cartItem in cart.cartItems) {
-        if (cartItem.item.uuid == product.uuid) {
-          totalInAllCarts += cartItem.quantity;
+    for (var mainCart in mainCartQueue) {
+      for (final cart in mainCart.cartQueue) {
+        for (final cartItem in cart.cartItems) {
+          if (cartItem.item.uuid == newCartItem.item.uuid) {
+            if (returnShopProvider()
+                    .userShop()
+                    ?.useGroupUnit ==
+                true) {
+              totalInAllCarts += cartItem.getRealQuantity();
+            } else {
+              totalInAllCarts += cartItem.quantity;
+            }
+          }
         }
       }
     }
-    double newTotal = totalInAllCarts + quantityToAdd;
-    double availableQty = product.quantity ?? 0;
+    print('Total Qtty in Carts: $totalInAllCarts');
+    double newTotal =
+        totalInAllCarts +
+        (returnShopProvider().userShop()?.useGroupUnit ==
+                true
+            ? (quantityToAdd *
+                (newCartItem.useGroupQuantity == true
+                    ? newCartItem.getQttyPerGroup()
+                    : 1))
+            : quantityToAdd);
+    double availableQty = newCartItem.item.quantity ?? 0;
     if (newTotal > availableQty &&
-        returnData().productList().contains(product) &&
-        product.isManaged) {
+        returnData().productList().contains(
+          newCartItem.item,
+        ) &&
+        newCartItem.item.isManaged) {
       print(
         'Cannot add — total ($newTotal) exceeds available stock ($availableQty)',
       );
@@ -1878,7 +1922,7 @@ class SalesProvider extends ChangeNotifier {
     required bool isCustomEdit,
   }) async {
     if (canAddProductToCart(
-      product: newItem.item,
+      newCartItem: newItem,
       quantityToAdd: newItem.quantity,
     )) {
       String result = '';
@@ -2259,6 +2303,8 @@ class SalesProvider extends ChangeNotifier {
             .isEmpty) {
           var newId = uuidGen();
           var tempCart = TempCart(
+            hasPrintedDocket: false,
+            subStaffName: receipt.subStaffName,
             customDate: null,
             departmentName: receipt.departmentName,
             departmentUuid: receipt.departmentUuidNew,
@@ -2334,6 +2380,8 @@ class SalesProvider extends ChangeNotifier {
                 await addNewCart(
                   context,
                   TempCart(
+                    hasPrintedDocket: false,
+                    subStaffName: null,
                     customDate: null,
                     departmentName: null,
                     departmentUuid: null,

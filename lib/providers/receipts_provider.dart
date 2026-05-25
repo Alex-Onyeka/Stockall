@@ -203,79 +203,91 @@ class ReceiptsProvider extends ChangeNotifier {
   }
 
   // DELETE a receipt
-  Future<void> deleteReceipt(
+  Future<int> deleteReceipt(
     TempMainReceipt receipt,
     List<String> productNames,
     // BuildContext context,
   ) async {
-    print('Deleting Receipt');
-    bool isOnline = await connectivity.isOnline();
-    if (isOnline) {
-      print('Deleting Receipt Online');
-      await supabase.rpc(
-        'delete_receipt_and_update_inventory_new',
-        params: {'target_receipt_uuid': receipt.uuid},
-      );
-      print('Finished Deleting Receipt Online');
-      var containsUpdate = UpdatedReceiptsFunc()
-          .getReceiptIds()
-          .where((rec) => rec.receiptUuid == receipt.uuid);
-      if (containsUpdate.isNotEmpty) {
-        await UpdatedReceiptsFunc().deleteUpdatedReceipt(
-          receipt.uuid!,
+    try {
+      print('Deleting Receipt');
+      bool isOnline = await connectivity.isOnline();
+      if (isOnline) {
+        print('Deleting Receipt Online');
+        await supabase.rpc(
+          'delete_receipt_and_update_inventory_new',
+          params: {'target_receipt_uuid': receipt.uuid},
         );
-      }
-    } else {
-      print('Deleting Receipt Offline');
-      await MainReceiptFunc().deleteReceipt(receipt.uuid!);
-      var containsCreated =
-          CreatedReceiptsFunc()
-              .getReceipts()
-              .where(
-                (rec) => rec.receipt.uuid == receipt.uuid,
-              )
-              .toList();
-      var containsUpdate = UpdatedReceiptsFunc()
-          .getReceiptIds()
-          .where((rec) => rec.receiptUuid == receipt.uuid!);
-      if (containsCreated.isNotEmpty) {
-        await CreatedReceiptsFunc().deleteReceipt(
-          receipt.uuid!,
-        );
+        print('Finished Deleting Receipt Online');
+        var containsUpdate = UpdatedReceiptsFunc()
+            .getReceiptIds()
+            .where(
+              (rec) => rec.receiptUuid == receipt.uuid,
+            );
+        if (containsUpdate.isNotEmpty) {
+          await UpdatedReceiptsFunc().deleteUpdatedReceipt(
+            receipt.uuid!,
+          );
+        }
       } else {
-        await DeletedReceiptsFunc().createDeletedReceipt(
-          DeletedReceipts(receiptUuid: receipt.uuid!),
+        print('Deleting Receipt Offline');
+        await MainReceiptFunc().deleteReceipt(
+          receipt.uuid!,
         );
-      }
-      if (containsUpdate.isNotEmpty) {
-        await UpdatedReceiptsFunc().deleteUpdatedReceipt(
+        var containsCreated =
+            CreatedReceiptsFunc()
+                .getReceipts()
+                .where(
+                  (rec) => rec.receipt.uuid == receipt.uuid,
+                )
+                .toList();
+        var containsUpdate = UpdatedReceiptsFunc()
+            .getReceiptIds()
+            .where(
+              (rec) => rec.receiptUuid == receipt.uuid!,
+            );
+        if (containsCreated.isNotEmpty) {
+          await CreatedReceiptsFunc().deleteReceipt(
+            receipt.uuid!,
+          );
+        } else {
+          await DeletedReceiptsFunc().createDeletedReceipt(
+            DeletedReceipts(receiptUuid: receipt.uuid!),
+          );
+        }
+        if (containsUpdate.isNotEmpty) {
+          await UpdatedReceiptsFunc().deleteUpdatedReceipt(
+            receipt.uuid!,
+          );
+        }
+        await ProductRecordFunc().deleteRecordsInReceipt(
           receipt.uuid!,
         );
       }
-      await ProductRecordFunc().deleteRecordsInReceipt(
-        receipt.uuid!,
+      if (productNames.isNotEmpty) {
+        await returnEventsLogProvider().createLog(
+          returnEventsLogProvider().receiptAdapter(
+            receipt,
+            productNames,
+            3,
+          ),
+        );
+      }
+
+      print(
+        '✅ Receipt and inventory successfully Delete and Updated.',
       );
-    }
-    if (productNames.isNotEmpty) {
-      await returnEventsLogProvider().createLog(
-        returnEventsLogProvider().receiptAdapter(
-          receipt,
-          productNames,
-          3,
-        ),
+
+      await loadReceipts(
+        returnShopProvider().userShop()!.shopId!,
       );
+
+      print('Totally Finished Deleting Receipt');
+      notifyListeners();
+      return 1;
+    } catch (e) {
+      print('Error Deleting Receipt: ${e.toString()}');
+      return 0;
     }
-
-    print(
-      '✅ Receipt and inventory successfully Delete and Updated.',
-    );
-
-    await loadReceipts(
-      returnShopProvider().userShop()!.shopId!,
-    );
-
-    print('Totally Finished Deleting Receipt');
-    notifyListeners();
   }
 
   // DELETE a receipt

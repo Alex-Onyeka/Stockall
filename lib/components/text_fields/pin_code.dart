@@ -45,12 +45,6 @@ class _PinCodeWidgetState extends State<PinCodeWidget> {
         widget.onChanged != null
             ? widget.onChanged!(value)
             : {};
-        print(widget.controller.text);
-        // print(value);
-        print(widget.text);
-        //   if (value.length > 2) {
-        //     widget.controller.clear();
-        //   }
       },
       controller: widget.controller,
       onCompleted: (value) {

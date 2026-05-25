@@ -39,13 +39,14 @@ class TempInvoiceAdapter extends TypeAdapter<TempInvoice> {
       subStaffUuid: fields[22] as String?,
       departmentUuidNew: fields[23] as String?,
       cartName: fields[24] as String?,
+      subStaffName: fields[25] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempInvoice obj) {
     writer
-      ..writeByte(22)
+      ..writeByte(23)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -89,7 +90,9 @@ class TempInvoiceAdapter extends TypeAdapter<TempInvoice> {
       ..writeByte(23)
       ..write(obj.departmentUuidNew)
       ..writeByte(24)
-      ..write(obj.cartName);
+      ..write(obj.cartName)
+      ..writeByte(25)
+      ..write(obj.subStaffName);
   }
 
   @override

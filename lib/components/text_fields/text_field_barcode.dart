@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:stockall/constants/bottom_sheet_widgets.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/main.dart';
@@ -61,6 +62,12 @@ class _TextFieldBarcodeState
         setState(() {
           isFocus = true;
         });
+        if (returnShopProvider()
+                .userShop()
+                ?.useScreenKeyboard ==
+            true) {
+          showOnScreenKeyboard();
+        }
       },
       onTapOutside: (event) {
         setState(() {

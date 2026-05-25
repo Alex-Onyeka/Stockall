@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/constants/bottom_sheet_widgets.dart';
+import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class GeneralTextField extends StatefulWidget {
@@ -59,6 +61,14 @@ class _GeneralTextFieldState
           widget.title,
         ),
         TextFormField(
+          onTap: () {
+            if (returnShopProvider()
+                    .userShop()
+                    ?.useScreenKeyboard ==
+                true) {
+              showOnScreenKeyboard();
+            }
+          },
           focusNode: widget.focusNode,
           onFieldSubmitted: widget.onSubmitted,
           enabled: widget.isEnabled ?? true,

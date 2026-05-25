@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl_phone_field/country_picker_dialog.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:stockall/constants/bottom_sheet_widgets.dart';
+import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class PhoneNumberTextField extends StatefulWidget {
@@ -40,6 +42,14 @@ class _PhoneNumberTextFieldState
         ),
         SizedBox(height: 5),
         IntlPhoneField(
+          onTap: () {
+            if (returnShopProvider()
+                    .userShop()
+                    ?.useScreenKeyboard ==
+                true) {
+              showOnScreenKeyboard();
+            }
+          },
           onChanged: (value) {
             // if (widget.controller.text.split('').first ==
             //     '0') {

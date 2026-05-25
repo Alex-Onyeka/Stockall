@@ -346,6 +346,8 @@ class _CartQueueMobileState extends State<CartQueueMobile> {
                       returnSalesProvider().addNewCart(
                         context,
                         TempCart(
+                          hasPrintedDocket: false,
+                          subStaffName: null,
                           customDate: null,
                           departmentName: null,
                           departmentUuid: null,

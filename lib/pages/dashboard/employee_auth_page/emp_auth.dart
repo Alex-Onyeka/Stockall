@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
@@ -17,6 +18,7 @@ import 'package:stockall/pages/dashboard/components/button_tab.dart';
 import 'package:stockall/pages/dashboard/components/main_bottom_nav.dart';
 import 'package:stockall/pages/dashboard/components/top_nav_bar.dart';
 import 'package:stockall/pages/dashboard/components/total_sales_banner.dart';
+import 'package:stockall/providers/theme_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class EmpAuth extends StatefulWidget {
@@ -40,6 +42,38 @@ class _EmpAuthState extends State<EmpAuth> {
   //   if (!context.mounted) return;
   //   returnNavProvider(context, listen: false).verify();
   // }
+
+  void addDigit(String digit) {
+    if (pinController.text.length < 4) {
+      pinController.text += digit;
+
+      pinController.selection = TextSelection.fromPosition(
+        TextPosition(offset: pinController.text.length),
+      );
+    }
+  }
+
+  void removeDigit() {
+    if (pinController.text.isNotEmpty) {
+      pinController.text = pinController.text.substring(
+        0,
+        pinController.text.length - 1,
+      );
+
+      pinController.selection = TextSelection.fromPosition(
+        TextPosition(offset: pinController.text.length),
+      );
+    }
+  }
+
+  void actionPressed(String value) {
+    if (value != '00') {
+      addDigit(value);
+    } else {
+      removeDigit();
+    }
+    setState(() {});
+  }
 
   Future<TempUserClass?> fetchUserFromDatabase(
     String email,
@@ -318,429 +352,287 @@ class _EmpAuthState extends State<EmpAuth> {
                       255,
                       255,
                     ),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            height:
-                                MediaQuery.of(
-                                  context,
-                                ).size.height *
-                                0.2,
+                    child: Center(
+                      child: SingleChildScrollView(
+                        child: Container(
+                          width:
+                              screenWidth(context) <
+                                      mobileScreenSmall
+                                  ? screenWidth(context) *
+                                      0.95
+                                  : mobileScreen - 100,
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.circular(5),
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color.fromARGB(
+                                  31,
+                                  0,
+                                  0,
+                                  0,
+                                ),
+                                blurRadius: 5,
+                              ),
+                            ],
                           ),
-                          Container(
-                            width:
-                                screenWidth(context) <
-                                        mobileScreen
-                                    ? screenWidth(context) *
-                                        0.85
-                                    : mobileScreen - 100,
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.circular(5),
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color:
-                                      const Color.fromARGB(
-                                        31,
-                                        0,
-                                        0,
-                                        0,
-                                      ),
-                                  blurRadius: 5,
-                                ),
-                              ],
-                            ),
-                            padding:
-                                EdgeInsetsDirectional.symmetric(
-                                  horizontal: 20,
-                                  vertical: 20,
-                                ),
-                            child: Column(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.center,
-                              children: [
-                                Column(
-                                  children: [
-                                    SizedBox(height: 20),
-                                    Row(
-                                      spacing: 10,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment
-                                              .spaceBetween,
-                                      children: [
-                                        Expanded(
-                                          child: Material(
-                                            color:
-                                                Colors
-                                                    .transparent,
-                                            child: InkWell(
-                                              onTap: () {
-                                                setState(() {
-                                                  isPassword =
-                                                      false;
-                                                  pinController =
-                                                      TextEditingController();
-                                                });
-                                              },
-                                              child: Container(
-                                                padding:
-                                                    EdgeInsets.symmetric(
-                                                      vertical:
-                                                          10,
-                                                    ),
-                                                decoration: BoxDecoration(
-                                                  border: Border(
-                                                    bottom: BorderSide(
-                                                      color:
-                                                          !isPassword
-                                                              ? theme.lightModeColor.secColor200
-                                                              : Colors.grey.shade400,
-                                                      width:
-                                                          !isPassword
-                                                              ? 2
-                                                              : 1,
-                                                    ),
-                                                  ),
-                                                  color:
-                                                      !isPassword
-                                                          ? const Color.fromARGB(
-                                                            29,
-                                                            255,
-                                                            193,
-                                                            7,
-                                                          )
-                                                          : Colors.transparent,
-                                                ),
-                                                child: Center(
-                                                  child: Text(
-                                                    style: TextStyle(
-                                                      fontWeight:
-                                                          !isPassword
-                                                              ? FontWeight.bold
-                                                              : FontWeight.normal,
-                                                      color:
-                                                          !isPassword
-                                                              ? Colors.grey.shade800
-                                                              : Colors.grey.shade600,
-                                                      fontSize:
-                                                          13,
-                                                    ),
-                                                    'Enter Pin',
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Material(
-                                            color:
-                                                Colors
-                                                    .transparent,
-                                            child: InkWell(
-                                              onTap: () {
-                                                setState(() {
-                                                  isPassword =
-                                                      true;
-                                                });
-                                              },
-                                              child: Container(
-                                                padding:
-                                                    EdgeInsets.symmetric(
-                                                      vertical:
-                                                          10,
-                                                    ),
-                                                decoration: BoxDecoration(
-                                                  border: Border(
-                                                    bottom: BorderSide(
-                                                      color:
-                                                          isPassword
-                                                              ? theme.lightModeColor.secColor200
-                                                              : Colors.grey.shade400,
-                                                      width:
-                                                          isPassword
-                                                              ? 2
-                                                              : 1,
-                                                    ),
-                                                  ),
-                                                  color:
-                                                      isPassword
-                                                          ? const Color.fromARGB(
-                                                            29,
-                                                            255,
-                                                            193,
-                                                            7,
-                                                          )
-                                                          : Colors.transparent,
-                                                ),
-                                                child: Center(
-                                                  child: Text(
-                                                    style: TextStyle(
-                                                      fontWeight:
-                                                          isPassword
-                                                              ? FontWeight.bold
-                                                              : FontWeight.normal,
-                                                      color:
-                                                          isPassword
-                                                              ? Colors.grey.shade800
-                                                              : Colors.grey.shade600,
-                                                      fontSize:
-                                                          13,
-                                                    ),
-                                                    'Password',
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 30),
-                                    Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .h2
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
-                                      ),
-                                      'Login',
-                                    ),
-                                    SizedBox(height: 10),
-                                    Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b2
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight
-                                                .normal,
-                                      ),
-                                      'Enter your ${isPassword ? 'password' : 'PIN'} to Login',
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 15),
-                                Stack(
-                                  children: [
-                                    Visibility(
-                                      visible: isPassword,
-                                      child: Column(
-                                        children: [
-                                          EmailTextField(
-                                            controller:
-                                                passwordController,
-                                            theme: theme,
-                                            isEmail: false,
-                                            hint:
-                                                'Enter Password',
-                                            title:
-                                                'Password',
-                                          ),
-                                          SizedBox(
-                                            height: 30,
-                                          ),
-                                          MainButtonP(
-                                            themeProvider:
-                                                theme,
-                                            action: () async {
-                                              if (passwordController
-                                                  .text
-                                                  .isEmpty) {
-                                                if (context
-                                                    .mounted) {
-                                                  showDialog(
-                                                    context:
-                                                        context,
-                                                    builder: (
-                                                      context,
-                                                    ) {
-                                                      return InfoAlert(
-                                                        theme:
-                                                            theme,
-                                                        message:
-                                                            'Password fields must be set.',
-                                                        title:
-                                                            'Empty Fields',
-                                                      );
-                                                    },
-                                                  );
-                                                }
-                                              } else {
-                                                setState(() {
-                                                  isLoading =
-                                                      true;
-                                                });
-
-                                                TempUserClass?
-                                                user = await fetchUserFromDatabase(
-                                                  AuthService()
-                                                      .currentUserEmail!,
-                                                  AuthService()
-                                                      .currentUser!,
-                                                );
-
-                                                setState(() {
-                                                  isLoading =
-                                                      false;
-                                                });
-
-                                                if (user !=
-                                                        null &&
-                                                    context
-                                                        .mounted) {
-                                                  if (user.password !=
-                                                      passwordController
-                                                          .text
-                                                          .trim()) {
-                                                    if (context
-                                                        .mounted) {
-                                                      setState(() {
-                                                        isLoading =
-                                                            false;
-                                                      });
-                                                      showDialog(
-                                                        context:
-                                                            context,
-                                                        builder: (
-                                                          context,
-                                                        ) {
-                                                          return InfoAlert(
-                                                            theme:
-                                                                theme,
-                                                            message:
-                                                                'Your password is not correct. Check it and try again.',
-                                                            title:
-                                                                'Incorrect Password',
-                                                          );
-                                                        },
-                                                      );
-                                                    }
-                                                  } else {
-                                                    setState(() {
-                                                      showSuccess =
-                                                          true;
-                                                    });
-                                                    await Future.delayed(
-                                                      Duration(
-                                                        seconds:
-                                                            2,
-                                                      ),
-                                                    );
-                                                    if (context
-                                                        .mounted) {
-                                                      widget
-                                                          .action!();
-                                                    }
-                                                    passwordController
-                                                        .clear();
-                                                    setState(() {
-                                                      showSuccess =
-                                                          false;
-                                                    });
-                                                  }
-                                                } else {
-                                                  setState(() {
-                                                    isLoading =
-                                                        false;
-                                                  });
-                                                  if (!context
-                                                      .mounted)
-                                                    return;
-                                                  showDialog(
-                                                    context:
-                                                        context,
-                                                    builder: (
-                                                      context,
-                                                    ) {
-                                                      return InfoAlert(
-                                                        theme:
-                                                            theme,
-                                                        message:
-                                                            'User is Not found. Please check your details, and network and try again.',
-                                                        title:
-                                                            'User not found',
-                                                      );
-                                                    },
-                                                  );
-                                                }
-                                              }
+                          padding:
+                              EdgeInsetsDirectional.symmetric(
+                                horizontal:
+                                    screenWidth(context) <
+                                            mobileScreenSmall
+                                        ? 10
+                                        : 20,
+                                vertical: 20,
+                              ),
+                          child: Column(
+                            mainAxisAlignment:
+                                MainAxisAlignment.center,
+                            children: [
+                              Column(
+                                children: [
+                                  SizedBox(height: 20),
+                                  Row(
+                                    spacing: 10,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Material(
+                                          color:
+                                              Colors
+                                                  .transparent,
+                                          child: InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                isPassword =
+                                                    false;
+                                                pinController =
+                                                    TextEditingController();
+                                              });
                                             },
-
-                                            text: 'Login',
-                                          ),
-                                          SizedBox(
-                                            height: 20,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Visibility(
-                                      visible: !isPassword,
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.symmetric(
-                                              horizontal: 0,
-                                            ),
-                                        child: Column(
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Text(
+                                            child: Container(
+                                              padding:
+                                                  EdgeInsets.symmetric(
+                                                    vertical:
+                                                        10,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                border: Border(
+                                                  bottom: BorderSide(
+                                                    color:
+                                                        !isPassword
+                                                            ? theme.lightModeColor.secColor200
+                                                            : Colors.grey.shade400,
+                                                    width:
+                                                        !isPassword
+                                                            ? 2
+                                                            : 1,
+                                                  ),
+                                                ),
+                                                color:
+                                                    !isPassword
+                                                        ? const Color.fromARGB(
+                                                          29,
+                                                          255,
+                                                          193,
+                                                          7,
+                                                        )
+                                                        : Colors.transparent,
+                                              ),
+                                              child: Center(
+                                                child: Text(
                                                   style: TextStyle(
                                                     fontWeight:
-                                                        FontWeight.bold,
+                                                        !isPassword
+                                                            ? FontWeight.bold
+                                                            : FontWeight.normal,
                                                     color:
-                                                        Colors.grey.shade700,
+                                                        !isPassword
+                                                            ? Colors.grey.shade800
+                                                            : Colors.grey.shade600,
+                                                    fontSize:
+                                                        13,
                                                   ),
-                                                  'Enter PIN',
+                                                  'Enter Pin',
                                                 ),
-                                              ],
+                                              ),
                                             ),
-                                            SizedBox(
-                                              height: 10,
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Material(
+                                          color:
+                                              Colors
+                                                  .transparent,
+                                          child: InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                isPassword =
+                                                    true;
+                                              });
+                                            },
+                                            child: Container(
+                                              padding:
+                                                  EdgeInsets.symmetric(
+                                                    vertical:
+                                                        10,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                border: Border(
+                                                  bottom: BorderSide(
+                                                    color:
+                                                        isPassword
+                                                            ? theme.lightModeColor.secColor200
+                                                            : Colors.grey.shade400,
+                                                    width:
+                                                        isPassword
+                                                            ? 2
+                                                            : 1,
+                                                  ),
+                                                ),
+                                                color:
+                                                    isPassword
+                                                        ? const Color.fromARGB(
+                                                          29,
+                                                          255,
+                                                          193,
+                                                          7,
+                                                        )
+                                                        : Colors.transparent,
+                                              ),
+                                              child: Center(
+                                                child: Text(
+                                                  style: TextStyle(
+                                                    fontWeight:
+                                                        isPassword
+                                                            ? FontWeight.bold
+                                                            : FontWeight.normal,
+                                                    color:
+                                                        isPassword
+                                                            ? Colors.grey.shade800
+                                                            : Colors.grey.shade600,
+                                                    fontSize:
+                                                        13,
+                                                  ),
+                                                  'Password',
+                                                ),
+                                              ),
                                             ),
-                                            PinCodeWidget(
-                                              focus: true,
-                                              hideText:
-                                                  true,
-                                              controller:
-                                                  pinController,
-                                              action: () async {
-                                                setState(() {
-                                                  isLoading =
-                                                      true;
-                                                });
-                                                TempUserClass?
-                                                user = await fetchUserFromDatabase(
-                                                  AuthService()
-                                                      .currentUserEmail!,
-                                                  AuthService()
-                                                      .currentUser!,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 30),
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .h2
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                    'Login',
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b2
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.normal,
+                                    ),
+                                    'Enter your ${isPassword ? 'password' : 'PIN'} to Login',
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 15),
+                              Stack(
+                                children: [
+                                  Visibility(
+                                    visible: isPassword,
+                                    child: Column(
+                                      children: [
+                                        EmailTextField(
+                                          controller:
+                                              passwordController,
+                                          theme: theme,
+                                          isEmail: false,
+                                          hint:
+                                              'Enter Password',
+                                          title: 'Password',
+                                        ),
+                                        SizedBox(
+                                          height: 30,
+                                        ),
+                                        MainButtonP(
+                                          themeProvider:
+                                              theme,
+                                          action: () async {
+                                            if (passwordController
+                                                .text
+                                                .isEmpty) {
+                                              if (context
+                                                  .mounted) {
+                                                showDialog(
+                                                  context:
+                                                      context,
+                                                  builder: (
+                                                    context,
+                                                  ) {
+                                                    return InfoAlert(
+                                                      theme:
+                                                          theme,
+                                                      message:
+                                                          'Password fields must be set.',
+                                                      title:
+                                                          'Empty Fields',
+                                                    );
+                                                  },
                                                 );
-                                                if (user !=
-                                                        null &&
-                                                    context
-                                                        .mounted) {
-                                                  if (pinController
-                                                          .text !=
-                                                      user.pin) {
+                                              }
+                                            } else {
+                                              setState(() {
+                                                isLoading =
+                                                    true;
+                                              });
+
+                                              TempUserClass?
+                                              user = await fetchUserFromDatabase(
+                                                AuthService()
+                                                    .currentUserEmail!,
+                                                AuthService()
+                                                    .currentUser!,
+                                              );
+
+                                              setState(() {
+                                                isLoading =
+                                                    false;
+                                              });
+
+                                              if (user !=
+                                                      null &&
+                                                  context
+                                                      .mounted) {
+                                                if (user.password !=
+                                                    passwordController
+                                                        .text
+                                                        .trim()) {
+                                                  if (context
+                                                      .mounted) {
                                                     setState(() {
                                                       isLoading =
                                                           false;
-                                                      // value =
-                                                      //     '';
                                                     });
-
                                                     showDialog(
                                                       context:
                                                           context,
@@ -751,338 +643,644 @@ class _EmpAuthState extends State<EmpAuth> {
                                                           theme:
                                                               theme,
                                                           message:
-                                                              'Pin is Incorrect. Please Try again, or try logging in with your password.',
+                                                              'Your password is not correct. Check it and try again.',
                                                           title:
-                                                              'Incorrect PIN',
+                                                              'Incorrect Password',
                                                         );
                                                       },
                                                     );
-                                                    print(
-                                                      "Pin Code Now: ${pinController.text}",
-                                                    );
-                                                    setState(() {
-                                                      pinController
-                                                          .clear();
-                                                    });
-                                                  } else {
-                                                    setState(() {
-                                                      isLoading =
-                                                          false;
-                                                      showSuccess =
-                                                          true;
-                                                    });
-                                                    await returnAppVersionProvider(
-                                                      context,
-                                                      listen:
-                                                          false,
-                                                    ).getAppVersion(
-                                                      context,
-                                                    );
-                                                    await Future.delayed(
-                                                      Duration(
-                                                        seconds:
-                                                            2,
-                                                      ),
-                                                    );
-                                                    if (context
-                                                        .mounted) {
-                                                      print(
-                                                        "✅✅✅✅ Mounted... Implemented Pin Success",
-                                                      );
-                                                      widget
-                                                          .action!();
-                                                    }
-
-                                                    setState(() {
-                                                      showSuccess =
-                                                          false;
-                                                    });
                                                   }
                                                 } else {
-                                                  if (!context
+                                                  setState(() {
+                                                    showSuccess =
+                                                        true;
+                                                  });
+                                                  await Future.delayed(
+                                                    Duration(
+                                                      seconds:
+                                                          2,
+                                                    ),
+                                                  );
+                                                  if (context
                                                       .mounted) {
-                                                    return;
+                                                    widget
+                                                        .action!();
                                                   }
-                                                  showDialog(
-                                                    context:
-                                                        context,
-                                                    builder: (
-                                                      context,
-                                                    ) {
-                                                      return InfoAlert(
-                                                        theme:
-                                                            theme,
-                                                        message:
-                                                            'User is Not found. Please check your details, and network and try again.',
-                                                        title:
-                                                            'User not found',
-                                                      );
-                                                    },
-                                                  );
-                                                  pinController
+                                                  passwordController
                                                       .clear();
+                                                  setState(() {
+                                                    showSuccess =
+                                                        false;
+                                                  });
                                                 }
-                                              },
-                                              // text: pin1Controller.text,
-                                            ),
-                                            SizedBox(
-                                              height: 15,
-                                            ),
-                                            MainButtonP(
-                                              themeProvider:
-                                                  theme,
-                                              action: () {
-                                                if (pinController
-                                                        .text
-                                                        .isEmpty ||
-                                                    pinController.text.length !=
-                                                        4) {
-                                                  showDialog(
-                                                    context:
-                                                        context,
-                                                    builder: (
+                                              } else {
+                                                setState(() {
+                                                  isLoading =
+                                                      false;
+                                                });
+                                                if (!context
+                                                    .mounted)
+                                                  return;
+                                                showDialog(
+                                                  context:
                                                       context,
-                                                    ) {
-                                                      return InfoAlert(
-                                                        theme:
-                                                            theme,
-                                                        message:
-                                                            'Invalid PIN Length. Please Ensure that the Length of PINS are 4, and try again.',
-                                                        title:
-                                                            'Invalid PIN',
-                                                      );
-                                                    },
-                                                  );
-                                                }
-                                              },
-                                              text: 'Login',
-                                            ),
-                                            SizedBox(
-                                              height: 15,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 15),
-                                Row(
-                                  spacing: 5,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment
-                                          .center,
-                                  children: [
-                                    Expanded(
-                                      child: Material(
-                                        color:
-                                            Colors
-                                                .transparent,
-                                        child: InkWell(
-                                          onTap: () async {
-                                            var safeContext =
-                                                context;
-                                            showDialog(
-                                              context:
-                                                  safeContext,
-                                              builder: (
-                                                context,
-                                              ) {
-                                                return ConfirmationAlert(
-                                                  theme:
-                                                      theme,
-                                                  message:
-                                                      'You are about to navigate from the shop to recover your password. Are you sure you want to Proceed?',
-                                                  title:
-                                                      'Recover Password',
-                                                  action: () async {
-                                                    Navigator.of(
-                                                      safeContext,
-                                                    ).pop();
-                                                    setState(() {
-                                                      isLoading =
-                                                          true;
-                                                    });
-                                                    //
-                                                    if (safeContext
-                                                        .mounted) {
-                                                      // localDatabase
-                                                      //     .deleteUser();
-                                                      Navigator.push(
-                                                        safeContext,
-                                                        MaterialPageRoute(
-                                                          builder: (
-                                                            context,
-                                                          ) {
-                                                            return ForgotPasswordPage(
-                                                              isMain:
-                                                                  true,
-                                                            );
-                                                          },
-                                                        ),
-                                                      );
-                                                      //await AuthService()
-                                                      //     .signOut();
-                                                      returnNavProvider(
-                                                        safeContext,
-                                                        listen:
-                                                            false,
-                                                      ).navigate(
-                                                        0,
-                                                      );
-                                                    }
+                                                  builder: (
+                                                    context,
+                                                  ) {
+                                                    return InfoAlert(
+                                                      theme:
+                                                          theme,
+                                                      message:
+                                                          'User is Not found. Please check your details, and network and try again.',
+                                                      title:
+                                                          'User not found',
+                                                    );
                                                   },
                                                 );
-                                              },
-                                            );
+                                              }
+                                            }
                                           },
-                                          child: Container(
-                                            padding:
-                                                EdgeInsets.symmetric(
-                                                  vertical:
-                                                      5,
-                                                ),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .center,
-                                              spacing: 5,
-                                              children: [
-                                                // Icon(
-                                                //   size: 18,
-                                                //   color:
-                                                //       Colors
-                                                //           .grey,
-                                                //   Icons
-                                                //       .question_mark,
-                                                // ),
-                                                Text(
-                                                  style: TextStyle(
-                                                    color:
-                                                        Colors.grey.shade700,
-                                                    fontSize:
-                                                        12,
-                                                  ),
-                                                  'Forgot Password?',
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
 
-                                    Expanded(
-                                      child: Material(
-                                        color:
-                                            Colors
-                                                .transparent,
-                                        child: InkWell(
-                                          onTap: () async {
-                                            final safceContext =
-                                                context;
-                                            showDialog(
-                                              context:
-                                                  context,
-                                              builder: (
-                                                context,
-                                              ) {
-                                                return ConfirmationAlert(
-                                                  theme:
-                                                      theme,
-                                                  message:
-                                                      'Are you sure you want to proceed to logout from your account?',
-                                                  title:
-                                                      'Are You Sure?',
-                                                  action: () async {
-                                                    Navigator.of(
-                                                      context,
-                                                    ).pop();
-                                                    if (safceContext
-                                                        .mounted) {
-                                                      Navigator.pushReplacement(
-                                                        safceContext,
-                                                        MaterialPageRoute(
-                                                          builder: (
-                                                            safceContext,
-                                                          ) {
-                                                            return AuthScreensPage();
-                                                          },
-                                                        ),
-                                                      );
-                                                      returnNavProvider(
-                                                        safceContext,
-                                                        listen:
-                                                            false,
-                                                      ).navigate(
-                                                        0,
-                                                      );
-                                                    }
-                                                    if (safceContext
-                                                        .mounted) {
-                                                      await AuthService().signOut(
-                                                        context:
-                                                            safceContext,
-                                                        allowLogout:
-                                                            true,
-                                                      );
-                                                    }
-                                                  },
-                                                );
-                                              },
-                                            );
-                                          },
-                                          child: Container(
-                                            padding:
-                                                EdgeInsets.symmetric(
-                                                  vertical:
-                                                      8,
-                                                ),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .center,
-                                              spacing: 5,
-                                              children: [
-                                                Icon(
-                                                  size: 20,
+                                          text: 'Login',
+                                        ),
+                                        SizedBox(
+                                          height: 20,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible: !isPassword,
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal: 0,
+                                          ),
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text(
+                                                style: TextStyle(
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
                                                   color:
                                                       Colors
-                                                          .redAccent,
-                                                  Icons
-                                                      .logout,
+                                                          .grey
+                                                          .shade700,
                                                 ),
-                                                Text(
-                                                  style: TextStyle(
-                                                    color:
-                                                        Colors.grey.shade700,
-                                                    fontSize:
-                                                        12,
-                                                  ),
-                                                  'Logout',
+                                                'Enter PIN',
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          PinCodeWidget(
+                                            focus: true,
+                                            hideText: true,
+                                            controller:
+                                                pinController,
+                                            action: () async {
+                                              setState(() {
+                                                isLoading =
+                                                    true;
+                                              });
+                                              TempUserClass?
+                                              user = await fetchUserFromDatabase(
+                                                AuthService()
+                                                    .currentUserEmail!,
+                                                AuthService()
+                                                    .currentUser!,
+                                              );
+                                              if (user !=
+                                                      null &&
+                                                  context
+                                                      .mounted) {
+                                                if (pinController
+                                                        .text !=
+                                                    user.pin) {
+                                                  setState(() {
+                                                    isLoading =
+                                                        false;
+                                                    // value =
+                                                    //     '';
+                                                  });
+
+                                                  showDialog(
+                                                    context:
+                                                        context,
+                                                    builder: (
+                                                      context,
+                                                    ) {
+                                                      return InfoAlert(
+                                                        theme:
+                                                            theme,
+                                                        message:
+                                                            'Pin is Incorrect. Please Try again, or try logging in with your password.',
+                                                        title:
+                                                            'Incorrect PIN',
+                                                      );
+                                                    },
+                                                  );
+                                                  print(
+                                                    "Pin Code Now: ${pinController.text}",
+                                                  );
+                                                  setState(() {
+                                                    pinController
+                                                        .clear();
+                                                  });
+                                                } else {
+                                                  setState(() {
+                                                    isLoading =
+                                                        false;
+                                                    showSuccess =
+                                                        true;
+                                                  });
+                                                  await returnAppVersionProvider(
+                                                    context,
+                                                    listen:
+                                                        false,
+                                                  ).getAppVersion(
+                                                    context,
+                                                  );
+                                                  await Future.delayed(
+                                                    Duration(
+                                                      seconds:
+                                                          2,
+                                                    ),
+                                                  );
+                                                  if (context
+                                                      .mounted) {
+                                                    print(
+                                                      "✅✅✅✅ Mounted... Implemented Pin Success",
+                                                    );
+                                                    widget
+                                                        .action!();
+                                                  }
+
+                                                  setState(() {
+                                                    showSuccess =
+                                                        false;
+                                                  });
+                                                }
+                                              } else {
+                                                if (!context
+                                                    .mounted) {
+                                                  return;
+                                                }
+                                                showDialog(
+                                                  context:
+                                                      context,
+                                                  builder: (
+                                                    context,
+                                                  ) {
+                                                    return InfoAlert(
+                                                      theme:
+                                                          theme,
+                                                      message:
+                                                          'User is Not found. Please check your details, and network and try again.',
+                                                      title:
+                                                          'User not found',
+                                                    );
+                                                  },
+                                                );
+                                                pinController
+                                                    .clear();
+                                              }
+                                            },
+                                            // text: pin1Controller.text,
+                                          ),
+                                          SizedBox(
+                                            height: 15,
+                                          ),
+                                          Container(
+                                            padding:
+                                                EdgeInsets.all(
+                                                  10,
+                                                ),
+                                            decoration:
+                                                BoxDecoration(
+                                                  color:
+                                                      Colors
+                                                          .grey
+                                                          .shade200,
+                                                ),
+                                            child: Column(
+                                              spacing: 10,
+                                              children: [
+                                                Row(
+                                                  spacing:
+                                                      10,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    CalcButtonPin(
+                                                      theme:
+                                                          theme,
+                                                      action: () {
+                                                        actionPressed(
+                                                          '1',
+                                                        );
+                                                      },
+                                                      text:
+                                                          '1',
+                                                    ),
+                                                    CalcButtonPin(
+                                                      theme:
+                                                          theme,
+                                                      action: () {
+                                                        actionPressed(
+                                                          '2',
+                                                        );
+                                                      },
+                                                      text:
+                                                          '2',
+                                                    ),
+                                                    CalcButtonPin(
+                                                      theme:
+                                                          theme,
+                                                      action: () {
+                                                        actionPressed(
+                                                          '3',
+                                                        );
+                                                      },
+                                                      text:
+                                                          '3',
+                                                    ),
+                                                    CalcButtonPin(
+                                                      theme:
+                                                          theme,
+                                                      action: () {
+                                                        actionPressed(
+                                                          '4',
+                                                        );
+                                                      },
+                                                      text:
+                                                          '4',
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  spacing:
+                                                      10,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    CalcButtonPin(
+                                                      theme:
+                                                          theme,
+                                                      action: () {
+                                                        actionPressed(
+                                                          '5',
+                                                        );
+                                                      },
+                                                      text:
+                                                          '5',
+                                                    ),
+                                                    CalcButtonPin(
+                                                      theme:
+                                                          theme,
+                                                      action: () {
+                                                        actionPressed(
+                                                          '6',
+                                                        );
+                                                      },
+                                                      text:
+                                                          '6',
+                                                    ),
+                                                    CalcButtonPin(
+                                                      theme:
+                                                          theme,
+                                                      action: () {
+                                                        actionPressed(
+                                                          '7',
+                                                        );
+                                                      },
+                                                      text:
+                                                          '7',
+                                                    ),
+                                                    CalcButtonPin(
+                                                      theme:
+                                                          theme,
+                                                      action: () {
+                                                        actionPressed(
+                                                          '8',
+                                                        );
+                                                        pinController.text =
+                                                            '2';
+                                                      },
+                                                      text:
+                                                          '8',
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  spacing:
+                                                      10,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    CalcButtonPin(
+                                                      theme:
+                                                          theme,
+                                                      action: () {
+                                                        actionPressed(
+                                                          '9',
+                                                        );
+                                                      },
+                                                      text:
+                                                          '9',
+                                                    ),
+                                                    CalcButtonPin(
+                                                      theme:
+                                                          theme,
+                                                      action: () {
+                                                        actionPressed(
+                                                          '0',
+                                                        );
+                                                      },
+                                                      text:
+                                                          '0',
+                                                    ),
+                                                    CalcButtonPin(
+                                                      theme:
+                                                          theme,
+                                                      action: () {
+                                                        actionPressed(
+                                                          '00',
+                                                        );
+                                                      },
+                                                      // text:
+                                                      //     '<=',
+                                                      icon:
+                                                          Icons.backspace_outlined,
+                                                      height:
+                                                          20,
+                                                    ),
+                                                  ],
                                                 ),
                                               ],
                                             ),
                                           ),
+                                          SizedBox(
+                                            height: 15,
+                                          ),
+                                          // MainButtonP(
+                                          //   themeProvider:
+                                          //       theme,
+                                          //   action: () {
+                                          //     if (pinController
+                                          //             .text
+                                          //             .isEmpty ||
+                                          //         pinController
+                                          //                 .text
+                                          //                 .length !=
+                                          //             4) {
+                                          //       showDialog(
+                                          //         context:
+                                          //             context,
+                                          //         builder: (
+                                          //           context,
+                                          //         ) {
+                                          //           return InfoAlert(
+                                          //             theme:
+                                          //                 theme,
+                                          //             message:
+                                          //                 'Invalid PIN Length. Please Ensure that the Length of PINS are 4, and try again.',
+                                          //             title:
+                                          //                 'Invalid PIN',
+                                          //           );
+                                          //         },
+                                          //       );
+                                          //     }
+                                          //   },
+                                          //   text: 'Login',
+                                          // ),
+                                          // SizedBox(
+                                          //   height: 15,
+                                          // ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 15),
+                              Row(
+                                spacing: 5,
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .center,
+                                children: [
+                                  Expanded(
+                                    child: Material(
+                                      color:
+                                          Colors
+                                              .transparent,
+                                      child: InkWell(
+                                        onTap: () async {
+                                          var safeContext =
+                                              context;
+                                          showDialog(
+                                            context:
+                                                safeContext,
+                                            builder: (
+                                              context,
+                                            ) {
+                                              return ConfirmationAlert(
+                                                theme:
+                                                    theme,
+                                                message:
+                                                    'You are about to navigate from the shop to recover your password. Are you sure you want to Proceed?',
+                                                title:
+                                                    'Recover Password',
+                                                action: () async {
+                                                  Navigator.of(
+                                                    safeContext,
+                                                  ).pop();
+                                                  setState(() {
+                                                    isLoading =
+                                                        true;
+                                                  });
+                                                  //
+                                                  if (safeContext
+                                                      .mounted) {
+                                                    // localDatabase
+                                                    //     .deleteUser();
+                                                    Navigator.push(
+                                                      safeContext,
+                                                      MaterialPageRoute(
+                                                        builder: (
+                                                          context,
+                                                        ) {
+                                                          return ForgotPasswordPage(
+                                                            isMain:
+                                                                true,
+                                                          );
+                                                        },
+                                                      ),
+                                                    );
+                                                    //await AuthService()
+                                                    //     .signOut();
+                                                    returnNavProvider(
+                                                      safeContext,
+                                                      listen:
+                                                          false,
+                                                    ).navigate(
+                                                      0,
+                                                    );
+                                                  }
+                                                },
+                                              );
+                                            },
+                                          );
+                                        },
+                                        child: Container(
+                                          padding:
+                                              EdgeInsets.symmetric(
+                                                vertical: 5,
+                                              ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .center,
+                                            spacing: 5,
+                                            children: [
+                                              // Icon(
+                                              //   size: 18,
+                                              //   color:
+                                              //       Colors
+                                              //           .grey,
+                                              //   Icons
+                                              //       .question_mark,
+                                              // ),
+                                              Text(
+                                                style: TextStyle(
+                                                  color:
+                                                      Colors
+                                                          .grey
+                                                          .shade700,
+                                                  fontSize:
+                                                      12,
+                                                ),
+                                                'Forgot Password?',
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ],
-                                ),
-                                SizedBox(height: 10),
-                                Container(),
-                                SizedBox(height: 10),
-                              ],
-                            ),
+                                  ),
+
+                                  Expanded(
+                                    child: Material(
+                                      color:
+                                          Colors
+                                              .transparent,
+                                      child: InkWell(
+                                        onTap: () async {
+                                          final safceContext =
+                                              context;
+                                          showDialog(
+                                            context:
+                                                context,
+                                            builder: (
+                                              context,
+                                            ) {
+                                              return ConfirmationAlert(
+                                                theme:
+                                                    theme,
+                                                message:
+                                                    'Are you sure you want to proceed to logout from your account?',
+                                                title:
+                                                    'Are You Sure?',
+                                                action: () async {
+                                                  Navigator.of(
+                                                    context,
+                                                  ).pop();
+                                                  if (safceContext
+                                                      .mounted) {
+                                                    Navigator.pushReplacement(
+                                                      safceContext,
+                                                      MaterialPageRoute(
+                                                        builder: (
+                                                          safceContext,
+                                                        ) {
+                                                          return AuthScreensPage();
+                                                        },
+                                                      ),
+                                                    );
+                                                    returnNavProvider(
+                                                      safceContext,
+                                                      listen:
+                                                          false,
+                                                    ).navigate(
+                                                      0,
+                                                    );
+                                                  }
+                                                  if (safceContext
+                                                      .mounted) {
+                                                    await AuthService().signOut(
+                                                      context:
+                                                          safceContext,
+                                                      allowLogout:
+                                                          true,
+                                                    );
+                                                  }
+                                                },
+                                              );
+                                            },
+                                          );
+                                        },
+                                        child: Container(
+                                          padding:
+                                              EdgeInsets.symmetric(
+                                                vertical: 8,
+                                              ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .center,
+                                            spacing: 5,
+                                            children: [
+                                              Icon(
+                                                size: 20,
+                                                color:
+                                                    Colors
+                                                        .redAccent,
+                                                Icons
+                                                    .logout,
+                                              ),
+                                              Text(
+                                                style: TextStyle(
+                                                  color:
+                                                      Colors
+                                                          .grey
+                                                          .shade700,
+                                                  fontSize:
+                                                      12,
+                                                ),
+                                                'Logout',
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 10),
+                              Container(),
+                              SizedBox(height: 10),
+                            ],
                           ),
-                          Container(
-                            height:
-                                MediaQuery.of(
-                                  context,
-                                ).size.height *
-                                0.4,
-                          ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
@@ -1104,6 +1302,89 @@ class _EmpAuthState extends State<EmpAuth> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class CalcButtonPin extends StatelessWidget {
+  final ThemeProvider theme;
+  final String? text;
+  final Color? color;
+  final Function() action;
+  final IconData? icon;
+  final String? svg;
+  final double? height;
+  final Color? itemColor;
+  final int? flex;
+
+  const CalcButtonPin({
+    super.key,
+    required this.theme,
+    this.text,
+    this.color,
+    required this.action,
+    this.icon,
+    this.svg,
+    this.height,
+    this.itemColor,
+    this.flex,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      flex: flex ?? 1,
+      child: Material(
+        color: Colors.transparent,
+        child: Ink(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: color ?? Colors.white,
+          ),
+          child: InkWell(
+            onTap: action,
+            borderRadius: BorderRadius.circular(10),
+            child: Container(
+              padding: EdgeInsets.all(15),
+              height: 60,
+              child: Center(
+                child: Stack(
+                  children: [
+                    Visibility(
+                      visible: icon == null && svg == null,
+                      child: Text(
+                        style: TextStyle(
+                          fontSize:
+                              theme.mobileTexts.h3.fontSize,
+                          fontWeight: FontWeight.w600,
+                          color: itemColor,
+                        ),
+                        text ?? '',
+                      ),
+                    ),
+                    Visibility(
+                      visible: icon != null,
+                      child: Icon(
+                        size: height,
+                        color: itemColor,
+                        icon,
+                      ),
+                    ),
+                    Visibility(
+                      visible: svg != null,
+                      child: SvgPicture.asset(
+                        height: height,
+                        color: itemColor,
+                        svg ?? '',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

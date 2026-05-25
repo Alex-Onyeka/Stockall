@@ -71,6 +71,7 @@ List<SubplanClass> subPlans = [
       numberOfDepartments: 10,
       useCloseSale: true,
       useFloatingButton: true,
+      useOnScreenKeyboard: true,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
@@ -150,6 +151,7 @@ List<SubplanClass> subPlans = [
       numberOfDepartments: 5,
       useCloseSale: true,
       useFloatingButton: true,
+      useOnScreenKeyboard: true,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
@@ -230,6 +232,7 @@ List<SubplanClass> subPlans = [
       numberOfDepartments: 0,
       useCloseSale: true,
       useFloatingButton: true,
+      useOnScreenKeyboard: true,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
@@ -310,6 +313,7 @@ List<SubplanClass> subPlans = [
       numberOfDepartments: 0,
       useCloseSale: false,
       useFloatingButton: false,
+      useOnScreenKeyboard: false,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
@@ -390,6 +394,7 @@ List<SubplanClass> subPlans = [
       numberOfDepartments: 0,
       useCloseSale: false,
       useFloatingButton: false,
+      useOnScreenKeyboard: false,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
@@ -466,6 +471,7 @@ List<SubplanClass> subPlans = [
       numberOfDepartments: 0,
       useCloseSale: false,
       useFloatingButton: false,
+      useOnScreenKeyboard: false,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: false,

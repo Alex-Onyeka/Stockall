@@ -68,6 +68,7 @@ class _ReceiptPageMobileState
       (rec) => rec.uuid! == widget.response.resUuid,
       orElse:
           () => TempMainReceipt(
+            subStaffName: null,
             departmentName:
                 returnDepartmentProvider()
                     .currentDepartment()
@@ -692,7 +693,11 @@ class _ReceiptDetailsContainerState
                             SizedBox(height: 10),
                             Visibility(
                               visible:
-                                  widget.shop.showFirst!,
+                                  widget.shop.showFirst! &&
+                                  widget
+                                          .mainReceipt
+                                          .subStaffName !=
+                                      null,
                               child: Row(
                                 spacing: 10,
                                 children: [
@@ -733,7 +738,7 @@ class _ReceiptDetailsContainerState
                                               widget
                                                   .mainReceipt
                                                   .staffName ??
-                                              "Not Set",
+                                              'Not Set',
                                         ),
                                       ],
                                     ),
@@ -757,7 +762,7 @@ class _ReceiptDetailsContainerState
                                                 FontWeight
                                                     .bold,
                                           ),
-                                          'Customer Name',
+                                          'Cart Id',
                                         ),
                                         Text(
                                           style: TextStyle(
@@ -771,11 +776,115 @@ class _ReceiptDetailsContainerState
                                                 FontWeight
                                                     .normal,
                                           ),
-                                          customer?.name ??
-                                              'Not Saved',
+                                          widget
+                                                  .mainReceipt
+                                                  .cartName ??
+                                              'Not Set',
                                         ),
                                       ],
                                     ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Visibility(
+                              visible:
+                                  widget.shop.showFirst!,
+                              child: Column(
+                                children: [
+                                  SizedBox(height: 5),
+                                  Row(
+                                    spacing: 10,
+                                    children: [
+                                      Expanded(
+                                        flex: 5,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment
+                                                  .start,
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    widget
+                                                        .theme
+                                                        .mobileTexts
+                                                        .b1
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              widget.mainReceipt.subStaffName !=
+                                                      null
+                                                  ? 'Waiter'
+                                                  : 'Cashier',
+                                            ),
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    widget
+                                                        .theme
+                                                        .mobileTexts
+                                                        .b2
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .normal,
+                                              ),
+                                              widget
+                                                      .mainReceipt
+                                                      .subStaffName ??
+                                                  staff
+                                                      ?.name ??
+                                                  widget
+                                                      .mainReceipt
+                                                      .staffName ??
+                                                  'Not Set',
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 4,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment
+                                                  .start,
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    widget
+                                                        .theme
+                                                        .mobileTexts
+                                                        .b1
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              'Customer Name',
+                                            ),
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    widget
+                                                        .theme
+                                                        .mobileTexts
+                                                        .b2
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .normal,
+                                              ),
+                                              customer?.name ??
+                                                  'Not Saved',
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),

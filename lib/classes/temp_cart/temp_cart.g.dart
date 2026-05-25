@@ -14,8 +14,7 @@ class TempCartAdapter extends TypeAdapter<TempCart> {
   TempCart read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++)
-        reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return TempCart(
       cartItems: (fields[0] as List).cast<TempCartItem>(),
@@ -39,13 +38,15 @@ class TempCartAdapter extends TypeAdapter<TempCart> {
       departmentName: fields[19] as String?,
       departmentUuid: fields[18] as String?,
       customDate: fields[20] as DateTime?,
+      hasPrintedDocket: fields[21] as bool?,
+      subStaffName: fields[22] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempCart obj) {
     writer
-      ..writeByte(21)
+      ..writeByte(23)
       ..writeByte(0)
       ..write(obj.cartItems)
       ..writeByte(1)
@@ -87,7 +88,11 @@ class TempCartAdapter extends TypeAdapter<TempCart> {
       ..writeByte(19)
       ..write(obj.departmentName)
       ..writeByte(20)
-      ..write(obj.customDate);
+      ..write(obj.customDate)
+      ..writeByte(21)
+      ..write(obj.hasPrintedDocket)
+      ..writeByte(22)
+      ..write(obj.subStaffName);
   }
 
   @override

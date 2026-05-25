@@ -11,6 +11,7 @@ class GeneralSettingsAuth {
   final int numberOfDepartments;
   final bool useCloseSale;
   final bool useFloatingButton;
+  final bool useOnScreenKeyboard;
 
   GeneralSettingsAuth({
     required this.addSocials,
@@ -21,6 +22,7 @@ class GeneralSettingsAuth {
     required this.numberOfDepartments,
     required this.useCloseSale,
     required this.useFloatingButton,
+    required this.useOnScreenKeyboard,
   });
 }
 
@@ -68,6 +70,33 @@ class GeneralSettingsAuthAction {
         .firstWhere((pl) => pl.plan == plan)
         .generalSettingsAuth
         .useCloseSale) {
+      action == null ? {} : action();
+      return true;
+    } else {
+      if (action != null) {
+        showUnauthorizedDialog(context);
+      }
+      return false;
+    }
+    // }
+  }
+
+  bool useOnScreenKeyboardAction({
+    required BuildContext context,
+    Function()? action,
+  }) {
+    var plan =
+        returnSubcsription(
+          context,
+          listen: false,
+        ).subscription?.plan;
+    if (plan == null) {
+      return false;
+    }
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .generalSettingsAuth
+        .useOnScreenKeyboard) {
       action == null ? {} : action();
       return true;
     } else {

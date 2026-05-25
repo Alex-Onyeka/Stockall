@@ -1205,6 +1205,71 @@ class ShopProvider extends ChangeNotifier {
     }
   }
 
+  bool isOnScreenKeyboardLoading = false;
+
+  Future<int> toggleOnScreenKeyboard() async {
+    bool isOnline = await connectivity.isOnline();
+    isOnScreenKeyboardLoading = true;
+    notifyListeners();
+    try {
+      if (isOnline) {
+        Map<String, dynamic>? res =
+            await supabase
+                .from('shops')
+                .update({
+                  'use_screen_keyboard':
+                      !userShop()!.useScreenKeyboard!,
+                })
+                .eq('shop_id', userShop()!.shopId!)
+                .select()
+                .maybeSingle();
+        if (res == null) {
+          print('Use on Screen Keyboard Update Failed');
+          isOnScreenKeyboardLoading = false;
+          notifyListeners();
+          return 0;
+        }
+
+        var shops = await getUserShops();
+        setShops(shops);
+        isOnScreenKeyboardLoading = false;
+        notifyListeners();
+        return 1;
+      } else {
+        try {
+          userShop()!.updatedAt = DateTime.now();
+          userShop()!.useGroupUnit =
+              !userShop()!.useScreenKeyboard!;
+          await ShopFunc().updateShop(userShop()!);
+          if (userShop() != null) {
+            await UpdatedShopFunc().createUpdatedShop(
+              UpdatedShop(shop: userShop()!),
+            );
+            // setShops(shop);
+            notifyListeners();
+          }
+          isOnScreenKeyboardLoading = false;
+          notifyListeners();
+          return 1;
+        } catch (e) {
+          print(
+            "❌ Failed to Update Use on Screen Keyboard Offline: ${e.toString()}",
+          );
+          isOnScreenKeyboardLoading = false;
+          notifyListeners();
+          return 0;
+        }
+      }
+    } catch (e) {
+      print(
+        "❌ Failed to Update Use on Screen Keyboard: ${e.toString()}",
+      );
+      isOnScreenKeyboardLoading = false;
+      notifyListeners();
+      return 0;
+    }
+  }
+
   bool allowBulkSale = false;
 
   Future<int> toggleAllowBulkSale() async {

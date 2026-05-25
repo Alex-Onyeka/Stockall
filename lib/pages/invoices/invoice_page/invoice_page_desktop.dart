@@ -1859,6 +1859,8 @@ class _InvoicePageDesktopState
                                                         //           false,
                                                         //     ).currentUserMain!;
                                                         var tempInvoice = TempInvoice(
+                                                          subStaffName:
+                                                              invoice.subStaffName,
                                                           departmentUuidNew:
                                                               invoice.departmentUuidNew,
                                                           uuid:

@@ -147,6 +147,7 @@ class _ShopSetupTwoMobileState
                     wholeSale: false,
                     manageDepartments: false,
                     printSalesDocket: false,
+                    useScreenKeyboard: false,
                   ),
                   safeContext,
                 );

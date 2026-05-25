@@ -56,9 +56,13 @@ void downloadDocket({
         html.Url.revokeObjectUrl(url);
 
         // Step 2: Print (make sure this runs in same click event if possible)
-        await Printing.layoutPdf(
+        var res = await Printing.layoutPdf(
           onLayout: (format) async => pdfUint8,
         );
+        if (res) {
+          await returnSalesProvider()
+              .updateCurrentCartIsPrintedDocket();
+        }
 
         if (context.mounted) {
           returnReceiptProvider(
@@ -100,9 +104,13 @@ Future<void> printDocket({
         setTotal: setTotal,
       );
 
-      await Printing.layoutPdf(
+      var res = await Printing.layoutPdf(
         onLayout: (_) async => pdfBytes,
       );
+      if (res) {
+        await returnSalesProvider()
+            .updateCurrentCartIsPrintedDocket();
+      }
     },
   );
 }

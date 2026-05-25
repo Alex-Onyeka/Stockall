@@ -106,25 +106,29 @@ class _ProductDetailsMobileState
                           message:
                               'This item is going to be added to your cart. Are you sure you want to proceed with this action?',
                           title: 'Add Item to Cart',
-                          action: () {
+                          action: () async {
                             Navigator.of(safeContext).pop();
-                            var res = returnSalesProvider()
-                                .addItemToCart(
-                                  context: context,
-                                  newItem: TempCartItem(
-                                    qttyPerGroup: null,
-                                    useGroupQuantity: false,
-                                    useWholeSalePrice:
-                                        false,
-                                    setCustomPrice: false,
-                                    item: product,
-                                    quantity: 1,
-                                    discount: null,
-                                    addToStock: false,
-                                    setTotalPrice: false,
-                                  ),
-                                  isCustomEdit: false,
-                                );
+                            var res =
+                                await returnSalesProvider()
+                                    .addItemToCart(
+                                      context: context,
+                                      newItem: TempCartItem(
+                                        qttyPerGroup: null,
+                                        useGroupQuantity:
+                                            false,
+                                        useWholeSalePrice:
+                                            false,
+                                        setCustomPrice:
+                                            false,
+                                        item: product,
+                                        quantity: 1,
+                                        discount: null,
+                                        addToStock: false,
+                                        setTotalPrice:
+                                            false,
+                                      ),
+                                      isCustomEdit: false,
+                                    );
                             if (res ==
                                 "Quantity Limit Exceeded") {
                               return;

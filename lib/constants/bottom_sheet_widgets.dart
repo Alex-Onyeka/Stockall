@@ -15,6 +15,8 @@ import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/small_button_main.dart';
 import 'package:stockall/components/buttons/toggle_total_price.dart';
 import 'package:stockall/components/major/empty_widget_display.dart';
+import 'package:stockall/components/on_screen_keyboard_pin.dart/on_screen_keyboard_pin.dart';
+import 'package:stockall/components/pin_code_widget/my_pin_code_widget.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
@@ -2715,16 +2717,23 @@ void selectProductSales({
   required TextEditingController quantityController,
   required TextEditingController searchController,
   required FocusNode qttyNode,
+  required FocusNode priceNode,
   required BuildContext context,
   // required double qttyTemp
 }) {
+  int currentFocus = 1;
   double qqty = 0;
   bool useWholeSalePriceTemp = false;
   bool useGroupQuantityTemp = false;
+  double existingQtty = cartItem.quantity;
   if (isEdit) {
     useWholeSalePriceTemp = cartItem.useWholeSalePrice;
     useGroupQuantityTemp =
         cartItem.useGroupQuantity ?? false;
+    if (useGroupQuantityTemp) {
+      existingQtty =
+          (existingQtty * (cartItem.qttyPerGroup ?? 1));
+    }
     returnSalesProvider().removeListenerScanBarcode();
     qttyNode.requestFocus();
     quantityController.text = cartItem.quantity.toString();
@@ -2887,720 +2896,1162 @@ void selectProductSales({
                 ],
               ),
               content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      width: 450,
-                      child: EditCartTextField(
-                        focusNode: qttyNode,
-                        onSubmitted: (value) {
-                          if (cartItem.item.sellingPrice ==
-                                  null &&
-                              priceController
-                                  .text
-                                  .isEmpty) {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return InfoAlert(
-                                  theme: theme,
-                                  message:
-                                      'Custom Price Must be set before Item can be added to cart.',
-                                  title:
-                                      'Custom Price Not Set',
-                                );
-                              },
-                            ).then((_) {
-                              qttyNode.requestFocus();
-                            });
-                          } else {
-                            if (quantityController
-                                    .text
-                                    .isEmpty ||
-                                qqty == 0) {
-                              // Navigator.of(context).pop();
-
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return InfoAlert(
-                                    theme: theme,
-                                    message:
-                                        'Item quantity cannot be set to (0)',
-                                    title:
-                                        'Invalid Quantity',
+                child: SizedBox(
+                  width: screenWidth(context) * 0.7,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(
+                              width:
+                                  screenWidth(context) >
+                                          tabletScreenSmall
+                                      ? 450
+                                      : null,
+                              child: EditCartTextField(
+                                onTap: () {
+                                  setState(() {
+                                    currentFocus = 1;
+                                  });
+                                  print(
+                                    'Current Focus Value: $currentFocus',
                                   );
                                 },
-                              ).then((_) {
-                                qttyNode.requestFocus();
-                              });
-                              ;
-                            } else {
-                              if (priceController
-                                  .text
-                                  .isNotEmpty) {
-                                cartItem.customPrice =
-                                    double.tryParse(
-                                      priceController.text
-                                          .replaceAll(
-                                            ',',
-                                            '',
-                                          ),
-                                    );
-                                cartItem.setCustomPrice =
-                                    true;
-                              } else {
-                                cartItem.setCustomPrice =
-                                    false;
-                              }
-                              cartItem.setTotalPrice =
-                                  returnSalesProvider()
-                                      .setTotalPrice;
-                              cartItem.quantity =
-                                  qqty.toDouble();
-                              returnSalesProvider()
-                                  .addItemToCart(
-                                    context: context,
-                                    newItem: cartItem,
-                                    isCustomEdit:
-                                        returnData()
-                                            .productList()
-                                            .where(
-                                              (product) =>
-                                                  product
-                                                      .uuid ==
-                                                  cartItem
-                                                      .item
-                                                      .uuid,
-                                            )
-                                            .isEmpty,
-                                  );
-                              Navigator.of(context).pop();
-                              closeAction();
-                            }
-                          }
-                        },
-                        onChanged: (value) {
-                          double entered =
-                              double.tryParse(
-                                value.replaceAll(',', ''),
-                              ) ??
-                              0;
-                          if (cartItem.item.isManaged) {
-                            if (!returnSalesProvider()
-                                .canAddProductToCart(
-                                  product: cartItem.item,
-                                  quantityToAdd:
-                                      entered +
-                                      cartItem.quantity,
-                                )) {
-                              showDialog(
-                                context: context,
-                                builder:
-                                    (_) => InfoAlert(
-                                      title:
-                                          "Quantity Limit Reached",
-                                      message:
-                                          "Only ${cartItem.item.quantity} available in stock.",
-                                      theme: theme,
-                                    ),
-                              ).then((_) {
-                                qttyNode.requestFocus();
-                              });
+                                focusNode: qttyNode,
+                                // onSubmitted: (value) {
+                                //   if (cartItem.item.sellingPrice ==
+                                //           null &&
+                                //       priceController
+                                //           .text
+                                //           .isEmpty) {
+                                //     showDialog(
+                                //       context: context,
+                                //       builder: (context) {
+                                //         return InfoAlert(
+                                //           theme: theme,
+                                //           message:
+                                //               'Custom Price Must be set before Item can be added to cart.',
+                                //           title:
+                                //               'Custom Price Not Set',
+                                //         );
+                                //       },
+                                //     ).then((_) {
+                                //       qttyNode.requestFocus();
+                                //     });
+                                //   } else {
+                                //     if (quantityController
+                                //             .text
+                                //             .isEmpty ||
+                                //         qqty == 0) {
+                                //       // Navigator.of(context).pop();
 
-                              Future.delayed(
-                                Duration(milliseconds: 300),
-                                () {
+                                //       showDialog(
+                                //         context: context,
+                                //         builder: (context) {
+                                //           return InfoAlert(
+                                //             theme: theme,
+                                //             message:
+                                //                 'Item quantity cannot be set to (0)',
+                                //             title:
+                                //                 'Invalid Quantity',
+                                //           );
+                                //         },
+                                //       ).then((_) {
+                                //         qttyNode.requestFocus();
+                                //       });
+                                //       ;
+                                //     } else {
+                                //       if (priceController
+                                //           .text
+                                //           .isNotEmpty) {
+                                //         cartItem.customPrice =
+                                //             double.tryParse(
+                                //               priceController.text
+                                //                   .replaceAll(
+                                //                     ',',
+                                //                     '',
+                                //                   ),
+                                //             );
+                                //         cartItem.setCustomPrice =
+                                //             true;
+                                //       } else {
+                                //         cartItem.setCustomPrice =
+                                //             false;
+                                //       }
+                                //       cartItem.setTotalPrice =
+                                //           returnSalesProvider()
+                                //               .setTotalPrice;
+                                //       cartItem.quantity =
+                                //           qqty.toDouble();
+                                //       returnSalesProvider()
+                                //           .addItemToCart(
+                                //             context: context,
+                                //             newItem: cartItem,
+                                //             isCustomEdit:
+                                //                 returnData()
+                                //                     .productList()
+                                //                     .where(
+                                //                       (product) =>
+                                //                           product
+                                //                               .uuid ==
+                                //                           cartItem
+                                //                               .item
+                                //                               .uuid,
+                                //                     )
+                                //                     .isEmpty,
+                                //           );
+                                //       Navigator.of(context).pop();
+                                //       closeAction();
+                                //     }
+                                //   }
+                                // },
+                                onChanged: (value) {
+                                  double entered =
+                                      double.tryParse(
+                                        value.replaceAll(
+                                          ',',
+                                          '',
+                                        ),
+                                      ) ??
+                                      0;
+                                  print(
+                                    'Entered Valueee: $entered',
+                                  );
+                                  if (cartItem
+                                      .item
+                                      .isManaged) {
+                                    if (!returnSalesProvider()
+                                        .canAddProductToCart(
+                                          newCartItem:
+                                              cartItem,
+                                          quantityToAdd:
+                                              entered,
+                                        )) {
+                                      showDialog(
+                                        context: context,
+                                        builder:
+                                            (
+                                              _,
+                                            ) => InfoAlert(
+                                              title:
+                                                  "Quantity Limit Reached",
+                                              message:
+                                                  "Only ${cartItem.item.quantity} available in stock.",
+                                              theme: theme,
+                                            ),
+                                      ).then((_) {
+                                        qttyNode
+                                            .requestFocus();
+                                      });
+
+                                      Future.delayed(
+                                        Duration(
+                                          milliseconds: 300,
+                                        ),
+                                        () {
+                                          setState(() {
+                                            qqty = 0;
+                                            quantityController
+                                                .text = '0';
+                                          });
+                                        },
+                                      );
+
+                                      return;
+                                    }
+                                  }
+
+                                  if (value.isEmpty) {
+                                    setState(() {
+                                      quantityController
+                                          .text = '0';
+                                    });
+                                  }
+
                                   setState(() {
-                                    qqty = 0;
-                                    quantityController
-                                        .text = '0';
+                                    qqty = entered;
                                   });
                                 },
-                              );
 
-                              return;
-                            }
-                          }
-
-                          if (value.isEmpty) {
-                            setState(() {
-                              quantityController.text = '0';
-                            });
-                          }
-
-                          setState(() {
-                            qqty = entered;
-                          });
-                        },
-
-                        title: 'Enter Item Quantity',
-                        hint: 'Quantity',
-                        controller: quantityController,
-                        theme: theme,
-                      ),
-                    ),
-                    Visibility(
-                      visible:
-                          returnShopProvider()
-                              .userShop()
-                              ?.useGroupUnit ==
-                          true,
-                      child: Column(
-                        children: [
-                          SizedBox(height: 20),
-                          ConstrainedBox(
-                            constraints: BoxConstraints(
-                              maxWidth: 230,
+                                title:
+                                    'Enter Item Quantity',
+                                hint: 'Quantity',
+                                controller:
+                                    quantityController,
+                                theme: theme,
+                              ),
                             ),
-                            child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment
-                                      .spaceBetween,
-                              children: [
-                                Text(
-                                  style: TextStyle(
-                                    fontWeight:
-                                        FontWeight.bold,
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b1
-                                            .fontSize,
-                                  ),
-                                  'Use Group Quantity?',
-                                ),
-                                MyToggleButton(
-                                  boolValue:
-                                      isEdit
-                                          ? useGroupQuantityTemp
-                                          : cartItem
-                                                  .useGroupQuantity ??
-                                              false,
-                                  toggle: () {
-                                    var salesProvider =
-                                        returnSalesProvider();
-
-                                    if (isEdit) {
-                                      setState(() {
-                                        if (useGroupQuantityTemp) {
-                                          useGroupQuantityTemp =
-                                              false;
-                                        } else {
-                                          useGroupQuantityTemp =
-                                              true;
-                                        }
-                                      });
-                                    } else {
-                                      salesProvider
-                                          .toggleGroupQuantity(
-                                            cartItem:
-                                                cartItem,
-                                            context:
-                                                context,
-                                          );
-                                    }
-                                  },
-                                  theme: theme,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Visibility(
-                      visible:
-                          cartItem.item.sellingPrice == null
-                              ? true
-                              : returnSalesProviderContext(
-                                    context,
-                                  ).isSetCustomPrice() &&
-                                  (cartItem
-                                      .item
-                                      .setCustomPrice),
-                      child: Column(
-                        children: [
-                          SizedBox(height: 30),
-                          Row(
-                            spacing: 10,
-                            crossAxisAlignment:
-                                CrossAxisAlignment.end,
-                            children: [
-                              Expanded(
-                                child:
-                                    ToggleTotalPriceWidget(
-                                      theme: theme,
-                                    ),
-                              ),
-                              Expanded(
-                                child: MoneyTextfield(
-                                  title:
-                                      returnSalesProviderContext(
-                                            context,
-                                          ).setTotalPrice
-                                          ? 'Total Price'
-                                          : 'Individual Price',
-                                  hint: 'Enter Price',
-                                  controller:
-                                      priceController,
-                                  theme: theme,
-                                  onChanged: (value) {
-                                    if (value.isNotEmpty) {
-                                      cartItem.setCustomPrice =
-                                          true;
-                                    } else {
-                                      cartItem.setCustomPrice =
-                                          false;
-                                    }
-                                    setState(() {});
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 30),
-                    Visibility(
-                      visible:
-                          isEdit
-                              ? cartItem
-                                      .item
-                                      .setCustomPrice &&
-                                  !useWholeSalePriceTemp
-                              : cartItem
-                                      .item
-                                      .setCustomPrice &&
-                                  !cartItem
-                                      .useWholeSalePrice,
-                      child: InkWell(
-                        onTap: () {
-                          returnSalesProvider()
-                              .toggleSetCustomPrice();
-                          priceController.clear();
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            vertical: 5,
-                            horizontal: 10,
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment:
-                                MainAxisAlignment.center,
-                            spacing: 5,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b1
-                                          .fontSize,
-
-                                  fontWeight:
-                                      FontWeight.bold,
-                                ),
-                                returnSalesProviderContext(
-                                      context,
-                                    ).isSetCustomPrice()
-                                    ? 'Cancel Custom Price'
-                                    : 'Set Custom Price',
-                              ),
-                              Stack(
+                            Visibility(
+                              visible:
+                                  returnShopProvider()
+                                      .userShop()
+                                      ?.useGroupUnit ==
+                                  true,
+                              child: Column(
                                 children: [
-                                  Visibility(
-                                    visible:
-                                        returnSalesProviderContext(
-                                          context,
-                                        ).isSetCustomPrice() ==
-                                        false,
-                                    child: SvgPicture.asset(
-                                      color:
-                                          theme
-                                              .lightModeColor
-                                              .secColor200,
-                                      editIconSvg,
-                                      height: 20,
-                                    ),
-                                  ),
-                                  Visibility(
-                                    visible:
-                                        returnSalesProviderContext(
-                                          context,
-                                        ).isSetCustomPrice() ==
-                                        true,
-                                    child: Icon(
-                                      color:
-                                          theme
-                                              .lightModeColor
-                                              .secColor200,
-                                      Icons.clear,
+                                  SizedBox(height: 20),
+                                  ConstrainedBox(
+                                    constraints:
+                                        BoxConstraints(
+                                          maxWidth: 230,
+                                        ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment
+                                              .spaceBetween,
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b1
+                                                    .fontSize,
+                                          ),
+                                          'Use Group Quantity?',
+                                        ),
+                                        MyToggleButton(
+                                          boolValue:
+                                              isEdit
+                                                  ? useGroupQuantityTemp
+                                                  : cartItem
+                                                          .useGroupQuantity ??
+                                                      false,
+                                          toggle: () {
+                                            var salesProvider =
+                                                returnSalesProvider();
+
+                                            if (isEdit) {
+                                              setState(() {
+                                                if (useGroupQuantityTemp) {
+                                                  useGroupQuantityTemp =
+                                                      false;
+                                                } else {
+                                                  useGroupQuantityTemp =
+                                                      true;
+                                                }
+                                              });
+                                            } else {
+                                              salesProvider.toggleGroupQuantity(
+                                                cartItem:
+                                                    cartItem,
+                                                context:
+                                                    context,
+                                              );
+                                            }
+                                          },
+                                          theme: theme,
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ],
                               ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(
-                          10,
-                        ),
-                        color: Colors.grey.shade100,
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20.0,
-                        vertical: 10,
-                      ),
-                      child: Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b1
-                                      .fontSize,
                             ),
-                            'Total',
-                          ),
-                          Text(
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b1
-                                      .fontSize,
-                              fontWeight:
-                                  theme
-                                      .mobileTexts
-                                      .b1
-                                      .fontWeightBold,
+                            Visibility(
+                              visible:
+                                  cartItem
+                                              .item
+                                              .sellingPrice ==
+                                          null
+                                      ? true
+                                      : returnSalesProviderContext(
+                                            context,
+                                          ).isSetCustomPrice() &&
+                                          (cartItem
+                                              .item
+                                              .setCustomPrice),
+                              child: Column(
+                                children: [
+                                  SizedBox(height: 30),
+                                  Row(
+                                    spacing: 10,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment
+                                            .end,
+                                    children: [
+                                      Expanded(
+                                        child:
+                                            ToggleTotalPriceWidget(
+                                              theme: theme,
+                                            ),
+                                      ),
+                                      Expanded(
+                                        child: MoneyTextfield(
+                                          onTap: () {
+                                            setState(() {
+                                              currentFocus =
+                                                  2;
+                                            });
+                                            print(
+                                              'Current Focus Value: $currentFocus',
+                                            );
+                                          },
+                                          focusNode:
+                                              priceNode,
+                                          title:
+                                              returnSalesProviderContext(
+                                                    context,
+                                                  ).setTotalPrice
+                                                  ? 'Total Price'
+                                                  : 'Individual Price',
+                                          hint:
+                                              'Enter Price',
+                                          controller:
+                                              priceController,
+                                          theme: theme,
+                                          onChanged: (
+                                            value,
+                                          ) {
+                                            if (value
+                                                .isNotEmpty) {
+                                              cartItem.setCustomPrice =
+                                                  true;
+                                            } else {
+                                              cartItem.setCustomPrice =
+                                                  false;
+                                            }
+                                            setState(() {});
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
-                            formatMoneyMid(
-                              amount: double.parse(
-                                formatSellingPrice(
-                                  cartItem,
+                            SizedBox(height: 30),
+                            Visibility(
+                              visible:
+                                  isEdit
+                                      ? cartItem
+                                              .item
+                                              .setCustomPrice &&
+                                          !useWholeSalePriceTemp
+                                      : cartItem
+                                              .item
+                                              .setCustomPrice &&
+                                          !cartItem
+                                              .useWholeSalePrice,
+                              child: InkWell(
+                                onTap: () {
+                                  returnSalesProvider()
+                                      .toggleSetCustomPrice();
+                                  priceController.clear();
+                                },
+                                child: Container(
+                                  padding:
+                                      EdgeInsets.symmetric(
+                                        vertical: 5,
+                                        horizontal: 10,
+                                      ),
+                                  child: Row(
+                                    mainAxisSize:
+                                        MainAxisSize.min,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .center,
+                                    spacing: 5,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b1
+                                                  .fontSize,
+
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        returnSalesProviderContext(
+                                              context,
+                                            ).isSetCustomPrice()
+                                            ? 'Cancel Custom Price'
+                                            : 'Set Custom Price',
+                                      ),
+                                      Stack(
+                                        children: [
+                                          Visibility(
+                                            visible:
+                                                returnSalesProviderContext(
+                                                  context,
+                                                ).isSetCustomPrice() ==
+                                                false,
+                                            child: SvgPicture.asset(
+                                              color:
+                                                  theme
+                                                      .lightModeColor
+                                                      .secColor200,
+                                              editIconSvg,
+                                              height: 20,
+                                            ),
+                                          ),
+                                          Visibility(
+                                            visible:
+                                                returnSalesProviderContext(
+                                                  context,
+                                                ).isSetCustomPrice() ==
+                                                true,
+                                            child: Icon(
+                                              color:
+                                                  theme
+                                                      .lightModeColor
+                                                      .secColor200,
+                                              Icons.clear,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                              context: context,
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Visibility(
-                      visible:
-                          returnShopProvider()
-                              .userShop()
-                              ?.wholeSale ==
-                          true,
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxWidth: 230,
-                        ),
-                        child: Column(
-                          children: [
+                            SizedBox(height: 20),
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      10,
+                                    ),
+                                color: Colors.grey.shade100,
+                              ),
+                              padding:
+                                  const EdgeInsets.symmetric(
+                                    horizontal: 20.0,
+                                    vertical: 10,
+                                  ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .spaceBetween,
+                                children: [
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b1
+                                              .fontSize,
+                                    ),
+                                    'Total',
+                                  ),
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b1
+                                              .fontSize,
+                                      fontWeight:
+                                          theme
+                                              .mobileTexts
+                                              .b1
+                                              .fontWeightBold,
+                                    ),
+                                    formatMoneyMid(
+                                      amount: double.parse(
+                                        formatSellingPrice(
+                                          cartItem,
+                                        ),
+                                      ),
+                                      context: context,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Visibility(
+                              visible:
+                                  returnShopProvider()
+                                      .userShop()
+                                      ?.wholeSale ==
+                                  true,
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  maxWidth: 230,
+                                ),
+                                child: Column(
+                                  children: [
+                                    SizedBox(height: 20),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment
+                                              .spaceBetween,
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          'Use Whole Sale Price?',
+                                        ),
+                                        MyToggleButton(
+                                          boolValue:
+                                              isEdit
+                                                  ? useWholeSalePriceTemp
+                                                  : cartItem
+                                                      .useWholeSalePrice,
+                                          toggle: () {
+                                            var salesProvider =
+                                                returnSalesProvider();
+
+                                            if (isEdit) {
+                                              setState(() {
+                                                useWholeSalePriceTemp =
+                                                    !useWholeSalePriceTemp;
+                                              });
+                                            } else {
+                                              salesProvider.toggleWholeSale(
+                                                cartItem:
+                                                    cartItem,
+                                                context:
+                                                    context,
+                                              );
+                                            }
+                                            priceController
+                                                .clear();
+                                            salesProvider
+                                                .closeCustomPrice();
+                                          },
+                                          theme: theme,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 20),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(
+                                    horizontal: 20.0,
+                                  ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .center,
+                                spacing: 15,
+                                children: [
+                                  Ink(
+                                    decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                            5,
+                                          ),
+                                      color:
+                                          Colors
+                                              .grey
+                                              .shade100,
+                                    ),
+                                    child: InkWell(
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                            5,
+                                          ),
+                                      onTap: () {
+                                        setState(() {
+                                          if (qqty > 0)
+                                            qqty--;
+                                          quantityController
+                                                  .text =
+                                              qqty.toString();
+                                        });
+                                      },
+                                      child: SizedBox(
+                                        height: 30,
+                                        width: 50,
+                                        child: Icon(
+                                          Icons.remove,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    formatLargeNumberDouble(
+                                      qqty,
+                                    ),
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .h4
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                  ),
+                                  Ink(
+                                    decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                            5,
+                                          ),
+                                      color:
+                                          Colors
+                                              .grey
+                                              .shade100,
+                                    ),
+                                    child: InkWell(
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                            5,
+                                          ),
+                                      onTap: () {
+                                        if (cartItem
+                                            .item
+                                            .isManaged) {
+                                          if (!returnSalesProvider()
+                                              .canAddProductToCart(
+                                                newCartItem:
+                                                    cartItem,
+                                                quantityToAdd:
+                                                    (qqty +
+                                                        1) -
+                                                    existingQtty,
+                                              )) {
+                                            showDialog(
+                                              context:
+                                                  context,
+                                              builder:
+                                                  (
+                                                    _,
+                                                  ) => InfoAlert(
+                                                    title:
+                                                        "Quantity Limit Reached",
+                                                    message:
+                                                        "Only (${cartItem.item.quantity}) items available in stock.",
+                                                    theme:
+                                                        theme,
+                                                  ),
+                                            );
+                                            return;
+                                          }
+                                        }
+                                        setState(() {
+                                          qqty++;
+                                          quantityController
+                                                  .text =
+                                              qqty.toString();
+                                        });
+                                      },
+
+                                      child: SizedBox(
+                                        height: 30,
+                                        width: 50,
+                                        child: Center(
+                                          child: Icon(
+                                            Icons.add,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                             SizedBox(height: 20),
                             Row(
                               mainAxisAlignment:
-                                  MainAxisAlignment
-                                      .spaceBetween,
+                                  MainAxisAlignment.center,
+                              spacing: 5,
                               children: [
-                                Text(
-                                  style: TextStyle(
-                                    fontWeight:
-                                        FontWeight.bold,
-                                  ),
-                                  'Use Whole Sale Price?',
+                                MaterialButton(
+                                  onPressed: () {
+                                    Navigator.of(
+                                      context,
+                                    ).pop();
+                                    quantityController
+                                        .clear();
+                                    qqty = 0;
+                                  },
+                                  child: Text('Cancel'),
                                 ),
-                                MyToggleButton(
-                                  boolValue:
-                                      isEdit
-                                          ? useWholeSalePriceTemp
-                                          : cartItem
-                                              .useWholeSalePrice,
-                                  toggle: () {
-                                    var salesProvider =
-                                        returnSalesProvider();
-
-                                    if (isEdit) {
-                                      setState(() {
-                                        useWholeSalePriceTemp =
-                                            !useWholeSalePriceTemp;
-                                      });
+                                SmallButtonMain(
+                                  theme: theme,
+                                  action: () async {
+                                    if (cartItem
+                                                .item
+                                                .sellingPrice ==
+                                            null &&
+                                        priceController
+                                            .text
+                                            .isEmpty) {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return InfoAlert(
+                                            theme: theme,
+                                            message:
+                                                'Custom Price Must be set before Item can be added to cart.',
+                                            title:
+                                                'Custom Price Not Set',
+                                          );
+                                        },
+                                      );
                                     } else {
-                                      salesProvider
-                                          .toggleWholeSale(
-                                            cartItem:
-                                                cartItem,
+                                      if (quantityController
+                                              .text
+                                              .isEmpty ||
+                                          qqty == 0) {
+                                        // Navigator.of(context).pop();
+
+                                        showDialog(
+                                          context: context,
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return InfoAlert(
+                                              theme: theme,
+                                              message:
+                                                  'Item quantity cannot be set to (0)',
+                                              title:
+                                                  'Invalid Quantity',
+                                            );
+                                          },
+                                        );
+                                      } else {
+                                        if (priceController
+                                            .text
+                                            .isNotEmpty) {
+                                          cartItem.customPrice =
+                                              double.tryParse(
+                                                priceController
+                                                    .text
+                                                    .replaceAll(
+                                                      ',',
+                                                      '',
+                                                    ),
+                                              );
+                                          cartItem.setCustomPrice =
+                                              true;
+                                        } else {
+                                          cartItem.setCustomPrice =
+                                              false;
+                                        }
+                                        if (isEdit) {
+                                          double getQtty() {
+                                            if (useGroupQuantityTemp) {
+                                              return (qqty *
+                                                  cartItem
+                                                      .quantity);
+                                            } else {
+                                              return qqty;
+                                            }
+                                          }
+
+                                          if (existingQtty >
+                                              getQtty()) {
+                                            if (returnSalesProvider()
+                                                    .currentCart()
+                                                    .hasPrintedDocket !=
+                                                true) {
+                                              cartItem.useWholeSalePrice =
+                                                  useWholeSalePriceTemp;
+                                              cartItem.useGroupQuantity =
+                                                  useGroupQuantityTemp;
+                                              returnSalesProvider().editCartItemQuantity(
+                                                setTotalPrice:
+                                                    returnSalesProvider()
+                                                        .setTotalPrice,
+                                                cartItem:
+                                                    cartItem,
+                                                number: double.parse(
+                                                  quantityController
+                                                      .text
+                                                      .replaceAll(
+                                                        ',',
+                                                        '',
+                                                      ),
+                                                ),
+                                                customPrice: double.tryParse(
+                                                  priceController
+                                                      .text
+                                                      .replaceAll(
+                                                        ',',
+                                                        '',
+                                                      ),
+                                                ),
+                                                setCustomPrice:
+                                                    priceController
+                                                        .text
+                                                        .isNotEmpty,
+                                              );
+                                              Navigator.of(
+                                                context,
+                                              ).pop();
+                                            } else {
+                                              var res =
+                                                  await pinCodeAction(
+                                                    context:
+                                                        context,
+                                                  );
+                                              if (res) {
+                                                cartItem.useWholeSalePrice =
+                                                    useWholeSalePriceTemp;
+                                                cartItem.useGroupQuantity =
+                                                    useGroupQuantityTemp;
+                                                returnSalesProvider().editCartItemQuantity(
+                                                  setTotalPrice:
+                                                      returnSalesProvider()
+                                                          .setTotalPrice,
+                                                  cartItem:
+                                                      cartItem,
+                                                  number: double.parse(
+                                                    quantityController
+                                                        .text
+                                                        .replaceAll(
+                                                          ',',
+                                                          '',
+                                                        ),
+                                                  ),
+                                                  customPrice: double.tryParse(
+                                                    priceController
+                                                        .text
+                                                        .replaceAll(
+                                                          ',',
+                                                          '',
+                                                        ),
+                                                  ),
+                                                  setCustomPrice:
+                                                      priceController
+                                                          .text
+                                                          .isNotEmpty,
+                                                );
+                                                Navigator.of(
+                                                  context,
+                                                ).pop();
+                                              }
+                                            }
+                                          } else {
+                                            cartItem.useWholeSalePrice =
+                                                useWholeSalePriceTemp;
+                                            cartItem.useGroupQuantity =
+                                                useGroupQuantityTemp;
+                                            returnSalesProvider().editCartItemQuantity(
+                                              setTotalPrice:
+                                                  returnSalesProvider()
+                                                      .setTotalPrice,
+                                              cartItem:
+                                                  cartItem,
+                                              number: double.parse(
+                                                quantityController
+                                                    .text
+                                                    .replaceAll(
+                                                      ',',
+                                                      '',
+                                                    ),
+                                              ),
+                                              customPrice: double.tryParse(
+                                                priceController
+                                                    .text
+                                                    .replaceAll(
+                                                      ',',
+                                                      '',
+                                                    ),
+                                              ),
+                                              setCustomPrice:
+                                                  priceController
+                                                      .text
+                                                      .isNotEmpty,
+                                            );
+                                            Navigator.of(
+                                              context,
+                                            ).pop();
+                                          }
+                                        } else {
+                                          cartItem.setTotalPrice =
+                                              returnSalesProvider()
+                                                  .setTotalPrice;
+                                          cartItem.quantity =
+                                              qqty.toDouble();
+                                          returnSalesProvider().addItemToCart(
                                             context:
                                                 context,
+                                            newItem:
+                                                cartItem,
+                                            isCustomEdit:
+                                                returnData()
+                                                    .productList()
+                                                    .where(
+                                                      (
+                                                        product,
+                                                      ) =>
+                                                          product.uuid ==
+                                                          cartItem.item.uuid,
+                                                    )
+                                                    .isEmpty,
                                           );
+                                          Navigator.of(
+                                            context,
+                                          ).pop();
+                                          closeAction();
+                                        }
+                                      }
                                     }
-                                    priceController.clear();
-                                    salesProvider
-                                        .closeCustomPrice();
                                   },
-                                  theme: theme,
+                                  buttonText: 'Add To Cart',
                                 ),
                               ],
                             ),
                           ],
                         ),
                       ),
-                    ),
-                    SizedBox(height: 20),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20.0,
-                      ),
-                      child: Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.center,
-                        spacing: 15,
-                        children: [
-                          Ink(
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.circular(5),
-                              color: Colors.grey.shade100,
-                            ),
-                            child: InkWell(
-                              borderRadius:
-                                  BorderRadius.circular(5),
-                              onTap: () {
-                                setState(() {
-                                  if (qqty > 0) qqty--;
-                                  quantityController.text =
-                                      qqty.toString();
-                                });
-                              },
-                              child: SizedBox(
-                                height: 30,
-                                width: 50,
-                                child: Icon(Icons.remove),
+                      Visibility(
+                        visible:
+                            screenWidth(context) >
+                            tabletScreenSmall,
+                        child: Expanded(
+                          child: Row(
+                            children: [
+                              Container(
+                                margin:
+                                    EdgeInsets.symmetric(
+                                      horizontal: 15,
+                                    ),
+                                color: Colors.grey.shade400,
+                                width: 1,
+                                height: 400,
                               ),
-                            ),
-                          ),
-                          Text(
-                            formatLargeNumberDouble(qqty),
-                            style: TextStyle(
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .h4
-                                      .fontSize,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Ink(
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.circular(5),
-                              color: Colors.grey.shade100,
-                            ),
-                            child: InkWell(
-                              borderRadius:
-                                  BorderRadius.circular(5),
-                              onTap: () {
-                                if (cartItem
-                                    .item
-                                    .isManaged) {
-                                  if (!returnSalesProvider()
-                                      .canAddProductToCart(
-                                        product:
-                                            cartItem.item,
-                                        quantityToAdd:
-                                            qqty + 1,
-                                      )) {
-                                    showDialog(
-                                      context: context,
-                                      builder:
-                                          (_) => InfoAlert(
-                                            title:
-                                                "Quantity Limit Reached",
-                                            message:
-                                                "Only (${cartItem.item.quantity}) items available in stock.",
-                                            theme: theme,
-                                          ),
-                                    );
-                                    return;
-                                  }
-                                }
-                                setState(() {
-                                  qqty++;
-                                  quantityController.text =
-                                      qqty.toString();
-                                });
-                              },
+                              Expanded(
+                                child: Container(
+                                  padding: EdgeInsets.all(
+                                    15,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                          10,
+                                        ),
+                                    color: Colors.white,
+                                  ),
+                                  child: OnScreenKeyboardPin(
+                                    action: (value) {
+                                      void addDigit(
+                                        String digit,
+                                        TextEditingController
+                                        controller,
+                                      ) {
+                                        if (currentFocus ==
+                                            1) {
+                                          double entered =
+                                              double.tryParse(
+                                                controller
+                                                    .text
+                                                    .replaceAll(
+                                                      ',',
+                                                      '',
+                                                    ),
+                                              ) ??
+                                              0;
+                                          print(
+                                            'Entered Valueee: $entered',
+                                          );
+                                          if (cartItem
+                                              .item
+                                              .isManaged) {
+                                            if (!returnSalesProvider()
+                                                .canAddProductToCart(
+                                                  newCartItem:
+                                                      cartItem,
+                                                  quantityToAdd:
+                                                      entered,
+                                                )) {
+                                              showDialog(
+                                                context:
+                                                    context,
+                                                builder:
+                                                    (
+                                                      _,
+                                                    ) => InfoAlert(
+                                                      title:
+                                                          "Quantity Limit Reached",
+                                                      message:
+                                                          "Only ${cartItem.item.quantity} available in stock.",
+                                                      theme:
+                                                          theme,
+                                                    ),
+                                              ).then((_) {
+                                                qttyNode
+                                                    .requestFocus();
+                                              });
 
-                              child: SizedBox(
-                                height: 30,
-                                width: 50,
-                                child: Center(
-                                  child: Icon(Icons.add),
+                                              Future.delayed(
+                                                Duration(
+                                                  milliseconds:
+                                                      300,
+                                                ),
+                                                () {
+                                                  setState(() {
+                                                    qqty =
+                                                        0;
+                                                    quantityController.text =
+                                                        '0';
+                                                  });
+                                                },
+                                              );
+
+                                              return;
+                                            } else {
+                                              if (controller
+                                                  .text
+                                                  .isEmpty) {
+                                                setState(() {
+                                                  quantityController
+                                                          .text =
+                                                      '0';
+                                                });
+                                              }
+
+                                              controller
+                                                      .text +=
+                                                  digit;
+                                              double
+                                              newVal =
+                                                  double.tryParse(
+                                                    controller
+                                                        .text,
+                                                  ) ??
+                                                  0;
+                                              setState(() {
+                                                qqty =
+                                                    newVal;
+                                              });
+                                              controller
+                                                  .selection = TextSelection.fromPosition(
+                                                TextPosition(
+                                                  offset:
+                                                      controller
+                                                          .text
+                                                          .length,
+                                                ),
+                                              );
+                                            }
+                                          } else {
+                                            if (controller
+                                                .text
+                                                .isEmpty) {
+                                              setState(() {
+                                                quantityController
+                                                        .text =
+                                                    '0';
+                                              });
+                                            }
+
+                                            controller
+                                                    .text +=
+                                                digit;
+                                            double newVal =
+                                                double.tryParse(
+                                                  controller
+                                                      .text,
+                                                ) ??
+                                                0;
+                                            setState(() {
+                                              qqty = newVal;
+                                            });
+
+                                            controller
+                                                .selection = TextSelection.fromPosition(
+                                              TextPosition(
+                                                offset:
+                                                    controller
+                                                        .text
+                                                        .length,
+                                              ),
+                                            );
+                                          }
+                                        } else {
+                                          controller.text +=
+                                              digit;
+                                          controller
+                                              .selection = TextSelection.fromPosition(
+                                            TextPosition(
+                                              offset:
+                                                  controller
+                                                      .text
+                                                      .length,
+                                            ),
+                                          );
+                                        }
+                                      }
+
+                                      void removeDigit(
+                                        TextEditingController
+                                        controller,
+                                      ) {
+                                        if (controller
+                                            .text
+                                            .isNotEmpty) {
+                                          controller
+                                              .text = controller
+                                              .text
+                                              .substring(
+                                                0,
+                                                controller
+                                                        .text
+                                                        .length -
+                                                    1,
+                                              );
+                                          if (currentFocus ==
+                                              1) {
+                                            double newVal =
+                                                double.tryParse(
+                                                  controller
+                                                      .text,
+                                                ) ??
+                                                0;
+                                            setState(() {
+                                              qqty = newVal;
+                                            });
+                                          }
+
+                                          controller
+                                              .selection = TextSelection.fromPosition(
+                                            TextPosition(
+                                              offset:
+                                                  controller
+                                                      .text
+                                                      .length,
+                                            ),
+                                          );
+                                        }
+                                      }
+
+                                      if (value != '00') {
+                                        addDigit(
+                                          value,
+                                          currentFocus == 1
+                                              ? quantityController
+                                              : priceController,
+                                        );
+                                      } else {
+                                        removeDigit(
+                                          currentFocus == 1
+                                              ? quantityController
+                                              : priceController,
+                                        );
+                                      }
+                                      setState(() {});
+                                    },
+                                  ),
                                 ),
                               ),
-                            ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.center,
-                      spacing: 5,
-                      children: [
-                        MaterialButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            quantityController.clear();
-                            qqty = 0;
-                          },
-                          child: Text('Cancel'),
-                        ),
-                        SmallButtonMain(
-                          theme: theme,
-                          action: () {
-                            if (cartItem
-                                        .item
-                                        .sellingPrice ==
-                                    null &&
-                                priceController
-                                    .text
-                                    .isEmpty) {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return InfoAlert(
-                                    theme: theme,
-                                    message:
-                                        'Custom Price Must be set before Item can be added to cart.',
-                                    title:
-                                        'Custom Price Not Set',
-                                  );
-                                },
-                              );
-                            } else {
-                              if (quantityController
-                                      .text
-                                      .isEmpty ||
-                                  qqty == 0) {
-                                // Navigator.of(context).pop();
-
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return InfoAlert(
-                                      theme: theme,
-                                      message:
-                                          'Item quantity cannot be set to (0)',
-                                      title:
-                                          'Invalid Quantity',
-                                    );
-                                  },
-                                );
-                              } else {
-                                if (priceController
-                                    .text
-                                    .isNotEmpty) {
-                                  cartItem.customPrice =
-                                      double.tryParse(
-                                        priceController.text
-                                            .replaceAll(
-                                              ',',
-                                              '',
-                                            ),
-                                      );
-                                  cartItem.setCustomPrice =
-                                      true;
-                                } else {
-                                  cartItem.setCustomPrice =
-                                      false;
-                                }
-                                if (isEdit) {
-                                  cartItem.useWholeSalePrice =
-                                      useWholeSalePriceTemp;
-                                  cartItem.useGroupQuantity =
-                                      useGroupQuantityTemp;
-                                  returnSalesProvider()
-                                      .editCartItemQuantity(
-                                        setTotalPrice:
-                                            returnSalesProvider()
-                                                .setTotalPrice,
-                                        cartItem: cartItem,
-                                        number: double.parse(
-                                          quantityController
-                                              .text
-                                              .replaceAll(
-                                                ',',
-                                                '',
-                                              ),
-                                        ),
-                                        customPrice:
-                                            double.tryParse(
-                                              priceController
-                                                  .text
-                                                  .replaceAll(
-                                                    ',',
-                                                    '',
-                                                  ),
-                                            ),
-                                        setCustomPrice:
-                                            priceController
-                                                .text
-                                                .isNotEmpty,
-                                      );
-                                  Navigator.of(
-                                    context,
-                                  ).pop();
-                                } else {
-                                  cartItem.setTotalPrice =
-                                      returnSalesProvider()
-                                          .setTotalPrice;
-                                  cartItem.quantity =
-                                      qqty.toDouble();
-                                  returnSalesProvider().addItemToCart(
-                                    context: context,
-                                    newItem: cartItem,
-                                    isCustomEdit:
-                                        returnData()
-                                            .productList()
-                                            .where(
-                                              (product) =>
-                                                  product
-                                                      .uuid ==
-                                                  cartItem
-                                                      .item
-                                                      .uuid,
-                                            )
-                                            .isEmpty,
-                                  );
-                                  Navigator.of(
-                                    context,
-                                  ).pop();
-                                  closeAction();
-                                }
-                              }
-                            }
-                          },
-                          buttonText: 'Add To Cart',
-                        ),
-                      ],
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             );
@@ -3642,6 +4093,7 @@ class CustomBottomPanel extends StatefulWidget {
 class _CustomBottomPanelState
     extends State<CustomBottomPanel> {
   FocusNode qttyNode = FocusNode();
+  FocusNode priceNode = FocusNode();
   //
   //
   //
@@ -3651,16 +4103,18 @@ class _CustomBottomPanelState
   TextEditingController priceController =
       TextEditingController();
   // double qqty = 0;
-  List<TempProductClass> productResults = [];
-  String? scanResult;
-  String? searchResult;
-  void clear() {
-    searchResult = null;
-    scanResult = '';
-    productResults.clear();
-  }
+  // List<TempProductClass> productResults = [];
+  // String? scanResult;
+  // String? searchResult;
+  // void clear() {
+  //   searchResult = null;
+  //   scanResult = '';
+  //   productResults.clear();
+  // }
 
   FocusNode mainSearchNode = FocusNode();
+
+  CategoryClass? selectedCat;
 
   @override
   Widget build(BuildContext context) {
@@ -3686,16 +4140,25 @@ class _CustomBottomPanelState
           ),
           child: Container(
             height:
-                MediaQuery.of(context).size.height * 0.9,
+                MediaQuery.of(context).size.height * 0.99,
 
             padding:
                 screenWidth(context) < mobileScreen
                     ? const EdgeInsets.fromLTRB(0, 0, 0, 0)
-                    : const EdgeInsets.fromLTRB(
+                    : returnCategoriesProvider()
+                        .categoriesMain
+                        .isEmpty
+                    ? const EdgeInsets.fromLTRB(
                       15,
                       15,
                       15,
                       40,
+                    )
+                    : const EdgeInsets.fromLTRB(
+                      15,
+                      5,
+                      15,
+                      20,
                     ),
             child: Column(
               children: [
@@ -3724,10 +4187,15 @@ class _CustomBottomPanelState
                                   screenWidth(context) <
                                       tabletScreen
                               ? 20
-                              : 100,
+                              : returnCategoriesProvider()
+                                  .categoriesMain
+                                  .isEmpty
+                              ? 100
+                              : 50,
                     ),
                     child: Container(
                       padding: EdgeInsets.all(15),
+                      width: double.infinity,
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(
@@ -3801,7 +4269,7 @@ class _CustomBottomPanelState
                                     widget.close();
                                     widget.searchController
                                         .clear();
-                                    clear();
+                                    // clear();
                                   },
                                   child: Container(
                                     padding: EdgeInsets.all(
@@ -3846,57 +4314,58 @@ class _CustomBottomPanelState
                                     onChanged: (
                                       value,
                                     ) async {
-                                      setState(() {
-                                        scanResult = null;
-                                        productResults
-                                            .clear();
-                                      });
-                                      if (value == '') {
-                                        setState(() {
-                                          searchResult =
-                                              null;
-                                        });
-                                      } else {
-                                        setState(() {
-                                          searchResult =
-                                              value
-                                                  .toLowerCase();
-                                        });
-                                        var items = returnData()
-                                            .productList()
-                                            .where(
-                                              (product) =>
-                                                  product
-                                                      .barcode
-                                                      ?.toLowerCase() ==
-                                                  value
-                                                      .toLowerCase(),
-                                            );
-                                        if (items
-                                            .isNotEmpty) {
-                                          SalesAuthAction().useBarcodeAction(
-                                            context:
-                                                context,
-                                            action: () async {
-                                              await playBeep();
-                                            },
-                                            failAction: () {
-                                              widget
-                                                  .searchController
-                                                  .clear();
-                                            },
+                                      // setState(() {
+                                      //   scanResult = null;
+                                      //   productResults
+                                      //       .clear();
+                                      // });
+                                      // if (value == '') {
+                                      //   setState(() {
+                                      //     searchResult =
+                                      //         null;
+                                      //   });
+                                      // } else {
+                                      //   setState(() {
+                                      //     searchResult =
+                                      //         value
+                                      //             .toLowerCase();
+                                      //   });
+
+                                      // }
+                                      var items = returnData()
+                                          .productList()
+                                          .where(
+                                            (product) =>
+                                                product
+                                                    .barcode
+                                                    ?.toLowerCase() ==
+                                                value
+                                                    .toLowerCase(),
                                           );
-                                        }
+                                      if (items
+                                          .isNotEmpty) {
+                                        SalesAuthAction().useBarcodeAction(
+                                          context: context,
+                                          action: () async {
+                                            await playBeep();
+                                          },
+                                          failAction: () {
+                                            widget
+                                                .searchController
+                                                .clear();
+                                          },
+                                        );
                                       }
+                                      setState(() {});
                                     },
                                     onPressedScan: () async {
                                       SalesAuthAction().useBarcodeAction(
                                         context: context,
                                         action: () async {
-                                          productResults
-                                              .clear();
-                                          searchResult =
-                                              null;
+                                          // productResults
+                                          //     .clear();
+                                          // searchResult =
+                                          //     null;
                                           String? result =
                                               await scanCode(
                                                 context,
@@ -3919,14 +4388,14 @@ class _CustomBottomPanelState
                                               );
                                           if (items
                                               .isNotEmpty) {
-                                            setState(() {
-                                              scanResult =
-                                                  result;
-                                              productResults
-                                                  .addAll(
-                                                    items,
-                                                  );
-                                            });
+                                            // setState(() {
+                                            //   scanResult =
+                                            //       result;
+                                            //   productResults
+                                            //       .addAll(
+                                            //         items,
+                                            //       );
+                                            // });
                                             await playBeep();
                                           }
                                           setState(() {});
@@ -3951,26 +4420,7 @@ class _CustomBottomPanelState
                                             onPressed: () async {
                                               mainSearchNode
                                                   .requestFocus();
-                                              try {
-                                                if (Platform
-                                                    .isWindows) {
-                                                  await Process.start(
-                                                    'cmd',
-                                                    [
-                                                      '/c',
-                                                      'start',
-                                                      '',
-                                                      'osk',
-                                                    ],
-                                                    mode:
-                                                        ProcessStartMode.detached,
-                                                  );
-                                                }
-                                              } catch (e) {
-                                                print(
-                                                  'Error Opening Keyboard: ${e.toString()}',
-                                                );
-                                              }
+                                              await showOnScreenKeyboard();
                                             },
                                             icon: Icon(
                                               size: 25,
@@ -3989,802 +4439,624 @@ class _CustomBottomPanelState
                             ),
                           ),
                           Expanded(
-                            child: Builder(
-                              builder: (context) {
-                                var products =
-                                    productResults;
-                                if (products.isEmpty &&
-                                    scanResult != null) {
-                                  return Padding(
-                                    padding:
-                                        const EdgeInsets.only(
-                                          top: 20.0,
-                                          left: 30,
-                                        ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment
-                                              .start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    theme
-                                                        .mobileTexts
-                                                        .b1
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              'Item Not Registered In Your Stock',
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                } else if (returnData()
-                                        .productList()
-                                        .where(
-                                          (product) =>
-                                              product.name
-                                                  .toLowerCase()
-                                                  .contains(
-                                                    widget
-                                                        .searchController
-                                                        .text
-                                                        .toLowerCase(),
-                                                  ) ||
-                                              (product.barcode !=
-                                                      null &&
-                                                  product
-                                                      .barcode!
-                                                      .toLowerCase()
-                                                      .contains(
-                                                        widget.searchController.text.toLowerCase(),
-                                                      )),
-                                        )
-                                        .isEmpty &&
-                                    searchResult != null) {
-                                  return Padding(
-                                    padding:
-                                        const EdgeInsets.only(
-                                          top: 20.0,
-                                          left: 30,
-                                        ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment
-                                              .start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    theme
-                                                        .mobileTexts
-                                                        .b1
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              'Found 0 Item(s)',
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                } else {
-                                  if (productResults
-                                      .isNotEmpty) {
-                                    return RefreshIndicator(
-                                      onRefresh: () async {
-                                        await returnData()
-                                            .getProducts(
-                                              returnShopProvider()
-                                                  .userShop()!
-                                                  .shopId!,
-                                            );
-                                        setState(() {});
-                                      },
-                                      backgroundColor:
-                                          Colors.white,
-                                      color:
-                                          theme
-                                              .lightModeColor
-                                              .prColor300,
-                                      displacement: 10,
-                                      child: ListView.builder(
-                                        padding:
-                                            EdgeInsets.only(
-                                              top: 10,
-                                            ),
-                                        itemCount:
-                                            products.length,
-                                        itemBuilder: (
-                                          context,
-                                          index,
-                                        ) {
-                                          final product =
-                                              products[index];
-                                          return ProductTileCartSearch(
-                                            action: () {
-                                              if (!product
-                                                  .isManaged) {
-                                                if (returnSalesProvider()
-                                                    .currentCart()
-                                                    .cartItems
-                                                    .where(
-                                                      (
-                                                        item,
-                                                      ) =>
-                                                          item.item.uuid! ==
-                                                          product.uuid,
-                                                    )
-                                                    .isNotEmpty) {
-                                                  selectProductSales(
-                                                    isEdit:
-                                                        false,
-                                                    context:
-                                                        context,
-                                                    qttyNode:
-                                                        qttyNode,
-                                                    quantityController:
-                                                        quantityController,
-                                                    searchController:
-                                                        widget.searchController,
-                                                    theme:
-                                                        theme,
-                                                    cartItem: TempCartItem(
-                                                      qttyPerGroup:
-                                                          returnSalesProvider()
-                                                              .currentCart()
-                                                              .cartItems
-                                                              .firstWhere(
-                                                                (
-                                                                  item,
-                                                                ) =>
-                                                                    item.item.uuid! ==
-                                                                    product.uuid!,
-                                                              )
-                                                              .qttyPerGroup,
-                                                      useGroupQuantity:
-                                                          returnSalesProvider()
-                                                              .currentCart()
-                                                              .cartItems
-                                                              .firstWhere(
-                                                                (
-                                                                  item,
-                                                                ) =>
-                                                                    item.item.uuid! ==
-                                                                    product.uuid!,
-                                                              )
-                                                              .useGroupQuantity,
-                                                      setTotalPrice:
-                                                          returnSalesProvider().setTotalPrice,
-                                                      useWholeSalePrice:
-                                                          returnSalesProvider()
-                                                              .currentCart()
-                                                              .cartItems
-                                                              .firstWhere(
-                                                                (
-                                                                  item,
-                                                                ) =>
-                                                                    item.item.uuid! ==
-                                                                    product.uuid!,
-                                                              )
-                                                              .useWholeSalePrice,
-                                                      addToStock:
-                                                          false,
-                                                      discount:
-                                                          product.discount,
-                                                      item:
-                                                          product,
-                                                      quantity:
-                                                          returnSalesProvider()
-                                                              .currentCart()
-                                                              .cartItems
-                                                              .firstWhere(
-                                                                (
-                                                                  item,
-                                                                ) =>
-                                                                    item.item.uuid! ==
-                                                                    product.uuid!,
-                                                              )
-                                                              .quantity,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Builder(
+                                    builder: (context) {
+                                      var products =
+                                          selectedCat ==
+                                                  null
+                                              ? returnData().productList().where(
+                                                (item) =>
+                                                    item.barcode ==
+                                                        widget.searchController.text ||
+                                                    item.name.toLowerCase().contains(
+                                                      widget
+                                                          .searchController
+                                                          .text
+                                                          .toLowerCase(),
                                                     ),
-                                                    closeAction:
-                                                        widget.close,
-                                                    priceController:
-                                                        priceController,
-                                                  );
-                                                } else {
-                                                  selectProductSales(
-                                                    isEdit:
-                                                        false,
-                                                    context:
-                                                        context,
-                                                    qttyNode:
-                                                        qttyNode,
-                                                    quantityController:
-                                                        quantityController,
-                                                    searchController:
-                                                        widget.searchController,
-                                                    theme:
-                                                        theme,
-                                                    cartItem: TempCartItem(
-                                                      qttyPerGroup:
-                                                          product.qttyPerGroup,
-                                                      useGroupQuantity:
-                                                          false,
-                                                      setTotalPrice:
-                                                          returnSalesProvider().setTotalPrice,
-                                                      useWholeSalePrice:
-                                                          false,
-                                                      addToStock:
-                                                          false,
-                                                      discount:
-                                                          product.discount,
-                                                      item:
-                                                          product,
-                                                      quantity:
-                                                          double.tryParse(
-                                                            quantityController.text
-                                                                .replaceAll(
-                                                                  ',',
-                                                                  '',
-                                                                )
-                                                                .trim(),
-                                                          ) ??
-                                                          0.0,
-                                                    ),
-                                                    closeAction:
-                                                        widget.close,
-                                                    priceController:
-                                                        priceController,
-                                                  );
-                                                }
-                                              } else {
-                                                if (product
-                                                        .quantity ==
-                                                    0) {
-                                                  showDialog(
-                                                    context:
-                                                        context,
-                                                    builder: (
-                                                      context,
-                                                    ) {
-                                                      var theme = Provider.of<
-                                                        ThemeProvider
-                                                      >(
-                                                        context,
-                                                      );
-                                                      return InfoAlert(
-                                                        theme:
-                                                            theme,
-                                                        message:
-                                                            'Item Quantity is Zero, Therefore, this item cannot be sold',
-                                                        title:
-                                                            'Item out of Stock',
-                                                      );
-                                                    },
-                                                  );
-                                                } else if (returnSalesProvider()
-                                                    .currentCart()
-                                                    .cartItems
-                                                    .where(
-                                                      (
-                                                        item,
-                                                      ) =>
-                                                          item.item.uuid! ==
-                                                          product.uuid,
-                                                    )
-                                                    .isNotEmpty) {
-                                                  selectProductSales(
-                                                    isEdit:
-                                                        false,
-                                                    context:
-                                                        context,
-                                                    qttyNode:
-                                                        qttyNode,
-                                                    quantityController:
-                                                        quantityController,
-                                                    searchController:
-                                                        widget.searchController,
-                                                    theme:
-                                                        theme,
-                                                    cartItem: TempCartItem(
-                                                      qttyPerGroup:
-                                                          returnSalesProvider()
-                                                              .currentCart()
-                                                              .cartItems
-                                                              .firstWhere(
-                                                                (
-                                                                  item,
-                                                                ) =>
-                                                                    item.item.uuid! ==
-                                                                    product.uuid!,
-                                                              )
-                                                              .qttyPerGroup,
-                                                      useGroupQuantity:
-                                                          returnSalesProvider()
-                                                              .currentCart()
-                                                              .cartItems
-                                                              .firstWhere(
-                                                                (
-                                                                  item,
-                                                                ) =>
-                                                                    item.item.uuid! ==
-                                                                    product.uuid!,
-                                                              )
-                                                              .useGroupQuantity,
-                                                      setTotalPrice:
-                                                          returnSalesProvider().setTotalPrice,
-                                                      useWholeSalePrice:
-                                                          returnSalesProvider()
-                                                              .currentCart()
-                                                              .cartItems
-                                                              .firstWhere(
-                                                                (
-                                                                  item,
-                                                                ) =>
-                                                                    item.item.uuid! ==
-                                                                    product.uuid!,
-                                                              )
-                                                              .useWholeSalePrice,
-                                                      addToStock:
-                                                          false,
-                                                      discount:
-                                                          product.discount,
-                                                      item:
-                                                          product,
-                                                      quantity:
-                                                          returnSalesProvider()
-                                                              .currentCart()
-                                                              .cartItems
-                                                              .firstWhere(
-                                                                (
-                                                                  item,
-                                                                ) =>
-                                                                    item.item.uuid! ==
-                                                                    product.uuid!,
-                                                              )
-                                                              .quantity,
-                                                    ),
-                                                    closeAction:
-                                                        widget.close,
-                                                    priceController:
-                                                        priceController,
-                                                  );
-                                                } else {
-                                                  selectProductSales(
-                                                    isEdit:
-                                                        false,
-                                                    context:
-                                                        context,
-                                                    qttyNode:
-                                                        qttyNode,
-                                                    quantityController:
-                                                        quantityController,
-                                                    searchController:
-                                                        widget.searchController,
-                                                    theme:
-                                                        theme,
-                                                    cartItem: TempCartItem(
-                                                      qttyPerGroup:
-                                                          product.qttyPerGroup,
-                                                      useGroupQuantity:
-                                                          false,
-                                                      setTotalPrice:
-                                                          returnSalesProvider().setTotalPrice,
-                                                      useWholeSalePrice:
-                                                          false,
-                                                      addToStock:
-                                                          false,
-                                                      discount:
-                                                          product.discount,
-                                                      item:
-                                                          product,
-                                                      quantity:
-                                                          double.tryParse(
-                                                            quantityController.text
-                                                                .replaceAll(
-                                                                  ',',
-                                                                  '',
-                                                                )
-                                                                .trim(),
-                                                          ) ??
-                                                          0.0,
-                                                    ),
-                                                    closeAction:
-                                                        widget.close,
-                                                    priceController:
-                                                        priceController,
-                                                  );
-                                                }
-                                              }
-                                            },
-                                            theme: theme,
-                                            product:
-                                                product,
-                                          );
-                                        },
-                                      ),
-                                    );
-                                  } else {
-                                    return RefreshIndicator(
-                                      onRefresh: () async {
-                                        await returnData()
-                                            .getProducts(
-                                              returnShopProvider()
-                                                  .userShop()!
-                                                  .shopId!,
-                                            );
-                                        setState(() {});
-                                      },
-                                      backgroundColor:
-                                          Colors.white,
-                                      color:
-                                          theme
-                                              .lightModeColor
-                                              .prColor300,
-                                      displacement: 15,
-                                      child: ListView.builder(
-                                        padding:
-                                            EdgeInsets.only(
-                                              top: 10,
-                                            ),
-                                        itemCount:
-                                            returnData()
-                                                .productList()
-                                                .where(
-                                                  (
-                                                    product,
-                                                  ) =>
-                                                      product.name.toLowerCase().contains(
-                                                        widget.searchController.text.toLowerCase(),
-                                                      ) ||
-                                                      (product.barcode !=
-                                                              null &&
-                                                          product.barcode!.toLowerCase().contains(
-                                                            widget.searchController.text.toLowerCase(),
-                                                          )),
-                                                )
-                                                .length,
-                                        itemBuilder: (
-                                          context,
-                                          index,
-                                        ) {
-                                          final product =
-                                              returnData()
-                                                  .productList()
-                                                  .where(
-                                                    (
-                                                      product,
-                                                    ) =>
-                                                        product.name.toLowerCase().contains(
+                                              )
+                                              : returnData().productList().where(
+                                                (itemm) =>
+                                                    itemm.categoryUuid ==
+                                                        selectedCat?.uuid &&
+                                                    (itemm.barcode ==
+                                                            widget.searchController.text ||
+                                                        itemm.name.toLowerCase().contains(
                                                           widget.searchController.text.toLowerCase(),
-                                                        ) ||
-                                                        (product.barcode !=
-                                                                null &&
-                                                            product.barcode!.toLowerCase().contains(
-                                                              widget.searchController.text.toLowerCase(),
-                                                            )),
-                                                  )
-                                                  .toList()[index];
-                                          return ProductTileCartSearch(
-                                            action: () {
-                                              if (!product
-                                                  .isManaged) {
-                                                if (returnSalesProvider()
-                                                    .currentCart()
-                                                    .cartItems
-                                                    .where(
-                                                      (
-                                                        item,
-                                                      ) =>
-                                                          item.item.uuid! ==
-                                                          product.uuid,
-                                                    )
-                                                    .isNotEmpty) {
-                                                  selectProductSales(
-                                                    isEdit:
-                                                        false,
-                                                    context:
-                                                        context,
-                                                    qttyNode:
-                                                        qttyNode,
-                                                    quantityController:
-                                                        quantityController,
-                                                    searchController:
-                                                        widget.searchController,
-                                                    theme:
-                                                        theme,
-                                                    cartItem: TempCartItem(
-                                                      qttyPerGroup:
-                                                          returnSalesProvider()
-                                                              .currentCart()
-                                                              .cartItems
-                                                              .firstWhere(
-                                                                (
-                                                                  item,
-                                                                ) =>
-                                                                    item.item.uuid! ==
-                                                                    product.uuid!,
-                                                              )
-                                                              .qttyPerGroup,
-                                                      useGroupQuantity:
-                                                          returnSalesProvider()
-                                                              .currentCart()
-                                                              .cartItems
-                                                              .firstWhere(
-                                                                (
-                                                                  item,
-                                                                ) =>
-                                                                    item.item.uuid! ==
-                                                                    product.uuid!,
-                                                              )
-                                                              .useGroupQuantity,
-                                                      setTotalPrice:
-                                                          returnSalesProvider().setTotalPrice,
-                                                      useWholeSalePrice:
-                                                          returnSalesProvider()
-                                                              .currentCart()
-                                                              .cartItems
-                                                              .firstWhere(
-                                                                (
-                                                                  item,
-                                                                ) =>
-                                                                    item.item.uuid! ==
-                                                                    product.uuid!,
-                                                              )
-                                                              .useWholeSalePrice,
-                                                      addToStock:
-                                                          false,
-                                                      discount:
-                                                          product.discount,
-                                                      item:
-                                                          product,
-                                                      quantity:
-                                                          returnSalesProvider()
-                                                              .currentCart()
-                                                              .cartItems
-                                                              .firstWhere(
-                                                                (
-                                                                  item,
-                                                                ) =>
-                                                                    item.item.uuid! ==
-                                                                    product.uuid!,
-                                                              )
-                                                              .quantity,
+                                                        )),
+                                              );
+
+                                      if (products
+                                          .isEmpty) {
+                                        return Padding(
+                                          padding:
+                                              const EdgeInsets.only(
+                                                top: 20.0,
+                                                left: 30,
+                                              ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment
+                                                    .start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          theme.mobileTexts.b1.fontSize,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                     ),
-                                                    closeAction:
-                                                        widget.close,
-                                                    priceController:
-                                                        priceController,
-                                                  );
-                                                } else {
-                                                  selectProductSales(
-                                                    isEdit:
-                                                        false,
-                                                    context:
-                                                        context,
-                                                    qttyNode:
-                                                        qttyNode,
-                                                    quantityController:
-                                                        quantityController,
-                                                    searchController:
-                                                        widget.searchController,
-                                                    theme:
-                                                        theme,
-                                                    cartItem: TempCartItem(
-                                                      qttyPerGroup:
-                                                          product.qttyPerGroup,
-                                                      useGroupQuantity:
-                                                          false,
-                                                      setTotalPrice:
-                                                          returnSalesProvider().setTotalPrice,
-                                                      useWholeSalePrice:
-                                                          false,
-                                                      addToStock:
-                                                          false,
-                                                      discount:
-                                                          product.discount,
-                                                      item:
-                                                          product,
-                                                      quantity:
-                                                          double.tryParse(
-                                                            quantityController.text
-                                                                .replaceAll(
-                                                                  ',',
-                                                                  '',
-                                                                )
-                                                                .trim(),
-                                                          ) ??
-                                                          0.0,
-                                                    ),
-                                                    closeAction:
-                                                        widget.close,
-                                                    priceController:
-                                                        priceController,
-                                                  );
-                                                }
-                                              } else {
-                                                if (product
-                                                        .quantity ==
-                                                    0) {
-                                                  showDialog(
-                                                    context:
-                                                        context,
-                                                    builder: (
-                                                      context,
-                                                    ) {
-                                                      var theme = Provider.of<
-                                                        ThemeProvider
-                                                      >(
-                                                        context,
-                                                      );
-                                                      return InfoAlert(
+                                                    'Found 0 Item(s)',
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      } else {
+                                        return RefreshIndicator(
+                                          onRefresh: () async {
+                                            await returnData()
+                                                .getProducts(
+                                                  returnShopProvider()
+                                                      .userShop()!
+                                                      .shopId!,
+                                                );
+                                            setState(() {});
+                                          },
+                                          backgroundColor:
+                                              Colors.white,
+                                          color:
+                                              theme
+                                                  .lightModeColor
+                                                  .prColor300,
+                                          displacement: 15,
+                                          child: ListView.builder(
+                                            padding:
+                                                EdgeInsets.only(
+                                                  top: 10,
+                                                ),
+                                            itemCount:
+                                                products
+                                                    .length,
+                                            itemBuilder: (
+                                              context,
+                                              index,
+                                            ) {
+                                              final product =
+                                                  products
+                                                      .toList()[index];
+                                              return ProductTileCartSearch(
+                                                action: () {
+                                                  if (!product
+                                                      .isManaged) {
+                                                    if (returnSalesProvider()
+                                                        .currentCart()
+                                                        .cartItems
+                                                        .where(
+                                                          (
+                                                            item,
+                                                          ) =>
+                                                              item.item.uuid! ==
+                                                              product.uuid,
+                                                        )
+                                                        .isNotEmpty) {
+                                                      selectProductSales(
+                                                        isEdit:
+                                                            false,
+                                                        context:
+                                                            context,
+                                                        qttyNode:
+                                                            qttyNode,
+                                                        priceNode:
+                                                            priceNode,
+                                                        quantityController:
+                                                            quantityController,
+                                                        searchController:
+                                                            widget.searchController,
                                                         theme:
                                                             theme,
-                                                        message:
-                                                            'Item Quantity is Zero, Therefore, this item cannot be sold',
-                                                        title:
-                                                            'Item out of Stock',
+                                                        cartItem: TempCartItem(
+                                                          qttyPerGroup:
+                                                              returnSalesProvider()
+                                                                  .currentCart()
+                                                                  .cartItems
+                                                                  .firstWhere(
+                                                                    (
+                                                                      item,
+                                                                    ) =>
+                                                                        item.item.uuid! ==
+                                                                        product.uuid!,
+                                                                  )
+                                                                  .qttyPerGroup,
+                                                          useGroupQuantity:
+                                                              returnSalesProvider()
+                                                                  .currentCart()
+                                                                  .cartItems
+                                                                  .firstWhere(
+                                                                    (
+                                                                      item,
+                                                                    ) =>
+                                                                        item.item.uuid! ==
+                                                                        product.uuid!,
+                                                                  )
+                                                                  .useGroupQuantity,
+                                                          setTotalPrice:
+                                                              returnSalesProvider().setTotalPrice,
+                                                          useWholeSalePrice:
+                                                              returnSalesProvider()
+                                                                  .currentCart()
+                                                                  .cartItems
+                                                                  .firstWhere(
+                                                                    (
+                                                                      item,
+                                                                    ) =>
+                                                                        item.item.uuid! ==
+                                                                        product.uuid!,
+                                                                  )
+                                                                  .useWholeSalePrice,
+                                                          addToStock:
+                                                              false,
+                                                          discount:
+                                                              product.discount,
+                                                          item:
+                                                              product,
+                                                          quantity:
+                                                              returnSalesProvider()
+                                                                  .currentCart()
+                                                                  .cartItems
+                                                                  .firstWhere(
+                                                                    (
+                                                                      item,
+                                                                    ) =>
+                                                                        item.item.uuid! ==
+                                                                        product.uuid!,
+                                                                  )
+                                                                  .quantity,
+                                                        ),
+                                                        closeAction:
+                                                            widget.close,
+                                                        priceController:
+                                                            priceController,
                                                       );
-                                                    },
-                                                  );
-                                                } else if (returnSalesProvider()
-                                                    .currentCart()
-                                                    .cartItems
-                                                    .where(
-                                                      (
-                                                        item,
-                                                      ) =>
-                                                          item.item.uuid! ==
-                                                          product.uuid,
-                                                    )
-                                                    .isNotEmpty) {
-                                                  selectProductSales(
-                                                    isEdit:
-                                                        false,
-                                                    context:
-                                                        context,
-                                                    qttyNode:
-                                                        qttyNode,
-                                                    quantityController:
-                                                        quantityController,
-                                                    searchController:
-                                                        widget.searchController,
-                                                    theme:
-                                                        theme,
-                                                    cartItem: TempCartItem(
-                                                      qttyPerGroup:
-                                                          returnSalesProvider()
-                                                              .currentCart()
-                                                              .cartItems
-                                                              .firstWhere(
-                                                                (
-                                                                  item,
-                                                                ) =>
-                                                                    item.item.uuid! ==
-                                                                    product.uuid!,
-                                                              )
-                                                              .qttyPerGroup,
-                                                      useGroupQuantity:
-                                                          returnSalesProvider()
-                                                              .currentCart()
-                                                              .cartItems
-                                                              .firstWhere(
-                                                                (
-                                                                  item,
-                                                                ) =>
-                                                                    item.item.uuid! ==
-                                                                    product.uuid!,
-                                                              )
-                                                              .useGroupQuantity,
-                                                      setTotalPrice:
-                                                          returnSalesProvider().setTotalPrice,
-                                                      useWholeSalePrice:
-                                                          returnSalesProvider()
-                                                              .currentCart()
-                                                              .cartItems
-                                                              .firstWhere(
-                                                                (
-                                                                  item,
-                                                                ) =>
-                                                                    item.item.uuid! ==
-                                                                    product.uuid!,
-                                                              )
-                                                              .useWholeSalePrice,
-                                                      addToStock:
-                                                          false,
-                                                      discount:
-                                                          product.discount,
-                                                      item:
-                                                          product,
-                                                      quantity:
-                                                          returnSalesProvider()
-                                                              .currentCart()
-                                                              .cartItems
-                                                              .firstWhere(
-                                                                (
-                                                                  item,
-                                                                ) =>
-                                                                    item.item.uuid! ==
-                                                                    product.uuid!,
-                                                              )
-                                                              .quantity,
-                                                    ),
-                                                    closeAction:
-                                                        widget.close,
-                                                    priceController:
-                                                        priceController,
-                                                  );
-                                                } else {
-                                                  selectProductSales(
-                                                    isEdit:
-                                                        false,
-                                                    context:
-                                                        context,
-                                                    qttyNode:
-                                                        qttyNode,
-                                                    quantityController:
-                                                        quantityController,
-                                                    searchController:
-                                                        widget.searchController,
-                                                    theme:
-                                                        theme,
-                                                    cartItem: TempCartItem(
-                                                      qttyPerGroup:
-                                                          product.qttyPerGroup,
-                                                      useGroupQuantity:
-                                                          false,
-                                                      setTotalPrice:
-                                                          returnSalesProvider().setTotalPrice,
-                                                      useWholeSalePrice:
-                                                          false,
-                                                      addToStock:
-                                                          false,
-                                                      discount:
-                                                          product.discount,
-                                                      item:
-                                                          product,
-                                                      quantity:
-                                                          double.tryParse(
-                                                            quantityController.text
-                                                                .replaceAll(
-                                                                  ',',
-                                                                  '',
-                                                                )
-                                                                .trim(),
-                                                          ) ??
-                                                          0.0,
-                                                    ),
-                                                    closeAction:
-                                                        widget.close,
-                                                    priceController:
-                                                        priceController,
-                                                  );
-                                                }
-                                              }
+                                                    } else {
+                                                      selectProductSales(
+                                                        isEdit:
+                                                            false,
+                                                        context:
+                                                            context,
+                                                        qttyNode:
+                                                            qttyNode,
+                                                        priceNode:
+                                                            priceNode,
+                                                        quantityController:
+                                                            quantityController,
+                                                        searchController:
+                                                            widget.searchController,
+                                                        theme:
+                                                            theme,
+                                                        cartItem: TempCartItem(
+                                                          qttyPerGroup:
+                                                              product.qttyPerGroup,
+                                                          useGroupQuantity:
+                                                              false,
+                                                          setTotalPrice:
+                                                              returnSalesProvider().setTotalPrice,
+                                                          useWholeSalePrice:
+                                                              false,
+                                                          addToStock:
+                                                              false,
+                                                          discount:
+                                                              product.discount,
+                                                          item:
+                                                              product,
+                                                          quantity:
+                                                              double.tryParse(
+                                                                quantityController.text
+                                                                    .replaceAll(
+                                                                      ',',
+                                                                      '',
+                                                                    )
+                                                                    .trim(),
+                                                              ) ??
+                                                              0.0,
+                                                        ),
+                                                        closeAction:
+                                                            widget.close,
+                                                        priceController:
+                                                            priceController,
+                                                      );
+                                                    }
+                                                  } else {
+                                                    if (product.quantity ==
+                                                        0) {
+                                                      showDialog(
+                                                        context:
+                                                            context,
+                                                        builder: (
+                                                          context,
+                                                        ) {
+                                                          var theme = Provider.of<
+                                                            ThemeProvider
+                                                          >(
+                                                            context,
+                                                          );
+                                                          return InfoAlert(
+                                                            theme:
+                                                                theme,
+                                                            message:
+                                                                'Item Quantity is Zero, Therefore, this item cannot be sold',
+                                                            title:
+                                                                'Item out of Stock',
+                                                          );
+                                                        },
+                                                      );
+                                                    } else if (returnSalesProvider()
+                                                        .currentCart()
+                                                        .cartItems
+                                                        .where(
+                                                          (
+                                                            item,
+                                                          ) =>
+                                                              item.item.uuid! ==
+                                                              product.uuid,
+                                                        )
+                                                        .isNotEmpty) {
+                                                      selectProductSales(
+                                                        isEdit:
+                                                            false,
+                                                        context:
+                                                            context,
+                                                        qttyNode:
+                                                            qttyNode,
+                                                        priceNode:
+                                                            priceNode,
+                                                        quantityController:
+                                                            quantityController,
+                                                        searchController:
+                                                            widget.searchController,
+                                                        theme:
+                                                            theme,
+                                                        cartItem: TempCartItem(
+                                                          qttyPerGroup:
+                                                              returnSalesProvider()
+                                                                  .currentCart()
+                                                                  .cartItems
+                                                                  .firstWhere(
+                                                                    (
+                                                                      item,
+                                                                    ) =>
+                                                                        item.item.uuid! ==
+                                                                        product.uuid!,
+                                                                  )
+                                                                  .qttyPerGroup,
+                                                          useGroupQuantity:
+                                                              returnSalesProvider()
+                                                                  .currentCart()
+                                                                  .cartItems
+                                                                  .firstWhere(
+                                                                    (
+                                                                      item,
+                                                                    ) =>
+                                                                        item.item.uuid! ==
+                                                                        product.uuid!,
+                                                                  )
+                                                                  .useGroupQuantity,
+                                                          setTotalPrice:
+                                                              returnSalesProvider().setTotalPrice,
+                                                          useWholeSalePrice:
+                                                              returnSalesProvider()
+                                                                  .currentCart()
+                                                                  .cartItems
+                                                                  .firstWhere(
+                                                                    (
+                                                                      item,
+                                                                    ) =>
+                                                                        item.item.uuid! ==
+                                                                        product.uuid!,
+                                                                  )
+                                                                  .useWholeSalePrice,
+                                                          addToStock:
+                                                              false,
+                                                          discount:
+                                                              product.discount,
+                                                          item:
+                                                              product,
+                                                          quantity:
+                                                              returnSalesProvider()
+                                                                  .currentCart()
+                                                                  .cartItems
+                                                                  .firstWhere(
+                                                                    (
+                                                                      item,
+                                                                    ) =>
+                                                                        item.item.uuid! ==
+                                                                        product.uuid!,
+                                                                  )
+                                                                  .quantity,
+                                                        ),
+                                                        closeAction:
+                                                            widget.close,
+                                                        priceController:
+                                                            priceController,
+                                                      );
+                                                    } else {
+                                                      selectProductSales(
+                                                        isEdit:
+                                                            false,
+                                                        context:
+                                                            context,
+                                                        qttyNode:
+                                                            qttyNode,
+                                                        priceNode:
+                                                            priceNode,
+                                                        quantityController:
+                                                            quantityController,
+                                                        searchController:
+                                                            widget.searchController,
+                                                        theme:
+                                                            theme,
+                                                        cartItem: TempCartItem(
+                                                          qttyPerGroup:
+                                                              product.qttyPerGroup,
+                                                          useGroupQuantity:
+                                                              false,
+                                                          setTotalPrice:
+                                                              returnSalesProvider().setTotalPrice,
+                                                          useWholeSalePrice:
+                                                              false,
+                                                          addToStock:
+                                                              false,
+                                                          discount:
+                                                              product.discount,
+                                                          item:
+                                                              product,
+                                                          quantity:
+                                                              double.tryParse(
+                                                                quantityController.text
+                                                                    .replaceAll(
+                                                                      ',',
+                                                                      '',
+                                                                    )
+                                                                    .trim(),
+                                                              ) ??
+                                                              0.0,
+                                                        ),
+                                                        closeAction:
+                                                            widget.close,
+                                                        priceController:
+                                                            priceController,
+                                                      );
+                                                    }
+                                                  }
+                                                },
+                                                theme:
+                                                    theme,
+                                                product:
+                                                    product,
+                                              );
                                             },
-                                            theme: theme,
-                                            product:
-                                                product,
-                                          );
-                                        },
-                                      ),
-                                    );
-                                  }
-                                }
-                              },
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ),
+                                Visibility(
+                                  visible:
+                                      returnCategoriesProvider()
+                                          .categoriesMain
+                                          .isNotEmpty &&
+                                      screenWidth(context) >
+                                          (mobileScreen +
+                                              150),
+                                  child: Expanded(
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          margin:
+                                              EdgeInsets.symmetric(
+                                                horizontal:
+                                                    20,
+                                              ),
+                                          color:
+                                              Colors
+                                                  .grey
+                                                  .shade300,
+                                          width: 2,
+                                          height:
+                                              double
+                                                  .infinity,
+                                        ),
+                                        Expanded(
+                                          child: Container(
+                                            height:
+                                                double
+                                                    .infinity,
+                                            padding:
+                                                EdgeInsets.all(
+                                                  10,
+                                                ),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment
+                                                      .start,
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(
+                                                        5.0,
+                                                      ),
+                                                  child: Row(
+                                                    spacing:
+                                                        3,
+                                                    children: [
+                                                      Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              theme.mobileTexts.b4.fontSize,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                        'Selected Category:',
+                                                      ),
+                                                      Container(
+                                                        padding: EdgeInsets.fromLTRB(
+                                                          7,
+                                                          3,
+                                                          7,
+                                                          5,
+                                                        ),
+                                                        decoration: BoxDecoration(
+                                                          color:
+                                                              Colors.grey.shade200,
+                                                        ),
+                                                        child: Text(
+                                                          style: TextStyle(
+                                                            fontSize:
+                                                                theme.mobileTexts.b3.fontSize,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                          selectedCat?.name ??
+                                                              'None',
+                                                        ),
+                                                      ),
+                                                      Visibility(
+                                                        visible:
+                                                            selectedCat !=
+                                                            null,
+                                                        child: Material(
+                                                          color:
+                                                              Colors.transparent,
+                                                          child: InkWell(
+                                                            onTap: () {
+                                                              setState(
+                                                                () {
+                                                                  selectedCat =
+                                                                      null;
+                                                                },
+                                                              );
+                                                            },
+                                                            child: Padding(
+                                                              padding: const EdgeInsets.symmetric(
+                                                                vertical:
+                                                                    4.0,
+                                                                horizontal:
+                                                                    10,
+                                                              ),
+                                                              child: Icon(
+                                                                size:
+                                                                    15,
+                                                                Icons.clear,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                Divider(),
+                                                Expanded(
+                                                  child: SingleChildScrollView(
+                                                    child: Wrap(
+                                                      alignment:
+                                                          WrapAlignment.start,
+                                                      runSpacing:
+                                                          10,
+                                                      spacing:
+                                                          10,
+                                                      children:
+                                                          returnCategoriesProvider().categoriesMain.map((
+                                                            cat,
+                                                          ) {
+                                                            return Material(
+                                                              color:
+                                                                  Colors.transparent,
+                                                              child: Ink(
+                                                                decoration: BoxDecoration(
+                                                                  color:
+                                                                      selectedCat ==
+                                                                              cat
+                                                                          ? theme.lightModeColor.tertColor200
+                                                                          : theme.lightModeColor.tertColor100,
+                                                                  borderRadius: BorderRadius.circular(
+                                                                    2,
+                                                                  ),
+                                                                ),
+                                                                child: InkWell(
+                                                                  borderRadius: BorderRadius.circular(
+                                                                    5,
+                                                                  ),
+                                                                  onTap: () {
+                                                                    setState(
+                                                                      () {
+                                                                        if (selectedCat ==
+                                                                            cat) {
+                                                                          selectedCat =
+                                                                              null;
+                                                                        } else {
+                                                                          selectedCat =
+                                                                              cat;
+                                                                        }
+                                                                      },
+                                                                    );
+                                                                  },
+                                                                  child: Container(
+                                                                    constraints: BoxConstraints(
+                                                                      maxWidth:
+                                                                          200,
+                                                                      minWidth:
+                                                                          50,
+                                                                    ),
+                                                                    padding: EdgeInsets.symmetric(
+                                                                      vertical:
+                                                                          17,
+                                                                      horizontal:
+                                                                          25,
+                                                                    ),
+                                                                    child: Text(
+                                                                      textAlign:
+                                                                          TextAlign.center,
+                                                                      style: TextStyle(
+                                                                        fontWeight:
+                                                                            selectedCat ==
+                                                                                    cat
+                                                                                ? FontWeight.bold
+                                                                                : FontWeight.normal,
+                                                                        fontSize:
+                                                                            theme.mobileTexts.b2.fontSize,
+                                                                        color:
+                                                                            selectedCat ==
+                                                                                    cat
+                                                                                ? Colors.white
+                                                                                : Colors.black,
+                                                                      ),
+                                                                      cat.name,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            );
+                                                          }).toList(),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -4798,6 +5070,21 @@ class _CustomBottomPanelState
         ),
       ),
     );
+  }
+}
+
+Future<void> showOnScreenKeyboard() async {
+  try {
+    if (Platform.isWindows) {
+      await Process.start('cmd', [
+        '/c',
+        'start',
+        '',
+        'osk',
+      ], mode: ProcessStartMode.detached);
+    }
+  } catch (e) {
+    print('Error Opening Keyboard: ${e.toString()}');
   }
 }
 

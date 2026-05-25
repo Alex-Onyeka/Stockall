@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
+import 'package:stockall/components/pin_code_widget/my_pin_code_widget.dart';
 import 'package:stockall/components/text_fields/general_textfield_only.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
@@ -86,16 +87,39 @@ class _CartQueueDesktopState
                                 'Enter the name of the Cart',
                             title: 'Enter Cart Name',
                             action: () async {
-                              await returnSalesProvider()
-                                  .updateCurrentCartName(
-                                    cartItem.id!,
-                                    formatText(
-                                      cartNameC.text.trim(),
-                                    ),
-                                  );
-                              Navigator.of(
-                                setNameDialog,
-                              ).pop();
+                              if (cartItem
+                                      .hasPrintedDocket ==
+                                  true) {
+                                var res =
+                                    await pinCodeAction(
+                                      context: context,
+                                    );
+                                if (res) {
+                                  await returnSalesProvider()
+                                      .updateCurrentCartName(
+                                        cartItem.id!,
+                                        formatText(
+                                          cartNameC.text
+                                              .trim(),
+                                        ),
+                                      );
+                                  Navigator.of(
+                                    setNameDialog,
+                                  ).pop();
+                                }
+                              } else {
+                                await returnSalesProvider()
+                                    .updateCurrentCartName(
+                                      cartItem.id!,
+                                      formatText(
+                                        cartNameC.text
+                                            .trim(),
+                                      ),
+                                    );
+                                Navigator.of(
+                                  setNameDialog,
+                                ).pop();
+                              }
                             },
                             widget: GeneralTextfieldOnly(
                               hint: 'Enter Name',
@@ -221,18 +245,41 @@ class _CartQueueDesktopState
                                               'You are about to Delete Entire Cart from the Queue, This action can not be reversed are you sure you want to proceed?',
                                           title:
                                               'Are you sure?',
-                                          action: () {
-                                            returnSalesProvider()
-                                                .deleteCart(
+                                          action: () async {
+                                            if (cartItem
+                                                    .hasPrintedDocket ==
+                                                true) {
+                                              var res =
+                                                  await pinCodeAction(
+                                                    context:
+                                                        context,
+                                                  );
+                                              if (res &&
+                                                  context
+                                                      .mounted) {
+                                                await returnSalesProvider().deleteCart(
                                                   cartId:
                                                       cartItem
                                                           .id!,
                                                   context:
                                                       context,
                                                 );
-                                            Navigator.of(
-                                              context,
-                                            ).pop();
+                                                Navigator.of(
+                                                  context,
+                                                ).pop();
+                                              }
+                                            } else {
+                                              await returnSalesProvider().deleteCart(
+                                                cartId:
+                                                    cartItem
+                                                        .id!,
+                                                context:
+                                                    context,
+                                              );
+                                              Navigator.of(
+                                                context,
+                                              ).pop();
+                                            }
                                           },
                                         );
                                       },

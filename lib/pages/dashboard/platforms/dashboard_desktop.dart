@@ -628,11 +628,8 @@ class _DashboardDesktopState
                                                       children: [
                                                         InkWell(
                                                           onTap: () async {
-                                                            bool
-                                                            res =
-                                                                await returnCountryProvider().isUserInNigeria();
                                                             print(
-                                                              res,
+                                                              returnReceiptProviderSingle().receipts.length,
                                                             );
                                                           },
                                                           child: Text(

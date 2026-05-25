@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:stockall/constants/bottom_sheet_widgets.dart';
+import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class EditCartTextField extends StatefulWidget {
@@ -13,6 +14,7 @@ class EditCartTextField extends StatefulWidget {
   final FocusNode? focusNode;
   final Function(String)? onSubmitted;
   final bool? showTitle;
+  final Function()? onTap;
 
   const EditCartTextField({
     super.key,
@@ -25,6 +27,7 @@ class EditCartTextField extends StatefulWidget {
     this.focusNode,
     this.onSubmitted,
     this.showTitle,
+    this.onTap,
   });
 
   @override
@@ -124,6 +127,17 @@ class _EditCartTextFieldState
         TextFormField(
           focusNode: widget.focusNode,
           onFieldSubmitted: widget.onSubmitted,
+          onTap: () {
+            if (widget.onTap != null) {
+              widget.onTap!();
+            }
+            if (returnShopProvider()
+                    .userShop()
+                    ?.useScreenKeyboard ==
+                true) {
+              showOnScreenKeyboard();
+            }
+          },
           onChanged: (value) {
             if (widget.controller.text == '.') {
               widget.controller.text = '';

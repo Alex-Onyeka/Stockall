@@ -76,6 +76,9 @@ class TempInvoice extends HiveObject {
   @HiveField(24)
   String? cartName;
 
+  @HiveField(25)
+  String? subStaffName;
+
   TempInvoice({
     this.id,
     this.barcode,
@@ -101,6 +104,7 @@ class TempInvoice extends HiveObject {
     this.subStaffUuid,
     required this.departmentUuidNew,
     required this.cartName,
+    required this.subStaffName,
   });
 
   factory TempInvoice.fromJson(Map<String, dynamic> json) {
@@ -137,6 +141,7 @@ class TempInvoice extends HiveObject {
       departmentUuidNew:
           json['department_uuid_new'] as String?,
       cartName: json['cart_name'] as String?,
+      subStaffName: json['sub_staff_name'] as String?,
     );
   }
 
@@ -166,6 +171,7 @@ class TempInvoice extends HiveObject {
       'sub_staff_uuid': subStaffUuid,
       'department_uuid_new': departmentUuidNew,
       'cart_name': cartName,
+      'sub_staff_name': subStaffName,
     };
   }
 }

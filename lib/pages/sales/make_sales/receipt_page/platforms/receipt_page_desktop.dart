@@ -69,6 +69,7 @@ class _ReceiptPageDesktopState
       (rec) => rec.uuid! == widget.response.resUuid,
       orElse:
           () => TempMainReceipt(
+            subStaffName: null,
             departmentName:
                 returnDepartmentProvider()
                     .currentDepartment()
@@ -90,26 +91,6 @@ class _ReceiptPageDesktopState
           ),
     );
 
-    // TempMainReceipt(
-    //   departmentName:
-    //       returnDepartmentProvider()
-    //           .currentDepartment()
-    //           ?.name,
-    //   departmentUuidNew:
-    //       returnDepartmentProvider()
-    //           .currentDepartment()
-    //           ?.uuid,
-    //   createdAt: DateTime.now(),
-    //   uuid: '1',
-    //   shopId: shopId(),
-    //   staffId: AuthService().currentUser!,
-    //   staffName: 'Staff Name',
-    //   paymentMethod: 'Cash',
-    //   bank: 0,
-    //   cashAlt: 0,
-    //   isInvoice: false,
-    //   cartName: 'Cart 1',
-    // ),
     return SafeArea(
       child: PopScope(
         canPop: false,
@@ -367,27 +348,6 @@ class _ReceiptPageDesktopState
                                 mainReceipt: mainReceipt,
                                 theme: theme,
                               );
-                              // } else {
-                              //   return Center(
-                              //     child: EmptyWidgetDisplayOnly(
-                              //       title:
-                              //           'An Error Occoured',
-                              //       subText:
-                              //           'Click this button below to refresh',
-                              //       theme: theme,
-                              //       height: 30,
-                              //       altAction: () {
-                              //         returnReceiptProviderSingle()
-                              //             .loadReceipts(
-                              //               shopId(),
-                              //             );
-                              //       },
-                              //       altActionText:
-                              //           'Refresh Receipt',
-                              //       icon: Icons.refresh,
-                              //     ),
-                              //   );
-                              // }
                             },
                           ),
                         ),
@@ -794,7 +754,11 @@ class _ReceiptDetailsContainerState
                             SizedBox(height: 10),
                             Visibility(
                               visible:
-                                  widget.shop.showFirst!,
+                                  widget.shop.showFirst! &&
+                                  widget
+                                          .mainReceipt
+                                          .subStaffName !=
+                                      null,
                               child: Row(
                                 spacing: 10,
                                 children: [
@@ -859,7 +823,7 @@ class _ReceiptDetailsContainerState
                                                 FontWeight
                                                     .bold,
                                           ),
-                                          'Customer Name',
+                                          'Cart Id',
                                         ),
                                         Text(
                                           style: TextStyle(
@@ -873,11 +837,115 @@ class _ReceiptDetailsContainerState
                                                 FontWeight
                                                     .normal,
                                           ),
-                                          customer?.name ??
-                                              'Not Saved',
+                                          widget
+                                                  .mainReceipt
+                                                  .cartName ??
+                                              'Not Set',
                                         ),
                                       ],
                                     ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Visibility(
+                              visible:
+                                  widget.shop.showFirst!,
+                              child: Column(
+                                children: [
+                                  SizedBox(height: 5),
+                                  Row(
+                                    spacing: 10,
+                                    children: [
+                                      Expanded(
+                                        flex: 5,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment
+                                                  .start,
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    widget
+                                                        .theme
+                                                        .mobileTexts
+                                                        .b1
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              widget.mainReceipt.subStaffName !=
+                                                      null
+                                                  ? 'Waiter'
+                                                  : 'Cashier',
+                                            ),
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    widget
+                                                        .theme
+                                                        .mobileTexts
+                                                        .b2
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .normal,
+                                              ),
+                                              widget
+                                                      .mainReceipt
+                                                      .subStaffName ??
+                                                  staff
+                                                      ?.name ??
+                                                  widget
+                                                      .mainReceipt
+                                                      .staffName ??
+                                                  'Not Set',
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 4,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment
+                                                  .start,
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    widget
+                                                        .theme
+                                                        .mobileTexts
+                                                        .b1
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              'Customer Name',
+                                            ),
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    widget
+                                                        .theme
+                                                        .mobileTexts
+                                                        .b2
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .normal,
+                                              ),
+                                              customer?.name ??
+                                                  'Not Saved',
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),

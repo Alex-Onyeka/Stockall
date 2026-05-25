@@ -1659,6 +1659,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                               priceController,
                                                           qttyNode:
                                                               FocusNode(),
+                                                          priceNode:
+                                                              FocusNode(),
                                                           quantityController:
                                                               quantityController,
                                                           searchController:

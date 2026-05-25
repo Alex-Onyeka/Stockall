@@ -16,6 +16,7 @@ import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/my_calculator.dart';
 import 'package:stockall/components/my_calculator_desktop.dart';
+import 'package:stockall/components/pin_code_widget/my_pin_code_widget.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
@@ -66,6 +67,8 @@ class _MakeSalesDesktopState
 
   final FocusNode qttyNode = FocusNode();
 
+  final FocusNode priceNode = FocusNode();
+
   double currentValue = 0;
   double qqty = 0;
 
@@ -115,6 +118,8 @@ class _MakeSalesDesktopState
       context: context,
       action: () {
         var theme = returnTheme(context, listen: false);
+        double existingQtty = cartItem.quantity;
+
         if (returnData()
                 .productList()
                 .where(
@@ -525,7 +530,7 @@ class _MakeSalesDesktopState
                                   ),
                                   SmallButtonMain(
                                     theme: theme,
-                                    action: () {
+                                    action: () async {
                                       var productIndex = returnData()
                                           .productList()
                                           .indexWhere((
@@ -645,8 +650,14 @@ class _MakeSalesDesktopState
                                             },
                                           );
                                         } else {
-                                          cartItem.customPrice =
-                                              double.tryParse(
+                                          if (existingQtty >
+                                              qqty) {
+                                            if (returnSalesProvider()
+                                                    .currentCart()
+                                                    .hasPrintedDocket !=
+                                                true) {
+                                              cartItem
+                                                  .customPrice = double.tryParse(
                                                 sellingPriceC
                                                     .text
                                                     .replaceAll(
@@ -654,53 +665,172 @@ class _MakeSalesDesktopState
                                                       '',
                                                     ),
                                               );
-                                          cartItem.quantity =
-                                              qqty.toDouble();
-                                          cartItem.setCustomPrice =
-                                              true;
-                                          cartItem.setTotalPrice =
-                                              returnSalesProvider()
-                                                  .setTotalPrice;
-                                          cartItem
-                                                  .item
-                                                  .name =
-                                              nameC.text;
-                                          cartItem
-                                                  .item
-                                                  .costPrice =
-                                              (double.tryParse(
-                                                    costPriceC
-                                                        .text
-                                                        .replaceAll(
+                                              cartItem.quantity =
+                                                  qqty.toDouble();
+                                              cartItem.setCustomPrice =
+                                                  true;
+                                              cartItem.setTotalPrice =
+                                                  returnSalesProvider()
+                                                      .setTotalPrice;
+                                              cartItem
+                                                      .item
+                                                      .name =
+                                                  nameC
+                                                      .text;
+                                              cartItem
+                                                      .item
+                                                      .costPrice =
+                                                  (double.tryParse(
+                                                        costPriceC.text.replaceAll(
                                                           ',',
                                                           '',
                                                         ),
-                                                  ) ??
-                                                  0);
-                                          // cartItem.item.uuid =
-                                          //     uuidGen();
-                                          cartItem.addToStock =
-                                              returnSalesProvider()
-                                                  .addToStock;
+                                                      ) ??
+                                                      0);
+                                              // cartItem.item.uuid =
+                                              //     uuidGen();
+                                              cartItem.addToStock =
+                                                  returnSalesProvider()
+                                                      .addToStock;
 
-                                          returnSalesProvider().addItemToCart(
-                                            context:
-                                                context,
-                                            newItem:
-                                                cartItem,
-                                            isCustomEdit:
-                                                returnData()
-                                                    .productList()
-                                                    .where(
-                                                      (
-                                                        product,
-                                                      ) =>
-                                                          product.uuid ==
-                                                          cartItem.item.uuid,
-                                                    )
-                                                    .isEmpty,
-                                          );
-                                          closeAction();
+                                              returnSalesProvider().addItemToCart(
+                                                context:
+                                                    context,
+                                                newItem:
+                                                    cartItem,
+                                                isCustomEdit:
+                                                    returnData()
+                                                        .productList()
+                                                        .where(
+                                                          (
+                                                            product,
+                                                          ) =>
+                                                              product.uuid ==
+                                                              cartItem.item.uuid,
+                                                        )
+                                                        .isEmpty,
+                                              );
+                                              closeAction();
+                                            } else {
+                                              var res =
+                                                  await pinCodeAction(
+                                                    context:
+                                                        context,
+                                                  );
+                                              if (res) {
+                                                cartItem
+                                                    .customPrice = double.tryParse(
+                                                  sellingPriceC
+                                                      .text
+                                                      .replaceAll(
+                                                        ',',
+                                                        '',
+                                                      ),
+                                                );
+                                                cartItem.quantity =
+                                                    qqty.toDouble();
+                                                cartItem.setCustomPrice =
+                                                    true;
+                                                cartItem.setTotalPrice =
+                                                    returnSalesProvider()
+                                                        .setTotalPrice;
+                                                cartItem
+                                                        .item
+                                                        .name =
+                                                    nameC
+                                                        .text;
+                                                cartItem
+                                                        .item
+                                                        .costPrice =
+                                                    (double.tryParse(
+                                                          costPriceC.text.replaceAll(
+                                                            ',',
+                                                            '',
+                                                          ),
+                                                        ) ??
+                                                        0);
+                                                // cartItem.item.uuid =
+                                                //     uuidGen();
+                                                cartItem.addToStock =
+                                                    returnSalesProvider()
+                                                        .addToStock;
+
+                                                returnSalesProvider().addItemToCart(
+                                                  context:
+                                                      context,
+                                                  newItem:
+                                                      cartItem,
+                                                  isCustomEdit:
+                                                      returnData()
+                                                          .productList()
+                                                          .where(
+                                                            (
+                                                              product,
+                                                            ) =>
+                                                                product.uuid ==
+                                                                cartItem.item.uuid,
+                                                          )
+                                                          .isEmpty,
+                                                );
+                                                closeAction();
+                                              }
+                                            }
+                                          } else {
+                                            cartItem.customPrice =
+                                                double.tryParse(
+                                                  sellingPriceC
+                                                      .text
+                                                      .replaceAll(
+                                                        ',',
+                                                        '',
+                                                      ),
+                                                );
+                                            cartItem.quantity =
+                                                qqty.toDouble();
+                                            cartItem.setCustomPrice =
+                                                true;
+                                            cartItem.setTotalPrice =
+                                                returnSalesProvider()
+                                                    .setTotalPrice;
+                                            cartItem
+                                                    .item
+                                                    .name =
+                                                nameC.text;
+                                            cartItem
+                                                    .item
+                                                    .costPrice =
+                                                (double.tryParse(
+                                                      costPriceC.text.replaceAll(
+                                                        ',',
+                                                        '',
+                                                      ),
+                                                    ) ??
+                                                    0);
+                                            // cartItem.item.uuid =
+                                            //     uuidGen();
+                                            cartItem.addToStock =
+                                                returnSalesProvider()
+                                                    .addToStock;
+
+                                            returnSalesProvider().addItemToCart(
+                                              context:
+                                                  context,
+                                              newItem:
+                                                  cartItem,
+                                              isCustomEdit:
+                                                  returnData()
+                                                      .productList()
+                                                      .where(
+                                                        (
+                                                          product,
+                                                        ) =>
+                                                            product.uuid ==
+                                                            cartItem.item.uuid,
+                                                      )
+                                                      .isEmpty,
+                                            );
+                                            closeAction();
+                                          }
                                         }
                                       }
                                     },
@@ -969,12 +1099,29 @@ class _MakeSalesDesktopState
                                                     'You are about to clear the items in your cart, are you sure you want to proceed?',
                                                 title:
                                                     'Are you sure?',
-                                                action: () {
-                                                  returnSalesProvider()
-                                                      .clearCart();
-                                                  Navigator.of(
-                                                    context,
-                                                  ).pop();
+                                                action: () async {
+                                                  if (returnSalesProvider()
+                                                          .currentCart()
+                                                          .hasPrintedDocket ==
+                                                      true) {
+                                                    var res = await pinCodeAction(
+                                                      context:
+                                                          context,
+                                                    );
+                                                    if (res) {
+                                                      returnSalesProvider()
+                                                          .clearCart();
+                                                      Navigator.of(
+                                                        context,
+                                                      ).pop();
+                                                    }
+                                                  } else {
+                                                    returnSalesProvider()
+                                                        .clearCart();
+                                                    Navigator.of(
+                                                      context,
+                                                    ).pop();
+                                                  }
                                                 },
                                               );
                                             },
@@ -1559,7 +1706,7 @@ class _MakeSalesDesktopState
                                                                   index,
                                                                 ) {
                                                                   return CartItemMain(
-                                                                    deleteCartItem: () {
+                                                                    deleteCartItem: () async {
                                                                       showDialog(
                                                                         context:
                                                                             context,
@@ -1573,23 +1720,38 @@ class _MakeSalesDesktopState
                                                                                 'You want to remove an Item from the List, are you sure you want to proceed?',
                                                                             title:
                                                                                 'Remove Item?',
-                                                                            action: () {
-                                                                              Navigator.of(
-                                                                                confirmContext,
-                                                                              ).pop();
-                                                                              returnSalesProvider().removeItemFromCart(
-                                                                                items[index],
-                                                                                context,
-                                                                              );
+                                                                            action: () async {
+                                                                              if (returnSalesProvider().currentCart().hasPrintedDocket !=
+                                                                                  true) {
+                                                                                Navigator.of(
+                                                                                  confirmContext,
+                                                                                ).pop();
+                                                                                returnSalesProvider().removeItemFromCart(
+                                                                                  items[index],
+                                                                                  context,
+                                                                                );
+                                                                              } else {
+                                                                                var res = await pinCodeAction(
+                                                                                  context:
+                                                                                      context,
+                                                                                );
+                                                                                if (res &&
+                                                                                    context.mounted) {
+                                                                                  Navigator.of(
+                                                                                    confirmContext,
+                                                                                  ).pop();
+                                                                                  returnSalesProvider().removeItemFromCart(
+                                                                                    items[index],
+                                                                                    context,
+                                                                                  );
+                                                                                }
+                                                                              }
                                                                             },
                                                                           );
                                                                         },
                                                                       );
                                                                     },
                                                                     editAction: () {
-                                                                      // var salesProvider =
-                                                                      //     returnSalesProvider();
-
                                                                       if (returnData()
                                                                           .productList()
                                                                           .where(
@@ -1601,6 +1763,8 @@ class _MakeSalesDesktopState
                                                                           )
                                                                           .isNotEmpty) {
                                                                         selectProductSales(
+                                                                          priceNode:
+                                                                              priceNode,
                                                                           isEdit:
                                                                               true,
                                                                           theme:
@@ -1861,6 +2025,10 @@ class _MakeSalesDesktopState
                                                       await returnSalesProvider().addNewCart(
                                                         context,
                                                         TempCart(
+                                                          hasPrintedDocket:
+                                                              false,
+                                                          subStaffName:
+                                                              null,
                                                           customDate:
                                                               null,
                                                           departmentName:
@@ -2024,7 +2192,7 @@ class _MakeSalesDesktopState
                                                         .prColor300,
                                               ),
                                               child: InkWell(
-                                                onTap: () {
+                                                onTap: () async {
                                                   returnSalesProvider()
                                                       .removeListenerScanBarcode();
                                                   showGeneralDialog(
@@ -2896,12 +3064,16 @@ class _DocketListTileWidgetState
                         3,
                       ),
                       onTap: () {
+                        // print(widget.item.quantity);
                         setState(() {
-                          newItem?.quantity++;
-                          if (!widget.list.contains(
-                            newItem,
-                          )) {
-                            widget.list.add(newItem!);
+                          if (widget.item.quantity >
+                              (newItem?.quantity ?? 0)) {
+                            newItem?.quantity++;
+                            if (!widget.list.contains(
+                              newItem,
+                            )) {
+                              widget.list.add(newItem!);
+                            }
                           }
                         });
                       },
@@ -3194,13 +3366,19 @@ class _SubStaffSelectionWidgetState
                                                                             'You are about to Delete Entire Bulk Sale Terminal, This action can not be reversed are you sure you want to proceed?',
                                                                         title:
                                                                             'Are you sure?',
-                                                                        action: () {
-                                                                          returnSalesProvider().deleteMainCart(
-                                                                            cart.mainCartId!,
+                                                                        action: () async {
+                                                                          var res = await pinCodeAction(
+                                                                            context:
+                                                                                context,
                                                                           );
-                                                                          Navigator.of(
-                                                                            context,
-                                                                          ).pop();
+                                                                          if (res) {
+                                                                            returnSalesProvider().deleteMainCart(
+                                                                              cart.mainCartId!,
+                                                                            );
+                                                                            Navigator.of(
+                                                                              context,
+                                                                            ).pop();
+                                                                          }
                                                                         },
                                                                       );
                                                                     },
@@ -3221,15 +3399,21 @@ class _SubStaffSelectionWidgetState
                                                                       title:
                                                                           'Remove Staff',
                                                                       action: () async {
-                                                                        await returnSalesProvider().removeStaffFromMainCart(
-                                                                          cart.mainCartId!,
+                                                                        var res = await pinCodeAction(
+                                                                          context:
+                                                                              context,
                                                                         );
-                                                                        print(
-                                                                          cart.subStaff?.staffName,
-                                                                        );
-                                                                        Navigator.of(
-                                                                          context,
-                                                                        ).pop();
+                                                                        if (res) {
+                                                                          await returnSalesProvider().removeStaffFromMainCart(
+                                                                            cart.mainCartId!,
+                                                                          );
+                                                                          print(
+                                                                            cart.subStaff?.staffName,
+                                                                          );
+                                                                          Navigator.of(
+                                                                            context,
+                                                                          ).pop();
+                                                                        }
                                                                       },
                                                                     );
                                                                   },
@@ -3283,14 +3467,20 @@ class _SubStaffSelectionWidgetState
                                                                     title:
                                                                         'Select Sub Staff',
                                                                     action: () async {
-                                                                      if (returnSalesProvider().selectedSubStaff !=
-                                                                          null) {
-                                                                        await returnSalesProvider().addSubStaffToMainCart(
-                                                                          cart.mainCartId!,
-                                                                        );
-                                                                        Navigator.of(
-                                                                          templateDialog,
-                                                                        ).pop();
+                                                                      var res = await pinCodeAction(
+                                                                        context:
+                                                                            context,
+                                                                      );
+                                                                      if (res) {
+                                                                        if (returnSalesProvider().selectedSubStaff !=
+                                                                            null) {
+                                                                          await returnSalesProvider().addSubStaffToMainCart(
+                                                                            cart.mainCartId!,
+                                                                          );
+                                                                          Navigator.of(
+                                                                            templateDialog,
+                                                                          ).pop();
+                                                                        }
                                                                       }
                                                                     },
                                                                     widget: SelectSubStaffListWidget(
