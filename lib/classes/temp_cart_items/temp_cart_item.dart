@@ -43,6 +43,9 @@ class TempCartItem extends HiveObject {
   @HiveField(11)
   double? qttyPerGroup;
 
+  @HiveField(12)
+  bool? isVoid;
+
   TempCartItem({
     required this.item,
     required this.quantity,
@@ -56,6 +59,7 @@ class TempCartItem extends HiveObject {
     this.salesRecordId,
     required this.useGroupQuantity,
     required this.qttyPerGroup,
+    required this.isVoid,
   });
 
   Map<String, dynamic> toJson() => {
@@ -71,6 +75,7 @@ class TempCartItem extends HiveObject {
     'use_whole_sale_price': useWholeSalePrice,
     'sell_group': useGroupQuantity,
     'qtty_per_group': qttyPerGroup,
+    'is_void': isVoid,
   };
 
   factory TempCartItem.fromJson(Map<String, dynamic> json) {
@@ -87,6 +92,7 @@ class TempCartItem extends HiveObject {
       useWholeSalePrice: json['use_whole_sale_price'],
       useGroupQuantity: json['sell_group'],
       qttyPerGroup: json['qtty_per_group'],
+      isVoid: json['is_void'],
     );
   }
 
@@ -261,6 +267,7 @@ class TempCartItem extends HiveObject {
     String? salesRecordId,
     bool? useGroupQuantity,
     double? qttyPerGroup,
+    bool? isVoid,
   }) {
     return TempCartItem(
       item: item ?? this.item,
@@ -277,6 +284,7 @@ class TempCartItem extends HiveObject {
       useGroupQuantity:
           useGroupQuantity ?? this.useGroupQuantity,
       qttyPerGroup: qttyPerGroup ?? this.qttyPerGroup,
+      isVoid: isVoid ?? this.isVoid,
     );
   }
 

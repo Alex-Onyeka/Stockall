@@ -50,7 +50,7 @@ class _ReceiptPageMobileState
         returnReceiptProvider(
           context,
           listen: false,
-        ).loadReceipts(
+        ).loadReceiptsOffline(
           returnShopProvider().userShop()!.shopId!,
         );
       });

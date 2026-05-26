@@ -113,6 +113,7 @@ class _ProductDetailsMobileState
                                     .addItemToCart(
                                       context: context,
                                       newItem: TempCartItem(
+                                        isVoid: false,
                                         qttyPerGroup: null,
                                         useGroupQuantity:
                                             false,

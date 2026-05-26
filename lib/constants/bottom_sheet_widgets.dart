@@ -4568,6 +4568,8 @@ class _CustomBottomPanelState
                                                         theme:
                                                             theme,
                                                         cartItem: TempCartItem(
+                                                          isVoid:
+                                                              false,
                                                           qttyPerGroup:
                                                               returnSalesProvider()
                                                                   .currentCart()
@@ -4647,6 +4649,8 @@ class _CustomBottomPanelState
                                                         theme:
                                                             theme,
                                                         cartItem: TempCartItem(
+                                                          isVoid:
+                                                              false,
                                                           qttyPerGroup:
                                                               product.qttyPerGroup,
                                                           useGroupQuantity:
@@ -4729,6 +4733,8 @@ class _CustomBottomPanelState
                                                         theme:
                                                             theme,
                                                         cartItem: TempCartItem(
+                                                          isVoid:
+                                                              false,
                                                           qttyPerGroup:
                                                               returnSalesProvider()
                                                                   .currentCart()
@@ -4808,6 +4814,8 @@ class _CustomBottomPanelState
                                                         theme:
                                                             theme,
                                                         cartItem: TempCartItem(
+                                                          isVoid:
+                                                              false,
                                                           qttyPerGroup:
                                                               product.qttyPerGroup,
                                                           useGroupQuantity:

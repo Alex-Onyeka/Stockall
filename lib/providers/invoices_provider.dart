@@ -472,6 +472,7 @@ class InvoicesProvider extends ChangeNotifier {
               );
 
               return TempProductSaleRecord(
+                isVoid: record.isVoid ?? false,
                 customPriceSet: record.customPriceSet,
                 createdAt: createdAt,
                 productId: record.productId,
@@ -676,6 +677,7 @@ class InvoicesProvider extends ChangeNotifier {
       }
     }
     return TempCartItem(
+      isVoid: record.isVoid ?? false,
       item: product,
       quantity: record.quantity,
       discount: 0,

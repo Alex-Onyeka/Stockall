@@ -6,7 +6,8 @@ part of 'temp_cart_item.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class TempCartItemAdapter extends TypeAdapter<TempCartItem> {
+class TempCartItemAdapter
+    extends TypeAdapter<TempCartItem> {
   @override
   final int typeId = 72;
 
@@ -14,7 +15,8 @@ class TempCartItemAdapter extends TypeAdapter<TempCartItem> {
   TempCartItem read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+      for (int i = 0; i < numOfFields; i++)
+        reader.readByte(): reader.read(),
     };
     return TempCartItem(
       item: fields[0] as TempProductClass,
@@ -29,13 +31,14 @@ class TempCartItemAdapter extends TypeAdapter<TempCartItem> {
       salesRecordId: fields[9] as String?,
       useGroupQuantity: fields[10] as bool?,
       qttyPerGroup: fields[11] as double?,
+      isVoid: fields[12] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempCartItem obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj.item)
       ..writeByte(1)
@@ -59,7 +62,9 @@ class TempCartItemAdapter extends TypeAdapter<TempCartItem> {
       ..writeByte(10)
       ..write(obj.useGroupQuantity)
       ..writeByte(11)
-      ..write(obj.qttyPerGroup);
+      ..write(obj.qttyPerGroup)
+      ..writeByte(12)
+      ..write(obj.isVoid);
   }
 
   @override

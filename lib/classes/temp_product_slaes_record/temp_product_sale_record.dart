@@ -100,6 +100,9 @@ class TempProductSaleRecord {
   @HiveField(31)
   double? qttyPerGroup;
 
+  @HiveField(32)
+  bool? isVoid;
+
   TempProductSaleRecord({
     this.productRecordId,
     required this.createdAt,
@@ -133,6 +136,7 @@ class TempProductSaleRecord {
     this.useWholeSalePrice,
     required this.useGroupQuantity,
     required this.qttyPerGroup,
+    required this.isVoid,
   });
 
   factory TempProductSaleRecord.fromJson(
@@ -176,6 +180,7 @@ class TempProductSaleRecord {
       useGroupQuantity: json['sell_group'],
       qttyPerGroup:
           (json['qtty_per_group'] as num?)?.toDouble(),
+      isVoid: json['is_void'] as bool?,
     );
   }
 
@@ -211,6 +216,7 @@ class TempProductSaleRecord {
       'use_whole_sale_price': useWholeSalePrice,
       'sell_group': useGroupQuantity,
       'qtty_per_group': qttyPerGroup,
+      'is_void': isVoid,
     };
   }
 
@@ -245,6 +251,7 @@ class TempProductSaleRecord {
     bool? useWholeSalePrice,
     bool? useGroupQuantity,
     double? qttyPerGroup,
+    bool? isVoid,
   }) {
     return TempProductSaleRecord(
       productRecordId:
@@ -282,6 +289,7 @@ class TempProductSaleRecord {
       useGroupQuantity:
           useGroupQuantity ?? this.useGroupQuantity,
       qttyPerGroup: qttyPerGroup ?? this.qttyPerGroup,
+      isVoid: isVoid ?? this.isVoid,
     );
   }
 }

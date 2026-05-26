@@ -1173,6 +1173,7 @@ class SalesProvider extends ChangeNotifier {
                 );
 
                 return TempProductSaleRecord(
+                  isVoid: cartItem.isVoid ?? false,
                   qttyPerGroup: cartItem.qttyPerGroup,
                   useGroupQuantity:
                       cartItem.useGroupQuantity,
@@ -1236,6 +1237,7 @@ class SalesProvider extends ChangeNotifier {
                 print('Sales Record about to be Created');
 
                 return TempProductSaleRecord(
+                  isVoid: cartItem.isVoid ?? false,
                   qttyPerGroup: cartItem.qttyPerGroup,
                   useGroupQuantity:
                       cartItem.useGroupQuantity,
@@ -1521,6 +1523,7 @@ class SalesProvider extends ChangeNotifier {
                 print('Sales Record about to be Created');
 
                 return TempProductSaleRecord(
+                  isVoid: cartItem.isVoid ?? false,
                   qttyPerGroup: cartItem.qttyPerGroup,
                   useGroupQuantity:
                       cartItem.useGroupQuantity,
@@ -1949,6 +1952,7 @@ class SalesProvider extends ChangeNotifier {
         item.useGroupQuantity = newItem.useGroupQuantity;
         item.qttyPerGroup = newItem.qttyPerGroup;
         item.item.unit = newItem.item.unit;
+        var copiedItem = item.copyWith();
 
         await returnMultiDisplayProvider().updateWindow(
           cartClass: AltCartClass(
@@ -2170,6 +2174,7 @@ class SalesProvider extends ChangeNotifier {
       }
     }
     return TempCartItem(
+      isVoid: record.isVoid ?? false,
       item: product,
       quantity: record.quantity,
       discount: record.discount,

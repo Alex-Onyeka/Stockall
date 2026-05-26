@@ -154,6 +154,7 @@ class _ProductDetailsDesktopState
                                             context:
                                                 context,
                                             newItem: TempCartItem(
+                                              isVoid: false,
                                               qttyPerGroup:
                                                   null,
                                               useGroupQuantity:

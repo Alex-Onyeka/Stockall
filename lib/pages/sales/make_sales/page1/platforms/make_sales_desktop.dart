@@ -1307,6 +1307,7 @@ class _MakeSalesDesktopState
                                               ).pop();
                                             },
                                             cartItem: TempCartItem(
+                                              isVoid: false,
                                               qttyPerGroup:
                                                   null,
                                               useGroupQuantity:
@@ -1440,6 +1441,8 @@ class _MakeSalesDesktopState
                                                     ).pop();
                                                   },
                                                   cartItem: TempCartItem(
+                                                    isVoid:
+                                                        false,
                                                     qttyPerGroup:
                                                         null,
                                                     useGroupQuantity:
@@ -1621,6 +1624,8 @@ class _MakeSalesDesktopState
                                                                           ).pop();
                                                                         },
                                                                         cartItem: TempCartItem(
+                                                                          isVoid:
+                                                                              false,
                                                                           qttyPerGroup:
                                                                               null,
                                                                           useGroupQuantity:
@@ -2118,6 +2123,8 @@ class _MakeSalesDesktopState
                                                     context:
                                                         context,
                                                     newItem: TempCartItem(
+                                                      isVoid:
+                                                          false,
                                                       qttyPerGroup:
                                                           null,
                                                       useGroupQuantity:
@@ -2281,6 +2288,8 @@ class _MakeSalesDesktopState
                                                           ).pop();
                                                         },
                                                         cartItem: TempCartItem(
+                                                          isVoid:
+                                                              false,
                                                           qttyPerGroup:
                                                               null,
                                                           useGroupQuantity:
