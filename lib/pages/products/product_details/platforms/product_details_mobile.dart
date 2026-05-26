@@ -1488,10 +1488,6 @@ class _ProductDetailsMobileState
                                 builder: (confirmDialog) {
                                   var provider =
                                       returnData();
-                                  var shopId =
-                                      returnShopProvider()
-                                          .userShop()!
-                                          .shopId!;
                                   return ConfirmationAlert(
                                     theme: returnTheme(
                                       context,
@@ -1511,10 +1507,10 @@ class _ProductDetailsMobileState
                                           .deleteProductMain(
                                             product,
                                           );
-                                      await provider
-                                          .getProducts(
-                                            shopId,
-                                          );
+                                      // await provider
+                                      //     .getProducts(
+                                      //       shopId,
+                                      //     );
                                       setState(() {
                                         isLoading = false;
                                         showSuccess = true;

@@ -52,50 +52,47 @@ class StorageProductProvider extends ChangeNotifier {
   Future<void> createStorageProduct(
     TempStorageProducts product,
   ) async {
-    bool isOnline = await connectivity.isOnline();
+    // bool isOnline = await connectivity.isOnline();
     product.updatedAt = DateTime.now();
-    if (isOnline) {
-      var data =
-          await supabase
-              .from(tableName)
-              .upsert(product.toJson(), onConflict: 'uuid')
-              .select()
-              .single();
-      print('Storage Product Created successfully');
-      final newProduct = TempStorageProducts.fromJson(data);
-      await StorageProductsFunc().createStorageProduct(
-        newProduct,
-      );
-      // await returnEventsLogProvider().createLog(
-      //   returnEventsLogProvider(
-      //     // ignore: use_build_context_synchronously
-      //   ).productAdapter(product, 1),
-      //   // ignore: use_build_context_synchronously
-      // );
-      print('Total Success');
-    } else {
-      product.createdAt ??= DateTime.now();
+    // if (isOnline) {
+    //   var data =
+    //       await supabase
+    //           .from(tableName)
+    //           .upsert(product.toJson(), onConflict: 'uuid')
+    //           .select()
+    //           .single();
+    //   print('Storage Product Created successfully');
+    //   final newProduct = TempStorageProducts.fromJson(data);
+    //   await StorageProductsFunc().createStorageProduct(
+    //     newProduct,
+    //   );
+    //   // await returnEventsLogProvider().createLog(
+    //   //   returnEventsLogProvider(
+    //   //     // ignore: use_build_context_synchronously
+    //   //   ).productAdapter(product, 1),
+    //   //   // ignore: use_build_context_synchronously
+    //   // );
+    //   print('Total Success');
+    // } else {
+    product.createdAt ??= DateTime.now();
 
-      await StorageProductsFunc().createStorageProduct(
-        product,
-      );
-      await CreatedStorageProductsFunc()
-          .createStorageProduct(
-            CreatedStorageProducts(storageProduct: product),
-          );
-      // await returnEventsLogProvider().createLog(
-      //   returnEventsLogProvider(
-      //     // ignore: use_build_context_synchronously
-      //   ).productAdapter(product, 1),
-      //   // ignore: use_build_context_synchronously
-      // );
-      print('Offline Success');
-      print(
-        'Offline Storage Product inserted Successfully',
-      );
-    }
+    await StorageProductsFunc().createStorageProduct(
+      product,
+    );
+    await CreatedStorageProductsFunc().createStorageProduct(
+      CreatedStorageProducts(storageProduct: product),
+    );
+    // await returnEventsLogProvider().createLog(
+    //   returnEventsLogProvider(
+    //     // ignore: use_build_context_synchronously
+    //   ).productAdapter(product, 1),
+    //   // ignore: use_build_context_synchronously
+    // );
+    print('Offline Success');
+    print('Offline Storage Product inserted Successfully');
+    // }
 
-    await getStorageProducts(
+    await getStorageProductsOffline(
       returnShopProvider().userShop()!.shopId!,
     );
   }
@@ -420,7 +417,7 @@ class StorageProductProvider extends ChangeNotifier {
           StorageProductsFunc().getStorageProducts();
       notifyListeners();
       await returnInventoryUpdatesProvider()
-          .getInventoryUpdates();
+          .getInventoryUpdatesOffline();
     }
 
     notifyListeners();
@@ -436,7 +433,7 @@ class StorageProductProvider extends ChangeNotifier {
         StorageProductsFunc().getStorageProducts();
     notifyListeners();
     await returnInventoryUpdatesProvider()
-        .getInventoryUpdates();
+        .getInventoryUpdatesOffline();
 
     notifyListeners();
     return storageProductListMain;
@@ -446,72 +443,70 @@ class StorageProductProvider extends ChangeNotifier {
     required TempStorageProducts product,
     TempStorageProducts? oldProduct,
   }) async {
-    bool isOnline = await connectivity.isOnline();
+    // bool isOnline = await connectivity.isOnline();
     try {
-      if (isOnline) {
-        product.updatedAt = DateTime.now().toLocal();
-        var res =
-            await supabase
-                .from(tableName)
-                .update(product.toJson())
-                .eq('uuid', product.uuid!)
-                .select()
-                .maybeSingle();
-        if (res != null) {
-          print('${product.uuid}');
-          await getStorageProducts(
-            returnShopProvider().userShop()!.shopId!,
-          );
-          notifyListeners();
-          // return TempStorageProducts.fromJson(res);
-          return 1;
+      // if (isOnline) {
+      //   product.updatedAt = DateTime.now().toLocal();
+      //   var res =
+      //       await supabase
+      //           .from(tableName)
+      //           .update(product.toJson())
+      //           .eq('uuid', product.uuid!)
+      //           .select()
+      //           .maybeSingle();
+      //   if (res != null) {
+      //     print('${product.uuid}');
+      //     await getStorageProducts(
+      //       returnShopProvider().userShop()!.shopId!,
+      //     );
+      //     notifyListeners();
+      //     // return TempStorageProducts.fromJson(res);
+      //     return 1;
+      //   } else {
+      //     print('Storage Product Update Failed');
+      //     return 0;
+      //   }
+      // } else {
+      var res = await StorageProductsFunc()
+          .updateStorageProduct(product);
+      if (res == 1) {
+        List<CreatedStorageProducts> containsCreated =
+            CreatedStorageProductsFunc()
+                .getStorageProducts()
+                .where(
+                  (createdProduct) =>
+                      createdProduct.storageProduct.uuid ==
+                      product.uuid,
+                )
+                .toList();
+        if (containsCreated.isEmpty) {
+          await UpdatedStorageProductsFunc()
+              .createUpdatedStorageProduct(
+                UpdatedStorageProduct(
+                  updatedStorageProduct: product,
+                ),
+              );
         } else {
-          print('Storage Product Update Failed');
-          return 0;
+          await CreatedStorageProductsFunc()
+              .updateCreatedStorageProduct(
+                CreatedStorageProducts(
+                  storageProduct: product,
+                ),
+              );
         }
+        print(product.updatedAt.toString());
+        print('${product.uuid}');
+        print('Context Mounted');
+        await getStorageProductsOffline(
+          returnShopProvider().userShop()!.shopId!,
+        );
+        notifyListeners();
+        return 1;
       } else {
-        var res = await StorageProductsFunc()
-            .updateStorageProduct(product);
-        if (res == 1) {
-          List<CreatedStorageProducts> containsCreated =
-              CreatedStorageProductsFunc()
-                  .getStorageProducts()
-                  .where(
-                    (createdProduct) =>
-                        createdProduct
-                            .storageProduct
-                            .uuid ==
-                        product.uuid,
-                  )
-                  .toList();
-          if (containsCreated.isEmpty) {
-            await UpdatedStorageProductsFunc()
-                .createUpdatedStorageProduct(
-                  UpdatedStorageProduct(
-                    updatedStorageProduct: product,
-                  ),
-                );
-          } else {
-            await CreatedStorageProductsFunc()
-                .updateCreatedStorageProduct(
-                  CreatedStorageProducts(
-                    storageProduct: product,
-                  ),
-                );
-          }
-          print(product.updatedAt.toString());
-          print('${product.uuid}');
-          print('Context Mounted');
-          await getStorageProducts(
-            returnShopProvider().userShop()!.shopId!,
-          );
-          notifyListeners();
-          return 1;
-        } else {
-          notifyListeners();
-          return 0;
-        }
+        notifyListeners();
+        return 0;
       }
+      // }
     } catch (e) {
       notifyListeners();
       print("Error Updating Product: ${e.toString()}");
@@ -523,76 +518,72 @@ class StorageProductProvider extends ChangeNotifier {
     TempStorageProducts product,
     // BuildContext context,
   ) async {
-    bool isOnline = await connectivity.isOnline();
-    if (isOnline) {
-      await supabase
-          .from(tableName)
-          .delete()
-          .eq('uuid', product.uuid!);
-      // await returnEventsLogProvider().createLog(
-      //   returnEventsLogProvider(
-      //     // ignore: use_build_context_synchronously
-      //   ).productAdapter(product, 3),
-      //   // ignore: use_build_context_synchronously
-      // );
-    } else {
-      await StorageProductsFunc().deleteStorageProduct(
-        product.uuid!,
-      );
-      var containsCreated =
-          CreatedStorageProductsFunc()
-              .getStorageProducts()
-              .where(
-                (product) =>
-                    product.storageProduct.uuid ==
-                    product.storageProduct.uuid,
-              )
-              .toList();
+    // bool isOnline = await connectivity.isOnline();
+    // if (isOnline) {
+    //   await supabase
+    //       .from(tableName)
+    //       .delete()
+    //       .eq('uuid', product.uuid!);
+    //   // await returnEventsLogProvider().createLog(
+    //   //   returnEventsLogProvider(
+    //   //     // ignore: use_build_context_synchronously
+    //   //   ).productAdapter(product, 3),
+    //   //   // ignore: use_build_context_synchronously
+    //   // );
+    // } else {
+    await StorageProductsFunc().deleteStorageProduct(
+      product.uuid!,
+    );
+    var containsCreated =
+        CreatedStorageProductsFunc()
+            .getStorageProducts()
+            .where(
+              (product) =>
+                  product.storageProduct.uuid ==
+                  product.storageProduct.uuid,
+            )
+            .toList();
 
-      var containsUpdated =
-          UpdatedStorageProductsFunc()
-              .getStorageProductIds()
-              .where(
-                (product) =>
-                    product.updatedStorageProduct.uuid ==
-                    product.updatedStorageProduct.uuid,
-              )
-              .toList();
-      print(
-        'Updated: ${containsCreated.length.toString()}',
-      );
-      print(
-        'Updated: ${containsUpdated.length.toString()}',
-      );
-      if (containsCreated.isNotEmpty) {
-        await CreatedStorageProductsFunc()
-            .deleteCreatedStorageProduct(product.uuid!);
-      } else {
-        await DeletedStorageProductsFunc()
-            .createDeletedStorageProduct(
-              DeletedStorageProduct(
-                storageProducteUuid: product.uuid!,
-              ),
-            );
-      }
-      if (containsUpdated.isNotEmpty) {
-        await UpdatedStorageProductsFunc()
-            .deleteUpdatedStorageProduct(
-              containsUpdated
-                  .first
-                  .updatedStorageProduct
-                  .uuid!,
-            );
-        print('Deleted Update Log');
-      }
-      // await returnEventsLogProvider().createLog(
-      //   returnEventsLogProvider(
-      //     // ignore: use_build_context_synchronously
-      //   ).productAdapter(product, 3),
-      //   // ignore: use_build_context_synchronously
-      // );
+    var containsUpdated =
+        UpdatedStorageProductsFunc()
+            .getStorageProductIds()
+            .where(
+              (product) =>
+                  product.updatedStorageProduct.uuid ==
+                  product.updatedStorageProduct.uuid,
+            )
+            .toList();
+    print('Updated: ${containsCreated.length.toString()}');
+    print('Updated: ${containsUpdated.length.toString()}');
+    if (containsCreated.isNotEmpty) {
+      await CreatedStorageProductsFunc()
+          .deleteCreatedStorageProduct(product.uuid!);
+    } else {
+      await DeletedStorageProductsFunc()
+          .createDeletedStorageProduct(
+            DeletedStorageProduct(
+              storageProducteUuid: product.uuid!,
+            ),
+          );
     }
-    await getStorageProducts(
+    if (containsUpdated.isNotEmpty) {
+      await UpdatedStorageProductsFunc()
+          .deleteUpdatedStorageProduct(
+            containsUpdated
+                .first
+                .updatedStorageProduct
+                .uuid!,
+          );
+      print('Deleted Update Log');
+    }
+    // await returnEventsLogProvider().createLog(
+    //   returnEventsLogProvider(
+    //     // ignore: use_build_context_synchronously
+    //   ).productAdapter(product, 3),
+    //   // ignore: use_build_context_synchronously
+    // );
+    // }
+    await getStorageProductsOffline(
       returnShopProvider().userShop()!.shopId!,
     );
     notifyListeners();

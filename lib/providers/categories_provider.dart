@@ -75,28 +75,28 @@ class CategoriesProvider extends ChangeNotifier {
   Future<int> addCategory({
     required CategoryClass category,
   }) async {
-    bool isOnline = await connectivity.isOnline();
+    // bool isOnline = await connectivity.isOnline();
     category.updatedAt = DateTime.now();
     try {
-      if (isOnline) {
-        Map<String, dynamic> res =
-            await supabase
-                .from(tableName)
-                .insert(category.toJson())
-                .select()
-                .single();
+      // if (isOnline) {
+      //   Map<String, dynamic> res =
+      //       await supabase
+      //           .from(tableName)
+      //           .insert(category.toJson())
+      //           .select()
+      //           .single();
 
-        CategoryClass cat = CategoryClass.fromJson(res);
-        await CategoryFunc().createCategory(cat);
-      } else {
-        category.createdAt ??= DateTime.now();
-        await CategoryFunc().createCategory(category);
-        await CreatedCategoriesFunc().createCategory(
-          CreatedCategory(category: category),
-        );
-      }
+      //   CategoryClass cat = CategoryClass.fromJson(res);
+      //   await CategoryFunc().createCategory(cat);
+      // } else {
+      category.createdAt ??= DateTime.now();
+      await CategoryFunc().createCategory(category);
+      await CreatedCategoriesFunc().createCategory(
+        CreatedCategory(category: category),
+      );
+      // }
       print('Category Created');
-      await getCategories(shopId());
+      await getCategoriesOffline(shopId());
       notifyListeners();
       return 1;
     } catch (e) {
@@ -160,6 +160,52 @@ class CategoriesProvider extends ChangeNotifier {
     }
   }
 
+  Future<List<CategoryClass>> getCategoriesOffline(
+    int shopId,
+  ) async {
+    // bool isOnline = await connectivity.isOnline();
+    // if (isOnline) {
+    //   try {
+    //     final response = await supabase
+    //         .from(tableName)
+    //         .select()
+    //         .eq('shop_id', shopId)
+    //         .order('name', ascending: true);
+    //     print('Categories Gotten: ${response.length}');
+
+    //     categoriesMain =
+    //         (response as List)
+    //             .map((e) => CategoryClass.fromJson(e))
+    //             .toList();
+
+    //     await CategoryFunc().insertAllCategories(
+    //       categoriesMain,
+    //     );
+    //     notifyListeners();
+    //     return categoriesMain;
+    //   } catch (e) {
+    //     print(
+    //       'Error Getting Categories Online: ${e.toString()}',
+    //     );
+    //     notifyListeners();
+    //     return [];
+    //   }
+    // } else {
+    try {
+      categoriesMain = CategoryFunc().getCategories();
+
+      notifyListeners();
+      return categoriesMain;
+    } catch (e) {
+      print(
+        'Error Getting Categories Offline: ${e.toString()}',
+      );
+      notifyListeners();
+      return [];
+    }
+    // }
+  }
+
   //
   //
   //
@@ -168,37 +214,35 @@ class CategoriesProvider extends ChangeNotifier {
   //
   //
   Future<int> updateCategory(CategoryClass category) async {
-    bool isOnline = await connectivity.isOnline();
+    // bool isOnline = await connectivity.isOnline();
     try {
       category.updatedAt = DateTime.now();
       print(category.uuid);
-      if (isOnline) {
-        await supabase
-            .from(tableName)
-            .update(category.toJson())
-            .eq('uuid', category.uuid);
+      // if (isOnline) {
+      //   await supabase
+      //       .from(tableName)
+      //       .update(category.toJson())
+      //       .eq('uuid', category.uuid);
+      // } else {
+      await CategoryFunc().updateCategory(category);
+      var containsCreated =
+          CreatedCategoriesFunc()
+              .getCreateCategories()
+              .where(
+                (cat) => cat.category.uuid == category.uuid,
+              )
+              .toList();
+      if (containsCreated.isEmpty) {
+        await UpdatedCategoriesFunc().createUpdatedCategory(
+          UpdatedCategory(category: category),
+        );
       } else {
-        await CategoryFunc().updateCategory(category);
-        var containsCreated =
-            CreatedCategoriesFunc()
-                .getCreateCategories()
-                .where(
-                  (cat) =>
-                      cat.category.uuid == category.uuid,
-                )
-                .toList();
-        if (containsCreated.isEmpty) {
-          await UpdatedCategoriesFunc()
-              .createUpdatedCategory(
-                UpdatedCategory(category: category),
-              );
-        } else {
-          await CreatedCategoriesFunc().updateCategory(
-            CreatedCategory(category: category),
-          );
-        }
+        await CreatedCategoriesFunc().updateCategory(
+          CreatedCategory(category: category),
+        );
       }
-      await getCategories(shopId());
+      // }
+      await getCategoriesOffline(shopId());
       notifyListeners();
       return 1;
     } catch (e) {
@@ -217,56 +261,51 @@ class CategoriesProvider extends ChangeNotifier {
   Future<int> deleteCategory({
     required CategoryClass category,
   }) async {
-    bool isOnline = await connectivity.isOnline();
+    // bool isOnline = await connectivity.isOnline();
     try {
-      if (isOnline) {
-        await supabase
-            .from(tableName)
-            .delete()
-            .eq('uuid', category.uuid);
+      // if (isOnline) {
+      //   await supabase
+      //       .from(tableName)
+      //       .delete()
+      //       .eq('uuid', category.uuid);
+      // } else {
+      var containsCreated =
+          CreatedCategoriesFunc()
+              .getCreateCategories()
+              .where(
+                (cat) => cat.category.uuid == category.uuid,
+              )
+              .toList();
+      var containsUpdated =
+          UpdatedCategoriesFunc()
+              .getCategories()
+              .where(
+                (cat) => cat.category.uuid == category.uuid,
+              )
+              .toList();
+      await CategoryFunc().deleteCategory(category.uuid);
+
+      if (containsCreated.isNotEmpty) {
+        CreatedCategoriesFunc().deleteCategory(
+          category.uuid,
+        );
       } else {
-        var containsCreated =
-            CreatedCategoriesFunc()
-                .getCreateCategories()
-                .where(
-                  (cat) =>
-                      cat.category.uuid == category.uuid,
-                )
-                .toList();
-        var containsUpdated =
-            UpdatedCategoriesFunc()
-                .getCategories()
-                .where(
-                  (cat) =>
-                      cat.category.uuid == category.uuid,
-                )
-                .toList();
-        await CategoryFunc().deleteCategory(category.uuid);
-
-        if (containsCreated.isNotEmpty) {
-          CreatedCategoriesFunc().deleteCategory(
-            category.uuid,
-          );
-        } else {
-          await DeletedCategoriesFunc()
-              .createDeletedCategory(
-                DeletedCategory(
-                  categoryUuid: category.uuid,
-                  shopId:
-                      returnShopProvider()
-                          .userShop()!
-                          .shopId!,
-                ),
-              );
-        }
-        if (containsUpdated.isNotEmpty) {
-          UpdatedCategoriesFunc().deleteUpdatedCategory(
-            category.uuid,
-          );
-        }
+        await DeletedCategoriesFunc().createDeletedCategory(
+          DeletedCategory(
+            categoryUuid: category.uuid,
+            shopId:
+                returnShopProvider().userShop()!.shopId!,
+          ),
+        );
       }
+      if (containsUpdated.isNotEmpty) {
+        UpdatedCategoriesFunc().deleteUpdatedCategory(
+          category.uuid,
+        );
+      }
+      // }
 
-      await getCategories(shopId());
+      await getCategoriesOffline(shopId());
       notifyListeners();
       return 1;
     } catch (e) {

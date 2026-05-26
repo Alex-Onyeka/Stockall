@@ -1423,10 +1423,6 @@ class _ProductDetailsDesktopState
                                           ) {
                                             var provider =
                                                 returnData();
-                                            var shopId =
-                                                returnShopProvider()
-                                                    .userShop()!
-                                                    .shopId!;
                                             return ConfirmationAlert(
                                               theme:
                                                   returnTheme(
@@ -1448,10 +1444,10 @@ class _ProductDetailsDesktopState
                                                     .deleteProductMain(
                                                       product,
                                                     );
-                                                await provider
-                                                    .getProducts(
-                                                      shopId,
-                                                    );
+                                                // await provider
+                                                //     .getProducts(
+                                                //       shopId,
+                                                //     );
                                                 setState(() {
                                                   isLoading =
                                                       false;

@@ -155,67 +155,68 @@ class InvoicesProvider extends ChangeNotifier {
     required TempInvoice invoice,
     required List<TempProductSaleRecord> records,
   }) async {
-    bool isOnline = await connectivity.isOnline();
+    // bool isOnline = await connectivity.isOnline();
     invoice.updatedAt = DateTime.now();
     try {
-      if (isOnline) {
-        Map<String, dynamic>? res =
-            await supabase
-                .from('invoices')
-                .update(invoice.toJson())
-                .eq('invoice_uuid', invoice.uuid!)
-                .select()
-                .maybeSingle();
+      // if (isOnline) {
+      //   Map<String, dynamic>? res =
+      //       await supabase
+      //           .from('invoices')
+      //           .update(invoice.toJson())
+      //           .eq('invoice_uuid', invoice.uuid!)
+      //           .select()
+      //           .maybeSingle();
 
-        if (res != null) {
-          print('Invoice Update Successfull');
-          await returnEventsLogProvider().createLog(
-            returnEventsLogProvider(
-              // ignore: use_build_context_synchronously
-            ).invoiceAdapter(
-              invoice,
-              records
-                  .map((rec) => rec.productName)
-                  .toList(),
-              2,
-            ),
-            // ignore: use_build_context_synchronously
-          );
-          notifyListeners();
-          return 1;
-        } else {
-          print('Invoice Update Failed');
-          notifyListeners();
-          return 0;
-        }
-      } else {
-        await InvoicesFunc().updateInvoice(invoice);
-        var containsCreated =
-            CreatedInvoicesFunc()
-                .getInvoices()
-                .where(
-                  (exp) => exp.invoice.uuid == invoice.uuid,
-                )
-                .toList();
-        if (containsCreated.isEmpty) {
-          await UpdatedInvoicesFunc().createUpdatedInvoice(
-            UpdatedInvoices(updatedInvoice: invoice),
-          );
-        } else {
-          await CreatedInvoicesFunc().createInvoice(
-            CreatedInvoices(invoice: invoice),
-          );
-        }
-        await returnEventsLogProvider().createLog(
-          returnEventsLogProvider().invoiceAdapter(
-            invoice,
-            records.map((rec) => rec.productName).toList(),
-            2,
-          ),
+      //   if (res != null) {
+      //     print('Invoice Update Successfull');
+      //     await returnEventsLogProvider().createLog(
+      //       returnEventsLogProvider(
+      //         // ignore: use_build_context_synchronously
+      //       ).invoiceAdapter(
+      //         invoice,
+      //         records
+      //             .map((rec) => rec.productName)
+      //             .toList(),
+      //         2,
+      //       ),
+      //       // ignore: use_build_context_synchronously
+      //     );
+      //     notifyListeners();
+      //     return 1;
+      //   } else {
+      //     print('Invoice Update Failed');
+      //     notifyListeners();
+      //     return 0;
+      //   }
+      // } else {
+      await InvoicesFunc().updateInvoice(invoice);
+      var containsCreated =
+          CreatedInvoicesFunc()
+              .getInvoices()
+              .where(
+                (exp) => exp.invoice.uuid == invoice.uuid,
+              )
+              .toList();
+      if (containsCreated.isEmpty) {
+        await UpdatedInvoicesFunc().createUpdatedInvoice(
+          UpdatedInvoices(updatedInvoice: invoice),
         );
-        notifyListeners();
-        return 1;
+      } else {
+        await CreatedInvoicesFunc().createInvoice(
+          CreatedInvoices(invoice: invoice),
+        );
       }
+      await returnEventsLogProvider().createLog(
+        returnEventsLogProvider().invoiceAdapter(
+          invoice,
+          records.map((rec) => rec.productName).toList(),
+          2,
+        ),
+      );
+      notifyListeners();
+      await loadInvoicesOffline(shopId());
+      return 1;
+      // }
     } catch (e) {
       print('Error Updating Invoices: ${e.toString()}');
       notifyListeners();
@@ -314,7 +315,7 @@ class InvoicesProvider extends ChangeNotifier {
         '✅ Invoice and inventory successfully Delete and Updated.',
       );
 
-      await loadInvoices(
+      await loadInvoicesOffline(
         returnShopProvider().userShop()!.shopId!,
       );
 
@@ -332,62 +333,60 @@ class InvoicesProvider extends ChangeNotifier {
     String uuid,
   ) async {
     print('Deleting Invoice 2');
-    bool isOnline = await connectivity.isOnline();
+    // bool isOnline = await connectivity.isOnline();
     try {
-      if (isOnline) {
-        print('Deleting Invoice 2 Online');
-        await supabase.rpc(
-          'delete_invoice_without_updating_inventory',
-          params: {'target_invoice_uuid': uuid},
-        );
-        print('Finished Deleting Invoice 2 Online');
-        var containsUpdate = UpdatedInvoicesFunc()
-            .getInvoiceIds()
-            .where(
-              (rec) => rec.updatedInvoice.uuid == uuid,
-            );
-        if (containsUpdate.isNotEmpty) {
-          await UpdatedInvoicesFunc().deleteUpdatedInvoice(
-            uuid,
-          );
-        }
-        return 1;
+      // if (isOnline) {
+      //   print('Deleting Invoice 2 Online');
+      //   await supabase.rpc(
+      //     'delete_invoice_without_updating_inventory',
+      //     params: {'target_invoice_uuid': uuid},
+      //   );
+      //   print('Finished Deleting Invoice 2 Online');
+      //   var containsUpdate = UpdatedInvoicesFunc()
+      //       .getInvoiceIds()
+      //       .where(
+      //         (rec) => rec.updatedInvoice.uuid == uuid,
+      //       );
+      //   if (containsUpdate.isNotEmpty) {
+      //     await UpdatedInvoicesFunc().deleteUpdatedInvoice(
+      //       uuid,
+      //     );
+      //   }
+      //   return 1;
+      // } else {
+      print('Deleting Invoice Offline');
+      await InvoicesFunc().deleteInvoices(uuid);
+      var containsCreated =
+          CreatedInvoicesFunc()
+              .getInvoices()
+              .where((inv) => inv.invoice.uuid == uuid)
+              .toList();
+      var containsUpdate = UpdatedInvoicesFunc()
+          .getInvoiceIds()
+          .where((inv) => inv.updatedInvoice.uuid == uuid);
+      if (containsCreated.isNotEmpty) {
+        await CreatedInvoicesFunc().deleteInvoice(uuid);
       } else {
-        print('Deleting Invoice Offline');
-        await InvoicesFunc().deleteInvoices(uuid);
-        var containsCreated =
-            CreatedInvoicesFunc()
-                .getInvoices()
-                .where((inv) => inv.invoice.uuid == uuid)
-                .toList();
-        var containsUpdate = UpdatedInvoicesFunc()
-            .getInvoiceIds()
-            .where(
-              (inv) => inv.updatedInvoice.uuid == uuid,
-            );
-        if (containsCreated.isNotEmpty) {
-          await CreatedInvoicesFunc().deleteInvoice(uuid);
-        } else {
-          await DeletedInvoicesFunc().createDeletedInvoice(
-            DeletedInvoices(invoiceUuid: uuid),
-          );
-        }
-        if (containsUpdate.isNotEmpty) {
-          await UpdatedInvoicesFunc().deleteUpdatedInvoice(
+        await DeletedInvoicesFunc().createDeletedInvoice(
+          DeletedInvoices(invoiceUuid: uuid),
+        );
+      }
+      if (containsUpdate.isNotEmpty) {
+        await UpdatedInvoicesFunc().deleteUpdatedInvoice(
+          uuid,
+        );
+      }
+      await ProductRecordFunc()
+          .deleteRecordsInInvoiceWithoutUpdatingInventory(
             uuid,
           );
-        }
-        await ProductRecordFunc()
-            .deleteRecordsInInvoiceWithoutUpdatingInventory(
-              uuid,
-            );
-      }
+      // }
 
       print(
         '✅ Invoice and inventory successfully Delete and Updated.',
       );
 
-      await loadInvoices(
+      await loadInvoicesOffline(
         returnShopProvider().userShop()!.shopId!,
       );
 
@@ -534,9 +533,8 @@ class InvoicesProvider extends ChangeNotifier {
           invoice: invoice,
           records: productSaleRecords,
         );
-        await returnReceiptProviderSingle().loadReceipts(
-          shopId(),
-        );
+        await returnReceiptProviderSingle()
+            .loadReceiptsOffline(shopId());
         notifyListeners();
         return 1;
       } else {

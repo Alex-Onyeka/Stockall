@@ -64,8 +64,6 @@ import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/providers/department_provider.dart';
 import 'package:stockall/providers/invoices_provider.dart';
-import 'package:stockall/providers/storage_product_provider.dart';
-
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DataProvider extends ChangeNotifier {
@@ -1357,112 +1355,109 @@ class DataProvider extends ChangeNotifier {
     return productListMain;
   }
 
-  Future<List<TempProductClass>> searchProductName(
-    BuildContext context,
-    String name,
-  ) async {
-    var temp = await getProducts(shopId());
-    final tempData =
-        temp
-            .where((product) => product.name.contains(name))
-            .toList();
+  // Future<List<TempProductClass>> searchProductName(
+  //   BuildContext context,
+  //   String name,
+  // ) async {
+  //   var temp = await getProducts(shopId());
+  //   final tempData =
+  //       temp
+  //           .where((product) => product.name.contains(name))
+  //           .toList();
 
-    return tempData;
-  }
+  //   return tempData;
+  // }
 
-  Future<List<TempProductClass>> getLowProducts(
-    int shopId,
-  ) async {
-    final data = await getProducts(shopId);
+  // Future<List<TempProductClass>> getLowProducts(
+  //   int shopId,
+  // ) async {
+  //   final data = await getProducts(shopId);
 
-    final tempData = data.where(
-      (product) =>
-          product.quantity != null &&
-          product.quantity! < product.lowQtty!,
-    );
+  //   final tempData = data.where(
+  //     (product) =>
+  //         product.quantity != null &&
+  //         product.quantity! < product.lowQtty!,
+  //   );
 
-    return tempData.toList();
-  }
+  //   return tempData.toList();
+  // }
 
   Future<TempProductClass?> updateProduct({
     required TempProductClass product,
     TempProductClass? oldProduct,
   }) async {
-    bool isOnline = await connectivity.isOnline();
+    // bool isOnline = await connectivity.isOnline();
     try {
       print(product.isManaged.toString());
-      if (isOnline) {
-        product.updatedAt = DateTime.now().toLocal();
-        var res =
-            await supabase
-                .from('products')
-                .update(product.toJson())
-                .eq('uuid', product.uuid!)
-                .select()
-                .maybeSingle();
-        if (res != null) {
-          print('${product.uuid}');
-          await returnEventsLogProvider().createLog(
-            returnEventsLogProvider().productAdapter(
-              product,
-              2,
-            ),
+      // if (isOnline) {
+      //   product.updatedAt = DateTime.now().toLocal();
+      //   var res =
+      //       await supabase
+      //           .from('products')
+      //           .update(product.toJson())
+      //           .eq('uuid', product.uuid!)
+      //           .select()
+      //           .maybeSingle();
+      //   if (res != null) {
+      //     print('${product.uuid}');
+      //     await returnEventsLogProvider().createLog(
+      //       returnEventsLogProvider().productAdapter(
+      //         product,
+      //         2,
+      //       ),
+      //     );
+      //     print('Context Mounted');
+      //     await getProducts(
+      //       returnShopProvider().userShop()!.shopId!,
+      //     );
+      //     notifyListeners();
+      //     return TempProductClass.fromJson(res);
+      //   } else {
+      //     print('Product Update Failed');
+      //     return null;
+      //   }
+      // } else {
+      var res = await ProductsFunc().updateProduct(product);
+      if (res == 1) {
+        var containsCreated =
+            CreatedProductFunc()
+                .getProducts()
+                .where(
+                  (createdProduct) =>
+                      createdProduct.product.uuid ==
+                      product.uuid,
+                )
+                .toList();
+        if (containsCreated.isEmpty) {
+          await UpdatedProductsFunc().createUpdatedProduct(
+            UpdatedProducts(product: product),
           );
-          print('Context Mounted');
-          await getProducts(
-            returnShopProvider().userShop()!.shopId!,
-          );
-          notifyListeners();
-          return TempProductClass.fromJson(res);
         } else {
-          print('Product Update Failed');
-          return null;
+          await CreatedProductFunc().updateProduct(
+            CreatedProducts(product: product),
+          );
         }
-      } else {
-        var res = await ProductsFunc().updateProduct(
-          product,
-        );
-        if (res == 1) {
-          var containsCreated =
-              CreatedProductFunc()
-                  .getProducts()
-                  .where(
-                    (createdProduct) =>
-                        createdProduct.product.uuid ==
-                        product.uuid,
-                  )
-                  .toList();
-          if (containsCreated.isEmpty) {
-            await UpdatedProductsFunc()
-                .createUpdatedProduct(
-                  UpdatedProducts(product: product),
-                );
-          } else {
-            await CreatedProductFunc().updateProduct(
-              CreatedProducts(product: product),
-            );
-          }
-          print(product.updatedAt.toString());
-          print('${product.uuid}');
-          await returnEventsLogProvider().createLog(
-            returnEventsLogProvider(
-              // ignore: use_build_context_synchronously
-            ).productAdapter(product, 2),
+        print(product.updatedAt.toString());
+        print('${product.uuid}');
+        await returnEventsLogProvider().createLog(
+          returnEventsLogProvider(
             // ignore: use_build_context_synchronously
-          );
-          print('Context Mounted');
-          await getProducts(
-            returnShopProvider().userShop()!.shopId!,
-          );
-          notifyListeners();
-          return ProductsFunc().getSingleProduct(
-            uuid: product.uuid!,
-          );
-        } else {
-          notifyListeners();
-          return null;
-        }
+          ).productAdapter(product, 2),
+          // ignore: use_build_context_synchronously
+        );
+        print('Context Mounted');
+        await getProductsOffline(
+          returnShopProvider().userShop()!.shopId!,
+        );
+        notifyListeners();
+        return ProductsFunc().getSingleProduct(
+          uuid: product.uuid!,
+        );
+      } else {
+        notifyListeners();
+        return null;
       }
+      // }
     } catch (e) {
       notifyListeners();
       print("Error Updating Product: ${e.toString()}");
@@ -1474,70 +1469,67 @@ class DataProvider extends ChangeNotifier {
     TempProductClass product,
     // BuildContext context,
   ) async {
-    bool isOnline = await connectivity.isOnline();
-    if (isOnline) {
-      await supabase
-          .from('products')
-          .delete()
-          .eq('uuid', product.uuid!);
-      await returnEventsLogProvider().createLog(
-        returnEventsLogProvider(
-          // ignore: use_build_context_synchronously
-        ).productAdapter(product, 3),
-        // ignore: use_build_context_synchronously
+    // bool isOnline = await connectivity.isOnline();
+    // if (isOnline) {
+    //   await supabase
+    //       .from('products')
+    //       .delete()
+    //       .eq('uuid', product.uuid!);
+    //   await returnEventsLogProvider().createLog(
+    //     returnEventsLogProvider(
+    //       // ignore: use_build_context_synchronously
+    //     ).productAdapter(product, 3),
+    //     // ignore: use_build_context_synchronously
+    //   );
+    // } else {
+    await ProductsFunc().deleteProduct(product.uuid!);
+    var containsCreated =
+        CreatedProductFunc()
+            .getProducts()
+            .where(
+              (product) =>
+                  product.product.uuid ==
+                  product.product.uuid,
+            )
+            .toList();
+
+    var containsUpdated =
+        UpdatedProductsFunc()
+            .getProducts()
+            .where(
+              (product) =>
+                  product.product.uuid ==
+                  product.product.uuid,
+            )
+            .toList();
+    print('Updated: ${containsCreated.length.toString()}');
+    print('Updated: ${containsUpdated.length.toString()}');
+    if (containsCreated.isNotEmpty) {
+      await CreatedProductFunc().createdProductsBox.delete(
+        product.uuid,
       );
     } else {
-      await ProductsFunc().deleteProduct(product.uuid!);
-      var containsCreated =
-          CreatedProductFunc()
-              .getProducts()
-              .where(
-                (product) =>
-                    product.product.uuid ==
-                    product.product.uuid,
-              )
-              .toList();
-
-      var containsUpdated =
-          UpdatedProductsFunc()
-              .getProducts()
-              .where(
-                (product) =>
-                    product.product.uuid ==
-                    product.product.uuid,
-              )
-              .toList();
-      print(
-        'Updated: ${containsCreated.length.toString()}',
-      );
-      print(
-        'Updated: ${containsUpdated.length.toString()}',
-      );
-      if (containsCreated.isNotEmpty) {
-        await CreatedProductFunc().createdProductsBox
-            .delete(product.uuid);
-      } else {
-        await DeletedProductsFunc().createDeletedProduct(
-          DeletedProducts(
-            productUuid: product.uuid!,
-            date: DateTime.now(),
-          ),
-        );
-      }
-      if (containsUpdated.isNotEmpty) {
-        await UpdatedProductsFunc().deleteUpdatedProduct(
-          containsUpdated.first.product.uuid!,
-        );
-        print('Deleted Update Log');
-      }
-      await returnEventsLogProvider().createLog(
-        returnEventsLogProvider(
-          // ignore: use_build_context_synchronously
-        ).productAdapter(product, 3),
-        // ignore: use_build_context_synchronously
+      await DeletedProductsFunc().createDeletedProduct(
+        DeletedProducts(
+          productUuid: product.uuid!,
+          date: DateTime.now(),
+        ),
       );
     }
-    await getProducts(
+    if (containsUpdated.isNotEmpty) {
+      await UpdatedProductsFunc().deleteUpdatedProduct(
+        containsUpdated.first.product.uuid!,
+      );
+      print('Deleted Update Log');
+    }
+    await returnEventsLogProvider().createLog(
+      returnEventsLogProvider(
+        // ignore: use_build_context_synchronously
+      ).productAdapter(product, 3),
+      // ignore: use_build_context_synchronously
+    );
+    // }
+    await getProductsOffline(
       returnShopProvider().userShop()!.shopId!,
     );
     notifyListeners();
@@ -2167,34 +2159,34 @@ class DataProvider extends ChangeNotifier {
   }
 
   Future<int> deleteSelectedProducts() async {
-    bool isOnline = await ConnectivityProvider().isOnline();
+    // bool isOnline = await ConnectivityProvider().isOnline();
     try {
-      if (isOnline) {
-        var productUuids =
-            selectedProducts.map((pr) => pr.uuid!).toList();
-        await supabase.rpc(
-          'delete_products_by_uuids',
-          params: {'product_uuids': productUuids},
-        );
-        print("Products Delete Successful Online");
-        for (var pr in selectedProducts) {
-          await returnEventsLogProvider().createLog(
-            returnEventsLogProvider().productAdapter(pr, 3),
-          );
-        }
+      // if (isOnline) {
+      //   var productUuids =
+      //       selectedProducts.map((pr) => pr.uuid!).toList();
+      //   await supabase.rpc(
+      //     'delete_products_by_uuids',
+      //     params: {'product_uuids': productUuids},
+      //   );
+      //   print("Products Delete Successful Online");
+      //   for (var pr in selectedProducts) {
+      //     await returnEventsLogProvider().createLog(
+      //       returnEventsLogProvider().productAdapter(pr, 3),
+      //     );
+      //   }
 
-        await getProducts(shopId());
-        toggleIsSelectProduct(false);
-        return 1;
-      } else {
-        for (var pr in ProductsFunc().getProducts().where(
-          (prr) => selectedProducts.contains(prr),
-        )) {
-          await deleteProductMain(pr);
-        }
-        toggleIsSelectProduct(false);
-        return 1;
+      //   await getProducts(shopId());
+      //   toggleIsSelectProduct(false);
+      //   return 1;
+      // } else {
+      for (var pr in ProductsFunc().getProducts().where(
+        (prr) => selectedProducts.contains(prr),
+      )) {
+        await deleteProductMain(pr);
       }
+      toggleIsSelectProduct(false);
+      return 1;
+      // }
     } catch (e) {
       print(
         "Error Deleting Multiple Products: ${e.toString()}",
@@ -2204,53 +2196,53 @@ class DataProvider extends ChangeNotifier {
   }
 
   Future<int> duplicateSelectedProducts() async {
-    bool isOnline = await ConnectivityProvider().isOnline();
+    // bool isOnline = await ConnectivityProvider().isOnline();
     try {
-      if (isOnline) {
-        var productUuids =
-            selectedProducts.map((pr) => pr.uuid!).toList();
-        await supabase.rpc(
-          'duplicate_products',
-          params: {'product_uuids': productUuids},
+      // if (isOnline) {
+      //   var productUuids =
+      //       selectedProducts.map((pr) => pr.uuid!).toList();
+      //   await supabase.rpc(
+      //     'duplicate_products',
+      //     params: {'product_uuids': productUuids},
+      //   );
+      //   print("Products Duplicated Successful Online");
+      //   for (var pr in selectedProducts) {
+      //     await returnEventsLogProvider().createLog(
+      //       returnEventsLogProvider().productAdapter(pr, 1),
+      //     );
+      //   }
+
+      //   await getProducts(shopId());
+      //   toggleIsSelectProduct(false);
+      //   return 1;
+      // } else {
+      for (var pr in selectedProducts) {
+        final random = Random();
+        final number = random.nextInt(50);
+
+        final newProduct = pr.copyWith(
+          uuid: uuidGen(),
+          name: '${pr.name} Copy $number',
+          createdAt: DateTime.now(),
         );
-        print("Products Duplicated Successful Online");
-        for (var pr in selectedProducts) {
-          await returnEventsLogProvider().createLog(
-            returnEventsLogProvider().productAdapter(pr, 1),
-          );
-        }
 
-        await getProducts(shopId());
-        toggleIsSelectProduct(false);
-        return 1;
-      } else {
-        for (var pr in selectedProducts) {
-          final random = Random();
-          final number = random.nextInt(50);
+        await ProductsFunc().createProduct(newProduct);
 
-          final newProduct = pr.copyWith(
-            uuid: uuidGen(),
-            name: '${pr.name} Copy $number',
-            createdAt: DateTime.now(),
-          );
+        await CreatedProductFunc().createProduct(
+          CreatedProducts(product: newProduct),
+        );
 
-          await ProductsFunc().createProduct(newProduct);
-
-          await CreatedProductFunc().createProduct(
-            CreatedProducts(product: newProduct),
-          );
-
-          await returnEventsLogProvider().createLog(
-            returnEventsLogProvider().productAdapter(
-              newProduct,
-              1,
-            ),
-          );
-        }
-        await getProducts(shopId());
-        toggleIsSelectProduct(false);
-        return 1;
+        await returnEventsLogProvider().createLog(
+          returnEventsLogProvider().productAdapter(
+            newProduct,
+            1,
+          ),
+        );
       }
+      await getProductsOffline(shopId());
+      toggleIsSelectProduct(false);
+      return 1;
+      // }
     } catch (e) {
       print(
         "Error Duplicating Multiple Products: ${e.toString()}",
@@ -2260,66 +2252,66 @@ class DataProvider extends ChangeNotifier {
   }
 
   Future<int> generateStorageSelectedProducts() async {
-    bool isOnline = await ConnectivityProvider().isOnline();
+    // bool isOnline = await ConnectivityProvider().isOnline();
     try {
-      if (isOnline) {
-        List<StorageProductInput> temp =
-            selectedProducts
-                .map(
-                  (pr) => StorageProductInput(
-                    name: pr.name,
-                    productUuid: pr.uuid!,
-                    shopId: pr.shopId,
-                    groupUnit: pr.groupUnit,
-                    singleUnit: pr.unit,
-                  ),
-                )
-                .toList();
-        List<Map<String, dynamic>> payload =
-            temp.map((pr) => pr.toJson()).toList();
-        await supabase.rpc(
-          'insert_storage_products_bulk',
-          params: {'products': payload},
-        );
-        print(
-          "Storage Products Generation Successful Online",
-        );
-        // for (var pr in selectedProducts) {
-        //   await returnEventsLogProvider().createLog(
-        //     returnEventsLogProvider().productAdapter(pr, 1),
-        //   );
-        // }
+      // if (isOnline) {
+      //   List<StorageProductInput> temp =
+      //       selectedProducts
+      //           .map(
+      //             (pr) => StorageProductInput(
+      //               name: pr.name,
+      //               productUuid: pr.uuid!,
+      //               shopId: pr.shopId,
+      //               groupUnit: pr.groupUnit,
+      //               singleUnit: pr.unit,
+      //             ),
+      //           )
+      //           .toList();
+      //   List<Map<String, dynamic>> payload =
+      //       temp.map((pr) => pr.toJson()).toList();
+      //   await supabase.rpc(
+      //     'insert_storage_products_bulk',
+      //     params: {'products': payload},
+      //   );
+      //   print(
+      //     "Storage Products Generation Successful Online",
+      //   );
+      //   // for (var pr in selectedProducts) {
+      //   //   await returnEventsLogProvider().createLog(
+      //   //     returnEventsLogProvider().productAdapter(pr, 1),
+      //   //   );
+      //   // }
 
-        await getProducts(shopId());
-        toggleIsSelectProduct(false);
-        return 1;
-      } else {
-        for (var pr in selectedProducts) {
-          var newUuid = uuidGen();
-          await returnStorageProductProvider()
-              .createStorageProduct(
-                TempStorageProducts(
-                  name: pr.name,
-                  shopId: pr.shopId,
-                  groupUnit: pr.groupUnit,
-                  unit: pr.unit,
-                  createdAt: DateTime.now(),
-                  uuid: newUuid,
-                  updatedAt: DateTime.now(),
-                  qttyPerGroup: pr.qttyPerGroup,
-                  costPrice: pr.costPrice,
-                  sellingPrice: pr.sellingPrice,
-                ),
-              );
+      //   await getProducts(shopId());
+      //   toggleIsSelectProduct(false);
+      //   return 1;
+      // } else {
+      for (var pr in selectedProducts) {
+        var newUuid = uuidGen();
+        await returnStorageProductProvider()
+            .createStorageProduct(
+              TempStorageProducts(
+                name: pr.name,
+                shopId: pr.shopId,
+                groupUnit: pr.groupUnit,
+                unit: pr.unit,
+                createdAt: DateTime.now(),
+                uuid: newUuid,
+                updatedAt: DateTime.now(),
+                qttyPerGroup: pr.qttyPerGroup,
+                costPrice: pr.costPrice,
+                sellingPrice: pr.sellingPrice,
+              ),
+            );
 
-          var product = pr.copyWith(storageUuid: newUuid);
+        var product = pr.copyWith(storageUuid: newUuid);
 
-          await updateProduct(product: product);
-        }
-        await getProducts(shopId());
-        toggleIsSelectProduct(false);
-        return 1;
+        await updateProduct(product: product);
       }
+      await getProductsOffline(shopId());
+      toggleIsSelectProduct(false);
+      return 1;
+      // }
     } catch (e) {
       print(
         "Error Generating Multiple Storage Products: ${e.toString()}",

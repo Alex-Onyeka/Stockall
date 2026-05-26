@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
@@ -36,14 +35,14 @@ class _CustomerReportMobileState
 
   int sortIndex = 1;
 
-  late Future<List<TempProductClass>> productsFuture;
-  Future<List<TempProductClass>> getProducts() async {
-    var tempEx = await returnData().getProducts(
-      returnShopProvider().userShop()!.shopId!,
-    );
+  // late Future<List<TempProductClass>> productsFuture;
+  // Future<List<TempProductClass>> getProducts() async {
+  //   var tempEx = await returnData().getProducts(
+  //     returnShopProvider().userShop()!.shopId!,
+  //   );
 
-    return tempEx;
-  }
+  //   return tempEx;
+  // }
 
   @override
   void initState() {
