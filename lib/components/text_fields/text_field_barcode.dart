@@ -62,10 +62,7 @@ class _TextFieldBarcodeState
         setState(() {
           isFocus = true;
         });
-        if (returnShopProvider()
-                .userShop()
-                ?.useScreenKeyboard ==
-            true) {
+        if (returnShopProvider().isOnScreenKeyboardOn()) {
           showOnScreenKeyboard();
         }
       },

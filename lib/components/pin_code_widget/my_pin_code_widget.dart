@@ -222,7 +222,6 @@ class _MyPinCodeWidgetState extends State<MyPinCodeWidget> {
                             theme: theme,
                             action: () {
                               actionPressed('8');
-                              // pinController.text = '2';
                             },
                             text: '8',
                           ),

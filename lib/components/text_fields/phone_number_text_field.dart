@@ -44,9 +44,7 @@ class _PhoneNumberTextFieldState
         IntlPhoneField(
           onTap: () {
             if (returnShopProvider()
-                    .userShop()
-                    ?.useScreenKeyboard ==
-                true) {
+                .isOnScreenKeyboardOn()) {
               showOnScreenKeyboard();
             }
           },

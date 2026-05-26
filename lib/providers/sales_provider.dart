@@ -578,46 +578,46 @@ class SalesProvider extends ChangeNotifier {
 
   final FocusNode scanBarcodeCartPageNode = FocusNode();
 
-  void addListenerScanBarcode() {
-    scanBarcodeCartPageNode.addListener(keepBarcodeFocused);
-  }
+  // void addListenerScanBarcode() {
+  //   scanBarcodeCartPageNode.addListener(keepBarcodeFocused);
+  // }
 
-  Timer? _timer;
+  // Timer? _timer;
 
-  void removeListenerScanBarcode() {
-    _timer?.cancel(); // prevent duplicates
+  // void removeListenerScanBarcode() {
+  //   _timer?.cancel(); // prevent duplicates
 
-    _timer = Timer.periodic(
-      const Duration(milliseconds: 200),
-      (t) {
-        if (scanBarcodeCartPageNode.hasFocus) {
-          print('Cart Page Node Still Has Listener');
-          unfocusScanBarcodeCartPage();
-          scanBarcodeCartPageNode.removeListener(
-            keepBarcodeFocused,
-          );
-        } else {
-          print('Cart Page Node Listener Cancelled');
-          t.cancel(); // cancel this timer instance
-          _timer = null; // clear reference
-        }
-      },
-    );
-  }
+  //   _timer = Timer.periodic(
+  //     const Duration(milliseconds: 200),
+  //     (t) {
+  //       if (scanBarcodeCartPageNode.hasFocus) {
+  //         print('Cart Page Node Still Has Listener');
+  //         unfocusScanBarcodeCartPage();
+  //         scanBarcodeCartPageNode.removeListener(
+  //           keepBarcodeFocused,
+  //         );
+  //       } else {
+  //         print('Cart Page Node Listener Cancelled');
+  //         t.cancel(); // cancel this timer instance
+  //         _timer = null; // clear reference
+  //       }
+  //     },
+  //   );
+  // }
 
   void requestFocusScanBarcode() {
     scanBarcodeCartPageNode.requestFocus();
   }
 
-  void unfocusScanBarcodeCartPage() {
-    scanBarcodeCartPageNode.unfocus();
-  }
+  // void unfocusScanBarcodeCartPage() {
+  //   scanBarcodeCartPageNode.unfocus();
+  // }
 
-  void keepBarcodeFocused() {
-    if (!scanBarcodeCartPageNode.hasFocus) {
-      scanBarcodeCartPageNode.requestFocus();
-    }
-  }
+  // void keepBarcodeFocused() {
+  //   if (!scanBarcodeCartPageNode.hasFocus) {
+  //     scanBarcodeCartPageNode.requestFocus();
+  //   }
+  // }
 
   void switchInvoiceSale({
     required bool value,
@@ -1014,7 +1014,7 @@ class SalesProvider extends ChangeNotifier {
     // String? customerUuid,
     // String? customerName,
   }) async {
-    bool isOnline = await connectivity.isOnline();
+    // bool isOnline = await connectivity.isOnline();
     final createdAt = currentCart().returnDate();
 
     if (currentCart().isInvoice) {
@@ -1288,21 +1288,21 @@ class SalesProvider extends ChangeNotifier {
                 in salesCartItem.cartItems) {
               if (((cartItem.item.quantity ?? 0) > 0) &&
                   cartItem.item.isManaged) {
-                if (isOnline) {
-                  await supabase.rpc(
-                    'decrement_product_quantity_new_double',
-                    params: {
-                      'p_product_uuid': cartItem.item.uuid,
-                      'p_quantity': cartItem.quantity,
-                    },
-                  );
-                } else {
-                  await ProductsFunc().deductQuantity(
-                    isOnline: isOnline,
-                    quantity: cartItem.quantity,
-                    uuid: cartItem.item.uuid!,
-                  );
-                }
+                // if (isOnline) {
+                //   await supabase.rpc(
+                //     'decrement_product_quantity_new_double',
+                //     params: {
+                //       'p_product_uuid': cartItem.item.uuid,
+                //       'p_quantity': cartItem.quantity,
+                //     },
+                //   );
+                // } else {
+                await ProductsFunc().deductQuantity(
+                  isOnline: /*isOnline*/ false,
+                  quantity: cartItem.quantity,
+                  uuid: cartItem.item.uuid!,
+                );
+                // }
               }
             }
 
@@ -1398,7 +1398,7 @@ class SalesProvider extends ChangeNotifier {
                 await returnReceiptProvider(
                   context,
                   listen: false,
-                ).loadReceipts(shopId);
+                ).loadReceiptsOffline(shopId);
                 if (context.mounted) {
                   returnNavProvider(
                     context,
@@ -1572,21 +1572,21 @@ class SalesProvider extends ChangeNotifier {
                 in salesCartItem.cartItems) {
               if (((cartItem.item.quantity ?? 0) > 0) &&
                   cartItem.item.isManaged) {
-                if (isOnline) {
-                  await supabase.rpc(
-                    'decrement_product_quantity_new_double',
-                    params: {
-                      'p_product_uuid': cartItem.item.uuid,
-                      'p_quantity': cartItem.quantity,
-                    },
-                  );
-                } else {
-                  await ProductsFunc().deductQuantity(
-                    isOnline: isOnline,
-                    quantity: cartItem.quantity,
-                    uuid: cartItem.item.uuid!,
-                  );
-                }
+                // if (isOnline) {
+                //   await supabase.rpc(
+                //     'decrement_product_quantity_new_double',
+                //     params: {
+                //       'p_product_uuid': cartItem.item.uuid,
+                //       'p_quantity': cartItem.quantity,
+                //     },
+                //   );
+                // } else {
+                await ProductsFunc().deductQuantity(
+                  isOnline: /*isOnline*/ false,
+                  quantity: cartItem.quantity,
+                  uuid: cartItem.item.uuid!,
+                );
+                // }
               }
             }
 
@@ -1680,7 +1680,7 @@ class SalesProvider extends ChangeNotifier {
                 await returnReceiptProvider(
                   context,
                   listen: false,
-                ).loadReceipts(shopId);
+                ).loadReceiptsOffline(shopId);
                 if (context.mounted) {
                   returnNavProvider(
                     context,

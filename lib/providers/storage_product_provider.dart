@@ -427,6 +427,21 @@ class StorageProductProvider extends ChangeNotifier {
     return storageProductListMain;
   }
 
+  Future<List<TempStorageProducts>>
+  getStorageProductsOffline(int shopId) async {
+    print(
+      "Offline Data Gotten: ${StorageProductsFunc().getStorageProducts().length}",
+    );
+    storageProductListMain =
+        StorageProductsFunc().getStorageProducts();
+    notifyListeners();
+    await returnInventoryUpdatesProvider()
+        .getInventoryUpdates();
+
+    notifyListeners();
+    return storageProductListMain;
+  }
+
   Future<int> updateProduct({
     required TempStorageProducts product,
     TempStorageProducts? oldProduct,

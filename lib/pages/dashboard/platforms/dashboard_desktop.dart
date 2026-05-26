@@ -629,7 +629,7 @@ class _DashboardDesktopState
                                                         InkWell(
                                                           onTap: () async {
                                                             print(
-                                                              returnReceiptProviderSingle().receipts.length,
+                                                              returnReceiptProviderSingle().produtRecordSalesMain.length,
                                                             );
                                                           },
                                                           child: Text(

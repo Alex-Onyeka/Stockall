@@ -2734,7 +2734,7 @@ void selectProductSales({
       existingQtty =
           (existingQtty * (cartItem.qttyPerGroup ?? 1));
     }
-    returnSalesProvider().removeListenerScanBarcode();
+    // returnSalesProvider().removeListenerScanBarcode();
     qttyNode.requestFocus();
     quantityController.text = cartItem.quantity.toString();
     qqty = cartItem.quantity.toDouble();
@@ -2897,7 +2897,11 @@ void selectProductSales({
               ),
               content: SingleChildScrollView(
                 child: SizedBox(
-                  width: screenWidth(context) * 0.7,
+                  width:
+                      screenWidth(context) >
+                              tabletScreenSmall
+                          ? screenWidth(context) * 0.7
+                          : screenWidth(context) * 0.85,
                   child: Row(
                     children: [
                       Expanded(
@@ -3843,6 +3847,8 @@ void selectProductSales({
                                       ) {
                                         if (currentFocus ==
                                             1) {
+                                          controller.text +=
+                                              digit;
                                           double entered =
                                               double.tryParse(
                                                 controller
@@ -3888,7 +3894,7 @@ void selectProductSales({
                                               Future.delayed(
                                                 Duration(
                                                   milliseconds:
-                                                      300,
+                                                      100,
                                                 ),
                                                 () {
                                                   setState(() {
@@ -3912,9 +3918,9 @@ void selectProductSales({
                                                 });
                                               }
 
-                                              controller
-                                                      .text +=
-                                                  digit;
+                                              // controller
+                                              //         .text +=
+                                              //     digit;
                                               double
                                               newVal =
                                                   double.tryParse(
@@ -3947,9 +3953,9 @@ void selectProductSales({
                                               });
                                             }
 
-                                            controller
-                                                    .text +=
-                                                digit;
+                                            // controller
+                                            //         .text +=
+                                            //     digit;
                                             double newVal =
                                                 double.tryParse(
                                                   controller
@@ -5011,7 +5017,7 @@ class _CustomBottomPanelState
                                                                   child: Container(
                                                                     constraints: BoxConstraints(
                                                                       maxWidth:
-                                                                          200,
+                                                                          250,
                                                                       minWidth:
                                                                           50,
                                                                     ),
@@ -5038,7 +5044,10 @@ class _CustomBottomPanelState
                                                                                 ? Colors.white
                                                                                 : Colors.black,
                                                                       ),
-                                                                      cat.name,
+                                                                      cutLongText(
+                                                                        cat.name,
+                                                                        20,
+                                                                      ),
                                                                     ),
                                                                   ),
                                                                 ),

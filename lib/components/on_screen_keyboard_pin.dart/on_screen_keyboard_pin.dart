@@ -132,7 +132,6 @@ class _OnScreenKeyboardPinState
                             theme: theme,
                             action: () {
                               widget.action('8');
-                              // widget.controller.text = '2';
                             },
                             text: '8',
                           ),

@@ -132,9 +132,7 @@ class _EditCartTextFieldState
               widget.onTap!();
             }
             if (returnShopProvider()
-                    .userShop()
-                    ?.useScreenKeyboard ==
-                true) {
+                .isOnScreenKeyboardOn()) {
               showOnScreenKeyboard();
             }
           },

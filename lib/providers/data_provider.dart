@@ -130,44 +130,44 @@ class DataProvider extends ChangeNotifier {
     TempProductClass product,
     // BuildContext context,
   ) async {
-    bool isOnline = await connectivity.isOnline();
+    // bool isOnline = await connectivity.isOnline();
     product.updatedAt = DateTime.now();
-    if (isOnline) {
-      var data =
-          await supabase
-              .from('products')
-              .upsert(product.toJson(), onConflict: 'uuid')
-              .select()
-              .single();
-      print('Item added successfully');
-      final newProduct = TempProductClass.fromJson(data);
-      await ProductsFunc().createProduct(newProduct);
-      await returnEventsLogProvider().createLog(
-        returnEventsLogProvider(
-          // ignore: use_build_context_synchronously
-        ).productAdapter(product, 1),
-        // ignore: use_build_context_synchronously
-      );
-      print('Total Success');
-    } else {
-      product.createdAt ??= DateTime.now();
+    // if (isOnline) {
+    //   var data =
+    //       await supabase
+    //           .from('products')
+    //           .upsert(product.toJson(), onConflict: 'uuid')
+    //           .select()
+    //           .single();
+    //   print('Item added successfully');
+    //   final newProduct = TempProductClass.fromJson(data);
+    //   await ProductsFunc().createProduct(newProduct);
+    //   await returnEventsLogProvider().createLog(
+    //     returnEventsLogProvider(
+    //       // ignore: use_build_context_synchronously
+    //     ).productAdapter(product, 1),
+    //     // ignore: use_build_context_synchronously
+    //   );
+    //   print('Total Success');
+    // } else {
+    product.createdAt ??= DateTime.now();
 
-      await ProductsFunc().createProduct(product);
-      await CreatedProductFunc().createProduct(
-        CreatedProducts(product: product),
-      );
-      await returnEventsLogProvider().createLog(
-        returnEventsLogProvider(
-          // ignore: use_build_context_synchronously
-        ).productAdapter(product, 1),
+    await ProductsFunc().createProduct(product);
+    await CreatedProductFunc().createProduct(
+      CreatedProducts(product: product),
+    );
+    await returnEventsLogProvider().createLog(
+      returnEventsLogProvider(
         // ignore: use_build_context_synchronously
-      );
-      print('Offline Success');
-      print('Offline Product inserted Successfully');
-    }
+      ).productAdapter(product, 1),
+      // ignore: use_build_context_synchronously
+    );
+    print('Offline Success');
+    print('Offline Product inserted Successfully');
+    // }
 
     print('Mounted');
-    await getProducts(
+    await getProductsOffline(
       returnShopProvider().userShop()!.shopId!,
     );
 
@@ -917,7 +917,11 @@ class DataProvider extends ChangeNotifier {
 
             await clearTotalCache();
             toggleSyncing(false);
+          } else {
+            toggleSyncing(false);
           }
+        } else {
+          toggleSyncing(false);
         }
       } else {
         // await ShopFunc().clearShop();
@@ -1333,6 +1337,23 @@ class DataProvider extends ChangeNotifier {
     }
 
     notifyListeners();
+    return productListMain;
+  }
+
+  Future<List<TempProductClass>> getProductsOffline(
+    int shopId,
+  ) async {
+    productListMain = ProductsFunc().getProducts();
+    notifyListeners();
+    if (returnShopProvider()
+            .userShop()
+            ?.manageInventoryStorage ==
+        true) {
+      await returnStorageProductProvider()
+          .getStorageProductsOffline(shopId);
+
+      notifyListeners();
+    }
     return productListMain;
   }
 

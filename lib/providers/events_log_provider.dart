@@ -180,53 +180,62 @@ class EventsLogProvider with ChangeNotifier {
     }
   }
 
+  Future<List<TempEventLogClass>>
+  getEventLogsOffline() async {
+    logs = EventsLogFunc().getEventsLogs();
+
+    print('Events Gotten Successfully Offline');
+    notifyListeners();
+    return logs;
+  }
+
   Future<int> createLog(TempEventLogClass log) async {
     if (ReportAuthAction().viewEventsLogAction()) {
-      bool isOnline =
-          await ConnectivityProvider().isOnline();
+      // bool isOnline =
+      //     await ConnectivityProvider().isOnline();
       log.uuid = uuidGen();
       log.createdAt ??= DateTime.now();
-      if (isOnline) {
-        try {
-          Map<String, dynamic>? res =
-              await client
-                  .from(tableName)
-                  .insert(log.toJson())
-                  .select()
-                  .maybeSingle();
-          if (res == null) {
-            print('Event Logging Failed');
-            return 0;
-          }
-          logs.add(TempEventLogClass.fromJson(res));
-          await EventsLogFunc().createEventsLog(
-            TempEventLogClass.fromJson(res),
-          );
-          notifyListeners();
-          await getEventLogs();
-          print('✅✅ Event Logged Successfully Online');
-          return 1;
-        } catch (e) {
-          print(
-            'Event Creating Online Failed: ${e.toString()}',
-          );
-          return 0;
-        }
-      } else {
-        try {
-          await EventsLogFunc().createEventsLog(log);
-          await CreatedEventsLogFunc().createEventLog(
-            CreatedEventsLogClass(eventLog: log),
-          );
-          await getEventLogs();
-          return 1;
-        } catch (e) {
-          print(
-            'Offline Event Creating Failed: ${e.toString()}',
-          );
-          return 0;
-        }
+      // if (isOnline) {
+      //   try {
+      //     Map<String, dynamic>? res =
+      //         await client
+      //             .from(tableName)
+      //             .insert(log.toJson())
+      //             .select()
+      //             .maybeSingle();
+      //     if (res == null) {
+      //       print('Event Logging Failed');
+      //       return 0;
+      //     }
+      //     logs.add(TempEventLogClass.fromJson(res));
+      //     await EventsLogFunc().createEventsLog(
+      //       TempEventLogClass.fromJson(res),
+      //     );
+      //     notifyListeners();
+      //     await getEventLogs();
+      //     print('✅✅ Event Logged Successfully Online');
+      //     return 1;
+      //   } catch (e) {
+      //     print(
+      //       'Event Creating Online Failed: ${e.toString()}',
+      //     );
+      //     return 0;
+      //   }
+      // } else {
+      try {
+        await EventsLogFunc().createEventsLog(log);
+        await CreatedEventsLogFunc().createEventLog(
+          CreatedEventsLogClass(eventLog: log),
+        );
+        await getEventLogsOffline();
+        return 1;
+      } catch (e) {
+        print(
+          'Offline Event Creating Failed: ${e.toString()}',
+        );
+        return 0;
       }
+      // }
     } else {
       return 0;
     }

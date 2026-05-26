@@ -48,10 +48,7 @@ class _GeneralTextfieldOnlyState
       key: widget.formState,
       child: TextFormField(
         onTap: () {
-          if (returnShopProvider()
-                  .userShop()
-                  ?.useScreenKeyboard ==
-              true) {
+          if (returnShopProvider().isOnScreenKeyboardOn()) {
             showOnScreenKeyboard();
           }
         },

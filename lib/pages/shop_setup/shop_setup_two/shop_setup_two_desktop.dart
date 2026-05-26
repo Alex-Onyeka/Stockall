@@ -148,7 +148,7 @@ class _ShopSetupTwoDesktopState
                     wholeSale: false,
                     manageDepartments: false,
                     printSalesDocket: false,
-                    useScreenKeyboard: false,
+                    // useScreenKeyboard: false,
                   ),
                   safeContext,
                 );

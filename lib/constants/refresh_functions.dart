@@ -83,6 +83,10 @@ class RefreshFunctions {
     return returnData().isSynced();
   }
 
+  bool isSyncing() {
+    return returnData().isSyncing;
+  }
+
   // Future<void> loadSuggestions() async {
   //   await suggestionProvider.loadSuggestions(
   //     shopProvider. userShop()!.shopId!,
@@ -530,127 +534,137 @@ class RefreshFunctions {
   //
 
   Future<void> refreshAll(BuildContext context) async {
-    var safeContext = context;
-    var navPro = returnNavProvider(context, listen: false);
-
-    dataProvider.toggleRefreshing(true);
-
-    List<TempShopClass> shop = await getUserShop();
-    if (shop.isEmpty) {
-      navPro.nullShop(
-        logoutAction: () {
-          navPro.navPush(context);
-        },
+    if (!isSyncing()) {
+      var safeContext = context;
+      var navPro = returnNavProvider(
+        context,
+        listen: false,
       );
-    } else {
-      bool isOnline =
-          await returnConnectivityProvider(
-            context,
-            listen: false,
-          ).isOnline();
-      if (isSynced() == 0 && context.mounted && isOnline) {
-        showDialog(
-          context: context,
-          builder: (confirmDialog) {
-            return ConfirmationAlert(
-              theme: returnTheme(context, listen: false),
-              message:
-                  'You have unsynced Records, are you sure you want to proceed?',
-              title: 'Unsynced Records Detected',
-              action: () async {
-                Navigator.of(confirmDialog).pop();
-                if (safeContext.mounted) {
-                  await returnData().syncData(safeContext);
-                }
-                if (context.mounted) {
-                  await returnUserProvider(
-                    context,
-                    listen: false,
-                  ).fetchCurrentUser(safeContext);
-                }
-                await utilityConstantProvider
-                    .getUtilityConstants();
 
-                // await getProductSalesRecord();
-                var subs = await loadSubscription();
-                print(
-                  "Subscription PLan RefreshAll: ${subs?.plan}",
-                );
-                if (safeContext.mounted) {
-                  dataProvider.setAllowedRange(
-                    plan: subs?.plan,
-                    context: safeContext,
-                  );
-                }
-                print(
-                  "Allowed Items RefreshAll: ${dataProvider.allowedRangeItems}",
-                );
+      dataProvider.toggleRefreshing(true);
 
-                await returnDepartmentProvider()
-                    .getDepartments();
-                if (safeContext.mounted) {
-                  await getMainReceipts();
-                }
-                // await getInvoices();
-                if (shopProvider.userShop()?.bulkSale ==
-                    true) {
-                  await returnSubStaffProvider()
-                      .getSubStaffs();
-                }
-                await getEventLogs();
-                await getExpenses();
-                await getEmployees();
-                // await getProducts();
-                await fetchNotifications();
-                await getCustomers();
-                await purchaseProvider.loadPurchases(
-                  shopId(),
-                );
-              },
-            );
+      List<TempShopClass> shop = await getUserShop();
+      if (shop.isEmpty) {
+        navPro.nullShop(
+          logoutAction: () {
+            navPro.navPush(context);
           },
         );
       } else {
-        await getUserShop();
-        await utilityConstantProvider.getUtilityConstants();
-        // await getProductSalesRecord();
-        var subs = await loadSubscription();
-        print(
-          "Subscription PLan RefreshAll: ${subs?.plan}",
-        );
-        if (safeContext.mounted) {
-          dataProvider.setAllowedRange(
-            plan: subs?.plan,
-            context: safeContext,
-          );
-        }
-        print(
-          "Allowed Items RefreshAll: ${dataProvider.allowedRangeItems}",
-        );
-        await returnDepartmentProvider().getDepartments();
-        if (safeContext.mounted) {
-          await getMainReceipts();
-        }
-        if (shopProvider.userShop()?.bulkSale == true) {
-          await returnSubStaffProvider().getSubStaffs();
-        }
-        await getEventLogs();
-        await getExpenses();
-        await getEmployees();
-        if (context.mounted) {
-          await returnUserProvider(
-            context,
-            listen: false,
-          ).fetchCurrentUser(safeContext);
-        }
-        // await getProducts();
-        await fetchNotifications();
-        await getCustomers();
-        await returnDepartmentProvider().getDepartments();
-        await purchaseProvider.loadPurchases(shopId());
-      }
-    }
+        bool isOnline =
+            await returnConnectivityProvider(
+              context,
+              listen: false,
+            ).isOnline();
+        if (isSynced() == 0 &&
+            context.mounted &&
+            isOnline) {
+          showDialog(
+            context: context,
+            builder: (confirmDialog) {
+              return ConfirmationAlert(
+                theme: returnTheme(context, listen: false),
+                message:
+                    'You have unsynced Records, are you sure you want to proceed?',
+                title: 'Unsynced Records Detected',
+                action: () async {
+                  Navigator.of(confirmDialog).pop();
+                  if (safeContext.mounted) {
+                    await returnData().syncData(
+                      safeContext,
+                    );
+                  }
+                  if (context.mounted) {
+                    await returnUserProvider(
+                      context,
+                      listen: false,
+                    ).fetchCurrentUser(safeContext);
+                  }
+                  await utilityConstantProvider
+                      .getUtilityConstants();
 
-    dataProvider.toggleRefreshing(false);
+                  // await getProductSalesRecord();
+                  var subs = await loadSubscription();
+                  print(
+                    "Subscription PLan RefreshAll: ${subs?.plan}",
+                  );
+                  if (safeContext.mounted) {
+                    dataProvider.setAllowedRange(
+                      plan: subs?.plan,
+                      context: safeContext,
+                    );
+                  }
+                  print(
+                    "Allowed Items RefreshAll: ${dataProvider.allowedRangeItems}",
+                  );
+
+                  await returnDepartmentProvider()
+                      .getDepartments();
+                  if (safeContext.mounted) {
+                    await getMainReceipts();
+                  }
+                  // await getInvoices();
+                  if (shopProvider.userShop()?.bulkSale ==
+                      true) {
+                    await returnSubStaffProvider()
+                        .getSubStaffs();
+                  }
+                  await getEventLogs();
+                  await getExpenses();
+                  await getEmployees();
+                  // await getProducts();
+                  await fetchNotifications();
+                  await getCustomers();
+                  await purchaseProvider.loadPurchases(
+                    shopId(),
+                  );
+                },
+              );
+            },
+          );
+        } else {
+          await getUserShop();
+          await utilityConstantProvider
+              .getUtilityConstants();
+          // await getProductSalesRecord();
+          var subs = await loadSubscription();
+          print(
+            "Subscription PLan RefreshAll: ${subs?.plan}",
+          );
+          if (safeContext.mounted) {
+            dataProvider.setAllowedRange(
+              plan: subs?.plan,
+              context: safeContext,
+            );
+          }
+          print(
+            "Allowed Items RefreshAll: ${dataProvider.allowedRangeItems}",
+          );
+          await returnDepartmentProvider().getDepartments();
+          if (safeContext.mounted) {
+            await getMainReceipts();
+          }
+          if (shopProvider.userShop()?.bulkSale == true) {
+            await returnSubStaffProvider().getSubStaffs();
+          }
+          await getEventLogs();
+          await getExpenses();
+          await getEmployees();
+          if (context.mounted) {
+            await returnUserProvider(
+              context,
+              listen: false,
+            ).fetchCurrentUser(safeContext);
+          }
+          // await getProducts();
+          await fetchNotifications();
+          await getCustomers();
+          await returnDepartmentProvider().getDepartments();
+          await purchaseProvider.loadPurchases(shopId());
+        }
+      }
+
+      dataProvider.toggleRefreshing(false);
+    }
   }
 }

@@ -74,8 +74,8 @@ class _CartQueueDesktopState
                   onLongPress: () {
                     if (cartItem.id == salesP.cartIdCache &&
                         !cartItem.isReceiptEdit) {
-                      returnSalesProvider()
-                          .removeListenerScanBarcode();
+                      // returnSalesProvider()
+                      //     .removeListenerScanBarcode();
                       cartNameC.text =
                           cartItem.cartName ?? '';
                       showDialog(
@@ -132,8 +132,8 @@ class _CartQueueDesktopState
                       ).then((_) {
                         returnSalesProvider()
                             .requestFocusScanBarcode();
-                        returnSalesProvider()
-                            .addListenerScanBarcode();
+                        // returnSalesProvider()
+                        //     .addListenerScanBarcode();
                       });
                     }
                   },

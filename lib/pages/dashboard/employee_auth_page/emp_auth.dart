@@ -359,8 +359,8 @@ class _EmpAuthState extends State<EmpAuth> {
                               screenWidth(context) <
                                       mobileScreenSmall
                                   ? screenWidth(context) *
-                                      0.95
-                                  : mobileScreen - 100,
+                                      0.9
+                                  : mobileScreen - 150,
                           decoration: BoxDecoration(
                             borderRadius:
                                 BorderRadius.circular(5),
@@ -379,11 +379,7 @@ class _EmpAuthState extends State<EmpAuth> {
                           ),
                           padding:
                               EdgeInsetsDirectional.symmetric(
-                                horizontal:
-                                    screenWidth(context) <
-                                            mobileScreenSmall
-                                        ? 10
-                                        : 20,
+                                horizontal: 30,
                                 vertical: 20,
                               ),
                           child: Column(
@@ -852,177 +848,183 @@ class _EmpAuthState extends State<EmpAuth> {
                                             },
                                             // text: pin1Controller.text,
                                           ),
-                                          SizedBox(
-                                            height: 15,
-                                          ),
-                                          Container(
-                                            padding:
-                                                EdgeInsets.all(
-                                                  10,
-                                                ),
-                                            decoration:
-                                                BoxDecoration(
-                                                  color:
-                                                      Colors
-                                                          .grey
-                                                          .shade200,
-                                                ),
+                                          Visibility(
+                                            visible:
+                                                screenWidth(
+                                                  context,
+                                                ) >
+                                                mobileScreen,
                                             child: Column(
-                                              spacing: 10,
                                               children: [
-                                                Row(
-                                                  spacing:
-                                                      10,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    CalcButtonPin(
-                                                      theme:
-                                                          theme,
-                                                      action: () {
-                                                        actionPressed(
-                                                          '1',
-                                                        );
-                                                      },
-                                                      text:
-                                                          '1',
-                                                    ),
-                                                    CalcButtonPin(
-                                                      theme:
-                                                          theme,
-                                                      action: () {
-                                                        actionPressed(
-                                                          '2',
-                                                        );
-                                                      },
-                                                      text:
-                                                          '2',
-                                                    ),
-                                                    CalcButtonPin(
-                                                      theme:
-                                                          theme,
-                                                      action: () {
-                                                        actionPressed(
-                                                          '3',
-                                                        );
-                                                      },
-                                                      text:
-                                                          '3',
-                                                    ),
-                                                    CalcButtonPin(
-                                                      theme:
-                                                          theme,
-                                                      action: () {
-                                                        actionPressed(
-                                                          '4',
-                                                        );
-                                                      },
-                                                      text:
-                                                          '4',
-                                                    ),
-                                                  ],
+                                                SizedBox(
+                                                  height:
+                                                      15,
                                                 ),
-                                                Row(
-                                                  spacing:
-                                                      10,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    CalcButtonPin(
-                                                      theme:
-                                                          theme,
-                                                      action: () {
-                                                        actionPressed(
-                                                          '5',
-                                                        );
-                                                      },
-                                                      text:
-                                                          '5',
-                                                    ),
-                                                    CalcButtonPin(
-                                                      theme:
-                                                          theme,
-                                                      action: () {
-                                                        actionPressed(
-                                                          '6',
-                                                        );
-                                                      },
-                                                      text:
-                                                          '6',
-                                                    ),
-                                                    CalcButtonPin(
-                                                      theme:
-                                                          theme,
-                                                      action: () {
-                                                        actionPressed(
-                                                          '7',
-                                                        );
-                                                      },
-                                                      text:
-                                                          '7',
-                                                    ),
-                                                    CalcButtonPin(
-                                                      theme:
-                                                          theme,
-                                                      action: () {
-                                                        actionPressed(
-                                                          '8',
-                                                        );
-                                                        pinController.text =
-                                                            '2';
-                                                      },
-                                                      text:
-                                                          '8',
-                                                    ),
-                                                  ],
-                                                ),
-                                                Row(
-                                                  spacing:
-                                                      10,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    CalcButtonPin(
-                                                      theme:
-                                                          theme,
-                                                      action: () {
-                                                        actionPressed(
-                                                          '9',
-                                                        );
-                                                      },
-                                                      text:
-                                                          '9',
-                                                    ),
-                                                    CalcButtonPin(
-                                                      theme:
-                                                          theme,
-                                                      action: () {
-                                                        actionPressed(
-                                                          '0',
-                                                        );
-                                                      },
-                                                      text:
-                                                          '0',
-                                                    ),
-                                                    CalcButtonPin(
-                                                      theme:
-                                                          theme,
-                                                      action: () {
-                                                        actionPressed(
-                                                          '00',
-                                                        );
-                                                      },
-                                                      // text:
-                                                      //     '<=',
-                                                      icon:
-                                                          Icons.backspace_outlined,
-                                                      height:
-                                                          20,
-                                                    ),
-                                                  ],
+                                                Container(
+                                                  padding:
+                                                      EdgeInsets.all(
+                                                        10,
+                                                      ),
+                                                  decoration:
+                                                      BoxDecoration(
+                                                        color:
+                                                            Colors.grey.shade200,
+                                                      ),
+                                                  child: Column(
+                                                    spacing:
+                                                        10,
+                                                    children: [
+                                                      Row(
+                                                        spacing:
+                                                            10,
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment.spaceBetween,
+                                                        children: [
+                                                          CalcButtonPin(
+                                                            theme:
+                                                                theme,
+                                                            action: () {
+                                                              actionPressed(
+                                                                '1',
+                                                              );
+                                                            },
+                                                            text:
+                                                                '1',
+                                                          ),
+                                                          CalcButtonPin(
+                                                            theme:
+                                                                theme,
+                                                            action: () {
+                                                              actionPressed(
+                                                                '2',
+                                                              );
+                                                            },
+                                                            text:
+                                                                '2',
+                                                          ),
+                                                          CalcButtonPin(
+                                                            theme:
+                                                                theme,
+                                                            action: () {
+                                                              actionPressed(
+                                                                '3',
+                                                              );
+                                                            },
+                                                            text:
+                                                                '3',
+                                                          ),
+                                                          CalcButtonPin(
+                                                            theme:
+                                                                theme,
+                                                            action: () {
+                                                              actionPressed(
+                                                                '4',
+                                                              );
+                                                            },
+                                                            text:
+                                                                '4',
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      Row(
+                                                        spacing:
+                                                            10,
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment.spaceBetween,
+                                                        children: [
+                                                          CalcButtonPin(
+                                                            theme:
+                                                                theme,
+                                                            action: () {
+                                                              actionPressed(
+                                                                '5',
+                                                              );
+                                                            },
+                                                            text:
+                                                                '5',
+                                                          ),
+                                                          CalcButtonPin(
+                                                            theme:
+                                                                theme,
+                                                            action: () {
+                                                              actionPressed(
+                                                                '6',
+                                                              );
+                                                            },
+                                                            text:
+                                                                '6',
+                                                          ),
+                                                          CalcButtonPin(
+                                                            theme:
+                                                                theme,
+                                                            action: () {
+                                                              actionPressed(
+                                                                '7',
+                                                              );
+                                                            },
+                                                            text:
+                                                                '7',
+                                                          ),
+                                                          CalcButtonPin(
+                                                            theme:
+                                                                theme,
+                                                            action: () {
+                                                              actionPressed(
+                                                                '8',
+                                                              );
+                                                            },
+                                                            text:
+                                                                '8',
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      Row(
+                                                        spacing:
+                                                            10,
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment.spaceBetween,
+                                                        children: [
+                                                          CalcButtonPin(
+                                                            theme:
+                                                                theme,
+                                                            action: () {
+                                                              actionPressed(
+                                                                '9',
+                                                              );
+                                                            },
+                                                            text:
+                                                                '9',
+                                                          ),
+                                                          CalcButtonPin(
+                                                            theme:
+                                                                theme,
+                                                            action: () {
+                                                              actionPressed(
+                                                                '0',
+                                                              );
+                                                            },
+                                                            text:
+                                                                '0',
+                                                          ),
+                                                          CalcButtonPin(
+                                                            theme:
+                                                                theme,
+                                                            action: () {
+                                                              actionPressed(
+                                                                '00',
+                                                              );
+                                                            },
+                                                            // text:
+                                                            //     '<=',
+                                                            icon:
+                                                                Icons.backspace_outlined,
+                                                            height:
+                                                                20,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
                                               ],
                                             ),
@@ -1030,40 +1032,49 @@ class _EmpAuthState extends State<EmpAuth> {
                                           SizedBox(
                                             height: 15,
                                           ),
-                                          // MainButtonP(
-                                          //   themeProvider:
-                                          //       theme,
-                                          //   action: () {
-                                          //     if (pinController
-                                          //             .text
-                                          //             .isEmpty ||
-                                          //         pinController
-                                          //                 .text
-                                          //                 .length !=
-                                          //             4) {
-                                          //       showDialog(
-                                          //         context:
-                                          //             context,
-                                          //         builder: (
-                                          //           context,
-                                          //         ) {
-                                          //           return InfoAlert(
-                                          //             theme:
-                                          //                 theme,
-                                          //             message:
-                                          //                 'Invalid PIN Length. Please Ensure that the Length of PINS are 4, and try again.',
-                                          //             title:
-                                          //                 'Invalid PIN',
-                                          //           );
-                                          //         },
-                                          //       );
-                                          //     }
-                                          //   },
-                                          //   text: 'Login',
-                                          // ),
-                                          // SizedBox(
-                                          //   height: 15,
-                                          // ),
+                                          Visibility(
+                                            visible:
+                                                screenWidth(
+                                                  context,
+                                                ) <=
+                                                mobileScreen,
+                                            child: Column(
+                                              children: [
+                                                MainButtonP(
+                                                  themeProvider:
+                                                      theme,
+                                                  action: () {
+                                                    if (pinController.text.isEmpty ||
+                                                        pinController.text.length !=
+                                                            4) {
+                                                      showDialog(
+                                                        context:
+                                                            context,
+                                                        builder: (
+                                                          context,
+                                                        ) {
+                                                          return InfoAlert(
+                                                            theme:
+                                                                theme,
+                                                            message:
+                                                                'Invalid PIN Length. Please Ensure that the Length of PINS are 4, and try again.',
+                                                            title:
+                                                                'Invalid PIN',
+                                                          );
+                                                        },
+                                                      );
+                                                    }
+                                                  },
+                                                  text:
+                                                      'Login',
+                                                ),
+                                                SizedBox(
+                                                  height:
+                                                      15,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),

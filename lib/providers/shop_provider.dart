@@ -24,6 +24,7 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/local_database/barcode_printer_func/barcode_printer_local_func.dart';
 import 'package:stockall/local_database/barcode_printer_func/price_and_barcode_local_func.dart';
 import 'package:stockall/local_database/barcode_printer_func/price_tag_printer_func.dart';
+import 'package:stockall/local_database/on_screen_keyboard_pin/on_screen_keyboard_pin_func.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';
 import 'package:stockall/local_database/shop/updated_shop/updated_shop_func.dart';
 import 'package:stockall/local_database/shop_current/current_shop_func.dart';
@@ -1207,59 +1208,23 @@ class ShopProvider extends ChangeNotifier {
 
   bool isOnScreenKeyboardLoading = false;
 
+  bool isOnScreenKeyboardOn() {
+    return OnScreenKeyboardPinFunc()
+            .getOnScreenKeyboardPinClass()
+            ?.isOn ??
+        false;
+  }
+
   Future<int> toggleOnScreenKeyboard() async {
-    bool isOnline = await connectivity.isOnline();
     isOnScreenKeyboardLoading = true;
     notifyListeners();
     try {
-      if (isOnline) {
-        Map<String, dynamic>? res =
-            await supabase
-                .from('shops')
-                .update({
-                  'use_screen_keyboard':
-                      !userShop()!.useScreenKeyboard!,
-                })
-                .eq('shop_id', userShop()!.shopId!)
-                .select()
-                .maybeSingle();
-        if (res == null) {
-          print('Use on Screen Keyboard Update Failed');
-          isOnScreenKeyboardLoading = false;
-          notifyListeners();
-          return 0;
-        }
-
-        var shops = await getUserShops();
-        setShops(shops);
-        isOnScreenKeyboardLoading = false;
-        notifyListeners();
-        return 1;
-      } else {
-        try {
-          userShop()!.updatedAt = DateTime.now();
-          userShop()!.useGroupUnit =
-              !userShop()!.useScreenKeyboard!;
-          await ShopFunc().updateShop(userShop()!);
-          if (userShop() != null) {
-            await UpdatedShopFunc().createUpdatedShop(
-              UpdatedShop(shop: userShop()!),
-            );
-            // setShops(shop);
-            notifyListeners();
-          }
-          isOnScreenKeyboardLoading = false;
-          notifyListeners();
-          return 1;
-        } catch (e) {
-          print(
-            "❌ Failed to Update Use on Screen Keyboard Offline: ${e.toString()}",
-          );
-          isOnScreenKeyboardLoading = false;
-          notifyListeners();
-          return 0;
-        }
-      }
+      var res =
+          await OnScreenKeyboardPinFunc()
+              .toggleOnScreenKeyboard();
+      notifyListeners();
+      isOnScreenKeyboardLoading = false;
+      return res;
     } catch (e) {
       print(
         "❌ Failed to Update Use on Screen Keyboard: ${e.toString()}",

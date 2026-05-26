@@ -132,9 +132,7 @@ class _MoneyTextfieldState extends State<MoneyTextfield> {
               widget.onTap!();
             }
             if (returnShopProvider()
-                    .userShop()
-                    ?.useScreenKeyboard ==
-                true) {
+                .isOnScreenKeyboardOn()) {
               showOnScreenKeyboard();
             }
           },

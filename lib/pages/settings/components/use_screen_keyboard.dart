@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widget_desktop.dart';
@@ -19,7 +21,8 @@ class UseScreenKeyboard extends StatelessWidget {
             authorized:
                 Authorizations().toggleOnScreenKeyboard,
           ) &&
-          !isStoreKeeper(),
+          !isStoreKeeper() &&
+          Platform.isWindows,
       child: SubWrapper(
         isVisible:
             !GeneralSettingsAuthAction()
@@ -40,14 +43,12 @@ class UseScreenKeyboard extends StatelessWidget {
                       theme: theme,
                       message:
                           shopProvider
-                                  .userShop()!
-                                  .useScreenKeyboard!
+                                  .isOnScreenKeyboardOn()
                               ? 'You are about to turn off Auto On-Screen Keyboard, are you sure you want to proceed?'
                               : 'You are about to turn on Auto On-Screen Keyboard, are you sure you want to proceed?',
                       title:
                           shopProvider
-                                  .userShop()!
-                                  .useScreenKeyboard!
+                                  .isOnScreenKeyboardOn()
                               ? 'Turn Off On-Screen Keyboard'
                               : 'Turn On On-Screen Keyboard',
                       action: () async {
@@ -80,8 +81,7 @@ class UseScreenKeyboard extends StatelessWidget {
                   boolValue:
                       returnShopProvider(
                         context: context,
-                      ).userShop()?.useScreenKeyboard ??
-                      true,
+                      ).isOnScreenKeyboardOn(),
                   toggle: () {
                     GeneralSettingsAuthAction().useOnScreenKeyboardAction(
                       context: context,
@@ -95,14 +95,12 @@ class UseScreenKeyboard extends StatelessWidget {
                               theme: theme,
                               message:
                                   shopProvider
-                                          .userShop()!
-                                          .useScreenKeyboard!
+                                          .isOnScreenKeyboardOn()
                                       ? 'You are about to turn off Auto On-Screen Keyboard, are you sure you want to proceed?'
                                       : 'You are about to turn on Auto On-Screen Keyboard, are you sure you want to proceed?',
                               title:
                                   shopProvider
-                                          .userShop()!
-                                          .useScreenKeyboard!
+                                          .isOnScreenKeyboardOn()
                                       ? 'Turn Off On-Screen Keyboard'
                                       : 'Turn On On-Screen Keyboard',
                               action: () async {

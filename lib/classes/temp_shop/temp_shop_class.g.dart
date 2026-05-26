@@ -68,14 +68,13 @@ class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
       printSalesDocket: fields[50] as bool?,
       closeSaleTimeString: fields[52] as String?,
       closeSaleTime: fields[51] as TimeOfDay?,
-      useScreenKeyboard: fields[53] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempShopClass obj) {
     writer
-      ..writeByte(52)
+      ..writeByte(51)
       ..writeByte(0)
       ..write(obj.shopId)
       ..writeByte(1)
@@ -177,9 +176,7 @@ class TempShopClassAdapter extends TypeAdapter<TempShopClass> {
       ..writeByte(51)
       ..write(obj.closeSaleTime)
       ..writeByte(52)
-      ..write(obj.closeSaleTimeString)
-      ..writeByte(53)
-      ..write(obj.useScreenKeyboard);
+      ..write(obj.closeSaleTimeString);
   }
 
   @override

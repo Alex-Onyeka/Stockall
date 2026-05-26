@@ -149,7 +149,7 @@ class _MakeSalesDesktopState
             cartItem.setTotalPrice,
           );
         }
-        returnSalesProvider().removeListenerScanBarcode();
+        // returnSalesProvider().removeListenerScanBarcode();
         nameEditNode.requestFocus();
         showDialog(
           context: context,
@@ -853,7 +853,7 @@ class _MakeSalesDesktopState
           },
         ).then((value) {
           qqty = 0;
-          returnSalesProvider().addListenerScanBarcode();
+          // returnSalesProvider().addListenerScanBarcode();
           returnSalesProvider().requestFocusScanBarcode();
 
           nameC.clear();
@@ -1574,7 +1574,7 @@ class _MakeSalesDesktopState
                                                                     height:
                                                                         35,
                                                                     action: () {
-                                                                      returnSalesProvider().removeListenerScanBarcode();
+                                                                      // returnSalesProvider().removeListenerScanBarcode();
                                                                       showGeneralDialog(
                                                                         context:
                                                                             context,
@@ -1600,7 +1600,7 @@ class _MakeSalesDesktopState
                                                                         (
                                                                           _,
                                                                         ) {
-                                                                          returnSalesProvider().addListenerScanBarcode();
+                                                                          // returnSalesProvider().addListenerScanBarcode();
                                                                           setState(
                                                                             () {
                                                                               returnSalesProvider().requestFocusScanBarcode();
@@ -2193,8 +2193,8 @@ class _MakeSalesDesktopState
                                               ),
                                               child: InkWell(
                                                 onTap: () async {
-                                                  returnSalesProvider()
-                                                      .removeListenerScanBarcode();
+                                                  // returnSalesProvider()
+                                                  //     .removeListenerScanBarcode();
                                                   showGeneralDialog(
                                                     context:
                                                         context,
@@ -2216,8 +2216,8 @@ class _MakeSalesDesktopState
                                                   ).then((
                                                     _,
                                                   ) {
-                                                    returnSalesProvider()
-                                                        .addListenerScanBarcode();
+                                                    // returnSalesProvider()
+                                                    //     .addListenerScanBarcode();
                                                     setState(() {
                                                       returnSalesProvider()
                                                           .requestFocusScanBarcode();
@@ -2406,7 +2406,7 @@ class _MakeSalesDesktopState
                                                           i++
                                                         ) {
                                                           if (returnSalesProvider().scanBarcodeCartPageNode.hasFocus) {
-                                                            returnSalesProvider().removeListenerScanBarcode();
+                                                            // returnSalesProvider().removeListenerScanBarcode();
                                                           }
                                                           print(
                                                             "${returnSalesProvider().scanBarcodeCartPageNode.hasFocus} Beans",
@@ -2607,7 +2607,7 @@ class _MakeSalesDesktopState
                                                           _,
                                                         ) {
                                                           returnSalesProvider().requestFocusScanBarcode();
-                                                          returnSalesProvider().addListenerScanBarcode();
+                                                          // returnSalesProvider().addListenerScanBarcode();
                                                         });
                                                       },
                                                     );
@@ -2853,34 +2853,34 @@ class _MakeSalesDesktopState
                                       addListener: () {
                                         returnSalesProvider()
                                             .requestFocusScanBarcode();
-                                        returnSalesProvider()
-                                            .addListenerScanBarcode();
+                                        // returnSalesProvider()
+                                        //     .addListenerScanBarcode();
                                       },
                                       removeListener: () {
-                                        var number = 2;
-                                        for (
-                                          var i = 0;
-                                          i < number;
-                                          i++
-                                        ) {
-                                          if (returnSalesProvider()
-                                              .scanBarcodeCartPageNode
-                                              .hasFocus) {
-                                            returnSalesProvider()
-                                                .removeListenerScanBarcode();
-                                          }
-                                          print(
-                                            "${returnSalesProvider().scanBarcodeCartPageNode.hasFocus} Beans",
-                                          );
-                                        }
+                                        // var number = 2;
+                                        // for (
+                                        //   var i = 0;
+                                        //   i < number;
+                                        //   i++
+                                        // ) {
+                                        //   if (returnSalesProvider()
+                                        //       .scanBarcodeCartPageNode
+                                        //       .hasFocus) {
+                                        //     returnSalesProvider()
+                                        //         .removeListenerScanBarcode();
+                                        //   }
+                                        //   print(
+                                        //     "${returnSalesProvider().scanBarcodeCartPageNode.hasFocus} Beans",
+                                        //   );
+                                        // }
                                       },
                                     ),
                                     SizedBox(height: 10),
                                     MainButtonP(
                                       themeProvider: theme,
                                       action: () {
-                                        returnSalesProvider()
-                                            .removeListenerScanBarcode();
+                                        // returnSalesProvider()
+                                        //     .removeListenerScanBarcode();
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
@@ -2897,8 +2897,8 @@ class _MakeSalesDesktopState
                                         ).then((_) {
                                           if (context
                                               .mounted) {
-                                            returnSalesProvider()
-                                                .addListenerScanBarcode();
+                                            // returnSalesProvider()
+                                            //     .addListenerScanBarcode();
                                             setState(() {
                                               returnSalesProvider()
                                                   .requestFocusScanBarcode();

@@ -728,12 +728,13 @@ class _TopNavBarState extends State<TopNavBar> {
                           10,
                         ),
                         onTap: () async {
-                          if (returnData().isSynced() ==
-                              0) {
-                            await returnData().syncData(
-                              context,
-                            );
-                          }
+                          // if (returnData().isSynced() ==
+                          //     0) {
+                          print('Beans');
+                          await returnData().syncData(
+                            context,
+                          );
+                          // }
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(10),

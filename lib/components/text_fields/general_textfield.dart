@@ -63,9 +63,7 @@ class _GeneralTextFieldState
         TextFormField(
           onTap: () {
             if (returnShopProvider()
-                    .userShop()
-                    ?.useScreenKeyboard ==
-                true) {
+                .isOnScreenKeyboardOn()) {
               showOnScreenKeyboard();
             }
           },
