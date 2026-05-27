@@ -10,7 +10,7 @@ class SalesAndRevenueReport extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth < mobileScreen) {
+        if (constraints.maxWidth < tabletScreen) {
           return SalesAndRevenueReportMobile();
         } else {
           return SalesAndRevenueReportDesktop();

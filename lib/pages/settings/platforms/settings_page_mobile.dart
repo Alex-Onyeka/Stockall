@@ -23,10 +23,12 @@ import 'package:stockall/pages/authentication/components/email_text_field.dart';
 import 'package:stockall/pages/categories/categories_page.dart';
 import 'package:stockall/pages/departments/departments_dashboard.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
+import 'package:stockall/pages/settings/components/manage_access_pin.dart';
 import 'package:stockall/pages/settings/components/manage_departments_toggle_switch.dart';
 import 'package:stockall/pages/settings/components/manage_inventory_switch_toggle.dart';
 import 'package:stockall/pages/settings/components/set_closing_time.dart';
 import 'package:stockall/pages/settings/components/toggle_bulk_sale.dart';
+import 'package:stockall/pages/settings/components/toggle_track_cart.dart';
 import 'package:stockall/pages/settings/components/toggle_whole_sale_switch.dart';
 import 'package:stockall/pages/settings/components/use_group_unit_toggle.dart';
 import 'package:stockall/pages/settings/components/use_screen_keyboard.dart';
@@ -1019,11 +1021,29 @@ class _SettingsPageMobileState
                             ),
                           ),
                         ),
+                        Visibility(
+                          visible: authorization(
+                            authorized:
+                                Authorizations()
+                                    .manageAccessPin,
+                          ),
+                          child: NavListTileDesktopAlt(
+                            height: 18,
+                            action: () {
+                              manageAccessPinAction(
+                                context: context,
+                              );
+                            },
+                            title: 'Manage Access Pin',
+                            icon: Icons.key,
+                          ),
+                        ),
                         ManageInventoryToggleSwitch(),
                         UseGroupUnitToggle(),
                         ToggleWholeSaleSwitch(),
                         ManageDepartmentsToggleSwitch(),
                         UseScreenKeyboard(),
+                        ToggleTrackCart(),
                         // FloatingButtonToggleSwitch(),
                         SetClosingTime(),
                         Visibility(

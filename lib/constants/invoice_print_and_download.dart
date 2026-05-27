@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
@@ -2230,6 +2228,40 @@ Future<Uint8List> _buildPdfRollInvoice({
                     // color: PdfColor(50, 50, 050),
                   ),
                   '------------',
+                ),
+                pw.Builder(
+                  builder: (beansContext) {
+                    if (records.length > 15) {
+                      return pw.Text(
+                        textAlign: pw.TextAlign.center,
+                        style: pw.TextStyle(
+                          fontSize: totalText,
+                          fontWeight: pw.FontWeight.bold,
+                          // color: PdfColor(50, 50, 050),
+                        ),
+                        '------------',
+                      );
+                    } else {
+                      return pw.Container();
+                    }
+                  },
+                ),
+                pw.Builder(
+                  builder: (beansContext) {
+                    if (records.length > 15) {
+                      return pw.Text(
+                        textAlign: pw.TextAlign.center,
+                        style: pw.TextStyle(
+                          fontSize: totalText,
+                          fontWeight: pw.FontWeight.bold,
+                          // color: PdfColor(50, 50, 050),
+                        ),
+                        '------------',
+                      );
+                    } else {
+                      return pw.Container();
+                    }
+                  },
                 ),
               ],
             ),

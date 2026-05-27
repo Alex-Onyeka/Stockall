@@ -1141,6 +1141,69 @@ class ShopProvider extends ChangeNotifier {
     }
   }
 
+  bool isUpdatePin = false;
+
+  Future<int> updateShopPin({
+    required String newPin,
+  }) async {
+    bool isOnline = await connectivity.isOnline();
+    isUpdatePin = true;
+    notifyListeners();
+    try {
+      if (isOnline) {
+        Map<String, dynamic>? res =
+            await supabase
+                .from('shops')
+                .update({'access_pin': newPin})
+                .eq('shop_id', userShop()!.shopId!)
+                .select()
+                .maybeSingle();
+        if (res == null) {
+          print('Access Pin Update Failed');
+          isUpdatePin = false;
+          notifyListeners();
+          return 0;
+        }
+
+        var shops = await getUserShops();
+        setShops(shops);
+        isUpdatePin = false;
+        notifyListeners();
+        return 1;
+      } else {
+        try {
+          userShop()!.updatedAt = DateTime.now();
+          userShop()!.accessPin = newPin;
+          await ShopFunc().updateShop(userShop()!);
+          if (userShop() != null) {
+            await UpdatedShopFunc().createUpdatedShop(
+              UpdatedShop(shop: userShop()!),
+            );
+            // setShops(shop);
+            notifyListeners();
+          }
+          isUpdatePin = false;
+          notifyListeners();
+          return 1;
+        } catch (e) {
+          print(
+            "❌ Failed to Update Access Pin Offline: ${e.toString()}",
+          );
+          isUpdatePin = false;
+          notifyListeners();
+          return 0;
+        }
+      }
+    } catch (e) {
+      print(
+        "❌ Failed to Update Access Pin: ${e.toString()}",
+      );
+      isUpdatePin = false;
+      notifyListeners();
+      return 0;
+    }
+  }
+
   bool isUseGroupUnitLoading = false;
 
   Future<int> toggleUseGroupUnit() async {
@@ -1201,6 +1264,69 @@ class ShopProvider extends ChangeNotifier {
         "❌ Failed to Update Use Group Unit: ${e.toString()}",
       );
       isUseGroupUnitLoading = false;
+      notifyListeners();
+      return 0;
+    }
+  }
+
+  bool isTrackCartLoading = false;
+
+  Future<int> toggleTrackCart() async {
+    bool isOnline = await connectivity.isOnline();
+    isTrackCartLoading = true;
+    notifyListeners();
+    try {
+      if (isOnline) {
+        Map<String, dynamic>? res =
+            await supabase
+                .from('shops')
+                .update({
+                  'track_cart': !userShop()!.trackCart!,
+                })
+                .eq('shop_id', userShop()!.shopId!)
+                .select()
+                .maybeSingle();
+        if (res == null) {
+          print('Track Cart Update Failed');
+          isTrackCartLoading = false;
+          notifyListeners();
+          return 0;
+        }
+
+        var shops = await getUserShops();
+        setShops(shops);
+        isTrackCartLoading = false;
+        notifyListeners();
+        return 1;
+      } else {
+        try {
+          userShop()!.updatedAt = DateTime.now();
+          userShop()!.trackCart = !userShop()!.trackCart!;
+          await ShopFunc().updateShop(userShop()!);
+          if (userShop() != null) {
+            await UpdatedShopFunc().createUpdatedShop(
+              UpdatedShop(shop: userShop()!),
+            );
+            // setShops(shop);
+            notifyListeners();
+          }
+          isTrackCartLoading = false;
+          notifyListeners();
+          return 1;
+        } catch (e) {
+          print(
+            "❌ Failed to Update Track Cart Offline: ${e.toString()}",
+          );
+          isTrackCartLoading = false;
+          notifyListeners();
+          return 0;
+        }
+      }
+    } catch (e) {
+      print(
+        "❌ Failed to Update Track Cart: ${e.toString()}",
+      );
+      isTrackCartLoading = false;
       notifyListeners();
       return 0;
     }

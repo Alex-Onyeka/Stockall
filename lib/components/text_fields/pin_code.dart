@@ -10,9 +10,11 @@ class PinCodeWidget extends StatefulWidget {
   final String? text;
   final bool hideText;
   final int? length;
+  final Function()? onTap;
 
   final Function(String value)? onChanged;
   final bool? focus;
+  final FocusNode? focusNode;
 
   const PinCodeWidget({
     super.key,
@@ -23,6 +25,8 @@ class PinCodeWidget extends StatefulWidget {
     this.onChanged,
     this.focus,
     this.length,
+    this.onTap,
+    this.focusNode,
   });
 
   @override
@@ -35,6 +39,8 @@ class _PinCodeWidgetState extends State<PinCodeWidget> {
   Widget build(BuildContext context) {
     var theme = returnTheme(context, listen: false);
     return PinCodeTextField(
+      focusNode: widget.focusNode,
+      onTap: widget.onTap,
       beforeTextPaste: (text) => true,
       autoDisposeControllers: false,
       autoFocus:

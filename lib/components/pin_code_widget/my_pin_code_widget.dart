@@ -8,7 +8,8 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/dashboard/employee_auth_page/emp_auth.dart';
 
 class MyPinCodeWidget extends StatefulWidget {
-  const MyPinCodeWidget({super.key});
+  final bool isMain;
+  const MyPinCodeWidget({super.key, required this.isMain});
 
   @override
   State<MyPinCodeWidget> createState() =>
@@ -87,7 +88,7 @@ class _MyPinCodeWidgetState extends State<MyPinCodeWidget> {
                   fontSize: theme.mobileTexts.h2.fontSize,
                   fontWeight: FontWeight.bold,
                 ),
-                'Enter PIN',
+                'Enter ${widget.isMain ? 'Admin' : 'Cashier'} PIN',
               ),
               SizedBox(height: 10),
               Text(
@@ -95,7 +96,7 @@ class _MyPinCodeWidgetState extends State<MyPinCodeWidget> {
                   fontSize: theme.mobileTexts.b2.fontSize,
                   fontWeight: FontWeight.normal,
                 ),
-                'Enter Access PIN before you can proceed to perform this action',
+                'Enter ${widget.isMain ? 'Admin' : 'Cashier'} PIN before you can proceed to perform this action',
               ),
             ],
           ),
@@ -123,27 +124,58 @@ class _MyPinCodeWidgetState extends State<MyPinCodeWidget> {
                   hideText: true,
                   controller: pinController,
                   action: () async {
-                    if (pinController.text !=
-                        currentUser().pin) {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return InfoAlert(
-                            theme: theme,
-                            message:
-                                'Pin is Incorrect. Please Try again',
-                            title: 'Incorrect PIN',
-                          );
-                        },
-                      );
-                      print(
-                        "Pin Code Now: ${pinController.text}",
-                      );
-                      setState(() {
-                        pinController.clear();
-                      });
+                    if (widget.isMain) {
+                      if (pinController.text !=
+                          returnShopProvider()
+                              .userShop()
+                              ?.accessPin) {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return InfoAlert(
+                              theme: theme,
+                              message:
+                                  'Pin is Incorrect. Please Try again',
+                              title: 'Incorrect PIN',
+                            );
+                          },
+                        );
+                        print(
+                          "Pin Code Now: ${pinController.text}",
+                        );
+                        setState(() {
+                          pinController.clear();
+                        });
+                      } else {
+                        Navigator.of(context).pop(true);
+                      }
                     } else {
-                      Navigator.of(context).pop(true);
+                      if (pinController.text ==
+                          currentUser().pin ||pinController.text ==
+                          returnShopProvider()
+                              .userShop()
+                              ?.accessPin) {
+                        Navigator.of(context).pop(true);
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return InfoAlert(
+                              theme: theme,
+                              message:
+                                  'Pin is Incorrect. Please Try again',
+                              title: 'Incorrect PIN',
+                            );
+                          },
+                        );
+                        print(
+                          "Pin Code Now: ${pinController.text}",
+                        );
+                        setState(() {
+                          pinController.clear();
+                        });
+                        Navigator.of(context).pop(true);
+                      }
                     }
                   },
                   // text: pin1Controller.text,
@@ -274,6 +306,7 @@ class _MyPinCodeWidgetState extends State<MyPinCodeWidget> {
 
 Future<bool> pinCodeAction({
   required BuildContext context,
+  required bool isMain,
 }) async {
   var theme = returnTheme(context, listen: false);
   // var tempRes  = false;
@@ -287,7 +320,7 @@ Future<bool> pinCodeAction({
         action: () {},
         showBottomActionButtons: false,
         showTopSection: false,
-        widget: MyPinCodeWidget(),
+        widget: MyPinCodeWidget(isMain: isMain),
       );
     },
   );

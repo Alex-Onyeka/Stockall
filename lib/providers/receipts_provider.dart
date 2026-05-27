@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_main_receipt/unsynced/created_receipts/created_receipts.dart';
 import 'package:stockall/classes/temp_main_receipt/unsynced/deleted_customers/deleted_receipts.dart';
+import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/classes/temp_product_slaes_record/unsynced/created_records/created_records.dart';
 import 'package:stockall/constants/calculations.dart';
@@ -13,6 +14,7 @@ import 'package:stockall/local_database/main_receipt/unsync_funcs/updated/update
 import 'package:stockall/local_database/product_record_func.dart/product_record_func.dart';
 import 'package:stockall/local_database/product_record_func.dart/unsync_funcs/created/created_records_func.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/report/general_report/class/general_report_class.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -100,7 +102,7 @@ class ReceiptsProvider extends ChangeNotifier {
     //     return null;
     //   }
     // } else {
-    receipt.createdAt = DateTime.now();
+    // receipt.createdAt = DateTime.now();
     await MainReceiptFunc().createReceipt(receipt);
     await CreatedReceiptsFunc().createReceipts(
       CreatedReceipts(receipt: receipt),
@@ -123,7 +125,8 @@ class ReceiptsProvider extends ChangeNotifier {
             .from('receipts')
             .select()
             .eq('shop_id', shopId)
-            .order('created_at', ascending: false);
+            .order('created_at', ascending: false)
+            .range(0, 1000);
         tempList.addAll(data);
         print('Receipts Gotten ${tempList.length}');
 
@@ -543,6 +546,18 @@ class ReceiptsProvider extends ChangeNotifier {
   List<TempProductSaleRecord> get produtRecordSalesMain =>
       _sales;
 
+  List<TempProductSaleRecord> getProductRecordsNoVoid() {
+    return _sales
+        .where((item) => item.isVoid != true)
+        .toList();
+  }
+
+  List<TempProductSaleRecord> getProductRecordsVoid() {
+    return _sales
+        .where((item) => item.isVoid == true)
+        .toList();
+  }
+
   // CREATE a new product sale record
   Future<void> createProductSaleRecord(
     List<TempProductSaleRecord> records,
@@ -568,7 +583,7 @@ class ReceiptsProvider extends ChangeNotifier {
       print('About to Create Product Sales Offline');
       var newRecords =
           records.map((rec) {
-            rec.createdAt = DateTime.now();
+            // rec.createdAt = DateTime.now();
 
             return rec;
           }).toList();
@@ -599,7 +614,8 @@ class ReceiptsProvider extends ChangeNotifier {
           .from('product_sales')
           .select()
           .eq('shop_id', shopId)
-          .order('created_at', ascending: false);
+          .order('created_at', ascending: false)
+          .range(0, 1000);
       tempList.addAll(data);
 
       print(
@@ -933,31 +949,13 @@ class ReceiptsProvider extends ChangeNotifier {
   }
 
   List<TempProductSaleRecord>
-  returnproductsRecordByDayOrWeek() {
-    List<TempProductSaleRecord> recordss = [];
-
-    for (var rec in produtRecordSalesMain) {
-      TempMainReceipt? receipt;
-
-      try {
-        receipt = returnOwnReceiptsByDayOrWeek().firstWhere(
-          (recx) => recx.uuid == rec.receiptUuid,
-        );
-      } catch (e) {
-        receipt = null;
-      }
-
-      if (receipt != null) {
-        recordss.add(rec);
-      }
-    }
-
+  returnProductsRecordByDayOrWeek() {
     if (rangeStartDate != null) {
       if (authorization(
         authorized:
             Authorizations().viewAllTransactionRecords,
       )) {
-        return recordss.where((record) {
+        return getProductRecordsNoVoid().where((record) {
           final created = record.createdAt.toLocal();
           return !created.isBefore(
                 fourAm(rangeStartDate!),
@@ -970,7 +968,7 @@ class ReceiptsProvider extends ChangeNotifier {
               );
         }).toList();
       } else {
-        return recordss.where((record) {
+        return getProductRecordsNoVoid().where((record) {
           final created = record.createdAt.toLocal();
           return !created.isBefore(
                 fourAm(rangeStartDate!),
@@ -991,7 +989,7 @@ class ReceiptsProvider extends ChangeNotifier {
       authorized:
           Authorizations().viewAllTransactionRecords,
     )) {
-      return recordss
+      return getProductRecordsNoVoid()
           .where(
             (record) =>
                 !record.createdAt.isBefore(
@@ -1003,7 +1001,75 @@ class ReceiptsProvider extends ChangeNotifier {
           )
           .toList();
     } else {
-      return recordss
+      return getProductRecordsNoVoid()
+          .where(
+            (record) =>
+                !record.createdAt.isBefore(
+                  fourAm(currentDate),
+                ) &&
+                !record.createdAt.isAfter(
+                  fourAmNextDay(currentDate),
+                ) &&
+                record.staffId == currentUser().userId,
+          )
+          .toList();
+    }
+  }
+
+  List<TempProductSaleRecord>
+  returnProductsRecordByDayOrWeekVoid() {
+    if (rangeStartDate != null) {
+      if (authorization(
+        authorized:
+            Authorizations().viewAllTransactionRecords,
+      )) {
+        return getProductRecordsVoid().where((record) {
+          final created = record.createdAt.toLocal();
+          return !created.isBefore(
+                fourAm(rangeStartDate!),
+              ) &&
+              created.isBefore(
+                fourAmNextDay(
+                  rangeEndDate ??
+                      resolveBusinessDate(DateTime.now()),
+                ),
+              );
+        }).toList();
+      } else {
+        return getProductRecordsVoid().where((record) {
+          final created = record.createdAt.toLocal();
+          return !created.isBefore(
+                fourAm(rangeStartDate!),
+              ) &&
+              created.isBefore(
+                fourAmNextDay(
+                  rangeEndDate ??
+                      resolveBusinessDate(DateTime.now()),
+                ),
+              ) &&
+              record.staffId == currentUser().userId;
+        }).toList();
+      }
+    }
+
+    var currentDate = dateSet ?? DateTime.now();
+    if (authorization(
+      authorized:
+          Authorizations().viewAllTransactionRecords,
+    )) {
+      return getProductRecordsVoid()
+          .where(
+            (record) =>
+                !record.createdAt.isBefore(
+                  fourAm(currentDate),
+                ) &&
+                !record.createdAt.isAfter(
+                  fourAmNextDay(currentDate),
+                ),
+          )
+          .toList();
+    } else {
+      return getProductRecordsVoid()
           .where(
             (record) =>
                 !record.createdAt.isBefore(
@@ -1134,4 +1200,207 @@ class ReceiptsProvider extends ChangeNotifier {
 
   //   }
   // }
+
+  //
+  //
+  //
+  ////////////  GENERAL REPORT PRINTING  // // // /  /  // // //
+
+  List<GeneralReportSalesSummaryItem>
+  returnGeneralReportSalesSummary() {
+    final List<TempProductSaleRecord> records =
+        returnProductsRecordByDayOrWeek();
+
+    Map<String, List<TempProductSaleRecord>> grouped = {};
+
+    for (var item in records) {
+      if (returnShopProvider()
+              .userShop()
+              ?.manageInventoryStorage ==
+          true) {
+        List<TempProductClass> productList =
+            returnData().productListMain
+                .where(
+                  (pro) => pro.uuid == item.productUuid,
+                )
+                .toList();
+        if (productList.isNotEmpty) {
+          TempProductClass product = productList.first;
+          if (product.storageUuid != null) {
+            final uuid = product.storageUuid ?? '';
+
+            grouped.putIfAbsent(uuid, () => []);
+            grouped[uuid]!.add(item);
+          } else {
+            final uuid = product.uuid ?? '';
+
+            grouped.putIfAbsent(uuid, () => []);
+            grouped[uuid]!.add(item);
+          }
+        } else {
+          final uuid = item.productUuid ?? '';
+
+          grouped.putIfAbsent(uuid, () => []);
+          grouped[uuid]!.add(item);
+        }
+      } else {
+        final uuid = item.productUuid ?? '';
+
+        grouped.putIfAbsent(uuid, () {
+          return [];
+        });
+        grouped[uuid]!.add(item);
+      }
+    }
+
+    List<GeneralReportSalesSummaryItem> result = [];
+
+    grouped.forEach((uuid, items) {
+      double totalQtty = items.fold(
+        0,
+        (sum, e) => sum + e.quantity,
+      );
+
+      double totalCost = items.fold(
+        0,
+        (sum, e) => sum + e.revenue,
+      );
+
+      double totalCostPrice = items.fold(
+        0,
+        (sum, e) => sum + (e.originalCost ?? 0),
+      );
+
+      String itemName() {
+        List<TempProductClass> products =
+            returnData().productListMain
+                .where(
+                  (pro) =>
+                      pro.uuid == items.first.productUuid,
+                )
+                .toList();
+        if (products.isNotEmpty) {
+          TempProductClass product = products.first;
+          if (returnShopProvider()
+                  .userShop()
+                  ?.manageInventoryStorage ==
+              true) {
+            var storageItems =
+                returnStorageProductProvider()
+                    .storageProductListMain
+                    .where(
+                      (item) =>
+                          item.uuid == product.storageUuid,
+                    )
+                    .toList();
+            if (storageItems.isNotEmpty) {
+              return storageItems.first.name;
+            } else {
+              return product.name;
+            }
+          } else {
+            return product.name;
+          }
+        } else {
+          return items.first.productName;
+        }
+      }
+
+      result.add(
+        GeneralReportSalesSummaryItem(
+          costPrice: totalCostPrice,
+          itemName: itemName(),
+          itemUuid: uuid,
+          quantity: totalQtty,
+          totalCost: totalCost,
+          departmentName:
+              items.first.departmentName ??
+              'Departmant Not Set',
+          departmentUuid:
+              items.first.departmentUuid ??
+              'Department Not Set',
+          staffName: items.first.staffName,
+          staffUuid: items.first.staffId,
+        ),
+      );
+    });
+    result.sort((a, b) => b.quantity.compareTo(a.quantity));
+    return result;
+  }
+
+  //
+  //
+  //
+
+  List<GeneralReportSalesSummaryItem>
+  returnGeneralReportSalesSummaryByDepartment(
+    String departmentUuid,
+  ) {
+    return returnGeneralReportSalesSummary()
+        .where(
+          (item) => item.departmentUuid == departmentUuid,
+        )
+        .toList();
+  }
+
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+
+  List<GeneralReportSalesSummaryItemStaff>
+  returnGeneralReportSalesSummaryByStaff() {
+    final List<TempProductSaleRecord> records =
+        returnProductsRecordByDayOrWeek();
+
+    Map<String, List<TempProductSaleRecord>> grouped = {};
+
+    // STEP 1: Group by staff + product
+    for (var item in records) {
+      final staffId = item.staffId;
+      final productId =
+          item.productUuid ?? 'unknown_product';
+
+      final key = '$staffId|$productId';
+
+      grouped.putIfAbsent(key, () => []);
+      grouped[key]!.add(item);
+    }
+
+    // STEP 2: Build result
+    List<GeneralReportSalesSummaryItemStaff> result = [];
+
+    grouped.forEach((key, items) {
+      final first = items.first;
+
+      double totalQuantity = items.fold(
+        0,
+        (sum, e) => sum + (e.quantity),
+      );
+
+      double totalCost = items.fold(
+        0,
+        (sum, e) => sum + (e.revenue),
+      );
+
+      result.add(
+        GeneralReportSalesSummaryItemStaff(
+          itemName: first.productName,
+          itemUuid: first.productUuid ?? 'unknown_product',
+          staffName: first.staffName,
+          staffUuid: first.staffId,
+          quantity: totalQuantity,
+          totalCost: totalCost,
+        ),
+      );
+    });
+    result.sort((a, b) => b.quantity.compareTo(a.quantity));
+
+    return result;
+  }
 }

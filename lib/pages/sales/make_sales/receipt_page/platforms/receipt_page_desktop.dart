@@ -406,7 +406,17 @@ class _ReceiptDetailsContainerState
   @override
   Widget build(BuildContext context) {
     var records =
-        returnReceiptProvider(context).produtRecordSalesMain
+        returnReceiptProvider(context)
+            .getProductRecordsNoVoid()
+            .where(
+              (record) =>
+                  record.receiptUuid ==
+                  widget.mainReceipt.uuid!,
+            )
+            .toList();
+    var recordsVoid =
+        returnReceiptProvider(context)
+            .getProductRecordsVoid()
             .where(
               (record) =>
                   record.receiptUuid ==
@@ -1217,140 +1227,296 @@ class _ReceiptDetailsContainerState
                                     fontWeight:
                                         FontWeight.bold,
                                   ),
-                                  'Item Record',
+                                  'Item Record:',
                                 ),
                               ],
                             ),
-                            ListView.builder(
-                              physics:
-                                  NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount: records.length,
-                              itemBuilder: (
-                                context,
-                                index,
-                              ) {
-                                var productRecord =
-                                    records[index];
-
-                                return Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(
-                                        vertical: 8.0,
-                                      ),
-                                  child: SizedBox(
-                                    child: Row(
-                                      spacing: 10,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment
-                                              .spaceBetween,
-                                      children: [
-                                        Expanded(
-                                          flex: 4,
-                                          child: Column(
-                                            spacing: 3,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment
-                                                    .start,
-                                            children: [
-                                              Text(
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      widget
-                                                          .theme
-                                                          .mobileTexts
-                                                          .b1
-                                                          .fontSize,
-                                                ),
-                                                productRecord
-                                                    .productName,
+                            Column(
+                              children: [
+                                Column(
+                                  children:
+                                      records.map((
+                                        productRecord,
+                                      ) {
+                                        return Container(
+                                          margin:
+                                              EdgeInsets.symmetric(
+                                                vertical: 4,
                                               ),
-                                              Text(
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      widget
-                                                          .theme
-                                                          .mobileTexts
-                                                          .b3
-                                                          .fontSize,
-                                                ),
-                                                'Qty: ${productRecord.quantity.toString()} ${productRecord.unit == 'Others' || productRecord.unit == null ? 'Item(s)' : productRecord.unit}',
+                                          padding:
+                                              const EdgeInsets.symmetric(
+                                                vertical:
+                                                    8.0,
+                                                horizontal:
+                                                    10,
                                               ),
-                                            ],
-                                          ),
-                                        ),
-                                        Expanded(
-                                          flex: 3,
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment
-                                                    .start,
-                                            children: [
-                                              Text(
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      widget
-                                                          .theme
-                                                          .mobileTexts
-                                                          .b1
-                                                          .fontSize,
-                                                  fontWeight:
-                                                      FontWeight
-                                                          .bold,
-                                                ),
-                                                formatMoneyMid(
-                                                  amount:
-                                                      (widget.mainReceipt.fixedDiscount ==
-                                                                      null &&
-                                                                  widget.mainReceipt.generalDiscount ==
-                                                                      null) &&
-                                                              productRecord.discount !=
-                                                                  null
-                                                          ? ((productRecord.originalCost ??
-                                                                  0) -
-                                                              (productRecord.discountedAmount ??
-                                                                  0))
-                                                          : (productRecord.originalCost ??
-                                                              0),
-                                                  context:
-                                                      context,
-                                                ),
+                                          decoration:
+                                              BoxDecoration(
+                                                color:
+                                                    Colors
+                                                        .grey
+                                                        .shade100,
                                               ),
-                                              Visibility(
-                                                visible:
-                                                    productRecord.discount !=
-                                                        null &&
-                                                    !productRecord
-                                                        .customPriceSet &&
-                                                    (widget.mainReceipt.fixedDiscount ==
-                                                            null &&
-                                                        widget.mainReceipt.generalDiscount ==
-                                                            null),
-                                                child: Text(
-                                                  style: TextStyle(
-                                                    decoration:
-                                                        TextDecoration.lineThrough,
-                                                    fontSize:
-                                                        widget.theme.mobileTexts.b3.fontSize,
-                                                    fontWeight:
-                                                        FontWeight.normal,
+                                          child: SizedBox(
+                                            child: Row(
+                                              spacing: 10,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Expanded(
+                                                  flex: 4,
+                                                  child: Column(
+                                                    spacing:
+                                                        3,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              widget.theme.mobileTexts.b1.fontSize,
+                                                        ),
+                                                        productRecord.productName,
+                                                      ),
+                                                      Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              widget.theme.mobileTexts.b3.fontSize,
+                                                        ),
+                                                        'Qty: ${productRecord.quantity.toString()} ${productRecord.unit == 'Others' || productRecord.unit == null ? 'Item(s)' : productRecord.unit}',
+                                                      ),
+                                                    ],
                                                   ),
-                                                  formatMoneyMid(
-                                                    amount:
-                                                        productRecord.originalCost!,
-                                                    context:
+                                                ),
+                                                Expanded(
+                                                  flex: 3,
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              widget.theme.mobileTexts.b1.fontSize,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                        formatMoneyMid(
+                                                          amount:
+                                                              (widget.mainReceipt.fixedDiscount ==
+                                                                              null &&
+                                                                          widget.mainReceipt.generalDiscount ==
+                                                                              null) &&
+                                                                      productRecord.discount !=
+                                                                          null
+                                                                  ? ((productRecord.originalCost ??
+                                                                          0) -
+                                                                      (productRecord.discountedAmount ??
+                                                                          0))
+                                                                  : (productRecord.originalCost ??
+                                                                      0),
+                                                          context:
+                                                              context,
+                                                        ),
+                                                      ),
+                                                      Visibility(
+                                                        visible:
+                                                            productRecord.discount !=
+                                                                null &&
+                                                            !productRecord.customPriceSet &&
+                                                            (widget.mainReceipt.fixedDiscount ==
+                                                                    null &&
+                                                                widget.mainReceipt.generalDiscount ==
+                                                                    null),
+                                                        child: Text(
+                                                          style: TextStyle(
+                                                            decoration:
+                                                                TextDecoration.lineThrough,
+                                                            fontSize:
+                                                                widget.theme.mobileTexts.b3.fontSize,
+                                                            fontWeight:
+                                                                FontWeight.normal,
+                                                          ),
+                                                          formatMoneyMid(
+                                                            amount:
+                                                                productRecord.originalCost!,
+                                                            context:
+                                                                context,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      }).toList(),
+                                ),
+                                Visibility(
+                                  visible:
+                                      recordsVoid
+                                          .isNotEmpty,
+                                  child: Column(
+                                    children: [
+                                      SizedBox(height: 15),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment
+                                                .center,
+                                        children: [
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  returnTheme(
                                                         context,
+                                                      )
+                                                      .mobileTexts
+                                                      .b3
+                                                      .fontSize,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                            ),
+                                            'Deleted Items',
+                                          ),
+                                        ],
+                                      ),
+                                      Divider(height: 10),
+                                      Column(
+                                        children:
+                                            recordsVoid.map((
+                                              productRecord,
+                                            ) {
+                                              return Container(
+                                                margin:
+                                                    EdgeInsets.symmetric(
+                                                      vertical:
+                                                          2,
+                                                    ),
+                                                padding: const EdgeInsets.symmetric(
+                                                  vertical:
+                                                      4.0,
+                                                  // horizontal:
+                                                  //     10,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  // color:
+                                                  //     Colors
+                                                  //         .red
+                                                  //         .shade100,
+                                                ),
+                                                child: SizedBox(
+                                                  child: Row(
+                                                    spacing:
+                                                        10,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.spaceBetween,
+                                                    children: [
+                                                      Icon(
+                                                        color:
+                                                            Colors.red.shade500,
+                                                        Icons.arrow_right,
+                                                      ),
+                                                      Expanded(
+                                                        flex:
+                                                            4,
+                                                        child: Column(
+                                                          spacing:
+                                                              3,
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment.start,
+                                                          children: [
+                                                            Text(
+                                                              style: TextStyle(
+                                                                fontSize:
+                                                                    widget.theme.mobileTexts.b3.fontSize,
+                                                              ),
+                                                              productRecord.productName,
+                                                            ),
+                                                            Text(
+                                                              style: TextStyle(
+                                                                fontSize:
+                                                                    widget.theme.mobileTexts.b4.fontSize,
+                                                              ),
+                                                              'Qty: ${productRecord.quantity.toString()} ${productRecord.unit == 'Others' || productRecord.unit == null ? 'Item(s)' : productRecord.unit}',
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      Expanded(
+                                                        flex:
+                                                            3,
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment.start,
+                                                          children: [
+                                                            Text(
+                                                              style: TextStyle(
+                                                                fontSize:
+                                                                    widget.theme.mobileTexts.b3.fontSize,
+                                                                fontWeight:
+                                                                    FontWeight.bold,
+                                                              ),
+                                                              formatMoneyMid(
+                                                                amount:
+                                                                    (widget.mainReceipt.fixedDiscount ==
+                                                                                    null &&
+                                                                                widget.mainReceipt.generalDiscount ==
+                                                                                    null) &&
+                                                                            productRecord.discount !=
+                                                                                null
+                                                                        ? ((productRecord.originalCost ??
+                                                                                0) -
+                                                                            (productRecord.discountedAmount ??
+                                                                                0))
+                                                                        : (productRecord.originalCost ??
+                                                                            0),
+                                                                context:
+                                                                    context,
+                                                              ),
+                                                            ),
+                                                            Visibility(
+                                                              visible:
+                                                                  productRecord.discount !=
+                                                                      null &&
+                                                                  !productRecord.customPriceSet &&
+                                                                  (widget.mainReceipt.fixedDiscount ==
+                                                                          null &&
+                                                                      widget.mainReceipt.generalDiscount ==
+                                                                          null),
+                                                              child: Text(
+                                                                style: TextStyle(
+                                                                  decoration:
+                                                                      TextDecoration.lineThrough,
+                                                                  fontSize:
+                                                                      widget.theme.mobileTexts.b4.fontSize,
+                                                                  fontWeight:
+                                                                      FontWeight.normal,
+                                                                ),
+                                                                formatMoneyMid(
+                                                                  amount:
+                                                                      productRecord.originalCost!,
+                                                                  context:
+                                                                      context,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                              );
+                                            }).toList(),
+                                      ),
+                                    ],
                                   ),
-                                );
-                              },
+                                ),
+                              ],
                             ),
                           ],
                         ),

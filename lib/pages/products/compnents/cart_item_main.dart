@@ -33,7 +33,10 @@ class _CartItemMainState extends State<CartItemMain> {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5),
-          color: Colors.white,
+          color:
+              widget.cartItem.isVoid == true
+                  ? Colors.grey.shade100
+                  : Colors.white,
           boxShadow: [
             BoxShadow(
               color: const Color.fromARGB(
@@ -49,7 +52,10 @@ class _CartItemMainState extends State<CartItemMain> {
         child: Material(
           borderRadius: BorderRadius.circular(5),
           elevation: 0,
-          color: Colors.white,
+          color:
+              widget.cartItem.isVoid == true
+                  ? const Color.fromARGB(255, 228, 228, 228)
+                  : Colors.white,
           child: Container(
             padding: EdgeInsets.symmetric(
               horizontal: 10,
@@ -63,9 +69,21 @@ class _CartItemMainState extends State<CartItemMain> {
                   width: 50,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
-                    color: Colors.grey.shade200,
+                    color:
+                        widget.cartItem.isVoid == true
+                            ? const Color.fromARGB(
+                              255,
+                              255,
+                              211,
+                              208,
+                            )
+                            : Colors.grey.shade200,
                   ),
-                  child: Icon(Icons.shopping_bag_outlined),
+                  child: Icon(
+                    widget.cartItem.isVoid == true
+                        ? Icons.clear
+                        : Icons.shopping_bag_outlined,
+                  ),
                 ),
                 SizedBox(width: 10),
                 Expanded(
@@ -176,17 +194,67 @@ class _CartItemMainState extends State<CartItemMain> {
                               ],
                             ),
                           ),
-                          Visibility(
-                            visible:
-                                widget.deleteCartItem !=
-                                null,
-                            child: IconButton(
-                              onPressed:
-                                  widget.deleteCartItem,
-                              icon: Icon(
-                                Icons.delete_outline,
+                          Stack(
+                            children: [
+                              Visibility(
+                                visible:
+                                    widget.deleteCartItem !=
+                                        null &&
+                                    widget
+                                            .cartItem
+                                            .isVoid !=
+                                        true,
+                                child: IconButton(
+                                  onPressed:
+                                      widget.deleteCartItem,
+                                  icon: Icon(
+                                    Icons.delete_outline,
+                                  ),
+                                ),
                               ),
-                            ),
+                              Visibility(
+                                visible:
+                                    widget
+                                        .cartItem
+                                        .isVoid ==
+                                    true,
+                                child: Container(
+                                  padding:
+                                      EdgeInsets.symmetric(
+                                        vertical: 3,
+                                        horizontal: 6,
+                                      ),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        Colors
+                                            .grey
+                                            .shade100,
+                                    borderRadius:
+                                        BorderRadius.circular(
+                                          2,
+                                        ),
+                                  ),
+                                  child: Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          theme
+                                              .mobileTexts
+                                              .b4
+                                              .fontSize,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                      fontStyle:
+                                          FontStyle.italic,
+                                      color:
+                                          Colors
+                                              .red
+                                              .shade400,
+                                    ),
+                                    'Deleted',
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -291,7 +359,14 @@ class _CartItemMainState extends State<CartItemMain> {
                                       BorderRadius.circular(
                                         5,
                                       ),
-                                  onTap: widget.editAction,
+                                  onTap:
+                                      widget
+                                                  .cartItem
+                                                  .isVoid ==
+                                              true
+                                          ? () {}
+                                          : widget
+                                              .editAction,
                                   child: Container(
                                     height: 30,
                                     padding:
@@ -300,11 +375,24 @@ class _CartItemMainState extends State<CartItemMain> {
                                         ),
 
                                     child: Row(
-                                      spacing: 10,
                                       children: [
-                                        SvgPicture.asset(
-                                          height: 16,
-                                          editIconSvg,
+                                        Visibility(
+                                          visible:
+                                              widget
+                                                  .cartItem
+                                                  .isVoid !=
+                                              true,
+                                          child: Row(
+                                            children: [
+                                              SvgPicture.asset(
+                                                height: 16,
+                                                editIconSvg,
+                                              ),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                         Center(
                                           child: Text(

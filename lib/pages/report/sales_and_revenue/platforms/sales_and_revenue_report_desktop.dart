@@ -1,18 +1,17 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/product_report_summary/product_report_summary.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
-import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
-import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
-import 'package:stockall/providers/theme_provider.dart';
+import 'package:stockall/pages/report/sales_and_revenue/components/generate_section_widget.dart';
+import 'package:stockall/pages/report/sales_and_revenue/components/summary_table_heading_bar.dart';
+import 'package:stockall/pages/report/sales_and_revenue/components/table_row_record_widget.dart';
+import 'package:stockall/pages/report/sales_and_revenue/components/table_row_record_widget_summary.dart';
 
 class SalesAndRevenueReportDesktop extends StatefulWidget {
   const SalesAndRevenueReportDesktop({super.key});
@@ -41,47 +40,6 @@ class _SalesAndRevenueReportDesktopState
     ).refreshProducts(context);
   }
 
-  List<ProductReportSummary> generateProductReportSummary(
-    List<TempProductSaleRecord> records,
-  ) {
-    final Map<String, ProductReportSummary> summaryMap = {};
-
-    for (var record in records) {
-      final name = record.productName;
-
-      if (summaryMap.containsKey(name)) {
-        final existing = summaryMap[name]!;
-
-        final costPrice = record.costPrice ?? 0;
-
-        summaryMap[name] = ProductReportSummary(
-          productName: name,
-          quantity: existing.quantity + record.quantity,
-          total: existing.total + record.revenue,
-          costTotal: existing.costTotal + costPrice,
-          profit:
-              (existing.total + record.revenue) -
-              (existing.costTotal + costPrice),
-        );
-      } else {
-        summaryMap[name] = ProductReportSummary(
-          productName: name,
-          quantity: record.quantity,
-          total: record.revenue,
-          costTotal: record.costPrice ?? 0,
-          profit:
-              (record.revenue) -
-              (record.costPrice == null ||
-                      record.costPrice == 0
-                  ? record.revenue
-                  : record.costPrice!),
-        );
-      }
-    }
-
-    return summaryMap.values.toList();
-  }
-
   @override
   void initState() {
     super.initState();
@@ -99,7 +57,18 @@ class _SalesAndRevenueReportDesktopState
     List<TempProductSaleRecord> salesRecords =
         returnReceiptProvider(
           context,
-        ).returnproductsRecordByDayOrWeek();
+        ).returnProductsRecordByDayOrWeek();
+    salesRecords.sort((a, b) {
+      if (sortIndex == 1) {
+        return a.productName.compareTo(b.productName);
+      } else if (sortIndex == 2) {
+        return a.quantity.compareTo(b.quantity);
+      } else if (sortIndex == 3) {
+        return a.revenue.compareTo(b.revenue);
+      } else {
+        return a.productName.compareTo(b.productName);
+      }
+    });
 
     return Stack(
       children: [
@@ -353,164 +322,82 @@ class _SalesAndRevenueReportDesktopState
                             ],
                           ),
                           Visibility(
-                            visible: false,
-                            // salesRecords.isNotEmpty,
+                            visible:
+                                salesRecords.isNotEmpty,
                             child: Row(
                               mainAxisAlignment:
                                   MainAxisAlignment.end,
                               children: [
                                 InkWell(
                                   onTap: () {
-                                    List<
-                                      ProductReportSummary
-                                    >
-                                    summary =
-                                        generateProductReportSummary(
-                                          salesRecords,
-                                        );
-                                    summary.sort((a, b) {
-                                      switch (sortIndex) {
-                                        case 1:
-                                          return a
-                                              .productName
-                                              .compareTo(
-                                                b.productName,
-                                              );
-                                        case 2:
-                                          return b.quantity
-                                              .compareTo(
-                                                a.quantity,
-                                              );
-                                        case 3:
-                                          return b.total
-                                              .compareTo(
-                                                a.total,
-                                              );
-                                        case 4:
-                                          return b.profit
-                                              .compareTo(
-                                                a.profit,
-                                              );
-                                        default:
-                                          return a
-                                              .productName
-                                              .compareTo(
-                                                b.productName,
-                                              );
-                                      }
-                                    });
+                                    showGeneralDialog(
+                                      barrierColor:
+                                          Colors.white,
 
-                                    // List<TempProductSaleRecord> records =
-                                    //     salesRecords;
-
-                                    salesRecords.sort((
-                                      a,
-                                      b,
-                                    ) {
-                                      switch (sortIndex) {
-                                        case 1:
-                                          return a
-                                              .productName
-                                              .compareTo(
-                                                b.productName,
-                                              );
-                                        case 2:
-                                          return b.quantity
-                                              .compareTo(
-                                                a.quantity,
-                                              );
-                                        case 3:
-                                          return b.revenue
-                                              .compareTo(
-                                                a.revenue,
-                                              );
-                                        case 4:
-                                          return a
-                                              .productName
-                                              .compareTo(
-                                                b.productName,
-                                              );
-                                        default:
-                                          return b.createdAt
-                                              .compareTo(
-                                                a.createdAt,
-                                              );
-                                      }
-                                    });
-
-                                    var safeContext =
-                                        context;
-                                    showDialog(
                                       context: context,
-                                      builder: (context) {
-                                        return ConfirmationAlert(
-                                          theme: theme,
-                                          message:
-                                              'You are about to convert all your product records to pdf, are you sure you want to proceed?',
-                                          title:
-                                              'Are you sure?',
-                                          action: () async {
-                                            Navigator.of(
-                                              context,
-                                            ).pop();
-                                            if (kIsWeb) {
-                                              if (safeContext
-                                                  .mounted) {
-                                                if (isSummary) {
-                                                  downloadPdfWebSalesSummary(
-                                                    summary:
-                                                        summary,
-                                                    shop:
-                                                        returnShopProvider().userShop()!,
+                                      pageBuilder: (
+                                        context,
+                                        animation,
+                                        secondaryAnimation,
+                                      ) {
+                                        return Material(
+                                          color:
+                                              Colors
+                                                  .transparent,
+                                          child: SizedBox(
+                                            height:
+                                                screenHeight(
+                                                  context,
+                                                ),
+                                            width:
+                                                screenWidth(
+                                                  context,
+                                                ),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                    20,
+                                                    0,
+                                                    20,
+                                                    10,
+                                                  ),
+                                              child: Column(
+                                                children: [
+                                                  appBar(
                                                     context:
-                                                        safeContext,
-                                                    filename:
-                                                        'Stockall_Sales Record ${DateTime.now().month}-${DateTime.now().day}-${DateTime.now().hour}-${DateTime.now().minute}.pdf',
-                                                  );
-                                                } else {
-                                                  downloadPdfWebSales(
-                                                    records:
-                                                        salesRecords,
-                                                    shop:
-                                                        returnShopProvider().userShop()!,
-                                                    context:
-                                                        safeContext,
-                                                    filename:
-                                                        'Stockall_Sales Record ${DateTime.now().month}-${DateTime.now().day}-${DateTime.now().hour}-${DateTime.now().minute}.pdf',
-                                                  );
-                                                }
-                                              }
-                                            }
-                                            if (isSummary) {
-                                              await generateAndPreviewPdfSalesSummary(
-                                                context:
-                                                    safeContext,
-                                                shop:
-                                                    returnShopProvider()
-                                                        .userShop()!,
-                                                summary:
-                                                    summary,
-                                              );
-                                            } else {
-                                              await generateAndPreviewPdfSales(
-                                                context:
-                                                    safeContext,
-                                                records:
-                                                    salesRecords,
-                                                shop:
-                                                    returnShopProvider()
-                                                        .userShop()!,
-                                              );
-                                            }
-
-                                            if (safeContext
-                                                .mounted) {
-                                              returnSalesProvider()
-                                                  .toggleIsLoading(
-                                                    false,
-                                                  );
-                                            }
-                                          },
+                                                        context,
+                                                    title:
+                                                        'Total Sales',
+                                                    backAction: () {
+                                                      Navigator.of(
+                                                        context,
+                                                      ).pop();
+                                                    },
+                                                  ),
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.center,
+                                                    spacing:
+                                                        5,
+                                                    children: [
+                                                      Expanded(
+                                                        child:
+                                                            GenerateSectionWidget(),
+                                                      ),
+                                                      Expanded(
+                                                        child:
+                                                            GenerateSectionWidget(),
+                                                      ),
+                                                      Expanded(
+                                                        child:
+                                                            GenerateSectionWidget(),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
                                         );
                                       },
                                     );
@@ -538,9 +425,10 @@ class _SalesAndRevenueReportDesktopState
                                                 FontWeight
                                                     .bold,
                                           ),
-                                          'Pdf',
+                                          'Generate',
                                         ),
                                         Icon(
+                                          size: 20,
                                           color:
                                               Colors.grey,
                                           Icons.print,
@@ -689,7 +577,7 @@ class _SalesAndRevenueReportDesktopState
                                       ? screenWidth(
                                             context,
                                           ) -
-                                          200
+                                          100
                                       : salesRecords
                                               .isNotEmpty &&
                                           screenWidth(
@@ -707,6 +595,7 @@ class _SalesAndRevenueReportDesktopState
                               child: Column(
                                 children: [
                                   SummaryTableHeadingBar(
+                                    isSummary: isSummary,
                                     isHeading: true,
                                     theme: theme,
                                     salesRecords:
@@ -730,9 +619,8 @@ class _SalesAndRevenueReportDesktopState
                                         } else {
                                           if (isSummary) {
                                             var summary =
-                                                generateProductReportSummary(
-                                                  salesRecords,
-                                                );
+                                                returnReceiptProviderSingle()
+                                                    .returnGeneralReportSalesSummary();
                                             summary.sort((
                                               a,
                                               b,
@@ -740,9 +628,9 @@ class _SalesAndRevenueReportDesktopState
                                               switch (sortIndex) {
                                                 case 1:
                                                   return a
-                                                      .productName
+                                                      .itemName
                                                       .compareTo(
-                                                        b.productName,
+                                                        b.itemName,
                                                       );
                                                 case 2:
                                                   return b
@@ -752,21 +640,21 @@ class _SalesAndRevenueReportDesktopState
                                                       );
                                                 case 3:
                                                   return b
-                                                      .total
+                                                      .totalCost
                                                       .compareTo(
-                                                        a.total,
+                                                        a.totalCost,
                                                       );
                                                 case 4:
                                                   return b
-                                                      .profit
+                                                      .profit()
                                                       .compareTo(
-                                                        a.profit,
+                                                        a.profit(),
                                                       );
                                                 default:
                                                   return a
-                                                      .productName
+                                                      .itemName
                                                       .compareTo(
-                                                        b.productName,
+                                                        b.itemName,
                                                       );
                                               }
                                             });
@@ -809,6 +697,8 @@ class _SalesAndRevenueReportDesktopState
                                                           1;
 
                                                       return TableRowRecordWidgetSummary(
+                                                        isSummary:
+                                                            isSummary,
                                                         theme:
                                                             theme,
                                                         recordIndex:
@@ -819,6 +709,8 @@ class _SalesAndRevenueReportDesktopState
                                                     },
                                                   ),
                                                   SummaryTableHeadingBar(
+                                                    isSummary:
+                                                        isSummary,
                                                     isHeading:
                                                         false,
                                                     theme:
@@ -866,33 +758,6 @@ class _SalesAndRevenueReportDesktopState
                                                       context,
                                                       index,
                                                     ) {
-                                                      salesRecords.sort((
-                                                        a,
-                                                        b,
-                                                      ) {
-                                                        switch (sortIndex) {
-                                                          case 1:
-                                                            return a.productName.compareTo(
-                                                              b.productName,
-                                                            );
-                                                          case 2:
-                                                            return b.quantity.compareTo(
-                                                              a.quantity,
-                                                            );
-                                                          case 3:
-                                                            return b.revenue.compareTo(
-                                                              a.revenue,
-                                                            );
-                                                          case 4:
-                                                            return a.productName.compareTo(
-                                                              b.productName,
-                                                            );
-                                                          default:
-                                                            return b.createdAt.compareTo(
-                                                              a.createdAt,
-                                                            );
-                                                        }
-                                                      });
                                                       var record =
                                                           salesRecords[index];
                                                       var recordIndex =
@@ -901,23 +766,9 @@ class _SalesAndRevenueReportDesktopState
                                                           ) +
                                                           1;
 
-                                                      // return Container(
-                                                      //   margin:
-                                                      //       EdgeInsets.symmetric(
-                                                      //         vertical:
-                                                      //             5,
-                                                      //       ),
-                                                      //   padding:
-                                                      //       EdgeInsets.symmetric(
-                                                      //         vertical:
-                                                      //             20,
-                                                      //       ),
-                                                      //   color:
-                                                      //       Colors
-                                                      //           .teal,
-                                                      // );
-
                                                       return TableRowRecordWidget(
+                                                        isSummary:
+                                                            isSummary,
                                                         theme:
                                                             theme,
                                                         recordIndex:
@@ -928,6 +779,8 @@ class _SalesAndRevenueReportDesktopState
                                                     },
                                                   ),
                                                   SummaryTableHeadingBar(
+                                                    isSummary:
+                                                        isSummary,
                                                     isHeading:
                                                         false,
                                                     theme:
@@ -971,760 +824,6 @@ class _SalesAndRevenueReportDesktopState
           ),
         ),
       ],
-    );
-  }
-}
-
-class SummaryTableHeadingBar extends StatefulWidget {
-  const SummaryTableHeadingBar({
-    super.key,
-    required this.theme,
-    required this.salesRecords,
-    required this.isHeading,
-  });
-
-  final ThemeProvider theme;
-  final List<TempProductSaleRecord> salesRecords;
-  final bool isHeading;
-  @override
-  State<SummaryTableHeadingBar> createState() =>
-      _SummaryTableHeadingBarState();
-}
-
-class _SummaryTableHeadingBarState
-    extends State<SummaryTableHeadingBar> {
-  double getTotal() {
-    double tempTotal = 0;
-    for (var item in widget.salesRecords) {
-      tempTotal += item.revenue;
-    }
-    return tempTotal;
-  }
-
-  double getTotalCostPrice() {
-    double tempTotal = 0;
-    for (var item in widget.salesRecords) {
-      tempTotal += (item.costPrice ?? 0);
-    }
-    return tempTotal;
-  }
-
-  double getTotalQuantity() {
-    double tempTotal = 0;
-    for (var item in widget.salesRecords) {
-      tempTotal += item.quantity;
-    }
-    return tempTotal;
-  }
-
-  double getTotalProfit() {
-    double tempTotal = 0;
-    for (var item in widget.salesRecords) {
-      tempTotal +=
-          item.revenue -
-          (item.costPrice == null || item.costPrice == 0
-              ? item.revenue
-              : item.costPrice!);
-    }
-    return tempTotal;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border:
-            widget.isHeading
-                ? Border(
-                  left: BorderSide(color: Colors.grey),
-                  right: BorderSide(color: Colors.grey),
-                  bottom: BorderSide(color: Colors.grey),
-                  top: BorderSide(color: Colors.grey),
-                )
-                : Border(
-                  left: BorderSide(color: Colors.grey),
-                  right: BorderSide(color: Colors.grey),
-                  bottom: BorderSide(color: Colors.grey),
-                ),
-        color:
-            widget.isHeading
-                ? Colors.grey.shade100
-                : Colors.grey.shade200,
-      ),
-      child: Row(
-        spacing: 0,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 2,
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 3,
-                vertical: 10,
-              ),
-              child: Center(
-                child: Text(
-                  style: TextStyle(
-                    fontSize:
-                        widget
-                            .theme
-                            .mobileTexts
-                            .b3
-                            .fontSize,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  widget.isHeading ? 'S/N' : '',
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 6,
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 5,
-                vertical: 10,
-              ),
-              decoration: BoxDecoration(
-                border: Border(
-                  // right: BorderSide(
-                  //   color: Colors.grey,
-                  // ),
-                  left: BorderSide(color: Colors.grey),
-                ),
-              ),
-              child: Center(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              widget.isHeading
-                                  ? widget
-                                      .theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize
-                                  : widget
-                                      .theme
-                                      .mobileTexts
-                                      .b2
-                                      .fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        widget.isHeading ? 'Name' : 'TOTAL',
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 3,
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 5,
-                vertical: 10,
-              ),
-              decoration: BoxDecoration(
-                border: Border(
-                  right: BorderSide(color: Colors.grey),
-                  left: BorderSide(color: Colors.grey),
-                ),
-              ),
-              child: Center(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b3
-                                  .fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        widget.isHeading
-                            ? 'Quantity'
-                            : getTotalQuantity().toString(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 5,
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 5,
-                vertical: 10,
-              ),
-              child: Center(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b3
-                                  .fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        widget.isHeading
-                            ? 'Selling-Price'
-                            : formatMoneyBig(
-                              amount: getTotal(),
-                              context: context,
-                            ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Visibility(
-            visible: widget.salesRecords.isNotEmpty,
-            child: Expanded(
-              flex: 5,
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    right: BorderSide(color: Colors.grey),
-                    left: BorderSide(color: Colors.grey),
-                  ),
-                ),
-                padding: EdgeInsets.symmetric(
-                  horizontal: 5,
-                  vertical: 10,
-                ),
-                child: Center(
-                  child: Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          style: TextStyle(
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          widget.isHeading
-                              ? 'Cost-Price'
-                              : formatMoneyBig(
-                                amount: getTotalCostPrice(),
-                                context: context,
-                              ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Visibility(
-            visible: widget.salesRecords.isNotEmpty,
-            child: Expanded(
-              flex: 5,
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 5,
-                  vertical: 10,
-                ),
-                child: Center(
-                  child: Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          style: TextStyle(
-                            fontSize:
-                                widget
-                                    .theme
-                                    .mobileTexts
-                                    .b3
-                                    .fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          widget.isHeading
-                              ? 'Profit/Loss'
-                              : getTotalProfit() == 0
-                              ? "Nill"
-                              : formatMoneyBig(
-                                amount: getTotalProfit(),
-                                context: context,
-                              ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class TableRowRecordWidgetSummary extends StatelessWidget {
-  const TableRowRecordWidgetSummary({
-    super.key,
-    required this.theme,
-    required this.recordIndex,
-    required this.record,
-  });
-
-  final ThemeProvider theme;
-  final int recordIndex;
-  final ProductReportSummary record;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: Colors.grey),
-          left: BorderSide(color: Colors.grey),
-          right: BorderSide(color: Colors.grey),
-        ),
-      ),
-      child: Row(
-        spacing: 0,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 2,
-            child: Container(
-              padding: EdgeInsets.all(5),
-              child: Center(
-                child: Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b3.fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        recordIndex.toString(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 6,
-            child: Container(
-              padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                border: Border(
-                  // right: BorderSide(
-                  //   color: Colors.grey,
-                  // ),
-                  left: BorderSide(color: Colors.grey),
-                ),
-              ),
-              child: Center(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b3.fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        record.productName,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 3,
-            child: Container(
-              padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                border: Border(
-                  right: BorderSide(color: Colors.grey),
-                  left: BorderSide(color: Colors.grey),
-                ),
-              ),
-              child: Center(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b3.fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        record.quantity.toString(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 5,
-            child: Container(
-              padding: EdgeInsets.all(5),
-              child: Center(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b3.fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        formatMoneyBig(
-                          amount: record.total,
-                          context: context,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 5,
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  right: BorderSide(color: Colors.grey),
-                  left: BorderSide(color: Colors.grey),
-                ),
-              ),
-              padding: EdgeInsets.all(5),
-              child: Center(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b3.fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        formatMoneyBig(
-                          amount: record.costTotal,
-                          context: context,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 5,
-            child: Container(
-              // height: double.infinity,
-              padding: EdgeInsets.all(5),
-              child: Center(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b3.fontSize,
-                          fontWeight: FontWeight.bold,
-                          color:
-                              (record.profit) >= 0
-                                  ? null
-                                  : const Color.fromARGB(
-                                    255,
-                                    218,
-                                    86,
-                                    76,
-                                  ),
-                        ),
-                        "${(record.profit) >= 0 ? '+' : ''}${formatMoneyBig(amount: record.profit, context: context)}",
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class TableRowRecordWidget extends StatefulWidget {
-  const TableRowRecordWidget({
-    super.key,
-    required this.theme,
-    required this.recordIndex,
-    required this.record,
-  });
-
-  final ThemeProvider theme;
-  final int recordIndex;
-  final TempProductSaleRecord record;
-
-  @override
-  State<TableRowRecordWidget> createState() =>
-      _TableRowRecordWidgetState();
-}
-
-class _TableRowRecordWidgetState
-    extends State<TableRowRecordWidget> {
-  String returnProfit() {
-    if (widget.record.costPrice == null ||
-        widget.record.costPrice == 0) {
-      return "Nill";
-    } else {
-      return "${(widget.record.revenue - (widget.record.costPrice ?? 0)) >= 0 ? '+' : ''}${formatMoneyBig(amount: widget.record.revenue - (widget.record.costPrice ?? 0), context: context)}";
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: Colors.grey),
-          left: BorderSide(color: Colors.grey),
-          right: BorderSide(color: Colors.grey),
-        ),
-      ),
-      child: Row(
-        spacing: 0,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 2,
-            child: Container(
-              padding: EdgeInsets.all(5),
-              child: Center(
-                child: Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b3
-                                  .fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        widget.recordIndex.toString(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 6,
-            child: Container(
-              padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                border: Border(
-                  // right: BorderSide(
-                  //   color: Colors.grey,
-                  // ),
-                  left: BorderSide(color: Colors.grey),
-                ),
-              ),
-              child: Center(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b3
-                                  .fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        widget.record.productName,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 3,
-            child: Container(
-              padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                border: Border(
-                  right: BorderSide(color: Colors.grey),
-                  left: BorderSide(color: Colors.grey),
-                ),
-              ),
-              child: Center(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b3
-                                  .fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        widget.record.quantity.toString(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 5,
-            child: Container(
-              padding: EdgeInsets.all(5),
-              child: Center(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b3
-                                  .fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        formatMoneyBig(
-                          amount: widget.record.revenue,
-                          context: context,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 5,
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  right: BorderSide(color: Colors.grey),
-                  left: BorderSide(color: Colors.grey),
-                ),
-              ),
-              padding: EdgeInsets.all(5),
-              child: Center(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b3
-                                  .fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        formatMoneyBig(
-                          amount:
-                              widget.record.costPrice ?? 0,
-                          context: context,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 5,
-            child: Container(
-              padding: EdgeInsets.all(5),
-              child: Center(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        style: TextStyle(
-                          fontSize:
-                              widget
-                                  .theme
-                                  .mobileTexts
-                                  .b3
-                                  .fontSize,
-                          fontWeight: FontWeight.bold,
-                          color:
-                              (widget.record.revenue -
-                                          (widget
-                                                  .record
-                                                  .costPrice ??
-                                              0)) >=
-                                      0
-                                  ? null
-                                  : const Color.fromARGB(
-                                    255,
-                                    218,
-                                    86,
-                                    76,
-                                  ),
-                        ),
-                        returnProfit(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

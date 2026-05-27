@@ -61,7 +61,7 @@ class _CustomerReportMobileState
     var theme = returnTheme(context);
     var salesRecords =
         returnReceiptProvider(context)
-            .returnproductsRecordByDayOrWeek()
+            .returnProductsRecordByDayOrWeekVoid()
             .where((record) => record.customerUuid != null)
             .toList();
 

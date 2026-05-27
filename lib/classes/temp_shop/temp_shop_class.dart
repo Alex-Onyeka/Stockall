@@ -158,8 +158,11 @@ class TempShopClass {
   @HiveField(52)
   String? closeSaleTimeString;
 
-  // @HiveField(53)
-  // bool? useScreenKeyboard;
+  @HiveField(53)
+  bool? trackCart;
+
+  @HiveField(54)
+  String? accessPin;
 
   TempShopClass({
     this.shopId,
@@ -215,7 +218,8 @@ class TempShopClass {
     required this.printSalesDocket,
     required this.closeSaleTimeString,
     this.closeSaleTime,
-    // required this.useScreenKeyboard,
+    required this.trackCart,
+    required this.accessPin,
   });
 
   factory TempShopClass.fromJson(
@@ -290,8 +294,8 @@ class TempShopClass {
       //         : null,
       closeSaleTimeString:
           json['close_sale_time'] as String?,
-      // useScreenKeyboard:
-      //     json['use_screen_keyboard'] as bool?,
+      trackCart: json['track_cart'] as bool?,
+      accessPin: json['access_pin'] as String?,
     );
   }
 
@@ -348,7 +352,8 @@ class TempShopClass {
       'print_sales_docket': printSalesDocket,
       // 'close_sale_time': closeSaleTime,
       'close_sale_time': closeSaleTimeString,
-      // 'use_screen_keyboard': useScreenKeyboard,
+      'track_cart': trackCart,
+      'access_pin': accessPin,
     };
   }
 }

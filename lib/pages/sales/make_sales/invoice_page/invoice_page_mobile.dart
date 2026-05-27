@@ -69,7 +69,7 @@ class _InvoicePageMobileState
     var theme = returnTheme(context);
     List<TempProductSaleRecord> saleRecords =
         returnReceiptProvider(context, listen: false)
-            .produtRecordSalesMain
+            .getProductRecordsNoVoid()
             .where(
               (record) =>
                   record.invoiceUuid == widget.invoiceUuid,

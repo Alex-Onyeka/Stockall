@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/product_report_summary/product_report_summary.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
@@ -8,8 +7,10 @@ import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/general_report_print_and_download.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/report/general_report/class/general_report_class.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
 class SalesAndRevenueReportMobile extends StatefulWidget {
@@ -39,47 +40,6 @@ class _SalesAndRevenueReportMobileState
     ).refreshProducts(context);
   }
 
-  List<ProductReportSummary> generateProductReportSummary(
-    List<TempProductSaleRecord> records,
-  ) {
-    final Map<String, ProductReportSummary> summaryMap = {};
-
-    for (var record in records) {
-      final name = record.productName;
-
-      if (summaryMap.containsKey(name)) {
-        final existing = summaryMap[name]!;
-
-        final costPrice = record.costPrice ?? 0;
-
-        summaryMap[name] = ProductReportSummary(
-          productName: name,
-          quantity: existing.quantity + record.quantity,
-          total: existing.total + record.revenue,
-          costTotal: existing.costTotal + costPrice,
-          profit:
-              (existing.total + record.revenue) -
-              (existing.costTotal + costPrice),
-        );
-      } else {
-        summaryMap[name] = ProductReportSummary(
-          productName: name,
-          quantity: record.quantity,
-          total: record.revenue,
-          costTotal: record.costPrice ?? 0,
-          profit:
-              (record.revenue) -
-              (record.costPrice == null ||
-                      record.costPrice == 0
-                  ? record.revenue
-                  : record.costPrice!),
-        );
-      }
-    }
-
-    return summaryMap.values.toList();
-  }
-
   @override
   void initState() {
     super.initState();
@@ -100,7 +60,7 @@ class _SalesAndRevenueReportMobileState
     List<TempProductSaleRecord> salesRecords =
         returnReceiptProvider(
           context,
-        ).returnproductsRecordByDayOrWeek();
+        ).returnProductsRecordByDayOrWeek();
 
     return Scaffold(
       appBar: appBar(
@@ -330,17 +290,18 @@ class _SalesAndRevenueReportMobileState
                         children: [
                           InkWell(
                             onTap: () {
-                              List<ProductReportSummary>
+                              List<
+                                GeneralReportSalesSummaryItem
+                              >
                               summary =
-                                  generateProductReportSummary(
-                                    salesRecords,
-                                  );
+                                  returnReceiptProviderSingle()
+                                      .returnGeneralReportSalesSummary();
                               summary.sort((a, b) {
                                 switch (sortIndex) {
                                   case 1:
-                                    return a.productName
+                                    return a.itemName
                                         .compareTo(
-                                          b.productName,
+                                          b.itemName,
                                         );
                                   case 2:
                                     return b.quantity
@@ -348,17 +309,20 @@ class _SalesAndRevenueReportMobileState
                                           a.quantity,
                                         );
                                   case 3:
-                                    return b.total
-                                        .compareTo(a.total);
-                                  case 4:
-                                    return b.profit
+                                    return b.totalCost
                                         .compareTo(
-                                          a.profit,
+                                          a.totalCost,
+                                        );
+                                  case 4:
+                                    return b
+                                        .profit()
+                                        .compareTo(
+                                          a.profit(),
                                         );
                                   default:
-                                    return a.productName
+                                    return a.itemName
                                         .compareTo(
-                                          b.productName,
+                                          b.itemName,
                                         );
                                 }
                               });
@@ -403,8 +367,9 @@ class _SalesAndRevenueReportMobileState
                                   return ConfirmationAlert(
                                     theme: theme,
                                     message:
-                                        'You are about to convert all your product records to pdf, are you sure you want to proceed?',
-                                    title: 'Are you sure?',
+                                        'You are about to Print Sales Report, are you sure you want to proceed?',
+                                    title:
+                                        'Print Sales Report',
                                     action: () async {
                                       Navigator.of(
                                         context,
@@ -413,40 +378,12 @@ class _SalesAndRevenueReportMobileState
                                         if (safeContext
                                             .mounted) {
                                           if (isSummary) {
-                                            downloadPdfWebSalesSummary(
-                                              summary:
-                                                  summary,
-                                              shop:
-                                                  returnShopProvider()
-                                                      .userShop()!,
-                                              context:
-                                                  safeContext,
-                                              filename:
-                                                  'Stockall_Sales Record ${DateTime.now().month}-${DateTime.now().day}-${DateTime.now().hour}-${DateTime.now().minute}.pdf',
-                                            );
-                                          } else {
-                                            downloadPdfWebSales(
-                                              records:
-                                                  salesRecords,
-                                              shop:
-                                                  returnShopProvider()
-                                                      .userShop()!,
-                                              context:
-                                                  safeContext,
-                                              filename:
-                                                  'Stockall_Sales Record ${DateTime.now().month}-${DateTime.now().day}-${DateTime.now().hour}-${DateTime.now().minute}.pdf',
-                                            );
-                                          }
+                                          } else {}
                                         }
                                       }
                                       if (isSummary) {
-                                        await generateAndPreviewPdfSalesSummary(
-                                          context:
-                                              safeContext,
-                                          shop:
-                                              returnShopProvider()
-                                                  .userShop()!,
-                                          summary: summary,
+                                        await generateAndPreviewPdfRollGeneralReport(
+                                          context: context,
                                         );
                                       } else {
                                         await generateAndPreviewPdfSales(
@@ -493,7 +430,7 @@ class _SalesAndRevenueReportMobileState
                                       fontWeight:
                                           FontWeight.bold,
                                     ),
-                                    'Pdf',
+                                    'Print Report',
                                   ),
                                   Icon(
                                     color: Colors.grey,
@@ -630,7 +567,7 @@ class _SalesAndRevenueReportMobileState
                               ? MediaQuery.of(
                                     context,
                                   ).size.width +
-                                  200
+                                  580
                               : MediaQuery.of(
                                         context,
                                       ).size.width >
@@ -642,7 +579,7 @@ class _SalesAndRevenueReportMobileState
                               ? MediaQuery.of(
                                     context,
                                   ).size.width +
-                                  130
+                                  380
                               : MediaQuery.of(
                                 context,
                               ).size.width,
@@ -668,16 +605,14 @@ class _SalesAndRevenueReportMobileState
                                 } else {
                                   if (isSummary) {
                                     var summary =
-                                        generateProductReportSummary(
-                                          salesRecords,
-                                        );
+                                        returnReceiptProviderSingle()
+                                            .returnGeneralReportSalesSummary();
                                     summary.sort((a, b) {
                                       switch (sortIndex) {
                                         case 1:
-                                          return a
-                                              .productName
+                                          return a.itemName
                                               .compareTo(
-                                                b.productName,
+                                                b.itemName,
                                               );
                                         case 2:
                                           return b.quantity
@@ -685,20 +620,20 @@ class _SalesAndRevenueReportMobileState
                                                 a.quantity,
                                               );
                                         case 3:
-                                          return b.total
+                                          return b.totalCost
                                               .compareTo(
-                                                a.total,
+                                                a.totalCost,
                                               );
                                         case 4:
-                                          return b.profit
+                                          return b
+                                              .profit()
                                               .compareTo(
-                                                a.profit,
+                                                a.profit(),
                                               );
                                         default:
-                                          return a
-                                              .productName
+                                          return a.itemName
                                               .compareTo(
-                                                b.productName,
+                                                b.itemName,
                                               );
                                       }
                                     });
@@ -1222,7 +1157,7 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
 
   final ThemeProvider theme;
   final int recordIndex;
-  final ProductReportSummary record;
+  final GeneralReportSalesSummaryItem record;
 
   @override
   Widget build(BuildContext context) {
@@ -1284,7 +1219,7 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
                               theme.mobileTexts.b3.fontSize,
                           fontWeight: FontWeight.bold,
                         ),
-                        record.productName,
+                        record.itemName,
                       ),
                     ),
                   ],
@@ -1335,7 +1270,7 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                         formatMoneyBig(
-                          amount: record.total,
+                          amount: record.totalCost,
                           context: context,
                         ),
                       ),
@@ -1366,7 +1301,7 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                         formatMoneyBig(
-                          amount: record.costTotal,
+                          amount: record.costPrice,
                           context: context,
                         ),
                       ),
@@ -1391,7 +1326,7 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
                               theme.mobileTexts.b3.fontSize,
                           fontWeight: FontWeight.bold,
                           color:
-                              (record.profit) >= 0
+                              (record.profit()) >= 0
                                   ? null
                                   : const Color.fromARGB(
                                     255,
@@ -1400,7 +1335,7 @@ class TableRowRecordWidgetSummary extends StatelessWidget {
                                     76,
                                   ),
                         ),
-                        "${(record.profit) >= 0 ? '+' : ''}${formatMoneyBig(amount: record.profit, context: context)}",
+                        "${(record.profit()) >= 0 ? '+' : ''}${formatMoneyBig(amount: record.profit(), context: context)}",
                       ),
                     ),
                   ],

@@ -712,11 +712,12 @@ class _MakeSalesDesktopState
                                               );
                                               closeAction();
                                             } else {
-                                              var res =
-                                                  await pinCodeAction(
-                                                    context:
-                                                        context,
-                                                  );
+                                              var res = await pinCodeAction(
+                                                isMain:
+                                                    false,
+                                                context:
+                                                    context,
+                                              );
                                               if (res) {
                                                 cartItem
                                                     .customPrice = double.tryParse(
@@ -1104,16 +1105,33 @@ class _MakeSalesDesktopState
                                                           .currentCart()
                                                           .hasPrintedDocket ==
                                                       true) {
-                                                    var res = await pinCodeAction(
-                                                      context:
+                                                    if (returnShopProvider().userShop()?.trackCart ==
+                                                        true) {
+                                                      var res = await pinCodeAction(
+                                                        isMain:
+                                                            true,
+                                                        context:
+                                                            context,
+                                                      );
+                                                      if (res) {
+                                                        returnSalesProvider().clearCart();
+                                                        Navigator.of(
                                                           context,
-                                                    );
-                                                    if (res) {
-                                                      returnSalesProvider()
-                                                          .clearCart();
-                                                      Navigator.of(
-                                                        context,
-                                                      ).pop();
+                                                        ).pop();
+                                                      }
+                                                    } else {
+                                                      var res = await pinCodeAction(
+                                                        isMain:
+                                                            false,
+                                                        context:
+                                                            context,
+                                                      );
+                                                      if (res) {
+                                                        returnSalesProvider().clearCart();
+                                                        Navigator.of(
+                                                          context,
+                                                        ).pop();
+                                                      }
                                                     }
                                                   } else {
                                                     returnSalesProvider()
@@ -1553,12 +1571,27 @@ class _MakeSalesDesktopState
                                                             List<
                                                               TempCartItem
                                                             >
+                                                            allItems =
+                                                                returnSalesProviderContext(
+                                                                  context,
+                                                                ).currentCart().getCartItemsAll().reversed.toList();
+
+                                                            List<
+                                                              TempCartItem
+                                                            >
                                                             items =
                                                                 returnSalesProviderContext(
                                                                   context,
-                                                                ).currentCart().cartItems.reversed.toList();
+                                                                ).currentCart().getCartItems().reversed.toList();
+                                                            List<
+                                                              TempCartItem
+                                                            >
+                                                            voidItems =
+                                                                returnSalesProviderContext(
+                                                                  context,
+                                                                ).currentCart().getCartItemsVoid().reversed.toList();
 
-                                                            if (items.isEmpty) {
+                                                            if (allItems.isEmpty) {
                                                               return Row(
                                                                 mainAxisAlignment:
                                                                     MainAxisAlignment.center,
@@ -1701,118 +1734,249 @@ class _MakeSalesDesktopState
                                                                 ],
                                                               );
                                                             } else {
-                                                              return ListView.builder(
-                                                                itemCount:
-                                                                    returnSalesProviderContext(
-                                                                      context,
-                                                                    ).currentCart().cartItems.length,
-                                                                itemBuilder: (
-                                                                  context,
-                                                                  index,
-                                                                ) {
-                                                                  return CartItemMain(
-                                                                    deleteCartItem: () async {
-                                                                      showDialog(
-                                                                        context:
-                                                                            context,
-                                                                        builder: (
-                                                                          confirmContext,
-                                                                        ) {
-                                                                          return ConfirmationAlert(
-                                                                            theme:
-                                                                                theme,
-                                                                            message:
-                                                                                'You want to remove an Item from the List, are you sure you want to proceed?',
-                                                                            title:
-                                                                                'Remove Item?',
-                                                                            action: () async {
-                                                                              if (returnSalesProvider().currentCart().hasPrintedDocket !=
-                                                                                  true) {
-                                                                                Navigator.of(
-                                                                                  confirmContext,
-                                                                                ).pop();
-                                                                                returnSalesProvider().removeItemFromCart(
-                                                                                  items[index],
-                                                                                  context,
-                                                                                );
-                                                                              } else {
-                                                                                var res = await pinCodeAction(
+                                                              return ListView(
+                                                                children: [
+                                                                  Column(
+                                                                    children:
+                                                                        items.map(
+                                                                          (
+                                                                            item,
+                                                                          ) {
+                                                                            return CartItemMain(
+                                                                              deleteCartItem: () async {
+                                                                                showDialog(
                                                                                   context:
                                                                                       context,
-                                                                                );
-                                                                                if (res &&
-                                                                                    context.mounted) {
-                                                                                  Navigator.of(
+                                                                                  builder: (
                                                                                     confirmContext,
-                                                                                  ).pop();
-                                                                                  returnSalesProvider().removeItemFromCart(
-                                                                                    items[index],
+                                                                                  ) {
+                                                                                    return ConfirmationAlert(
+                                                                                      theme:
+                                                                                          theme,
+                                                                                      message:
+                                                                                          'You want to remove an Item from the List, are you sure you want to proceed?',
+                                                                                      title:
+                                                                                          'Remove Item?',
+                                                                                      action: () async {
+                                                                                        if (returnSalesProvider().currentCart().hasPrintedDocket !=
+                                                                                            true) {
+                                                                                          Navigator.of(
+                                                                                            confirmContext,
+                                                                                          ).pop();
+                                                                                          returnSalesProvider().removeItemFromCart(
+                                                                                            item,
+                                                                                            context,
+                                                                                          );
+                                                                                        } else {
+                                                                                          var res = await pinCodeAction(
+                                                                                            isMain:
+                                                                                                true,
+                                                                                            context:
+                                                                                                context,
+                                                                                          );
+                                                                                          if (res &&
+                                                                                              context.mounted) {
+                                                                                            Navigator.of(
+                                                                                              confirmContext,
+                                                                                            ).pop();
+                                                                                            returnSalesProvider().removeItemFromCart(
+                                                                                              item,
+                                                                                              context,
+                                                                                            );
+                                                                                          }
+                                                                                        }
+                                                                                      },
+                                                                                    );
+                                                                                  },
+                                                                                );
+                                                                              },
+                                                                              editAction: () {
+                                                                                if (returnData()
+                                                                                    .productList()
+                                                                                    .where(
+                                                                                      (
+                                                                                        product,
+                                                                                      ) =>
+                                                                                          product.uuid ==
+                                                                                          item.item.uuid,
+                                                                                    )
+                                                                                    .isNotEmpty) {
+                                                                                  selectProductSales(
+                                                                                    priceNode:
+                                                                                        priceNode,
+                                                                                    isEdit:
+                                                                                        true,
+                                                                                    theme:
+                                                                                        theme,
+                                                                                    closeAction:
+                                                                                        () {},
+                                                                                    priceController:
+                                                                                        priceController,
+                                                                                    qttyNode:
+                                                                                        qttyNode,
+                                                                                    quantityController:
+                                                                                        quantityController,
+                                                                                    searchController:
+                                                                                        widget.searchController,
+                                                                                    // productQuantity:
+                                                                                    //     item.quantity,
+                                                                                    context:
+                                                                                        context,
+                                                                                    cartItem:
+                                                                                        item,
+                                                                                  );
+                                                                                } else {
+                                                                                  returnSalesProvider().toggleAddToStock(
+                                                                                    false,
                                                                                     context,
                                                                                   );
+                                                                                  makeCustomSale(
+                                                                                    closeAction: () {
+                                                                                      Navigator.of(
+                                                                                        context,
+                                                                                      ).pop();
+                                                                                    },
+                                                                                    cartItem:
+                                                                                        item,
+                                                                                  );
                                                                                 }
-                                                                              }
-                                                                            },
-                                                                          );
-                                                                        },
-                                                                      );
-                                                                    },
-                                                                    editAction: () {
-                                                                      if (returnData()
-                                                                          .productList()
-                                                                          .where(
-                                                                            (
-                                                                              product,
-                                                                            ) =>
-                                                                                product.uuid ==
-                                                                                items[index].item.uuid,
-                                                                          )
-                                                                          .isNotEmpty) {
-                                                                        selectProductSales(
-                                                                          priceNode:
-                                                                              priceNode,
-                                                                          isEdit:
-                                                                              true,
-                                                                          theme:
-                                                                              theme,
-                                                                          closeAction:
-                                                                              () {},
-                                                                          priceController:
-                                                                              priceController,
-                                                                          qttyNode:
-                                                                              qttyNode,
-                                                                          quantityController:
-                                                                              quantityController,
-                                                                          searchController:
-                                                                              widget.searchController,
-                                                                          // productQuantity:
-                                                                          //     items[index].quantity,
-                                                                          context:
-                                                                              context,
-                                                                          cartItem:
-                                                                              items[index],
-                                                                        );
-                                                                      } else {
-                                                                        returnSalesProvider().toggleAddToStock(
-                                                                          false,
-                                                                          context,
-                                                                        );
-                                                                        makeCustomSale(
-                                                                          closeAction: () {
-                                                                            Navigator.of(
-                                                                              context,
-                                                                            ).pop();
+                                                                              },
+                                                                              theme:
+                                                                                  theme,
+                                                                              cartItem:
+                                                                                  item,
+                                                                            );
                                                                           },
-                                                                          cartItem:
-                                                                              items[index],
-                                                                        );
-                                                                      }
-                                                                    },
-                                                                    theme:
-                                                                        theme,
-                                                                    cartItem:
-                                                                        items[index],
-                                                                  );
-                                                                },
+                                                                        ).toList(),
+                                                                  ),
+                                                                  Visibility(
+                                                                    visible:
+                                                                        returnSalesProviderContext(
+                                                                          context,
+                                                                        ).currentCart().getCartItemsVoid().isNotEmpty,
+                                                                    child: Column(
+                                                                      children: [
+                                                                        Divider(
+                                                                          height:
+                                                                              20,
+                                                                        ),
+                                                                        Column(
+                                                                          children:
+                                                                              voidItems.map(
+                                                                                (
+                                                                                  item,
+                                                                                ) {
+                                                                                  return CartItemMain(
+                                                                                    deleteCartItem: () async {
+                                                                                      showDialog(
+                                                                                        context:
+                                                                                            context,
+                                                                                        builder: (
+                                                                                          confirmContext,
+                                                                                        ) {
+                                                                                          return ConfirmationAlert(
+                                                                                            theme:
+                                                                                                theme,
+                                                                                            message:
+                                                                                                'You want to remove an Item from the List, are you sure you want to proceed?',
+                                                                                            title:
+                                                                                                'Remove Item?',
+                                                                                            action: () async {
+                                                                                              if (returnSalesProvider().currentCart().hasPrintedDocket !=
+                                                                                                  true) {
+                                                                                                Navigator.of(
+                                                                                                  confirmContext,
+                                                                                                ).pop();
+                                                                                                returnSalesProvider().removeItemFromCart(
+                                                                                                  item,
+                                                                                                  context,
+                                                                                                );
+                                                                                              } else {
+                                                                                                var res = await pinCodeAction(
+                                                                                                  isMain:
+                                                                                                      true,
+                                                                                                  context:
+                                                                                                      context,
+                                                                                                );
+                                                                                                if (res &&
+                                                                                                    context.mounted) {
+                                                                                                  Navigator.of(
+                                                                                                    confirmContext,
+                                                                                                  ).pop();
+                                                                                                  returnSalesProvider().removeItemFromCart(
+                                                                                                    item,
+                                                                                                    context,
+                                                                                                  );
+                                                                                                }
+                                                                                              }
+                                                                                            },
+                                                                                          );
+                                                                                        },
+                                                                                      );
+                                                                                    },
+                                                                                    editAction: () {
+                                                                                      if (returnData()
+                                                                                          .productList()
+                                                                                          .where(
+                                                                                            (
+                                                                                              product,
+                                                                                            ) =>
+                                                                                                product.uuid ==
+                                                                                                item.item.uuid,
+                                                                                          )
+                                                                                          .isNotEmpty) {
+                                                                                        selectProductSales(
+                                                                                          priceNode:
+                                                                                              priceNode,
+                                                                                          isEdit:
+                                                                                              true,
+                                                                                          theme:
+                                                                                              theme,
+                                                                                          closeAction:
+                                                                                              () {},
+                                                                                          priceController:
+                                                                                              priceController,
+                                                                                          qttyNode:
+                                                                                              qttyNode,
+                                                                                          quantityController:
+                                                                                              quantityController,
+                                                                                          searchController:
+                                                                                              widget.searchController,
+                                                                                          // productQuantity:
+                                                                                          //     item.quantity,
+                                                                                          context:
+                                                                                              context,
+                                                                                          cartItem:
+                                                                                              item,
+                                                                                        );
+                                                                                      } else {
+                                                                                        returnSalesProvider().toggleAddToStock(
+                                                                                          false,
+                                                                                          context,
+                                                                                        );
+                                                                                        makeCustomSale(
+                                                                                          closeAction: () {
+                                                                                            Navigator.of(
+                                                                                              context,
+                                                                                            ).pop();
+                                                                                          },
+                                                                                          cartItem:
+                                                                                              item,
+                                                                                        );
+                                                                                      }
+                                                                                    },
+                                                                                    theme:
+                                                                                        theme,
+                                                                                    cartItem:
+                                                                                        item,
+                                                                                  );
+                                                                                },
+                                                                              ).toList(),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                ],
                                                               );
                                                             }
                                                           },
@@ -1981,6 +2145,7 @@ class _MakeSalesDesktopState
                                       MainAxisAlignment
                                           .start,
                                   children: [
+                                    ProjectDisplayWidget(),
                                     Container(
                                       height: 40,
                                       padding:
@@ -2080,7 +2245,6 @@ class _MakeSalesDesktopState
                                       ),
                                     ),
                                     SubStaffSelectionWidget(),
-                                    ProjectDisplayWidget(),
                                     SizedBox(height: 10),
                                     SubWrapper(
                                       isVisible:
@@ -3376,17 +3540,39 @@ class _SubStaffSelectionWidgetState
                                                                         title:
                                                                             'Are you sure?',
                                                                         action: () async {
-                                                                          var res = await pinCodeAction(
-                                                                            context:
-                                                                                context,
-                                                                          );
-                                                                          if (res) {
-                                                                            returnSalesProvider().deleteMainCart(
-                                                                              cart.mainCartId!,
+                                                                          if (returnSalesProvider().canDeleteMainCart(
+                                                                            cartMain:
+                                                                                cart,
+                                                                          )) {
+                                                                            var res = await pinCodeAction(
+                                                                              isMain:
+                                                                                  false,
+                                                                              context:
+                                                                                  context,
                                                                             );
-                                                                            Navigator.of(
-                                                                              context,
-                                                                            ).pop();
+                                                                            if (res) {
+                                                                              returnSalesProvider().deleteMainCart(
+                                                                                cart.mainCartId!,
+                                                                              );
+                                                                              Navigator.of(
+                                                                                context,
+                                                                              ).pop();
+                                                                            }
+                                                                          } else {
+                                                                            var res = await pinCodeAction(
+                                                                              isMain:
+                                                                                  true,
+                                                                              context:
+                                                                                  context,
+                                                                            );
+                                                                            if (res) {
+                                                                              returnSalesProvider().deleteMainCart(
+                                                                                cart.mainCartId!,
+                                                                              );
+                                                                              Navigator.of(
+                                                                                context,
+                                                                              ).pop();
+                                                                            }
                                                                           }
                                                                         },
                                                                       );
@@ -3409,6 +3595,8 @@ class _SubStaffSelectionWidgetState
                                                                           'Remove Staff',
                                                                       action: () async {
                                                                         var res = await pinCodeAction(
+                                                                          isMain:
+                                                                              false,
                                                                           context:
                                                                               context,
                                                                         );
@@ -3477,6 +3665,8 @@ class _SubStaffSelectionWidgetState
                                                                         'Select Sub Staff',
                                                                     action: () async {
                                                                       var res = await pinCodeAction(
+                                                                        isMain:
+                                                                            false,
                                                                         context:
                                                                             context,
                                                                       );
@@ -3562,7 +3752,6 @@ class ProjectDisplayWidget extends StatelessWidget {
           ),
       child: Column(
         children: [
-          SizedBox(height: 5),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -3620,8 +3809,24 @@ class ProjectDisplayWidget extends StatelessWidget {
               ),
             ],
           ),
+          SizedBox(height: 10),
         ],
       ),
     );
   }
 }
+
+// void trackingCartRestrictedAction(BuildContext context) {
+//   var theme = returnTheme(context, listen: false);
+//   showDialog(
+//     context: context,
+//     builder: (errorContext) {
+//       return InfoAlert(
+//         theme: theme,
+//         message:
+//             'You cannot reduce the quantity of an item in cart when your "Manage Cart" Option is Turned On.',
+//         title: 'Action Not Allowed',
+//       );
+//     },
+//   );
+// }

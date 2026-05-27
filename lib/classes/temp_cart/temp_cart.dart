@@ -100,6 +100,22 @@ class TempCart extends HiveObject {
     required this.subStaffName,
   });
 
+  List<TempCartItem> getCartItemsAll() {
+    return cartItems.toList();
+  }
+
+  List<TempCartItem> getCartItems() {
+    return cartItems
+        .where((item) => item.isVoid != true)
+        .toList();
+  }
+
+  List<TempCartItem> getCartItemsVoid() {
+    return cartItems
+        .where((item) => item.isVoid == true)
+        .toList();
+  }
+
   DateTime returnDate() {
     return customDate?.toUtc() ??
         createdDate?.toUtc() ??

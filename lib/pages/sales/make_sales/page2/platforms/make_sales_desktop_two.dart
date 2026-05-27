@@ -792,6 +792,7 @@ class _MakeSalesDesktopTwoState
                                   MainAxisAlignment.start,
                               children: [
                                 SizedBox(height: 5),
+                                ProjectDisplayWidget(),
                                 Container(
                                   height: 40,
                                   padding:
@@ -891,7 +892,6 @@ class _MakeSalesDesktopTwoState
                                   ),
                                 ),
                                 SubStaffSelectionWidget(),
-                                ProjectDisplayWidget(),
                                 SizedBox(height: 10),
                                 Row(
                                   mainAxisAlignment:

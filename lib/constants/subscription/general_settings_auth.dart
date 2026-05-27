@@ -12,6 +12,7 @@ class GeneralSettingsAuth {
   final bool useCloseSale;
   final bool useFloatingButton;
   final bool useOnScreenKeyboard;
+  final bool trackCart;
 
   GeneralSettingsAuth({
     required this.addSocials,
@@ -23,6 +24,7 @@ class GeneralSettingsAuth {
     required this.useCloseSale,
     required this.useFloatingButton,
     required this.useOnScreenKeyboard,
+    required this.trackCart,
   });
 }
 
@@ -70,6 +72,33 @@ class GeneralSettingsAuthAction {
         .firstWhere((pl) => pl.plan == plan)
         .generalSettingsAuth
         .useCloseSale) {
+      action == null ? {} : action();
+      return true;
+    } else {
+      if (action != null) {
+        showUnauthorizedDialog(context);
+      }
+      return false;
+    }
+    // }
+  }
+
+  bool trackCart({
+    required BuildContext context,
+    Function()? action,
+  }) {
+    var plan =
+        returnSubcsription(
+          context,
+          listen: false,
+        ).subscription?.plan;
+    if (plan == null) {
+      return false;
+    }
+    if (subPlans
+        .firstWhere((pl) => pl.plan == plan)
+        .generalSettingsAuth
+        .trackCart) {
       action == null ? {} : action();
       return true;
     } else {

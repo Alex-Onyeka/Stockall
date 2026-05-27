@@ -11,6 +11,7 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/general_report_print_and_download.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -150,30 +151,24 @@ class _GeneralReportDesktopState
                         children: [
                           InkWell(
                             onTap: () {
-                              var safeContext = context;
                               showDialog(
                                 context: context,
-                                builder: (context) {
+                                builder: (confirmContext) {
                                   return ConfirmationAlert(
                                     theme: theme,
                                     message:
-                                        'You are about to convert all your item records to pdf, are you sure you want to proceed?',
-                                    title: 'Are you sure?',
+                                        'You are about to Print General Report, are you sure you want to proceed?',
+                                    title:
+                                        'Print General Report',
                                     action: () async {
                                       Navigator.of(
-                                        context,
+                                        confirmContext,
                                       ).pop();
                                       if (kIsWeb) {
-                                        if (safeContext
-                                            .mounted) {}
-                                      }
-
-                                      if (safeContext
-                                          .mounted) {
-                                        returnSalesProvider()
-                                            .toggleIsLoading(
-                                              false,
-                                            );
+                                      } else {
+                                        generateAndPreviewPdfRollGeneralReport(
+                                          context: context,
+                                        );
                                       }
                                     },
                                   );
@@ -201,7 +196,7 @@ class _GeneralReportDesktopState
                                       fontWeight:
                                           FontWeight.bold,
                                     ),
-                                    'Pdf',
+                                    'Print Report',
                                   ),
                                   Icon(
                                     color: Colors.grey,
@@ -1856,7 +1851,7 @@ class _GeneralReportDesktopState
                                                 context,
                                                 listen:
                                                     false,
-                                              ).returnproductsRecordByDayOrWeek();
+                                              ).returnProductsRecordByDayOrWeekVoid();
 
                                           List<
                                             ProductSummaryClass

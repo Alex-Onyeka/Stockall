@@ -1679,6 +1679,23 @@ Future<Uint8List> _buildPdfRollWaybill({
                     ),
                   ],
                 ),
+                pw.Builder(
+                  builder: (beansContext) {
+                    if (waybill.items.length > 15) {
+                      return pw.Text(
+                        textAlign: pw.TextAlign.center,
+                        style: pw.TextStyle(
+                          fontSize: totalText,
+                          fontWeight: pw.FontWeight.bold,
+                          // color: PdfColor(50, 50, 050),
+                        ),
+                        '------------',
+                      );
+                    } else {
+                      return pw.Container();
+                    }
+                  },
+                ),
               ],
             ),
           ),

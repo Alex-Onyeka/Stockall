@@ -2721,6 +2721,7 @@ void selectProductSales({
   required BuildContext context,
   // required double qttyTemp
 }) {
+  bool isOnscreenKeyboardClicked = false;
   int currentFocus = 1;
   double qqty = 0;
   bool useWholeSalePriceTemp = false;
@@ -3042,7 +3043,7 @@ void selectProductSales({
                                               title:
                                                   "Quantity Limit Reached",
                                               message:
-                                                  "Only ${cartItem.item.quantity} available in stock.",
+                                                  "Only ${returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem)} available in stock.",
                                               theme: theme,
                                             ),
                                       ).then((_) {
@@ -3464,11 +3465,12 @@ void selectProductSales({
                                           ),
                                       onTap: () {
                                         setState(() {
-                                          if (qqty > 0)
+                                          if (qqty > 0) {
                                             qqty--;
-                                          quantityController
-                                                  .text =
-                                              qqty.toString();
+                                            quantityController
+                                                    .text =
+                                                qqty.toString();
+                                          }
                                         });
                                       },
                                       child: SizedBox(
@@ -3533,7 +3535,7 @@ void selectProductSales({
                                                     title:
                                                         "Quantity Limit Reached",
                                                     message:
-                                                        "Only (${cartItem.item.quantity}) items available in stock.",
+                                                        "Only (${returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem)}) items available in stock.",
                                                     theme:
                                                         theme,
                                                   ),
@@ -3694,11 +3696,12 @@ void selectProductSales({
                                                 context,
                                               ).pop();
                                             } else {
-                                              var res =
-                                                  await pinCodeAction(
-                                                    context:
-                                                        context,
-                                                  );
+                                              var res = await pinCodeAction(
+                                                context:
+                                                    context,
+                                                isMain:
+                                                    false,
+                                              );
                                               if (res) {
                                                 cartItem.useWholeSalePrice =
                                                     useWholeSalePriceTemp;
@@ -3847,8 +3850,18 @@ void selectProductSales({
                                       ) {
                                         if (currentFocus ==
                                             1) {
-                                          controller.text +=
-                                              digit;
+                                          if (isOnscreenKeyboardClicked ==
+                                              false) {
+                                            controller
+                                                    .text =
+                                                digit;
+                                            isOnscreenKeyboardClicked =
+                                                true;
+                                          } else {
+                                            controller
+                                                    .text +=
+                                                digit;
+                                          }
                                           double entered =
                                               double.tryParse(
                                                 controller
@@ -3882,7 +3895,7 @@ void selectProductSales({
                                                       title:
                                                           "Quantity Limit Reached",
                                                       message:
-                                                          "Only ${cartItem.item.quantity} available in stock.",
+                                                          "Only ${returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem)} available in stock.",
                                                       theme:
                                                           theme,
                                                     ),

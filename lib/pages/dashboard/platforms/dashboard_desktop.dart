@@ -626,21 +626,14 @@ class _DashboardDesktopState
                                                   children: [
                                                     Row(
                                                       children: [
-                                                        InkWell(
-                                                          onTap: () async {
-                                                            print(
-                                                              returnReceiptProviderSingle().produtRecordSalesMain.length,
-                                                            );
-                                                          },
-                                                          child: Text(
-                                                            style: TextStyle(
-                                                              fontSize:
-                                                                  theme.mobileTexts.b1.fontSize,
-                                                              fontWeight:
-                                                                  theme.mobileTexts.b1.fontWeightBold,
-                                                            ),
-                                                            'Quick Actions',
+                                                        Text(
+                                                          style: TextStyle(
+                                                            fontSize:
+                                                                theme.mobileTexts.b1.fontSize,
+                                                            fontWeight:
+                                                                theme.mobileTexts.b1.fontWeightBold,
                                                           ),
+                                                          'Quick Actions',
                                                         ),
                                                       ],
                                                     ),

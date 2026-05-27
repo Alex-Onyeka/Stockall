@@ -1838,7 +1838,7 @@ class _GeneralReportMobileState
                                             returnReceiptProvider(
                                               context,
                                               listen: false,
-                                            ).returnproductsRecordByDayOrWeek();
+                                            ).returnProductsRecordByDayOrWeekVoid();
 
                                         List<
                                           ProductSummaryClass

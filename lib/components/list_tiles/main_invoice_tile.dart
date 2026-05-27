@@ -98,7 +98,7 @@ class _MainInvoiceTileMobileState
         returnReceiptProvider(
           context,
           listen: false,
-        ).produtRecordSalesMain;
+        ).getProductRecordsNoVoid();
 
     return tempRecords
         .where(
@@ -389,7 +389,7 @@ class _MainInvoiceTileDesktopState
         returnReceiptProvider(
           context,
           listen: false,
-        ).produtRecordSalesMain;
+        ).getProductRecordsNoVoid();
 
     return tempRecords
         .where(

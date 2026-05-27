@@ -162,7 +162,9 @@ class AltDisplayState extends State<AltDisplay> {
 
   double calcTotalMain() {
     double tempTotal = 0;
-    for (var item in cartClass!.cartItems) {
+    for (var item in cartClass!.cartItems.where(
+      (item) => item.isVoid != true,
+    )) {
       tempTotal += item.totalCost();
     }
     return tempTotal;
@@ -411,7 +413,15 @@ class AltDisplayState extends State<AltDisplay> {
                                                                       TempCartItem
                                                                     >
                                                                     items =
-                                                                        cartClass!.cartItems;
+                                                                        cartClass!.cartItems
+                                                                            .where(
+                                                                              (
+                                                                                item,
+                                                                              ) =>
+                                                                                  item.isVoid !=
+                                                                                  true,
+                                                                            )
+                                                                            .toList();
 
                                                                     if (items.isEmpty) {
                                                                       return Row(
@@ -424,7 +434,15 @@ class AltDisplayState extends State<AltDisplay> {
                                                                     } else {
                                                                       return ListView.builder(
                                                                         itemCount:
-                                                                            cartClass!.cartItems.length,
+                                                                            cartClass!.cartItems
+                                                                                .where(
+                                                                                  (
+                                                                                    item,
+                                                                                  ) =>
+                                                                                      item.isVoid !=
+                                                                                      true,
+                                                                                )
+                                                                                .length,
                                                                         itemBuilder: (
                                                                           context,
                                                                           index,

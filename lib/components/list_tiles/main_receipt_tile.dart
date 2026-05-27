@@ -71,7 +71,7 @@ class _MainReceiptTileMobileState
         returnReceiptProvider(
           context,
           listen: false,
-        ).produtRecordSalesMain;
+        ).getProductRecordsNoVoid();
 
     return tempRecords
         .where(
@@ -363,7 +363,7 @@ class _MainReceiptTileDesktopState
         returnReceiptProvider(
           context,
           listen: false,
-        ).produtRecordSalesMain;
+        ).getProductRecordsNoVoid();
 
     return tempRecords
         .where(
@@ -529,8 +529,19 @@ class _MainReceiptTileDesktopState
                       ReceicptTileSectionDesktop(
                         flex: 3,
                         subTitle: 'Cashier',
-                        title:
-                            'Cashier: ${cutLongText2(widget.mainReceipt.staffName == null || widget.mainReceipt.staffName!.isEmpty ? 'Not Set' : widget.mainReceipt.staffName ?? 'Not Set')}',
+                        title: cutLongText2(
+                          widget.mainReceipt.staffName ==
+                                      null ||
+                                  widget
+                                      .mainReceipt
+                                      .staffName!
+                                      .isEmpty
+                              ? 'Not Set'
+                              : widget
+                                      .mainReceipt
+                                      .staffName ??
+                                  'Not Set',
+                        ),
                         theme: theme,
                       ),
                     ],

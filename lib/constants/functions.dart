@@ -1,9 +1,6 @@
-import 'dart:typed_data';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/currency_class/currency_class.dart';
-import 'package:stockall/classes/product_report_summary/product_report_summary.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
@@ -12,6 +9,7 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/report/general_report/class/general_report_class.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:pdf/pdf.dart';
@@ -133,6 +131,8 @@ class Authorizations {
   String viewItemQuantity = 'View Item Quantity';
   String setCustomReceiptCreatedDate =
       'Set Custom Receipt Created Date';
+  String toggleTrackCart = 'Toggle Track Cart';
+  String manageAccessPin = 'Manage Access Pin';
 }
 
 bool authorization({required String authorized}) {
@@ -2644,6 +2644,40 @@ Future<Uint8List> _buildPdfRoll(
                   ),
                   '------------',
                 ),
+                pw.Builder(
+                  builder: (beansContext) {
+                    if (records.length > 15) {
+                      return pw.Text(
+                        textAlign: pw.TextAlign.center,
+                        style: pw.TextStyle(
+                          fontSize: totalText,
+                          fontWeight: pw.FontWeight.bold,
+                          // color: PdfColor(50, 50, 050),
+                        ),
+                        '------------',
+                      );
+                    } else {
+                      return pw.Container();
+                    }
+                  },
+                ),
+                pw.Builder(
+                  builder: (beansContext) {
+                    if (records.length > 15) {
+                      return pw.Text(
+                        textAlign: pw.TextAlign.center,
+                        style: pw.TextStyle(
+                          fontSize: totalText,
+                          fontWeight: pw.FontWeight.bold,
+                          // color: PdfColor(50, 50, 050),
+                        ),
+                        '------------',
+                      );
+                    } else {
+                      return pw.Container();
+                    }
+                  },
+                ),
               ],
             ),
           ),
@@ -4354,7 +4388,7 @@ void downloadPdfWebSales({
 //
 
 Future<void> generateAndPreviewPdfSalesSummary({
-  required List<ProductReportSummary> summary,
+  required List<GeneralReportSalesSummaryItem> summary,
   required TempShopClass shop,
   required BuildContext context,
 }) async {
@@ -4374,7 +4408,7 @@ Future<void> generateAndPreviewPdfSalesSummary({
 }
 
 Future<Uint8List> _buildPdfSalesSummary(
-  List<ProductReportSummary> summary,
+  List<GeneralReportSalesSummaryItem> summary,
   TempShopClass shop,
   BuildContext context,
 ) async {
@@ -4389,7 +4423,7 @@ Future<Uint8List> _buildPdfSalesSummary(
   double totalSellingPrice() {
     double tempQtty = 0;
     for (var element in summary) {
-      tempQtty += element.total;
+      tempQtty += element.totalCost;
     }
     return tempQtty;
   }
@@ -4397,7 +4431,7 @@ Future<Uint8List> _buildPdfSalesSummary(
   double totalCostPrice() {
     double tempQtty = 0;
     for (var element in summary) {
-      tempQtty += element.costTotal;
+      tempQtty += element.costPrice;
     }
     return tempQtty;
   }
@@ -4405,7 +4439,7 @@ Future<Uint8List> _buildPdfSalesSummary(
   double totalProfit() {
     double tempQtty = 0;
     for (var element in summary) {
-      tempQtty += element.total - element.costTotal;
+      tempQtty += element.totalCost - element.costPrice;
     }
     return tempQtty;
   }
@@ -4673,7 +4707,7 @@ Future<Uint8List> _buildPdfSalesSummary(
                                       vertical: 5,
                                     ),
                                     child: pw.Text(
-                                      summ.productName,
+                                      summ.itemName,
                                     ),
                                   ),
                                   pw.Padding(
@@ -4697,7 +4731,8 @@ Future<Uint8List> _buildPdfSalesSummary(
                                     ),
                                     child: pw.Text(
                                       formatMoneyMid(
-                                        amount: summ.total,
+                                        amount:
+                                            summ.totalCost,
                                         context: context,
                                       ),
                                     ),
@@ -4711,7 +4746,7 @@ Future<Uint8List> _buildPdfSalesSummary(
                                     child: pw.Text(
                                       formatMoneyMid(
                                         amount:
-                                            summ.costTotal,
+                                            summ.costPrice,
                                         context: context,
                                       ),
                                     ),
@@ -4724,7 +4759,8 @@ Future<Uint8List> _buildPdfSalesSummary(
                                     ),
                                     child: pw.Text(
                                       formatMoneyMid(
-                                        amount: summ.profit,
+                                        amount:
+                                            summ.profit(),
                                         context: context,
                                       ),
                                     ),
@@ -4861,7 +4897,7 @@ Future<Uint8List> _buildPdfSalesSummary(
 }
 
 void downloadPdfWebSalesSummary({
-  required List<ProductReportSummary> summary,
+  required List<GeneralReportSalesSummaryItem> summary,
   required TempShopClass shop,
   required BuildContext context,
   required String filename,

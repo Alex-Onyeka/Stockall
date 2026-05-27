@@ -1343,16 +1343,24 @@ Future<Uint8List> _buildPdfRollPurchasePayment({
                     ),
                   ],
                 ),
-                // pw.SizedBox(height: 35),
-                // pw.Text(
-                //   textAlign: pw.TextAlign.center,
-                //   style: pw.TextStyle(
-                //     fontSize: totalText,
-                //     fontWeight: pw.FontWeight.bold,
-                //     // color: PdfColor(50, 50, 050),
-                //   ),
-                //   '------------',
-                // ),
+                pw.Builder(
+                  builder: (beansContext) {
+                    if (purchase.purchasePayments.length >
+                        15) {
+                      return pw.Text(
+                        textAlign: pw.TextAlign.center,
+                        style: pw.TextStyle(
+                          fontSize: totalText,
+                          fontWeight: pw.FontWeight.bold,
+                          // color: PdfColor(50, 50, 050),
+                        ),
+                        '------------',
+                      );
+                    } else {
+                      return pw.Container();
+                    }
+                  },
+                ),
               ],
             ),
           ),

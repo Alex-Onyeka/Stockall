@@ -72,6 +72,7 @@ List<SubplanClass> subPlans = [
       useCloseSale: true,
       useFloatingButton: true,
       useOnScreenKeyboard: true,
+      trackCart: true,
     ),
     multipleStoresAuth: MultipleStoresAuth(
       createMultipleStores: true,
@@ -143,6 +144,7 @@ List<SubplanClass> subPlans = [
       deleteAndEditExpenses: true,
     ),
     generalSettingsAuth: GeneralSettingsAuth(
+      trackCart: true,
       addSocials: true,
       customizeReceiptTemplate: true,
       allowOfflineUse: true,
@@ -224,6 +226,7 @@ List<SubplanClass> subPlans = [
       deleteAndEditExpenses: true,
     ),
     generalSettingsAuth: GeneralSettingsAuth(
+      trackCart: true,
       addSocials: true,
       customizeReceiptTemplate: true,
       allowOfflineUse: true,
@@ -305,6 +308,7 @@ List<SubplanClass> subPlans = [
       deleteAndEditExpenses: true,
     ),
     generalSettingsAuth: GeneralSettingsAuth(
+      trackCart: false,
       addSocials: true,
       customizeReceiptTemplate: true,
       allowOfflineUse: true,
@@ -386,6 +390,7 @@ List<SubplanClass> subPlans = [
       deleteAndEditExpenses: true,
     ),
     generalSettingsAuth: GeneralSettingsAuth(
+      trackCart: false,
       manageVAT: true,
       addSocials: true,
       customizeReceiptTemplate: false,
@@ -463,6 +468,7 @@ List<SubplanClass> subPlans = [
       deleteAndEditExpenses: true,
     ),
     generalSettingsAuth: GeneralSettingsAuth(
+      trackCart: false,
       manageVAT: false,
       addSocials: false,
       customizeReceiptTemplate: false,

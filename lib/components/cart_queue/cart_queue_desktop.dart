@@ -92,6 +92,7 @@ class _CartQueueDesktopState
                                   true) {
                                 var res =
                                     await pinCodeAction(
+                                      isMain: false,
                                       context: context,
                                     );
                                 if (res) {
@@ -251,6 +252,8 @@ class _CartQueueDesktopState
                                                 true) {
                                               var res =
                                                   await pinCodeAction(
+                                                    isMain:
+                                                        true,
                                                     context:
                                                         context,
                                                   );
