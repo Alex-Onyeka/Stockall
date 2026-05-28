@@ -1918,7 +1918,9 @@ class SalesProvider extends ChangeNotifier {
     double totalInAllCarts = 0;
     for (var mainCart in mainCartQueue) {
       for (final cart in mainCart.cartQueue) {
-        for (final cartItem in cart.getCartItems()) {
+        for (final cartItem in cart.getCartItems().where(
+          (item) => item != newCartItem,
+        )) {
           if (cartItem.item.uuid == newCartItem.item.uuid) {
             if (returnShopProvider()
                     .userShop()
@@ -1935,37 +1937,102 @@ class SalesProvider extends ChangeNotifier {
     return totalInAllCarts;
   }
 
+  // double totalInAllCartsForEdit({
+  //   required TempCartItem newCartItem,
+  //   required double newQuantity,
+  // }) {
+  //   double totalInAllCarts = 0;
+  //   for (var mainCart in mainCartQueue) {
+  //     for (final cart in mainCart.cartQueue) {
+  //       for (final cartItem in cart.getCartItems()) {
+  //         if (cartItem.item.uuid == newCartItem.item.uuid) {
+  //           if (cartItem == newCartItem) {
+  //             if (returnShopProvider()
+  //                     .userShop()
+  //                     ?.useGroupUnit ==
+  //                 true) {
+  //               totalInAllCarts +=
+  //                   newQuantity *
+  //                   cartItem.getQttyPerGroup();
+  //             } else {
+  //               totalInAllCarts += newQuantity;
+  //             }
+  //           } else {
+  //             if (returnShopProvider()
+  //                     .userShop()
+  //                     ?.useGroupUnit ==
+  //                 true) {
+  //               totalInAllCarts +=
+  //                   cartItem.getRealQuantity();
+  //             } else {
+  //               totalInAllCarts += cartItem.quantity;
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  //   return totalInAllCarts;
+  // }
+
   double remainingQttyInAllCarts({
     required TempCartItem newCartItem,
   }) {
-    return (newCartItem.item.quantity ?? 0) -
-        totalInAllCarts(newCartItem: newCartItem);
+    var tempList = returnData().productListMain.where(
+      (item) => item.uuid == newCartItem.item.uuid,
+    );
+    if (tempList.isNotEmpty) {
+      return (tempList.first.quantity ?? 0) -
+          totalInAllCarts(newCartItem: newCartItem);
+    } else {
+      return (newCartItem.item.quantity ?? 0) -
+          totalInAllCarts(newCartItem: newCartItem);
+    }
   }
 
   bool canAddProductToCart({
     required TempCartItem newCartItem,
     required double quantityToAdd,
+    required bool isEdit,
   }) {
+    double quantityToAddCalc() {
+      if (returnShopProvider().userShop()?.useGroupUnit ==
+          true) {
+        return (quantityToAdd *
+            (newCartItem.useGroupQuantity == true
+                ? newCartItem.getQttyPerGroup()
+                : 1));
+      } else {
+        return quantityToAdd;
+      }
+    }
+
     double newTotal =
         totalInAllCarts(newCartItem: newCartItem) +
-        (returnShopProvider().userShop()?.useGroupUnit ==
-                true
-            ? (quantityToAdd *
-                (newCartItem.useGroupQuantity == true
-                    ? newCartItem.getQttyPerGroup()
-                    : 1))
-            : quantityToAdd);
-    double availableQty = newCartItem.item.quantity ?? 0;
+        quantityToAddCalc();
+
+    double availableQty() {
+      var tempProducts = returnData().productListMain.where(
+        (item) => item.uuid == newCartItem.item.uuid,
+      );
+      if (tempProducts.isNotEmpty) {
+        var product = tempProducts.first;
+        return product.quantity ?? 0;
+      } else {
+        return newCartItem.item.quantity ?? 0;
+      }
+    }
+
     double remainingQtty =
-        availableQty -
+        availableQty() -
         totalInAllCarts(newCartItem: newCartItem);
-    if (newTotal > availableQty &&
+    if (newTotal > availableQty() &&
         returnData().productList().contains(
           newCartItem.item,
         ) &&
         newCartItem.item.isManaged) {
       print(
-        'Cannot add — total ($newTotal) exceeds available stock ($remainingQtty)',
+        'Cannot add — total ($newTotal) exceeds available stock ($remainingQtty) : Avaliable Quantity: ${availableQty()}',
       );
       return false;
     }
@@ -1982,10 +2049,12 @@ class SalesProvider extends ChangeNotifier {
     required BuildContext context,
     required TempCartItem newItem,
     required bool isCustomEdit,
+    required bool isEdit,
   }) async {
     if (canAddProductToCart(
       newCartItem: newItem,
       quantityToAdd: newItem.quantity,
+      isEdit: isEdit,
     )) {
       String result = '';
       final index = currentCart().getCartItems().indexWhere(

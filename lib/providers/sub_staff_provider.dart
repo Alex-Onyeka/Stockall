@@ -137,7 +137,7 @@ class SubStaffProvider extends ChangeNotifier {
 
   Future<List<TempSubStaff>> getSubStaffs() async {
     bool isOnline = await connectivity.isOnline();
-    if (isOnline) {
+    if (isOnline && returnData().isSynced() == 1) {
       final response = await supabase
           .from(tableName)
           .select()
@@ -344,13 +344,12 @@ class SubStaffProvider extends ChangeNotifier {
         print('${data.length} items added successfully ✅');
         await CreatedSubStaffFunc().clearSubStaffs();
         print('Unsynced Sub Staffs Cleared');
+        print('Mounted, refreshing Sub Staffs ✅');
+        await getSubStaffs();
       }
     } catch (e) {
       print('Batch Sub Staffs insert failed ❌: $e');
     }
-
-    print('Mounted, refreshing Sub Staffs ✅');
-    await getSubStaffs();
   }
 
   //
@@ -389,13 +388,12 @@ class SubStaffProvider extends ChangeNotifier {
 
         await DeletedSubStaffFunc().clearDeletedSubStaff();
         print('Unsynced deleted Sub Staffs cleared');
+        print('Mounted, refreshing Sub Staffs ✅');
+        await getSubStaffs();
       }
     } catch (e) {
       print('Batch delete failed ❌: $e');
     }
-
-    print('Mounted, refreshing Sub Staffs ✅');
-    await getSubStaffs();
   }
 
   //
@@ -487,13 +485,12 @@ class SubStaffProvider extends ChangeNotifier {
 
         await UpdatedSubStaffFunc().clearUpdatedSubStaff();
         print('Unsynced updated Sub Staffs cleared');
+        print('Mounted, refreshing Sub Staffs ✅');
+        await getSubStaffs();
       }
     } catch (e) {
       print('Batch update failed ❌: $e');
     }
-
-    print('Mounted, refreshing Sub Staffs ✅');
-    await getSubStaffs();
   }
 
   //

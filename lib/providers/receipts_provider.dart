@@ -118,7 +118,7 @@ class ReceiptsProvider extends ChangeNotifier {
   ) async {
     bool isOnline = await connectivity.isOnline();
     List<Map<String, dynamic>> tempList = [];
-    if (isOnline) {
+    if (isOnline && returnData().isSynced() == 1) {
       await MainReceiptFunc().clearReceipts();
       try {
         final data = await supabase
@@ -609,7 +609,7 @@ class ReceiptsProvider extends ChangeNotifier {
   loadProductSalesRecord(int shopId) async {
     bool isOnline = await connectivity.isOnline();
     List<Map<String, dynamic>> tempList = [];
-    if (isOnline) {
+    if (isOnline && returnData().isSynced() == 1) {
       final data = await supabase
           .from('product_sales')
           .select()

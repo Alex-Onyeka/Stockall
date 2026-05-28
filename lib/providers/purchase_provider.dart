@@ -189,7 +189,7 @@ class PurchaseProvider extends ChangeNotifier {
     int shopId,
   ) async {
     bool isOnline = await connectivity.isOnline();
-    if (isOnline) {
+    if (isOnline && returnData().isSynced() == 1) {
       await PurchaseFunc().clearPurchases();
       try {
         final data = await supabase
@@ -742,15 +742,14 @@ class PurchaseProvider extends ChangeNotifier {
         await UpdatedPurchasesFunc()
             .clearUpdatedPurchases();
         print('Unsynced Purchase products cleared');
+        print('Mounted, refreshing products ✅');
+        await loadPurchases(
+          returnShopProvider().userShop()!.shopId!,
+        );
       }
     } catch (e) {
       print('Batch update failed ❌: $e');
     }
-
-    print('Mounted, refreshing products ✅');
-    await loadPurchases(
-      returnShopProvider().userShop()!.shopId!,
-    );
   }
   //
   //
@@ -981,7 +980,7 @@ class PurchaseProvider extends ChangeNotifier {
   loadItemPurchaseRecords(int shopId) async {
     bool isOnline = await connectivity.isOnline();
     try {
-      if (isOnline) {
+      if (isOnline && returnData().isSynced() == 1) {
         final data = await supabase
             .from('item_purchase_records')
             .select()

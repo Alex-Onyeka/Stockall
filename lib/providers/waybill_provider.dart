@@ -283,7 +283,7 @@ class WaybillProvider extends ChangeNotifier {
     int shopId,
   ) async {
     bool isOnline = await connectivity.isOnline();
-    if (isOnline) {
+    if (isOnline && returnData().isSynced() == 1) {
       await WaybillsFunc().clearWaybills();
       try {
         final data = await supabase
@@ -603,15 +603,14 @@ class WaybillProvider extends ChangeNotifier {
 
         await UpdatedWaybillsFunc().clearUpdatedWaybills();
         print('Unsynced Waybill products cleared');
+        print('Mounted, refreshing products ✅');
+        await loadWaybills(
+          returnShopProvider().userShop()!.shopId!,
+        );
       }
     } catch (e) {
       print('Batch update failed ❌: $e');
     }
-
-    print('Mounted, refreshing products ✅');
-    await loadWaybills(
-      returnShopProvider().userShop()!.shopId!,
-    );
   }
   //
   //

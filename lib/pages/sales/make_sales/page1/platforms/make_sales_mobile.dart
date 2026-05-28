@@ -741,6 +741,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                   .addToStock;
 
                                           returnSalesProvider().addItemToCart(
+                                            isEdit: false,
                                             context:
                                                 context,
                                             newItem:
@@ -1788,6 +1789,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                               var pro =
                                                                   prod.first;
                                                               returnSalesProvider().addItemToCart(
+                                                                isEdit:
+                                                                    false,
                                                                 // ignore: use_build_context_synchronously
                                                                 context:
                                                                     context,

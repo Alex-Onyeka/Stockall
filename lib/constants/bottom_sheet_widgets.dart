@@ -3029,6 +3029,7 @@ void selectProductSales({
                                       .isManaged) {
                                     if (!returnSalesProvider()
                                         .canAddProductToCart(
+                                          isEdit: isEdit,
                                           newCartItem:
                                               cartItem,
                                           quantityToAdd:
@@ -3470,6 +3471,8 @@ void selectProductSales({
                                             quantityController
                                                     .text =
                                                 qqty.toString();
+                                            isOnscreenKeyboardClicked =
+                                                false;
                                           }
                                         });
                                       },
@@ -3513,17 +3516,38 @@ void selectProductSales({
                                             5,
                                           ),
                                       onTap: () {
+                                        setState(() {
+                                          qqty++;
+                                          quantityController
+                                                  .text =
+                                              qqty.toString();
+                                          isOnscreenKeyboardClicked =
+                                              false;
+                                        });
+                                        double entered =
+                                            double.tryParse(
+                                              quantityController
+                                                  .text
+                                                  .replaceAll(
+                                                    ',',
+                                                    '',
+                                                  ),
+                                            ) ??
+                                            0;
+                                        print(
+                                          'Entered Valueee: $entered',
+                                        );
                                         if (cartItem
                                             .item
                                             .isManaged) {
                                           if (!returnSalesProvider()
                                               .canAddProductToCart(
+                                                isEdit:
+                                                    isEdit,
                                                 newCartItem:
                                                     cartItem,
                                                 quantityToAdd:
-                                                    (qqty +
-                                                        1) -
-                                                    existingQtty,
+                                                    entered,
                                               )) {
                                             showDialog(
                                               context:
@@ -3535,20 +3559,97 @@ void selectProductSales({
                                                     title:
                                                         "Quantity Limit Reached",
                                                     message:
-                                                        "Only (${returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem)}) items available in stock.",
+                                                        "Only ${returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem)} available in stock.",
                                                     theme:
                                                         theme,
                                                   ),
+                                            ).then((_) {
+                                              qttyNode
+                                                  .requestFocus();
+                                            });
+
+                                            Future.delayed(
+                                              Duration(
+                                                milliseconds:
+                                                    300,
+                                              ),
+                                              () {
+                                                setState(() {
+                                                  qqty = 0;
+                                                  quantityController
+                                                          .text =
+                                                      '0';
+                                                });
+                                              },
                                             );
+
                                             return;
                                           }
                                         }
+
+                                        if (quantityController
+                                            .text
+                                            .isEmpty) {
+                                          setState(() {
+                                            quantityController
+                                                .text = '0';
+                                          });
+                                        }
+
                                         setState(() {
-                                          qqty++;
-                                          quantityController
-                                                  .text =
-                                              qqty.toString();
+                                          qqty = entered;
                                         });
+                                        // if (cartItem
+                                        //     .item
+                                        //     .isManaged) {
+                                        //   if (!returnSalesProvider().canAddProductToCart(
+                                        //     isEdit: isEdit,
+                                        //     newCartItem:
+                                        //         cartItem,
+                                        //     quantityToAdd:
+                                        //         isEdit
+                                        //             ? (qqty +
+                                        //                 1)
+                                        //             : (qqty +
+                                        //                     1) -
+                                        //                 existingQtty,
+                                        //   )) {
+                                        //     showDialog(
+                                        //       context:
+                                        //           context,
+                                        //       builder:
+                                        //           (
+                                        //             _,
+                                        //           ) => InfoAlert(
+                                        //             title:
+                                        //                 "Quantity Limit Reached",
+                                        //             message:
+                                        //                 "Only (${returnSalesProvider().remainingQttyInAllCarts(newCartItem: cartItem)}) items available in stock.",
+                                        //             theme:
+                                        //                 theme,
+                                        //           ),
+                                        //     );
+                                        //     return;
+                                        //   } else {
+                                        //     setState(() {
+                                        //       qqty++;
+                                        //       quantityController
+                                        //               .text =
+                                        //           qqty.toString();
+                                        //       isOnscreenKeyboardClicked =
+                                        //           false;
+                                        //     });
+                                        //   }
+                                        // } else {
+                                        //   setState(() {
+                                        //     qqty++;
+                                        //     quantityController
+                                        //             .text =
+                                        //         qqty.toString();
+                                        //     isOnscreenKeyboardClicked =
+                                        //         false;
+                                        //   });
+                                        // }
                                       },
 
                                       child: SizedBox(
@@ -3782,6 +3883,7 @@ void selectProductSales({
                                           cartItem.quantity =
                                               qqty.toDouble();
                                           returnSalesProvider().addItemToCart(
+                                            isEdit: isEdit,
                                             context:
                                                 context,
                                             newItem:
@@ -3878,13 +3980,14 @@ void selectProductSales({
                                           if (cartItem
                                               .item
                                               .isManaged) {
-                                            if (!returnSalesProvider()
-                                                .canAddProductToCart(
-                                                  newCartItem:
-                                                      cartItem,
-                                                  quantityToAdd:
-                                                      entered,
-                                                )) {
+                                            if (!returnSalesProvider().canAddProductToCart(
+                                              isEdit:
+                                                  isEdit,
+                                              newCartItem:
+                                                  cartItem,
+                                              quantityToAdd:
+                                                  entered,
+                                            )) {
                                               showDialog(
                                                 context:
                                                     context,
@@ -5428,163 +5531,6 @@ Future<void> showOnScreenKeyboard() async {
 //
 
 // A D D   N E W   C U S T O M E R   B O T T O M
-
-void selectProduct(
-  ThemeProvider theme,
-  TempCartItem cartItem,
-  Function() closeAction,
-  BuildContext context,
-) {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return StatefulBuilder(
-        builder: (context, setState) {
-          return AlertDialog(
-            backgroundColor: Colors.white,
-            title: Text(
-              'Enter Item Quantity',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: theme.mobileTexts.h4.fontSize,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(height: 20),
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.grey.shade100,
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0,
-                    vertical: 10,
-                  ),
-                  child: Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b1.fontSize,
-                        ),
-                        'Total',
-                      ),
-                      Text(
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.b1.fontSize,
-                          fontWeight:
-                              theme
-                                  .mobileTexts
-                                  .b1
-                                  .fontWeightBold,
-                        ),
-                        'THis',
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0,
-                  ),
-                  child: Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center,
-                    spacing: 15,
-                    children: [
-                      Ink(
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(5),
-                          color: Colors.grey.shade100,
-                        ),
-                        child: InkWell(
-                          borderRadius:
-                              BorderRadius.circular(5),
-                          onTap: () {},
-                          child: SizedBox(
-                            height: 30,
-                            width: 50,
-                            child: Icon(Icons.remove),
-                          ),
-                        ),
-                      ),
-                      Text(
-                        ' qqty.toString(),',
-                        style: TextStyle(
-                          fontSize:
-                              theme.mobileTexts.h4.fontSize,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Ink(
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(5),
-                          color: Colors.grey.shade100,
-                        ),
-                        child: InkWell(
-                          borderRadius:
-                              BorderRadius.circular(5),
-                          onTap: () {},
-                          child: SizedBox(
-                            height: 30,
-                            width: 50,
-                            child: Center(
-                              child: Icon(Icons.add),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 20),
-                SmallButtonMain(
-                  theme: theme,
-                  action: () async {
-                    String result =
-                        await returnSalesProvider()
-                            .addItemToCart(
-                              context: context,
-                              newItem: cartItem,
-                              isCustomEdit:
-                                  returnData()
-                                      .productList()
-                                      .where(
-                                        (product) =>
-                                            product.uuid ==
-                                            cartItem
-                                                .item
-                                                .uuid,
-                                      )
-                                      .isEmpty,
-                            );
-                    Navigator.of(context).pop();
-                    closeAction();
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(
-                      SnackBar(content: Text(result)),
-                    );
-                  },
-                  buttonText: 'Add To Cart',
-                ),
-              ],
-            ),
-          );
-        },
-      );
-    },
-  );
-}
 
 class CountryBottomSheet extends StatefulWidget {
   final TextEditingController searchController;

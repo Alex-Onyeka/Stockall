@@ -179,7 +179,7 @@ class DepartmentProvider with ChangeNotifier {
   Future<List<DepartmentClass>> getDepartments() async {
     bool isOnline = await connectivity.isOnline();
     try {
-      if (isOnline) {
+      if (isOnline && returnData().isSynced() == 1) {
         final res = await supabase
             .from(tableName)
             .select()
@@ -462,13 +462,12 @@ class DepartmentProvider with ChangeNotifier {
         print('${data.length} items added Successfully ✅');
         await CreatedDepartmentsFunc().clearDepartment();
         print('Unsynced Departments Cleared');
+        print('Mounted, refreshing Departments ✅');
+        await getDepartments();
       }
     } catch (e) {
       print('Batch Departments insert failed ❌: $e');
     }
-
-    print('Mounted, refreshing Departments ✅');
-    await getDepartments();
   }
 
   //
@@ -508,13 +507,12 @@ class DepartmentProvider with ChangeNotifier {
         await DeletedDepartmentsFunc()
             .clearDeletedDepartments();
         print('Unsynced deleted Departments cleared');
+        print('Mounted, refreshing Departments ✅');
+        await getDepartments();
       }
     } catch (e) {
       print('Batch Departments delete failed ❌: $e');
     }
-
-    print('Mounted, refreshing Departments ✅');
-    await getDepartments();
   }
 
   //
@@ -607,13 +605,12 @@ class DepartmentProvider with ChangeNotifier {
         await UpdatedDepartmentFunc()
             .clearupdatedDepartments();
         print('Unsynced updated Departments cleared');
+        print('Mounted, refreshing Departments ✅');
+        await getDepartments();
       }
     } catch (e) {
       print('Batch Departments update failed ❌: $e');
     }
-
-    print('Mounted, refreshing Departments ✅');
-    await getDepartments();
   }
 
   //

@@ -108,7 +108,7 @@ class InvoicesProvider extends ChangeNotifier {
   // READ all Invoices for a shop
   Future<List<TempInvoice>> loadInvoices(int shopId) async {
     bool isOnline = await connectivity.isOnline();
-    if (isOnline) {
+    if (isOnline && returnData().isSynced() == 1) {
       await InvoicesFunc().clearInvoices();
       try {
         final data = await supabase
@@ -1240,15 +1240,14 @@ class InvoicesProvider extends ChangeNotifier {
         await UpdatedInvoicesFunc()
             .clearupdatedInvoiceUpdatedInvoices();
         print('Unsynced updated Invoices cleared');
+        print('Mounted, refreshing Invoices ✅');
+        await loadInvoices(
+          returnShopProvider().userShop()!.shopId!,
+        );
       }
     } catch (e) {
       print('Batch update failed ❌: $e');
     }
-
-    print('Mounted, refreshing Invoices ✅');
-    await loadInvoices(
-      returnShopProvider().userShop()!.shopId!,
-    );
   }
 
   //

@@ -225,13 +225,27 @@ class _AddProductDesktopState
                       dataProvider.selectedCategory?.uuid,
                   uuid: createdProductUuid,
                   departmentName:
-                      returnDepartmentProvider()
-                          .currentDepartment()
-                          ?.name,
+                      returnData().departmentUuid != null
+                          ? returnDepartmentProvider()
+                              .departments
+                              .firstWhere(
+                                (dept) =>
+                                    dept.uuid ==
+                                    returnData()
+                                        .departmentUuid,
+                              )
+                              .name
+                          : null,
                   departmentUuid:
-                      returnDepartmentProvider()
-                          .currentDepartment()
-                          ?.uuid,
+                      returnData().departmentUuid,
+                  // departmentName:
+                  //     returnDepartmentProvider()
+                  //         .currentDepartment()
+                  //         ?.name,
+                  // departmentUuid:
+                  //     returnDepartmentProvider()
+                  //         .currentDepartment()
+                  //         ?.uuid,
                 ),
               );
 
@@ -1538,9 +1552,7 @@ class _AddProductDesktopState
                                                   authorization(
                                                     authorized:
                                                         Authorizations().viewAllDepartments,
-                                                  ) &&
-                                                  widget.product !=
-                                                      null,
+                                                  ),
                                               child:
                                                   SizedBox(
                                                     height:
@@ -1556,9 +1568,7 @@ class _AddProductDesktopState
                                                   authorization(
                                                     authorized:
                                                         Authorizations().viewAllDepartments,
-                                                  ) &&
-                                                  widget.product !=
-                                                      null,
+                                                  ),
                                               child: InkWell(
                                                 onTap: () {
                                                   GeneralSettingsAuthAction().manageDeparmtmentsAction(

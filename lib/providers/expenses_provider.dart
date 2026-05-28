@@ -84,7 +84,7 @@ class ExpensesProvider extends ChangeNotifier {
     int shopId,
   ) async {
     bool isOnline = await connectivity.isOnline();
-    if (isOnline) {
+    if (isOnline && returnData().isSynced() == 1) {
       try {
         final response = await supabase
             .from('expenses')
@@ -491,16 +491,15 @@ class ExpensesProvider extends ChangeNotifier {
         print('${data.length} items added successfully ✅');
         await CreatedExpensesFunc().clearExpenses();
         print('Unsynced Expenses Cleared');
+        if (context.mounted) {
+          print('Mounted, refreshing Expenses ✅');
+          await getExpenses(
+            returnShopProvider().userShop()!.shopId!,
+          );
+        }
       }
     } catch (e) {
       print('Batch Expenses insert failed ❌: $e');
-    }
-
-    if (context.mounted) {
-      print('Mounted, refreshing Expenses ✅');
-      await getExpenses(
-        returnShopProvider().userShop()!.shopId!,
-      );
     }
   }
 
@@ -542,16 +541,15 @@ class ExpensesProvider extends ChangeNotifier {
 
         await DeletedExpensesFunc().clearDeletedExpenses();
         print('Unsynced deleted Expenses cleared');
+        if (context.mounted) {
+          print('Mounted, refreshing Expenses ✅');
+          await getExpenses(
+            returnShopProvider().userShop()!.shopId!,
+          );
+        }
       }
     } catch (e) {
       print('Batch delete failed ❌: $e');
-    }
-
-    if (context.mounted) {
-      print('Mounted, refreshing Expenses ✅');
-      await getExpenses(
-        returnShopProvider().userShop()!.shopId!,
-      );
     }
   }
 
@@ -646,16 +644,15 @@ class ExpensesProvider extends ChangeNotifier {
 
         await UpdatedExpensesFunc().clearupdatedExpenses();
         print('Unsynced updated Expenses cleared');
+        if (context.mounted) {
+          print('Mounted, refreshing Expenses ✅');
+          await getExpenses(
+            returnShopProvider().userShop()!.shopId!,
+          );
+        }
       }
     } catch (e) {
       print('Batch update failed ❌: $e');
-    }
-
-    if (context.mounted) {
-      print('Mounted, refreshing Expenses ✅');
-      await getExpenses(
-        returnShopProvider().userShop()!.shopId!,
-      );
     }
   }
 

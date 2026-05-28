@@ -126,13 +126,19 @@ class _AddProductMobileState
                 TempProductClass(
                   storageUuid: null,
                   departmentName:
-                      returnDepartmentProvider()
-                          .currentDepartment()
-                          ?.name,
+                      returnData().departmentUuid != null
+                          ? returnDepartmentProvider()
+                              .departments
+                              .firstWhere(
+                                (dept) =>
+                                    dept.uuid ==
+                                    returnData()
+                                        .departmentUuid,
+                              )
+                              .name
+                          : null,
                   departmentUuid:
-                      returnDepartmentProvider()
-                          .currentDepartment()
-                          ?.uuid,
+                      returnData().departmentUuid,
                   totalQttyInStorageDouble:
                       widget
                               .storageQuantityController
@@ -1323,9 +1329,7 @@ class _AddProductMobileState
                                                 authorized:
                                                     Authorizations()
                                                         .viewAllDepartments,
-                                              ) &&
-                                              widget.product !=
-                                                  null,
+                                              ),
                                           child: SizedBox(
                                             height: 10,
                                           ),
@@ -1340,9 +1344,7 @@ class _AddProductMobileState
                                                 authorized:
                                                     Authorizations()
                                                         .viewAllDepartments,
-                                              ) &&
-                                              widget.product !=
-                                                  null,
+                                              ),
                                           child: InkWell(
                                             onTap: () {
                                               GeneralSettingsAuthAction().manageDeparmtmentsAction(

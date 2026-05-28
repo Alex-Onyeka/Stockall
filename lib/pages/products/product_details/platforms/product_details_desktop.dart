@@ -151,6 +151,7 @@ class _ProductDetailsDesktopState
                                       ).pop();
                                       var res = await returnSalesProvider()
                                           .addItemToCart(
+                                            isEdit: false,
                                             context:
                                                 context,
                                             newItem: TempCartItem(

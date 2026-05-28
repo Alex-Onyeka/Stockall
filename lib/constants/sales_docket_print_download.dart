@@ -1,12 +1,9 @@
-import 'dart:typed_data';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
-import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:pdf/pdf.dart';
@@ -14,7 +11,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
-void downloadDocket({
+Future<bool> downloadDocket({
   required BuildContext context,
   required String fileName,
   required TempCart cart,
@@ -22,65 +19,60 @@ void downloadDocket({
   required List<TempCartItem> items,
   required bool setTotal,
 }) async {
-  SalesAuthAction().printReceiptAction(
-    context: context,
-    action: () async {
-      try {
-        print('Begin Download');
-        final pdfBytes = await _buildPdfRoll(
-          context: context,
-          fileName: fileName,
-          waiter: waiter,
-          cart: cart,
-          items: items,
-          setTotal: setTotal,
-        );
+  try {
+    print('Begin Download');
+    final pdfBytes = await _buildPdfRoll(
+      context: context,
+      fileName: fileName,
+      waiter: waiter,
+      cart: cart,
+      items: items,
+      setTotal: setTotal,
+    );
 
-        // ✅ Ensure Uint8List
-        final pdfUint8 = Uint8List.fromList(pdfBytes);
+    // ✅ Ensure Uint8List
+    final pdfUint8 = Uint8List.fromList(pdfBytes);
 
-        // Step 1: Download
-        final blob = html.Blob([
-          pdfUint8,
-        ], 'application/pdf');
-        final url = html.Url.createObjectUrlFromBlob(blob);
+    // Step 1: Download
+    final blob = html.Blob([pdfUint8], 'application/pdf');
+    final url = html.Url.createObjectUrlFromBlob(blob);
 
-        final anchor =
-            html.AnchorElement(href: url)
-              ..download = fileName
-              ..style.display = 'none';
+    final anchor =
+        html.AnchorElement(href: url)
+          ..download = fileName
+          ..style.display = 'none';
 
-        html.document.body?.append(anchor);
-        anchor.click();
-        anchor.remove();
-        html.Url.revokeObjectUrl(url);
+    html.document.body?.append(anchor);
+    anchor.click();
+    anchor.remove();
+    html.Url.revokeObjectUrl(url);
 
-        // Step 2: Print (make sure this runs in same click event if possible)
-        var res = await Printing.layoutPdf(
-          onLayout: (format) async => pdfUint8,
-        );
-        if (res) {
-          await returnSalesProvider()
-              .updateCurrentCartIsPrintedDocket();
-        }
+    // Step 2: Print (make sure this runs in same click event if possible)
+    var res = await Printing.layoutPdf(
+      onLayout: (format) async => pdfUint8,
+    );
+    if (res) {
+      await returnSalesProvider()
+          .updateCurrentCartIsPrintedDocket();
+    }
 
-        if (context.mounted) {
-          returnReceiptProvider(
-            context,
-            listen: false,
-          ).toggleIsLoading(false);
-        }
-        // return pdfUint8;
-      } catch (e, stackTrace) {
-        print(
-          '❌ Error downloading/printing PDF: $e\n$stackTrace',
-        );
-      }
-    },
-  );
+    if (context.mounted) {
+      returnReceiptProvider(
+        context,
+        listen: false,
+      ).toggleIsLoading(false);
+    }
+    return res;
+    // return pdfUint8;
+  } catch (e, stackTrace) {
+    print(
+      '❌ Error downloading/printing PDF: $e\n$stackTrace',
+    );
+    return false;
+  }
 }
 
-Future<void> printDocket({
+Future<bool> printDocket({
   required BuildContext context,
   required String fileName,
   required TempCart cart,
@@ -88,31 +80,23 @@ Future<void> printDocket({
   required List<TempCartItem> items,
   required bool setTotal,
 }) async {
-  SalesAuthAction().printReceiptAction(
+  final Uint8List pdfBytes = await _buildPdfRoll(
     context: context,
-    action: () async {
-      // returnReceiptProvider(
-      //   context,
-      //   listen: false,
-      // ).toggleIsLoading(true);
-      final Uint8List pdfBytes = await _buildPdfRoll(
-        context: context,
-        fileName: fileName,
-        waiter: waiter,
-        cart: cart,
-        items: items,
-        setTotal: setTotal,
-      );
-
-      var res = await Printing.layoutPdf(
-        onLayout: (_) async => pdfBytes,
-      );
-      if (res) {
-        await returnSalesProvider()
-            .updateCurrentCartIsPrintedDocket();
-      }
-    },
+    fileName: fileName,
+    waiter: waiter,
+    cart: cart,
+    items: items,
+    setTotal: setTotal,
   );
+
+  var res = await Printing.layoutPdf(
+    onLayout: (_) async => pdfBytes,
+  );
+  if (res) {
+    await returnSalesProvider()
+        .updateCurrentCartIsPrintedDocket();
+  }
+  return res;
 }
 
 Future<Uint8List> _buildPdfRoll({

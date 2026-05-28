@@ -694,6 +694,8 @@ class _MakeSalesDesktopState
                                                       .addToStock;
 
                                               returnSalesProvider().addItemToCart(
+                                                isEdit:
+                                                    false,
                                                 context:
                                                     context,
                                                 newItem:
@@ -757,6 +759,8 @@ class _MakeSalesDesktopState
                                                         .addToStock;
 
                                                 returnSalesProvider().addItemToCart(
+                                                  isEdit:
+                                                      false,
                                                   context:
                                                       context,
                                                   newItem:
@@ -814,6 +818,7 @@ class _MakeSalesDesktopState
                                                     .addToStock;
 
                                             returnSalesProvider().addItemToCart(
+                                              isEdit: false,
                                               context:
                                                   context,
                                               newItem:
@@ -2284,6 +2289,8 @@ class _MakeSalesDesktopState
                                                 if (items
                                                     .isNotEmpty) {
                                                   returnSalesProvider().addItemToCart(
+                                                    isEdit:
+                                                        false,
                                                     context:
                                                         context,
                                                     newItem: TempCartItem(
@@ -2566,224 +2573,257 @@ class _MakeSalesDesktopState
                                                 ),
                                                 child: InkWell(
                                                   onTap: () {
-                                                    SalesAuthAction().printReceiptAction(
-                                                      context:
-                                                          context,
-                                                      action: () {
-                                                        var number =
-                                                            2;
-                                                        for (
-                                                          var i = 0;
-                                                          i <
-                                                              number;
-                                                          i++
-                                                        ) {
-                                                          if (returnSalesProvider().scanBarcodeCartPageNode.hasFocus) {
-                                                            // returnSalesProvider().removeListenerScanBarcode();
-                                                          }
-                                                          print(
-                                                            "${returnSalesProvider().scanBarcodeCartPageNode.hasFocus} Beans",
-                                                          );
-                                                        }
-                                                        List<
-                                                          TempCartItem
-                                                        >
-                                                        list =
-                                                            [];
-                                                        bool
-                                                        showTotal =
-                                                            false;
-                                                        // setState(() {
-                                                        //   list.addAll(
-                                                        //     returnSalesProvider().currentCart().cartItems,
-                                                        //   );
-                                                        // });
-                                                        showDialog(
-                                                          context:
-                                                              context,
-                                                          builder: (
-                                                            firstContext,
+                                                    if (returnSalesProvider()
+                                                        .currentCart()
+                                                        .cartItems
+                                                        .isNotEmpty) {
+                                                      SalesAuthAction().printReceiptAction(
+                                                        context:
+                                                            context,
+                                                        action: () {
+                                                          var number =
+                                                              2;
+                                                          for (
+                                                            var i = 0;
+                                                            i <
+                                                                number;
+                                                            i++
                                                           ) {
-                                                            return StatefulBuilder(
-                                                              builder: (
-                                                                secondContext,
-                                                                setState,
-                                                              ) {
-                                                                return DialogTemplate(
-                                                                  theme:
-                                                                      theme,
-                                                                  message:
-                                                                      'Select Items to print for this Docket',
-                                                                  title:
-                                                                      'Select Item(s)',
-                                                                  action: () {
-                                                                    showDialog(
-                                                                      context:
-                                                                          context,
-                                                                      builder: (
-                                                                        confirmContext,
-                                                                      ) {
-                                                                        return ConfirmationAlert(
-                                                                          theme:
-                                                                              theme,
-                                                                          message:
-                                                                              'You are about to print docket slip for this cart. Are you sure you want to proceed?',
-                                                                          title:
-                                                                              'Print Docket Slip',
-                                                                          action: () {
-                                                                            Navigator.of(
-                                                                              confirmContext,
-                                                                            ).pop();
-                                                                            if (kIsWeb) {
-                                                                              downloadDocket(
-                                                                                setTotal:
-                                                                                    showTotal,
-                                                                                items:
-                                                                                    list,
-                                                                                cart:
-                                                                                    returnSalesProvider().currentCart(),
-                                                                                context:
-                                                                                    context,
-                                                                                fileName:
-                                                                                    'DocketSlip${DateTime.now().microsecondsSinceEpoch.toString().substring(0, 5)}',
-                                                                                waiter:
-                                                                                    returnSalesProvider().currentMainCart().subStaff?.staffName ??
-                                                                                    'Not Set',
-                                                                              );
-                                                                            } else {
-                                                                              printDocket(
-                                                                                setTotal:
-                                                                                    showTotal,
-                                                                                items:
-                                                                                    list,
-                                                                                cart:
-                                                                                    returnSalesProvider().currentCart(),
-                                                                                context:
-                                                                                    context,
-                                                                                fileName:
-                                                                                    'DocketSlip${DateTime.now().microsecondsSinceEpoch.toString().substring(0, 5)}',
-                                                                                waiter:
-                                                                                    returnSalesProvider().currentMainCart().subStaff?.staffName ??
-                                                                                    'Not Set',
-                                                                              );
-                                                                            }
-                                                                          },
-                                                                        );
-                                                                      },
-                                                                    );
-                                                                  },
-                                                                  widget: SizedBox(
-                                                                    height:
-                                                                        screenHeight(
-                                                                          context,
-                                                                        ) -
-                                                                        300,
-                                                                    child: Column(
-                                                                      children: [
-                                                                        Expanded(
-                                                                          child: SingleChildScrollView(
-                                                                            child: Padding(
-                                                                              padding: const EdgeInsets.symmetric(
-                                                                                horizontal:
-                                                                                    20.0,
-                                                                                vertical:
-                                                                                    15,
-                                                                              ),
-                                                                              child: Column(
-                                                                                spacing:
-                                                                                    5,
-                                                                                children:
-                                                                                    returnSalesProvider()
-                                                                                        .currentCart()
-                                                                                        .cartItems
-                                                                                        .map(
-                                                                                          (
-                                                                                            item,
-                                                                                          ) => DocketListTileWidget(
-                                                                                            item:
-                                                                                                item,
-                                                                                            list:
-                                                                                                list,
-                                                                                            theme:
-                                                                                                theme,
-                                                                                          ),
-                                                                                        )
-                                                                                        .toList(),
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                        Container(
-                                                                          padding: const EdgeInsets.symmetric(
-                                                                            horizontal:
-                                                                                20.0,
-                                                                            vertical:
-                                                                                10,
-                                                                          ),
-                                                                          decoration: BoxDecoration(
-                                                                            border: Border(
-                                                                              top: BorderSide(
-                                                                                color:
-                                                                                    Colors.grey.shade300,
-                                                                                width:
-                                                                                    1,
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                          child: Row(
-                                                                            mainAxisAlignment:
-                                                                                MainAxisAlignment.spaceBetween,
-                                                                            children: [
-                                                                              Text(
-                                                                                style: TextStyle(
-                                                                                  fontWeight:
-                                                                                      FontWeight.bold,
-                                                                                ),
-                                                                                'Print Total Bill',
-                                                                              ),
-                                                                              MyToggleButton(
-                                                                                boolValue:
-                                                                                    showTotal,
-                                                                                toggle: () {
-                                                                                  setState(
-                                                                                    () {
-                                                                                      if (showTotal ==
-                                                                                          true) {
-                                                                                        showTotal =
-                                                                                            false;
-                                                                                        list.clear();
-                                                                                      } else {
-                                                                                        showTotal =
-                                                                                            true;
-                                                                                        list.clear();
-                                                                                        list.addAll(
-                                                                                          returnSalesProvider().currentCart().cartItems,
-                                                                                        );
-                                                                                      }
-                                                                                    },
-                                                                                  );
-                                                                                },
-                                                                                theme:
-                                                                                    theme,
-                                                                              ),
-                                                                            ],
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                  ),
-                                                                );
-                                                              },
+                                                            if (returnSalesProvider().scanBarcodeCartPageNode.hasFocus) {
+                                                              // returnSalesProvider().removeListenerScanBarcode();
+                                                            }
+                                                            print(
+                                                              "${returnSalesProvider().scanBarcodeCartPageNode.hasFocus} Beans",
                                                             );
-                                                          },
-                                                        ).then((
-                                                          _,
-                                                        ) {
-                                                          returnSalesProvider().requestFocusScanBarcode();
-                                                          // returnSalesProvider().addListenerScanBarcode();
-                                                        });
-                                                      },
-                                                    );
+                                                          }
+                                                          List<
+                                                            TempCartItem
+                                                          >
+                                                          list =
+                                                              [];
+                                                          bool
+                                                          showTotal =
+                                                              false;
+                                                          showDialog(
+                                                            context:
+                                                                context,
+                                                            builder: (
+                                                              firstContext,
+                                                            ) {
+                                                              return StatefulBuilder(
+                                                                builder: (
+                                                                  secondContext,
+                                                                  setState,
+                                                                ) {
+                                                                  return DialogTemplate(
+                                                                    theme:
+                                                                        theme,
+                                                                    message:
+                                                                        'Select Items to print for this Docket',
+                                                                    title:
+                                                                        'Select Item(s)',
+                                                                    action: () {
+                                                                      showDialog(
+                                                                        context:
+                                                                            context,
+                                                                        builder: (
+                                                                          confirmContext,
+                                                                        ) {
+                                                                          return ConfirmationAlert(
+                                                                            theme:
+                                                                                theme,
+                                                                            message:
+                                                                                'You are about to print docket slip for this cart. Are you sure you want to proceed?',
+                                                                            title:
+                                                                                'Print Docket Slip',
+                                                                            action: () async {
+                                                                              Navigator.of(
+                                                                                confirmContext,
+                                                                              ).pop();
+                                                                              if (list.isEmpty) {
+                                                                                setState(
+                                                                                  () {
+                                                                                    if (showTotal ==
+                                                                                        true) {
+                                                                                      showTotal =
+                                                                                          false;
+                                                                                      list.clear();
+                                                                                    } else {
+                                                                                      showTotal =
+                                                                                          true;
+                                                                                      list.clear();
+                                                                                      list.addAll(
+                                                                                        returnSalesProvider().currentCart().cartItems,
+                                                                                      );
+                                                                                    }
+                                                                                  },
+                                                                                );
+                                                                              }
+                                                                              if (kIsWeb) {
+                                                                                var res = await downloadDocket(
+                                                                                  setTotal:
+                                                                                      showTotal,
+                                                                                  items:
+                                                                                      list,
+                                                                                  cart:
+                                                                                      returnSalesProvider().currentCart(),
+                                                                                  context:
+                                                                                      context,
+                                                                                  fileName:
+                                                                                      'DocketSlip${DateTime.now().microsecondsSinceEpoch.toString().substring(0, 5)}',
+                                                                                  waiter:
+                                                                                      returnSalesProvider().currentMainCart().subStaff?.staffName ??
+                                                                                      'Not Set',
+                                                                                );
+                                                                                if (res &&
+                                                                                    firstContext.mounted) {
+                                                                                  Navigator.of(
+                                                                                    firstContext,
+                                                                                  ).pop();
+                                                                                }
+                                                                              } else {
+                                                                                var res = await printDocket(
+                                                                                  setTotal:
+                                                                                      showTotal,
+                                                                                  items:
+                                                                                      list,
+                                                                                  cart:
+                                                                                      returnSalesProvider().currentCart(),
+                                                                                  context:
+                                                                                      context,
+                                                                                  fileName:
+                                                                                      'DocketSlip${DateTime.now().microsecondsSinceEpoch.toString().substring(0, 5)}',
+                                                                                  waiter:
+                                                                                      returnSalesProvider().currentMainCart().subStaff?.staffName ??
+                                                                                      'Not Set',
+                                                                                );
+                                                                                if (res &&
+                                                                                    firstContext.mounted) {
+                                                                                  Navigator.of(
+                                                                                    firstContext,
+                                                                                  ).pop();
+                                                                                }
+                                                                              }
+                                                                            },
+                                                                          );
+                                                                        },
+                                                                      );
+                                                                    },
+                                                                    widget: SizedBox(
+                                                                      height:
+                                                                          screenHeight(
+                                                                            context,
+                                                                          ) -
+                                                                          300,
+                                                                      child: Column(
+                                                                        children: [
+                                                                          Expanded(
+                                                                            child: SingleChildScrollView(
+                                                                              child: Padding(
+                                                                                padding: const EdgeInsets.symmetric(
+                                                                                  horizontal:
+                                                                                      20.0,
+                                                                                  vertical:
+                                                                                      15,
+                                                                                ),
+                                                                                child: Column(
+                                                                                  spacing:
+                                                                                      5,
+                                                                                  children:
+                                                                                      returnSalesProvider()
+                                                                                          .currentCart()
+                                                                                          .cartItems
+                                                                                          .map(
+                                                                                            (
+                                                                                              item,
+                                                                                            ) => DocketListTileWidget(
+                                                                                              item:
+                                                                                                  item,
+                                                                                              list:
+                                                                                                  list,
+                                                                                              theme:
+                                                                                                  theme,
+                                                                                            ),
+                                                                                          )
+                                                                                          .toList(),
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                          Container(
+                                                                            padding: const EdgeInsets.symmetric(
+                                                                              horizontal:
+                                                                                  20.0,
+                                                                              vertical:
+                                                                                  10,
+                                                                            ),
+                                                                            decoration: BoxDecoration(
+                                                                              border: Border(
+                                                                                top: BorderSide(
+                                                                                  color:
+                                                                                      Colors.grey.shade300,
+                                                                                  width:
+                                                                                      1,
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                            child: Row(
+                                                                              mainAxisAlignment:
+                                                                                  MainAxisAlignment.spaceBetween,
+                                                                              children: [
+                                                                                Text(
+                                                                                  style: TextStyle(
+                                                                                    fontWeight:
+                                                                                        FontWeight.bold,
+                                                                                  ),
+                                                                                  'Print Total Bill',
+                                                                                ),
+                                                                                MyToggleButton(
+                                                                                  boolValue:
+                                                                                      showTotal,
+                                                                                  toggle: () {
+                                                                                    setState(
+                                                                                      () {
+                                                                                        if (showTotal ==
+                                                                                            true) {
+                                                                                          showTotal =
+                                                                                              false;
+                                                                                          list.clear();
+                                                                                        } else {
+                                                                                          showTotal =
+                                                                                              true;
+                                                                                          list.clear();
+                                                                                          list.addAll(
+                                                                                            returnSalesProvider().currentCart().cartItems,
+                                                                                          );
+                                                                                        }
+                                                                                      },
+                                                                                    );
+                                                                                  },
+                                                                                  theme:
+                                                                                      theme,
+                                                                                ),
+                                                                              ],
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    ),
+                                                                  );
+                                                                },
+                                                              );
+                                                            },
+                                                          ).then(
+                                                            (
+                                                              _,
+                                                            ) {
+                                                              returnSalesProvider().requestFocusScanBarcode();
+                                                              // returnSalesProvider().addListenerScanBarcode();
+                                                            },
+                                                          );
+                                                        },
+                                                      );
+                                                    }
                                                   },
                                                   child: Container(
                                                     padding: EdgeInsets.symmetric(

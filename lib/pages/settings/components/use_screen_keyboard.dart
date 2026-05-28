@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/drawer_widget/platforms/my_drawer_widget_desktop.dart';
@@ -22,7 +20,7 @@ class UseScreenKeyboard extends StatelessWidget {
                 Authorizations().toggleOnScreenKeyboard,
           ) &&
           !isStoreKeeper() &&
-          Platform.isWindows,
+          platforms(context) == TargetPlatform.windows,
       child: SubWrapper(
         isVisible:
             !GeneralSettingsAuthAction()

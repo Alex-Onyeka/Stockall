@@ -141,7 +141,7 @@ class EventsLogProvider with ChangeNotifier {
   Future<List<TempEventLogClass>> getEventLogs() async {
     bool isOnline = await ConnectivityProvider().isOnline();
     var shopId = returnShopProvider().userShop()!.shopId!;
-    if (isOnline) {
+    if (isOnline && returnData().isSynced() == 1) {
       try {
         var res = await client
             .from(tableName)

@@ -118,7 +118,7 @@ class CategoriesProvider extends ChangeNotifier {
     int shopId,
   ) async {
     bool isOnline = await connectivity.isOnline();
-    if (isOnline) {
+    if (isOnline && returnData().isSynced() == 1) {
       try {
         final response = await supabase
             .from(tableName)
@@ -352,15 +352,14 @@ class CategoriesProvider extends ChangeNotifier {
         print('${data.length} items added successfully ✅');
         await CreatedCategoriesFunc().clearCategories();
         print('Unsynced Categories Cleared');
+        print('Mounted, refreshing Categories ✅');
+        await getCategories(
+          returnShopProvider().userShop()!.shopId!,
+        );
       }
     } catch (e) {
       print('Batch Categories insert failed ❌: $e');
     }
-
-    print('Mounted, refreshing Categories ✅');
-    await getCategories(
-      returnShopProvider().userShop()!.shopId!,
-    );
   }
 
   //
@@ -400,15 +399,14 @@ class CategoriesProvider extends ChangeNotifier {
         await DeletedCategoriesFunc()
             .clearDeletedCategories();
         print('Unsynced deleted Categories cleared');
+        print('Mounted, refreshing Categories ✅');
+        await getCategories(
+          returnShopProvider().userShop()!.shopId!,
+        );
       }
     } catch (e) {
       print('Batch delete failed ❌: $e');
     }
-
-    print('Mounted, refreshing Categories ✅');
-    await getCategories(
-      returnShopProvider().userShop()!.shopId!,
-    );
   }
 
   //
@@ -501,15 +499,14 @@ class CategoriesProvider extends ChangeNotifier {
         await UpdatedCategoriesFunc()
             .clearUpdatedCategory();
         print('Unsynced updated Categories cleared');
+        print('Mounted, refreshing Categories ✅');
+        await getCategories(
+          returnShopProvider().userShop()!.shopId!,
+        );
       }
     } catch (e) {
       print('Batch update failed ❌: $e');
     }
-
-    print('Mounted, refreshing Categories ✅');
-    await getCategories(
-      returnShopProvider().userShop()!.shopId!,
-    );
   }
 
   //

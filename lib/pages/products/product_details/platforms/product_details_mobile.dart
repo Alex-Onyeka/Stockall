@@ -111,6 +111,7 @@ class _ProductDetailsMobileState
                             var res =
                                 await returnSalesProvider()
                                     .addItemToCart(
+                                      isEdit: false,
                                       context: context,
                                       newItem: TempCartItem(
                                         isVoid: false,

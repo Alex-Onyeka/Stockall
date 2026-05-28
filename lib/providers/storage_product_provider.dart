@@ -124,16 +124,15 @@ class StorageProductProvider extends ChangeNotifier {
         print('${data.length} items added successfully ✅');
         await CreatedStorageProductsFunc()
             .clearCreatedStorageProducts();
+        print('Mounted, refreshing Storage Products ✅');
+        await getStorageProducts(
+          returnShopProvider().userShop()!.shopId!,
+        );
         print('Unsynced Storage Products Cleared');
       }
     } catch (e) {
       print('Batch insert failed ❌: $e');
     }
-
-    print('Mounted, refreshing Storage Products ✅');
-    await getStorageProducts(
-      returnShopProvider().userShop()!.shopId!,
-    );
   }
 
   Future<void> deleteStorageProductsSync() async {
@@ -166,16 +165,15 @@ class StorageProductProvider extends ChangeNotifier {
 
         await DeletedStorageProductsFunc()
             .clearDeletedStorageProduct();
+        print('Mounted, refreshing Storage Products ✅');
+        await getStorageProducts(
+          returnShopProvider().userShop()!.shopId!,
+        );
         print('Unsynced deleted Storage products cleared');
       }
     } catch (e) {
       print('Batch delete failed ❌: $e');
     }
-
-    print('Mounted, refreshing Storage Products ✅');
-    await getStorageProducts(
-      returnShopProvider().userShop()!.shopId!,
-    );
   }
 
   Future<void> updateStorageProductsSync() async {
@@ -268,15 +266,14 @@ class StorageProductProvider extends ChangeNotifier {
         await UpdatedStorageProductsFunc()
             .clearUpdatedStorageProduct();
         print('Unsynced updated Storage products cleared');
+        print('Mounted, refreshing products ✅');
+        await getStorageProducts(
+          returnShopProvider().userShop()!.shopId!,
+        );
       }
     } catch (e) {
       print('Batch update failed ❌: $e');
     }
-
-    print('Mounted, refreshing products ✅');
-    await getStorageProducts(
-      returnShopProvider().userShop()!.shopId!,
-    );
   }
 
   //
@@ -315,7 +312,7 @@ class StorageProductProvider extends ChangeNotifier {
   ) async {
     bool isOnline = await connectivity.isOnline();
     print('✅✅ Products List Cleared');
-    if (isOnline) {
+    if (isOnline && returnData().isSynced() == 1) {
       final data = await supabase
           .from(tableName)
           .select()

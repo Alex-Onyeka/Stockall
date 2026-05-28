@@ -83,7 +83,7 @@ class SuppliersProvider extends ChangeNotifier {
     int shopId,
   ) async {
     bool isOnline = await connectivity.isOnline();
-    if (isOnline) {
+    if (isOnline && returnData().isSynced() == 1) {
       final data = await supabase
           .from(tableName)
           .select()
