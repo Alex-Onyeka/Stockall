@@ -117,7 +117,6 @@ class _TableRowRecordWidgetState
                 padding: EdgeInsets.all(5),
                 decoration: BoxDecoration(
                   border: Border(
-                    right: BorderSide(color: Colors.grey),
                     left: BorderSide(color: Colors.grey),
                   ),
                 ),

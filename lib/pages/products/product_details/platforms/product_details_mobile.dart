@@ -1240,6 +1240,25 @@ class _ProductDetailsMobileState
                                     text: 'Expiry Date',
                                   ),
                                 ),
+                                Visibility(
+                                  visible:
+                                      returnShopProvider()
+                                          .userShop()
+                                          ?.useGroupUnit ==
+                                      true,
+                                  child: BottomInfoSection(
+                                    theme: widget.theme,
+                                    mainText:
+                                        product.qttyPerGroup !=
+                                                null
+                                            ? formatLargeNumberDouble(
+                                              (product.qttyPerGroup ??
+                                                  0),
+                                            )
+                                            : 'Not Set',
+                                    text: 'Qtty Per Group',
+                                  ),
+                                ),
                                 BottomInfoSection(
                                   theme: widget.theme,
                                   mainText:

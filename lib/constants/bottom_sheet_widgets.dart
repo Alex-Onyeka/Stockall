@@ -26,6 +26,7 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/play_sounds.dart';
+import 'package:stockall/constants/sales_docket_print_download.dart';
 import 'package:stockall/constants/scan_barcode.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
@@ -3882,28 +3883,106 @@ void selectProductSales({
                                                   .setTotalPrice;
                                           cartItem.quantity =
                                               qqty.toDouble();
-                                          returnSalesProvider().addItemToCart(
-                                            isEdit: isEdit,
-                                            context:
-                                                context,
-                                            newItem:
-                                                cartItem,
-                                            isCustomEdit:
-                                                returnData()
-                                                    .productList()
-                                                    .where(
-                                                      (
-                                                        product,
-                                                      ) =>
-                                                          product.uuid ==
-                                                          cartItem.item.uuid,
+                                          if (returnShopProvider()
+                                                      .userShop()
+                                                      ?.printSalesDocket ==
+                                                  true &&
+                                              screenWidth(
+                                                    context,
+                                                  ) >
+                                                  tabletScreenSmall) {
+                                            var tempCartItem =
+                                                cartItem.copyWith(
+                                                  quantity:
+                                                      qqty.toDouble(),
+                                                );
+
+                                            var res =
+                                                kIsWeb
+                                                    ? await downloadDocket(
+                                                      setTotal:
+                                                          false,
+                                                      items: [
+                                                        tempCartItem,
+                                                      ],
+                                                      cart:
+                                                          returnSalesProvider().currentCart(),
+                                                      context:
+                                                          context,
+                                                      fileName:
+                                                          'Docket Slip${DateTime.now().microsecondsSinceEpoch.toString().substring(0, 5)}',
+                                                      waiter:
+                                                          returnSalesProvider().currentMainCart().subStaff?.staffName ??
+                                                          'Not Set',
                                                     )
-                                                    .isEmpty,
-                                          );
-                                          Navigator.of(
-                                            context,
-                                          ).pop();
-                                          closeAction();
+                                                    : await printDocket(
+                                                      setTotal:
+                                                          false,
+                                                      items: [
+                                                        tempCartItem,
+                                                      ],
+                                                      cart:
+                                                          returnSalesProvider().currentCart(),
+                                                      context:
+                                                          context,
+                                                      fileName:
+                                                          'Docket Slip${DateTime.now().microsecondsSinceEpoch.toString().substring(0, 5)}',
+                                                      waiter:
+                                                          returnSalesProvider().currentMainCart().subStaff?.staffName ??
+                                                          'Not Set',
+                                                    );
+                                            if (res) {
+                                              returnSalesProvider().addItemToCart(
+                                                isEdit:
+                                                    isEdit,
+                                                // ignore: use_build_context_synchronously
+                                                context:
+                                                    context,
+                                                newItem:
+                                                    cartItem,
+                                                isCustomEdit:
+                                                    returnData()
+                                                        .productList()
+                                                        .where(
+                                                          (
+                                                            product,
+                                                          ) =>
+                                                              product.uuid ==
+                                                              cartItem.item.uuid,
+                                                        )
+                                                        .isEmpty,
+                                              );
+                                              Navigator.of(
+                                                context,
+                                              ).pop();
+                                              closeAction();
+                                            }
+                                          } else {
+                                            returnSalesProvider().addItemToCart(
+                                              isEdit:
+                                                  isEdit,
+                                              // ignore: use_build_context_synchronously
+                                              context:
+                                                  context,
+                                              newItem:
+                                                  cartItem,
+                                              isCustomEdit:
+                                                  returnData()
+                                                      .productList()
+                                                      .where(
+                                                        (
+                                                          product,
+                                                        ) =>
+                                                            product.uuid ==
+                                                            cartItem.item.uuid,
+                                                      )
+                                                      .isEmpty,
+                                            );
+                                            Navigator.of(
+                                              context,
+                                            ).pop();
+                                            closeAction();
+                                          }
                                         }
                                       }
                                     }

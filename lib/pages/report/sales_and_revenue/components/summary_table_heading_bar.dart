@@ -164,7 +164,6 @@ class _SummaryTableHeadingBarState
                 ),
                 decoration: BoxDecoration(
                   border: Border(
-                    right: BorderSide(color: Colors.grey),
                     left: BorderSide(color: Colors.grey),
                   ),
                 ),

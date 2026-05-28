@@ -3,6 +3,7 @@ import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_rec
 import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
+import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
@@ -359,7 +360,7 @@ class _SalesAndRevenueReportDesktopState
                                                     20,
                                                     0,
                                                     20,
-                                                    10,
+                                                    5,
                                                   ),
                                               child: Column(
                                                 children: [
@@ -374,23 +375,143 @@ class _SalesAndRevenueReportDesktopState
                                                       ).pop();
                                                     },
                                                   ),
+                                                  SizedBox(
+                                                    height:
+                                                        10,
+                                                  ),
                                                   Row(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment.start,
                                                     mainAxisAlignment:
                                                         MainAxisAlignment.center,
                                                     spacing:
-                                                        5,
+                                                        10,
                                                     children: [
                                                       Expanded(
-                                                        child:
-                                                            GenerateSectionWidget(),
+                                                        child: SizedBox(
+                                                          height:
+                                                              screenHeight(
+                                                                context,
+                                                              ) *
+                                                              0.85,
+                                                          child: GenerateSectionWidget(
+                                                            title:
+                                                                'All Sales',
+                                                            widget: Expanded(
+                                                              child: ListView(
+                                                                children:
+                                                                    salesRecords.map(
+                                                                      (
+                                                                        record,
+                                                                      ) {
+                                                                        return Container(
+                                                                          margin: EdgeInsets.symmetric(
+                                                                            vertical:
+                                                                                4,
+                                                                          ),
+                                                                          padding: EdgeInsets.symmetric(
+                                                                            vertical:
+                                                                                10,
+                                                                            horizontal:
+                                                                                10,
+                                                                          ),
+                                                                          decoration: BoxDecoration(
+                                                                            color:
+                                                                                Colors.grey.shade100,
+                                                                          ),
+                                                                          child: Row(
+                                                                            spacing:
+                                                                                10,
+                                                                            children: [
+                                                                              Expanded(
+                                                                                child: Row(
+                                                                                  children: [
+                                                                                    SizedBox(
+                                                                                      width:
+                                                                                          50,
+                                                                                      child: Row(
+                                                                                        children: [
+                                                                                          Expanded(
+                                                                                            child: Text(
+                                                                                              style: TextStyle(
+                                                                                                fontWeight:
+                                                                                                    FontWeight.bold,
+                                                                                                fontSize:
+                                                                                                    theme.mobileTexts.b3.fontSize,
+                                                                                              ),
+                                                                                              "${[formatLargeNumber(record.quantity.toString())]} - ",
+                                                                                            ),
+                                                                                          ),
+                                                                                        ],
+                                                                                      ),
+                                                                                    ),
+                                                                                    Flexible(
+                                                                                      child: Text(
+                                                                                        style: TextStyle(
+                                                                                          fontWeight:
+                                                                                              FontWeight.bold,
+                                                                                          fontSize:
+                                                                                              theme.mobileTexts.b3.fontSize,
+                                                                                        ),
+                                                                                        record.productName,
+                                                                                      ),
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
+                                                                              ),
+                                                                              Text(
+                                                                                style: TextStyle(
+                                                                                  fontWeight:
+                                                                                      FontWeight.bold,
+                                                                                  fontSize:
+                                                                                      theme.mobileTexts.b3.fontSize,
+                                                                                ),
+                                                                                formatMoneyMid(
+                                                                                  amount:
+                                                                                      record.revenue,
+                                                                                  context:
+                                                                                      context,
+                                                                                ),
+                                                                              ),
+                                                                            ],
+                                                                          ),
+                                                                        );
+                                                                      },
+                                                                    ).toList(),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
                                                       ),
                                                       Expanded(
-                                                        child:
-                                                            GenerateSectionWidget(),
+                                                        child: SizedBox(
+                                                          height:
+                                                              screenHeight(
+                                                                context,
+                                                              ) *
+                                                              0.85,
+                                                          child: GenerateSectionWidget(
+                                                            title:
+                                                                'Department Summary',
+                                                            widget:
+                                                                Container(),
+                                                          ),
+                                                        ),
                                                       ),
                                                       Expanded(
-                                                        child:
-                                                            GenerateSectionWidget(),
+                                                        child: SizedBox(
+                                                          height:
+                                                              screenHeight(
+                                                                context,
+                                                              ) *
+                                                              0.85,
+                                                          child: GenerateSectionWidget(
+                                                            title:
+                                                                'Calculation',
+                                                            widget:
+                                                                Container(),
+                                                          ),
+                                                        ),
                                                       ),
                                                     ],
                                                   ),

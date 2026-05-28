@@ -2581,21 +2581,6 @@ class _MakeSalesDesktopState
                                                         context:
                                                             context,
                                                         action: () {
-                                                          var number =
-                                                              2;
-                                                          for (
-                                                            var i = 0;
-                                                            i <
-                                                                number;
-                                                            i++
-                                                          ) {
-                                                            if (returnSalesProvider().scanBarcodeCartPageNode.hasFocus) {
-                                                              // returnSalesProvider().removeListenerScanBarcode();
-                                                            }
-                                                            print(
-                                                              "${returnSalesProvider().scanBarcodeCartPageNode.hasFocus} Beans",
-                                                            );
-                                                          }
                                                           List<
                                                             TempCartItem
                                                           >
@@ -3162,13 +3147,16 @@ class DocketListTileWidget extends StatefulWidget {
 class _DocketListTileWidgetState
     extends State<DocketListTileWidget> {
   TempCartItem? newItem;
+  TextEditingController controller =
+      TextEditingController();
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
-        newItem = widget.item.copyWith(quantity: 0);
+        newItem = widget.item.copyWith();
+        controller.text = widget.item.quantity.toString();
       });
     });
   }
@@ -3184,8 +3172,10 @@ class _DocketListTileWidgetState
               widget.list.remove(newItem);
             } else {
               widget.list.add(newItem!);
-              if (newItem?.quantity == 0) {
+              if (controller.text.isEmpty) {
                 newItem?.quantity++;
+                controller.text =
+                    (newItem?.quantity ?? 0).toString();
               }
             }
           });
@@ -3234,11 +3224,17 @@ class _DocketListTileWidgetState
                           if ((newItem?.quantity ?? 0) >
                               0) {
                             newItem?.quantity--;
+                            controller.text =
+                                (newItem?.quantity ?? 0)
+                                    .toString();
                           }
                           if ((newItem?.quantity ?? 0) ==
                               0) {
                             widget.list.remove(newItem);
                           }
+                          controller.text =
+                              (newItem?.quantity ?? 0)
+                                  .toString();
                         });
                       },
                       child: Container(
@@ -3253,17 +3249,50 @@ class _DocketListTileWidgetState
                       ),
                     ),
                   ),
-                  Text(
-                    style: TextStyle(
-                      fontSize:
-                          widget
-                              .theme
-                              .mobileTexts
-                              .b2
-                              .fontSize,
-                      fontWeight: FontWeight.bold,
+                  SizedBox(
+                    height: 40,
+                    width: 100,
+                    child: EditCartTextField(
+                      title: '',
+                      hint: '0',
+                      showTitle: false,
+                      onTap: () {
+                        showOnScreenKeyboard();
+                      },
+                      onChanged: (value) {
+                        if (widget.item.quantity >
+                            (double.tryParse(
+                                  value.replaceAll(',', ''),
+                                ) ??
+                                0)) {
+                          setState(() {
+                            newItem?.quantity =
+                                double.tryParse(
+                                  controller.text
+                                      .replaceAll(',', ''),
+                                ) ??
+                                0;
+                          });
+                        } else {
+                          setState(() {
+                            newItem?.quantity =
+                                widget.item.quantity;
+                            controller.text =
+                                (newItem?.quantity ?? 0)
+                                    .toString();
+                          });
+                        }
+                        setState(() {
+                          if (!widget.list.contains(
+                            newItem,
+                          )) {
+                            widget.list.add(newItem!);
+                          }
+                        });
+                      },
+                      controller: controller,
+                      theme: returnTheme(context),
                     ),
-                    newItem?.quantity.toString() ?? '0',
                   ),
                   Ink(
                     decoration: BoxDecoration(
@@ -3287,6 +3316,9 @@ class _DocketListTileWidgetState
                             )) {
                               widget.list.add(newItem!);
                             }
+                            controller.text =
+                                (newItem?.quantity ?? 0)
+                                    .toString();
                           }
                         });
                       },
