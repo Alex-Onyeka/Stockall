@@ -11,6 +11,7 @@ import 'package:stockall/components/discount_setter.dart/discount_setter_widget.
 import 'package:stockall/components/major/empty_widget_display.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/my_calculator.dart';
+import 'package:stockall/components/pin_code_widget/my_pin_code_widget.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
 import 'package:stockall/components/text_fields/general_textfield.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
@@ -112,13 +113,15 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
   bool isNormalEdit = true;
 
   void makeCustomSale({
-    required TempCartItem cartItem,
+    required TempCartItem editCartItem,
     required Function() closeAction,
   }) {
     SalesAuthAction().addCustomItemToCartAction(
       context: context,
       action: () {
+        double existingQtty = editCartItem.quantity;
         var theme = returnTheme(context, listen: false);
+        TempCartItem cartItem = editCartItem.copyWith();
         if (returnData()
                 .productList()
                 .where(
@@ -582,7 +585,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                   ),
                                   SmallButtonMain(
                                     theme: theme,
-                                    action: () {
+                                    action: () async {
                                       var productIndex = returnData()
                                           .productList()
                                           .indexWhere((
@@ -702,8 +705,14 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                             },
                                           );
                                         } else {
-                                          cartItem.customPrice =
-                                              double.tryParse(
+                                          if (existingQtty >
+                                              qqty) {
+                                            if (returnSalesProvider()
+                                                .currentCart()
+                                                .cartItems
+                                                .isEmpty) {
+                                              cartItem
+                                                  .customPrice = double.tryParse(
                                                 sellingPriceC
                                                     .text
                                                     .replaceAll(
@@ -711,54 +720,178 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                       '',
                                                     ),
                                               );
-                                          cartItem.quantity =
-                                              qqty.toDouble();
-                                          cartItem.setCustomPrice =
-                                              true;
-                                          cartItem.setTotalPrice =
-                                              returnSalesProvider()
-                                                  .setTotalPrice;
-                                          cartItem
-                                                  .item
-                                                  .name =
-                                              nameC.text;
-                                          cartItem
-                                                  .item
-                                                  .costPrice =
-                                              (double.tryParse(
-                                                    costPriceC
-                                                        .text
-                                                        .replaceAll(
+                                              cartItem.quantity =
+                                                  qqty.toDouble();
+                                              cartItem.setCustomPrice =
+                                                  true;
+                                              cartItem.setTotalPrice =
+                                                  returnSalesProvider()
+                                                      .setTotalPrice;
+                                              cartItem
+                                                      .item
+                                                      .name =
+                                                  nameC
+                                                      .text;
+                                              cartItem
+                                                      .item
+                                                      .costPrice =
+                                                  (double.tryParse(
+                                                        costPriceC.text.replaceAll(
                                                           ',',
                                                           '',
                                                         ),
-                                                  ) ??
-                                                  0);
-                                          // cartItem.item.uuid =
-                                          //     uuidGen();
-                                          cartItem.addToStock =
-                                              returnSalesProvider()
-                                                  .addToStock;
+                                                      ) ??
+                                                      0);
+                                              // cartItem.item.uuid =
+                                              //     uuidGen();
+                                              cartItem.addToStock =
+                                                  returnSalesProvider()
+                                                      .addToStock;
 
-                                          returnSalesProvider().addItemToCart(
-                                            isEdit: false,
-                                            context:
-                                                context,
-                                            newItem:
-                                                cartItem,
-                                            isCustomEdit:
-                                                returnData()
-                                                    .productList()
-                                                    .where(
-                                                      (
-                                                        product,
-                                                      ) =>
-                                                          product.uuid ==
-                                                          cartItem.item.uuid,
-                                                    )
-                                                    .isEmpty,
-                                          );
-                                          closeAction();
+                                              returnSalesProvider().addItemToCart(
+                                                isEdit:
+                                                    false,
+                                                context:
+                                                    context,
+                                                newItem:
+                                                    cartItem,
+                                                isCustomEdit:
+                                                    returnData()
+                                                        .productList()
+                                                        .where(
+                                                          (
+                                                            product,
+                                                          ) =>
+                                                              product.uuid ==
+                                                              cartItem.item.uuid,
+                                                        )
+                                                        .isEmpty,
+                                              );
+                                              closeAction();
+                                            } else {
+                                              var res = await pinCodeAction(
+                                                isMain:
+                                                    false,
+                                                context:
+                                                    context,
+                                              );
+                                              if (res) {
+                                                cartItem
+                                                    .customPrice = double.tryParse(
+                                                  sellingPriceC
+                                                      .text
+                                                      .replaceAll(
+                                                        ',',
+                                                        '',
+                                                      ),
+                                                );
+                                                cartItem.quantity =
+                                                    qqty.toDouble();
+                                                cartItem.setCustomPrice =
+                                                    true;
+                                                cartItem.setTotalPrice =
+                                                    returnSalesProvider()
+                                                        .setTotalPrice;
+                                                cartItem
+                                                        .item
+                                                        .name =
+                                                    nameC
+                                                        .text;
+                                                cartItem
+                                                        .item
+                                                        .costPrice =
+                                                    (double.tryParse(
+                                                          costPriceC.text.replaceAll(
+                                                            ',',
+                                                            '',
+                                                          ),
+                                                        ) ??
+                                                        0);
+                                                // cartItem.item.uuid =
+                                                //     uuidGen();
+                                                cartItem.addToStock =
+                                                    returnSalesProvider()
+                                                        .addToStock;
+
+                                                returnSalesProvider().addItemToCart(
+                                                  isEdit:
+                                                      false,
+                                                  context:
+                                                      context,
+                                                  newItem:
+                                                      cartItem,
+                                                  isCustomEdit:
+                                                      returnData()
+                                                          .productList()
+                                                          .where(
+                                                            (
+                                                              product,
+                                                            ) =>
+                                                                product.uuid ==
+                                                                cartItem.item.uuid,
+                                                          )
+                                                          .isEmpty,
+                                                );
+                                                closeAction();
+                                              }
+                                            }
+                                          } else {
+                                            cartItem.customPrice =
+                                                double.tryParse(
+                                                  sellingPriceC
+                                                      .text
+                                                      .replaceAll(
+                                                        ',',
+                                                        '',
+                                                      ),
+                                                );
+                                            cartItem.quantity =
+                                                qqty.toDouble();
+                                            cartItem.setCustomPrice =
+                                                true;
+                                            cartItem.setTotalPrice =
+                                                returnSalesProvider()
+                                                    .setTotalPrice;
+                                            cartItem
+                                                    .item
+                                                    .name =
+                                                nameC.text;
+                                            cartItem
+                                                    .item
+                                                    .costPrice =
+                                                (double.tryParse(
+                                                      costPriceC.text.replaceAll(
+                                                        ',',
+                                                        '',
+                                                      ),
+                                                    ) ??
+                                                    0);
+                                            // cartItem.item.uuid =
+                                            //     uuidGen();
+                                            cartItem.addToStock =
+                                                returnSalesProvider()
+                                                    .addToStock;
+
+                                            returnSalesProvider().addItemToCart(
+                                              isEdit: false,
+                                              context:
+                                                  context,
+                                              newItem:
+                                                  cartItem,
+                                              isCustomEdit:
+                                                  returnData()
+                                                      .productList()
+                                                      .where(
+                                                        (
+                                                          product,
+                                                        ) =>
+                                                            product.uuid ==
+                                                            cartItem.item.uuid,
+                                                      )
+                                                      .isEmpty,
+                                            );
+                                            closeAction();
+                                          }
                                         }
                                       }
                                     },
@@ -896,10 +1029,39 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                             message:
                                 'You are about to clear the items in your cart, are you sure you want to proceed?',
                             title: 'Are you sure?',
-                            action: () {
-                              returnSalesProvider()
-                                  .clearCart();
-                              Navigator.of(context).pop();
+                            action: () async {
+                              if (returnSalesProvider()
+                                  .currentCart()
+                                  .cartItems
+                                  .isNotEmpty) {
+                                if (returnShopProvider()
+                                        .userShop()
+                                        ?.trackCart ==
+                                    true) {
+                                  var res =
+                                      await pinCodeAction(
+                                        isMain: true,
+                                        context: context,
+                                      );
+                                  if (res) {
+                                    returnSalesProvider()
+                                        .clearCart();
+                                    Navigator.of(
+                                      context,
+                                    ).pop();
+                                  }
+                                } else {
+                                  returnSalesProvider()
+                                      .clearCart();
+                                  Navigator.of(
+                                    context,
+                                  ).pop();
+                                }
+                              } else {
+                                returnSalesProvider()
+                                    .clearCart();
+                                Navigator.of(context).pop();
+                              }
                             },
                           );
                         },
@@ -1074,7 +1236,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                       context,
                                     ).pop();
                                   },
-                                  cartItem: TempCartItem(
+                                  editCartItem: TempCartItem(
                                     isVoid: false,
                                     qttyPerGroup: null,
                                     useGroupQuantity: false,
@@ -1159,7 +1321,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                     context,
                                   ).pop();
                                 },
-                                cartItem: TempCartItem(
+                                editCartItem: TempCartItem(
                                   isVoid: false,
                                   qttyPerGroup: null,
                                   useGroupQuantity: false,
@@ -1269,7 +1431,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                           context,
                                         ).pop();
                                       },
-                                      cartItem: TempCartItem(
+                                      editCartItem: TempCartItem(
                                         isVoid: false,
                                         qttyPerGroup: null,
                                         useGroupQuantity:
@@ -1363,7 +1525,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                     context,
                                   ).pop();
                                 },
-                                cartItem: TempCartItem(
+                                editCartItem: TempCartItem(
                                   isVoid: false,
                                   qttyPerGroup: null,
                                   useGroupQuantity: false,
@@ -1466,16 +1628,39 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                             List<
                                               TempCartItem
                                             >
+                                            allItems =
+                                                returnSalesProviderContext(
+                                                      context,
+                                                    )
+                                                    .currentCart()
+                                                    .getCartItemsAll()
+                                                    .reversed
+                                                    .toList();
+
+                                            List<
+                                              TempCartItem
+                                            >
                                             items =
                                                 returnSalesProviderContext(
                                                       context,
                                                     )
                                                     .currentCart()
-                                                    .cartItems
+                                                    .getCartItems()
+                                                    .reversed
+                                                    .toList();
+                                            List<
+                                              TempCartItem
+                                            >
+                                            voidItems =
+                                                returnSalesProviderContext(
+                                                      context,
+                                                    )
+                                                    .currentCart()
+                                                    .getCartItemsVoid()
                                                     .reversed
                                                     .toList();
 
-                                            if (items
+                                            if (allItems
                                                 .isEmpty) {
                                               return SingleChildScrollView(
                                                 child: EmptyWidgetDisplay(
@@ -1526,7 +1711,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                           context,
                                                         ).pop();
                                                       },
-                                                      cartItem: TempCartItem(
+                                                      editCartItem: TempCartItem(
                                                         isVoid:
                                                             false,
                                                         qttyPerGroup:
@@ -1604,103 +1789,247 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                 ),
                                               );
                                             } else {
-                                              return ListView.builder(
-                                                itemCount:
-                                                    returnSalesProviderContext(
-                                                          context,
-                                                        )
-                                                        .currentCart()
-                                                        .cartItems
-                                                        .length,
-                                                itemBuilder: (
-                                                  context,
-                                                  index,
-                                                ) {
-                                                  return CartItemMain(
-                                                    deleteCartItem: () {
-                                                      showDialog(
-                                                        context:
-                                                            context,
-                                                        builder: (
-                                                          confirmContext,
+                                              return ListView(
+                                                children: [
+                                                  Column(
+                                                    children:
+                                                        items.map((
+                                                          item,
                                                         ) {
-                                                          return ConfirmationAlert(
-                                                            theme:
-                                                                theme,
-                                                            message:
-                                                                'You want to remove an Item from the List, are you sure you want to proceed?',
-                                                            title:
-                                                                'Remove Item?',
-                                                            action: () {
-                                                              Navigator.of(
-                                                                confirmContext,
-                                                              ).pop();
-                                                              returnSalesProvider().removeItemFromCart(
-                                                                items[index],
-                                                                context,
+                                                          return CartItemMain(
+                                                            deleteCartItem: () async {
+                                                              showDialog(
+                                                                context:
+                                                                    context,
+                                                                builder: (
+                                                                  confirmContext,
+                                                                ) {
+                                                                  return ConfirmationAlert(
+                                                                    theme:
+                                                                        theme,
+                                                                    message:
+                                                                        'You want to remove an Item from the List, are you sure you want to proceed?',
+                                                                    title:
+                                                                        'Remove Item?',
+                                                                    action: () async {
+                                                                      if (returnShopProvider().userShop()?.trackCart ==
+                                                                          true) {
+                                                                        var res = await pinCodeAction(
+                                                                          isMain:
+                                                                              false,
+                                                                          context:
+                                                                              context,
+                                                                        );
+                                                                        if (res &&
+                                                                            context.mounted) {
+                                                                          Navigator.of(
+                                                                            confirmContext,
+                                                                          ).pop();
+                                                                          returnSalesProvider().removeItemFromCart(
+                                                                            item,
+                                                                            context,
+                                                                          );
+                                                                        }
+                                                                      } else {
+                                                                        Navigator.of(
+                                                                          confirmContext,
+                                                                        ).pop();
+                                                                        returnSalesProvider().removeItemFromCart(
+                                                                          item,
+                                                                          context,
+                                                                        );
+                                                                      }
+                                                                    },
+                                                                  );
+                                                                },
                                                               );
                                                             },
+                                                            editAction: () {
+                                                              if (returnData()
+                                                                  .productList()
+                                                                  .where(
+                                                                    (
+                                                                      product,
+                                                                    ) =>
+                                                                        product.uuid ==
+                                                                        item.item.uuid,
+                                                                  )
+                                                                  .isNotEmpty) {
+                                                                selectProductSales(
+                                                                  priceNode:
+                                                                      FocusNode(),
+                                                                  isEdit:
+                                                                      true,
+                                                                  theme:
+                                                                      theme,
+                                                                  closeAction:
+                                                                      () {},
+                                                                  priceController:
+                                                                      priceController,
+                                                                  qttyNode:
+                                                                      FocusNode(),
+                                                                  quantityController:
+                                                                      quantityController,
+                                                                  searchController:
+                                                                      widget.searchController,
+                                                                  // productQuantity:
+                                                                  //     item.quantity,
+                                                                  context:
+                                                                      context,
+                                                                  cartItem:
+                                                                      item,
+                                                                );
+                                                              } else {
+                                                                returnSalesProvider().toggleAddToStock(
+                                                                  false,
+                                                                  context,
+                                                                );
+                                                                makeCustomSale(
+                                                                  closeAction: () {
+                                                                    Navigator.of(
+                                                                      context,
+                                                                    ).pop();
+                                                                  },
+                                                                  editCartItem:
+                                                                      item,
+                                                                );
+                                                              }
+                                                            },
+                                                            theme:
+                                                                theme,
+                                                            cartItem:
+                                                                item,
                                                           );
-                                                        },
-                                                      );
-                                                    },
-                                                    editAction: () {
-                                                      if (returnData()
-                                                          .productList()
-                                                          .where(
-                                                            (
-                                                              product,
-                                                            ) =>
-                                                                product.uuid ==
-                                                                items[index].item.uuid,
-                                                          )
-                                                          .isNotEmpty) {
-                                                        selectProductSales(
-                                                          isEdit:
-                                                              true,
-                                                          theme:
-                                                              theme,
-                                                          closeAction:
-                                                              () {},
-                                                          priceController:
-                                                              priceController,
-                                                          qttyNode:
-                                                              FocusNode(),
-                                                          priceNode:
-                                                              FocusNode(),
-                                                          quantityController:
-                                                              quantityController,
-                                                          searchController:
-                                                              widget.searchController,
-                                                          // productQuantity:
-                                                          //     items[index].quantity,
-                                                          context:
-                                                              context,
-                                                          cartItem:
-                                                              items[index],
-                                                        );
-                                                      } else {
-                                                        returnSalesProvider().toggleAddToStock(
-                                                          false,
+                                                        }).toList(),
+                                                  ),
+                                                  Visibility(
+                                                    visible:
+                                                        returnSalesProviderContext(
                                                           context,
-                                                        );
-                                                        makeCustomSale(
-                                                          closeAction: () {
-                                                            Navigator.of(
-                                                              context,
-                                                            ).pop();
-                                                          },
-                                                          cartItem:
-                                                              items[index],
-                                                        );
-                                                      }
-                                                    },
-                                                    theme:
-                                                        theme,
-                                                    cartItem:
-                                                        items[index],
-                                                  );
-                                                },
+                                                        ).currentCart().getCartItemsVoid().isNotEmpty,
+                                                    child: Column(
+                                                      children: [
+                                                        Divider(
+                                                          height:
+                                                              20,
+                                                        ),
+                                                        Column(
+                                                          children:
+                                                              voidItems.map(
+                                                                (
+                                                                  item,
+                                                                ) {
+                                                                  return CartItemMain(
+                                                                    deleteCartItem: () async {
+                                                                      showDialog(
+                                                                        context:
+                                                                            context,
+                                                                        builder: (
+                                                                          confirmContext,
+                                                                        ) {
+                                                                          return ConfirmationAlert(
+                                                                            theme:
+                                                                                theme,
+                                                                            message:
+                                                                                'You want to remove an Item from the List, are you sure you want to proceed?',
+                                                                            title:
+                                                                                'Remove Item?',
+                                                                            action: () async {
+                                                                              if (returnShopProvider().userShop()?.trackCart ==
+                                                                                  true) {
+                                                                                var res = await pinCodeAction(
+                                                                                  isMain:
+                                                                                      false,
+                                                                                  context:
+                                                                                      context,
+                                                                                );
+                                                                                if (res &&
+                                                                                    context.mounted) {
+                                                                                  Navigator.of(
+                                                                                    confirmContext,
+                                                                                  ).pop();
+                                                                                  returnSalesProvider().removeItemFromCart(
+                                                                                    item,
+                                                                                    context,
+                                                                                  );
+                                                                                }
+                                                                              } else {
+                                                                                Navigator.of(
+                                                                                  confirmContext,
+                                                                                ).pop();
+                                                                                returnSalesProvider().removeItemFromCart(
+                                                                                  item,
+                                                                                  context,
+                                                                                );
+                                                                              }
+                                                                            },
+                                                                          );
+                                                                        },
+                                                                      );
+                                                                    },
+                                                                    editAction: () {
+                                                                      if (returnData()
+                                                                          .productList()
+                                                                          .where(
+                                                                            (
+                                                                              product,
+                                                                            ) =>
+                                                                                product.uuid ==
+                                                                                item.item.uuid,
+                                                                          )
+                                                                          .isNotEmpty) {
+                                                                        selectProductSales(
+                                                                          priceNode:
+                                                                              FocusNode(),
+                                                                          isEdit:
+                                                                              true,
+                                                                          theme:
+                                                                              theme,
+                                                                          closeAction:
+                                                                              () {},
+                                                                          priceController:
+                                                                              priceController,
+                                                                          qttyNode:
+                                                                              FocusNode(),
+                                                                          quantityController:
+                                                                              quantityController,
+                                                                          searchController:
+                                                                              widget.searchController,
+                                                                          // productQuantity:
+                                                                          //     item.quantity,
+                                                                          context:
+                                                                              context,
+                                                                          cartItem:
+                                                                              item,
+                                                                        );
+                                                                      } else {
+                                                                        returnSalesProvider().toggleAddToStock(
+                                                                          false,
+                                                                          context,
+                                                                        );
+                                                                        makeCustomSale(
+                                                                          closeAction: () {
+                                                                            Navigator.of(
+                                                                              context,
+                                                                            ).pop();
+                                                                          },
+                                                                          editCartItem:
+                                                                              item,
+                                                                        );
+                                                                      }
+                                                                    },
+                                                                    theme:
+                                                                        theme,
+                                                                    cartItem:
+                                                                        item,
+                                                                  );
+                                                                },
+                                                              ).toList(),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
                                               );
                                             }
                                           },
@@ -2047,7 +2376,7 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                                 context,
                                                               ).pop();
                                                             },
-                                                            cartItem: TempCartItem(
+                                                            editCartItem: TempCartItem(
                                                               isVoid:
                                                                   false,
                                                               qttyPerGroup:

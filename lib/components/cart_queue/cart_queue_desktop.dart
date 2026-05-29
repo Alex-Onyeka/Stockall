@@ -88,8 +88,8 @@ class _CartQueueDesktopState
                             title: 'Enter Cart Name',
                             action: () async {
                               if (cartItem
-                                      .hasPrintedDocket ==
-                                  true) {
+                                  .cartItems
+                                  .isNotEmpty) {
                                 var res =
                                     await pinCodeAction(
                                       isMain: false,
@@ -248,18 +248,32 @@ class _CartQueueDesktopState
                                               'Are you sure?',
                                           action: () async {
                                             if (cartItem
-                                                    .hasPrintedDocket ==
-                                                true) {
-                                              var res =
-                                                  await pinCodeAction(
-                                                    isMain:
-                                                        true,
+                                                .cartItems
+                                                .isNotEmpty) {
+                                              if (returnShopProvider()
+                                                      .userShop()
+                                                      ?.trackCart ==
+                                                  true) {
+                                                var res = await pinCodeAction(
+                                                  isMain:
+                                                      true,
+                                                  context:
+                                                      context,
+                                                );
+                                                if (res &&
+                                                    context
+                                                        .mounted) {
+                                                  await returnSalesProvider().deleteCart(
+                                                    cartId:
+                                                        cartItem.id!,
                                                     context:
                                                         context,
                                                   );
-                                              if (res &&
-                                                  context
-                                                      .mounted) {
+                                                  Navigator.of(
+                                                    context,
+                                                  ).pop();
+                                                }
+                                              } else {
                                                 await returnSalesProvider().deleteCart(
                                                   cartId:
                                                       cartItem

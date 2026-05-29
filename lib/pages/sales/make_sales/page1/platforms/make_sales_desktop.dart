@@ -111,13 +111,14 @@ class _MakeSalesDesktopState
   FocusNode nameEditNode = FocusNode();
 
   void makeCustomSale({
-    required TempCartItem cartItem,
+    required TempCartItem editCartItem,
     required Function() closeAction,
   }) {
     SalesAuthAction().addCustomItemToCartAction(
       context: context,
       action: () {
         var theme = returnTheme(context, listen: false);
+        TempCartItem cartItem = editCartItem.copyWith();
         double existingQtty = cartItem.quantity;
 
         if (returnData()
@@ -653,9 +654,9 @@ class _MakeSalesDesktopState
                                           if (existingQtty >
                                               qqty) {
                                             if (returnSalesProvider()
-                                                    .currentCart()
-                                                    .hasPrintedDocket !=
-                                                true) {
+                                                .currentCart()
+                                                .cartItems
+                                                .isEmpty) {
                                               cartItem
                                                   .customPrice = double.tryParse(
                                                 sellingPriceC
@@ -1107,9 +1108,9 @@ class _MakeSalesDesktopState
                                                     'Are you sure?',
                                                 action: () async {
                                                   if (returnSalesProvider()
-                                                          .currentCart()
-                                                          .hasPrintedDocket ==
-                                                      true) {
+                                                      .currentCart()
+                                                      .cartItems
+                                                      .isNotEmpty) {
                                                     if (returnShopProvider().userShop()?.trackCart ==
                                                         true) {
                                                       var res = await pinCodeAction(
@@ -1125,18 +1126,11 @@ class _MakeSalesDesktopState
                                                         ).pop();
                                                       }
                                                     } else {
-                                                      var res = await pinCodeAction(
-                                                        isMain:
-                                                            false,
-                                                        context:
-                                                            context,
-                                                      );
-                                                      if (res) {
-                                                        returnSalesProvider().clearCart();
-                                                        Navigator.of(
-                                                          context,
-                                                        ).pop();
-                                                      }
+                                                      returnSalesProvider()
+                                                          .clearCart();
+                                                      Navigator.of(
+                                                        context,
+                                                      ).pop();
                                                     }
                                                   } else {
                                                     returnSalesProvider()
@@ -1329,7 +1323,7 @@ class _MakeSalesDesktopState
                                                 context,
                                               ).pop();
                                             },
-                                            cartItem: TempCartItem(
+                                            editCartItem: TempCartItem(
                                               isVoid: false,
                                               qttyPerGroup:
                                                   null,
@@ -1463,7 +1457,7 @@ class _MakeSalesDesktopState
                                                       context,
                                                     ).pop();
                                                   },
-                                                  cartItem: TempCartItem(
+                                                  editCartItem: TempCartItem(
                                                     isVoid:
                                                         false,
                                                     qttyPerGroup:
@@ -1641,12 +1635,8 @@ class _MakeSalesDesktopState
                                                                         (
                                                                           _,
                                                                         ) {
-                                                                          // returnSalesProvider().addListenerScanBarcode();
-                                                                          setState(
-                                                                            () {
-                                                                              returnSalesProvider().requestFocusScanBarcode();
-                                                                            },
-                                                                          );
+                                                                          returnSalesProvider().requestFocusScanBarcode();
+                                                                          // returnSalesProvider().resetMultipleAddProcess();
                                                                         },
                                                                       );
                                                                     },
@@ -1661,7 +1651,7 @@ class _MakeSalesDesktopState
                                                                             context,
                                                                           ).pop();
                                                                         },
-                                                                        cartItem: TempCartItem(
+                                                                        editCartItem: TempCartItem(
                                                                           isVoid:
                                                                               false,
                                                                           qttyPerGroup:
@@ -1763,19 +1753,11 @@ class _MakeSalesDesktopState
                                                                                       title:
                                                                                           'Remove Item?',
                                                                                       action: () async {
-                                                                                        if (returnSalesProvider().currentCart().hasPrintedDocket !=
+                                                                                        if (returnShopProvider().userShop()?.trackCart ==
                                                                                             true) {
-                                                                                          Navigator.of(
-                                                                                            confirmContext,
-                                                                                          ).pop();
-                                                                                          returnSalesProvider().removeItemFromCart(
-                                                                                            item,
-                                                                                            context,
-                                                                                          );
-                                                                                        } else {
                                                                                           var res = await pinCodeAction(
                                                                                             isMain:
-                                                                                                true,
+                                                                                                false,
                                                                                             context:
                                                                                                 context,
                                                                                           );
@@ -1789,6 +1771,14 @@ class _MakeSalesDesktopState
                                                                                               context,
                                                                                             );
                                                                                           }
+                                                                                        } else {
+                                                                                          Navigator.of(
+                                                                                            confirmContext,
+                                                                                          ).pop();
+                                                                                          returnSalesProvider().removeItemFromCart(
+                                                                                            item,
+                                                                                            context,
+                                                                                          );
                                                                                         }
                                                                                       },
                                                                                     );
@@ -1841,7 +1831,7 @@ class _MakeSalesDesktopState
                                                                                         context,
                                                                                       ).pop();
                                                                                     },
-                                                                                    cartItem:
+                                                                                    editCartItem:
                                                                                         item,
                                                                                   );
                                                                                 }
@@ -1887,19 +1877,11 @@ class _MakeSalesDesktopState
                                                                                             title:
                                                                                                 'Remove Item?',
                                                                                             action: () async {
-                                                                                              if (returnSalesProvider().currentCart().hasPrintedDocket !=
+                                                                                              if (returnShopProvider().userShop()?.trackCart ==
                                                                                                   true) {
-                                                                                                Navigator.of(
-                                                                                                  confirmContext,
-                                                                                                ).pop();
-                                                                                                returnSalesProvider().removeItemFromCart(
-                                                                                                  item,
-                                                                                                  context,
-                                                                                                );
-                                                                                              } else {
                                                                                                 var res = await pinCodeAction(
                                                                                                   isMain:
-                                                                                                      true,
+                                                                                                      false,
                                                                                                   context:
                                                                                                       context,
                                                                                                 );
@@ -1913,6 +1895,14 @@ class _MakeSalesDesktopState
                                                                                                     context,
                                                                                                   );
                                                                                                 }
+                                                                                              } else {
+                                                                                                Navigator.of(
+                                                                                                  confirmContext,
+                                                                                                ).pop();
+                                                                                                returnSalesProvider().removeItemFromCart(
+                                                                                                  item,
+                                                                                                  context,
+                                                                                                );
                                                                                               }
                                                                                             },
                                                                                           );
@@ -1965,7 +1955,7 @@ class _MakeSalesDesktopState
                                                                                               context,
                                                                                             ).pop();
                                                                                           },
-                                                                                          cartItem:
+                                                                                          editCartItem:
                                                                                               item,
                                                                                         );
                                                                                       }
@@ -2009,6 +1999,8 @@ class _MakeSalesDesktopState
                                                 widget
                                                     .searchController
                                                     .clear();
+                                                // returnSalesProvider()
+                                                //     .resetMultipleAddProcess();
                                               });
                                             },
                                           ),
@@ -2399,6 +2391,8 @@ class _MakeSalesDesktopState
                                                     setState(() {
                                                       returnSalesProvider()
                                                           .requestFocusScanBarcode();
+                                                      // returnSalesProvider()
+                                                      //     .resetMultipleAddProcess();
                                                     });
                                                   });
                                                 },
@@ -2458,7 +2452,7 @@ class _MakeSalesDesktopState
                                                             context,
                                                           ).pop();
                                                         },
-                                                        cartItem: TempCartItem(
+                                                        editCartItem: TempCartItem(
                                                           isVoid:
                                                               false,
                                                           qttyPerGroup:
@@ -3612,25 +3606,10 @@ class _SubStaffSelectionWidgetState
                                                                         title:
                                                                             'Are you sure?',
                                                                         action: () async {
-                                                                          if (returnSalesProvider().canDeleteMainCart(
+                                                                          if (!returnSalesProvider().canDeleteMainCart(
                                                                             cartMain:
                                                                                 cart,
                                                                           )) {
-                                                                            var res = await pinCodeAction(
-                                                                              isMain:
-                                                                                  false,
-                                                                              context:
-                                                                                  context,
-                                                                            );
-                                                                            if (res) {
-                                                                              returnSalesProvider().deleteMainCart(
-                                                                                cart.mainCartId!,
-                                                                              );
-                                                                              Navigator.of(
-                                                                                context,
-                                                                              ).pop();
-                                                                            }
-                                                                          } else {
                                                                             var res = await pinCodeAction(
                                                                               isMain:
                                                                                   true,
@@ -3645,6 +3624,13 @@ class _SubStaffSelectionWidgetState
                                                                                 context,
                                                                               ).pop();
                                                                             }
+                                                                          } else {
+                                                                            returnSalesProvider().deleteMainCart(
+                                                                              cart.mainCartId!,
+                                                                            );
+                                                                            Navigator.of(
+                                                                              context,
+                                                                            ).pop();
                                                                           }
                                                                         },
                                                                       );

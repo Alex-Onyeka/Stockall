@@ -9,10 +9,12 @@ import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/report/general_report/class/general_report_class.dart';
 import 'package:stockall/pages/report/sales_and_revenue/components/generate_section_widget.dart';
 import 'package:stockall/pages/report/sales_and_revenue/components/summary_table_heading_bar.dart';
 import 'package:stockall/pages/report/sales_and_revenue/components/table_row_record_widget.dart';
 import 'package:stockall/pages/report/sales_and_revenue/components/table_row_record_widget_summary.dart';
+import 'package:stockall/providers/theme_provider.dart';
 
 class SalesAndRevenueReportDesktop extends StatefulWidget {
   const SalesAndRevenueReportDesktop({super.key});
@@ -63,11 +65,34 @@ class _SalesAndRevenueReportDesktopState
       if (sortIndex == 1) {
         return a.productName.compareTo(b.productName);
       } else if (sortIndex == 2) {
-        return a.quantity.compareTo(b.quantity);
+        return b.quantity.compareTo(a.quantity);
       } else if (sortIndex == 3) {
-        return a.revenue.compareTo(b.revenue);
+        return b.revenue.compareTo(a.revenue);
+      } else if (sortIndex == 4) {
+        return (b.revenue - (b.costPrice ?? 0)).compareTo(
+          (a.revenue - (a.costPrice ?? 0)),
+        );
+      } else if (sortIndex == 5) {
+        return b.createdAt.compareTo(a.createdAt);
       } else {
         return a.productName.compareTo(b.productName);
+      }
+    });
+    var summary =
+        returnReceiptProviderSingle()
+            .returnGeneralReportSalesSummary();
+    summary.sort((a, b) {
+      switch (sortIndex) {
+        case 1:
+          return a.itemName.compareTo(b.itemName);
+        case 2:
+          return b.quantity.compareTo(a.quantity);
+        case 3:
+          return b.totalCost.compareTo(a.totalCost);
+        case 4:
+          return b.profit().compareTo(a.profit());
+        default:
+          return a.itemName.compareTo(b.itemName);
       }
     });
 
@@ -192,7 +217,6 @@ class _SalesAndRevenueReportDesktopState
                         ),
                       ),
                       PopupMenuItem(
-                        enabled: isSummary,
                         onTap: () {
                           setState(() {
                             sortIndex = 4;
@@ -397,88 +421,15 @@ class _SalesAndRevenueReportDesktopState
                                                           child: GenerateSectionWidget(
                                                             title:
                                                                 'All Sales',
-                                                            widget: Expanded(
-                                                              child: ListView(
-                                                                children:
-                                                                    salesRecords.map(
-                                                                      (
-                                                                        record,
-                                                                      ) {
-                                                                        return Container(
-                                                                          margin: EdgeInsets.symmetric(
-                                                                            vertical:
-                                                                                4,
-                                                                          ),
-                                                                          padding: EdgeInsets.symmetric(
-                                                                            vertical:
-                                                                                10,
-                                                                            horizontal:
-                                                                                10,
-                                                                          ),
-                                                                          decoration: BoxDecoration(
-                                                                            color:
-                                                                                Colors.grey.shade100,
-                                                                          ),
-                                                                          child: Row(
-                                                                            spacing:
-                                                                                10,
-                                                                            children: [
-                                                                              Expanded(
-                                                                                child: Row(
-                                                                                  children: [
-                                                                                    SizedBox(
-                                                                                      width:
-                                                                                          50,
-                                                                                      child: Row(
-                                                                                        children: [
-                                                                                          Expanded(
-                                                                                            child: Text(
-                                                                                              style: TextStyle(
-                                                                                                fontWeight:
-                                                                                                    FontWeight.bold,
-                                                                                                fontSize:
-                                                                                                    theme.mobileTexts.b3.fontSize,
-                                                                                              ),
-                                                                                              "${[formatLargeNumber(record.quantity.toString())]} - ",
-                                                                                            ),
-                                                                                          ),
-                                                                                        ],
-                                                                                      ),
-                                                                                    ),
-                                                                                    Flexible(
-                                                                                      child: Text(
-                                                                                        style: TextStyle(
-                                                                                          fontWeight:
-                                                                                              FontWeight.bold,
-                                                                                          fontSize:
-                                                                                              theme.mobileTexts.b3.fontSize,
-                                                                                        ),
-                                                                                        record.productName,
-                                                                                      ),
-                                                                                    ),
-                                                                                  ],
-                                                                                ),
-                                                                              ),
-                                                                              Text(
-                                                                                style: TextStyle(
-                                                                                  fontWeight:
-                                                                                      FontWeight.bold,
-                                                                                  fontSize:
-                                                                                      theme.mobileTexts.b3.fontSize,
-                                                                                ),
-                                                                                formatMoneyMid(
-                                                                                  amount:
-                                                                                      record.revenue,
-                                                                                  context:
-                                                                                      context,
-                                                                                ),
-                                                                              ),
-                                                                            ],
-                                                                          ),
-                                                                        );
-                                                                      },
-                                                                    ).toList(),
-                                                              ),
+                                                            widget: TotalSalesListWidget(
+                                                              isSummary:
+                                                                  isSummary,
+                                                              summary:
+                                                                  summary,
+                                                              theme:
+                                                                  theme,
+                                                              salesRecords:
+                                                                  salesRecords,
                                                             ),
                                                           ),
                                                         ),
@@ -493,8 +444,16 @@ class _SalesAndRevenueReportDesktopState
                                                           child: GenerateSectionWidget(
                                                             title:
                                                                 'Department Summary',
-                                                            widget:
-                                                                Container(),
+                                                            widget: DepartmentSummaryListWidget(
+                                                              isSummary:
+                                                                  isSummary,
+                                                              summary:
+                                                                  summary,
+                                                              theme:
+                                                                  theme,
+                                                              salesRecords:
+                                                                  salesRecords,
+                                                            ),
                                                           ),
                                                         ),
                                                       ),
@@ -739,46 +698,6 @@ class _SalesAndRevenueReportDesktopState
                                           );
                                         } else {
                                           if (isSummary) {
-                                            var summary =
-                                                returnReceiptProviderSingle()
-                                                    .returnGeneralReportSalesSummary();
-                                            summary.sort((
-                                              a,
-                                              b,
-                                            ) {
-                                              switch (sortIndex) {
-                                                case 1:
-                                                  return a
-                                                      .itemName
-                                                      .compareTo(
-                                                        b.itemName,
-                                                      );
-                                                case 2:
-                                                  return b
-                                                      .quantity
-                                                      .compareTo(
-                                                        a.quantity,
-                                                      );
-                                                case 3:
-                                                  return b
-                                                      .totalCost
-                                                      .compareTo(
-                                                        a.totalCost,
-                                                      );
-                                                case 4:
-                                                  return b
-                                                      .profit()
-                                                      .compareTo(
-                                                        a.profit(),
-                                                      );
-                                                default:
-                                                  return a
-                                                      .itemName
-                                                      .compareTo(
-                                                        b.itemName,
-                                                      );
-                                              }
-                                            });
                                             return RefreshIndicator(
                                               onRefresh: () {
                                                 return RefreshFunctions(
@@ -945,6 +864,848 @@ class _SalesAndRevenueReportDesktopState
           ),
         ),
       ],
+    );
+  }
+}
+
+class TotalSalesListWidget extends StatelessWidget {
+  const TotalSalesListWidget({
+    super.key,
+    required this.isSummary,
+    required this.summary,
+    required this.theme,
+    required this.salesRecords,
+  });
+
+  final bool isSummary;
+  final List<GeneralReportSalesSummaryItem> summary;
+  final ThemeProvider theme;
+  final List<TempProductSaleRecord> salesRecords;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child:
+          isSummary
+              ? ListView(
+                children:
+                    summary.map((record) {
+                      return Container(
+                        margin: EdgeInsets.symmetric(
+                          vertical: 4,
+                        ),
+                        padding: EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                        ),
+                        child: Row(
+                          spacing: 10,
+                          children: [
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: 60,
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            style: TextStyle(
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b3
+                                                      .fontSize,
+                                            ),
+                                            "${[formatLargeNumber(record.quantity.toString())]} - ",
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Flexible(
+                                    child: Text(
+                                      style: TextStyle(
+                                        fontWeight:
+                                            FontWeight.bold,
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                      ),
+                                      record.itemName,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Text(
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b3
+                                        .fontSize,
+                              ),
+                              formatMoneyMid(
+                                amount: record.totalCost,
+                                context: context,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+              )
+              : ListView(
+                children:
+                    salesRecords.map((record) {
+                      return Container(
+                        margin: EdgeInsets.symmetric(
+                          vertical: 4,
+                        ),
+                        padding: EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                        ),
+                        child: Row(
+                          spacing: 10,
+                          children: [
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: 60,
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            style: TextStyle(
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b3
+                                                      .fontSize,
+                                            ),
+                                            "${[formatLargeNumber(record.quantity.toString())]} - ",
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Flexible(
+                                    child: Text(
+                                      style: TextStyle(
+                                        fontWeight:
+                                            FontWeight.bold,
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                      ),
+                                      record.productName,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Text(
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b3
+                                        .fontSize,
+                              ),
+                              formatMoneyMid(
+                                amount: record.revenue,
+                                context: context,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+              ),
+    );
+  }
+}
+
+class DepartmentSummaryListWidget extends StatelessWidget {
+  const DepartmentSummaryListWidget({
+    super.key,
+    required this.isSummary,
+    required this.summary,
+    required this.theme,
+    required this.salesRecords,
+  });
+
+  final bool isSummary;
+  final List<GeneralReportSalesSummaryItem> summary;
+  final ThemeProvider theme;
+  final List<TempProductSaleRecord> salesRecords;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child:
+          isSummary
+              ? ListView(
+                children: [
+                  Column(
+                    spacing: 10,
+                    children:
+                        returnDepartmentProvider()
+                            .departments
+                            .where((item) {
+                              for (var rec
+                                  in salesRecords) {
+                                if (rec.departmentUuid ==
+                                    item.uuid) {
+                                  return true;
+                                }
+                              }
+                              return false;
+                            })
+                            .map((dept) {
+                              return Container(
+                                padding:
+                                    EdgeInsets.symmetric(
+                                      vertical: 10,
+                                    ),
+                                decoration: BoxDecoration(),
+                                child: Column(
+                                  spacing: 5,
+                                  children: [
+                                    Row(
+                                      spacing: 5,
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b3
+                                                    .fontSize,
+                                          ),
+                                          "Department:",
+                                        ),
+                                        Container(
+                                          padding:
+                                              EdgeInsets.symmetric(
+                                                vertical: 3,
+                                                horizontal:
+                                                    6,
+                                              ),
+                                          decoration:
+                                              BoxDecoration(
+                                                color:
+                                                    Colors
+                                                        .grey
+                                                        .shade200,
+                                              ),
+                                          child: Text(
+                                            style: TextStyle(
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b3
+                                                      .fontSize,
+                                            ),
+                                            dept.name,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Container(
+                                      width:
+                                          double.infinity,
+                                      height: 6,
+                                      decoration:
+                                          BoxDecoration(
+                                            color:
+                                                Colors
+                                                    .amber,
+                                          ),
+                                    ),
+                                    Column(
+                                      children:
+                                          summary
+                                              .where(
+                                                (sum) =>
+                                                    sum.departmentUuid ==
+                                                    dept.uuid,
+                                              )
+                                              .map((
+                                                record,
+                                              ) {
+                                                return Container(
+                                                  margin: EdgeInsets.symmetric(
+                                                    vertical:
+                                                        4,
+                                                  ),
+                                                  padding: EdgeInsets.symmetric(
+                                                    vertical:
+                                                        10,
+                                                    horizontal:
+                                                        10,
+                                                  ),
+                                                  decoration:
+                                                      BoxDecoration(
+                                                        color:
+                                                            Colors.grey.shade100,
+                                                      ),
+                                                  child: Row(
+                                                    spacing:
+                                                        10,
+                                                    children: [
+                                                      Expanded(
+                                                        child: Row(
+                                                          children: [
+                                                            SizedBox(
+                                                              width:
+                                                                  60,
+                                                              child: Row(
+                                                                children: [
+                                                                  Expanded(
+                                                                    child: Text(
+                                                                      style: TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                        fontSize:
+                                                                            theme.mobileTexts.b3.fontSize,
+                                                                      ),
+                                                                      "${[formatLargeNumber(record.quantity.toString())]} - ",
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                            Flexible(
+                                                              child: Text(
+                                                                style: TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight.bold,
+                                                                  fontSize:
+                                                                      theme.mobileTexts.b3.fontSize,
+                                                                ),
+                                                                record.itemName,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize:
+                                                              theme.mobileTexts.b3.fontSize,
+                                                        ),
+                                                        formatMoneyMid(
+                                                          amount:
+                                                              record.totalCost,
+                                                          context:
+                                                              context,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              })
+                                              .toList(),
+                                    ),
+                                    Divider(),
+                                    Visibility(
+                                      visible:
+                                          returnReceiptProviderSingle()
+                                              .returnProductsRecordByDayOrWeek()
+                                              .where(
+                                                (sum) =>
+                                                    sum.departmentUuid ==
+                                                    dept.uuid,
+                                              )
+                                              .toList()
+                                              .sublist(0, 5)
+                                              .isNotEmpty,
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .center,
+                                            children: [
+                                              Text(
+                                                style: TextStyle(
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                  fontSize:
+                                                      theme
+                                                          .mobileTexts
+                                                          .b3
+                                                          .fontSize,
+                                                ),
+                                                'Deleted Items',
+                                              ),
+                                            ],
+                                          ),
+                                          Column(
+                                            children:
+                                                returnReceiptProviderSingle()
+                                                    .returnProductsRecordByDayOrWeek()
+                                                    .where(
+                                                      (
+                                                        sum,
+                                                      ) =>
+                                                          sum.departmentUuid ==
+                                                          dept.uuid,
+                                                    )
+                                                    .toList()
+                                                    .sublist(
+                                                      0,
+                                                      5,
+                                                    )
+                                                    .map((
+                                                      record,
+                                                    ) {
+                                                      return Container(
+                                                        margin: EdgeInsets.symmetric(
+                                                          vertical:
+                                                              4,
+                                                        ),
+                                                        padding: EdgeInsets.symmetric(
+                                                          vertical:
+                                                              10,
+                                                          horizontal:
+                                                              10,
+                                                        ),
+                                                        decoration: BoxDecoration(
+                                                          color: const Color.fromARGB(
+                                                            255,
+                                                            255,
+                                                            231,
+                                                            233,
+                                                          ),
+                                                        ),
+                                                        child: Row(
+                                                          spacing:
+                                                              10,
+                                                          children: [
+                                                            Icon(
+                                                              size:
+                                                                  20,
+                                                              Icons.clear,
+                                                            ),
+                                                            Expanded(
+                                                              child: Row(
+                                                                children: [
+                                                                  SizedBox(
+                                                                    width:
+                                                                        60,
+                                                                    child: Row(
+                                                                      children: [
+                                                                        Expanded(
+                                                                          child: Text(
+                                                                            style: TextStyle(
+                                                                              fontWeight:
+                                                                                  FontWeight.bold,
+                                                                              fontSize:
+                                                                                  theme.mobileTexts.b3.fontSize,
+                                                                            ),
+                                                                            "${[formatLargeNumber(record.quantity.toString())]} - ",
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                  Flexible(
+                                                                    child: Text(
+                                                                      style: TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                        fontSize:
+                                                                            theme.mobileTexts.b3.fontSize,
+                                                                      ),
+                                                                      record.productName,
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                            Text(
+                                                              style: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight.bold,
+                                                                fontSize:
+                                                                    theme.mobileTexts.b3.fontSize,
+                                                              ),
+                                                              formatMoneyMid(
+                                                                amount:
+                                                                    record.revenue,
+                                                                context:
+                                                                    context,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      );
+                                                    })
+                                                    .toList(),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            })
+                            .toList(),
+                  ),
+                ],
+              )
+              : ListView(
+                children: [
+                  Column(
+                    spacing: 10,
+                    children:
+                        returnDepartmentProvider()
+                            .departments
+                            .where((item) {
+                              for (var rec
+                                  in salesRecords) {
+                                if (rec.departmentUuid ==
+                                    item.uuid) {
+                                  return true;
+                                }
+                              }
+                              return false;
+                            })
+                            .map((dept) {
+                              return Container(
+                                padding:
+                                    EdgeInsets.symmetric(
+                                      vertical: 10,
+                                    ),
+                                decoration: BoxDecoration(),
+                                child: Column(
+                                  spacing: 5,
+                                  children: [
+                                    Row(
+                                      spacing: 5,
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b3
+                                                    .fontSize,
+                                          ),
+                                          "Department:",
+                                        ),
+                                        Container(
+                                          padding:
+                                              EdgeInsets.symmetric(
+                                                vertical: 3,
+                                                horizontal:
+                                                    6,
+                                              ),
+                                          decoration:
+                                              BoxDecoration(
+                                                color:
+                                                    Colors
+                                                        .grey
+                                                        .shade200,
+                                              ),
+                                          child: Text(
+                                            style: TextStyle(
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                              fontSize:
+                                                  theme
+                                                      .mobileTexts
+                                                      .b3
+                                                      .fontSize,
+                                            ),
+                                            dept.name,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Container(
+                                      width:
+                                          double.infinity,
+                                      height: 6,
+                                      decoration:
+                                          BoxDecoration(
+                                            color:
+                                                Colors
+                                                    .amber,
+                                          ),
+                                    ),
+                                    Column(
+                                      children:
+                                          salesRecords
+                                              .where(
+                                                (sum) =>
+                                                    sum.departmentUuid ==
+                                                    dept.uuid,
+                                              )
+                                              .map((
+                                                record,
+                                              ) {
+                                                return Container(
+                                                  margin: EdgeInsets.symmetric(
+                                                    vertical:
+                                                        4,
+                                                  ),
+                                                  padding: EdgeInsets.symmetric(
+                                                    vertical:
+                                                        10,
+                                                    horizontal:
+                                                        10,
+                                                  ),
+                                                  decoration:
+                                                      BoxDecoration(
+                                                        color:
+                                                            Colors.grey.shade100,
+                                                      ),
+                                                  child: Row(
+                                                    spacing:
+                                                        10,
+                                                    children: [
+                                                      Expanded(
+                                                        child: Row(
+                                                          children: [
+                                                            SizedBox(
+                                                              width:
+                                                                  60,
+                                                              child: Row(
+                                                                children: [
+                                                                  Expanded(
+                                                                    child: Text(
+                                                                      style: TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                        fontSize:
+                                                                            theme.mobileTexts.b3.fontSize,
+                                                                      ),
+                                                                      "${[formatLargeNumber(record.quantity.toString())]} - ",
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                            Flexible(
+                                                              child: Text(
+                                                                style: TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight.bold,
+                                                                  fontSize:
+                                                                      theme.mobileTexts.b3.fontSize,
+                                                                ),
+                                                                record.productName,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize:
+                                                              theme.mobileTexts.b3.fontSize,
+                                                        ),
+                                                        formatMoneyMid(
+                                                          amount:
+                                                              record.revenue,
+                                                          context:
+                                                              context,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              })
+                                              .toList(),
+                                    ),
+                                    Divider(),
+                                    Visibility(
+                                      visible:
+                                          returnReceiptProviderSingle()
+                                              .returnProductsRecordByDayOrWeek()
+                                              .where(
+                                                (sum) =>
+                                                    sum.departmentUuid ==
+                                                    dept.uuid,
+                                              )
+                                              .toList()
+                                              .sublist(0, 5)
+                                              .isNotEmpty,
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .center,
+                                            children: [
+                                              Text(
+                                                style: TextStyle(
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                  fontSize:
+                                                      theme
+                                                          .mobileTexts
+                                                          .b3
+                                                          .fontSize,
+                                                ),
+                                                'Deleted Items',
+                                              ),
+                                            ],
+                                          ),
+                                          Column(
+                                            children:
+                                                returnReceiptProviderSingle()
+                                                    .returnProductsRecordByDayOrWeek()
+                                                    .where(
+                                                      (
+                                                        sum,
+                                                      ) =>
+                                                          sum.departmentUuid ==
+                                                          dept.uuid,
+                                                    )
+                                                    .toList()
+                                                    .sublist(
+                                                      0,
+                                                      5,
+                                                    )
+                                                    .map((
+                                                      record,
+                                                    ) {
+                                                      return Container(
+                                                        margin: EdgeInsets.symmetric(
+                                                          vertical:
+                                                              4,
+                                                        ),
+                                                        padding: EdgeInsets.symmetric(
+                                                          vertical:
+                                                              10,
+                                                          horizontal:
+                                                              10,
+                                                        ),
+                                                        decoration: BoxDecoration(
+                                                          color: const Color.fromARGB(
+                                                            255,
+                                                            255,
+                                                            231,
+                                                            233,
+                                                          ),
+                                                        ),
+                                                        child: Row(
+                                                          spacing:
+                                                              10,
+                                                          children: [
+                                                            Icon(
+                                                              size:
+                                                                  20,
+                                                              Icons.clear,
+                                                            ),
+                                                            Expanded(
+                                                              child: Row(
+                                                                children: [
+                                                                  SizedBox(
+                                                                    width:
+                                                                        60,
+                                                                    child: Row(
+                                                                      children: [
+                                                                        Expanded(
+                                                                          child: Text(
+                                                                            style: TextStyle(
+                                                                              fontWeight:
+                                                                                  FontWeight.bold,
+                                                                              fontSize:
+                                                                                  theme.mobileTexts.b3.fontSize,
+                                                                            ),
+                                                                            "${[formatLargeNumber(record.quantity.toString())]} - ",
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                  Flexible(
+                                                                    child: Text(
+                                                                      style: TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                        fontSize:
+                                                                            theme.mobileTexts.b3.fontSize,
+                                                                      ),
+                                                                      record.productName,
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                            Text(
+                                                              style: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight.bold,
+                                                                fontSize:
+                                                                    theme.mobileTexts.b3.fontSize,
+                                                              ),
+                                                              formatMoneyMid(
+                                                                amount:
+                                                                    record.revenue,
+                                                                context:
+                                                                    context,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      );
+                                                    })
+                                                    .toList(),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            })
+                            .toList(),
+                  ),
+                ],
+              ),
     );
   }
 }

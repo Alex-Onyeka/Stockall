@@ -128,23 +128,27 @@ class AltDisplayState extends State<AltDisplay> {
     MethodCall call,
     int fromWindowId,
   ) async {
-    switch (call.method) {
-      case 'update_cart':
-        final data = jsonDecode(call.arguments as String);
-        final cart = AltCartClass.fromJson(data);
-        setState(() {
-          cartClass = cart;
-          showCart = null;
-        });
-        break;
-      case 'show_cart':
-        setState(() {
-          showCart = false;
-        });
-        break;
+    try {
+      switch (call.method) {
+        case 'update_cart':
+          final data = jsonDecode(call.arguments as String);
+          final cart = AltCartClass.fromJson(data);
+          setState(() {
+            cartClass = cart;
+            showCart = null;
+          });
+          break;
+        case 'show_cart':
+          setState(() {
+            showCart = false;
+          });
+          break;
 
-      default:
-        print('Unknown method: ${call.method}');
+        default:
+          print('Unknown method: ${call.method}');
+      }
+    } catch (e) {
+      print('Error Updating Alt Screen: ${e.toString()}');
     }
   }
 
