@@ -36,7 +36,9 @@ class MainButtonTransparent extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(5),
           onTap: () {
-            action!();
+            action != null
+                ? action!()
+                : Navigator.of(context).pop();
             FocusManager.instance.primaryFocus?.unfocus();
           },
           child: Container(

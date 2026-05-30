@@ -1472,6 +1472,139 @@ class ReceiptsProvider extends ChangeNotifier {
     return result;
   }
 
+  List<GeneralReportSalesSummaryItem>
+  returnGeneralReportSalesSummaryNoDepartment() {
+    final List<TempProductSaleRecord> records =
+        returnProductsRecordByDayOrWeek()
+            .where((item) => item.departmentUuid == null)
+            .toList();
+
+    Map<String, List<TempProductSaleRecord>> grouped = {};
+
+    for (var item in records) {
+      if (returnShopProvider()
+              .userShop()
+              ?.manageInventoryStorage ==
+          true) {
+        List<TempProductClass> productList =
+            returnData().productListMain
+                .where(
+                  (pro) => pro.uuid == item.productUuid,
+                )
+                .toList();
+        if (productList.isNotEmpty) {
+          TempProductClass product = productList.first;
+          if (product.storageUuid != null) {
+            final uuid = product.storageUuid ?? '';
+            // print(
+            //   '✅ Product Storage Exist: ${product.name}',
+            // );
+
+            grouped.putIfAbsent(uuid, () => []);
+            grouped[uuid]!.add(item);
+          } else {
+            // print(
+            //   '🔥 Product Storage Uuid does not Exist: ${product.name}',
+            // );
+            final uuid = product.uuid ?? '';
+
+            grouped.putIfAbsent(uuid, () => []);
+            grouped[uuid]!.add(item);
+          }
+        } else {
+          final uuid = item.productUuid ?? '';
+          // print(
+          //   '❌ Product Does Not Exist: ${item.productName}',
+          // );
+
+          grouped.putIfAbsent(uuid, () => []);
+          grouped[uuid]!.add(item);
+        }
+      } else {
+        final uuid = item.productUuid ?? '';
+
+        grouped.putIfAbsent(uuid, () {
+          return [];
+        });
+        grouped[uuid]!.add(item);
+      }
+    }
+
+    List<GeneralReportSalesSummaryItem> result = [];
+
+    grouped.forEach((uuid, items) {
+      double totalQtty = items.fold(
+        0,
+        (sum, e) => sum + e.quantity,
+      );
+
+      double totalCost = items.fold(
+        0,
+        (sum, e) => sum + e.revenue,
+      );
+
+      double totalCostPrice = items.fold(
+        0,
+        (sum, e) => sum + (e.originalCost ?? 0),
+      );
+
+      String itemName() {
+        List<TempProductClass> products =
+            returnData().productListMain
+                .where(
+                  (pro) =>
+                      pro.uuid == items.first.productUuid,
+                )
+                .toList();
+        if (products.isNotEmpty) {
+          TempProductClass product = products.first;
+          if (returnShopProvider()
+                  .userShop()
+                  ?.manageInventoryStorage ==
+              true) {
+            var storageItems =
+                returnStorageProductProvider()
+                    .storageProductListMain
+                    .where(
+                      (item) =>
+                          item.uuid == product.storageUuid,
+                    )
+                    .toList();
+            if (storageItems.isNotEmpty) {
+              return storageItems.first.name;
+            } else {
+              return product.name;
+            }
+          } else {
+            return product.name;
+          }
+        } else {
+          return items.first.productName;
+        }
+      }
+
+      result.add(
+        GeneralReportSalesSummaryItem(
+          costPrice: totalCostPrice,
+          itemName: itemName(),
+          itemUuid: uuid,
+          quantity: totalQtty,
+          totalCost: totalCost,
+          departmentName:
+              items.first.departmentName ??
+              'Departmant Not Set',
+          departmentUuid:
+              items.first.departmentUuid ??
+              'Department Not Set',
+          staffName: items.first.staffName,
+          staffUuid: items.first.staffId,
+        ),
+      );
+    });
+    result.sort((a, b) => b.quantity.compareTo(a.quantity));
+    return result;
+  }
+
   //
   //
   //

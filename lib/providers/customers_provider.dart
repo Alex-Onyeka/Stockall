@@ -368,8 +368,12 @@ class CustomersProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void reloadPage() {
+    notifyListeners();
+  }
+
   void selectCustomer({
-    required String id,
+    String? id,
     required String name,
     required BuildContext context,
   }) {

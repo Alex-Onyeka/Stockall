@@ -4632,7 +4632,7 @@ class _CustomBottomPanelState
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment
-                                            .start,
+                                            .center,
                                     spacing: 3,
                                     children: [
                                       Text(
@@ -5452,9 +5452,11 @@ class MultipleTemporaryCartItems extends StatelessWidget {
               ),
               Visibility(
                 visible:
-                    returnCategoriesProvider()
-                        .categoriesMain
-                        .isNotEmpty,
+                    screenWidth(context) < tabletScreenSmall
+                        ? true
+                        : returnCategoriesProvider()
+                            .categoriesMain
+                            .isNotEmpty,
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(

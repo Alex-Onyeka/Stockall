@@ -22,7 +22,6 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/alt_display/alt_display.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
-import 'package:stockall/providers/customers_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SalesProvider extends ChangeNotifier {
@@ -925,89 +924,91 @@ class SalesProvider extends ChangeNotifier {
   }
 
   String? customerName() {
-    if (currentCart().invoiceUuidEdit != null) {
-      return currentCart().selectedCustomerName ??
-          (CustomersProvider()
-                  .customersMain()
-                  .where(
-                    (cust) =>
-                        cust.uuid ==
-                        currentCart().selectedCustomer,
-                  )
-                  .isNotEmpty
-              ? CustomersProvider()
-                  .customersMain()
-                  .where(
-                    (cust) =>
-                        cust.uuid ==
-                        currentCart().selectedCustomer,
-                  )
-                  .first
-                  .name
-              : null);
-    } else {
-      return CustomersProvider()
-              .customersMain()
-              .where(
-                (cust) =>
-                    cust.uuid ==
-                    currentCart().selectedCustomer,
-              )
-              .isNotEmpty
-          ? CustomersProvider()
-              .customersMain()
-              .where(
-                (cust) =>
-                    cust.uuid ==
-                    currentCart().selectedCustomer,
-              )
-              .first
-              .name
-          : null;
-    }
+    return currentCart().selectedCustomerName;
+    // if (currentCart().invoiceUuidEdit != null) {
+    //   return currentCart().selectedCustomerName ??
+    //       (CustomersProvider()
+    //               .customersMain()
+    //               .where(
+    //                 (cust) =>
+    //                     cust.uuid ==
+    //                     currentCart().selectedCustomer,
+    //               )
+    //               .isNotEmpty
+    //           ? CustomersProvider()
+    //               .customersMain()
+    //               .where(
+    //                 (cust) =>
+    //                     cust.uuid ==
+    //                     currentCart().selectedCustomer,
+    //               )
+    //               .first
+    //               .name
+    //           : null);
+    // } else {
+    //   return CustomersProvider()
+    //           .customersMain()
+    //           .where(
+    //             (cust) =>
+    //                 cust.uuid ==
+    //                 currentCart().selectedCustomer,
+    //           )
+    //           .isNotEmpty
+    //       ? CustomersProvider()
+    //           .customersMain()
+    //           .where(
+    //             (cust) =>
+    //                 cust.uuid ==
+    //                 currentCart().selectedCustomer,
+    //           )
+    //           .first
+    //           .name
+    //       : null;
+    // }
   }
 
   String? customerUuid() {
-    if (currentCart().invoiceUuidEdit != null) {
-      return currentCart().selectedCustomer ??
-          (CustomersProvider()
-                  .customersMain()
-                  .where(
-                    (cust) =>
-                        cust.uuid ==
-                        currentCart().selectedCustomer,
-                  )
-                  .isNotEmpty
-              ? CustomersProvider()
-                  .customersMain()
-                  .where(
-                    (cust) =>
-                        cust.uuid ==
-                        currentCart().selectedCustomer,
-                  )
-                  .first
-                  .uuid
-              : null);
-    } else {
-      return CustomersProvider()
-              .customersMain()
-              .where(
-                (cust) =>
-                    cust.uuid ==
-                    currentCart().selectedCustomer,
-              )
-              .isNotEmpty
-          ? CustomersProvider()
-              .customersMain()
-              .where(
-                (cust) =>
-                    cust.uuid ==
-                    currentCart().selectedCustomer,
-              )
-              .first
-              .uuid
-          : null;
-    }
+    return currentCart().selectedCustomer;
+    // if (currentCart().invoiceUuidEdit != null) {
+    //   return currentCart().selectedCustomer ??
+    //       (CustomersProvider()
+    //               .customersMain()
+    //               .where(
+    //                 (cust) =>
+    //                     cust.uuid ==
+    //                     currentCart().selectedCustomer,
+    //               )
+    //               .isNotEmpty
+    //           ? CustomersProvider()
+    //               .customersMain()
+    //               .where(
+    //                 (cust) =>
+    //                     cust.uuid ==
+    //                     currentCart().selectedCustomer,
+    //               )
+    //               .first
+    //               .uuid
+    //           : null);
+    // } else {
+    //   return CustomersProvider()
+    //           .customersMain()
+    //           .where(
+    //             (cust) =>
+    //                 cust.uuid ==
+    //                 currentCart().selectedCustomer,
+    //           )
+    //           .isNotEmpty
+    //       ? CustomersProvider()
+    //           .customersMain()
+    //           .where(
+    //             (cust) =>
+    //                 cust.uuid ==
+    //                 currentCart().selectedCustomer,
+    //           )
+    //           .first
+    //           .uuid
+    //       : null;
+    // }
   }
 
   String? departmentName() {
@@ -2051,7 +2052,7 @@ class SalesProvider extends ChangeNotifier {
     return true;
   }
 
-  bool isAddMultipleItemsToCart = true;
+  bool isAddMultipleItemsToCart = false;
   List<TempCartItem> tempCartItems = [];
 
   void toggleAddMultipleItemsToCart() {
