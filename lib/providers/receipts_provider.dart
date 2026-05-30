@@ -1337,6 +1337,13 @@ class ReceiptsProvider extends ChangeNotifier {
     return result;
   }
 
+  double getTotalSalesRevenue() {
+    return returnProductsRecordByDayOrWeek()
+        .map((item) => item.revenue)
+        .toList()
+        .fold(0, (first, second) => first + second);
+  }
+
   //
   //
   //
@@ -1618,6 +1625,16 @@ class ReceiptsProvider extends ChangeNotifier {
           (item) => item.departmentUuid == departmentUuid,
         )
         .toList();
+  }
+
+  double getTotalSalesRevenueForDepartment({
+    required String deptUuid,
+  }) {
+    return returnProductsRecordByDayOrWeek()
+        .where((item) => item.departmentUuid == deptUuid)
+        .map((item) => item.revenue)
+        .toList()
+        .fold(0, (first, second) => first + second);
   }
 
   //

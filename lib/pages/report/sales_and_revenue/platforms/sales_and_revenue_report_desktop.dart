@@ -467,8 +467,161 @@ class _SalesAndRevenueReportDesktopState
                                                           child: GenerateSectionWidget(
                                                             title:
                                                                 'Calculation',
-                                                            widget:
-                                                                Container(),
+                                                            widget: Padding(
+                                                              padding: const EdgeInsets.symmetric(
+                                                                horizontal:
+                                                                    10.0,
+                                                              ),
+                                                              child: Column(
+                                                                spacing:
+                                                                    5,
+                                                                children: [
+                                                                  SizedBox(
+                                                                    height:
+                                                                        30,
+                                                                  ),
+                                                                  Container(
+                                                                    height:
+                                                                        6,
+                                                                    color:
+                                                                        Colors.amber,
+                                                                  ),
+                                                                  Padding(
+                                                                    padding: const EdgeInsets.all(
+                                                                      8.0,
+                                                                    ),
+                                                                    child: Row(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment.spaceBetween,
+                                                                      children: [
+                                                                        Text(
+                                                                          style: TextStyle(
+                                                                            fontSize:
+                                                                                theme.mobileTexts.b1.fontSize,
+                                                                            fontWeight:
+                                                                                FontWeight.bold,
+                                                                          ),
+                                                                          'TOTAL SALES:',
+                                                                        ),
+                                                                        Text(
+                                                                          style: TextStyle(
+                                                                            fontSize:
+                                                                                theme.mobileTexts.b1.fontSize,
+                                                                            fontWeight:
+                                                                                FontWeight.bold,
+                                                                          ),
+                                                                          formatMoneyBig(
+                                                                            amount:
+                                                                                returnReceiptProviderSingle().getTotalSalesRevenue(),
+                                                                            context:
+                                                                                context,
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                  SizedBox(
+                                                                    height:
+                                                                        20,
+                                                                  ),
+                                                                  Container(
+                                                                    height:
+                                                                        6,
+                                                                    color:
+                                                                        Colors.amber,
+                                                                  ),
+                                                                  SizedBox(
+                                                                    height:
+                                                                        5,
+                                                                  ),
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment.center,
+                                                                    children: [
+                                                                      Text(
+                                                                        style: TextStyle(
+                                                                          fontSize:
+                                                                              theme.mobileTexts.b3.fontSize,
+                                                                          fontWeight:
+                                                                              FontWeight.bold,
+                                                                        ),
+                                                                        'Departments',
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  SizedBox(
+                                                                    height:
+                                                                        5,
+                                                                  ),
+                                                                  Divider(
+                                                                    color:
+                                                                        Colors.grey,
+                                                                    height:
+                                                                        0,
+                                                                  ),
+                                                                  Column(
+                                                                    children:
+                                                                        returnDepartmentProvider().departments
+                                                                            .where(
+                                                                              (
+                                                                                item,
+                                                                              ) {
+                                                                                for (var rec in salesRecords) {
+                                                                                  if (rec.departmentUuid ==
+                                                                                      item.uuid) {
+                                                                                    return true;
+                                                                                  }
+                                                                                }
+                                                                                return false;
+                                                                              },
+                                                                            )
+                                                                            .map(
+                                                                              (
+                                                                                dept,
+                                                                              ) {
+                                                                                return Padding(
+                                                                                  padding: const EdgeInsets.all(
+                                                                                    8.0,
+                                                                                  ),
+                                                                                  child: Row(
+                                                                                    mainAxisAlignment:
+                                                                                        MainAxisAlignment.spaceBetween,
+                                                                                    children: [
+                                                                                      Text(
+                                                                                        style: TextStyle(
+                                                                                          fontSize:
+                                                                                              theme.mobileTexts.b3.fontSize,
+                                                                                          fontWeight:
+                                                                                              FontWeight.bold,
+                                                                                        ),
+                                                                                        "${dept.name}:",
+                                                                                      ),
+                                                                                      Text(
+                                                                                        style: TextStyle(
+                                                                                          fontSize:
+                                                                                              theme.mobileTexts.b3.fontSize,
+                                                                                          fontWeight:
+                                                                                              FontWeight.bold,
+                                                                                        ),
+                                                                                        formatMoneyBig(
+                                                                                          amount: returnReceiptProviderSingle().getTotalSalesRevenueForDepartment(
+                                                                                            deptUuid:
+                                                                                                dept.uuid,
+                                                                                          ),
+                                                                                          context:
+                                                                                              context,
+                                                                                        ),
+                                                                                      ),
+                                                                                    ],
+                                                                                  ),
+                                                                                );
+                                                                              },
+                                                                            )
+                                                                            .toList(),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
                                                           ),
                                                         ),
                                                       ),
@@ -1241,14 +1394,13 @@ class DepartmentSummaryListWidget extends StatelessWidget {
                                     Visibility(
                                       visible:
                                           returnReceiptProviderSingle()
-                                              .returnProductsRecordByDayOrWeek()
+                                              .returnGeneralReportSalesSummaryVoid()
                                               .where(
                                                 (sum) =>
                                                     sum.departmentUuid ==
                                                     dept.uuid,
                                               )
                                               .toList()
-                                              .sublist(0, 5)
                                               .isNotEmpty,
                                       child: Column(
                                         children: [
@@ -1275,7 +1427,7 @@ class DepartmentSummaryListWidget extends StatelessWidget {
                                           Column(
                                             children:
                                                 returnReceiptProviderSingle()
-                                                    .returnProductsRecordByDayOrWeek()
+                                                    .returnGeneralReportSalesSummaryVoid()
                                                     .where(
                                                       (
                                                         sum,
@@ -1284,10 +1436,6 @@ class DepartmentSummaryListWidget extends StatelessWidget {
                                                           dept.uuid,
                                                     )
                                                     .toList()
-                                                    .sublist(
-                                                      0,
-                                                      5,
-                                                    )
                                                     .map((
                                                       record,
                                                     ) {
@@ -1349,7 +1497,7 @@ class DepartmentSummaryListWidget extends StatelessWidget {
                                                                         fontSize:
                                                                             theme.mobileTexts.b3.fontSize,
                                                                       ),
-                                                                      record.productName,
+                                                                      record.itemName,
                                                                     ),
                                                                   ),
                                                                 ],
@@ -1364,7 +1512,7 @@ class DepartmentSummaryListWidget extends StatelessWidget {
                                                               ),
                                                               formatMoneyMid(
                                                                 amount:
-                                                                    record.revenue,
+                                                                    record.totalCost,
                                                                 context:
                                                                     context,
                                                               ),
@@ -1561,14 +1709,13 @@ class DepartmentSummaryListWidget extends StatelessWidget {
                                     Visibility(
                                       visible:
                                           returnReceiptProviderSingle()
-                                              .returnProductsRecordByDayOrWeek()
+                                              .returnGeneralReportSalesSummaryVoid()
                                               .where(
                                                 (sum) =>
                                                     sum.departmentUuid ==
                                                     dept.uuid,
                                               )
                                               .toList()
-                                              .sublist(0, 5)
                                               .isNotEmpty,
                                       child: Column(
                                         children: [
@@ -1595,7 +1742,7 @@ class DepartmentSummaryListWidget extends StatelessWidget {
                                           Column(
                                             children:
                                                 returnReceiptProviderSingle()
-                                                    .returnProductsRecordByDayOrWeek()
+                                                    .returnGeneralReportSalesSummaryVoid()
                                                     .where(
                                                       (
                                                         sum,
@@ -1604,10 +1751,6 @@ class DepartmentSummaryListWidget extends StatelessWidget {
                                                           dept.uuid,
                                                     )
                                                     .toList()
-                                                    .sublist(
-                                                      0,
-                                                      5,
-                                                    )
                                                     .map((
                                                       record,
                                                     ) {
@@ -1669,7 +1812,7 @@ class DepartmentSummaryListWidget extends StatelessWidget {
                                                                         fontSize:
                                                                             theme.mobileTexts.b3.fontSize,
                                                                       ),
-                                                                      record.productName,
+                                                                      record.itemName,
                                                                     ),
                                                                   ),
                                                                 ],
@@ -1684,7 +1827,7 @@ class DepartmentSummaryListWidget extends StatelessWidget {
                                                               ),
                                                               formatMoneyMid(
                                                                 amount:
-                                                                    record.revenue,
+                                                                    record.totalCost,
                                                                 context:
                                                                     context,
                                                               ),
@@ -1844,139 +1987,6 @@ class DepartmentSummaryListWidget extends StatelessWidget {
                               }).toList(),
                         ),
                         Divider(),
-                        Visibility(
-                          visible:
-                              returnReceiptProviderSingle()
-                                  .returnProductsRecordByDayOrWeek()
-                                  .where(
-                                    (sum) =>
-                                        sum.departmentUuid ==
-                                        null,
-                                  )
-                                  .toList()
-                                  .isNotEmpty,
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment
-                                        .center,
-                                children: [
-                                  Text(
-                                    style: TextStyle(
-                                      fontWeight:
-                                          FontWeight.bold,
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                    ),
-                                    'Deleted Items',
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                children:
-                                    returnReceiptProviderSingle()
-                                        .returnProductsRecordByDayOrWeek()
-                                        .where(
-                                          (sum) =>
-                                              sum.departmentUuid ==
-                                              null,
-                                        )
-                                        .toList()
-                                        .map((record) {
-                                          return Container(
-                                            margin:
-                                                EdgeInsets.symmetric(
-                                                  vertical:
-                                                      4,
-                                                ),
-                                            padding:
-                                                EdgeInsets.symmetric(
-                                                  vertical:
-                                                      10,
-                                                  horizontal:
-                                                      10,
-                                                ),
-                                            decoration:
-                                                BoxDecoration(
-                                                  color:
-                                                      const Color.fromARGB(
-                                                        255,
-                                                        255,
-                                                        231,
-                                                        233,
-                                                      ),
-                                                ),
-                                            child: Row(
-                                              spacing: 10,
-                                              children: [
-                                                Icon(
-                                                  size: 20,
-                                                  Icons
-                                                      .clear,
-                                                ),
-                                                Expanded(
-                                                  child: Row(
-                                                    children: [
-                                                      SizedBox(
-                                                        width:
-                                                            60,
-                                                        child: Row(
-                                                          children: [
-                                                            Expanded(
-                                                              child: Text(
-                                                                style: TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight.bold,
-                                                                  fontSize:
-                                                                      theme.mobileTexts.b3.fontSize,
-                                                                ),
-                                                                "${[formatLargeNumber(record.quantity.toString())]} - ",
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      Flexible(
-                                                        child: Text(
-                                                          style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize:
-                                                                theme.mobileTexts.b3.fontSize,
-                                                          ),
-                                                          record.productName,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Text(
-                                                  style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold,
-                                                    fontSize:
-                                                        theme.mobileTexts.b3.fontSize,
-                                                  ),
-                                                  formatMoneyMid(
-                                                    amount:
-                                                        record.revenue,
-                                                    context:
-                                                        context,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                        })
-                                        .toList(),
-                              ),
-                            ],
-                          ),
-                        ),
                       ],
                     ),
                   ),
