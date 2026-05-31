@@ -1966,7 +1966,7 @@ class SalesProvider extends ChangeNotifier {
         )) {
           if ((cartItem.itemUuid ?? cartItem.item.uuid) ==
               (newCartItem.itemUuid ??
-                  cartItem.item.uuid)) {
+                  newCartItem.item.uuid)) {
             if (returnShopProvider()
                     .userShop()
                     ?.useGroupUnit ==
@@ -2102,7 +2102,7 @@ class SalesProvider extends ChangeNotifier {
     var items = tempCartItems.where(
       (cartItem) =>
           (cartItem.itemUuid ?? cartItem.item.uuid) ==
-          (cartItem.itemUuid ?? cartItem.item.uuid),
+          (item.itemUuid ?? item.item.uuid),
     );
     if (items.isNotEmpty) {
       tempCartItems.remove(items.first);

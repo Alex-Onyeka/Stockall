@@ -117,6 +117,8 @@ class TempCart extends HiveObject {
   }
 
   DateTime returnDate() {
-    return customDate ?? createdDate ?? DateTime.now();
+    return customDate ??
+        createdDate?.toUtc() ??
+        DateTime.now().toUtc();
   }
 }

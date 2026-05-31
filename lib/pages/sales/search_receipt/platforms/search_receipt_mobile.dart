@@ -71,8 +71,10 @@ class _SearchReceiptMobileState
                                     .toLowerCase(),
                               ) ==
                           true ||
-                      receipt.barcode ==
-                          widget.searchController.text,
+                      receipt.barcode?.contains(
+                            widget.searchController.text,
+                          ) ==
+                          true,
                 )
                 .toList()
             : returnReceiptProvider(
