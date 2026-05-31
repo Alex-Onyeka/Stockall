@@ -10,6 +10,7 @@ import 'package:stockall/components/major/top_banner_two.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/home/home.dart';
@@ -479,7 +480,7 @@ class _ReceiptDetailsContainerState
                                             widget
                                                 .theme
                                                 .mobileTexts
-                                                .b3
+                                                .b4
                                                 .fontSize,
                                         fontWeight:
                                             FontWeight.bold,
@@ -1063,7 +1064,10 @@ class _ReceiptDetailsContainerState
                                               widget
                                                       .mainReceipt
                                                       .barcode ??
-                                                  'Not Saved',
+                                                  returnOnlyDigits(
+                                                    widget.mainReceipt.uuid ??
+                                                        '',
+                                                  ),
                                             ),
                                           ],
                                         ),
@@ -1268,7 +1272,7 @@ class _ReceiptDetailsContainerState
                                                       Text(
                                                         style: TextStyle(
                                                           fontSize:
-                                                              widget.theme.mobileTexts.b2.fontSize,
+                                                              widget.theme.mobileTexts.b3.fontSize,
                                                           fontWeight:
                                                               FontWeight.bold,
                                                         ),

@@ -498,6 +498,7 @@ class _SalesPageDesktopState
                                                         ).returnOwnReceiptsByDayOrWeek().toList()[index];
                                                     return MainReceiptTile(
                                                       action: () {
+                                                        FocusManager.instance.primaryFocus?.unfocus();
                                                         Navigator.push(
                                                           context,
                                                           MaterialPageRoute(

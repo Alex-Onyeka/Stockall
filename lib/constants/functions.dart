@@ -7,6 +7,7 @@ import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_rec
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/general_report/class/general_report_class.dart';
@@ -746,31 +747,24 @@ Future<Uint8List> _buildPdf(
           (context) => pw.Column(
             children: [
               pw.Divider(),
-              pw.Builder(
-                builder: (beansContext) {
-                  if (receipt.barcode != null) {
-                    return pw.Column(
-                      children: [
-                        pw.Padding(
-                          padding: pw.EdgeInsets.only(
-                            right: 10,
-                          ),
-                          child: pw.SvgImage(
-                            svg: pw.Barcode.ean13().toSvg(
-                              receipt.barcode ?? '',
-                              width: 110,
-                              height: 30,
-                              fontHeight: 8,
-                              drawText: true,
+              pw.Column(
+                children: [
+                  pw.Padding(
+                    padding: pw.EdgeInsets.only(right: 10),
+                    child: pw.SvgImage(
+                      svg: pw.Barcode.ean13().toSvg(
+                        receipt.barcode ??
+                            returnOnlyDigits(
+                              receipt.uuid ?? '',
                             ),
-                          ),
-                        ),
-                      ],
-                    );
-                  } else {
-                    return pw.SizedBox();
-                  }
-                },
+                        width: 110,
+                        height: 30,
+                        fontHeight: 8,
+                        drawText: true,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               pw.SizedBox(height: 5),
               pw.Align(
@@ -1116,7 +1110,10 @@ Future<Uint8List> _buildPdf(
                                           fontSize: 10,
                                         ),
                                         receipt.barcode ??
-                                            'Not Set',
+                                            returnOnlyDigits(
+                                              receipt.uuid ??
+                                                  '',
+                                            ),
                                       ),
                                     ],
                                   ),
@@ -1251,11 +1248,16 @@ Future<Uint8List> _buildPdf(
                   pw.SizedBox(height: 5),
 
                   ...records.map(
-                    (record) => pw.Padding(
+                    (record) => pw.Container(
                       padding:
                           const pw.EdgeInsets.symmetric(
-                            vertical: 3,
+                            vertical: 6,
+                            horizontal: 5,
                           ),
+                      /**alpha: 1, red: 0.961, green: 0.961, blue: 0.961 */
+                      decoration: pw.BoxDecoration(
+                        color: PdfColor.fromHex('#EFEFEF'),
+                      ),
                       child: pw.Row(
                         mainAxisAlignment:
                             pw
@@ -1265,6 +1267,9 @@ Future<Uint8List> _buildPdf(
                           pw.Expanded(
                             flex: 5,
                             child: pw.Text(
+                              style: pw.TextStyle(
+                                fontSize: 12,
+                              ),
                               '${record.productName} ',
                             ),
                           ),
@@ -2225,7 +2230,10 @@ Future<Uint8List> _buildPdfRoll(
                                         fontSize: parText,
                                       ),
                                       receipt.barcode ??
-                                          'Not Set',
+                                          returnOnlyDigits(
+                                            receipt.uuid ??
+                                                '',
+                                          ),
                                     ),
                                   ],
                                 ),
@@ -2707,32 +2715,27 @@ Future<Uint8List> _buildPdfRoll(
                 ),
                 pw.SizedBox(height: 5),
                 pw.Divider(),
-                pw.Builder(
-                  builder: (beansContext) {
-                    if (receipt.barcode != null) {
-                      return pw.Column(
-                        children: [
-                          pw.Padding(
-                            padding: pw.EdgeInsets.only(
-                              right: 10,
-                            ),
-                            child: pw.SvgImage(
-                              svg: pw.Barcode.ean13().toSvg(
-                                receipt.barcode ?? '',
-                                width: 110,
-                                height: 30,
-                                fontHeight: 8,
-                                drawText: true,
+                pw.Column(
+                  children: [
+                    pw.Padding(
+                      padding: pw.EdgeInsets.only(
+                        right: 10,
+                      ),
+                      child: pw.SvgImage(
+                        svg: pw.Barcode.ean13().toSvg(
+                          receipt.barcode ??
+                              returnOnlyDigits(
+                                receipt.uuid ?? '',
                               ),
-                            ),
-                          ),
-                          pw.Divider(height: 8),
-                        ],
-                      );
-                    } else {
-                      return pw.SizedBox();
-                    }
-                  },
+                          width: 110,
+                          height: 30,
+                          fontHeight: 8,
+                          drawText: true,
+                        ),
+                      ),
+                    ),
+                    pw.Divider(height: 8),
+                  ],
                 ),
                 pw.SizedBox(height: 5),
                 pw.Row(

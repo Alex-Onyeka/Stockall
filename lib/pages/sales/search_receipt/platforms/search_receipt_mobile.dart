@@ -6,7 +6,6 @@ import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/components/text_fields/text_field_barcode.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
-import 'package:stockall/constants/play_sounds.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/constants/scan_barcode.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
@@ -154,7 +153,6 @@ class _SearchReceiptMobileState
                                             context,
                                             'Scan Failed',
                                           );
-                                      await playBeep();
                                       setState(() {
                                         if (result !=
                                             null) {

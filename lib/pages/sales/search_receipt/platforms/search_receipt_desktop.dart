@@ -9,7 +9,6 @@ import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
-import 'package:stockall/constants/play_sounds.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/constants/scan_barcode.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
@@ -137,7 +136,6 @@ class _SearchReceiptDesktopState
                                             context,
                                             'Scan Failed',
                                           );
-                                      await playBeep();
                                       setState(() {
                                         if (result !=
                                             null) {

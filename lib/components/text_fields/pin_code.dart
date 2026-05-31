@@ -43,8 +43,8 @@ class _PinCodeWidgetState extends State<PinCodeWidget> {
       onTap: widget.onTap,
       beforeTextPaste: (text) => true,
       autoDisposeControllers: false,
-      autoFocus:
-          widget.focus != null && widget.focus == true,
+      // autoFocus:
+      //     widget.focus != null && widget.focus == true,
       appContext: context,
       length: widget.length ?? 4,
       onChanged: (value) {

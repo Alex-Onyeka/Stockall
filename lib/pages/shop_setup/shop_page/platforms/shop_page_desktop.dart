@@ -544,16 +544,30 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                       Column(
                         spacing: 2,
                         children: [
-                          Text(
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize:
-                                  theme
-                                      .mobileTexts
-                                      .b3
-                                      .fontSize,
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 4,
+                              horizontal: 8,
                             ),
-                            "#Shop ID: ${shopRef()}",
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade100,
+                              borderRadius:
+                                  BorderRadius.circular(3),
+                              border: Border.all(
+                                color: Colors.grey.shade300,
+                              ),
+                            ),
+                            child: Text(
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize:
+                                    theme
+                                        .mobileTexts
+                                        .b4
+                                        .fontSize,
+                              ),
+                              "#Shop ID: ${shopRef()}",
+                            ),
                           ),
                           Padding(
                             padding:

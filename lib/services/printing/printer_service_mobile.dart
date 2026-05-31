@@ -9,6 +9,7 @@ import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_rec
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/pos_printer/device_service.dart';
 
@@ -654,6 +655,9 @@ Uint8List generateStyledReceipt({
   if (!DeviceService.isPos) {
     builder.addBlank();
   }
+  if (shop.showEmail!) {
+    builder.addTextMiddle('#Shop ID: ${shopRef()}');
+  }
 
   if (shop.showShopName!) {
     builder.addTitle(shop.name);
@@ -691,7 +695,7 @@ Uint8List generateStyledReceipt({
     builder.addTextMiddle("Staff: ${receipt.staffName}");
   }
 
-  if (shop.showSecond! && receipt.customerUuid != null) {
+  if (shop.showSecond! && receipt.customerName != null) {
     builder.addTextMiddle(
       "Customer: ${receipt.customerName ?? 'Customer Not Set'}",
     );
@@ -699,11 +703,16 @@ Uint8List generateStyledReceipt({
   builder.addTextMiddle(
     'Date: ${formatDateTime(receipt.createdAt)} | ${formatTime(receipt.createdAt)}',
   );
+  if (shop.showFirst!) {
+    builder.addTextMiddle(
+      "Ticket Id: ${receipt.barcode ?? returnOnlyDigits(receipt.uuid ?? '')}",
+    );
+  }
 
   builder.addSeparator();
   builder.addTextMiddle('Payment Receipt');
   builder.addSeparator();
-  builder.addBlank();
+  // builder.addBlank();
   // builder.addTextBold('Items:'.toUpperCase());
   builder.addRowStyled(
     'Items:'.toUpperCase(),
@@ -737,7 +746,7 @@ Uint8List generateStyledReceipt({
       builder.addSmallSpace(5);
     }
   }
-  builder.addBlank();
+  // builder.addBlank();
   builder.addSeparator();
   builder.addBlank();
   final subtotal = returnReceiptProvider(
@@ -811,6 +820,13 @@ Uint8List generateStyledReceipt({
   );
 
   builder.addBlank();
+
+  final barcode =
+      receipt.barcode ??
+      returnOnlyDigits(receipt.uuid ?? '');
+
+  builder.addBarcode(barcode);
+
   builder.addTextMiddle(
     'Created by $appName Solutions - ( www.stockallapp.com )',
   );
@@ -847,7 +863,7 @@ class ReceiptBuilder {
     // Bold OFF
     _buffer.write(String.fromCharCodes([0x1B, 0x45, 0x00]));
 
-    _buffer.writeln(""); // spacing
+    // _buffer.writeln(""); // spacing
   }
 
   void addTextMiddle(String text) {
@@ -936,6 +952,40 @@ class ReceiptBuilder {
   void addBlank() => _buffer.writeln();
   void addSmallSpace([int dots = 10]) {
     _buffer.write(String.fromCharCodes([0x1B, 0x4A, dots]));
+  }
+
+  void addBarcode(String data) {
+    final clean = data.replaceAll(RegExp(r'\D'), '');
+
+    final ean =
+        clean.length >= 12
+            ? clean.substring(0, 12)
+            : clean.padLeft(12, '0');
+
+    // Center align
+    _buffer.write(String.fromCharCodes([0x1B, 0x61, 0x01]));
+
+    // Shorter barcode height
+    _buffer.write(String.fromCharCodes([0x1D, 0x68, 60]));
+
+    // Wider bars (better scanning)
+    _buffer.write(String.fromCharCodes([0x1D, 0x77, 3]));
+
+    // HRI text BELOW barcode
+    _buffer.write(String.fromCharCodes([0x1D, 0x48, 0x02]));
+
+    // EAN13 mode
+    _buffer.write(String.fromCharCodes([0x1D, 0x6B, 0x43]));
+
+    // 12-digit requirement
+    _buffer.writeCharCode(12);
+
+    _buffer.write(ean);
+
+    _buffer.writeln();
+
+    // Reset alignment
+    _buffer.write(String.fromCharCodes([0x1B, 0x61, 0x00]));
   }
 
   Uint8List build() =>

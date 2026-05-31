@@ -31,7 +31,6 @@ class _SalesPageState extends State<SalesPage> {
       },
       child: LayoutBuilder(
         builder: (context, constraints) {
-          print(constraints.constrainWidth());
           if (constraints.maxWidth < mobileScreen) {
             return SalesPageMobile();
           } else {

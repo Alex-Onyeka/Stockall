@@ -347,45 +347,38 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                                 mainAxisSize:
                                     MainAxisSize.min,
                                 children: [
-                                  Visibility(
-                                    visible:
-                                        screenWidth(
-                                          context,
-                                        ) >
-                                        1150,
-                                    child: Row(
-                                      mainAxisSize:
-                                          MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          style: TextStyle(
-                                            fontSize:
-                                                theme
-                                                    .mobileTexts
-                                                    .b3
-                                                    .fontSize,
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
-                                            color:
-                                                Colors
-                                                    .grey
-                                                    .shade700,
-                                          ),
-                                          (widget.isDateSet !=
-                                                          null &&
-                                                      widget
-                                                          .isDateSet!) ||
-                                                  (widget.setDate !=
-                                                          null &&
-                                                      widget
-                                                          .setDate!)
-                                              ? 'Clear Date'
-                                              : 'Set Date',
+                                  Row(
+                                    mainAxisSize:
+                                        MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b3
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                          color:
+                                              Colors
+                                                  .grey
+                                                  .shade700,
                                         ),
-                                        SizedBox(width: 3),
-                                      ],
-                                    ),
+                                        (widget.isDateSet !=
+                                                        null &&
+                                                    widget
+                                                        .isDateSet!) ||
+                                                (widget.setDate !=
+                                                        null &&
+                                                    widget
+                                                        .setDate!)
+                                            ? 'Clear Date'
+                                            : 'Set Date',
+                                      ),
+                                      SizedBox(width: 3),
+                                    ],
                                   ),
                                   Icon(
                                     size: 17,

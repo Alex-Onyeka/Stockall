@@ -449,6 +449,10 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                               .toList()[index];
                                       return MainReceiptTile(
                                         action: () {
+                                          FocusManager
+                                              .instance
+                                              .primaryFocus
+                                              ?.unfocus();
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
