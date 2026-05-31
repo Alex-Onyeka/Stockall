@@ -541,6 +541,17 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                     Column(
                       spacing: 2,
                       children: [
+                        Text(
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize:
+                                theme
+                                    .mobileTexts
+                                    .b3
+                                    .fontSize,
+                          ),
+                          "#Shop ID: ${shopRef()}",
+                        ),
                         Padding(
                           padding:
                               const EdgeInsets.symmetric(
@@ -553,7 +564,7 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                               fontSize:
                                   theme
                                       .mobileTexts
-                                      .h4
+                                      .b1
                                       .fontSize,
                             ),
                             shop.name,
@@ -578,7 +589,7 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                             fontSize:
                                 theme
                                     .mobileTexts
-                                    .b1
+                                    .b3
                                     .fontSize,
                             color:
                                 theme
@@ -611,7 +622,7 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                         fontSize:
                                             theme
                                                 .mobileTexts
-                                                .b1
+                                                .b3
                                                 .fontSize,
                                       ),
                                       'Country:',
@@ -628,7 +639,7 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                         fontSize:
                                             theme
                                                 .mobileTexts
-                                                .b1
+                                                .b3
                                                 .fontSize,
                                       ),
                                       shop.country ??
@@ -652,7 +663,7 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                         fontSize:
                                             theme
                                                 .mobileTexts
-                                                .b1
+                                                .b3
                                                 .fontSize,
                                       ),
                                       'State:',
@@ -669,7 +680,7 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                         fontSize:
                                             theme
                                                 .mobileTexts
-                                                .b1
+                                                .b3
                                                 .fontSize,
                                       ),
                                       shop.state ??
@@ -693,7 +704,7 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                         fontSize:
                                             theme
                                                 .mobileTexts
-                                                .b1
+                                                .b3
                                                 .fontSize,
                                       ),
                                       'City:',
@@ -710,7 +721,7 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                         fontSize:
                                             theme
                                                 .mobileTexts
-                                                .b1
+                                                .b3
                                                 .fontSize,
                                       ),
 
@@ -735,7 +746,7 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                         fontSize:
                                             theme
                                                 .mobileTexts
-                                                .b1
+                                                .b3
                                                 .fontSize,
                                       ),
                                       'Address:',
@@ -752,7 +763,7 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                         fontSize:
                                             theme
                                                 .mobileTexts
-                                                .b1
+                                                .b3
                                                 .fontSize,
                                       ),
                                       shop.shopAddress ??
@@ -776,7 +787,7 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                         fontSize:
                                             theme
                                                 .mobileTexts
-                                                .b1
+                                                .b3
                                                 .fontSize,
                                       ),
                                       'Facebook:',
@@ -793,7 +804,7 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                         fontSize:
                                             theme
                                                 .mobileTexts
-                                                .b1
+                                                .b3
                                                 .fontSize,
                                       ),
                                       shop.faceBookHandle ??
@@ -817,7 +828,7 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                         fontSize:
                                             theme
                                                 .mobileTexts
-                                                .b1
+                                                .b3
                                                 .fontSize,
                                       ),
                                       'Instagram:',
@@ -834,7 +845,7 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                         fontSize:
                                             theme
                                                 .mobileTexts
-                                                .b1
+                                                .b3
                                                 .fontSize,
                                       ),
                                       shop.instaHandle ??
@@ -999,7 +1010,7 @@ class _ShopPageMobileState extends State<ShopPageMobile> {
                                   fontSize:
                                       theme
                                           .mobileTexts
-                                          .b2
+                                          .b3
                                           .fontSize,
                                 ),
                                 'Set your Currency',

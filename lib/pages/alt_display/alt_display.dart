@@ -169,7 +169,7 @@ class AltDisplayState extends State<AltDisplay> {
     for (var item in cartClass!.cartItems.where(
       (item) => item.isVoid != true,
     )) {
-      tempTotal += item.totalCost();
+      tempTotal += item.totalCostForAltScreen();
     }
     return tempTotal;
   }
@@ -218,7 +218,8 @@ class AltDisplayState extends State<AltDisplay> {
                 (item.item.discount! / 100);
             tempTotalDiscount +=
                 discountPerUnit *
-                (item.quantity * item.getQttyPerGroup());
+                (item.quantity *
+                    item.getQttyPerGroupForAltScreen());
           }
         } else {
           if (item.item.discount != null &&
@@ -238,7 +239,7 @@ class AltDisplayState extends State<AltDisplay> {
   double calcSubTotal() {
     double tempTotal = 0;
     for (var item in cartClass!.cartItems) {
-      tempTotal += item.totalCost();
+      tempTotal += item.totalCostForAltScreen();
     }
     return tempTotal.roundToDouble();
   }

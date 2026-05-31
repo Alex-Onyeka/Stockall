@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/constants/bottom_sheet_widgets.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -81,11 +80,11 @@ class _TextFieldBarcodeState
         fillColor: Colors.white,
         filled: isFocus,
         suffixIcon: Visibility(
-          visible:
-              platforms(context) ==
-                  TargetPlatform.android ||
-              platforms(context) == TargetPlatform.iOS ||
-              kIsWeb,
+          // visible:
+          //     platforms(context) ==
+          //         TargetPlatform.android ||
+          //     platforms(context) == TargetPlatform.iOS ||
+          //     kIsWeb,
           child: Material(
             color: Colors.transparent,
             child: Ink(
@@ -99,7 +98,16 @@ class _TextFieldBarcodeState
                       .searchController
                       .text
                       .isEmpty) {
-                    widget.onPressedScan!();
+                    if (platforms(context) !=
+                            TargetPlatform.windows &&
+                        platforms(context) !=
+                            TargetPlatform.macOS &&
+                        platforms(context) !=
+                            TargetPlatform.linux) {
+                      widget.onPressedScan != null
+                          ? widget.onPressedScan!()
+                          : () {};
+                    }
                     setState(() {
                       isFocus = true;
                     });

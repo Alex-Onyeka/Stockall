@@ -49,8 +49,14 @@ class ProductRecordFunc {
   Future<int> insertSalesProductRecords(
     List<TempProductSaleRecord> records,
   ) async {
+    print(
+      'About to Insert Product Record inside Offline Function: ${records.length}',
+    );
     try {
       for (var record in records) {
+        print(
+          'Record To Insert Inside Offline Func: ${record.productName}  |  ${record.uuid}',
+        );
         await productRecordBox.put(record.uuid, record);
       }
       print('Offline Record insert Successful');
@@ -99,7 +105,7 @@ class ProductRecordFunc {
               .toList();
       print('Records Gotten: ${records.length}');
       for (var record in records) {
-        if (record.isProductManaged!) {
+        if (record.isProductManaged! && !record.isVoid!) {
           await ProductsFunc().incrementQuantity(
             quantity: record.quantity,
             uuid: record.productUuid!,

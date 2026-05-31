@@ -18,6 +18,7 @@ class TempCartItemAdapter extends TypeAdapter<TempCartItem> {
     };
     return TempCartItem(
       item: fields[0] as TempProductClass,
+      itemUuid: fields[13] as String?,
       quantity: fields[3] as double,
       discount: fields[1] as double?,
       fixedDiscount: fields[2] as double?,
@@ -30,13 +31,14 @@ class TempCartItemAdapter extends TypeAdapter<TempCartItem> {
       useGroupQuantity: fields[10] as bool?,
       qttyPerGroup: fields[11] as double?,
       isVoid: fields[12] as bool?,
+      uuid: fields[14] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempCartItem obj) {
     writer
-      ..writeByte(13)
+      ..writeByte(15)
       ..writeByte(0)
       ..write(obj.item)
       ..writeByte(1)
@@ -62,7 +64,11 @@ class TempCartItemAdapter extends TypeAdapter<TempCartItem> {
       ..writeByte(11)
       ..write(obj.qttyPerGroup)
       ..writeByte(12)
-      ..write(obj.isVoid);
+      ..write(obj.isVoid)
+      ..writeByte(13)
+      ..write(obj.itemUuid)
+      ..writeByte(14)
+      ..write(obj.uuid);
   }
 
   @override

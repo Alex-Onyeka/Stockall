@@ -2760,7 +2760,7 @@ void selectProductSales({
       if (useGroupQuantityTemp == true) {
         if (useWholeSalePriceTemp) {
           return ((qqty * cartItem.getQttyPerGroup()) *
-                  (cartItem.item.wholeSalePrice ?? 0))
+                  (cartItem.getItem()?.wholeSalePrice ?? 0))
               .toString();
         } else if (priceController.text.isNotEmpty) {
           if (returnSalesProvider().setTotalPrice) {
@@ -2780,13 +2780,13 @@ void selectProductSales({
           }
         } else {
           return ((qqty * cartItem.getQttyPerGroup()) *
-                  (cartItem.item.sellingPrice ?? 0))
+                  (cartItem.getItem()?.sellingPrice ?? 0))
               .toString();
         }
       } else {
         if (useWholeSalePriceTemp) {
           return (qqty *
-                  (cartItem.item.wholeSalePrice ?? 0))
+                  (cartItem.getItem()?.wholeSalePrice ?? 0))
               .toString();
         } else if (priceController.text.isNotEmpty) {
           if (returnSalesProvider().setTotalPrice) {
@@ -2804,7 +2804,8 @@ void selectProductSales({
                 .toString();
           }
         } else {
-          return (qqty * (cartItem.item.sellingPrice ?? 0))
+          return (qqty *
+                  (cartItem.getItem()?.sellingPrice ?? 0))
               .toString();
         }
       }
@@ -2812,7 +2813,7 @@ void selectProductSales({
       if (cartItem.useGroupQuantity == true) {
         if (cartItem.useWholeSalePrice) {
           return ((qqty * cartItem.getQttyPerGroup()) *
-                  (cartItem.item.wholeSalePrice ?? 0))
+                  (cartItem.getItem()?.wholeSalePrice ?? 0))
               .toString();
         } else if (priceController.text.isNotEmpty) {
           if (returnSalesProvider().setTotalPrice) {
@@ -2832,13 +2833,13 @@ void selectProductSales({
           }
         } else {
           return ((qqty * cartItem.getQttyPerGroup()) *
-                  (cartItem.item.sellingPrice ?? 0))
+                  (cartItem.getItem()?.sellingPrice ?? 0))
               .toString();
         }
       } else {
         if (cartItem.useWholeSalePrice) {
           return (qqty *
-                  (cartItem.item.wholeSalePrice ?? 0))
+                  (cartItem.getItem()?.wholeSalePrice ?? 0))
               .toString();
         } else if (priceController.text.isNotEmpty) {
           if (returnSalesProvider().setTotalPrice) {
@@ -2856,7 +2857,8 @@ void selectProductSales({
                 .toString();
           }
         } else {
-          return (qqty * (cartItem.item.sellingPrice ?? 0))
+          return (qqty *
+                  (cartItem.getItem()?.sellingPrice ?? 0))
               .toString();
         }
       }
@@ -3027,8 +3029,9 @@ void selectProductSales({
                                     'Entered Valueee: $entered',
                                   );
                                   if (cartItem
-                                      .item
-                                      .isManaged) {
+                                          .getItem()
+                                          ?.isManaged ??
+                                      false) {
                                     if (!returnSalesProvider()
                                         .canAddProductToCart(
                                           isEdit: isEdit,
@@ -3164,16 +3167,17 @@ void selectProductSales({
                             Visibility(
                               visible:
                                   cartItem
-                                              .item
-                                              .sellingPrice ==
+                                              .getItem()
+                                              ?.sellingPrice ==
                                           null
                                       ? true
                                       : returnSalesProviderContext(
                                             context,
                                           ).isSetCustomPrice() &&
                                           (cartItem
-                                              .item
-                                              .setCustomPrice),
+                                                  .getItem()
+                                                  ?.setCustomPrice ??
+                                              false),
                               child: Column(
                                 children: [
                                   SizedBox(height: 30),
@@ -3237,13 +3241,15 @@ void selectProductSales({
                             Visibility(
                               visible:
                                   isEdit
-                                      ? cartItem
-                                              .item
-                                              .setCustomPrice &&
+                                      ? (cartItem
+                                                  .getItem()
+                                                  ?.setCustomPrice ??
+                                              false) &&
                                           !useWholeSalePriceTemp
-                                      : cartItem
-                                              .item
-                                              .setCustomPrice &&
+                                      : (cartItem
+                                                  .getItem()
+                                                  ?.setCustomPrice ??
+                                              false) &&
                                           !cartItem
                                               .useWholeSalePrice,
                               child: InkWell(
@@ -3540,8 +3546,9 @@ void selectProductSales({
                                           'Entered Valueee: $entered',
                                         );
                                         if (cartItem
-                                            .item
-                                            .isManaged) {
+                                                .getItem()
+                                                ?.isManaged ??
+                                            false) {
                                           if (!returnSalesProvider()
                                               .canAddProductToCart(
                                                 isEdit:
@@ -3689,8 +3696,8 @@ void selectProductSales({
                                   theme: theme,
                                   action: () async {
                                     if (cartItem
-                                                .item
-                                                .sellingPrice ==
+                                                .getItem()
+                                                ?.sellingPrice ==
                                             null &&
                                         priceController
                                             .text
@@ -3962,7 +3969,7 @@ void selectProductSales({
                                                               product,
                                                             ) =>
                                                                 product.uuid ==
-                                                                cartItem.item.uuid,
+                                                                cartItem.getItem()?.uuid,
                                                           )
                                                           .isEmpty,
                                                 );
@@ -3988,7 +3995,7 @@ void selectProductSales({
                                                             product,
                                                           ) =>
                                                               product.uuid ==
-                                                              cartItem.item.uuid,
+                                                              cartItem.getItem()?.uuid,
                                                         )
                                                         .isEmpty,
                                               );
@@ -4072,8 +4079,9 @@ void selectProductSales({
                                             'Entered Valueee: $entered',
                                           );
                                           if (cartItem
-                                              .item
-                                              .isManaged) {
+                                                  .getItem()
+                                                  ?.isManaged ??
+                                              false) {
                                             if (!returnSalesProvider().canAddProductToCart(
                                               isEdit:
                                                   isEdit,
@@ -4776,7 +4784,8 @@ class _CustomBottomPanelState
                                                             (
                                                               item,
                                                             ) =>
-                                                                item.item.uuid! ==
+                                                                (item.itemUuid ??
+                                                                    item.item.uuid) ==
                                                                 product.uuid,
                                                           )
                                                           .isNotEmpty) {
@@ -4796,6 +4805,21 @@ class _CustomBottomPanelState
                                                           theme:
                                                               theme,
                                                           cartItem: TempCartItem(
+                                                            uuid:
+                                                                returnSalesProvider()
+                                                                    .currentCart()
+                                                                    .cartItems
+                                                                    .firstWhere(
+                                                                      (
+                                                                        item,
+                                                                      ) =>
+                                                                          (item.itemUuid ??
+                                                                              item.item.uuid) ==
+                                                                          product.uuid!,
+                                                                    )
+                                                                    .uuid,
+                                                            itemUuid:
+                                                                product.uuid,
                                                             isVoid:
                                                                 false,
                                                             qttyPerGroup:
@@ -4806,7 +4830,8 @@ class _CustomBottomPanelState
                                                                       (
                                                                         item,
                                                                       ) =>
-                                                                          item.item.uuid! ==
+                                                                          (item.itemUuid ??
+                                                                              item.item.uuid) ==
                                                                           product.uuid!,
                                                                     )
                                                                     .qttyPerGroup,
@@ -4818,7 +4843,8 @@ class _CustomBottomPanelState
                                                                       (
                                                                         item,
                                                                       ) =>
-                                                                          item.item.uuid! ==
+                                                                          (item.itemUuid ??
+                                                                              item.item.uuid) ==
                                                                           product.uuid!,
                                                                     )
                                                                     .useGroupQuantity,
@@ -4832,7 +4858,8 @@ class _CustomBottomPanelState
                                                                       (
                                                                         item,
                                                                       ) =>
-                                                                          item.item.uuid! ==
+                                                                          (item.itemUuid ??
+                                                                              item.item.uuid) ==
                                                                           product.uuid!,
                                                                     )
                                                                     .useWholeSalePrice,
@@ -4850,7 +4877,8 @@ class _CustomBottomPanelState
                                                                       (
                                                                         item,
                                                                       ) =>
-                                                                          item.item.uuid! ==
+                                                                          (item.itemUuid ??
+                                                                              item.item.uuid) ==
                                                                           product.uuid!,
                                                                     )
                                                                     .quantity,
@@ -4877,6 +4905,10 @@ class _CustomBottomPanelState
                                                           theme:
                                                               theme,
                                                           cartItem: TempCartItem(
+                                                            uuid:
+                                                                uuidGen(),
+                                                            itemUuid:
+                                                                product.uuid,
                                                             isVoid:
                                                                 false,
                                                             qttyPerGroup:
@@ -4941,7 +4973,8 @@ class _CustomBottomPanelState
                                                             (
                                                               item,
                                                             ) =>
-                                                                item.item.uuid! ==
+                                                                (item.itemUuid ??
+                                                                    item.item.uuid) ==
                                                                 product.uuid,
                                                           )
                                                           .isNotEmpty) {
@@ -4961,6 +4994,21 @@ class _CustomBottomPanelState
                                                           theme:
                                                               theme,
                                                           cartItem: TempCartItem(
+                                                            uuid:
+                                                                returnSalesProvider()
+                                                                    .currentCart()
+                                                                    .cartItems
+                                                                    .firstWhere(
+                                                                      (
+                                                                        item,
+                                                                      ) =>
+                                                                          (item.itemUuid ??
+                                                                              item.item.uuid) ==
+                                                                          product.uuid!,
+                                                                    )
+                                                                    .uuid,
+                                                            itemUuid:
+                                                                product.uuid,
                                                             isVoid:
                                                                 false,
                                                             qttyPerGroup:
@@ -4971,7 +5019,8 @@ class _CustomBottomPanelState
                                                                       (
                                                                         item,
                                                                       ) =>
-                                                                          item.item.uuid! ==
+                                                                          (item.itemUuid ??
+                                                                              item.item.uuid) ==
                                                                           product.uuid!,
                                                                     )
                                                                     .qttyPerGroup,
@@ -4983,7 +5032,8 @@ class _CustomBottomPanelState
                                                                       (
                                                                         item,
                                                                       ) =>
-                                                                          item.item.uuid! ==
+                                                                          (item.itemUuid ??
+                                                                              item.item.uuid) ==
                                                                           product.uuid!,
                                                                     )
                                                                     .useGroupQuantity,
@@ -4997,7 +5047,8 @@ class _CustomBottomPanelState
                                                                       (
                                                                         item,
                                                                       ) =>
-                                                                          item.item.uuid! ==
+                                                                          (item.itemUuid ??
+                                                                              item.item.uuid) ==
                                                                           product.uuid!,
                                                                     )
                                                                     .useWholeSalePrice,
@@ -5015,7 +5066,8 @@ class _CustomBottomPanelState
                                                                       (
                                                                         item,
                                                                       ) =>
-                                                                          item.item.uuid! ==
+                                                                          (item.itemUuid ??
+                                                                              item.item.uuid) ==
                                                                           product.uuid!,
                                                                     )
                                                                     .quantity,
@@ -5042,6 +5094,10 @@ class _CustomBottomPanelState
                                                           theme:
                                                               theme,
                                                           cartItem: TempCartItem(
+                                                            uuid:
+                                                                uuidGen(),
+                                                            itemUuid:
+                                                                product.uuid,
                                                             isVoid:
                                                                 false,
                                                             qttyPerGroup:
@@ -5544,7 +5600,8 @@ class MultipleTemporaryCartItems extends StatelessWidget {
                                       fontWeight:
                                           FontWeight.bold,
                                     ),
-                                    item.item.name,
+                                    item.getItem()?.name ??
+                                        'Item Name',
                                   ),
                                 ),
                               ],

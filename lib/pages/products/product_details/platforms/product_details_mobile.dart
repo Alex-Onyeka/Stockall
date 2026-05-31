@@ -114,6 +114,9 @@ class _ProductDetailsMobileState
                                       isEdit: false,
                                       context: context,
                                       newItem: TempCartItem(
+                                        uuid: uuidGen(),
+                                        itemUuid:
+                                            product.uuid,
                                         isVoid: false,
                                         qttyPerGroup: null,
                                         useGroupQuantity:

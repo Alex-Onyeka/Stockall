@@ -768,9 +768,9 @@ class SalesProvider extends ChangeNotifier {
             fixedDiscountAmount: (discount ?? 0),
             itemCost: item.totalCost(),
           );
-      print(
-        "General Fixed ${item.item.name}: ${item.fixedDiscount}  ${item.revenue()}",
-      );
+      // print(
+      //   "General Fixed ${item.item.name}: ${item.fixedDiscount}  ${item.revenue()}",
+      // );
     }
     print(currentCart().fixedDiscount);
     print(currentCart().discount);
@@ -801,9 +801,9 @@ class SalesProvider extends ChangeNotifier {
     for (var item in currentCart().getCartItems()) {
       item.discount = discount;
       item.fixedDiscount = null;
-      print(
-        "${item.item.name}: ${item.discount} ${item.revenue()}",
-      );
+      // print(
+      //   "${item.item.name}: ${item.discount} ${item.revenue()}",
+      // );
     }
     CartFunc().updateMainCart(currentMainCart());
     returnMultiDisplayProvider().updateWindow(
@@ -1045,10 +1045,7 @@ class SalesProvider extends ChangeNotifier {
     required double cashAlt,
     required double bank,
     double? partPayment,
-    // String? customerUuid,
-    // String? customerName,
   }) async {
-    // bool isOnline = await connectivity.isOnline();
     final createdAt = currentCart().returnDate();
 
     if (currentCart().isInvoice) {
@@ -1103,7 +1100,11 @@ class SalesProvider extends ChangeNotifier {
                 invoice,
                 salesCartItem
                     .getCartItems()
-                    .map((item) => item.item.name)
+                    .map(
+                      (item) =>
+                          item.getItem()?.name ??
+                          'Item Name',
+                    )
                     .toList(),
                 2,
               ),
@@ -1120,7 +1121,10 @@ class SalesProvider extends ChangeNotifier {
               invoice,
               salesCartItem
                   .getCartItems()
-                  .map((item) => item.item.name)
+                  .map(
+                    (item) =>
+                        item.getItem()?.name ?? 'Item Name',
+                  )
                   .toList(),
               1,
             ),
@@ -1195,7 +1199,10 @@ class SalesProvider extends ChangeNotifier {
               receipt,
               salesCartItem
                   .getCartItems()
-                  .map((item) => item.item.name)
+                  .map(
+                    (item) =>
+                        item.getItem()?.name ?? 'Item Name',
+                  )
                   .toList(),
               1,
             ),
@@ -1205,7 +1212,7 @@ class SalesProvider extends ChangeNotifier {
               salesCartItem.getCartItemsAll().map((
                 cartItem,
               ) {
-                final product = cartItem.item;
+                final product = cartItem.getItem();
 
                 print(
                   'Sales Record For Receipt about to be Created',
@@ -1220,10 +1227,10 @@ class SalesProvider extends ChangeNotifier {
                   useWholeSalePrice:
                       cartItem.useWholeSalePrice,
                   createdAt: createdAt,
-                  productId: product.id ?? 0,
-                  productUuid: product.uuid,
-                  productName: product.name,
-                  shopId: product.shopId,
+                  productId: product?.id ?? 0,
+                  productUuid: product?.uuid,
+                  productName: product?.name ?? 'Item Name',
+                  shopId: product?.shopId ?? shopId,
                   staffId: staffUuid(), // staffId,
                   staffName: staffName(), // staffName,
                   customerUuid: customerUuid(),
@@ -1243,14 +1250,15 @@ class SalesProvider extends ChangeNotifier {
                   originalCost: cartItem.totalCost(),
                   discount:
                       cartItem.discount ??
-                      cartItem.item.discount,
+                      cartItem.getItem()?.discount,
                   fixedDiscount: cartItem.fixedDiscount,
                   costPrice: cartItem.costPrice(),
                   addToStock: cartItem.addToStock,
                   departmentName: departmentName(),
                   departmentUuid: departmentUuid(),
-                  uuid: cartItem.salesRecordId ?? uuidGen(),
-                  isProductManaged: cartItem.item.isManaged,
+                  uuid: cartItem.uuid ?? uuidGen(),
+                  isProductManaged:
+                      cartItem.getItem()?.isManaged,
                   setTotalPrice: cartItem.setTotalPrice,
                   unit: cartItem.getUnit(),
                   // invoiceUuid: invoiceRes?.uuid,
@@ -1273,7 +1281,7 @@ class SalesProvider extends ChangeNotifier {
               salesCartItem.getCartItemsAll().map((
                 cartItem,
               ) {
-                final product = cartItem.item;
+                final product = cartItem.getItem();
 
                 print('Sales Record about to be Created');
 
@@ -1286,10 +1294,10 @@ class SalesProvider extends ChangeNotifier {
                   useWholeSalePrice:
                       cartItem.useWholeSalePrice,
                   createdAt: createdAt,
-                  productId: product.id ?? 0,
-                  productUuid: product.uuid,
-                  productName: product.name,
-                  shopId: product.shopId,
+                  productId: product?.id ?? 0,
+                  productUuid: product?.uuid,
+                  productName: product?.name ?? 'Item Name',
+                  shopId: product?.shopId ?? shopId,
                   staffId: staffUuid(), // staffId,
                   staffName: staffName(), // staffName,
                   customerUuid: customerUuid(),
@@ -1302,14 +1310,15 @@ class SalesProvider extends ChangeNotifier {
                   originalCost: cartItem.totalCost(),
                   discount:
                       cartItem.discount ??
-                      cartItem.item.discount,
+                      cartItem.getItem()?.discount,
                   fixedDiscount: cartItem.fixedDiscount,
                   costPrice: cartItem.costPrice(),
                   addToStock: cartItem.addToStock,
                   departmentName: departmentName(),
                   departmentUuid: departmentUuid(),
-                  uuid: cartItem.salesRecordId ?? uuidGen(),
-                  isProductManaged: cartItem.item.isManaged,
+                  uuid: cartItem.uuid ?? uuidGen(),
+                  isProductManaged:
+                      cartItem.getItem()?.isManaged,
                   setTotalPrice: cartItem.setTotalPrice,
                   invoiceUuid: invoiceRes?.uuid,
                   unit: cartItem.getUnit(),
@@ -1329,8 +1338,10 @@ class SalesProvider extends ChangeNotifier {
             // Step 3: Decrement quantity via RPC
             for (final cartItem
                 in salesCartItem.getCartItems()) {
-              if (((cartItem.item.quantity ?? 0) > 0) &&
-                  cartItem.item.isManaged) {
+              if (((cartItem.getItem()?.quantity ?? 0) >
+                      0) &&
+                  (cartItem.getItem()?.isManaged ??
+                      false)) {
                 // if (isOnline) {
                 //   await supabase.rpc(
                 //     'decrement_product_quantity_new_double',
@@ -1343,7 +1354,10 @@ class SalesProvider extends ChangeNotifier {
                 await ProductsFunc().deductQuantity(
                   isOnline: /*isOnline*/ false,
                   quantity: cartItem.quantity,
-                  uuid: cartItem.item.uuid!,
+                  uuid:
+                      cartItem.getItem()?.uuid ??
+                      (cartItem.itemUuid ??
+                          cartItem.item.uuid)!,
                 );
                 // }
               }
@@ -1526,7 +1540,10 @@ class SalesProvider extends ChangeNotifier {
               receipt,
               salesCartItem
                   .getCartItems()
-                  .map((item) => item.item.name)
+                  .map(
+                    (item) =>
+                        item.getItem()?.name ?? 'Item Name',
+                  )
                   .toList(),
               2,
             ),
@@ -1541,7 +1558,10 @@ class SalesProvider extends ChangeNotifier {
             receipt,
             salesCartItem
                 .getCartItems()
-                .map((item) => item.item.name)
+                .map(
+                  (item) =>
+                      item.getItem()?.name ?? 'Item Name',
+                )
                 .toList(),
             1,
           ),
@@ -1570,9 +1590,11 @@ class SalesProvider extends ChangeNotifier {
               salesCartItem.getCartItemsAll().map((
                 cartItem,
               ) {
-                final product = cartItem.item;
+                final product = cartItem.getItem();
 
-                print('Sales Record about to be Created');
+                print(
+                  'Sales Record about to be Created: ${cartItem.getItem()?.name}',
+                );
 
                 return TempProductSaleRecord(
                   isVoid: cartItem.isVoid ?? false,
@@ -1583,10 +1605,10 @@ class SalesProvider extends ChangeNotifier {
                   useWholeSalePrice:
                       cartItem.useWholeSalePrice,
                   createdAt: createdAt,
-                  productId: product.id ?? 0,
-                  productUuid: product.uuid,
-                  productName: product.name,
-                  shopId: product.shopId,
+                  productId: product?.id ?? 0,
+                  productUuid: product?.uuid,
+                  productName: product?.name ?? 'Item Name',
+                  shopId: product?.shopId ?? shopId,
                   staffId: staffUuid(), // staffId,
                   staffName: staffName(), // staffName,
                   customerUuid: customerUuid(),
@@ -1599,21 +1621,24 @@ class SalesProvider extends ChangeNotifier {
                   originalCost: cartItem.totalCost(),
                   discount:
                       cartItem.discount ??
-                      cartItem.item.discount,
+                      cartItem.getItem()?.discount,
                   fixedDiscount: cartItem.fixedDiscount,
                   costPrice: cartItem.costPrice(),
                   addToStock: cartItem.addToStock,
                   departmentName: departmentName(),
                   departmentUuid: departmentUuid(),
-                  uuid: cartItem.salesRecordId ?? uuidGen(),
-                  isProductManaged: cartItem.item.isManaged,
+                  uuid: cartItem.uuid ?? uuidGen(),
+                  isProductManaged:
+                      cartItem.getItem()?.isManaged,
                   setTotalPrice: cartItem.setTotalPrice,
                   unit: cartItem.getUnit(),
                 );
               }).toList();
 
           if (context.mounted) {
-            print('Creating Record Sales About to Start');
+            print(
+              'Creating Record Sales About to Start: ${productSaleRecords.length}',
+            );
             await returnReceiptProvider(
               context,
               listen: false,
@@ -1625,8 +1650,10 @@ class SalesProvider extends ChangeNotifier {
             // Step 3: Decrement quantity via RPC
             for (final cartItem
                 in salesCartItem.getCartItems()) {
-              if (((cartItem.item.quantity ?? 0) > 0) &&
-                  cartItem.item.isManaged) {
+              if (((cartItem.getItem()?.quantity ?? 0) >
+                      0) &&
+                  (cartItem.getItem()?.isManaged ??
+                      false)) {
                 // if (isOnline) {
                 //   await supabase.rpc(
                 //     'decrement_product_quantity_new_double',
@@ -1639,7 +1666,10 @@ class SalesProvider extends ChangeNotifier {
                 await ProductsFunc().deductQuantity(
                   isOnline: /*isOnline*/ false,
                   quantity: cartItem.quantity,
-                  uuid: cartItem.item.uuid!,
+                  uuid:
+                      cartItem.getItem()?.uuid ??
+                      (cartItem.itemUuid ??
+                          cartItem.item.uuid)!,
                 );
                 // }
               }
@@ -1847,11 +1877,11 @@ class SalesProvider extends ChangeNotifier {
     } else {
       double tempTotalDiscount = 0;
       for (var item in currentCart().getCartItems()) {
-        if (item.item.discount != null &&
+        if (item.getItem()?.discount != null &&
             item.customPrice == null) {
           double discountPerUnit =
-              (item.item.sellingPrice ?? 0) *
-              (item.item.discount! / 100);
+              (item.getItem()?.sellingPrice ?? 0) *
+              ((item.getItem()?.discount ?? 1) / 100);
           tempTotalDiscount +=
               discountPerUnit * item.quantity;
         }
@@ -1934,7 +1964,9 @@ class SalesProvider extends ChangeNotifier {
         for (final cartItem in cart.getCartItems().where(
           (item) => item != newCartItem,
         )) {
-          if (cartItem.item.uuid == newCartItem.item.uuid) {
+          if ((cartItem.itemUuid ?? cartItem.item.uuid) ==
+              (newCartItem.itemUuid ??
+                  cartItem.item.uuid)) {
             if (returnShopProvider()
                     .userShop()
                     ?.useGroupUnit ==
@@ -1992,13 +2024,15 @@ class SalesProvider extends ChangeNotifier {
     required TempCartItem newCartItem,
   }) {
     var tempList = returnData().productListMain.where(
-      (item) => item.uuid == newCartItem.item.uuid,
+      (item) =>
+          item.uuid ==
+          (newCartItem.itemUuid ?? newCartItem.item.uuid),
     );
     if (tempList.isNotEmpty) {
       return (tempList.first.quantity ?? 0) -
           totalInAllCarts(newCartItem: newCartItem);
     } else {
-      return (newCartItem.item.quantity ?? 0) -
+      return (newCartItem.getItem()?.quantity ?? 0) -
           totalInAllCarts(newCartItem: newCartItem);
     }
   }
@@ -2026,13 +2060,15 @@ class SalesProvider extends ChangeNotifier {
 
     double availableQty() {
       var tempProducts = returnData().productListMain.where(
-        (item) => item.uuid == newCartItem.item.uuid,
+        (item) =>
+            item.uuid ==
+            (newCartItem.itemUuid ?? newCartItem.item.uuid),
       );
       if (tempProducts.isNotEmpty) {
         var product = tempProducts.first;
         return product.quantity ?? 0;
       } else {
-        return newCartItem.item.quantity ?? 0;
+        return newCartItem.getItem()?.quantity ?? 0;
       }
     }
 
@@ -2041,9 +2077,9 @@ class SalesProvider extends ChangeNotifier {
         totalInAllCarts(newCartItem: newCartItem);
     if (newTotal > availableQty() &&
         returnData().productList().contains(
-          newCartItem.item,
+          newCartItem.getItem(),
         ) &&
-        newCartItem.item.isManaged) {
+        (newCartItem.getItem()?.isManaged ?? false)) {
       print(
         'Cannot add — total ($newTotal) exceeds available stock ($remainingQtty) : Avaliable Quantity: ${availableQty()}',
       );
@@ -2064,7 +2100,9 @@ class SalesProvider extends ChangeNotifier {
   void addItemToTempCart({required TempCartItem item}) {
     var newItem = item.copyWith();
     var items = tempCartItems.where(
-      (cartItem) => cartItem.item.uuid == item.item.uuid,
+      (cartItem) =>
+          (cartItem.itemUuid ?? cartItem.item.uuid) ==
+          (cartItem.itemUuid ?? cartItem.item.uuid),
     );
     if (items.isNotEmpty) {
       tempCartItems.remove(items.first);
@@ -2100,7 +2138,9 @@ class SalesProvider extends ChangeNotifier {
         final index = currentCart()
             .getCartItems()
             .indexWhere(
-              (item) => item.item.uuid == newItem.item.uuid,
+              (item) =>
+                  (item.itemUuid ?? item.item.uuid) ==
+                  (newItem.itemUuid ?? newItem.item.uuid),
             );
 
         if (index != -1) {
@@ -2148,21 +2188,24 @@ class SalesProvider extends ChangeNotifier {
       isEdit: isEdit,
     )) {
       String result = '';
-      final index = currentCart().getCartItems().indexWhere(
-        (item) => item.item.uuid == newItem.item.uuid,
-      );
+      // final index = currentCart().getCartItems().indexWhere(
+      //   (item) => item.itemUuid == newItem.itemUuid
+      // );
       var items = currentCart().getCartItems().where(
-        (item) => item.item.uuid == newItem.item.uuid,
+        (item) =>
+            (item.itemUuid ?? item.item.uuid) ==
+            (newItem.itemUuid ?? newItem.item.uuid),
       );
 
       var voidItems = currentCart()
           .getCartItemsVoid()
           .where(
             (voidItem) =>
-                voidItem.item.uuid == newItem.item.uuid,
+                (voidItem.itemUuid ?? voidItem.item.uuid) ==
+                (newItem.itemUuid ?? newItem.item.uuid),
           );
 
-      if (isCustomEdit && index != -1) {
+      if (isCustomEdit && items.isNotEmpty) {
         var item = items.first;
 
         if (returnShopProvider().userShop()!.trackCart ==
@@ -2176,6 +2219,7 @@ class SalesProvider extends ChangeNotifier {
             var deletedItem = newItem.copyWith(
               quantity: item.quantity - newItem.quantity,
               isVoid: true,
+              uuid: uuidGen(),
             );
             currentCart().cartItems.add(deletedItem);
           }
@@ -2218,10 +2262,9 @@ class SalesProvider extends ChangeNotifier {
         );
         notifyListeners();
       } else {
-        if (index != -1) {
-          currentCart().getCartItemsAll()[index].discount;
-          currentCart().getCartItemsAll()[index].quantity +=
-              newItem.quantity;
+        if (items.isNotEmpty) {
+          // currentCart().getCartItemsAll()[index].discount;
+          items.first.quantity += newItem.quantity;
           await returnMultiDisplayProvider().updateWindow(
             cartClass: AltCartClass(
               cartId: currentCart().id!,
@@ -2278,7 +2321,7 @@ class SalesProvider extends ChangeNotifier {
             (_) => InfoAlert(
               title: "Quantity Limit Reached",
               message:
-                  "Only ${newItem.item.quantity} available in stock.",
+                  "Only ${newItem.getItem()?.quantity ?? 0} available in stock.",
               theme: returnTheme(context, listen: false),
             ),
       );
@@ -2298,7 +2341,8 @@ class SalesProvider extends ChangeNotifier {
         cartItem.quantity > number) {
       var affectedItems = currentCart().cartItems.where(
         (item) =>
-            item.item.uuid == cartItem.item.uuid &&
+            (item.itemUuid ?? item.item.uuid) ==
+                (cartItem.itemUuid ?? cartItem.item.uuid) &&
             item.isVoid == true,
       );
 
@@ -2309,6 +2353,7 @@ class SalesProvider extends ChangeNotifier {
         var deletedItem = cartItem.copyWith(
           quantity: cartItem.quantity - number,
           isVoid: true,
+          uuid: uuidGen(),
         );
         currentCart().cartItems.add(deletedItem);
       }
@@ -2342,13 +2387,16 @@ class SalesProvider extends ChangeNotifier {
     TempCartItem item,
     BuildContext context,
   ) async {
-    var newItem = item.copyWith(isVoid: true);
-
     if (returnShopProvider().userShop()!.trackCart ==
         true) {
+      var newItem = item.copyWith(
+        isVoid: true,
+        uuid: uuidGen(),
+      );
       var affectedItems = currentCart().cartItems.where(
         (items) =>
-            items.item.uuid == item.item.uuid &&
+            (items.itemUuid ?? items.item.uuid) ==
+                (item.itemUuid ?? item.item.uuid) &&
             items.isVoid == true,
       );
 
@@ -2464,6 +2512,8 @@ class SalesProvider extends ChangeNotifier {
       }
     }
     return TempCartItem(
+      uuid: record.uuid,
+      itemUuid: product.uuid,
       isVoid: record.isVoid ?? false,
       item: product,
       quantity: record.quantity,
@@ -2473,7 +2523,7 @@ class SalesProvider extends ChangeNotifier {
       addToStock: record.addToStock ?? false,
       setCustomPrice: record.customPriceSet,
       setTotalPrice: record.setTotalPrice ?? false,
-      salesRecordId: record.uuid,
+      // salesRecordId: record.uuid,
       useWholeSalePrice: record.useWholeSalePrice ?? false,
       useGroupQuantity: record.useGroupQuantity ?? false,
       qttyPerGroup: record.qttyPerGroup,

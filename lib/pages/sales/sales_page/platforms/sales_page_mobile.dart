@@ -17,6 +17,7 @@ import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dar
 import 'package:stockall/pages/dashboard/components/main_bottom_nav.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
+import 'package:stockall/pages/sales/search_receipt/search_receipt_page.dart';
 import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -175,112 +176,107 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                     ),
                     Align(
                       alignment: Alignment(0, 1),
-                      child: InkWell(
-                        onTap: () {
-                          returnReceiptProvider(
-                            context,
-                            listen: false,
-                          ).clearDate();
+                      child: ItemsSummary(
+                        scanReceiptBarcode: () {
+                          showSearchReceiptPage(context);
                         },
-                        child: ItemsSummary(
-                          isFilter: authorization(
-                            authorized:
-                                Authorizations().viewDate,
-                          ),
-                          isMoney1: true,
-                          mainTitle: 'Sales Summary',
-                          subTitle:
-                              returnReceiptProvider(
-                                            context,
-                                          ).dateSet !=
-                                          null ||
-                                      returnReceiptProvider(
-                                            context,
-                                          ).rangeStartDate !=
-                                          null
-                                  ? 'All Sales'
-                                  : 'For Today',
-                          firsRow: true,
-                          color1: Colors.green,
-                          title1: 'Sales Revenue',
-                          value1:
-                              returnReceiptProvider(
-                                context,
-                              ).getTotalRevenueForSelectedDay(),
-                          color2: Colors.amber,
-                          title2: 'Sales Number',
-                          value2:
-                              returnReceiptProvider(context)
-                                  .returnOwnReceiptsByDayOrWeek()
-                                  .toList()
-                                  .length
-                                  .toDouble(),
-                          secondRow: false,
-                          onSearch: false,
-                          isDateSet:
-                              returnReceiptProvider(
-                                    context,
-                                    listen: false,
-                                  ).dateSet !=
-                                  null ||
-                              returnReceiptProvider(
-                                    context,
-                                    listen: false,
-                                  ).rangeStartDate !=
-                                  null,
-                          setDate:
-                              returnReceiptProvider(
-                                    context,
-                                    listen: false,
-                                  ).dateSet !=
-                                  null ||
-                              returnReceiptProvider(
-                                    context,
-                                    listen: false,
-                                  ).rangeStartDate !=
-                                  null,
-                          filterAction: () {
-                            if (returnReceiptProvider(
-                                      context,
-                                      listen: false,
-                                    ).dateSet !=
-                                    null ||
-                                returnReceiptProvider(
-                                      context,
-                                      listen: false,
-                                    ).rangeStartDate !=
-                                    null) {
-                              returnReceiptProvider(
-                                context,
-                                listen: false,
-                              ).clearDate();
-                            } else {
-                              mainDatePicker(
-                                context: context,
-                                theme: theme,
-                                singleDate: (date) {
-                                  returnReceiptProvider(
-                                    context,
-                                    listen: false,
-                                  ).setDate(date!);
-                                },
-                                rangeDate: (
-                                  firstDate,
-                                  lastDate,
-                                ) {
-                                  returnReceiptProvider(
-                                    context,
-                                    listen: false,
-                                  ).setRange(
-                                    firstDate!,
-                                    lastDate ??
-                                        DateTime.now(),
-                                  );
-                                },
-                              );
-                            }
-                          },
+                        isFilter: authorization(
+                          authorized:
+                              Authorizations().viewDate,
                         ),
+                        isMoney1: true,
+                        mainTitle: 'Sales Summary',
+                        subTitle:
+                            returnReceiptProvider(
+                                          context,
+                                        ).dateSet !=
+                                        null ||
+                                    returnReceiptProvider(
+                                          context,
+                                        ).rangeStartDate !=
+                                        null
+                                ? 'All Sales'
+                                : 'For Today',
+                        firsRow: true,
+                        color1: Colors.green,
+                        title1: 'Sales Revenue',
+                        value1:
+                            returnReceiptProvider(
+                              context,
+                            ).getTotalRevenueForSelectedDay(),
+                        color2: Colors.amber,
+                        title2: 'Sales Number',
+                        value2:
+                            returnReceiptProvider(context)
+                                .returnOwnReceiptsByDayOrWeek()
+                                .toList()
+                                .length
+                                .toDouble(),
+                        secondRow: false,
+                        onSearch: false,
+                        isDateSet:
+                            returnReceiptProvider(
+                                  context,
+                                  listen: false,
+                                ).dateSet !=
+                                null ||
+                            returnReceiptProvider(
+                                  context,
+                                  listen: false,
+                                ).rangeStartDate !=
+                                null,
+                        setDate:
+                            returnReceiptProvider(
+                                  context,
+                                  listen: false,
+                                ).dateSet !=
+                                null ||
+                            returnReceiptProvider(
+                                  context,
+                                  listen: false,
+                                ).rangeStartDate !=
+                                null,
+                        filterAction: () {
+                          if (returnReceiptProvider(
+                                    context,
+                                    listen: false,
+                                  ).dateSet !=
+                                  null ||
+                              returnReceiptProvider(
+                                    context,
+                                    listen: false,
+                                  ).rangeStartDate !=
+                                  null) {
+                            returnReceiptProvider(
+                              context,
+                              listen: false,
+                            ).clearDate();
+                          } else {
+                            mainDatePicker(
+                              context: context,
+                              theme: theme,
+                              singleDate: (date) {
+                                returnReceiptProvider(
+                                  context,
+                                  listen: false,
+                                ).setDate(date!);
+                              },
+                              rangeDate: (
+                                firstDate,
+                                lastDate,
+                              ) {
+                                returnReceiptProvider(
+                                  context,
+                                  listen: false,
+                                ).setRange(
+                                  firstDate!,
+                                  lastDate ??
+                                      DateTime.now(),
+                                );
+                              },
+                            );
+                          }
+                        },
                       ),
                     ),
                     //

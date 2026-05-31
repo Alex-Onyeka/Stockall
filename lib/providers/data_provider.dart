@@ -641,11 +641,11 @@ class DataProvider extends ChangeNotifier {
                 context,
                 listen: false,
               ).deleteReceiptsSync(context);
-              print('Finished Syncing Created Receipts');
+              print('Finished Syncing Deleted Receipts');
               setSyncProgress(21);
             }
-            if (CreatedReceiptsFunc()
-                    .getReceipts()
+            if (CreatedRecordsFunc()
+                    .getRecords()
                     .isNotEmpty &&
                 context.mounted &&
                 isOnline) {

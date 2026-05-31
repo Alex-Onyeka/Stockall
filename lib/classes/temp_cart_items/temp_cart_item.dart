@@ -46,8 +46,15 @@ class TempCartItem extends HiveObject {
   @HiveField(12)
   bool? isVoid;
 
+  @HiveField(13)
+  String? itemUuid;
+
+  @HiveField(14)
+  String? uuid;
+
   TempCartItem({
     required this.item,
+    required this.itemUuid,
     required this.quantity,
     required this.discount,
     this.fixedDiscount,
@@ -60,10 +67,12 @@ class TempCartItem extends HiveObject {
     required this.useGroupQuantity,
     required this.qttyPerGroup,
     required this.isVoid,
+    required this.uuid,
   });
 
   Map<String, dynamic> toJson() => {
     'item': item.toJson(),
+    'item_uuid': itemUuid,
     'discount': discount,
     'fixed_discount': fixedDiscount,
     'quantity': quantity,
@@ -76,11 +85,14 @@ class TempCartItem extends HiveObject {
     'sell_group': useGroupQuantity,
     'qtty_per_group': qttyPerGroup,
     'is_void': isVoid,
+    'uuid': uuid,
   };
 
   factory TempCartItem.fromJson(Map<String, dynamic> json) {
     return TempCartItem(
       item: TempProductClass.fromJson(json['item']),
+      uuid: json['uuid'],
+      itemUuid: json['item_uuid'],
       discount: json['discount'],
       quantity: json['quantity'],
       customPrice: json['customPrice'],
@@ -94,6 +106,22 @@ class TempCartItem extends HiveObject {
       qttyPerGroup: json['qtty_per_group'],
       isVoid: json['is_void'],
     );
+  }
+
+  TempProductClass? getItem() {
+    List<TempProductClass> products =
+        returnData().productListMain
+            .where(
+              (pro) =>
+                  pro.uuid == itemUuid ||
+                  pro.uuid == item.uuid,
+            )
+            .toList();
+    if (products.isNotEmpty) {
+      return products.first;
+    } else {
+      return item;
+    }
   }
 
   double? returnDiscount() {
@@ -110,8 +138,23 @@ class TempCartItem extends HiveObject {
           ((returnDiscount() ?? 0) / 100));
     } else if (returnFixedDiscount() != null) {
       return returnFixedDiscount() ?? 0;
+    } else if (getItem()?.discount != null) {
+      return (totalCost() *
+          ((getItem()?.discount ?? 0) / 100));
+    } else {
+      return 0;
+    }
+  }
+
+  double discountCostForAltScreen() {
+    if (returnDiscount() != null) {
+      return (totalCostForAltScreen() *
+          ((returnDiscount() ?? 0) / 100));
+    } else if (returnFixedDiscount() != null) {
+      return returnFixedDiscount() ?? 0;
     } else if (item.discount != null) {
-      return (totalCost() * ((item.discount ?? 0) / 100));
+      return (totalCostForAltScreen() *
+          ((item.discount ?? 0) / 100));
     } else {
       return 0;
     }
@@ -120,8 +163,47 @@ class TempCartItem extends HiveObject {
   double totalCost() {
     if (useGroupQuantity == true) {
       if (useWholeSalePrice) {
+        return getItem()?.wholeSalePrice != null
+            ? (getItem()?.wholeSalePrice ?? 0) *
+                (quantity * getQttyPerGroup())
+            : 0;
+      } else if (customPrice != null) {
+        if (setTotalPrice) {
+          return customPrice!;
+        } else {
+          return customPrice! *
+              (quantity * getQttyPerGroup());
+        }
+      } else {
+        return getItem()?.sellingPrice != null
+            ? (getItem()?.sellingPrice ?? 0) *
+                (quantity * getQttyPerGroup())
+            : 0;
+      }
+    } else {
+      if (useWholeSalePrice) {
+        return getItem()?.wholeSalePrice != null
+            ? (getItem()?.wholeSalePrice ?? 0) * quantity
+            : 0;
+      } else if (customPrice != null) {
+        if (setTotalPrice) {
+          return customPrice!;
+        } else {
+          return customPrice! * quantity;
+        }
+      } else {
+        return getItem()?.sellingPrice != null
+            ? (getItem()?.sellingPrice ?? 0) * quantity
+            : 0;
+      }
+    }
+  }
+
+  double totalCostForAltScreen() {
+    if (useGroupQuantity == true) {
+      if (useWholeSalePrice) {
         return item.wholeSalePrice != null
-            ? item.wholeSalePrice! *
+            ? (item.wholeSalePrice ?? 0) *
                 (quantity * getQttyPerGroup())
             : 0;
       } else if (customPrice != null) {
@@ -133,14 +215,14 @@ class TempCartItem extends HiveObject {
         }
       } else {
         return item.sellingPrice != null
-            ? item.sellingPrice! *
+            ? (item.sellingPrice ?? 0) *
                 (quantity * getQttyPerGroup())
             : 0;
       }
     } else {
       if (useWholeSalePrice) {
         return item.wholeSalePrice != null
-            ? item.wholeSalePrice! * quantity
+            ? (item.wholeSalePrice ?? 0) * quantity
             : 0;
       } else if (customPrice != null) {
         if (setTotalPrice) {
@@ -150,7 +232,7 @@ class TempCartItem extends HiveObject {
         }
       } else {
         return item.sellingPrice != null
-            ? item.sellingPrice! * quantity
+            ? (item.sellingPrice ?? 0) * quantity
             : 0;
       }
     }
@@ -165,36 +247,101 @@ class TempCartItem extends HiveObject {
     }
   }
 
+  double revenueForAltScreen() {
+    if (returnShopProvider().userShop()!.applyVAT!) {
+      return (totalCostForAltScreen() -
+              discountCostForAltScreen()) +
+          (totalCostForAltScreen() * (vat / 100));
+    } else {
+      return totalCostForAltScreen() -
+          discountCostForAltScreen();
+    }
+  }
+
   double? costPrice() {
     if (useGroupQuantity == true) {
-      return item.costPrice == 0
+      return (getItem()?.costPrice ?? 0) == 0
           ? null
-          : item.costPrice * (quantity * getQttyPerGroup());
+          : (getItem()?.costPrice ?? 0) *
+              (quantity * getQttyPerGroup());
     } else {
-      return item.costPrice == 0
+      return (getItem()?.costPrice ?? 0) == 0
           ? null
-          : item.costPrice * quantity;
+          : (getItem()?.costPrice ?? 0) * quantity;
+    }
+  }
+
+  double? costPriceForAltScreen() {
+    if (useGroupQuantity == true) {
+      return (item.costPrice) == 0
+          ? null
+          : (item.costPrice) *
+              (quantity * getQttyPerGroupForAltScreen());
+    } else {
+      return (item.costPrice) == 0
+          ? null
+          : (item.costPrice) * quantity;
     }
   }
 
   double getItemDiscountedRemainingCost() {
     if (useGroupQuantity == true) {
+      if (getItem()?.discount != null) {
+        if (useWholeSalePrice) {
+          return (((getItem()?.wholeSalePrice ?? 0) -
+                  ((getItem()?.wholeSalePrice ?? 0) *
+                      (getItem()?.discount ?? 0) /
+                      100)) *
+              (quantity * getQttyPerGroup()));
+        } else {
+          return (((getItem()?.sellingPrice ?? 0) -
+                  ((getItem()?.sellingPrice ?? 0) *
+                      (getItem()?.discount ?? 0) /
+                      100)) *
+              (quantity * getQttyPerGroup()));
+        }
+      } else {
+        return totalCost();
+      }
+    } else {
+      if (getItem()?.discount != null) {
+        if (useWholeSalePrice) {
+          return (((getItem()?.wholeSalePrice ?? 0) -
+                  ((getItem()?.wholeSalePrice ?? 0) *
+                      (getItem()?.discount ?? 0) /
+                      100)) *
+              quantity);
+        } else {
+          return (((getItem()?.sellingPrice ?? 0) -
+                  ((getItem()?.sellingPrice ?? 0) *
+                      (getItem()?.discount ?? 0) /
+                      100)) *
+              quantity);
+        }
+      } else {
+        return totalCost();
+      }
+    }
+  }
+
+  double getItemDiscountedRemainingCostForAltScreen() {
+    if (useGroupQuantity == true) {
       if (item.discount != null) {
         if (useWholeSalePrice) {
           return (((item.wholeSalePrice ?? 0) -
                   ((item.wholeSalePrice ?? 0) *
                       (item.discount ?? 0) /
                       100)) *
-              (quantity * getQttyPerGroup()));
+              (quantity * getQttyPerGroupForAltScreen()));
         } else {
           return (((item.sellingPrice ?? 0) -
                   ((item.sellingPrice ?? 0) *
                       (item.discount ?? 0) /
                       100)) *
-              (quantity * getQttyPerGroup()));
+              (quantity * getQttyPerGroupForAltScreen()));
         }
       } else {
-        return totalCost();
+        return totalCostForAltScreen();
       }
     } else {
       if (item.discount != null) {
@@ -212,12 +359,16 @@ class TempCartItem extends HiveObject {
               quantity);
         }
       } else {
-        return totalCost();
+        return totalCostForAltScreen();
       }
     }
   }
 
   double getQttyPerGroup() {
+    return getItem()?.qttyPerGroup ?? 1;
+  }
+
+  double getQttyPerGroupForAltScreen() {
     return item.qttyPerGroup ?? 1;
   }
 
@@ -225,8 +376,16 @@ class TempCartItem extends HiveObject {
     return quantity / getQttyPerGroup();
   }
 
+  double unitTogetQttyPerGroupForAltScreen() {
+    return quantity / getQttyPerGroupForAltScreen();
+  }
+
   double groupToUnitQuantity() {
     return quantity * getQttyPerGroup();
+  }
+
+  double groupToUnitQuantityForAltScreen() {
+    return quantity * getQttyPerGroupForAltScreen();
   }
 
   double getRealQuantity() {
@@ -237,13 +396,38 @@ class TempCartItem extends HiveObject {
     }
   }
 
+  double getRealQuantityForAltScreen() {
+    if (useGroupQuantity == true) {
+      return quantity * getQttyPerGroupForAltScreen();
+    } else {
+      return quantity;
+    }
+  }
+
   String getUnit() {
+    if (useGroupQuantity == true) {
+      if (getItem()?.groupUnit == 'Others' ||
+          getItem()?.groupUnit == null) {
+        return "Group(s)";
+      } else {
+        return getItem()?.groupUnit ?? 'Group(s)';
+      }
+    } else {
+      if (getItem()?.unit == 'Others') {
+        return "Unit(s)";
+      } else {
+        return getItem()?.unit ?? 'Unit(s)';
+      }
+    }
+  }
+
+  String getUnitForAltScreen() {
     if (useGroupQuantity == true) {
       if (item.groupUnit == 'Others' ||
           item.groupUnit == null) {
         return "Group(s)";
       } else {
-        return item.groupUnit!;
+        return item.groupUnit ?? 'Group(s)';
       }
     } else {
       if (item.unit == 'Others') {
@@ -268,6 +452,8 @@ class TempCartItem extends HiveObject {
     bool? useGroupQuantity,
     double? qttyPerGroup,
     bool? isVoid,
+    String? itemUuid,
+    String? uuid,
   }) {
     return TempCartItem(
       item: item ?? this.item,
@@ -285,6 +471,8 @@ class TempCartItem extends HiveObject {
           useGroupQuantity ?? this.useGroupQuantity,
       qttyPerGroup: qttyPerGroup ?? this.qttyPerGroup,
       isVoid: isVoid ?? this.isVoid,
+      itemUuid: itemUuid ?? this.itemUuid,
+      uuid: uuid ?? this.uuid,
     );
   }
 

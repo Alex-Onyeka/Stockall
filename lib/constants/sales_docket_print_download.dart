@@ -516,7 +516,7 @@ Future<Uint8List> _buildPdfRoll({
                             style: pw.TextStyle(
                               fontSize: parText,
                             ),
-                            '${record.item.name} ',
+                            '${record.getItem()?.name ?? 'Item Name'} ',
                           ),
                         ),
                         pw.Expanded(

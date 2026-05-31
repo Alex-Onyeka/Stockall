@@ -118,57 +118,54 @@ class _CartItemMainState extends State<CartItemMain> {
                                               FontWeight
                                                   .bold,
                                         ),
-                                        widget
-                                            .cartItem
-                                            .item
-                                            .name,
+                                        widget.cartItem
+                                                .getItem()
+                                                ?.name ??
+                                            'Item Name',
                                       ),
                                       Visibility(
                                         visible:
-                                            widget
-                                                    .cartItem
-                                                    .item
-                                                    .color !=
+                                            widget.cartItem
+                                                    .getItem()
+                                                    ?.color !=
                                                 null ||
-                                            widget
-                                                    .cartItem
-                                                    .item
-                                                    .sizeType !=
+                                            widget.cartItem
+                                                    .getItem()
+                                                    ?.sizeType !=
                                                 null ||
-                                            widget
-                                                    .cartItem
-                                                    .item
-                                                    .size !=
+                                            widget.cartItem
+                                                    .getItem()
+                                                    ?.size !=
                                                 null,
                                         child: Text(
                                           [
                                             if (widget
                                                     .cartItem
-                                                    .item
-                                                    .color !=
+                                                    .getItem()
+                                                    ?.color !=
                                                 null)
                                               widget
                                                   .cartItem
-                                                  .item
-                                                  .color,
+                                                  .getItem()
+                                                  ?.color,
                                             if (widget
                                                     .cartItem
-                                                    .item
-                                                    .sizeType !=
+                                                    .getItem()
+                                                    ?.sizeType !=
                                                 null)
                                               widget
                                                   .cartItem
-                                                  .item
-                                                  .sizeType,
+                                                  .getItem()
+                                                  ?.sizeType,
                                             if (widget
                                                     .cartItem
-                                                    .item
-                                                    .size !=
+                                                    .getItem()
+                                                    ?.size !=
                                                 null)
                                               widget
                                                   .cartItem
-                                                  .item
-                                                  .size,
+                                                  .getItem()
+                                                  ?.size,
                                           ].join('  |  '),
                                           style: TextStyle(
                                             fontSize:
@@ -293,10 +290,9 @@ class _CartItemMainState extends State<CartItemMain> {
                               ),
                               Visibility(
                                 visible:
-                                    widget
-                                            .cartItem
-                                            .item
-                                            .discount !=
+                                    widget.cartItem
+                                            .getItem()
+                                            ?.discount !=
                                         null &&
                                     widget
                                             .cartItem
@@ -306,10 +302,9 @@ class _CartItemMainState extends State<CartItemMain> {
                               ),
                               Visibility(
                                 visible:
-                                    widget
-                                            .cartItem
-                                            .item
-                                            .discount !=
+                                    widget.cartItem
+                                            .getItem()
+                                            ?.discount !=
                                         null &&
                                     widget
                                             .cartItem

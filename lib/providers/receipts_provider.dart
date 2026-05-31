@@ -7,6 +7,7 @@ import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_rec
 import 'package:stockall/classes/temp_product_slaes_record/unsynced/created_records/created_records.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/local_database/main_receipt/main_receipt_func.dart';
 import 'package:stockall/local_database/main_receipt/unsync_funcs/created/created_receipts_func.dart';
 import 'package:stockall/local_database/main_receipt/unsync_funcs/deleted/deleted_receipts_func.dart';
@@ -103,6 +104,8 @@ class ReceiptsProvider extends ChangeNotifier {
     //   }
     // } else {
     // receipt.createdAt = DateTime.now();
+    var barcode = returnOnlyDigits(uuidGen());
+    receipt.barcode = barcode;
     await MainReceiptFunc().createReceipt(receipt);
     await CreatedReceiptsFunc().createReceipts(
       CreatedReceipts(receipt: receipt),
@@ -580,10 +583,13 @@ class ReceiptsProvider extends ChangeNotifier {
       //   );
       //   print('Finished Creating Product Sales Online');
       // } else {
-      print('About to Create Product Sales Offline');
+      print(
+        'About to Create Product Sales Offline: ${records.length}',
+      );
       var newRecords =
           records.map((rec) {
             // rec.createdAt = DateTime.now();
+            print('Record to Create: ${rec.productName}');
 
             return rec;
           }).toList();

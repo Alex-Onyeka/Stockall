@@ -155,6 +155,11 @@ class _ProductDetailsDesktopState
                                             context:
                                                 context,
                                             newItem: TempCartItem(
+                                              uuid:
+                                                  uuidGen(),
+                                              itemUuid:
+                                                  product
+                                                      .uuid,
                                               isVoid: false,
                                               qttyPerGroup:
                                                   null,

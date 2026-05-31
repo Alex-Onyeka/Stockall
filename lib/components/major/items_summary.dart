@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/components/text_fields/general_textfield_only.dart';
 import 'package:stockall/components/text_fields/text_field_barcode.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
@@ -10,7 +12,10 @@ import 'package:stockall/pages/products/storage_page/storage_page.dart';
 
 class ItemsSummary extends StatefulWidget {
   final TextEditingController? searchController;
+  final TextEditingController? searchControllerForSales;
   final Function(String)? searchAction;
+  final Function(String)? onChangedForSales;
+  final Function()? scanReceiptBarcode;
   final bool? onSearch;
   final String? mainTitle;
   final String? subTitle;
@@ -96,6 +101,9 @@ class ItemsSummary extends StatefulWidget {
     this.show0,
     this.show00,
     this.refreshAction,
+    this.searchControllerForSales,
+    this.onChangedForSales,
+    this.scanReceiptBarcode,
   });
 
   @override
@@ -178,11 +186,96 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                     ],
                   ),
                   Row(
-                    spacing: 0,
                     mainAxisAlignment:
                         MainAxisAlignment.end,
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      Visibility(
+                        visible:
+                            widget
+                                .searchControllerForSales !=
+                            null,
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                            right: 5.0,
+                          ),
+                          child: SizedBox(
+                            width: 200,
+                            height: 30,
+                            child: GeneralTextfieldOnly(
+                              hint:
+                                  'Barcode/Search Customer/Staff',
+                              controller:
+                                  widget
+                                      .searchControllerForSales ??
+                                  TextEditingController(),
+                              lines: 1,
+                              theme: theme,
+                              onChanged:
+                                  widget.onChangedForSales,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Visibility(
+                        visible:
+                            widget.scanReceiptBarcode !=
+                            null,
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius:
+                                BorderRadius.circular(5),
+                            onTap:
+                                widget.scanReceiptBarcode,
+                            child: Padding(
+                              padding:
+                                  EdgeInsetsGeometry.all(
+                                    6.5,
+                                  ),
+                              child: Row(
+                                mainAxisSize:
+                                    MainAxisSize.min,
+                                children: [
+                                  Row(
+                                    mainAxisSize:
+                                        MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b3
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                          color:
+                                              Colors
+                                                  .grey
+                                                  .shade700,
+                                        ),
+                                        'Search${screenWidth(context) <= mobileScreen ? '' : ' Receipt'}',
+                                      ),
+                                      SizedBox(width: 3),
+                                    ],
+                                  ),
+                                  Icon(
+                                    size: 20,
+                                    // color:
+                                    //     theme
+                                    //         .lightModeColor
+                                    //         .secColor100,
+                                    Icons
+                                        .manage_search_rounded,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                       Visibility(
                         visible:
                             widget.refreshAction != null,
@@ -197,19 +290,35 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                                 7,
                               ),
                               child: Row(
-                                spacing: 3,
+                                mainAxisSize:
+                                    MainAxisSize.min,
                                 children: [
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
+                                  Visibility(
+                                    visible:
+                                        screenWidth(
+                                          context,
+                                        ) >
+                                        1150,
+                                    child: Row(
+                                      mainAxisSize:
+                                          MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b3
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                          ),
+                                          'Refresh',
+                                        ),
+                                        SizedBox(width: 3),
+                                      ],
                                     ),
-                                    'Refresh',
                                   ),
                                   Icon(
                                     size: 16,
@@ -221,41 +330,62 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                           ),
                         ),
                       ),
-                      Stack(
-                        children: [
-                          Visibility(
-                            visible:
-                                widget.isFilter ?? false,
-                            child: MaterialButton(
-                              onPressed:
-                                  widget.filterAction,
+                      Visibility(
+                        visible: widget.isFilter ?? false,
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius:
+                                BorderRadius.circular(5),
+                            onTap: widget.filterAction,
+                            child: Padding(
+                              padding:
+                                  EdgeInsetsGeometry.all(
+                                    6.5,
+                                  ),
                               child: Row(
-                                spacing: 3,
+                                mainAxisSize:
+                                    MainAxisSize.min,
                                 children: [
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade700,
+                                  Visibility(
+                                    visible:
+                                        screenWidth(
+                                          context,
+                                        ) >
+                                        1150,
+                                    child: Row(
+                                      mainAxisSize:
+                                          MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b3
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                            color:
+                                                Colors
+                                                    .grey
+                                                    .shade700,
+                                          ),
+                                          (widget.isDateSet !=
+                                                          null &&
+                                                      widget
+                                                          .isDateSet!) ||
+                                                  (widget.setDate !=
+                                                          null &&
+                                                      widget
+                                                          .setDate!)
+                                              ? 'Clear Date'
+                                              : 'Set Date',
+                                        ),
+                                        SizedBox(width: 3),
+                                      ],
                                     ),
-                                    (widget.isDateSet !=
-                                                    null &&
-                                                widget
-                                                    .isDateSet!) ||
-                                            (widget.setDate !=
-                                                    null &&
-                                                widget
-                                                    .setDate!)
-                                        ? 'Clear Date'
-                                        : 'Set Date',
                                   ),
                                   Icon(
                                     size: 17,
@@ -279,82 +409,78 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                               ),
                             ),
                           ),
-                          Visibility(
-                            visible:
-                                widget.isProduct != null &&
-                                        authorization(
-                                          authorized:
-                                              Authorizations()
-                                                  .addProduct,
-                                        )
-                                    ? true
-                                    : false,
-                            child: SubWrapper(
-                              isVisible:
-                                  !ItemsAuthAction()
-                                      .numberOfItemsAction(
-                                        context: context,
-                                      ),
-                              mainWidget: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                        5,
-                                      ),
-                                  onTap: () {
-                                    ItemsAuthAction()
-                                        .numberOfItemsAction(
-                                          context: context,
-                                          action: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (
-                                                  context,
-                                                ) {
-                                                  return AddProduct();
-                                                },
-                                              ),
-                                            );
-                                          },
-                                        );
-                                  },
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsets.all(
-                                          7,
-                                        ),
-                                    child: Row(
-                                      spacing: 3,
-                                      children: [
-                                        Text(
-                                          style: TextStyle(
-                                            fontSize:
-                                                theme
-                                                    .mobileTexts
-                                                    .b3
-                                                    .fontSize,
-                                            fontWeight:
-                                                FontWeight
-                                                    .bold,
-                                          ),
-                                          'Add Item',
-                                        ),
-                                        Icon(
-                                          size: 15,
-                                          Icons.add,
-                                          color:
-                                              Colors.amber,
-                                        ),
-                                      ],
-                                    ),
+                        ),
+                      ),
+                      Visibility(
+                        visible:
+                            widget.isProduct != null &&
+                                    authorization(
+                                      authorized:
+                                          Authorizations()
+                                              .addProduct,
+                                    )
+                                ? true
+                                : false,
+                        child: SubWrapper(
+                          isVisible:
+                              !ItemsAuthAction()
+                                  .numberOfItemsAction(
+                                    context: context,
                                   ),
+                          mainWidget: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius:
+                                  BorderRadius.circular(5),
+                              onTap: () {
+                                ItemsAuthAction()
+                                    .numberOfItemsAction(
+                                      context: context,
+                                      action: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (
+                                              context,
+                                            ) {
+                                              return AddProduct();
+                                            },
+                                          ),
+                                        );
+                                      },
+                                    );
+                              },
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.all(7),
+                                child: Row(
+                                  mainAxisSize:
+                                      MainAxisSize.min,
+                                  spacing: 3,
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      'Add Item',
+                                    ),
+                                    Icon(
+                                      size: 15,
+                                      Icons.add,
+                                      color: Colors.amber,
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
                           ),
-                        ],
+                        ),
                       ),
                       Visibility(
                         visible:
@@ -472,7 +598,6 @@ class _ItemsSummaryState extends State<ItemsSummary> {
                             ),
                           ),
                         ),
-
                         Expanded(
                           child: ProductSummaryTab(
                             isMoney: widget.isMoney1,

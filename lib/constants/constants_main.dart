@@ -150,6 +150,24 @@ const String appDesc =
 const String appVersionMobile = '1.1.0+27';
 const String appVersionDesktop = '1.1.27.0';
 
+String shopRef() {
+  String tempId =
+      (returnShopProvider().userShop()?.shopId ?? 0)
+          .toString();
+  switch (tempId.length) {
+    case 1:
+      return '0000$tempId';
+    case 2:
+      return '000$tempId';
+    case 3:
+      return '00$tempId';
+    case 4:
+      return '0$tempId';
+    default:
+      return tempId;
+  }
+}
+
 double vat =
     returnUtilityConstantProvider().utilityConstants?.vat ??
     7.5;

@@ -77,7 +77,7 @@ class _GeneralTextfieldOnlyState
           labelStyle: TextStyle(
             fontWeight: FontWeight.normal,
             color: Colors.grey.shade600,
-            fontSize: theme.mobileTexts.b1.fontSize,
+            fontSize: theme.mobileTexts.b3.fontSize,
           ),
           floatingLabelStyle: TextStyle(
             fontWeight: FontWeight.w600,

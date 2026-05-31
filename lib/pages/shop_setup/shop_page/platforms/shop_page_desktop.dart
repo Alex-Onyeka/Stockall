@@ -544,6 +544,17 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                       Column(
                         spacing: 2,
                         children: [
+                          Text(
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize:
+                                  theme
+                                      .mobileTexts
+                                      .b3
+                                      .fontSize,
+                            ),
+                            "#Shop ID: ${shopRef()}",
+                          ),
                           Padding(
                             padding:
                                 const EdgeInsets.symmetric(
@@ -568,7 +579,7 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                               fontSize:
                                   theme
                                       .mobileTexts
-                                      .b1
+                                      .b3
                                       .fontSize,
                             ),
                             shop.phoneNumber ??
@@ -581,7 +592,7 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                               fontSize:
                                   theme
                                       .mobileTexts
-                                      .b1
+                                      .b3
                                       .fontSize,
                               color:
                                   theme
@@ -614,7 +625,7 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                                           fontSize:
                                               theme
                                                   .mobileTexts
-                                                  .b1
+                                                  .b3
                                                   .fontSize,
                                         ),
                                         'Country:',
@@ -632,7 +643,7 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                                           fontSize:
                                               theme
                                                   .mobileTexts
-                                                  .b1
+                                                  .b3
                                                   .fontSize,
                                         ),
                                         shop.country ??
@@ -656,7 +667,7 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                                           fontSize:
                                               theme
                                                   .mobileTexts
-                                                  .b1
+                                                  .b3
                                                   .fontSize,
                                         ),
                                         'State:',
@@ -674,7 +685,7 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                                           fontSize:
                                               theme
                                                   .mobileTexts
-                                                  .b1
+                                                  .b3
                                                   .fontSize,
                                         ),
                                         shop.state ??
@@ -698,7 +709,7 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                                           fontSize:
                                               theme
                                                   .mobileTexts
-                                                  .b1
+                                                  .b3
                                                   .fontSize,
                                         ),
                                         'City:',
@@ -716,7 +727,7 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                                           fontSize:
                                               theme
                                                   .mobileTexts
-                                                  .b1
+                                                  .b3
                                                   .fontSize,
                                         ),
 
@@ -741,7 +752,7 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                                           fontSize:
                                               theme
                                                   .mobileTexts
-                                                  .b1
+                                                  .b3
                                                   .fontSize,
                                         ),
                                         'Address:',
@@ -759,7 +770,7 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                                           fontSize:
                                               theme
                                                   .mobileTexts
-                                                  .b1
+                                                  .b3
                                                   .fontSize,
                                         ),
                                         shop.shopAddress ??
@@ -783,7 +794,7 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                                           fontSize:
                                               theme
                                                   .mobileTexts
-                                                  .b1
+                                                  .b3
                                                   .fontSize,
                                         ),
                                         'Facebook:',
@@ -801,7 +812,7 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                                           fontSize:
                                               theme
                                                   .mobileTexts
-                                                  .b1
+                                                  .b3
                                                   .fontSize,
                                         ),
                                         shop.faceBookHandle ??
@@ -825,7 +836,7 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                                           fontSize:
                                               theme
                                                   .mobileTexts
-                                                  .b1
+                                                  .b3
                                                   .fontSize,
                                         ),
                                         'Instagram:',
@@ -843,7 +854,7 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                                           fontSize:
                                               theme
                                                   .mobileTexts
-                                                  .b1
+                                                  .b3
                                                   .fontSize,
                                         ),
                                         shop.instaHandle ??
@@ -1020,7 +1031,7 @@ class ShopPageDesktopState extends State<ShopPageDesktop> {
                                     fontSize:
                                         theme
                                             .mobileTexts
-                                            .b2
+                                            .b3
                                             .fontSize,
                                   ),
                                   'Set your Currency',

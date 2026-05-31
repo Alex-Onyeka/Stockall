@@ -8,6 +8,7 @@ import 'package:stockall/classes/user_class/temp_user_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/top_banner_two.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
@@ -206,14 +207,14 @@ class _ReceiptPageMobileState
                                             .fontSize,
                                     color: Colors.white,
                                   ),
-                                  'Printer Type:',
+                                  'Printer:',
                                 ),
                                 Text(
                                   style: TextStyle(
                                     fontSize:
                                         theme
                                             .mobileTexts
-                                            .b2
+                                            .b4
                                             .fontSize,
                                     color: Colors.white,
                                     fontWeight:
@@ -265,7 +266,10 @@ class _ReceiptPageMobileState
                                 ),
                               ],
                             ),
-                            Icon(Icons.more_vert_rounded),
+                            Icon(
+                              color: Colors.amber,
+                              Icons.more_vert_rounded,
+                            ),
                           ],
                         ),
                       ),
@@ -395,7 +399,7 @@ class _ReceiptDetailsContainerState
               width: MediaQuery.of(context).size.width - 40,
               height:
                   MediaQuery.of(context).size.height - 150,
-              padding: EdgeInsets.all(25),
+              padding: EdgeInsets.all(15),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),
                 color: Colors.white,
@@ -422,52 +426,68 @@ class _ReceiptDetailsContainerState
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
-                            SizedBox(height: 5),
-                            // GestureDetector(
-                            //   onTap: () {
-                            //     returnShopProvider(
-                            //       context,
-                            //       listen: false,
-                            //     ).deletePrinter();
-                            //   },
-                            //   child: Image.asset(
-                            //     mainLogoIcon,
-                            //     height: 40,
-                            //   ),
-                            // ),
                             Builder(
                               builder: (context) {
                                 if (returnShopProvider()
                                         .selectedLogo !=
                                     null) {
-                                  return Container(
-                                    height:
-                                        (returnShopProvider()
-                                                        .imageWidth ??
-                                                    0) >
-                                                (2 *
-                                                    (returnShopProvider().imageHeight ??
-                                                        0))
-                                            ? 35
-                                            : 90,
-                                    width: double.infinity,
-                                    decoration:
-                                        BoxDecoration(),
-                                    child: Image.memory(
-                                      returnShopProvider()
-                                          .selectedLogo!,
-                                      fit: BoxFit.contain,
-                                    ),
+                                  return Column(
+                                    children: [
+                                      SizedBox(height: 10),
+                                      Container(
+                                        height:
+                                            (returnShopProvider().imageWidth ??
+                                                        0) >
+                                                    (2 *
+                                                        (returnShopProvider().imageHeight ??
+                                                            0))
+                                                ? 35
+                                                : 90,
+                                        width:
+                                            double.infinity,
+                                        decoration:
+                                            BoxDecoration(),
+                                        child: Image.memory(
+                                          returnShopProvider()
+                                              .selectedLogo!,
+                                          fit:
+                                              BoxFit
+                                                  .contain,
+                                        ),
+                                      ),
+                                    ],
                                   );
                                 } else {
                                   return Container();
                                 }
                               },
                             ),
-                            SizedBox(height: 10),
+
                             Column(
                               // spacing: 8,
                               children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .center,
+                                  children: [
+                                    Text(
+                                      textAlign:
+                                          TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize:
+                                            widget
+                                                .theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      "Shop Id: ${shopRef()}",
+                                    ),
+                                  ],
+                                ),
                                 Visibility(
                                   visible:
                                       widget
@@ -477,12 +497,7 @@ class _ReceiptDetailsContainerState
                                     textAlign:
                                         TextAlign.center,
                                     style: TextStyle(
-                                      fontSize:
-                                          widget
-                                              .theme
-                                              .mobileTexts
-                                              .h4
-                                              .fontSize,
+                                      fontSize: 15,
                                       fontWeight:
                                           FontWeight.bold,
                                     ),
@@ -728,7 +743,7 @@ class _ReceiptDetailsContainerState
                                                 widget
                                                     .theme
                                                     .mobileTexts
-                                                    .b1
+                                                    .b4
                                                     .fontSize,
                                             fontWeight:
                                                 FontWeight
@@ -742,7 +757,7 @@ class _ReceiptDetailsContainerState
                                                 widget
                                                     .theme
                                                     .mobileTexts
-                                                    .b2
+                                                    .b3
                                                     .fontSize,
                                             fontWeight:
                                                 FontWeight
@@ -770,13 +785,13 @@ class _ReceiptDetailsContainerState
                                                 widget
                                                     .theme
                                                     .mobileTexts
-                                                    .b1
+                                                    .b4
                                                     .fontSize,
                                             fontWeight:
                                                 FontWeight
                                                     .bold,
                                           ),
-                                          'Cart Id',
+                                          'Cart Name',
                                         ),
                                         Text(
                                           style: TextStyle(
@@ -784,7 +799,7 @@ class _ReceiptDetailsContainerState
                                                 widget
                                                     .theme
                                                     .mobileTexts
-                                                    .b2
+                                                    .b3
                                                     .fontSize,
                                             fontWeight:
                                                 FontWeight
@@ -823,7 +838,7 @@ class _ReceiptDetailsContainerState
                                                     widget
                                                         .theme
                                                         .mobileTexts
-                                                        .b1
+                                                        .b4
                                                         .fontSize,
                                                 fontWeight:
                                                     FontWeight
@@ -840,7 +855,7 @@ class _ReceiptDetailsContainerState
                                                     widget
                                                         .theme
                                                         .mobileTexts
-                                                        .b2
+                                                        .b3
                                                         .fontSize,
                                                 fontWeight:
                                                     FontWeight
@@ -872,13 +887,13 @@ class _ReceiptDetailsContainerState
                                                     widget
                                                         .theme
                                                         .mobileTexts
-                                                        .b1
+                                                        .b4
                                                         .fontSize,
                                                 fontWeight:
                                                     FontWeight
                                                         .bold,
                                               ),
-                                              'Customer Name',
+                                              'Customer',
                                             ),
                                             Text(
                                               style: TextStyle(
@@ -886,7 +901,7 @@ class _ReceiptDetailsContainerState
                                                     widget
                                                         .theme
                                                         .mobileTexts
-                                                        .b2
+                                                        .b3
                                                         .fontSize,
                                                 fontWeight:
                                                     FontWeight
@@ -925,53 +940,13 @@ class _ReceiptDetailsContainerState
                                                     widget
                                                         .theme
                                                         .mobileTexts
-                                                        .b1
+                                                        .b4
                                                         .fontSize,
                                                 fontWeight:
                                                     FontWeight
                                                         .bold,
                                               ),
                                               'Payment Method',
-                                            ),
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    widget
-                                                        .theme
-                                                        .mobileTexts
-                                                        .b2
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .normal,
-                                              ),
-                                              widget
-                                                  .mainReceipt
-                                                  .paymentMethod,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 4,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment
-                                                  .start,
-                                          children: [
-                                            Text(
-                                              style: TextStyle(
-                                                fontSize:
-                                                    widget
-                                                        .theme
-                                                        .mobileTexts
-                                                        .b1
-                                                        .fontSize,
-                                                fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                              ),
-                                              'Amount(s)',
                                             ),
                                             Column(
                                               children: [
@@ -988,7 +963,7 @@ class _ReceiptDetailsContainerState
                                                       Text(
                                                         style: TextStyle(
                                                           fontSize:
-                                                              widget.theme.mobileTexts.b3.fontSize,
+                                                              widget.theme.mobileTexts.b4.fontSize,
                                                           fontWeight:
                                                               FontWeight.normal,
                                                         ),
@@ -997,7 +972,7 @@ class _ReceiptDetailsContainerState
                                                       Text(
                                                         style: TextStyle(
                                                           fontSize:
-                                                              widget.theme.mobileTexts.b3.fontSize,
+                                                              widget.theme.mobileTexts.b4.fontSize,
                                                           fontWeight:
                                                               FontWeight.bold,
                                                         ),
@@ -1024,7 +999,7 @@ class _ReceiptDetailsContainerState
                                                       Text(
                                                         style: TextStyle(
                                                           fontSize:
-                                                              widget.theme.mobileTexts.b3.fontSize,
+                                                              widget.theme.mobileTexts.b4.fontSize,
                                                           fontWeight:
                                                               FontWeight.normal,
                                                         ),
@@ -1033,7 +1008,7 @@ class _ReceiptDetailsContainerState
                                                       Text(
                                                         style: TextStyle(
                                                           fontSize:
-                                                              widget.theme.mobileTexts.b3.fontSize,
+                                                              widget.theme.mobileTexts.b4.fontSize,
                                                           fontWeight:
                                                               FontWeight.bold,
                                                         ),
@@ -1048,6 +1023,47 @@ class _ReceiptDetailsContainerState
                                                   ),
                                                 ),
                                               ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 4,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment
+                                                  .start,
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    widget
+                                                        .theme
+                                                        .mobileTexts
+                                                        .b4
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .bold,
+                                              ),
+                                              'Ticket #Id',
+                                            ),
+                                            Text(
+                                              style: TextStyle(
+                                                fontSize:
+                                                    widget
+                                                        .theme
+                                                        .mobileTexts
+                                                        .b3
+                                                        .fontSize,
+                                                fontWeight:
+                                                    FontWeight
+                                                        .normal,
+                                              ),
+                                              widget
+                                                      .mainReceipt
+                                                      .barcode ??
+                                                  'Not Saved',
                                             ),
                                           ],
                                         ),
@@ -1079,7 +1095,7 @@ class _ReceiptDetailsContainerState
                                                     widget
                                                         .theme
                                                         .mobileTexts
-                                                        .b1
+                                                        .b4
                                                         .fontSize,
                                                 fontWeight:
                                                     FontWeight
@@ -1093,7 +1109,7 @@ class _ReceiptDetailsContainerState
                                                     widget
                                                         .theme
                                                         .mobileTexts
-                                                        .b2
+                                                        .b3
                                                         .fontSize,
                                                 fontWeight:
                                                     FontWeight
@@ -1121,7 +1137,7 @@ class _ReceiptDetailsContainerState
                                                     widget
                                                         .theme
                                                         .mobileTexts
-                                                        .b1
+                                                        .b4
                                                         .fontSize,
                                                 fontWeight:
                                                     FontWeight
@@ -1135,7 +1151,7 @@ class _ReceiptDetailsContainerState
                                                     widget
                                                         .theme
                                                         .mobileTexts
-                                                        .b2
+                                                        .b3
                                                         .fontSize,
                                                 fontWeight:
                                                     FontWeight
@@ -1165,7 +1181,7 @@ class _ReceiptDetailsContainerState
                                         widget
                                             .theme
                                             .mobileTexts
-                                            .b1
+                                            .b3
                                             .fontSize,
                                     fontWeight:
                                         FontWeight.bold,
@@ -1202,6 +1218,9 @@ class _ReceiptDetailsContainerState
                                               ),
                                           child: SizedBox(
                                             child: Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment
+                                                      .start,
                                               spacing: 10,
                                               mainAxisAlignment:
                                                   MainAxisAlignment
@@ -1218,16 +1237,24 @@ class _ReceiptDetailsContainerState
                                                       Text(
                                                         style: TextStyle(
                                                           fontSize:
-                                                              widget.theme.mobileTexts.b1.fontSize,
+                                                              widget.theme.mobileTexts.b3.fontSize,
                                                         ),
                                                         productRecord.productName,
                                                       ),
-                                                      Text(
-                                                        style: TextStyle(
-                                                          fontSize:
-                                                              widget.theme.mobileTexts.b3.fontSize,
-                                                        ),
-                                                        'Qty: ${productRecord.quantity.toString()} ${productRecord.unit == 'Others' || productRecord.unit == null ? 'Item(s)' : productRecord.unit}',
+                                                      Row(
+                                                        children: [
+                                                          Flexible(
+                                                            child: Text(
+                                                              style: TextStyle(
+                                                                fontSize:
+                                                                    widget.theme.mobileTexts.b4.fontSize,
+                                                                fontWeight:
+                                                                    FontWeight.bold,
+                                                              ),
+                                                              'Qty: ${productRecord.quantity.toString()} ${productRecord.unit == 'Others' || productRecord.unit == null ? 'Item(s)' : productRecord.unit}',
+                                                            ),
+                                                          ),
+                                                        ],
                                                       ),
                                                     ],
                                                   ),
@@ -1241,7 +1268,7 @@ class _ReceiptDetailsContainerState
                                                       Text(
                                                         style: TextStyle(
                                                           fontSize:
-                                                              widget.theme.mobileTexts.b1.fontSize,
+                                                              widget.theme.mobileTexts.b2.fontSize,
                                                           fontWeight:
                                                               FontWeight.bold,
                                                         ),
@@ -1263,32 +1290,47 @@ class _ReceiptDetailsContainerState
                                                               context,
                                                         ),
                                                       ),
-                                                      Visibility(
-                                                        visible:
-                                                            productRecord.discount !=
-                                                                null &&
-                                                            !productRecord.customPriceSet &&
-                                                            (widget.mainReceipt.fixedDiscount ==
-                                                                    null &&
-                                                                widget.mainReceipt.generalDiscount ==
-                                                                    null),
+                                                      Padding(
+                                                        padding: const EdgeInsets.only(
+                                                          left:
+                                                              1.0,
+                                                        ),
                                                         child: Text(
                                                           style: TextStyle(
-                                                            decoration:
-                                                                TextDecoration.lineThrough,
                                                             fontSize:
-                                                                widget.theme.mobileTexts.b3.fontSize,
+                                                                9,
                                                             fontWeight:
-                                                                FontWeight.normal,
+                                                                FontWeight.bold,
                                                           ),
-                                                          formatMoneyMid(
-                                                            amount:
-                                                                productRecord.originalCost!,
-                                                            context:
-                                                                context,
-                                                          ),
+                                                          "${formatMoneyMid(amount: ((widget.mainReceipt.fixedDiscount == null && widget.mainReceipt.generalDiscount == null) && productRecord.discount != null ? ((productRecord.originalCost ?? 0) - (productRecord.discountedAmount ?? 0)) : (productRecord.originalCost ?? 0) / productRecord.quantity), context: context)} per 1",
                                                         ),
                                                       ),
+                                                      // Visibility(
+                                                      //   visible:
+                                                      //       productRecord.discount !=
+                                                      //           null &&
+                                                      //       !productRecord.customPriceSet &&
+                                                      //       (widget.mainReceipt.fixedDiscount ==
+                                                      //               null &&
+                                                      //           widget.mainReceipt.generalDiscount ==
+                                                      //               null),
+                                                      //   child: Text(
+                                                      //     style: TextStyle(
+                                                      //       decoration:
+                                                      //           TextDecoration.lineThrough,
+                                                      //       fontSize:
+                                                      //           widget.theme.mobileTexts.b3.fontSize,
+                                                      //       fontWeight:
+                                                      //           FontWeight.normal,
+                                                      //     ),
+                                                      //     formatMoneyMid(
+                                                      //       amount:
+                                                      //           productRecord.originalCost!,
+                                                      //       context:
+                                                      //           context,
+                                                      //     ),
+                                                      //   ),
+                                                      // ),
                                                     ],
                                                   ),
                                                 ),
@@ -1317,7 +1359,7 @@ class _ReceiptDetailsContainerState
                                                         context,
                                                       )
                                                       .mobileTexts
-                                                      .b3
+                                                      .b4
                                                       .fontSize,
                                               fontWeight:
                                                   FontWeight
@@ -1419,32 +1461,6 @@ class _ReceiptDetailsContainerState
                                                                             0),
                                                                 context:
                                                                     context,
-                                                              ),
-                                                            ),
-                                                            Visibility(
-                                                              visible:
-                                                                  productRecord.discount !=
-                                                                      null &&
-                                                                  !productRecord.customPriceSet &&
-                                                                  (widget.mainReceipt.fixedDiscount ==
-                                                                          null &&
-                                                                      widget.mainReceipt.generalDiscount ==
-                                                                          null),
-                                                              child: Text(
-                                                                style: TextStyle(
-                                                                  decoration:
-                                                                      TextDecoration.lineThrough,
-                                                                  fontSize:
-                                                                      widget.theme.mobileTexts.b4.fontSize,
-                                                                  fontWeight:
-                                                                      FontWeight.normal,
-                                                                ),
-                                                                formatMoneyMid(
-                                                                  amount:
-                                                                      productRecord.originalCost!,
-                                                                  context:
-                                                                      context,
-                                                                ),
                                                               ),
                                                             ),
                                                           ],

@@ -11,6 +11,7 @@ import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_rec
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/local_database/invoices/invoices_func.dart';
 import 'package:stockall/local_database/invoices/unsync_funcs/created/created_invoices_func.dart';
@@ -95,6 +96,8 @@ class InvoicesProvider extends ChangeNotifier {
     //     return null;
     //   }
     // } else {
+    var barcode = returnOnlyDigits(uuidGen());
+    invoice.barcode = barcode;
     invoice.createdAt = DateTime.now();
     await InvoicesFunc().createInvoices(invoice);
     await CreatedInvoicesFunc().createInvoice(
@@ -675,6 +678,8 @@ class InvoicesProvider extends ChangeNotifier {
       }
     }
     return TempCartItem(
+      uuid: record.uuid,
+      itemUuid: product.uuid,
       isVoid: record.isVoid ?? false,
       item: product,
       quantity: record.quantity,
@@ -683,7 +688,7 @@ class InvoicesProvider extends ChangeNotifier {
       addToStock: record.addToStock ?? false,
       setCustomPrice: record.customPriceSet,
       setTotalPrice: record.setTotalPrice ?? false,
-      salesRecordId: record.uuid,
+      // salesRecordId: record.uuid,
       useWholeSalePrice: record.useWholeSalePrice ?? false,
       useGroupQuantity: record.useGroupQuantity ?? false,
       qttyPerGroup: record.qttyPerGroup,

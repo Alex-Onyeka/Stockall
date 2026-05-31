@@ -20,21 +20,6 @@ class _SalesPageState extends State<SalesPage> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    // WidgetsBinding.instance.addPostFrameCallback((_) async {
-    //   await returnNavProvider(
-    //     context,
-    //     listen: false,
-    //   ).validate(context);
-
-    //   setState(() {
-    //     // stillLoading = false;
-    //   });
-    // });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
@@ -46,6 +31,7 @@ class _SalesPageState extends State<SalesPage> {
       },
       child: LayoutBuilder(
         builder: (context, constraints) {
+          print(constraints.constrainWidth());
           if (constraints.maxWidth < mobileScreen) {
             return SalesPageMobile();
           } else {

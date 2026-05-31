@@ -70,7 +70,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
             .toString();
       }
     } else {
-      return (qqty * (cartItem.item.sellingPrice!))
+      return (qqty *
+              (cartItem.getItem()?.sellingPrice ?? 1))
           .toString();
     }
   }
@@ -1237,6 +1238,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                     ).pop();
                                   },
                                   editCartItem: TempCartItem(
+                                    itemUuid: null,
+                                    uuid: uuidGen(),
                                     isVoid: false,
                                     qttyPerGroup: null,
                                     useGroupQuantity: false,
@@ -1322,6 +1325,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                   ).pop();
                                 },
                                 editCartItem: TempCartItem(
+                                  itemUuid: null,
+                                  uuid: uuidGen(),
                                   isVoid: false,
                                   qttyPerGroup: null,
                                   useGroupQuantity: false,
@@ -1432,6 +1437,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                         ).pop();
                                       },
                                       editCartItem: TempCartItem(
+                                        itemUuid: null,
+                                        uuid: uuidGen(),
                                         isVoid: false,
                                         qttyPerGroup: null,
                                         useGroupQuantity:
@@ -1526,6 +1533,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                   ).pop();
                                 },
                                 editCartItem: TempCartItem(
+                                  itemUuid: null,
+                                  uuid: uuidGen(),
                                   isVoid: false,
                                   qttyPerGroup: null,
                                   useGroupQuantity: false,
@@ -1712,6 +1721,10 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                         ).pop();
                                                       },
                                                       editCartItem: TempCartItem(
+                                                        itemUuid:
+                                                            null,
+                                                        uuid:
+                                                            uuidGen(),
                                                         isVoid:
                                                             false,
                                                         qttyPerGroup:
@@ -1852,7 +1865,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                                       product,
                                                                     ) =>
                                                                         product.uuid ==
-                                                                        item.item.uuid,
+                                                                        (item.itemUuid ??
+                                                                            item.item.uuid),
                                                                   )
                                                                   .isNotEmpty) {
                                                                 selectProductSales(
@@ -1975,7 +1989,8 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                                               product,
                                                                             ) =>
                                                                                 product.uuid ==
-                                                                                item.item.uuid,
+                                                                                (item.itemUuid ??
+                                                                                    item.item.uuid),
                                                                           )
                                                                           .isNotEmpty) {
                                                                         selectProductSales(
@@ -2124,6 +2139,10 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                                 context:
                                                                     context,
                                                                 newItem: TempCartItem(
+                                                                  uuid:
+                                                                      uuidGen(),
+                                                                  itemUuid:
+                                                                      pro.uuid,
                                                                   isVoid:
                                                                       false,
                                                                   qttyPerGroup:
@@ -2377,6 +2396,10 @@ class _MakeSalesMobileState extends State<MakeSalesMobile> {
                                                               ).pop();
                                                             },
                                                             editCartItem: TempCartItem(
+                                                              itemUuid:
+                                                                  null,
+                                                              uuid:
+                                                                  uuidGen(),
                                                               isVoid:
                                                                   false,
                                                               qttyPerGroup:

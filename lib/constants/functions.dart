@@ -443,6 +443,23 @@ Future<Uint8List> _buildPdf(
                               }
                             },
                           ),
+                          pw.SizedBox(height: 1),
+                          pw.Row(
+                            mainAxisAlignment:
+                                pw.MainAxisAlignment.center,
+                            children: [
+                              pw.Text(
+                                textAlign:
+                                    pw.TextAlign.center,
+                                "#Shop Id: ${shopRef()}",
+                                style: pw.TextStyle(
+                                  font: fontBold,
+                                  fontSize: 9,
+                                ),
+                                // maxLines: 2,
+                              ),
+                            ],
+                          ),
                           pw.Builder(
                             builder: (
                               pw.Context pdfContext,
@@ -729,6 +746,32 @@ Future<Uint8List> _buildPdf(
           (context) => pw.Column(
             children: [
               pw.Divider(),
+              pw.Builder(
+                builder: (beansContext) {
+                  if (receipt.barcode != null) {
+                    return pw.Column(
+                      children: [
+                        pw.Padding(
+                          padding: pw.EdgeInsets.only(
+                            right: 10,
+                          ),
+                          child: pw.SvgImage(
+                            svg: pw.Barcode.ean13().toSvg(
+                              receipt.barcode ?? '',
+                              width: 110,
+                              height: 30,
+                              fontHeight: 8,
+                              drawText: true,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  } else {
+                    return pw.SizedBox();
+                  }
+                },
+              ),
               pw.SizedBox(height: 5),
               pw.Align(
                 alignment: pw.Alignment.centerRight,
@@ -991,34 +1034,6 @@ Future<Uint8List> _buildPdf(
                                       pw.SizedBox(
                                         height: 5,
                                       ),
-                                      pw.Text(
-                                        style: pw.TextStyle(
-                                          font: fontBold,
-                                          fontSize: 10,
-                                        ),
-                                        receipt
-                                            .paymentMethod,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                pw.Expanded(
-                                  child: pw.Column(
-                                    crossAxisAlignment:
-                                        pw
-                                            .CrossAxisAlignment
-                                            .start,
-                                    children: [
-                                      pw.Text(
-                                        style: pw.TextStyle(
-                                          font: fontRegular,
-                                          fontSize: 9,
-                                        ),
-                                        'Amount(s):',
-                                      ),
-                                      pw.SizedBox(
-                                        height: 5,
-                                      ),
                                       pw.Builder(
                                         builder: (
                                           beansContext,
@@ -1074,6 +1089,34 @@ Future<Uint8List> _buildPdf(
                                             );
                                           }
                                         },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                pw.Expanded(
+                                  child: pw.Column(
+                                    crossAxisAlignment:
+                                        pw
+                                            .CrossAxisAlignment
+                                            .start,
+                                    children: [
+                                      pw.Text(
+                                        style: pw.TextStyle(
+                                          font: fontRegular,
+                                          fontSize: 9,
+                                        ),
+                                        '#Ticket Id:',
+                                      ),
+                                      pw.SizedBox(
+                                        height: 5,
+                                      ),
+                                      pw.Text(
+                                        style: pw.TextStyle(
+                                          font: fontBold,
+                                          fontSize: 10,
+                                        ),
+                                        receipt.barcode ??
+                                            'Not Set',
                                       ),
                                     ],
                                   ),
@@ -1265,37 +1308,44 @@ Future<Uint8List> _buildPdf(
                                     context: context,
                                   ),
                                 ),
-                                pw.Builder(
-                                  builder: (pdfContext) {
-                                    if (record.discount !=
-                                            null &&
-                                        !record
-                                            .customPriceSet &&
-                                        (receipt.fixedDiscount ==
-                                                null &&
-                                            receipt.generalDiscount ==
-                                                null)) {
-                                      return pw.Text(
-                                        style: pw.TextStyle(
-                                          font: fontRegular,
-                                          decoration:
-                                              pw
-                                                  .TextDecoration
-                                                  .lineThrough,
-                                          fontSize: 8,
-                                        ),
-                                        formatMoneyMid(
-                                          amount:
-                                              (record.originalCost ??
-                                                  0),
-                                          context: context,
-                                        ),
-                                      );
-                                    } else {
-                                      return pw.Container();
-                                    }
-                                  },
+                                pw.Text(
+                                  style: pw.TextStyle(
+                                    font: fontRegular,
+                                    fontSize: 7,
+                                  ),
+                                  "${formatMoneyMid(amount: ((receipt.fixedDiscount == null && receipt.generalDiscount == null) && record.discount != null ? ((record.originalCost ?? 0) - (record.discountedAmount ?? 0)) : (record.originalCost ?? 0) / record.quantity), context: context)} per 1",
                                 ),
+                                // pw.Builder(
+                                //   builder: (pdfContext) {
+                                //     if (record.discount !=
+                                //             null &&
+                                //         !record
+                                //             .customPriceSet &&
+                                //         (receipt.fixedDiscount ==
+                                //                 null &&
+                                //             receipt.generalDiscount ==
+                                //                 null)) {
+                                //       return pw.Text(
+                                //         style: pw.TextStyle(
+                                //           font: fontRegular,
+                                //           decoration:
+                                //               pw
+                                //                   .TextDecoration
+                                //                   .lineThrough,
+                                //           fontSize: 8,
+                                //         ),
+                                //         formatMoneyMid(
+                                //           amount:
+                                //               (record.originalCost ??
+                                //                   0),
+                                //           context: context,
+                                //         ),
+                                //       );
+                                //     } else {
+                                //       return pw.Container();
+                                //     }
+                                //   },
+                                // ),
                               ],
                             ),
                           ),
@@ -1555,7 +1605,7 @@ Future<Uint8List> _buildPdfRoll(
   BuildContext context,
   int printerType,
 ) async {
-  double headingText = printerType == 1 ? 12 : 14;
+  double headingText = printerType == 1 ? 11 : 13;
   double parText = printerType == 1 ? 7 : 9;
   double parTextAlt = printerType == 1 ? 5 : 7;
   double totalText = printerType == 1 ? 8 : 10;
@@ -1627,6 +1677,23 @@ Future<Uint8List> _buildPdfRoll(
                               fit: pw.BoxFit.contain,
                             ),
                           ),
+                        pw.SizedBox(height: 1),
+                        pw.Row(
+                          mainAxisAlignment:
+                              pw.MainAxisAlignment.center,
+                          children: [
+                            pw.Text(
+                              textAlign:
+                                  pw.TextAlign.center,
+                              "#Shop Id: ${shopRef()}",
+                              style: pw.TextStyle(
+                                font: fontBold,
+                                fontSize: parText,
+                              ),
+                              // maxLines: 2,
+                            ),
+                          ],
+                        ),
                         if (returnShopProvider()
                                 .selectedLogo !=
                             null)
@@ -1636,7 +1703,6 @@ Future<Uint8List> _buildPdfRoll(
                             if (shop.showShopName!) {
                               return pw.Column(
                                 children: [
-                                  pw.SizedBox(height: 1),
                                   pw.Text(
                                     textAlign:
                                         pw.TextAlign.center,
@@ -2078,31 +2144,6 @@ Future<Uint8List> _buildPdfRoll(
                                       'Payment Method:',
                                     ),
                                     pw.SizedBox(height: 1),
-                                    pw.Text(
-                                      style: pw.TextStyle(
-                                        font: fontBold,
-                                        fontSize: parText,
-                                      ),
-                                      receipt.paymentMethod,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              pw.Expanded(
-                                child: pw.Column(
-                                  crossAxisAlignment:
-                                      pw
-                                          .CrossAxisAlignment
-                                          .start,
-                                  children: [
-                                    pw.Text(
-                                      style: pw.TextStyle(
-                                        font: fontRegular,
-                                        fontSize: parText,
-                                      ),
-                                      'Amount(s):',
-                                    ),
-                                    pw.SizedBox(height: 1),
                                     pw.Builder(
                                       builder: (
                                         beansContext,
@@ -2159,6 +2200,32 @@ Future<Uint8List> _buildPdfRoll(
                                           );
                                         }
                                       },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              pw.Expanded(
+                                child: pw.Column(
+                                  crossAxisAlignment:
+                                      pw
+                                          .CrossAxisAlignment
+                                          .start,
+                                  children: [
+                                    pw.Text(
+                                      style: pw.TextStyle(
+                                        font: fontRegular,
+                                        fontSize: parText,
+                                      ),
+                                      '#Ticket ID',
+                                    ),
+                                    pw.SizedBox(height: 1),
+                                    pw.Text(
+                                      style: pw.TextStyle(
+                                        font: fontBold,
+                                        fontSize: parText,
+                                      ),
+                                      receipt.barcode ??
+                                          'Not Set',
                                     ),
                                   ],
                                 ),
@@ -2253,7 +2320,7 @@ Future<Uint8List> _buildPdfRoll(
                 pw.Row(
                   children: [
                     pw.Expanded(
-                      flex: 4,
+                      flex: 6,
                       child: pw.Text(
                         'Items:',
                         style: pw.TextStyle(
@@ -2273,7 +2340,7 @@ Future<Uint8List> _buildPdfRoll(
                       ),
                     ),
                     pw.Expanded(
-                      flex: 3,
+                      flex: 4,
                       child: pw.Text(
                         'Price:',
                         style: pw.TextStyle(
@@ -2296,7 +2363,7 @@ Future<Uint8List> _buildPdfRoll(
                           pw.MainAxisAlignment.spaceBetween,
                       children: [
                         pw.Expanded(
-                          flex: 4,
+                          flex: 6,
                           child: pw.Text(
                             style: pw.TextStyle(
                               fontSize: parText,
@@ -2308,13 +2375,13 @@ Future<Uint8List> _buildPdfRoll(
                           flex: 2,
                           child: pw.Text(
                             style: pw.TextStyle(
-                              fontSize: parTextAlt,
+                              fontSize: parText,
                             ),
                             '[ ${formatLargeNumberDouble(record.quantity)} ] ',
                           ),
                         ),
                         pw.Expanded(
-                          flex: 3,
+                          flex: 4,
                           child: pw.Column(
                             crossAxisAlignment:
                                 pw.CrossAxisAlignment.start,
@@ -2341,37 +2408,44 @@ Future<Uint8List> _buildPdfRoll(
                                   context: context,
                                 ),
                               ),
-                              pw.Builder(
-                                builder: (pdfContext) {
-                                  if (record.discount !=
-                                          null &&
-                                      !record
-                                          .customPriceSet &&
-                                      (receipt.fixedDiscount ==
-                                              null &&
-                                          receipt.generalDiscount ==
-                                              null)) {
-                                    return pw.Text(
-                                      style: pw.TextStyle(
-                                        font: fontRegular,
-                                        decoration:
-                                            pw
-                                                .TextDecoration
-                                                .lineThrough,
-                                        fontSize: 6,
-                                      ),
-                                      formatMoneyMid(
-                                        amount:
-                                            (record.originalCost ??
-                                                0),
-                                        context: context,
-                                      ),
-                                    );
-                                  } else {
-                                    return pw.Container();
-                                  }
-                                },
-                              ),
+                              // pw.Text(
+                              //   style: pw.TextStyle(
+                              //     font: fontRegular,
+                              //     fontSize: 6,
+                              //   ),
+                              //   "1x  ${formatMoneyMid(amount: ((receipt.fixedDiscount == null && receipt.generalDiscount == null) && record.discount != null ? ((record.originalCost ?? 0) - (record.discountedAmount ?? 0)) : (record.originalCost ?? 0) / record.quantity), context: context)}",
+                              // ),
+                              // pw.Builder(
+                              //   builder: (pdfContext) {
+                              //     if (record.discount !=
+                              //             null &&
+                              //         !record
+                              //             .customPriceSet &&
+                              //         (receipt.fixedDiscount ==
+                              //                 null &&
+                              //             receipt.generalDiscount ==
+                              //                 null)) {
+                              //       return pw.Text(
+                              //         style: pw.TextStyle(
+                              //           font: fontRegular,
+                              //           decoration:
+                              //               pw
+                              //                   .TextDecoration
+                              //                   .lineThrough,
+                              //           fontSize: 6,
+                              //         ),
+                              //         formatMoneyMid(
+                              //           amount:
+                              //               (record.originalCost ??
+                              //                   0),
+                              //           context: context,
+                              //         ),
+                              //       );
+                              //     } else {
+                              //       return pw.Container();
+                              //     }
+                              //   },
+                              // ),
                             ],
                           ),
                         ),
@@ -2483,50 +2557,69 @@ Future<Uint8List> _buildPdfRoll(
                 ),
                 pw.SizedBox(height: 1),
 
-                pw.Row(
-                  mainAxisAlignment:
-                      pw.MainAxisAlignment.spaceEvenly,
-                  children: [
-                    pw.Expanded(
-                      flex: 9,
-                      child: pw.Row(
+                pw.Builder(
+                  builder: (beansContext) {
+                    if (receipt.vat != null) {
+                      return pw.Column(
                         children: [
-                          pw.Text(
-                            style: pw.TextStyle(
-                              font: fontRegular,
-                              fontSize: parTextAlt,
-                            ),
-                            'VAT:',
+                          pw.Row(
+                            mainAxisAlignment:
+                                pw
+                                    .MainAxisAlignment
+                                    .spaceEvenly,
+                            children: [
+                              pw.Expanded(
+                                flex: 9,
+                                child: pw.Row(
+                                  children: [
+                                    pw.Text(
+                                      style: pw.TextStyle(
+                                        font: fontRegular,
+                                        fontSize:
+                                            parTextAlt,
+                                      ),
+                                      'VAT:',
+                                    ),
+                                    pw.Text(
+                                      style: pw.TextStyle(
+                                        font: fontRegular,
+                                        fontSize:
+                                            parTextAlt,
+                                      ),
+                                      '(${receipt.vat ?? 0}%)',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              pw.Expanded(
+                                flex: 7,
+                                child: pw.Text(
+                                  style: pw.TextStyle(
+                                    font: fontRegular,
+                                    fontSize: parText,
+                                  ),
+                                  formatMoneyMid(
+                                    amount:
+                                        returnReceiptProvider(
+                                          context,
+                                          listen: false,
+                                        ).getVATForReceipt(
+                                          receipt,
+                                        ),
+                                    context: context,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          pw.Text(
-                            style: pw.TextStyle(
-                              font: fontRegular,
-                              fontSize: parTextAlt,
-                            ),
-                            '(${receipt.vat ?? 0}%)',
-                          ),
+                          pw.SizedBox(height: 1),
                         ],
-                      ),
-                    ),
-                    pw.Expanded(
-                      flex: 7,
-                      child: pw.Text(
-                        style: pw.TextStyle(
-                          font: fontRegular,
-                          fontSize: parText,
-                        ),
-                        formatMoneyMid(
-                          amount: returnReceiptProvider(
-                            context,
-                            listen: false,
-                          ).getVATForReceipt(receipt),
-                          context: context,
-                        ),
-                      ),
-                    ),
-                  ],
+                      );
+                    } else {
+                      return pw.SizedBox();
+                    }
+                  },
                 ),
-                pw.SizedBox(height: 1),
                 pw.Builder(
                   builder: (pdfContext) {
                     if (receipt.balance != null) {
@@ -2614,6 +2707,33 @@ Future<Uint8List> _buildPdfRoll(
                 ),
                 pw.SizedBox(height: 5),
                 pw.Divider(),
+                pw.Builder(
+                  builder: (beansContext) {
+                    if (receipt.barcode != null) {
+                      return pw.Column(
+                        children: [
+                          pw.Padding(
+                            padding: pw.EdgeInsets.only(
+                              right: 10,
+                            ),
+                            child: pw.SvgImage(
+                              svg: pw.Barcode.ean13().toSvg(
+                                receipt.barcode ?? '',
+                                width: 110,
+                                height: 30,
+                                fontHeight: 8,
+                                drawText: true,
+                              ),
+                            ),
+                          ),
+                          pw.Divider(height: 8),
+                        ],
+                      );
+                    } else {
+                      return pw.SizedBox();
+                    }
+                  },
+                ),
                 pw.SizedBox(height: 5),
                 pw.Row(
                   mainAxisAlignment:

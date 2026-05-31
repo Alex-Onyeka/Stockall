@@ -18,6 +18,7 @@ import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
+import 'package:stockall/pages/sales/search_receipt/search_receipt_page.dart';
 import 'package:stockall/pages/sales/total_sales/total_sales_page.dart';
 import 'package:stockall/services/auth_service.dart';
 
@@ -66,6 +67,13 @@ class _SalesPageDesktopState
   @override
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
+    // List<TempMainReceipt> receipts(){
+    //   if (widget.searchControllerForSales.text.isNotEmpty) {
+
+    //   }else {
+    //     return
+    //   }
+    // }
 
     return Scaffold(
       key: _scaffoldKey,
@@ -192,128 +200,121 @@ class _SalesPageDesktopState
                                       0,
                                       1,
                                     ),
-                                    child: InkWell(
-                                      onTap: () {
-                                        returnReceiptProvider(
+                                    child: ItemsSummary(
+                                      scanReceiptBarcode: () {
+                                        showSearchReceiptPage(
                                           context,
-                                          listen: false,
-                                        ).clearDate();
+                                        );
                                       },
-                                      child: ItemsSummary(
-                                        refreshAction:
-                                            () async {
-                                              await getMainReceipts();
-                                            },
-                                        isFilter: authorization(
-                                          authorized:
-                                              Authorizations()
-                                                  .viewDate,
-                                        ),
-                                        isMoney1: true,
-                                        mainTitle:
-                                            'Sales Summary',
-                                        subTitle:
-                                            'All Sales',
-                                        firsRow: true,
-                                        color1:
-                                            Colors.green,
-                                        title1:
-                                            'Sales Revenue',
-                                        value1:
-                                            returnReceiptProvider(
-                                              context,
-                                            ).getTotalRevenueForSelectedDay(),
-                                        color2:
-                                            Colors.amber,
-                                        title2:
-                                            'Sales Number',
-                                        value2:
-                                            returnReceiptProvider(
-                                                  context,
-                                                )
-                                                .returnOwnReceiptsByDayOrWeek()
-                                                .toList()
-                                                .length
-                                                .toDouble(),
-                                        secondRow: false,
-                                        onSearch: false,
-                                        isDateSet:
-                                            returnReceiptProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).dateSet !=
-                                                null ||
-                                            returnReceiptProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).rangeStartDate !=
-                                                null,
-                                        setDate:
-                                            returnReceiptProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).dateSet !=
-                                                null ||
-                                            returnReceiptProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).rangeStartDate !=
-                                                null,
-                                        filterAction: () {
-                                          if (returnReceiptProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).dateSet !=
-                                                  null ||
-                                              returnReceiptProvider(
-                                                    context,
-                                                    listen:
-                                                        false,
-                                                  ).rangeStartDate !=
-                                                  null) {
-                                            returnReceiptProvider(
-                                              context,
-                                              listen: false,
-                                            ).clearDate();
-                                          } else {
-                                            mainDatePicker(
-                                              context:
-                                                  context,
-                                              theme: theme,
-                                              singleDate: (
-                                                date,
-                                              ) {
-                                                returnReceiptProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).setDate(
-                                                  date!,
-                                                );
-                                              },
-                                              rangeDate: (
-                                                firstDate,
-                                                lastDate,
-                                              ) {
-                                                returnReceiptProvider(
-                                                  context,
-                                                  listen:
-                                                      false,
-                                                ).setRange(
-                                                  firstDate!,
-                                                  lastDate ??
-                                                      DateTime.now(),
-                                                );
-                                              },
-                                            );
-                                          }
-                                        },
+                                      refreshAction: () async {
+                                        await getMainReceipts();
+                                      },
+                                      isFilter: authorization(
+                                        authorized:
+                                            Authorizations()
+                                                .viewDate,
                                       ),
+                                      isMoney1: true,
+                                      mainTitle:
+                                          'Sales Summary',
+                                      subTitle: 'All Sales',
+                                      firsRow: true,
+                                      color1: Colors.green,
+                                      title1:
+                                          'Sales Revenue',
+                                      value1:
+                                          returnReceiptProvider(
+                                            context,
+                                          ).getTotalRevenueForSelectedDay(),
+                                      color2: Colors.amber,
+                                      title2:
+                                          'Sales Number',
+                                      value2:
+                                          returnReceiptProvider(
+                                                context,
+                                              )
+                                              .returnOwnReceiptsByDayOrWeek()
+                                              .toList()
+                                              .length
+                                              .toDouble(),
+                                      secondRow: false,
+                                      onSearch: false,
+                                      isDateSet:
+                                          returnReceiptProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).dateSet !=
+                                              null ||
+                                          returnReceiptProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).rangeStartDate !=
+                                              null,
+                                      setDate:
+                                          returnReceiptProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).dateSet !=
+                                              null ||
+                                          returnReceiptProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).rangeStartDate !=
+                                              null,
+                                      filterAction: () {
+                                        if (returnReceiptProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).dateSet !=
+                                                null ||
+                                            returnReceiptProvider(
+                                                  context,
+                                                  listen:
+                                                      false,
+                                                ).rangeStartDate !=
+                                                null) {
+                                          returnReceiptProvider(
+                                            context,
+                                            listen: false,
+                                          ).clearDate();
+                                        } else {
+                                          mainDatePicker(
+                                            context:
+                                                context,
+                                            theme: theme,
+                                            singleDate: (
+                                              date,
+                                            ) {
+                                              returnReceiptProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).setDate(
+                                                date!,
+                                              );
+                                            },
+                                            rangeDate: (
+                                              firstDate,
+                                              lastDate,
+                                            ) {
+                                              returnReceiptProvider(
+                                                context,
+                                                listen:
+                                                    false,
+                                              ).setRange(
+                                                firstDate!,
+                                                lastDate ??
+                                                    DateTime.now(),
+                                              );
+                                            },
+                                          );
+                                        }
+                                      },
                                     ),
                                   ),
                                   //

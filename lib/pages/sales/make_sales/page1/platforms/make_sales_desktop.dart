@@ -1324,6 +1324,10 @@ class _MakeSalesDesktopState
                                               ).pop();
                                             },
                                             editCartItem: TempCartItem(
+                                              itemUuid:
+                                                  null,
+                                              uuid:
+                                                  uuidGen(),
                                               isVoid: false,
                                               qttyPerGroup:
                                                   null,
@@ -1458,6 +1462,10 @@ class _MakeSalesDesktopState
                                                     ).pop();
                                                   },
                                                   editCartItem: TempCartItem(
+                                                    itemUuid:
+                                                        null,
+                                                    uuid:
+                                                        uuidGen(),
                                                     isVoid:
                                                         false,
                                                     qttyPerGroup:
@@ -1652,6 +1660,10 @@ class _MakeSalesDesktopState
                                                                           ).pop();
                                                                         },
                                                                         editCartItem: TempCartItem(
+                                                                          itemUuid:
+                                                                              null,
+                                                                          uuid:
+                                                                              uuidGen(),
                                                                           isVoid:
                                                                               false,
                                                                           qttyPerGroup:
@@ -1793,7 +1805,8 @@ class _MakeSalesDesktopState
                                                                                         product,
                                                                                       ) =>
                                                                                           product.uuid ==
-                                                                                          item.item.uuid,
+                                                                                          (item.itemUuid ??
+                                                                                              item.item.uuid),
                                                                                     )
                                                                                     .isNotEmpty) {
                                                                                   selectProductSales(
@@ -1917,7 +1930,8 @@ class _MakeSalesDesktopState
                                                                                               product,
                                                                                             ) =>
                                                                                                 product.uuid ==
-                                                                                                item.item.uuid,
+                                                                                                (item.itemUuid ??
+                                                                                                    item.item.uuid),
                                                                                           )
                                                                                           .isNotEmpty) {
                                                                                         selectProductSales(
@@ -2243,96 +2257,31 @@ class _MakeSalesDesktopState
                                     ),
                                     SubStaffSelectionWidget(),
                                     SizedBox(height: 10),
-                                    SubWrapper(
-                                      isVisible:
-                                          !SalesAuthAction()
-                                              .useBarcodeAction(
-                                                context:
-                                                    context,
-                                              ),
-                                      mainWidget: TextFieldBarcode(
-                                        node:
-                                            returnSalesProvider()
-                                                .scanBarcodeCartPageNode,
-                                        hintText:
-                                            'Scan Barcode',
-                                        clearTextField: () {
-                                          setState(() {});
-                                        },
-                                        searchController:
-                                            widget
-                                                .searchController,
-                                        onChanged: (value) {
-                                          SalesAuthAction().useBarcodeAction(
-                                            context:
-                                                context,
-                                            action: () async {
-                                              if (value
-                                                  .isNotEmpty) {
-                                                var items = returnData().productList().where(
-                                                  (
-                                                    product,
-                                                  ) =>
-                                                      product.barcode?.toLowerCase() ==
-                                                          value.toLowerCase() ||
-                                                      product.name.toLowerCase() ==
-                                                          value.toLowerCase(),
-                                                );
-                                                if (items
-                                                    .isNotEmpty) {
-                                                  returnSalesProvider().addItemToCart(
-                                                    isEdit:
-                                                        false,
-                                                    context:
-                                                        context,
-                                                    newItem: TempCartItem(
-                                                      isVoid:
-                                                          false,
-                                                      qttyPerGroup:
-                                                          null,
-                                                      useGroupQuantity:
-                                                          false,
-                                                      useWholeSalePrice:
-                                                          false,
-                                                      setCustomPrice:
-                                                          false,
-                                                      item:
-                                                          items.first,
-                                                      quantity:
-                                                          1,
-                                                      discount:
-                                                          null,
-                                                      addToStock:
-                                                          false,
-                                                      setTotalPrice:
-                                                          false,
-                                                    ),
-                                                    isCustomEdit:
-                                                        false,
-                                                  );
-
-                                                  widget
-                                                      .searchController
-                                                      .clear();
-                                                  await playBeep();
-                                                  setState(
-                                                    () {},
-                                                  );
-                                                  returnSalesProvider()
-                                                      .requestFocusScanBarcode();
-                                                }
-                                              }
-                                            },
-                                            failAction: () {
-                                              widget
-                                                  .searchController
-                                                  .clear();
-                                            },
-                                          );
-                                        },
-                                        onPressedScan:
-                                            () async {},
-                                      ),
+                                    // SubWrapper(
+                                    //   isVisible:
+                                    //       !SalesAuthAction()
+                                    //           .useBarcodeAction(
+                                    //             context:
+                                    //                 context,
+                                    //           ),
+                                    //   mainWidget:
+                                    // ),
+                                    BarcodeAndSearchTextField(
+                                      searchController:
+                                          widget
+                                              .searchController,
+                                      theme: theme,
+                                      priceNode: priceNode,
+                                      qtyNode: qttyNode,
+                                      priceController:
+                                          priceController,
+                                      quantityController:
+                                          quantityController,
+                                      close: () {
+                                        // Navigator.of(
+                                        //   context,
+                                        // ).pop();
+                                      },
                                     ),
                                     SizedBox(height: 10),
                                     Material(
@@ -2453,6 +2402,10 @@ class _MakeSalesDesktopState
                                                           ).pop();
                                                         },
                                                         editCartItem: TempCartItem(
+                                                          itemUuid:
+                                                              null,
+                                                          uuid:
+                                                              uuidGen(),
                                                           isVoid:
                                                               false,
                                                           qttyPerGroup:
@@ -3121,6 +3074,280 @@ class _MakeSalesDesktopState
   }
 }
 
+class BarcodeAndSearchTextField extends StatefulWidget {
+  final ThemeProvider theme;
+  final TextEditingController searchController;
+  final FocusNode priceNode;
+  final FocusNode qtyNode;
+  final TextEditingController quantityController;
+  final TextEditingController priceController;
+  final Function() close;
+
+  const BarcodeAndSearchTextField({
+    super.key,
+    required this.theme,
+    required this.searchController,
+    required this.priceNode,
+    required this.qtyNode,
+    required this.quantityController,
+    required this.priceController,
+    required this.close,
+  });
+
+  @override
+  State<BarcodeAndSearchTextField> createState() =>
+      _BarcodeAndSearchTextFieldState();
+}
+
+class _BarcodeAndSearchTextFieldState
+    extends State<BarcodeAndSearchTextField> {
+  @override
+  Widget build(BuildContext context) {
+    List<TempProductClass> products =
+        returnData()
+            .productList()
+            .where(
+              (pro) => pro.name.toLowerCase().contains(
+                widget.searchController.text.toLowerCase(),
+              ),
+            )
+            .toList();
+    return Column(
+      children: [
+        TextFieldBarcode(
+          node:
+              returnSalesProvider().scanBarcodeCartPageNode,
+          hintText: 'Search Or Scan Barcode',
+          clearTextField: () {
+            setState(() {});
+          },
+          searchController: widget.searchController,
+          onChanged: (value) {
+            if (value.isNotEmpty) {
+              var items = returnData().productList().where(
+                (product) =>
+                    product.barcode?.toLowerCase() ==
+                    value.toLowerCase(),
+              );
+              SalesAuthAction().useBarcodeAction(
+                context: context,
+                action: () async {
+                  if (items.isNotEmpty) {
+                    returnSalesProvider().addItemToCart(
+                      isEdit: false,
+                      context: context,
+                      newItem: TempCartItem(
+                        uuid: uuidGen(),
+                        itemUuid: items.first.uuid,
+                        isVoid: false,
+                        qttyPerGroup: null,
+                        useGroupQuantity: false,
+                        useWholeSalePrice: false,
+                        setCustomPrice: false,
+                        item: items.first,
+                        quantity: 1,
+                        discount: null,
+                        addToStock: false,
+                        setTotalPrice: false,
+                      ),
+                      isCustomEdit: false,
+                    );
+
+                    widget.searchController.clear();
+                    await playBeep();
+                    setState(() {});
+                    returnSalesProvider()
+                        .requestFocusScanBarcode();
+                  }
+                },
+                failAction: () {
+                  widget.searchController.clear();
+                },
+              );
+            }
+
+            setState(() {});
+          },
+          onPressedScan: () async {},
+        ),
+        Visibility(
+          visible: widget.searchController.text.isNotEmpty,
+          child: Column(
+            children: [
+              SizedBox(height: 10),
+              Container(
+                padding: EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: 10,
+                ),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Column(
+                  spacing: 5,
+                  children:
+                      (products.length > 5
+                              ? products.getRange(0, 5)
+                              : products)
+                          .map(
+                            (item) => Material(
+                              color: Colors.grey.shade100,
+                              child: InkWell(
+                                onTap: () {
+                                  selectProductSales(
+                                    isEdit: false,
+                                    context: context,
+                                    qttyNode:
+                                        widget.qtyNode,
+                                    priceNode:
+                                        widget.priceNode,
+                                    quantityController:
+                                        widget
+                                            .quantityController,
+                                    searchController:
+                                        widget
+                                            .searchController,
+                                    theme: widget.theme,
+                                    cartItem: TempCartItem(
+                                      uuid: uuidGen(),
+                                      itemUuid: item.uuid,
+                                      isVoid: false,
+                                      qttyPerGroup:
+                                          item.qttyPerGroup,
+                                      useGroupQuantity:
+                                          false,
+                                      setTotalPrice:
+                                          returnSalesProvider()
+                                              .setTotalPrice,
+                                      useWholeSalePrice:
+                                          false,
+                                      addToStock: false,
+                                      discount:
+                                          item.discount,
+                                      item: item,
+                                      quantity:
+                                          double.tryParse(
+                                            widget
+                                                .quantityController
+                                                .text
+                                                .replaceAll(
+                                                  ',',
+                                                  '',
+                                                )
+                                                .trim(),
+                                          ) ??
+                                          0.0,
+                                    ),
+                                    closeAction:
+                                        widget.close,
+                                    priceController:
+                                        widget
+                                            .priceController,
+                                  );
+                                },
+                                child: Container(
+                                  padding:
+                                      EdgeInsets.symmetric(
+                                        vertical: 5,
+                                        horizontal: 5,
+                                      ),
+
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .spaceBetween,
+                                    spacing: 5,
+                                    children: [
+                                      Expanded(
+                                        child: Row(
+                                          spacing: 5,
+                                          children: [
+                                            Icon(
+                                              size: 20,
+                                              color:
+                                                  widget
+                                                      .theme
+                                                      .lightModeColor
+                                                      .secColor200,
+                                              Icons
+                                                  .arrow_right_rounded,
+                                            ),
+                                            Flexible(
+                                              child: Text(
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      widget
+                                                          .theme
+                                                          .mobileTexts
+                                                          .b4
+                                                          .fontSize,
+                                                  fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                ),
+                                                item.name,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  widget
+                                                      .theme
+                                                      .mobileTexts
+                                                      .b4
+                                                      .fontSize,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                            ),
+                                            "- (${formatLargeNumberDouble(item.quantity ?? 0)})  ",
+                                          ),
+                                          Text(
+                                            style: TextStyle(
+                                              fontSize:
+                                                  widget
+                                                      .theme
+                                                      .mobileTexts
+                                                      .b4
+                                                      .fontSize,
+                                              fontWeight:
+                                                  FontWeight
+                                                      .bold,
+                                            ),
+                                            formatMoneyMid(
+                                              amount:
+                                                  item.sellingPrice ??
+                                                  0,
+                                              context:
+                                                  context,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class DocketListTileWidget extends StatefulWidget {
   const DocketListTileWidget({
     super.key,
@@ -3195,7 +3422,7 @@ class _DocketListTileWidgetState
                             .fontSize,
                     fontWeight: FontWeight.bold,
                   ),
-                  newItem?.item.name ?? 'Name',
+                  newItem?.getItem()?.name ?? 'Name',
                 ),
               ),
               Row(

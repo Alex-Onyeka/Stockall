@@ -90,7 +90,7 @@ class _MainReceiptTileMobileState
     });
   }
 
-  TempCustomersClass? customer;
+  String? customer;
   void getCustomer() {
     List<TempCustomersClass> customers =
         returnCustomers(context, listen: false)
@@ -104,7 +104,11 @@ class _MainReceiptTileMobileState
             .toList();
     if (customers.isNotEmpty) {
       setState(() {
-        customer = customers.first;
+        customer = customers.first.name;
+      });
+    } else {
+      setState(() {
+        customer = widget.mainReceipt.customerName;
       });
     }
   }
@@ -303,7 +307,7 @@ class _MainReceiptTileMobileState
                                 .secColor200,
                       ),
 
-                      "Customer: ${cutLongText2(customer != null ? (customer?.name ?? '') : 'Not Set')}",
+                      "Customer: ${cutLongText2(customer != null ? (customer ?? '') : 'Not Set')}",
                     ),
                     SizedBox(width: 10),
                     Text(
@@ -383,7 +387,7 @@ class _MainReceiptTileDesktopState
     });
   }
 
-  TempCustomersClass? customer;
+  String? customer;
   void getCustomer() {
     List<TempCustomersClass> customers =
         returnCustomers(context, listen: false)
@@ -394,10 +398,13 @@ class _MainReceiptTileDesktopState
                   widget.mainReceipt.customerUuid,
             )
             .toList();
-    print(customers.length);
     if (customers.isNotEmpty) {
       setState(() {
-        customer = customers.first;
+        customer = customers.first.name;
+      });
+    } else {
+      setState(() {
+        customer = widget.mainReceipt.customerName;
       });
     }
   }
@@ -521,7 +528,7 @@ class _MainReceiptTileDesktopState
                         flex: 3,
                         subTitle: 'Customer',
                         title: cutLongText(
-                          customer?.name ?? 'Not Set',
+                          customer ?? 'Not Set',
                         ),
                         theme: theme,
                       ),
