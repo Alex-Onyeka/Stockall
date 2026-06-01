@@ -364,10 +364,8 @@ class _PricingContainerWidgetState
                     );
                   } else {
                     bool isOnline =
-                        await returnConnectivityProvider(
-                          context,
-                          listen: false,
-                        ).isOnline();
+                        returnConnectivityProvider()
+                            .isConnected;
                     if (isOnline) {
                       showDialog(
                         // ignore: use_build_context_synchronously

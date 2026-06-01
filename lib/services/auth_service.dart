@@ -13,8 +13,6 @@ import 'package:stockall/providers/nav_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService extends ChangeNotifier {
-  ConnectivityProvider connectivity =
-      ConnectivityProvider();
   bool isLoading = false;
   bool isSuccessLoading = false;
   void toggleIsLoading(bool value) {
@@ -197,7 +195,7 @@ class AuthService extends ChangeNotifier {
     // BuildContext context,
   ) async {
     NavProvider navProvider = NavProvider();
-    bool isOnline = await connectivity.isOnline();
+    bool isOnline = ConnectivityProvider().isConnected;
     if (isOnline) {
       try {
         final authResponse = await _client.auth
@@ -323,7 +321,7 @@ class AuthService extends ChangeNotifier {
       await CurrentShopFunc().clearCurrentShop();
       returnSalesProvider().clearCart();
       await CartFunc().clearMainCart();
-      bool isOnline = await connectivity.isOnline();
+      bool isOnline = ConnectivityProvider().isConnected;
 
       if (isOnline) {
         await _client.auth.signOut();
@@ -448,7 +446,7 @@ class AuthService extends ChangeNotifier {
           ?.email;
 
   Future<String?> checkAuth() async {
-    bool isOnline = await connectivity.isOnline();
+    bool isOnline = ConnectivityProvider().isConnected;
     if (isOnline) {
       print('Online Auth Validated');
       return currentUserAuth?.id;

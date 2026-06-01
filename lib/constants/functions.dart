@@ -1268,7 +1268,7 @@ Future<Uint8List> _buildPdf(
                             flex: 5,
                             child: pw.Text(
                               style: pw.TextStyle(
-                                fontSize: 12,
+                                fontSize: 10,
                               ),
                               '${record.productName} ',
                             ),

@@ -206,8 +206,8 @@ class _SettingsPageDesktopState
                                   height: 18,
                                   action: () async {
                                     bool isOnline =
-                                        await ConnectivityProvider()
-                                            .isOnline();
+                                        ConnectivityProvider()
+                                            .isConnected;
                                     if (isOnline) {
                                       MultipleStoresAuthAction()
                                           .manageShopDashboardAction(

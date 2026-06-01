@@ -13,7 +13,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/sales/make_sales/page1/platforms/make_sales_desktop.dart';
 import 'package:stockall/pages/sales/make_sales/page1/platforms/make_sales_mobile.dart';
 import 'package:stockall/pages/sales/make_sales/page2/components/customer_selection_widget.dart';
-import 'package:stockall/pages/sales/make_sales/page2/platforms/make_sales_desktop_two.dart';
+import 'package:stockall/pages/sales/make_sales/page2/components/set_custom_receipt_created_date_widget.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 

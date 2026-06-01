@@ -393,9 +393,7 @@ class ReceiptsProvider extends ChangeNotifier {
   //
   //
 
-  Future<void> createReceiptsSync(
-    BuildContext context,
-  ) async {
+  Future<void> createReceiptsSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
       // Prepare batch payload
@@ -423,12 +421,10 @@ class ReceiptsProvider extends ChangeNotifier {
         print('${data.length} items added successfully ✅');
         await CreatedReceiptsFunc().clearReceipts();
         print('Unsynced Receipts Cleared');
-        if (context.mounted) {
-          print('Mounted, refreshing Receipts ✅');
-          await loadReceipts(
-            returnShopProvider().userShop()!.shopId!,
-          );
-        }
+        print('Mounted, refreshing Receipts ✅');
+        await loadReceipts(
+          returnShopProvider().userShop()!.shopId!,
+        );
       }
     } catch (e) {
       print('Batch Receipts insert failed ❌: $e');
@@ -447,9 +443,7 @@ class ReceiptsProvider extends ChangeNotifier {
   //
   //
 
-  Future<void> deleteReceiptsSync(
-    BuildContext context,
-  ) async {
+  Future<void> deleteReceiptsSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
       // Prepare batch payload
@@ -476,12 +470,10 @@ class ReceiptsProvider extends ChangeNotifier {
         );
         await DeletedReceiptsFunc().clearDeletedReceipts();
         print('Unsynced Deleted Receipts Cleared');
-        if (context.mounted) {
-          print('Mounted, refreshing Receipts ✅');
-          await loadReceipts(
-            returnShopProvider().userShop()!.shopId!,
-          );
-        }
+        print('Mounted, refreshing Receipts ✅');
+        await loadReceipts(
+          returnShopProvider().userShop()!.shopId!,
+        );
       }
     } catch (e) {
       print('Batch Receipts Deleted failed ❌: $e');
@@ -493,9 +485,7 @@ class ReceiptsProvider extends ChangeNotifier {
   //
   //
 
-  Future<void> updateReceiptsSync(
-    BuildContext context,
-  ) async {
+  Future<void> updateReceiptsSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
       // Prepare batch payload
@@ -521,12 +511,10 @@ class ReceiptsProvider extends ChangeNotifier {
         );
         await UpdatedReceiptsFunc().clearUpdatedReceipts();
         print('Unsynced Receipts Cleared');
-        if (context.mounted) {
-          print('Mounted, refreshing Receipts ✅');
-          await loadReceipts(
-            returnShopProvider().userShop()!.shopId!,
-          );
-        }
+        print('Mounted, refreshing Receipts ✅');
+        await loadReceipts(
+          returnShopProvider().userShop()!.shopId!,
+        );
       }
     } catch (e) {
       print('Batch Receipts insert failed ❌: $e');
@@ -732,9 +720,7 @@ class ReceiptsProvider extends ChangeNotifier {
   //
   //
 
-  Future<void> createRecordsSync(
-    BuildContext context,
-  ) async {
+  Future<void> createRecordsSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
       // Prepare batch payload

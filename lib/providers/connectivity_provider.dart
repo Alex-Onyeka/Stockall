@@ -4,13 +4,19 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 
 class ConnectivityProvider extends ChangeNotifier {
+  static final ConnectivityProvider _instance =
+      ConnectivityProvider._internal();
+  factory ConnectivityProvider() => _instance;
+  ConnectivityProvider._internal() {
+    init();
+  }
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<List<ConnectivityResult>>
   subscription;
 
-  ConnectivityProvider() {
-    init();
-  }
+  // ConnectivityProvider() {
+  //   init();
+  // }
 
   bool isConnected = false;
 
@@ -49,7 +55,7 @@ class ConnectivityProvider extends ChangeNotifier {
     });
     // } else {
     //   // Fallback for Windows
-    isOnline();
+    // isOnline();
     // }
   }
 
@@ -75,17 +81,18 @@ class ConnectivityProvider extends ChangeNotifier {
       });
 
   Future<bool> isOnline() async {
-    final results = await _connectivity.checkConnectivity();
-    print('Connectivity results: $results');
-    bool anything = results.any(
-      (result) =>
-          result != ConnectivityResult.none &&
-          result != ConnectivityResult.bluetooth &&
-          result != ConnectivityResult.other &&
-          result != ConnectivityResult.vpn,
-    );
-    checkConnection(anything);
-    return anything;
+    // final results = await _connectivity.checkConnectivity();
+    // print('Connectivity results: $results');
+    // bool anything = results.any(
+    //   (result) =>
+    //       result != ConnectivityResult.none &&
+    //       result != ConnectivityResult.bluetooth &&
+    //       result != ConnectivityResult.other &&
+    //       result != ConnectivityResult.vpn,
+    // );
+    // checkConnection(anything);
+    // return anything;
+    return isConnected;
   }
 
   @override

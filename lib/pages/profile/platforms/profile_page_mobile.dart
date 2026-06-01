@@ -239,10 +239,8 @@ class _ProfilePageMobileState
                           MainButtonTransparent(
                             themeProvider: theme,
                             action: () {
-                              if (returnConnectivityProvider(
-                                context,
-                                listen: false,
-                              ).isConnected) {
+                              if (returnConnectivityProvider()
+                                  .isConnected) {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -278,10 +276,8 @@ class _ProfilePageMobileState
                           MainButtonTransparent(
                             themeProvider: theme,
                             action: () {
-                              if (returnConnectivityProvider(
-                                context,
-                                listen: false,
-                              ).isConnected) {
+                              if (returnConnectivityProvider()
+                                  .isConnected) {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -318,10 +314,8 @@ class _ProfilePageMobileState
                             themeProvider: theme,
                             action: () {
                               var isOnline =
-                                  returnConnectivityProvider(
-                                    context,
-                                    listen: false,
-                                  ).isConnected;
+                                  returnConnectivityProvider()
+                                      .isConnected;
                               if (isOnline) {
                                 showDialog(
                                   context: context,
@@ -405,10 +399,8 @@ class _ProfilePageMobileState
                           MainButtonTransparent(
                             themeProvider: theme,
                             action: () {
-                              if (returnConnectivityProvider(
-                                context,
-                                listen: false,
-                              ).isConnected) {
+                              if (returnConnectivityProvider()
+                                  .isConnected) {
                                 showDialog(
                                   context: context,
                                   builder: (confirmDialog) {
@@ -505,10 +497,8 @@ class _ProfilePageMobileState
                             themeProvider: theme,
                             color: Colors.red,
                             action: () {
-                              if (returnConnectivityProvider(
-                                context,
-                                listen: false,
-                              ).isConnected) {
+                              if (returnConnectivityProvider()
+                                  .isConnected) {
                                 showDialog(
                                   context: context,
                                   builder: (confirmDialog) {

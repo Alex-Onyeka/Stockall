@@ -394,9 +394,7 @@ class CustomersProvider extends ChangeNotifier {
   //
   //
 
-  Future<void> createCustomersSync(
-    BuildContext context,
-  ) async {
+  Future<void> createCustomersSync() async {
     final shopProvider = returnShopProvider();
     try {
       bool isOnline = await connectivity.isOnline();
@@ -427,12 +425,10 @@ class CustomersProvider extends ChangeNotifier {
         print('${data.length} items added successfully ✅');
         await CreatedCustomersFunc().clearCustomers();
         print('Unsynced Customers Cleared');
-        if (context.mounted) {
-          print('Mounted, refreshing Customers ✅');
-          await fetchCustomers(
-            shopProvider.userShop()!.shopId!,
-          );
-        }
+        print('Mounted, refreshing Customers ✅');
+        await fetchCustomers(
+          shopProvider.userShop()!.shopId!,
+        );
       }
     } catch (e) {
       print('Batch Customers insert failed ❌: $e');
@@ -445,9 +441,7 @@ class CustomersProvider extends ChangeNotifier {
   //
   //
 
-  Future<void> updateCustomersSync(
-    BuildContext context,
-  ) async {
+  Future<void> updateCustomersSync() async {
     final shopProvider = returnShopProvider();
     try {
       bool isOnline = await connectivity.isOnline();
@@ -536,12 +530,10 @@ class CustomersProvider extends ChangeNotifier {
         await UpdatedCustomersFunc()
             .clearupdatedCustomers();
         print('Unsynced updated Customers cleared');
-        if (context.mounted) {
-          print('Mounted, refreshing Customers ✅');
-          await fetchCustomers(
-            shopProvider.userShop()!.shopId!,
-          );
-        }
+        print('Mounted, refreshing Customers ✅');
+        await fetchCustomers(
+          shopProvider.userShop()!.shopId!,
+        );
       }
     } catch (e) {
       print('Batch update failed ❌: $e');
@@ -553,9 +545,7 @@ class CustomersProvider extends ChangeNotifier {
   //
   //
 
-  Future<void> deletedCustomersSync(
-    BuildContext context,
-  ) async {
+  Future<void> deletedCustomersSync() async {
     final shopProvider = returnShopProvider();
     try {
       bool isOnline = await connectivity.isOnline();
@@ -587,12 +577,10 @@ class CustomersProvider extends ChangeNotifier {
         await DeletedCustomersFunc()
             .clearDeletedCustomers();
         print('Unsynced deleted Customers cleared');
-        if (context.mounted) {
-          print('Mounted, refreshing Customers ✅');
-          await fetchCustomers(
-            shopProvider.userShop()!.shopId!,
-          );
-        }
+        print('Mounted, refreshing Customers ✅');
+        await fetchCustomers(
+          shopProvider.userShop()!.shopId!,
+        );
       }
     } catch (e) {
       print('Batch delete failed ❌: $e');

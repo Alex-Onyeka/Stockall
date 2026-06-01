@@ -16,6 +16,7 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/pages/invoices/search_receipt/search_invoice_page.dart';
 import 'package:stockall/pages/products/compnents/product_filter_button.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
@@ -178,6 +179,63 @@ class _InvoiceListDesktopState
                         mainAxisAlignment:
                             MainAxisAlignment.end,
                         children: [
+                          Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius:
+                                  BorderRadius.circular(5),
+                              onTap: () {
+                                showSearchInvoicePage(
+                                  context,
+                                );
+                              },
+                              child: Padding(
+                                padding:
+                                    EdgeInsetsGeometry.all(
+                                      6.5,
+                                    ),
+                                child: Row(
+                                  mainAxisSize:
+                                      MainAxisSize.min,
+                                  children: [
+                                    Row(
+                                      mainAxisSize:
+                                          MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          style: TextStyle(
+                                            fontSize:
+                                                theme
+                                                    .mobileTexts
+                                                    .b3
+                                                    .fontSize,
+                                            fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                            color:
+                                                Colors
+                                                    .grey
+                                                    .shade700,
+                                          ),
+                                          'Search${screenWidth(context) <= mobileScreen ? '' : ' Invoice'}',
+                                        ),
+                                        SizedBox(width: 3),
+                                      ],
+                                    ),
+                                    Icon(
+                                      size: 20,
+                                      // color:
+                                      //     theme
+                                      //         .lightModeColor
+                                      //         .secColor100,
+                                      Icons
+                                          .manage_search_rounded,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
                           Visibility(
                             visible:
                                 screenWidth(context) >

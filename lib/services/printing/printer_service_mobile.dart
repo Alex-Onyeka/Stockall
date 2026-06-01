@@ -655,13 +655,10 @@ Uint8List generateStyledReceipt({
   if (!DeviceService.isPos) {
     builder.addBlank();
   }
-  if (shop.showEmail!) {
-    builder.addTextMiddle('#Shop ID: ${shopRef()}');
-  }
 
-  if (shop.showShopName!) {
-    builder.addTitle(shop.name);
-  }
+  builder.addTextMiddle('#Shop ID: ${shopRef()}');
+
+  builder.addTitle(shop.name);
 
   if (shop.showEmail!) {
     builder.addTextMiddle(shop.email ?? 'Email Not Set');
@@ -1061,6 +1058,9 @@ Uint8List generateStyledInvoice({
   if (!DeviceService.isPos) {
     builder.addBlank();
   }
+
+  builder.addTextMiddle('#Shop ID: ${shopRef()}');
+
   if (shop.showShopName!) {
     builder.addTitle(shop.name);
   }
@@ -1097,7 +1097,7 @@ Uint8List generateStyledInvoice({
     builder.addTextMiddle("Staff: ${invoice.staffName}");
   }
 
-  if (shop.showSecond! && invoice.customerUuid != null) {
+  if (shop.showSecond! && invoice.customerName != null) {
     builder.addTextMiddle(
       "Customer: ${invoice.customerName ?? 'Customer Not Set'}",
     );
@@ -1105,6 +1105,11 @@ Uint8List generateStyledInvoice({
   builder.addTextMiddle(
     'Date: ${formatDateTime(invoice.createdAt)} | ${formatTime(invoice.createdAt)}',
   );
+  if (shop.showFirst!) {
+    builder.addTextMiddle(
+      "Ticket Id: ${invoice.barcode ?? returnOnlyDigits(invoice.uuid ?? '')}",
+    );
+  }
 
   builder.addSeparator();
 
@@ -1223,6 +1228,13 @@ Uint8List generateStyledInvoice({
   );
 
   builder.addBlank();
+
+  final barcode =
+      invoice.barcode ??
+      returnOnlyDigits(invoice.uuid ?? '');
+
+  builder.addBarcode(barcode);
+
   builder.addTextMiddle(
     'Created by $appName Solutions - ( www.stockallapp.com )',
   );

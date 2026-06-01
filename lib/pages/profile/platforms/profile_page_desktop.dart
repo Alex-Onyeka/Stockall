@@ -241,10 +241,8 @@ class ProfilePageDesktopState
                             MainButtonTransparent(
                               themeProvider: theme,
                               action: () {
-                                if (returnConnectivityProvider(
-                                  context,
-                                  listen: false,
-                                ).isConnected) {
+                                if (returnConnectivityProvider()
+                                    .isConnected) {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -282,10 +280,8 @@ class ProfilePageDesktopState
                             MainButtonTransparent(
                               themeProvider: theme,
                               action: () {
-                                if (returnConnectivityProvider(
-                                  context,
-                                  listen: false,
-                                ).isConnected) {
+                                if (returnConnectivityProvider()
+                                    .isConnected) {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -325,10 +321,8 @@ class ProfilePageDesktopState
                               themeProvider: theme,
                               action: () {
                                 var isOnline =
-                                    returnConnectivityProvider(
-                                      context,
-                                      listen: false,
-                                    ).isConnected;
+                                    returnConnectivityProvider()
+                                        .isConnected;
                                 if (isOnline) {
                                   showDialog(
                                     context: context,
@@ -416,10 +410,8 @@ class ProfilePageDesktopState
                             MainButtonTransparent(
                               themeProvider: theme,
                               action: () {
-                                if (returnConnectivityProvider(
-                                  context,
-                                  listen: false,
-                                ).isConnected) {
+                                if (returnConnectivityProvider()
+                                    .isConnected) {
                                   showDialog(
                                     context: context,
                                     builder: (
@@ -522,10 +514,8 @@ class ProfilePageDesktopState
                               themeProvider: theme,
                               color: Colors.red,
                               action: () {
-                                if (returnConnectivityProvider(
-                                  context,
-                                  listen: false,
-                                ).isConnected) {
+                                if (returnConnectivityProvider()
+                                    .isConnected) {
                                   showDialog(
                                     context: context,
                                     builder: (

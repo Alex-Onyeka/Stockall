@@ -934,7 +934,7 @@ class _CartItemAltState extends State<CartItemAlt> {
                                 formatMoneyAlt(
                                   amount:
                                       widget.cartItem
-                                          .totalCost(),
+                                          .totalCostForAltScreen(),
                                   currency: widget.currency,
                                 ),
                               ),
@@ -983,10 +983,6 @@ class _CartItemAltState extends State<CartItemAlt> {
                                           ),
                                         ),
                                       ),
-                                      // SvgPicture.asset(
-                                      //   height: 16,
-                                      //   editIconSvg,
-                                      // ),
                                     ],
                                   ),
                                 ),

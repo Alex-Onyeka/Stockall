@@ -188,6 +188,10 @@ ExpensesProvider returnExpensesProvider(
   );
 }
 
+ExpensesProvider returnExpensesProviderSingle() {
+  return ExpensesProvider();
+}
+
 AuthService returnAuth(
   BuildContext context, {
   bool listen = true,
@@ -367,6 +371,10 @@ CustomersProvider returnCustomers(
   );
 }
 
+CustomersProvider returnCustomersSingle() {
+  return CustomersProvider();
+}
+
 SubscriptionProvider returnSubcsription(
   BuildContext context, {
   bool listen = true,
@@ -382,6 +390,10 @@ NavProvider returnNavProvider(
   bool listen = true,
 }) {
   return Provider.of<NavProvider>(context, listen: listen);
+}
+
+NavProvider returnNavProviderSingle() {
+  return NavProvider();
 }
 
 CompProvider returnCompProvider(
@@ -411,14 +423,14 @@ TranslationProvider returnTranslationProvider(
   );
 }
 
-ConnectivityProvider returnConnectivityProvider(
-  BuildContext context, {
-  bool listen = true,
+ConnectivityProvider returnConnectivityProvider({
+  BuildContext? context,
 }) {
-  return Provider.of<ConnectivityProvider>(
-    context,
-    listen: listen,
-  );
+  if (context == null) {
+    return ConnectivityProvider();
+  } else {
+    return Provider.of<ConnectivityProvider>(context);
+  }
 }
 
 SubPaymentProvider returnSubPaymentProvider({

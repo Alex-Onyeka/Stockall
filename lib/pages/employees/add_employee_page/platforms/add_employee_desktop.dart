@@ -378,10 +378,8 @@ class _AddEmployeeDesktopState
                                           'Are you Sure?',
                                       action: () async {
                                         var isOnline =
-                                            await returnConnectivityProvider(
-                                              context,
-                                              listen: false,
-                                            ).isOnline();
+                                            returnConnectivityProvider()
+                                                .isConnected;
                                         if (!isOnline) {
                                           showDialog(
                                             // ignore: use_build_context_synchronously
@@ -652,10 +650,8 @@ class _AddEmployeeDesktopState
                                     title: 'Procced?',
                                     action: () async {
                                       var isOnline =
-                                          await returnConnectivityProvider(
-                                            context,
-                                            listen: false,
-                                          ).isOnline();
+                                          returnConnectivityProvider()
+                                              .isConnected;
                                       if (!isOnline) {
                                         showDialog(
                                           // ignore: use_build_context_synchronously

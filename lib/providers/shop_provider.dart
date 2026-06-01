@@ -811,7 +811,7 @@ class ShopProvider extends ChangeNotifier {
         },
       );
       // ignore: use_build_context_synchronously
-      returnData().syncData(context);
+      returnData().syncData();
     } else {
       try {
         var safeContext = context;
@@ -1807,7 +1807,7 @@ class ShopProvider extends ChangeNotifier {
   //
   //
 
-  Future<void> updateShopSync(BuildContext context) async {
+  Future<void> updateShopSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
       print(
@@ -1890,10 +1890,8 @@ class ShopProvider extends ChangeNotifier {
 
         await UpdatedShopFunc().clearUpdatedShop();
         print('Unsynced updated Shop cleared');
-        if (context.mounted) {
-          print('Mounted, refreshing Shop ✅');
-          await getUserShops();
-        }
+        print('Mounted, refreshing Shop ✅');
+        await getUserShops();
       }
     } catch (e) {
       print('Batch update failed ❌: $e');
@@ -1905,7 +1903,7 @@ class ShopProvider extends ChangeNotifier {
   //
 
   Future<void> uploadShopLogoSync(
-    BuildContext context,
+    // BuildContext context,
   ) async {
     try {
       bool isOnline = await connectivity.isOnline();
@@ -1959,7 +1957,6 @@ class ShopProvider extends ChangeNotifier {
               imageWidth: imageWidth!,
             ),
             // ignore: use_build_context_synchronously
-            context,
           );
         } catch (e) {
           print('❌ Error Syncing logo: $e');
@@ -1967,10 +1964,8 @@ class ShopProvider extends ChangeNotifier {
 
         await CreatedShopLogosFunc().clearCreatedLogos();
         print('Unsynced updated Shop Logo cleared');
-        if (context.mounted) {
-          print('Mounted, refreshing Shop ✅');
-          await getUserShops();
-        }
+        print('Mounted, refreshing Shop ✅');
+        await getUserShops();
       }
     } catch (e) {
       print('Logo Sync failed ❌: $e');
@@ -2293,7 +2288,6 @@ class ShopProvider extends ChangeNotifier {
               imageWidth: userShop()!.imageWidth!,
             ),
             // ignore: use_build_context_synchronously
-            context,
           );
         }
         selectedLogo = onlineBytes;
@@ -2388,7 +2382,6 @@ class ShopProvider extends ChangeNotifier {
             imageWidth: imageWidth!,
           ),
           // ignore: use_build_context_synchronously
-          context,
         );
         return 'success';
       } catch (e) {
@@ -2406,7 +2399,6 @@ class ShopProvider extends ChangeNotifier {
             imageWidth: imageWidth!,
           ),
           // ignore: use_build_context_synchronously
-          context,
         );
         await CreatedShopLogosFunc().createCreatedShopLogo(
           TempShopLogos(

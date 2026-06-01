@@ -6,6 +6,7 @@ import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_rec
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:universal_html/html.dart' as html;
@@ -143,6 +144,23 @@ Future<Uint8List> _buildPdfInvoice({
                                 return pw.Container();
                               }
                             },
+                          ),
+                          pw.SizedBox(height: 1),
+                          pw.Row(
+                            mainAxisAlignment:
+                                pw.MainAxisAlignment.center,
+                            children: [
+                              pw.Text(
+                                textAlign:
+                                    pw.TextAlign.center,
+                                "#Shop Id: ${shopRef()}",
+                                style: pw.TextStyle(
+                                  font: fontBold,
+                                  fontSize: 9,
+                                ),
+                                // maxLines: 2,
+                              ),
+                            ],
                           ),
                           pw.Builder(
                             builder: (
@@ -430,6 +448,25 @@ Future<Uint8List> _buildPdfInvoice({
           (context) => pw.Column(
             children: [
               pw.Divider(),
+              pw.Column(
+                children: [
+                  pw.Padding(
+                    padding: pw.EdgeInsets.only(right: 10),
+                    child: pw.SvgImage(
+                      svg: pw.Barcode.ean13().toSvg(
+                        invoice.barcode ??
+                            returnOnlyDigits(
+                              invoice.uuid ?? '',
+                            ),
+                        width: 110,
+                        height: 30,
+                        fontHeight: 8,
+                        drawText: true,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               pw.SizedBox(height: 5),
               pw.Align(
                 alignment: pw.Alignment.centerRight,
@@ -490,62 +527,250 @@ Future<Uint8List> _buildPdfInvoice({
                   pw.Builder(
                     builder: (context) {
                       if (shop.showFirst!) {
-                        return pw.Row(
-                          mainAxisAlignment:
-                              pw
-                                  .MainAxisAlignment
-                                  .spaceEvenly,
+                        return pw.Column(
                           children: [
-                            pw.Expanded(
-                              child: pw.Column(
-                                crossAxisAlignment:
-                                    pw
-                                        .CrossAxisAlignment
-                                        .start,
-                                children: [
-                                  pw.Text(
-                                    style: pw.TextStyle(
-                                      font: fontRegular,
-                                      fontSize: 9,
-                                    ),
-                                    'Staff Name:',
+                            pw.Row(
+                              mainAxisAlignment:
+                                  pw
+                                      .MainAxisAlignment
+                                      .spaceEvenly,
+                              children: [
+                                pw.Expanded(
+                                  child: pw.Column(
+                                    crossAxisAlignment:
+                                        pw
+                                            .CrossAxisAlignment
+                                            .start,
+                                    children: [
+                                      pw.Text(
+                                        style: pw.TextStyle(
+                                          font: fontRegular,
+                                          fontSize: 9,
+                                        ),
+                                        'Staff Name:',
+                                      ),
+                                      pw.SizedBox(
+                                        height: 5,
+                                      ),
+                                      pw.Text(
+                                        style: pw.TextStyle(
+                                          font: fontBold,
+                                          fontSize: 10,
+                                        ),
+                                        staffName,
+                                      ),
+                                    ],
                                   ),
-                                  pw.SizedBox(height: 5),
-                                  pw.Text(
-                                    style: pw.TextStyle(
-                                      font: fontBold,
-                                      fontSize: 10,
-                                    ),
-                                    staffName,
-                                  ),
-                                ],
-                              ),
+                                ),
+                                pw.Builder(
+                                  builder: (context) {
+                                    if (invoice
+                                            .customerUuid !=
+                                        null) {
+                                      return pw.Expanded(
+                                        child: pw.Column(
+                                          crossAxisAlignment:
+                                              pw
+                                                  .CrossAxisAlignment
+                                                  .start,
+                                          children: [
+                                            pw.Text(
+                                              style: pw.TextStyle(
+                                                font:
+                                                    fontRegular,
+                                                fontSize: 9,
+                                              ),
+                                              'Customer Name:',
+                                            ),
+                                            pw.SizedBox(
+                                              height: 5,
+                                            ),
+                                            pw.Text(
+                                              style: pw.TextStyle(
+                                                font:
+                                                    fontBold,
+                                                fontSize:
+                                                    10,
+                                              ),
+                                              invoice.customerName ??
+                                                  'Not Set',
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    } else {
+                                      return pw.Container();
+                                    }
+                                  },
+                                ),
+                              ],
                             ),
-                            pw.Expanded(
-                              child: pw.Column(
-                                crossAxisAlignment:
-                                    pw
-                                        .CrossAxisAlignment
-                                        .start,
-                                children: [
-                                  pw.Text(
-                                    style: pw.TextStyle(
-                                      font: fontRegular,
-                                      fontSize: 9,
-                                    ),
-                                    'Customer Name:',
+                            pw.Builder(
+                              builder: (beansContext) {
+                                if (invoice.subStaffName !=
+                                    null) {
+                                  return pw.Column(
+                                    children: [
+                                      pw.SizedBox(
+                                        height: 10,
+                                      ),
+                                      pw.Row(
+                                        mainAxisAlignment:
+                                            pw
+                                                .MainAxisAlignment
+                                                .spaceEvenly,
+                                        children: [
+                                          pw.Expanded(
+                                            child: pw.Column(
+                                              crossAxisAlignment:
+                                                  pw
+                                                      .CrossAxisAlignment
+                                                      .start,
+                                              children: [
+                                                pw.Text(
+                                                  style: pw.TextStyle(
+                                                    font:
+                                                        fontRegular,
+                                                    fontSize:
+                                                        9,
+                                                  ),
+                                                  'Waiter:',
+                                                ),
+                                                pw.SizedBox(
+                                                  height: 5,
+                                                ),
+                                                pw.Text(
+                                                  style: pw.TextStyle(
+                                                    font:
+                                                        fontBold,
+                                                    fontSize:
+                                                        10,
+                                                  ),
+                                                  invoice.subStaffName ??
+                                                      'Not Set',
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          pw.Expanded(
+                                            child: pw.Column(
+                                              crossAxisAlignment:
+                                                  pw
+                                                      .CrossAxisAlignment
+                                                      .start,
+                                              children: [
+                                                pw.Text(
+                                                  style: pw.TextStyle(
+                                                    font:
+                                                        fontRegular,
+                                                    fontSize:
+                                                        9,
+                                                  ),
+                                                  'Receipt Id:',
+                                                ),
+                                                pw.SizedBox(
+                                                  height: 5,
+                                                ),
+                                                pw.Text(
+                                                  style: pw.TextStyle(
+                                                    font:
+                                                        fontBold,
+                                                    fontSize:
+                                                        10,
+                                                  ),
+                                                  invoice.cartName ??
+                                                      'Not Set',
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  );
+                                } else {
+                                  return pw.SizedBox();
+                                }
+                              },
+                            ),
+                          ],
+                        );
+                      } else {
+                        return pw.Container();
+                      }
+                    },
+                  ),
+                  pw.Builder(
+                    builder: (pw.Context pdfContext) {
+                      if (shop.showThird!) {
+                        return pw.Column(
+                          children: [
+                            pw.SizedBox(height: 10),
+                            pw.Row(
+                              mainAxisAlignment:
+                                  pw
+                                      .MainAxisAlignment
+                                      .spaceEvenly,
+                              children: [
+                                pw.Expanded(
+                                  child: pw.Column(
+                                    crossAxisAlignment:
+                                        pw
+                                            .CrossAxisAlignment
+                                            .start,
+                                    children: [
+                                      pw.Text(
+                                        style: pw.TextStyle(
+                                          font: fontRegular,
+                                          fontSize: 9,
+                                        ),
+                                        'Date:',
+                                      ),
+                                      pw.SizedBox(
+                                        height: 5,
+                                      ),
+                                      pw.Text(
+                                        style: pw.TextStyle(
+                                          font: fontBold,
+                                          fontSize: 10,
+                                        ),
+                                        formatDateTime(
+                                          invoice.createdAt,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  pw.SizedBox(height: 5),
-                                  pw.Text(
-                                    style: pw.TextStyle(
-                                      font: fontBold,
-                                      fontSize: 10,
-                                    ),
-                                    invoice.customerName ??
-                                        'Not Set',
+                                ),
+                                pw.Expanded(
+                                  child: pw.Column(
+                                    crossAxisAlignment:
+                                        pw
+                                            .CrossAxisAlignment
+                                            .start,
+                                    children: [
+                                      pw.Text(
+                                        style: pw.TextStyle(
+                                          font: fontRegular,
+                                          fontSize: 9,
+                                        ),
+                                        'Time:',
+                                      ),
+                                      pw.SizedBox(
+                                        height: 5,
+                                      ),
+                                      pw.Text(
+                                        style: pw.TextStyle(
+                                          font: fontBold,
+                                          fontSize: 10,
+                                        ),
+                                        formatTime(
+                                          invoice.createdAt,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ],
                         );
@@ -647,100 +872,91 @@ Future<Uint8List> _buildPdfInvoice({
                       }
                     },
                   ),
-                  pw.Builder(
-                    builder: (pw.Context pdfContext) {
-                      if (shop.showThird!) {
-                        return pw.Column(
+                  pw.SizedBox(height: 10),
+                  pw.Row(
+                    mainAxisAlignment:
+                        pw.MainAxisAlignment.start,
+                    children: [
+                      pw.Expanded(
+                        child: pw.Column(
+                          crossAxisAlignment:
+                              pw.CrossAxisAlignment.start,
                           children: [
-                            pw.SizedBox(height: 10),
-                            pw.Row(
-                              mainAxisAlignment:
-                                  pw
-                                      .MainAxisAlignment
-                                      .spaceEvenly,
-                              children: [
-                                pw.Expanded(
-                                  child: pw.Column(
-                                    crossAxisAlignment:
-                                        pw
-                                            .CrossAxisAlignment
-                                            .start,
-                                    children: [
-                                      pw.Text(
-                                        style: pw.TextStyle(
-                                          font: fontRegular,
-                                          fontSize: 9,
-                                        ),
-                                        'Date:',
-                                      ),
-                                      pw.SizedBox(
-                                        height: 5,
-                                      ),
-                                      pw.Text(
-                                        style: pw.TextStyle(
-                                          font: fontBold,
-                                          fontSize: 10,
-                                        ),
-                                        formatDateTime(
-                                          invoice.createdAt,
-                                        ),
-                                      ),
-                                    ],
+                            pw.Text(
+                              style: pw.TextStyle(
+                                font: fontRegular,
+                                fontSize: 9,
+                              ),
+                              '#Ticket Id:',
+                            ),
+                            pw.SizedBox(height: 5),
+                            pw.Text(
+                              style: pw.TextStyle(
+                                font: fontBold,
+                                fontSize: 10,
+                              ),
+                              invoice.barcode ??
+                                  returnOnlyDigits(
+                                    invoice.uuid ?? '',
                                   ),
-                                ),
-                                pw.Expanded(
-                                  child: pw.Column(
-                                    crossAxisAlignment:
-                                        pw
-                                            .CrossAxisAlignment
-                                            .start,
-                                    children: [
-                                      pw.Text(
-                                        style: pw.TextStyle(
-                                          font: fontRegular,
-                                          fontSize: 9,
-                                        ),
-                                        'Time:',
-                                      ),
-                                      pw.SizedBox(
-                                        height: 5,
-                                      ),
-                                      pw.Text(
-                                        style: pw.TextStyle(
-                                          font: fontBold,
-                                          fontSize: 10,
-                                        ),
-                                        formatTime(
-                                          invoice.createdAt,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
                             ),
                           ],
-                        );
-                      } else {
-                        return pw.Container();
-                      }
-                    },
+                        ),
+                      ),
+                    ],
                   ),
                   pw.SizedBox(height: 5),
                   pw.Divider(),
 
-                  pw.Text(
-                    'Items:',
-                    style: pw.TextStyle(font: fontBold),
+                  pw.Row(
+                    mainAxisAlignment:
+                        pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Expanded(
+                        flex: 5,
+                        child: pw.Text(
+                          'Items:',
+                          style: pw.TextStyle(
+                            font: fontBold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                      pw.Expanded(
+                        flex: 1,
+                        child: pw.Text(
+                          'Qty:',
+                          style: pw.TextStyle(
+                            font: fontRegular,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ),
+                      pw.Expanded(
+                        flex: 3,
+                        child: pw.Text(
+                          'Price:',
+                          style: pw.TextStyle(
+                            font: fontRegular,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   pw.SizedBox(height: 5),
 
                   ...records.map(
-                    (record) => pw.Padding(
+                    (record) => pw.Container(
                       padding:
                           const pw.EdgeInsets.symmetric(
-                            vertical: 3,
+                            vertical: 6,
+                            horizontal: 5,
                           ),
+                      /**alpha: 1, red: 0.961, green: 0.961, blue: 0.961 */
+                      decoration: pw.BoxDecoration(
+                        color: PdfColor.fromHex('#EFEFEF'),
+                      ),
                       child: pw.Row(
                         mainAxisAlignment:
                             pw
@@ -750,6 +966,9 @@ Future<Uint8List> _buildPdfInvoice({
                           pw.Expanded(
                             flex: 5,
                             child: pw.Text(
+                              style: pw.TextStyle(
+                                fontSize: 10,
+                              ),
                               '${record.productName} ',
                             ),
                           ),
@@ -759,7 +978,7 @@ Future<Uint8List> _buildPdfInvoice({
                               style: pw.TextStyle(
                                 fontSize: 8,
                               ),
-                              '( ${formatLargeNumberDouble(record.quantity)} ) ',
+                              '[ ${formatLargeNumberDouble(record.quantity)} ] ',
                             ),
                           ),
                           pw.Expanded(
@@ -793,36 +1012,12 @@ Future<Uint8List> _buildPdfInvoice({
                                     context: context,
                                   ),
                                 ),
-                                pw.Builder(
-                                  builder: (pdfContext) {
-                                    if (record.discount !=
-                                            null &&
-                                        !record
-                                            .customPriceSet &&
-                                        (invoice.fixedDiscount ==
-                                                null &&
-                                            invoice.generalDiscount ==
-                                                null)) {
-                                      return pw.Text(
-                                        style: pw.TextStyle(
-                                          font: fontRegular,
-                                          decoration:
-                                              pw
-                                                  .TextDecoration
-                                                  .lineThrough,
-                                          fontSize: 7,
-                                        ),
-                                        formatMoneyMid(
-                                          amount:
-                                              (record.originalCost ??
-                                                  0),
-                                          context: context,
-                                        ),
-                                      );
-                                    } else {
-                                      return pw.Container();
-                                    }
-                                  },
+                                pw.Text(
+                                  style: pw.TextStyle(
+                                    font: fontRegular,
+                                    fontSize: 7,
+                                  ),
+                                  "${formatMoneyMid(amount: ((invoice.fixedDiscount == null && invoice.generalDiscount == null) && record.discount != null ? ((record.originalCost ?? 0) - (record.discountedAmount ?? 0)) : (record.originalCost ?? 0) / record.quantity), context: context)} per 1",
                                 ),
                               ],
                             ),
@@ -1323,6 +1518,23 @@ Future<Uint8List> _buildPdfRollInvoice({
                               fit: pw.BoxFit.contain,
                             ),
                           ),
+                        pw.SizedBox(height: 1),
+                        pw.Row(
+                          mainAxisAlignment:
+                              pw.MainAxisAlignment.center,
+                          children: [
+                            pw.Text(
+                              textAlign:
+                                  pw.TextAlign.center,
+                              "#Shop Id: ${shopRef()}",
+                              style: pw.TextStyle(
+                                font: fontBold,
+                                fontSize: parText,
+                              ),
+                              // maxLines: 2,
+                            ),
+                          ],
+                        ),
                         if (returnShopProvider()
                                 .selectedLogo !=
                             null)
@@ -1728,6 +1940,92 @@ Future<Uint8List> _buildPdfRollInvoice({
                               ),
                             ],
                           ),
+                          pw.Builder(
+                            builder: (beansContext) {
+                              if (invoice.subStaffName !=
+                                  null) {
+                                return pw.Column(
+                                  children: [
+                                    pw.SizedBox(height: 3),
+                                    pw.Row(
+                                      mainAxisAlignment:
+                                          pw
+                                              .MainAxisAlignment
+                                              .spaceEvenly,
+                                      children: [
+                                        pw.Expanded(
+                                          child: pw.Column(
+                                            crossAxisAlignment:
+                                                pw
+                                                    .CrossAxisAlignment
+                                                    .start,
+                                            children: [
+                                              pw.Text(
+                                                style: pw.TextStyle(
+                                                  font:
+                                                      fontRegular,
+                                                  fontSize:
+                                                      parText,
+                                                ),
+                                                'Waiter:',
+                                              ),
+                                              pw.SizedBox(
+                                                height: 1,
+                                              ),
+                                              pw.Text(
+                                                style: pw.TextStyle(
+                                                  font:
+                                                      fontBold,
+                                                  fontSize:
+                                                      parText,
+                                                ),
+                                                invoice.subStaffName ??
+                                                    'Not Set',
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        pw.Expanded(
+                                          child: pw.Column(
+                                            crossAxisAlignment:
+                                                pw
+                                                    .CrossAxisAlignment
+                                                    .start,
+                                            children: [
+                                              pw.Text(
+                                                style: pw.TextStyle(
+                                                  font:
+                                                      fontRegular,
+                                                  fontSize:
+                                                      parText,
+                                                ),
+                                                'Receipt Id:',
+                                              ),
+                                              pw.SizedBox(
+                                                height: 1,
+                                              ),
+                                              pw.Text(
+                                                style: pw.TextStyle(
+                                                  font:
+                                                      fontBold,
+                                                  fontSize:
+                                                      parText,
+                                                ),
+                                                invoice.cartName ??
+                                                    'Not Set',
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                );
+                              } else {
+                                return pw.SizedBox();
+                              }
+                            },
+                          ),
                         ],
                       );
                     } else {
@@ -1774,6 +2072,33 @@ Future<Uint8List> _buildPdfRollInvoice({
                                   ],
                                 ),
                               ),
+                              // pw.Expanded(
+                              //   child: pw.Column(
+                              //     crossAxisAlignment:
+                              //         pw
+                              //             .CrossAxisAlignment
+                              //             .start,
+                              //     children: [
+                              //       pw.Text(
+                              //         style: pw.TextStyle(
+                              //           font: fontRegular,
+                              //           fontSize: parText,
+                              //         ),
+                              //         'Time:',
+                              //       ),
+                              //       pw.SizedBox(height: 1),
+                              //       pw.Text(
+                              //         style: pw.TextStyle(
+                              //           font: fontBold,
+                              //           fontSize: parText,
+                              //         ),
+                              //         formatTime(
+                              //           invoice.createdAt,
+                              //         ),
+                              //       ),
+                              //     ],
+                              //   ),
+                              // ),
                               pw.Expanded(
                                 child: pw.Column(
                                   crossAxisAlignment:
@@ -1786,7 +2111,7 @@ Future<Uint8List> _buildPdfRollInvoice({
                                         font: fontRegular,
                                         fontSize: parText,
                                       ),
-                                      'Time:',
+                                      '#Ticket ID',
                                     ),
                                     pw.SizedBox(height: 1),
                                     pw.Text(
@@ -1794,9 +2119,11 @@ Future<Uint8List> _buildPdfRollInvoice({
                                         font: fontBold,
                                         fontSize: parText,
                                       ),
-                                      formatTime(
-                                        invoice.createdAt,
-                                      ),
+                                      invoice.barcode ??
+                                          returnOnlyDigits(
+                                            invoice.uuid ??
+                                                '',
+                                          ),
                                     ),
                                   ],
                                 ),
@@ -1809,6 +2136,43 @@ Future<Uint8List> _buildPdfRollInvoice({
                       return pw.Container();
                     }
                   },
+                ),
+                pw.Column(
+                  children: [
+                    pw.SizedBox(height: 3),
+                    pw.Row(
+                      mainAxisAlignment:
+                          pw.MainAxisAlignment.spaceEvenly,
+                      children: [
+                        pw.Expanded(
+                          child: pw.Column(
+                            crossAxisAlignment:
+                                pw.CrossAxisAlignment.start,
+                            children: [
+                              pw.Text(
+                                style: pw.TextStyle(
+                                  font: fontRegular,
+                                  fontSize: parText,
+                                ),
+                                '#Ticket ID',
+                              ),
+                              pw.SizedBox(height: 1),
+                              pw.Text(
+                                style: pw.TextStyle(
+                                  font: fontBold,
+                                  fontSize: parText,
+                                ),
+                                invoice.barcode ??
+                                    returnOnlyDigits(
+                                      invoice.uuid ?? '',
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
                 pw.SizedBox(height: 3),
                 pw.Divider(thickness: 0.6, height: 6),
@@ -1836,7 +2200,7 @@ Future<Uint8List> _buildPdfRollInvoice({
                           pw.MainAxisAlignment.spaceBetween,
                       children: [
                         pw.Expanded(
-                          flex: 5,
+                          flex: 6,
                           child: pw.Text(
                             style: pw.TextStyle(
                               fontSize: parText,
@@ -1845,7 +2209,7 @@ Future<Uint8List> _buildPdfRollInvoice({
                           ),
                         ),
                         pw.Expanded(
-                          flex: 1,
+                          flex: 2,
                           child: pw.Text(
                             style: pw.TextStyle(
                               fontSize: parTextAlt,
@@ -1854,7 +2218,7 @@ Future<Uint8List> _buildPdfRollInvoice({
                           ),
                         ),
                         pw.Expanded(
-                          flex: 3,
+                          flex: 4,
                           child: pw.Column(
                             crossAxisAlignment:
                                 pw.CrossAxisAlignment.start,
@@ -2022,48 +2386,67 @@ Future<Uint8List> _buildPdfRollInvoice({
                   },
                 ),
                 pw.SizedBox(height: 1),
-                pw.Row(
-                  mainAxisAlignment:
-                      pw.MainAxisAlignment.spaceEvenly,
-                  children: [
-                    pw.Expanded(
-                      flex: 9,
-                      child: pw.Row(
+                pw.Builder(
+                  builder: (beansContext) {
+                    if (invoice.vat != null) {
+                      return pw.Column(
                         children: [
-                          pw.Text(
-                            style: pw.TextStyle(
-                              font: fontRegular,
-                              fontSize: parTextAlt,
-                            ),
-                            'VAT:',
-                          ),
-                          pw.Text(
-                            style: pw.TextStyle(
-                              font: fontRegular,
-                              fontSize: parTextAlt,
-                            ),
-                            '(${invoice.vat ?? 0}%)',
-                          ),
-                        ],
-                      ),
-                    ),
-                    pw.Expanded(
-                      flex: 7,
-                      child: pw.Text(
-                        style: pw.TextStyle(
-                          font: fontRegular,
-                          fontSize: parTextAlt,
-                        ),
-                        formatMoneyMid(
-                          amount: returnInvoicesProvider()
-                              .getVATInvoice(
-                                invoice: invoice,
+                          pw.Row(
+                            mainAxisAlignment:
+                                pw
+                                    .MainAxisAlignment
+                                    .spaceEvenly,
+                            children: [
+                              pw.Expanded(
+                                flex: 9,
+                                child: pw.Row(
+                                  children: [
+                                    pw.Text(
+                                      style: pw.TextStyle(
+                                        font: fontRegular,
+                                        fontSize:
+                                            parTextAlt,
+                                      ),
+                                      'VAT:',
+                                    ),
+                                    pw.Text(
+                                      style: pw.TextStyle(
+                                        font: fontRegular,
+                                        fontSize:
+                                            parTextAlt,
+                                      ),
+                                      '(${invoice.vat ?? 0}%)',
+                                    ),
+                                  ],
+                                ),
                               ),
-                          context: context,
-                        ),
-                      ),
-                    ),
-                  ],
+                              pw.Expanded(
+                                flex: 7,
+                                child: pw.Text(
+                                  style: pw.TextStyle(
+                                    font: fontRegular,
+                                    fontSize: parTextAlt,
+                                  ),
+                                  formatMoneyMid(
+                                    amount:
+                                        returnInvoicesProvider()
+                                            .getVATInvoice(
+                                              invoice:
+                                                  invoice,
+                                            ),
+                                    context: context,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          pw.SizedBox(height: 1),
+                        ],
+                      );
+                    } else {
+                      return pw.SizedBox();
+                    }
+                  },
                 ),
                 pw.SizedBox(height: 1),
                 pw.Builder(
@@ -2200,6 +2583,28 @@ Future<Uint8List> _buildPdfRollInvoice({
                 ),
                 pw.SizedBox(height: 5),
                 pw.Divider(),
+                pw.Column(
+                  children: [
+                    pw.Padding(
+                      padding: pw.EdgeInsets.only(
+                        right: 10,
+                      ),
+                      child: pw.SvgImage(
+                        svg: pw.Barcode.ean13().toSvg(
+                          invoice.barcode ??
+                              returnOnlyDigits(
+                                invoice.uuid ?? '',
+                              ),
+                          width: 110,
+                          height: 30,
+                          fontHeight: 8,
+                          drawText: true,
+                        ),
+                      ),
+                    ),
+                    pw.Divider(height: 8),
+                  ],
+                ),
                 pw.SizedBox(height: 5),
                 pw.Row(
                   mainAxisAlignment:

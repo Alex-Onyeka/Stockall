@@ -2206,6 +2206,10 @@ class _MakeSalesDesktopState
                                                       await returnSalesProvider().addNewCart(
                                                         context,
                                                         TempCart(
+                                                          createdDate:
+                                                              DateTime.now(),
+                                                          timeOfDay:
+                                                              null,
                                                           hasPrintedDocket:
                                                               false,
                                                           subStaffName:

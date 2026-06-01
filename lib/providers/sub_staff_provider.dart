@@ -74,52 +74,52 @@ class SubStaffProvider extends ChangeNotifier {
   }
 
   Future<int> createSubStaff(TempSubStaff subStaff) async {
-    bool isOnline = await connectivity.isOnline();
+    // bool isOnline = await connectivity.isOnline();
     try {
       subStaff.updatedAt = DateTime.now();
       subStaff.createdAt = DateTime.now();
       subStaff.uuid = uuidGen();
-      if (isOnline) {
-        Map<String, dynamic>? res =
-            await supabase
-                .from(tableName)
-                .insert(subStaff.toJson())
-                .select()
-                .maybeSingle();
+      // if (isOnline) {
+      //   Map<String, dynamic>? res =
+      //       await supabase
+      //           .from(tableName)
+      //           .insert(subStaff.toJson())
+      //           .select()
+      //           .maybeSingle();
 
-        if (res == null) {
-          print('Failed to Create Sub Staff');
-          return 0;
-        }
+      //   if (res == null) {
+      //     print('Failed to Create Sub Staff');
+      //     return 0;
+      //   }
 
-        TempSubStaff exp = TempSubStaff.fromJson(res);
-        await SubStaffFunc().createSubStaff(exp);
-        await returnEventsLogProvider().createLog(
-          returnEventsLogProvider(
-            // ignore: use_build_context_synchronously
-          ).subStaffAdapter(exp, 1),
+      //   TempSubStaff exp = TempSubStaff.fromJson(res);
+      //   await SubStaffFunc().createSubStaff(exp);
+      //   await returnEventsLogProvider().createLog(
+      //     returnEventsLogProvider(
+      //       // ignore: use_build_context_synchronously
+      //     ).subStaffAdapter(exp, 1),
+      //     // ignore: use_build_context_synchronously
+      //   );
+      //   print('Created Sub Staff Online');
+      //   await getSubStaffs();
+      //   notifyListeners();
+      //   return 1;
+      // } else {
+      await SubStaffFunc().createSubStaff(subStaff);
+      await CreatedSubStaffFunc().createSubStaff(
+        CreatedSubStaff(subStaff: subStaff),
+      );
+      await returnEventsLogProvider().createLog(
+        returnEventsLogProvider(
           // ignore: use_build_context_synchronously
-        );
-        print('Created Sub Staff Online');
-        await getSubStaffs();
-        notifyListeners();
-        return 1;
-      } else {
-        await SubStaffFunc().createSubStaff(subStaff);
-        await CreatedSubStaffFunc().createSubStaff(
-          CreatedSubStaff(subStaff: subStaff),
-        );
-        await returnEventsLogProvider().createLog(
-          returnEventsLogProvider(
-            // ignore: use_build_context_synchronously
-          ).subStaffAdapter(subStaff, 1),
-          // ignore: use_build_context_synchronously
-        );
-        print('Created Sub Staff Offline');
-        await getSubStaffs();
-        notifyListeners();
-        return 1;
-      }
+        ).subStaffAdapter(subStaff, 1),
+        // ignore: use_build_context_synchronously
+      );
+      print('Created Sub Staff Offline');
+      await getSubStaffsOffline();
+      notifyListeners();
+      return 1;
+      // }
     } catch (e) {
       print('Error Creating Sub Staff: ${e.toString()}');
       return 0;
@@ -141,8 +141,7 @@ class SubStaffProvider extends ChangeNotifier {
       final response = await supabase
           .from(tableName)
           .select()
-          .eq('shop_id', shopId())
-          .order('created_at', ascending: false);
+          .eq('shop_id', shopId());
       print('Sub Staffs Gotten: ${response.length}');
 
       subStaffsMain =
@@ -155,6 +154,17 @@ class SubStaffProvider extends ChangeNotifier {
     } else {
       subStaffsMain = SubStaffFunc().getSubStaffs();
     }
+    subStaffsMain.sort(
+      (a, b) => a.staffName!.toLowerCase().compareTo(
+        b.staffName!.toLowerCase(),
+      ),
+    );
+    notifyListeners();
+    return subStaffsMain;
+  }
+
+  Future<List<TempSubStaff>> getSubStaffsOffline() async {
+    subStaffsMain = SubStaffFunc().getSubStaffs();
     notifyListeners();
     return subStaffsMain;
   }
@@ -173,60 +183,59 @@ class SubStaffProvider extends ChangeNotifier {
     TempSubStaff subStaff,
     // BuildContext context,
   ) async {
-    bool isOnline = await connectivity.isOnline();
+    // bool isOnline = await connectivity.isOnline();
     try {
       subStaff.updatedAt = DateTime.now();
-      print(subStaff.uuid);
-      if (isOnline) {
-        var res =
-            await supabase
-                .from(tableName)
-                .update(subStaff.toJson())
-                .eq('uuid', subStaff.uuid!)
-                .select()
-                .maybeSingle();
-        if (res == null) {
-          print('Failed to Update Sub Staff');
-          return 0;
-        }
-        await returnEventsLogProvider().createLog(
-          returnEventsLogProvider().subStaffAdapter(
-            subStaff,
-            2,
-          ),
+      // print(subStaff.uuid);
+      // if (isOnline) {
+      //   var res =
+      //       await supabase
+      //           .from(tableName)
+      //           .update(subStaff.toJson())
+      //           .eq('uuid', subStaff.uuid!)
+      //           .select()
+      //           .maybeSingle();
+      //   if (res == null) {
+      //     print('Failed to Update Sub Staff');
+      //     return 0;
+      //   }
+      //   await returnEventsLogProvider().createLog(
+      //     returnEventsLogProvider().subStaffAdapter(
+      //       subStaff,
+      //       2,
+      //     ),
+      //   );
+      //   await getSubStaffs();
+      //   notifyListeners();
+      //   return 1;
+      // } else {
+      await SubStaffFunc().updateSubStaff(subStaff);
+      var containsCreated =
+          CreatedSubStaffFunc()
+              .getSubStaffs()
+              .where(
+                (exp) => exp.subStaff.uuid == subStaff.uuid,
+              )
+              .toList();
+      if (containsCreated.isEmpty) {
+        await UpdatedSubStaffFunc().createUpdatedSubStaff(
+          UpdatedSubStaff(subStaff: subStaff),
         );
-        await getSubStaffs();
-        notifyListeners();
-        return 1;
       } else {
-        await SubStaffFunc().updateSubStaff(subStaff);
-        var containsCreated =
-            CreatedSubStaffFunc()
-                .getSubStaffs()
-                .where(
-                  (exp) =>
-                      exp.subStaff.uuid == subStaff.uuid,
-                )
-                .toList();
-        if (containsCreated.isEmpty) {
-          await UpdatedSubStaffFunc().createUpdatedSubStaff(
-            UpdatedSubStaff(subStaff: subStaff),
-          );
-        } else {
-          await CreatedSubStaffFunc().updateSubStaff(
-            CreatedSubStaff(subStaff: subStaff),
-          );
-        }
-        await returnEventsLogProvider().createLog(
-          returnEventsLogProvider().subStaffAdapter(
-            subStaff,
-            2,
-          ),
+        await CreatedSubStaffFunc().updateSubStaff(
+          CreatedSubStaff(subStaff: subStaff),
         );
-        notifyListeners();
-        await getSubStaffs();
-        return 1;
       }
+      await returnEventsLogProvider().createLog(
+        returnEventsLogProvider().subStaffAdapter(
+          subStaff,
+          2,
+        ),
+      );
+      notifyListeners();
+      await getSubStaffsOffline();
+      return 1;
+      // }
     } catch (e) {
       print('Error Updating Sub Staff: ${e.toString()}');
       return 0;
@@ -241,67 +250,65 @@ class SubStaffProvider extends ChangeNotifier {
   //
 
   Future<int> deleteSubStaff(TempSubStaff subStaff) async {
-    bool isOnline = await connectivity.isOnline();
+    // bool isOnline = await connectivity.isOnline();
     try {
-      if (isOnline) {
-        await supabase
-            .from(tableName)
-            .delete()
-            .eq('uuid', subStaff.uuid!);
-        await returnEventsLogProvider().createLog(
-          returnEventsLogProvider().subStaffAdapter(
-            subStaff,
-            3,
-          ),
-        );
+      // if (isOnline) {
+      //   await supabase
+      //       .from(tableName)
+      //       .delete()
+      //       .eq('uuid', subStaff.uuid!);
+      //   await returnEventsLogProvider().createLog(
+      //     returnEventsLogProvider().subStaffAdapter(
+      //       subStaff,
+      //       3,
+      //     ),
+      //   );
 
-        await getSubStaffs();
-        notifyListeners();
-        return 1;
+      //   await getSubStaffs();
+      //   notifyListeners();
+      //   return 1;
+      // } else {
+      var containsCreated =
+          CreatedSubStaffFunc()
+              .getSubStaffs()
+              .where(
+                (exp) => exp.subStaff.uuid == subStaff.uuid,
+              )
+              .toList();
+      var containsUpdated =
+          UpdatedSubStaffFunc()
+              .getSubStaffs()
+              .where(
+                (exp) => exp.subStaff.uuid == subStaff.uuid,
+              )
+              .toList();
+      await SubStaffFunc().deleteSubStaff(subStaff.uuid!);
+
+      if (containsCreated.isNotEmpty) {
+        CreatedSubStaffFunc().deleteSubStaff(
+          subStaff.uuid!,
+        );
       } else {
-        var containsCreated =
-            CreatedSubStaffFunc()
-                .getSubStaffs()
-                .where(
-                  (exp) =>
-                      exp.subStaff.uuid == subStaff.uuid,
-                )
-                .toList();
-        var containsUpdated =
-            UpdatedSubStaffFunc()
-                .getSubStaffs()
-                .where(
-                  (exp) =>
-                      exp.subStaff.uuid == subStaff.uuid,
-                )
-                .toList();
-        await SubStaffFunc().deleteSubStaff(subStaff.uuid!);
-
-        if (containsCreated.isNotEmpty) {
-          CreatedSubStaffFunc().deleteSubStaff(
-            subStaff.uuid!,
-          );
-        } else {
-          await DeletedSubStaffFunc().createDeletedSubStaff(
-            DeletedSubStaff(subStaffUuid: subStaff.uuid!),
-          );
-        }
-        if (containsUpdated.isNotEmpty) {
-          UpdatedSubStaffFunc().deleteUpdatedSubStaff(
-            subStaff.uuid!,
-          );
-        }
-        await returnEventsLogProvider().createLog(
-          returnEventsLogProvider(
-            // ignore: use_build_context_synchronously
-          ).subStaffAdapter(subStaff, 3),
-          // ignore: use_build_context_synchronously
+        await DeletedSubStaffFunc().createDeletedSubStaff(
+          DeletedSubStaff(subStaffUuid: subStaff.uuid!),
         );
-
-        await getSubStaffs();
-        notifyListeners();
-        return 1;
       }
+      if (containsUpdated.isNotEmpty) {
+        UpdatedSubStaffFunc().deleteUpdatedSubStaff(
+          subStaff.uuid!,
+        );
+      }
+      await returnEventsLogProvider().createLog(
+        returnEventsLogProvider(
+          // ignore: use_build_context_synchronously
+        ).subStaffAdapter(subStaff, 3),
+        // ignore: use_build_context_synchronously
+      );
+
+      await getSubStaffs();
+      notifyListeners();
+      return 1;
+      // }
     } catch (e) {
       print('Error Deleting Sub Staff: ${e.toString()}');
       return 0;

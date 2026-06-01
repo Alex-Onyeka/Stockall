@@ -488,13 +488,10 @@ class EventsLogProvider with ChangeNotifier {
     );
   }
 
-  Future<void> eventsLogSync(BuildContext context) async {
+  Future<void> eventsLogSync() async {
     try {
       bool isOnline =
-          await returnConnectivityProvider(
-            context,
-            listen: false,
-          ).isOnline();
+          await ConnectivityProvider().isOnline();
       // Prepare batch payload
       if (CreatedEventsLogFunc()
               .getCreatedEventsLogs()
@@ -525,10 +522,8 @@ class EventsLogProvider with ChangeNotifier {
         );
         await CreatedEventsLogFunc().clearEvents();
         print('Unsynced Event Logs Cleared');
-        if (context.mounted) {
-          print('Mounted, refreshing Receipts ✅');
-          await getEventLogs();
-        }
+        print('Mounted, refreshing Receipts ✅');
+        await getEventLogs();
       }
     } catch (e) {
       print('Batch Event Logs insert failed ❌: $e');

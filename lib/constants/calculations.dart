@@ -97,6 +97,15 @@ String formatDateTime(DateTime date) {
   return DateFormat('MMM d, yyyy').format(date);
 }
 
+String formatTimeOfDay(TimeOfDay time) {
+  final hour =
+      time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
+  final minute = time.minute.toString().padLeft(2, '0');
+  final period = time.period == DayPeriod.am ? 'AM' : 'PM';
+
+  return '$hour:$minute $period';
+}
+
 String formatDateWithoutYear(DateTime date) {
   return DateFormat('E, MMM d').format(date);
 }

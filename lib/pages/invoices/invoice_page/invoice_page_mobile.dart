@@ -8,6 +8,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/constants/invoice_print_and_download.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
@@ -82,15 +83,18 @@ class _InvoicePageMobileState
 
     TempInvoice? invoice =
         invs.isNotEmpty ? invs.first : null;
-    var custs =
-        returnCustomers(context, listen: false)
-            .customersMain()
-            .where(
-              (cus) => cus.uuid == invoice?.customerUuid,
-            )
-            .toList();
-    TempCustomersClass? customer =
-        custs.isNotEmpty ? custs.first : null;
+    String? customer;
+    TempCustomersClass? customersClass;
+
+    var customers = returnCustomers(context)
+        .customersMain()
+        .where((c) => c.uuid == invoice?.customerUuid);
+    if (customers.isNotEmpty) {
+      customersClass = customers.first;
+    } else {
+      customer = invoice?.customerName;
+    }
+
     return Builder(
       builder: (context) {
         if (invoice == null) {
@@ -175,15 +179,32 @@ class _InvoicePageMobileState
                                   CrossAxisAlignment.start,
                               spacing: 2,
                               children: [
-                                Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
-                                  ),
-                                  'Invoice',
+                                Row(
+                                  spacing: 2,
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                      ),
+                                      'Invoice',
+                                    ),
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      "[ #${invoice?.barcode ?? returnOnlyDigits(invoice?.uuid ?? '')} ]",
+                                    ),
+                                  ],
                                 ),
                                 Text(
                                   style: TextStyle(
@@ -384,15 +405,32 @@ class _InvoicePageMobileState
                                   CrossAxisAlignment.start,
                               spacing: 2,
                               children: [
-                                Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        theme
-                                            .mobileTexts
-                                            .b3
-                                            .fontSize,
-                                  ),
-                                  'Invoice',
+                                Row(
+                                  spacing: 2,
+                                  children: [
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                      ),
+                                      'Invoice',
+                                    ),
+                                    Text(
+                                      style: TextStyle(
+                                        fontSize:
+                                            theme
+                                                .mobileTexts
+                                                .b3
+                                                .fontSize,
+                                        fontWeight:
+                                            FontWeight.bold,
+                                      ),
+                                      "[ #${invoice.barcode ?? returnOnlyDigits(invoice.uuid ?? '')} ]",
+                                    ),
+                                  ],
                                 ),
                                 Text(
                                   style: TextStyle(
@@ -404,7 +442,7 @@ class _InvoicePageMobileState
                                     fontWeight:
                                         FontWeight.bold,
                                   ),
-                                  customer?.name ??
+                                  customer ??
                                       'Customer Name',
                                 ),
                               ],
@@ -1612,7 +1650,8 @@ class _InvoicePageMobileState
                                                             fontWeight:
                                                                 FontWeight.bold,
                                                           ),
-                                                          customer?.name ??
+                                                          customersClass?.name ??
+                                                              customer ??
                                                               'Name',
                                                         ),
                                                       ],
@@ -1635,15 +1674,18 @@ class _InvoicePageMobileState
                                                             fontWeight:
                                                                 FontWeight.normal,
                                                           ),
-                                                          customer?.phone ??
+                                                          customersClass?.phone ??
                                                               'Phone Number',
                                                         ),
                                                       ],
                                                     ),
                                                     Visibility(
                                                       visible:
-                                                          customer?.email !=
-                                                          null,
+                                                          customersClass?.email !=
+                                                              null ||
+                                                          customersClass?.email !=
+                                                                  null &&
+                                                              customersClass!.email.isEmpty,
                                                       child: Row(
                                                         spacing:
                                                             10,
@@ -1662,7 +1704,7 @@ class _InvoicePageMobileState
                                                               fontWeight:
                                                                   FontWeight.normal,
                                                             ),
-                                                            customer?.email ??
+                                                            customersClass?.email ??
                                                                 'Email',
                                                           ),
                                                         ],

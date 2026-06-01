@@ -42,23 +42,14 @@ class RefreshFunctions {
   RefreshFunctions(this.context) {
     shopProvider = returnShopProvider();
     // suggestionProvider = returnSuggestionsProvider(context, listen: false);
-    receiptsProvider = returnReceiptProvider(
-      context,
-      listen: false,
-    );
+    receiptsProvider = returnReceiptProviderSingle();
     invoicesProvider = returnInvoicesProvider();
     notificationProvider = returnNotificationProvider(
       context,
       listen: false,
     );
-    expensesProvider = returnExpensesProvider(
-      context,
-      listen: false,
-    );
-    userProvider = returnUserProvider(
-      context,
-      listen: false,
-    );
+    expensesProvider = returnExpensesProviderSingle();
+    userProvider = returnUserProviderSingle();
     appVersionP = returnAppVersionProvider(
       context,
       listen: false,
@@ -72,10 +63,7 @@ class RefreshFunctions {
 
   Future<bool> checkOnline() async {
     bool isOnline =
-        await returnConnectivityProvider(
-          context,
-          listen: false,
-        ).isOnline();
+        returnConnectivityProvider().isConnected;
     return isOnline;
   }
 
@@ -119,7 +107,9 @@ class RefreshFunctions {
             title: 'Unsynced Records Detected',
             action: () async {
               Navigator.of(context).pop();
-              await returnData().syncData(safeContext);
+              await returnData().syncData(
+                context: safeContext,
+              );
               await getMainReceipts();
             },
           );
@@ -156,7 +146,9 @@ class RefreshFunctions {
             title: 'Unsynced Records Detected',
             action: () async {
               Navigator.of(confirmContext).pop();
-              await returnData().syncData(safeContext);
+              await returnData().syncData(
+                context: safeContext,
+              );
               await getInvoices();
             },
           );
@@ -190,7 +182,9 @@ class RefreshFunctions {
             title: 'Unsynced Records Detected',
             action: () async {
               Navigator.of(context).pop();
-              await returnData().syncData(safeContext);
+              await returnData().syncData(
+                context: safeContext,
+              );
               await getUserShop();
             },
           );
@@ -230,7 +224,9 @@ class RefreshFunctions {
             title: 'Unsynced Records Detected',
             action: () async {
               Navigator.of(context).pop();
-              await returnData().syncData(safeContext);
+              await returnData().syncData(
+                context: safeContext,
+              );
               await getProducts();
             },
           );
@@ -276,7 +272,9 @@ class RefreshFunctions {
             title: 'Unsynced Records Detected',
             action: () async {
               Navigator.of(context).pop();
-              await returnData().syncData(safeContext);
+              await returnData().syncData(
+                context: safeContext,
+              );
               await fetchNotifications();
             },
           );
@@ -332,7 +330,9 @@ class RefreshFunctions {
             title: 'Unsynced Records Detected',
             action: () async {
               Navigator.of(context).pop();
-              await returnData().syncData(safeContext);
+              await returnData().syncData(
+                context: safeContext,
+              );
               await getProductSalesRecord();
             },
           );
@@ -379,7 +379,9 @@ class RefreshFunctions {
             title: 'Unsynced Records Detected',
             action: () async {
               Navigator.of(context).pop();
-              await returnData().syncData(safeContext);
+              await returnData().syncData(
+                context: safeContext,
+              );
               await getExpenses();
             },
           );
@@ -423,7 +425,9 @@ class RefreshFunctions {
             title: 'Unsynced Records Detected',
             action: () async {
               Navigator.of(context).pop();
-              await returnData().syncData(safeContext);
+              await returnData().syncData(
+                context: safeContext,
+              );
               await getEmployees();
             },
           );
@@ -471,7 +475,9 @@ class RefreshFunctions {
             title: 'Unsynced Records Detected',
             action: () async {
               Navigator.of(context).pop();
-              await returnData().syncData(safeContext);
+              await returnData().syncData(
+                context: safeContext,
+              );
               await getCustomers();
             },
           );
@@ -518,7 +524,9 @@ class RefreshFunctions {
             title: 'Unsynced Records Detected',
             action: () async {
               Navigator.of(context).pop();
-              await returnData().syncData(safeContext);
+              await returnData().syncData(
+                context: safeContext,
+              );
               await loadSubscription();
             },
           );
@@ -552,10 +560,7 @@ class RefreshFunctions {
         );
       } else {
         bool isOnline =
-            await returnConnectivityProvider(
-              context,
-              listen: false,
-            ).isOnline();
+            returnConnectivityProvider().isConnected;
         if (isSynced() == 0 &&
             context.mounted &&
             isOnline) {
@@ -571,7 +576,7 @@ class RefreshFunctions {
                   Navigator.of(confirmDialog).pop();
                   if (safeContext.mounted) {
                     await returnData().syncData(
-                      safeContext,
+                      context: safeContext,
                     );
                   }
                   if (context.mounted) {

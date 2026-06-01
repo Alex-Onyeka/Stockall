@@ -371,7 +371,9 @@ class _DashboardTotalSalesBannerState
                 borderRadius: BorderRadius.circular(5),
                 onTap: () async {
                   if (returnData().isSynced() == 0) {
-                    await returnData().syncData(context);
+                    await returnData().syncData(
+                      context: context,
+                    );
                   } else {
                     print('Data is in sync');
                     returnData().toggleRefreshing(true);
@@ -404,10 +406,10 @@ class _DashboardTotalSalesBannerState
                         size: 13,
                         color:
                             returnConnectivityProvider(
-                              context,
+                              context: context,
                             ).connectedColor(),
                         returnConnectivityProvider(
-                              context,
+                              context: context,
                             ).isConnected
                             ? Icons.wifi
                             : Icons.wifi_off_sharp,

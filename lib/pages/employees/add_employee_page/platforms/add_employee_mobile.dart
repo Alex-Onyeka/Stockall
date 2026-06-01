@@ -372,10 +372,8 @@ class _AddEmployeeMobileState
                                           'Are you Sure?',
                                       action: () async {
                                         var isOnline =
-                                            await returnConnectivityProvider(
-                                              context,
-                                              listen: false,
-                                            ).isOnline();
+                                            returnConnectivityProvider()
+                                                .isConnected;
                                         if (!isOnline) {
                                           showDialog(
                                             // ignore: use_build_context_synchronously
@@ -645,10 +643,8 @@ class _AddEmployeeMobileState
                                     title: 'Procced?',
                                     action: () async {
                                       var isOnline =
-                                          await returnConnectivityProvider(
-                                            context,
-                                            listen: false,
-                                          ).isOnline();
+                                          returnConnectivityProvider()
+                                              .isConnected;
                                       if (!isOnline) {
                                         showDialog(
                                           // ignore: use_build_context_synchronously

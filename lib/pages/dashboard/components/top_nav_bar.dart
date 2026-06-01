@@ -112,10 +112,8 @@ class _TopNavBarState extends State<TopNavBar> {
                           return;
                         }
                         var isOnline =
-                            await returnConnectivityProvider(
-                              context,
-                              listen: false,
-                            ).isOnline();
+                            returnConnectivityProvider()
+                                .isConnected;
                         setState(() {
                           isOpen = true;
                         });
@@ -421,7 +419,7 @@ class _TopNavBarState extends State<TopNavBar> {
                       onTap: () async {
                         if (returnData().isSynced() == 0) {
                           await returnData().syncData(
-                            context,
+                            context: context,
                           );
                         } else {
                           print('Data is in sync');
@@ -450,10 +448,10 @@ class _TopNavBarState extends State<TopNavBar> {
                               size: 15,
                               color:
                                   returnConnectivityProvider(
-                                    context,
+                                    context: context,
                                   ).connectedColor(),
                               returnConnectivityProvider(
-                                    context,
+                                    context: context,
                                   ).isConnected
                                   ? Icons.wifi
                                   : Icons.wifi_off_sharp,
@@ -693,7 +691,7 @@ class _TopNavBarState extends State<TopNavBar> {
                                       ),
 
                                       returnConnectivityProvider(
-                                        context,
+                                        context: context,
                                       ).connectedText(),
                                     ),
                                     SizedBox(width: 5),
@@ -704,10 +702,10 @@ class _TopNavBarState extends State<TopNavBar> {
                                 size: 17,
                                 color:
                                     returnConnectivityProvider(
-                                      context,
+                                      context: context,
                                     ).connectedColor(),
                                 returnConnectivityProvider(
-                                      context,
+                                      context: context,
                                     ).isConnected
                                     ? Icons.wifi
                                     : Icons.wifi_off_sharp,
@@ -732,7 +730,7 @@ class _TopNavBarState extends State<TopNavBar> {
                           //     0) {
                           print('Beans');
                           await returnData().syncData(
-                            context,
+                            context: context,
                           );
                           // }
                         },
@@ -1182,10 +1180,8 @@ class PopoverMenu extends StatelessWidget {
                               var safeContext =
                                   parentContext;
                               var isOnline =
-                                  await returnConnectivityProvider(
-                                    context,
-                                    listen: false,
-                                  ).isOnline();
+                                  returnConnectivityProvider()
+                                      .isConnected;
                               if (!safeContext.mounted)
                                 return;
                               if (returnShopProvider()

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_shop_logos/temp_shop_logos.dart';
 import 'package:stockall/local_database/shop_logos/created_shop_logo/created_shop_logos_func.dart';
@@ -28,10 +27,7 @@ class ShopLogosFunc {
     return logo;
   }
 
-  Future<int> createLogo(
-    TempShopLogos logo,
-    BuildContext context,
-  ) async {
+  Future<int> createLogo(TempShopLogos logo) async {
     try {
       await clearLogos();
       await shopLogosBox.put(

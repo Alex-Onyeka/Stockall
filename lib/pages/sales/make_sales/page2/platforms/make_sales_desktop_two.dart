@@ -13,13 +13,13 @@ import 'package:stockall/components/text_fields/money_textfield.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
-import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/sales/make_sales/page1/platforms/make_sales_desktop.dart';
 import 'package:stockall/pages/sales/make_sales/page2/components/customer_selection_widget.dart';
+import 'package:stockall/pages/sales/make_sales/page2/components/set_custom_receipt_created_date_widget.dart';
 import 'package:stockall/pages/sales/make_sales/receipt_page/receipt_page.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -636,6 +636,10 @@ class _MakeSalesDesktopTwoState
                                                   returnSalesProvider().addNewCart(
                                                     context,
                                                     TempCart(
+                                                      timeOfDay:
+                                                          null,
+                                                      createdDate:
+                                                          DateTime.now(),
                                                       hasPrintedDocket:
                                                           false,
                                                       subStaffName:
@@ -1111,189 +1115,6 @@ class _MakeSalesDesktopTwoState
               context,
             ).showSuccess('Sales Successful'),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class SetCustomReceiptCreatedDateWidget
-    extends StatelessWidget {
-  const SetCustomReceiptCreatedDateWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    var theme = returnTheme(context);
-    return Visibility(
-      visible:
-          (returnSalesProviderContext(
-                    context,
-                  ).currentCart().invoiceUuidEdit !=
-                  null ||
-              returnSalesProviderContext(
-                    context,
-                  ).currentCart().receiptUuidEdit !=
-                  null) &&
-          authorization(
-            authorized:
-                Authorizations()
-                    .setCustomReceiptCreatedDate,
-          ),
-      child: Column(
-        children: [
-          Divider(color: Colors.grey.shade300),
-          SizedBox(height: 10),
-          Builder(
-            builder: (context) {
-              if (returnSalesProviderContext(
-                    context,
-                  ).currentCart().customDate ==
-                  null) {
-                return Material(
-                  color: Colors.transparent,
-                  child: Ink(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        5,
-                      ),
-                      border: Border.all(
-                        color: Colors.grey.shade400,
-                        width: 1,
-                      ),
-                    ),
-                    child: InkWell(
-                      onTap: () async {
-                        var date = await myDatePickerAction(
-                          theme,
-                          context,
-                        );
-                        returnSalesProvider()
-                            .updateReceiptCreatedDate(
-                              createdDate: date,
-                            );
-                      },
-                      borderRadius: BorderRadius.circular(
-                        5,
-                      ),
-                      child: Container(
-                        padding: EdgeInsets.only(
-                          left: 20,
-                          right: 15,
-                          bottom: 12,
-                          top: 12,
-                        ),
-
-                        child: Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
-                          children: [
-                            Text(
-                              style: TextStyle(
-                                color: Colors.grey,
-                                fontWeight: FontWeight.bold,
-                                fontSize:
-                                    theme
-                                        .mobileTexts
-                                        .b2
-                                        .fontSize,
-                              ),
-                              'Edit Created Date',
-                            ),
-                            Icon(
-                              color: Colors.orange,
-                              size: 20,
-                              Icons.date_range,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              } else {
-                return Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 5,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.grey.shade200,
-                  ),
-                  child: Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        spacing: 10,
-                        children: [
-                          Icon(
-                            size: 20,
-                            Icons.date_range_outlined,
-                          ),
-                          Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b4
-                                          .fontSize,
-                                ),
-                                'Custom Created Date:',
-                              ),
-                              SizedBox(height: 2),
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b2
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                ),
-                                formatDateTime(
-                                  returnSalesProviderContext(
-                                            context,
-                                          )
-                                          .currentCart()
-                                          .customDate ??
-                                      DateTime.now(),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      Visibility(
-                        visible:
-                            returnSalesProviderContext(
-                              context,
-                            ).currentCart().customDate !=
-                            null,
-                        child: IconButton(
-                          onPressed: () {
-                            returnSalesProvider()
-                                .updateReceiptCreatedDate();
-                            // setState(
-                            //   () {},
-                            // );
-                          },
-                          icon: Icon(Icons.clear),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }
-            },
-          ),
-          SizedBox(height: 10),
         ],
       ),
     );

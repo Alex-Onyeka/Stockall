@@ -14,6 +14,10 @@ import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ExpensesProvider extends ChangeNotifier {
+  static final ExpensesProvider _instance =
+      ExpensesProvider._internal();
+  factory ExpensesProvider() => _instance;
+  ExpensesProvider._internal();
   final supabase = Supabase.instance.client;
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
@@ -461,9 +465,7 @@ class ExpensesProvider extends ChangeNotifier {
   //
   //
 
-  Future<void> createExpensesSync(
-    BuildContext context,
-  ) async {
+  Future<void> createExpensesSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
       // Prepare batch payload
@@ -491,12 +493,10 @@ class ExpensesProvider extends ChangeNotifier {
         print('${data.length} items added successfully ✅');
         await CreatedExpensesFunc().clearExpenses();
         print('Unsynced Expenses Cleared');
-        if (context.mounted) {
-          print('Mounted, refreshing Expenses ✅');
-          await getExpenses(
-            returnShopProvider().userShop()!.shopId!,
-          );
-        }
+        print('Mounted, refreshing Expenses ✅');
+        await getExpenses(
+          returnShopProvider().userShop()!.shopId!,
+        );
       }
     } catch (e) {
       print('Batch Expenses insert failed ❌: $e');
@@ -509,9 +509,7 @@ class ExpensesProvider extends ChangeNotifier {
   //
   //
 
-  Future<void> deleteExpensesSync(
-    BuildContext context,
-  ) async {
+  Future<void> deleteExpensesSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
 
@@ -541,12 +539,10 @@ class ExpensesProvider extends ChangeNotifier {
 
         await DeletedExpensesFunc().clearDeletedExpenses();
         print('Unsynced deleted Expenses cleared');
-        if (context.mounted) {
-          print('Mounted, refreshing Expenses ✅');
-          await getExpenses(
-            returnShopProvider().userShop()!.shopId!,
-          );
-        }
+        print('Mounted, refreshing Expenses ✅');
+        await getExpenses(
+          returnShopProvider().userShop()!.shopId!,
+        );
       }
     } catch (e) {
       print('Batch delete failed ❌: $e');
@@ -557,9 +553,7 @@ class ExpensesProvider extends ChangeNotifier {
   //
   //
 
-  Future<void> updateExpensesSync(
-    BuildContext context,
-  ) async {
+  Future<void> updateExpensesSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
       print(
@@ -644,12 +638,10 @@ class ExpensesProvider extends ChangeNotifier {
 
         await UpdatedExpensesFunc().clearupdatedExpenses();
         print('Unsynced updated Expenses cleared');
-        if (context.mounted) {
-          print('Mounted, refreshing Expenses ✅');
-          await getExpenses(
-            returnShopProvider().userShop()!.shopId!,
-          );
-        }
+        print('Mounted, refreshing Expenses ✅');
+        await getExpenses(
+          returnShopProvider().userShop()!.shopId!,
+        );
       }
     } catch (e) {
       print('Batch update failed ❌: $e');

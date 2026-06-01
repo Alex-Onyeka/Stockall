@@ -6,6 +6,10 @@ import 'package:stockall/pages/restricted_page/restricted_page.dart';
 import 'package:stockall/services/auth_service.dart';
 
 class NavProvider extends ChangeNotifier {
+  static final NavProvider _instance =
+      NavProvider._internal();
+  factory NavProvider() => _instance;
+  NavProvider._internal();
   int currentPage = 0;
 
   bool settingNow = false;
@@ -70,10 +74,7 @@ class NavProvider extends ChangeNotifier {
       listen: false,
     );
     bool isOnline =
-        await returnConnectivityProvider(
-          context,
-          listen: false,
-        ).isOnline();
+        returnConnectivityProvider().isConnected;
     if (!context.mounted) {
       return;
     }
@@ -195,7 +196,7 @@ class NavProvider extends ChangeNotifier {
           );
           if (context.mounted) {
             print('Context is Mounted');
-            await dataProvider.syncData(context);
+            await dataProvider.syncData();
           } else {
             print('Context is not mounted');
           }

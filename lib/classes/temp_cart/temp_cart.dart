@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
 
@@ -74,6 +75,9 @@ class TempCart extends HiveObject {
   @HiveField(22)
   String? subStaffName;
 
+  @HiveField(23)
+  TimeOfDay? timeOfDay;
+
   TempCart({
     required this.cartItems,
     required this.isInvoice,
@@ -98,6 +102,7 @@ class TempCart extends HiveObject {
     required this.customDate,
     required this.hasPrintedDocket,
     required this.subStaffName,
+    required this.timeOfDay,
   });
 
   List<TempCartItem> getCartItemsAll() {
@@ -117,8 +122,23 @@ class TempCart extends HiveObject {
   }
 
   DateTime returnDate() {
-    return customDate ??
-        createdDate?.toUtc() ??
-        DateTime.now().toUtc();
+    var newDate = DateTime(
+      (customDate?.year ??
+          createdDate?.year ??
+          DateTime.now().year),
+      (customDate?.month ??
+          createdDate?.month ??
+          DateTime.now().month),
+      (customDate?.day ??
+          createdDate?.day ??
+          DateTime.now().day),
+      (timeOfDay?.hour ??
+          createdDate?.hour ??
+          DateTime.now().hour),
+      (timeOfDay?.minute ??
+          createdDate?.minute ??
+          DateTime.now().minute),
+    );
+    return newDate;
   }
 }

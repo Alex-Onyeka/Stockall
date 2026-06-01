@@ -242,7 +242,7 @@ class _AddSupplierMobileState
   String? selectedCityName;
 
   void getCountries() async {
-    bool isOnline = await ConnectivityProvider().isOnline();
+    bool isOnline = ConnectivityProvider().isConnected;
     if (isOnline) {
       countriesFuture = fetchCountries();
     }
@@ -422,7 +422,7 @@ class _AddSupplierMobileState
                               Visibility(
                                 visible:
                                     returnConnectivityProvider(
-                                      context,
+                                      context: context,
                                     ).isConnected,
                                 child: Column(
                                   spacing: 10,

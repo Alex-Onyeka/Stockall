@@ -63,7 +63,6 @@ import 'package:stockall/local_database/waybills/unsync_funcs/updated/updated_wa
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/providers/department_provider.dart';
-import 'package:stockall/providers/invoices_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DataProvider extends ChangeNotifier {
@@ -173,7 +172,7 @@ class DataProvider extends ChangeNotifier {
   }
 
   Future<void> createProductsSync(
-    BuildContext context,
+    // BuildContext context,
   ) async {
     try {
       bool isOnline = await connectivity.isOnline();
@@ -196,12 +195,10 @@ class DataProvider extends ChangeNotifier {
 
         print('${data.length} items added successfully ✅');
         await CreatedProductFunc().clearProducts();
-        if (context.mounted) {
-          print('Mounted, refreshing products ✅');
-          await getProducts(
-            returnShopProvider().userShop()!.shopId!,
-          );
-        }
+        print('Mounted, refreshing products ✅');
+        await getProducts(
+          returnShopProvider().userShop()!.shopId!,
+        );
 
         clearFields();
         print('Unsynced Products Cleared');
@@ -211,9 +208,7 @@ class DataProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> deleteProductsSync(
-    BuildContext context,
-  ) async {
+  Future<void> deleteProductsSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
 
@@ -243,12 +238,10 @@ class DataProvider extends ChangeNotifier {
 
         await DeletedProductsFunc().clearDeletedProducts();
 
-        if (context.mounted) {
-          print('Mounted, refreshing products ✅');
-          await getProducts(
-            returnShopProvider().userShop()!.shopId!,
-          );
-        }
+        print('Mounted, refreshing products ✅');
+        await getProducts(
+          returnShopProvider().userShop()!.shopId!,
+        );
 
         clearFields();
         print('Unsynced deleted products cleared');
@@ -258,9 +251,7 @@ class DataProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> updateProductsSync(
-    BuildContext context,
-  ) async {
+  Future<void> updateProductsSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
       print(
@@ -345,13 +336,10 @@ class DataProvider extends ChangeNotifier {
 
         await UpdatedProductsFunc().clearupdatedProducts();
         print('Unsynced updated products cleared');
-        if (context.mounted) {
-          print('Mounted, refreshing products ✅');
-          await getProducts(
-            returnShopProvider().userShop()!.shopId!,
-          );
-        }
-
+        print('Mounted, refreshing products ✅');
+        await getProducts(
+          returnShopProvider().userShop()!.shopId!,
+        );
         clearFields();
       }
     } catch (e) {
@@ -365,9 +353,7 @@ class DataProvider extends ChangeNotifier {
   //
   //
   //
-  Future<void> salesProductsSync(
-    BuildContext context,
-  ) async {
+  Future<void> salesProductsSync() async {
     try {
       bool isOnline = await connectivity.isOnline();
       print(
@@ -396,12 +382,10 @@ class DataProvider extends ChangeNotifier {
             salesProduct.productUuid,
           );
 
-          if (context.mounted) {
-            print('Mounted, refreshing products ✅');
-            await getProducts(
-              returnShopProvider().userShop()!.shopId!,
-            );
-          }
+          print('Mounted, refreshing products ✅');
+          await getProducts(
+            returnShopProvider().userShop()!.shopId!,
+          );
 
           clearFields();
         }
@@ -418,512 +402,433 @@ class DataProvider extends ChangeNotifier {
   //
   //
 
-  Future<void> syncData(BuildContext context) async {
+  Future<void> syncData({BuildContext? context}) async {
     int isSynced = returnData().isSynced();
     syncProgress = 0;
     toggleSyncing(true);
-    List<TempShopClass> shop =
-        await returnShopProvider().getUserShops();
     bool isOnline = await connectivity.isOnline();
     if (isOnline) {
+      List<TempShopClass> shop =
+          await returnShopProvider().getUserShops();
       if (shop.isNotEmpty) {
-        if (context.mounted) {
-          if (isSynced == 0) {
-            if (CreatedCategoriesFunc()
-                    .getCreateCategories()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnCategoriesProvider()
-                  .createCategoriesSync();
-              print('Finished Syncing Created Categories');
-              setSyncProgress(1);
-            }
-            if (UpdatedCategoriesFunc()
-                    .getCategories()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnCategoriesProvider()
-                  .updateCategoriesSync();
-              print('Finished Syncing Updated Categories');
-              setSyncProgress(2);
-            }
-            if (DeletedCategoriesFunc()
-                    .getCategoryIds()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnCategoriesProvider()
-                  .deleteCategoriesSync();
-              print('Finished Syncing Deleted Categories');
-              setSyncProgress(3);
-            }
-            if (CreatedDepartmentsFunc()
-                    .getDepartment()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await DepartmentProvider()
-                  .createDepartmentsSync();
-              print('Finished Syncing Created Departments');
-              setSyncProgress(5);
-            }
-            if (UpdatedDepartmentFunc()
-                    .getDepartments()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await DepartmentProvider()
-                  .updateDepartmentsSync();
-              print('Finished Syncing Updated Departments');
-              setSyncProgress(6);
-            }
-            if (DeletedDepartmentsFunc()
-                    .getDepartmentIds()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await DepartmentProvider()
-                  .deleteDepartmentsSync();
-              print('Finished Syncing Deleted Departments');
-              setSyncProgress(7);
-            }
-            if (CreatedStorageProductsFunc()
-                    .getStorageProducts()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnStorageProductProvider()
-                  .createStorageProductsSync();
-              print(
-                'Finished Syncing Created StorageProductss',
-              );
-              setSyncProgress(8);
-            }
-            if (UpdatedStorageProductsFunc()
-                    .getStorageProductIds()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnStorageProductProvider()
-                  .updateStorageProductsSync();
-              print(
-                'Finished Syncing Updated StorageProductss',
-              );
-              setSyncProgress(9);
-            }
-            if (DeletedStorageProductsFunc()
-                    .getStorageProductIds()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnStorageProductProvider()
-                  .deleteStorageProductsSync();
-              print(
-                'Finished Syncing Deleted StorageProductss',
-              );
-              setSyncProgress(10);
-            }
-            if (CreatedProductFunc()
-                    .getProducts()
-                    .isNotEmpty &&
-                isOnline) {
-              await createProductsSync(context);
-              print('Finished Syncing Created Products');
-              setSyncProgress(11);
-            }
-            if (DeletedProductsFunc()
-                    .getProductIds()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await deleteProductsSync(context);
-              print('Finished Syncing Deleted Products');
-              setSyncProgress(12);
-            }
-            if (UpdatedProductsFunc()
-                    .getProducts()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await updateProductsSync(context);
-              print('Finished Syncing Updated Products');
-              setSyncProgress(13);
-            }
-            if (SalesProductFunc()
-                    .getProducts()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await salesProductsSync(context);
-              print('Finished Syncing Sales Products');
-              setSyncProgress(14);
-            }
-            if (CreatedExpensesFunc()
-                    .getExpenses()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnExpensesProvider(
-                context,
-                listen: false,
-              ).createExpensesSync(context);
-              print('Finished Syncing Created Expenses');
-              setSyncProgress(15);
-            }
-            if (UpdatedExpensesFunc()
-                    .getExpenses()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnExpensesProvider(
-                context,
-                listen: false,
-              ).updateExpensesSync(context);
-              print('Finished Syncing Updated Expenses');
-              setSyncProgress(16);
-            }
-            if (DeletedExpensesFunc()
-                    .getExpenseIds()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnExpensesProvider(
-                context,
-                listen: false,
-              ).deleteExpensesSync(context);
-              print('Finished Syncing Deleted Expenses');
-              setSyncProgress(17);
-            }
-            if (CreatedCustomersFunc()
-                    .getCustomers()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnCustomers(
-                context,
-                listen: false,
-              ).createCustomersSync(context);
-              print('Finished Syncing Created Customer');
-              setSyncProgress(18);
-            }
-            if (UpdatedCustomersFunc()
-                    .getCustomers()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnCustomers(
-                context,
-                listen: false,
-              ).updateCustomersSync(context);
-              print('Finished Syncing Updated Customers');
-              setSyncProgress(19);
-            }
-            if (DeletedCustomersFunc()
-                    .getCustomerIds()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnCustomers(
-                context,
-                listen: false,
-              ).deletedCustomersSync(context);
-              print('Finished Syncing Deleted Customers');
-              setSyncProgress(20);
-            }
-            if (DeletedReceiptsFunc()
-                    .getReceiptIds()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnReceiptProvider(
-                context,
-                listen: false,
-              ).deleteReceiptsSync(context);
-              print('Finished Syncing Deleted Receipts');
-              setSyncProgress(21);
-            }
-            if (CreatedRecordsFunc()
-                    .getRecords()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnReceiptProvider(
-                context,
-                listen: false,
-              ).createRecordsSync(context);
-              print(
-                'Finished Syncing Created Records Customers',
-              );
-              setSyncProgress(22);
-            }
-            if (CreatedReceiptsFunc()
-                    .getReceipts()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnReceiptProvider(
-                context,
-                listen: false,
-              ).createReceiptsSync(context);
-              print('Finished Syncing Created Receipts');
-              setSyncProgress(23);
-            }
-            if (UpdatedReceiptsFunc()
-                    .getReceiptIds()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnReceiptProvider(
-                context,
-                listen: false,
-              ).updateReceiptsSync(context);
-              print('Finished Syncing Created Receipts');
-              setSyncProgress(24);
-            }
-            if (UpdatedShopFunc()
-                    .getUpdatedShop()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnShopProvider().updateShopSync(
-                context,
-              );
-              print('Finished Syncing Created Receipts');
-              setSyncProgress(25);
-            }
-            if (CreatedShopLogosFunc().getCreatedLogo() !=
-                    null &&
-                context.mounted &&
-                isOnline) {
-              await returnShopProvider().uploadShopLogoSync(
-                context,
-              );
-              print('Finished Syncing Created Logo');
-              setSyncProgress(26);
-            }
-            if (CreatedEventsLogFunc()
-                    .getCreatedEventsLogs()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnEventsLogProvider().eventsLogSync(
-                context,
-              );
-              print('Finished Syncing Created Events Log');
-              setSyncProgress(27);
-            }
-            if (CreatedInvoicesFunc()
-                    .getInvoices()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnInvoicesProvider()
-                  .createInvoicesSync();
-              print('Finished Syncing Created Invoices');
-              setSyncProgress(28);
-            }
-            if (UpdatedInvoicesFunc()
-                    .getInvoiceIds()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await InvoicesProvider().updateInvoicesSync();
-              print('Finished Syncing Updated Invoices');
-              setSyncProgress(29);
-            }
-            if (DeletedInvoicesFunc()
-                    .getInvoiceIds()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await InvoicesProvider().deleteInvoicesSync();
-              print('Finished Syncing Deleted Invoices');
-              setSyncProgress(30);
-            }
-            if (CreatedInventoryUpdatesFunc()
-                    .getCreatedInventoryUpdatess()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnInventoryUpdatesProvider()
-                  .inventoryUpdatesSync();
-              print('Finished Syncing Inventory Updates');
-              setSyncProgress(31);
-            }
-            if (CreatedSubStaffFunc()
-                    .getSubStaffs()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnSubStaffProvider()
-                  .createSubStaffSync();
-              print('Finished Syncing Created Sub Staffs');
-              setSyncProgress(32);
-            }
-            if (UpdatedSubStaffFunc()
-                    .getSubStaffs()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnSubStaffProvider()
-                  .updateSubStaffSync();
-              print('Finished Syncing Updated Sub Staffs');
-              setSyncProgress(33);
-            }
-            if (DeletedSubStaffFunc()
-                    .getSubStaffIds()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnSubStaffProvider()
-                  .deleteSubStaffSync();
-              print('Finished Syncing Deleted Sub Staffs');
-              setSyncProgress(34);
-            }
-            if (CreatedSupplierFunc()
-                    .getSuppliers()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnSuppliersProvider()
-                  .createSupplierSync();
-              print('Finished Syncing Created Suppliers');
-              setSyncProgress(35);
-            }
-            if (UpdatedSupplierFunc()
-                    .getSuppliers()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnSuppliersProvider()
-                  .updateSuppliersSync();
-              print('Finished Syncing Updated Suppliers');
-              setSyncProgress(36);
-            }
-            if (DeletedSupplierFunc()
-                    .getSupplierIds()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnSuppliersProvider()
-                  .deletedSuppliersSync();
-              print('Finished Syncing Deleted Suppliers');
-              setSyncProgress(37);
-            }
-            if (CreatedPurchasesFunc()
-                    .getPurchases()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnPurchaseProvider()
-                  .createPurchasesSync();
-              print('Finished Syncing Created Purchasess');
-              setSyncProgress(38);
-            }
-            if (UpdatedPurchasesFunc()
-                    .getPurchaseIds()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnPurchaseProvider()
-                  .updatePurchaseSync();
-              print('Finished Syncing Updated Purchasess');
-              setSyncProgress(39);
-            }
-            if (DeletedPurchasesFunc()
-                    .getPurchaseIds()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnPurchaseProvider()
-                  .deletePurchasesSync();
-              print('Finished Syncing Deleted Purchasess');
-              setSyncProgress(40);
-            }
-            if (CreatedItemPurchaseFunc()
-                    .getRecords()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnPurchaseProvider()
-                  .createRecordsSync();
-              print(
-                'Finished Syncing Created Purchase Item Records',
-              );
-              setSyncProgress(41);
-            }
-            if (DeletedItemPurchaseFunc()
-                    .getItemPurchaseIds()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnPurchaseProvider()
-                  .deleteItemRecordsSync();
-              print(
-                'Finished Syncing Deleted Purchase Item Records',
-              );
-              setSyncProgress(42);
-            }
-            if (CreatedWaybillsFunc()
-                    .getWaybills()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnWaybillProvider()
-                  .createWaybillsSync();
-              print('Finished Syncing Created Waybills');
-              setSyncProgress(43);
-            }
-            if (UpdatedWaybillsFunc()
-                    .getWaybillIds()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnWaybillProvider()
-                  .updateWaybillSync();
-              print('Finished Syncing Updated Waybills');
-              setSyncProgress(44);
-            }
-            if (DeletedWaybillsFunc()
-                    .getWaybillIds()
-                    .isNotEmpty &&
-                context.mounted &&
-                isOnline) {
-              await returnWaybillProvider()
-                  .deleteWaybillsSync();
-              print('Finished Syncing Deleted Waybills');
-              setSyncProgress(45);
-            }
-
-            // await clearTotalCache();
-            toggleSyncing(false);
-          } else {
-            toggleSyncing(false);
+        if (isSynced == 0) {
+          if (CreatedCategoriesFunc()
+                  .getCreateCategories()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnCategoriesProvider()
+                .createCategoriesSync();
+            print('Finished Syncing Created Categories');
+            setSyncProgress(1);
           }
+          if (UpdatedCategoriesFunc()
+                  .getCategories()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnCategoriesProvider()
+                .updateCategoriesSync();
+            print('Finished Syncing Updated Categories');
+            setSyncProgress(2);
+          }
+          if (DeletedCategoriesFunc()
+                  .getCategoryIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnCategoriesProvider()
+                .deleteCategoriesSync();
+            print('Finished Syncing Deleted Categories');
+            setSyncProgress(3);
+          }
+          if (CreatedDepartmentsFunc()
+                  .getDepartment()
+                  .isNotEmpty &&
+              isOnline) {
+            await DepartmentProvider()
+                .createDepartmentsSync();
+            print('Finished Syncing Created Departments');
+            setSyncProgress(5);
+          }
+          if (UpdatedDepartmentFunc()
+                  .getDepartments()
+                  .isNotEmpty &&
+              isOnline) {
+            await DepartmentProvider()
+                .updateDepartmentsSync();
+            print('Finished Syncing Updated Departments');
+            setSyncProgress(6);
+          }
+          if (DeletedDepartmentsFunc()
+                  .getDepartmentIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await DepartmentProvider()
+                .deleteDepartmentsSync();
+            print('Finished Syncing Deleted Departments');
+            setSyncProgress(7);
+          }
+          if (CreatedStorageProductsFunc()
+                  .getStorageProducts()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnStorageProductProvider()
+                .createStorageProductsSync();
+            print(
+              'Finished Syncing Created StorageProductss',
+            );
+            setSyncProgress(8);
+          }
+          if (UpdatedStorageProductsFunc()
+                  .getStorageProductIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnStorageProductProvider()
+                .updateStorageProductsSync();
+            print(
+              'Finished Syncing Updated StorageProductss',
+            );
+            setSyncProgress(9);
+          }
+          if (DeletedStorageProductsFunc()
+                  .getStorageProductIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnStorageProductProvider()
+                .deleteStorageProductsSync();
+            print(
+              'Finished Syncing Deleted StorageProductss',
+            );
+            setSyncProgress(10);
+          }
+          if (CreatedProductFunc()
+                  .getProducts()
+                  .isNotEmpty &&
+              isOnline) {
+            await createProductsSync();
+            print('Finished Syncing Created Products');
+            setSyncProgress(11);
+          }
+          if (DeletedProductsFunc()
+                  .getProductIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await deleteProductsSync();
+            print('Finished Syncing Deleted Products');
+            setSyncProgress(12);
+          }
+          if (UpdatedProductsFunc()
+                  .getProducts()
+                  .isNotEmpty &&
+              isOnline) {
+            await updateProductsSync();
+            print('Finished Syncing Updated Products');
+            setSyncProgress(13);
+          }
+          if (SalesProductFunc().getProducts().isNotEmpty &&
+              isOnline) {
+            await salesProductsSync();
+            print('Finished Syncing Sales Products');
+            setSyncProgress(14);
+          }
+          if (CreatedExpensesFunc()
+                  .getExpenses()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnExpensesProviderSingle()
+                .createExpensesSync();
+            print('Finished Syncing Created Expenses');
+            setSyncProgress(15);
+          }
+          if (UpdatedExpensesFunc()
+                  .getExpenses()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnExpensesProviderSingle()
+                .updateExpensesSync();
+            print('Finished Syncing Updated Expenses');
+            setSyncProgress(16);
+          }
+          if (DeletedExpensesFunc()
+                  .getExpenseIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnExpensesProviderSingle()
+                .deleteExpensesSync();
+            print('Finished Syncing Deleted Expenses');
+            setSyncProgress(17);
+          }
+          if (CreatedCustomersFunc()
+                  .getCustomers()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnCustomersSingle()
+                .createCustomersSync();
+            print('Finished Syncing Created Customer');
+            setSyncProgress(18);
+          }
+          if (UpdatedCustomersFunc()
+                  .getCustomers()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnCustomersSingle()
+                .updateCustomersSync();
+            print('Finished Syncing Updated Customers');
+            setSyncProgress(19);
+          }
+          if (DeletedCustomersFunc()
+                  .getCustomerIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnCustomersSingle()
+                .deletedCustomersSync();
+            print('Finished Syncing Deleted Customers');
+            setSyncProgress(20);
+          }
+          if (DeletedReceiptsFunc()
+                  .getReceiptIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnReceiptProviderSingle()
+                .deleteReceiptsSync();
+            print('Finished Syncing Deleted Receipts');
+            setSyncProgress(21);
+          }
+          if (CreatedRecordsFunc()
+                  .getRecords()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnReceiptProviderSingle()
+                .createRecordsSync();
+            print(
+              'Finished Syncing Created Records Customers',
+            );
+            setSyncProgress(22);
+          }
+          if (CreatedReceiptsFunc()
+                  .getReceipts()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnReceiptProviderSingle()
+                .createReceiptsSync();
+            print('Finished Syncing Created Receipts');
+            setSyncProgress(23);
+          }
+          if (UpdatedReceiptsFunc()
+                  .getReceiptIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnReceiptProviderSingle()
+                .updateReceiptsSync();
+            print('Finished Syncing Created Receipts');
+            setSyncProgress(24);
+          }
+          if (UpdatedShopFunc()
+                  .getUpdatedShop()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnShopProvider().updateShopSync();
+            print('Finished Syncing Created Receipts');
+            setSyncProgress(25);
+          }
+          if (CreatedShopLogosFunc().getCreatedLogo() !=
+                  null &&
+              isOnline) {
+            await returnShopProvider().uploadShopLogoSync();
+            print('Finished Syncing Created Logo');
+            setSyncProgress(26);
+          }
+          if (CreatedEventsLogFunc()
+                  .getCreatedEventsLogs()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnEventsLogProvider().eventsLogSync();
+            print('Finished Syncing Created Events Log');
+            setSyncProgress(27);
+          }
+          if (CreatedInvoicesFunc()
+                  .getInvoices()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnInvoicesProvider()
+                .createInvoicesSync();
+            print('Finished Syncing Created Invoices');
+            setSyncProgress(28);
+          }
+          if (UpdatedInvoicesFunc()
+                  .getInvoiceIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnInvoicesProvider()
+                .updateInvoicesSync();
+            print('Finished Syncing Updated Invoices');
+            setSyncProgress(29);
+          }
+          if (DeletedInvoicesFunc()
+                  .getInvoiceIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnInvoicesProvider()
+                .deleteInvoicesSync();
+            print('Finished Syncing Deleted Invoices');
+            setSyncProgress(30);
+          }
+          if (CreatedInventoryUpdatesFunc()
+                  .getCreatedInventoryUpdatess()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnInventoryUpdatesProvider()
+                .inventoryUpdatesSync();
+            print('Finished Syncing Inventory Updates');
+            setSyncProgress(31);
+          }
+          if (CreatedSubStaffFunc()
+                  .getSubStaffs()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnSubStaffProvider()
+                .createSubStaffSync();
+            print('Finished Syncing Created Sub Staffs');
+            setSyncProgress(32);
+          }
+          if (UpdatedSubStaffFunc()
+                  .getSubStaffs()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnSubStaffProvider()
+                .updateSubStaffSync();
+            print('Finished Syncing Updated Sub Staffs');
+            setSyncProgress(33);
+          }
+          if (DeletedSubStaffFunc()
+                  .getSubStaffIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnSubStaffProvider()
+                .deleteSubStaffSync();
+            print('Finished Syncing Deleted Sub Staffs');
+            setSyncProgress(34);
+          }
+          if (CreatedSupplierFunc()
+                  .getSuppliers()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnSuppliersProvider()
+                .createSupplierSync();
+            print('Finished Syncing Created Suppliers');
+            setSyncProgress(35);
+          }
+          if (UpdatedSupplierFunc()
+                  .getSuppliers()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnSuppliersProvider()
+                .updateSuppliersSync();
+            print('Finished Syncing Updated Suppliers');
+            setSyncProgress(36);
+          }
+          if (DeletedSupplierFunc()
+                  .getSupplierIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnSuppliersProvider()
+                .deletedSuppliersSync();
+            print('Finished Syncing Deleted Suppliers');
+            setSyncProgress(37);
+          }
+          if (CreatedPurchasesFunc()
+                  .getPurchases()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnPurchaseProvider()
+                .createPurchasesSync();
+            print('Finished Syncing Created Purchasess');
+            setSyncProgress(38);
+          }
+          if (UpdatedPurchasesFunc()
+                  .getPurchaseIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnPurchaseProvider()
+                .updatePurchaseSync();
+            print('Finished Syncing Updated Purchasess');
+            setSyncProgress(39);
+          }
+          if (DeletedPurchasesFunc()
+                  .getPurchaseIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnPurchaseProvider()
+                .deletePurchasesSync();
+            print('Finished Syncing Deleted Purchasess');
+            setSyncProgress(40);
+          }
+          if (CreatedItemPurchaseFunc()
+                  .getRecords()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnPurchaseProvider()
+                .createRecordsSync();
+            print(
+              'Finished Syncing Created Purchase Item Records',
+            );
+            setSyncProgress(41);
+          }
+          if (DeletedItemPurchaseFunc()
+                  .getItemPurchaseIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnPurchaseProvider()
+                .deleteItemRecordsSync();
+            print(
+              'Finished Syncing Deleted Purchase Item Records',
+            );
+            setSyncProgress(42);
+          }
+          if (CreatedWaybillsFunc()
+                  .getWaybills()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnWaybillProvider()
+                .createWaybillsSync();
+            print('Finished Syncing Created Waybills');
+            setSyncProgress(43);
+          }
+          if (UpdatedWaybillsFunc()
+                  .getWaybillIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnWaybillProvider()
+                .updateWaybillSync();
+            print('Finished Syncing Updated Waybills');
+            setSyncProgress(44);
+          }
+          if (DeletedWaybillsFunc()
+                  .getWaybillIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnWaybillProvider()
+                .deleteWaybillsSync();
+            print('Finished Syncing Deleted Waybills');
+            setSyncProgress(45);
+          }
+
+          // await clearTotalCache();
+          toggleSyncing(false);
         } else {
           toggleSyncing(false);
         }
       } else {
         // await ShopFunc().clearShop();
-        if (context.mounted) {
-          toggleSyncing(false);
-          returnNavProvider(
-            context,
-            listen: false,
-          ).nullShop(
-            logoutAction:
-                () => returnNavProvider(
-                  context,
-                  listen: false,
-                ).navPush(context),
-          );
-        }
+        toggleSyncing(false);
+        // returnNavProvider(context, listen: false).nullShop(
+        //   logoutAction:
+        //       () => returnNavProviderSingle().navPush(
+        //         context,
+        //       ),
+        // );
       }
     } else {
-      if (context.mounted) {
-        toggleSyncing(false);
+      toggleSyncing(false);
+      if (context != null && context.mounted) {
         showDialog(
           context: context,
           builder: (context) {

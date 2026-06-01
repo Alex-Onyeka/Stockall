@@ -152,6 +152,8 @@ class SalesProvider extends ChangeNotifier {
         TempMainCart(
           cartQueue: [
             TempCart(
+              timeOfDay: null,
+              createdDate: DateTime.now(),
               hasPrintedDocket: false,
               subStaffName: null,
               customDate: null,
@@ -265,6 +267,8 @@ class SalesProvider extends ChangeNotifier {
               .cartQueue
               .add(
                 TempCart(
+                  timeOfDay: null,
+                  createdDate: DateTime.now(),
                   hasPrintedDocket: false,
                   subStaffName: null,
                   customDate: null,
@@ -346,24 +350,38 @@ class SalesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateReceiptCreatedDate(
-  // String id,
-  {DateTime? createdDate}) async {
+  Future<void> updateReceiptCreatedDate({
+    DateTime? createdDate,
+  }) async {
     var cart = currentMainCart().cartQueue.firstWhere(
       (car) => car.id == currentCart().id,
     );
     if (createdDate != null) {
-      var currentDate = cart.createdDate;
       cart.customDate = DateTime(
         createdDate.year,
         createdDate.month,
         createdDate.day,
-        currentDate?.hour ?? 00,
-        currentDate?.minute ?? 00,
-        currentDate?.second ?? 00,
       );
     } else {
       cart.customDate = null;
+    }
+    await CartFunc().updateMainCart(currentMainCart());
+    notifyListeners();
+  }
+
+  Future<void> updateReceiptCreatedTime(
+  // String id,
+  {TimeOfDay? timeOfDay}) async {
+    var cart = currentMainCart().cartQueue.firstWhere(
+      (car) => car.id == currentCart().id,
+    );
+    if (timeOfDay != null) {
+      cart.timeOfDay = TimeOfDay(
+        hour: timeOfDay.hour,
+        minute: timeOfDay.minute,
+      );
+    } else {
+      cart.timeOfDay = null;
     }
     await CartFunc().updateMainCart(currentMainCart());
     notifyListeners();
@@ -508,6 +526,8 @@ class SalesProvider extends ChangeNotifier {
       await addNewCart(
         context,
         TempCart(
+          timeOfDay: null,
+          createdDate: DateTime.now(),
           hasPrintedDocket: false,
           subStaffName: null,
           customDate: null,
@@ -1470,6 +1490,7 @@ class SalesProvider extends ChangeNotifier {
                 }
               }
               notifyListeners();
+              returnData().syncData();
               return CheckoutResponse(
                 resUuid: invoiceRes!.uuid!,
                 isReceipt: false,
@@ -1779,6 +1800,7 @@ class SalesProvider extends ChangeNotifier {
                   ).navigate(0);
                 }
               }
+              returnData().syncData();
               notifyListeners();
               return CheckoutResponse(
                 resUuid: receipt.uuid!,
@@ -1835,6 +1857,8 @@ class SalesProvider extends ChangeNotifier {
     currentCart().paymentMethod = 0;
     currentCart().discount = null;
     currentCart().fixedDiscount = null;
+    currentCart().customDate = null;
+    currentCart().timeOfDay = null;
     await returnMultiDisplayProvider().updateWindow(
       cartClass: AltCartClass(
         cartId: currentCart().id!,
@@ -2648,6 +2672,7 @@ class SalesProvider extends ChangeNotifier {
             .isEmpty) {
           var newId = uuidGen();
           var tempCart = TempCart(
+            timeOfDay: null,
             hasPrintedDocket: false,
             subStaffName: receipt.subStaffName,
             customDate: null,
@@ -2728,6 +2753,8 @@ class SalesProvider extends ChangeNotifier {
                 await addNewCart(
                   context,
                   TempCart(
+                    timeOfDay: null,
+                    createdDate: DateTime.now(),
                     hasPrintedDocket: false,
                     subStaffName: null,
                     customDate: null,

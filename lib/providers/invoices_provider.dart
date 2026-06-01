@@ -98,7 +98,7 @@ class InvoicesProvider extends ChangeNotifier {
     // } else {
     var barcode = returnOnlyDigits(uuidGen());
     invoice.barcode = barcode;
-    invoice.createdAt = DateTime.now();
+    // invoice.createdAt = DateTime.now();
     await InvoicesFunc().createInvoices(invoice);
     await CreatedInvoicesFunc().createInvoice(
       CreatedInvoices(invoice: invoice),
@@ -538,6 +538,10 @@ class InvoicesProvider extends ChangeNotifier {
         );
         await returnReceiptProviderSingle()
             .loadReceiptsOffline(shopId());
+        returnData().syncData();
+        print(
+          'Context is Not Mounted So Offline Data Cannot Be Synchronized',
+        );
         notifyListeners();
         return 1;
       } else {
@@ -595,6 +599,7 @@ class InvoicesProvider extends ChangeNotifier {
             .isEmpty) {
           var newId = uuidGen();
           var tempCart = TempCart(
+            timeOfDay: null,
             hasPrintedDocket: false,
             subStaffName: invoice.subStaffName,
             customDate: null,
@@ -804,6 +809,8 @@ class InvoicesProvider extends ChangeNotifier {
                 await returnSalesProvider().addNewCart(
                   context,
                   TempCart(
+                    timeOfDay: null,
+                    createdDate: DateTime.now(),
                     hasPrintedDocket: false,
                     subStaffName: null,
                     customDate: null,

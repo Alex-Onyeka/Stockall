@@ -243,7 +243,7 @@ class _AddCustomerDesktopState
   String? selectedCityName;
 
   void getCountries() async {
-    bool isOnline = await ConnectivityProvider().isOnline();
+    bool isOnline = ConnectivityProvider().isConnected;
     if (isOnline) {
       countriesFuture = fetchCountries();
     }
@@ -426,7 +426,7 @@ class _AddCustomerDesktopState
                                 Visibility(
                                   visible:
                                       returnConnectivityProvider(
-                                        context,
+                                        context: context,
                                       ).isConnected,
                                   child: Column(
                                     spacing: 10,
