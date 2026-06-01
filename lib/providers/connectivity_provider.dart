@@ -95,6 +95,20 @@ class ConnectivityProvider extends ChangeNotifier {
     return isConnected;
   }
 
+  Future<bool> isOnlineAction() async {
+    final results = await _connectivity.checkConnectivity();
+    print('Connectivity results: $results');
+    bool anything = results.any(
+      (result) =>
+          result != ConnectivityResult.none &&
+          result != ConnectivityResult.bluetooth &&
+          result != ConnectivityResult.other &&
+          result != ConnectivityResult.vpn,
+    );
+    checkConnection(anything);
+    return anything;
+  }
+
   @override
   void dispose() {
     subscription.cancel();

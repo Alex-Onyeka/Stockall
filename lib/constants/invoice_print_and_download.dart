@@ -948,6 +948,9 @@ Future<Uint8List> _buildPdfInvoice({
 
                   ...records.map(
                     (record) => pw.Container(
+                      margin: pw.EdgeInsets.symmetric(
+                        vertical: 3,
+                      ),
                       padding:
                           const pw.EdgeInsets.symmetric(
                             vertical: 6,

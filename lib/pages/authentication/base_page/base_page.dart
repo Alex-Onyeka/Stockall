@@ -39,6 +39,7 @@ class _BasePageState extends State<BasePage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await returnConnectivityProvider().isOnlineAction();
       switchLoading();
       returnCompProvider(
         context,

@@ -583,6 +583,33 @@ class DataProvider extends ChangeNotifier {
             print('Finished Syncing Deleted Customers');
             setSyncProgress(20);
           }
+          if (CreatedSubStaffFunc()
+                  .getSubStaffs()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnSubStaffProvider()
+                .createSubStaffSync();
+            print('Finished Syncing Created Sub Staffs');
+            setSyncProgress(21);
+          }
+          if (UpdatedSubStaffFunc()
+                  .getSubStaffs()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnSubStaffProvider()
+                .updateSubStaffSync();
+            print('Finished Syncing Updated Sub Staffs');
+            setSyncProgress(22);
+          }
+          if (DeletedSubStaffFunc()
+                  .getSubStaffIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnSubStaffProvider()
+                .deleteSubStaffSync();
+            print('Finished Syncing Deleted Sub Staffs');
+            setSyncProgress(23);
+          }
           if (DeletedReceiptsFunc()
                   .getReceiptIds()
                   .isNotEmpty &&
@@ -590,7 +617,7 @@ class DataProvider extends ChangeNotifier {
             await returnReceiptProviderSingle()
                 .deleteReceiptsSync();
             print('Finished Syncing Deleted Receipts');
-            setSyncProgress(21);
+            setSyncProgress(24);
           }
           if (CreatedRecordsFunc()
                   .getRecords()
@@ -601,7 +628,7 @@ class DataProvider extends ChangeNotifier {
             print(
               'Finished Syncing Created Records Customers',
             );
-            setSyncProgress(22);
+            setSyncProgress(25);
           }
           if (CreatedReceiptsFunc()
                   .getReceipts()
@@ -610,7 +637,7 @@ class DataProvider extends ChangeNotifier {
             await returnReceiptProviderSingle()
                 .createReceiptsSync();
             print('Finished Syncing Created Receipts');
-            setSyncProgress(23);
+            setSyncProgress(26);
           }
           if (UpdatedReceiptsFunc()
                   .getReceiptIds()
@@ -619,7 +646,7 @@ class DataProvider extends ChangeNotifier {
             await returnReceiptProviderSingle()
                 .updateReceiptsSync();
             print('Finished Syncing Created Receipts');
-            setSyncProgress(24);
+            setSyncProgress(27);
           }
           if (UpdatedShopFunc()
                   .getUpdatedShop()
@@ -627,14 +654,14 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnShopProvider().updateShopSync();
             print('Finished Syncing Created Receipts');
-            setSyncProgress(25);
+            setSyncProgress(28);
           }
           if (CreatedShopLogosFunc().getCreatedLogo() !=
                   null &&
               isOnline) {
             await returnShopProvider().uploadShopLogoSync();
             print('Finished Syncing Created Logo');
-            setSyncProgress(26);
+            setSyncProgress(29);
           }
           if (CreatedEventsLogFunc()
                   .getCreatedEventsLogs()
@@ -642,7 +669,7 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnEventsLogProvider().eventsLogSync();
             print('Finished Syncing Created Events Log');
-            setSyncProgress(27);
+            setSyncProgress(30);
           }
           if (CreatedInvoicesFunc()
                   .getInvoices()
@@ -651,7 +678,7 @@ class DataProvider extends ChangeNotifier {
             await returnInvoicesProvider()
                 .createInvoicesSync();
             print('Finished Syncing Created Invoices');
-            setSyncProgress(28);
+            setSyncProgress(31);
           }
           if (UpdatedInvoicesFunc()
                   .getInvoiceIds()
@@ -660,7 +687,7 @@ class DataProvider extends ChangeNotifier {
             await returnInvoicesProvider()
                 .updateInvoicesSync();
             print('Finished Syncing Updated Invoices');
-            setSyncProgress(29);
+            setSyncProgress(32);
           }
           if (DeletedInvoicesFunc()
                   .getInvoiceIds()
@@ -669,7 +696,7 @@ class DataProvider extends ChangeNotifier {
             await returnInvoicesProvider()
                 .deleteInvoicesSync();
             print('Finished Syncing Deleted Invoices');
-            setSyncProgress(30);
+            setSyncProgress(33);
           }
           if (CreatedInventoryUpdatesFunc()
                   .getCreatedInventoryUpdatess()
@@ -678,35 +705,9 @@ class DataProvider extends ChangeNotifier {
             await returnInventoryUpdatesProvider()
                 .inventoryUpdatesSync();
             print('Finished Syncing Inventory Updates');
-            setSyncProgress(31);
-          }
-          if (CreatedSubStaffFunc()
-                  .getSubStaffs()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnSubStaffProvider()
-                .createSubStaffSync();
-            print('Finished Syncing Created Sub Staffs');
-            setSyncProgress(32);
-          }
-          if (UpdatedSubStaffFunc()
-                  .getSubStaffs()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnSubStaffProvider()
-                .updateSubStaffSync();
-            print('Finished Syncing Updated Sub Staffs');
-            setSyncProgress(33);
-          }
-          if (DeletedSubStaffFunc()
-                  .getSubStaffIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnSubStaffProvider()
-                .deleteSubStaffSync();
-            print('Finished Syncing Deleted Sub Staffs');
             setSyncProgress(34);
           }
+
           if (CreatedSupplierFunc()
                   .getSuppliers()
                   .isNotEmpty &&

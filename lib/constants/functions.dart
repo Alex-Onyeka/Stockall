@@ -1249,6 +1249,9 @@ Future<Uint8List> _buildPdf(
 
                   ...records.map(
                     (record) => pw.Container(
+                      margin: pw.EdgeInsets.symmetric(
+                        vertical: 3,
+                      ),
                       padding:
                           const pw.EdgeInsets.symmetric(
                             vertical: 6,
@@ -1293,7 +1296,7 @@ Future<Uint8List> _buildPdf(
                                 pw.Text(
                                   style: pw.TextStyle(
                                     font: fontRegular,
-                                    fontSize: 10,
+                                    fontSize: 9,
                                   ),
                                   formatMoneyMid(
                                     amount:
