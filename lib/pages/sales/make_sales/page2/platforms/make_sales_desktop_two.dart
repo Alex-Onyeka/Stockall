@@ -909,7 +909,7 @@ class _MakeSalesDesktopTwoState
                                               .isInvoice &&
                                           returnSalesProvider()
                                                   .currentCart()
-                                                  .selectedCustomer ==
+                                                  .selectedCustomerName ==
                                               null) {
                                         showDialog(
                                           context: context,

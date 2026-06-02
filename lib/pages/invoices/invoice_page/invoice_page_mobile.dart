@@ -2182,8 +2182,7 @@ class _InvoicePageMobileState
                                             ) {
                                               if (returnReceiptProvider(
                                                     context,
-                                                  )
-                                                  .returnOwnReceiptsByDayOrWeek()
+                                                  ).receipts
                                                   .where(
                                                     (rec) =>
                                                         rec.invoiceUuid ==

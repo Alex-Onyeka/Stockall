@@ -570,7 +570,10 @@ class RightSideBar extends StatelessWidget {
               visible:
                   screenWidth(context) <=
                       tabletScreenSmall &&
-                  !isStoreKeeper(),
+                  !isStoreKeeper() &&
+                  authorization(
+                    authorized: Authorizations().makeSale,
+                  ),
               child: Material(
                 color: Colors.transparent,
                 child: Ink(

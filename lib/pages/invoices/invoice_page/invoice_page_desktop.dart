@@ -2116,8 +2116,7 @@ class _InvoicePageDesktopState
                                     builder: (context) {
                                       if (returnReceiptProvider(
                                             context,
-                                          )
-                                          .returnOwnReceiptsByDayOrWeek()
+                                          ).receipts
                                           .where(
                                             (rec) =>
                                                 rec.invoiceUuid ==

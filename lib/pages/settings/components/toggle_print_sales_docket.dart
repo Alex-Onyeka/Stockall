@@ -17,7 +17,8 @@ class TogglePrintSalesDocket extends StatelessWidget {
     return Visibility(
       visible:
           authorization(
-            authorized: Authorizations().manageShop,
+            authorized:
+                Authorizations().togglePrintSalesDocket,
           ) &&
           !isStoreKeeper(),
       child: SubWrapper(

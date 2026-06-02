@@ -450,16 +450,21 @@ class _SalesPageDesktopState
                                                         .clear,
                                                 height: 35,
                                                 action: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (
-                                                        context,
-                                                      ) {
-                                                        return MakeSalesPage();
-                                                      },
-                                                    ),
-                                                  );
+                                                  if (authorization(
+                                                    authorized:
+                                                        Authorizations().makeSale,
+                                                  )) {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (
+                                                          context,
+                                                        ) {
+                                                          return MakeSalesPage();
+                                                        },
+                                                      ),
+                                                    );
+                                                  }
                                                 },
                                                 altAction: () {
                                                   getMainReceipts();

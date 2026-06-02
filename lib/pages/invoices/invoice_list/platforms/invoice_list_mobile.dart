@@ -111,16 +111,20 @@ class InvoiceListMobileState
           SalesAuthAction().invoiceManagementAction(
             context: context,
             action: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return MakeSalesPage(isInvoice: true);
-                  },
-                ),
-              ).then((_) {
-                setState(() {});
-              });
+              if (authorization(
+                authorized: Authorizations().makeSale,
+              )) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return MakeSalesPage(isInvoice: true);
+                    },
+                  ),
+                ).then((_) {
+                  setState(() {});
+                });
+              }
             },
           );
         },

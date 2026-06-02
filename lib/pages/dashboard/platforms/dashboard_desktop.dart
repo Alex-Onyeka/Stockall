@@ -319,8 +319,6 @@ class _DashboardDesktopState
                                                 visible:
                                                     !isStoreKeeper(),
                                                 child: Row(
-                                                  spacing:
-                                                      15,
                                                   children: [
                                                     Expanded(
                                                       child: DashboardTotalSalesBanner(
@@ -342,74 +340,86 @@ class _DashboardDesktopState
                                                             ).getTotalRevenueForSelectedDay(),
                                                       ),
                                                     ),
-                                                    Material(
-                                                      elevation:
-                                                          2,
-                                                      child: Ink(
-                                                        decoration: BoxDecoration(
-                                                          boxShadow: [
-                                                            BoxShadow(
-                                                              color: const Color.fromARGB(
-                                                                24,
-                                                                0,
-                                                                0,
-                                                                0,
-                                                              ),
-                                                              blurRadius:
-                                                                  10,
-                                                            ),
-                                                          ],
-                                                          color:
-                                                              theme.lightModeColor.prColor300,
-                                                          borderRadius: BorderRadius.circular(
-                                                            10,
-                                                          ),
+                                                    Visibility(
+                                                      visible: authorization(
+                                                        authorized:
+                                                            Authorizations().makeSale,
+                                                      ),
+                                                      child: Padding(
+                                                        padding: const EdgeInsets.only(
+                                                          left:
+                                                              15.0,
                                                         ),
-                                                        child: InkWell(
-                                                          onTap: () {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                builder: (
-                                                                  context,
-                                                                ) {
-                                                                  return MakeSalesPage();
-                                                                },
-                                                              ),
-                                                            );
-                                                          },
-                                                          child: Container(
-                                                            padding: EdgeInsets.symmetric(
-                                                              horizontal:
-                                                                  30,
-                                                              vertical:
-                                                                  40,
-                                                            ),
-                                                            child: Column(
-                                                              spacing:
-                                                                  5,
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment.center,
-                                                              children: [
-                                                                SvgPicture.asset(
-                                                                  plusIconSvg,
-                                                                  color:
-                                                                      theme.lightModeColor.secColor200,
-                                                                  height:
-                                                                      20,
-                                                                ),
-                                                                Text(
-                                                                  style: TextStyle(
-                                                                    color:
-                                                                        Colors.white,
-                                                                    fontWeight:
-                                                                        FontWeight.bold,
-                                                                    fontSize:
-                                                                        theme.mobileTexts.b3.fontSize,
+                                                        child: Material(
+                                                          elevation:
+                                                              2,
+                                                          child: Ink(
+                                                            decoration: BoxDecoration(
+                                                              boxShadow: [
+                                                                BoxShadow(
+                                                                  color: const Color.fromARGB(
+                                                                    24,
+                                                                    0,
+                                                                    0,
+                                                                    0,
                                                                   ),
-                                                                  'Make Sale',
+                                                                  blurRadius:
+                                                                      10,
                                                                 ),
                                                               ],
+                                                              color:
+                                                                  theme.lightModeColor.prColor300,
+                                                              borderRadius: BorderRadius.circular(
+                                                                10,
+                                                              ),
+                                                            ),
+                                                            child: InkWell(
+                                                              onTap: () {
+                                                                Navigator.push(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                    builder: (
+                                                                      context,
+                                                                    ) {
+                                                                      return MakeSalesPage();
+                                                                    },
+                                                                  ),
+                                                                );
+                                                              },
+                                                              child: Container(
+                                                                padding: EdgeInsets.symmetric(
+                                                                  horizontal:
+                                                                      30,
+                                                                  vertical:
+                                                                      40,
+                                                                ),
+                                                                child: Column(
+                                                                  spacing:
+                                                                      5,
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment.center,
+                                                                  children: [
+                                                                    SvgPicture.asset(
+                                                                      plusIconSvg,
+                                                                      color:
+                                                                          theme.lightModeColor.secColor200,
+                                                                      height:
+                                                                          20,
+                                                                    ),
+                                                                    Text(
+                                                                      style: TextStyle(
+                                                                        color:
+                                                                            Colors.white,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                        fontSize:
+                                                                            theme.mobileTexts.b3.fontSize,
+                                                                      ),
+                                                                      'Make Sale',
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
                                                             ),
                                                           ),
                                                         ),

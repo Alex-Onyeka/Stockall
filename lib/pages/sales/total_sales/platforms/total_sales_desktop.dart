@@ -257,24 +257,30 @@ class _TotalSalesDesktopState
                               .invoiceManagementAction(
                                 context: context,
                                 action: () {
-                                  returnNavProvider(
-                                    context,
-                                    listen: false,
-                                  ).navigate(2);
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return MakeSalesPage(
-                                          isInvoice: true,
-                                        );
-                                      },
-                                    ),
-                                  ).then((_) {
-                                    setState(() {
-                                      // getProductList(context);
+                                  if (authorization(
+                                    authorized:
+                                        Authorizations()
+                                            .makeSale,
+                                  )) {
+                                    returnNavProvider(
+                                      context,
+                                      listen: false,
+                                    ).navigate(2);
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return MakeSalesPage(
+                                            isInvoice: true,
+                                          );
+                                        },
+                                      ),
+                                    ).then((_) {
+                                      setState(() {
+                                        // getProductList(context);
+                                      });
                                     });
-                                  });
+                                  }
                                 },
                               );
                         },

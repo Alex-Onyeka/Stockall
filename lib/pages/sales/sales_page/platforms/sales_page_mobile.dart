@@ -401,14 +401,22 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                   icon: Icons.clear,
                                   height: 35,
                                   action: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) {
-                                          return MakeSalesPage();
-                                        },
-                                      ),
-                                    );
+                                    if (authorization(
+                                      authorized:
+                                          Authorizations()
+                                              .makeSale,
+                                    )) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (
+                                            context,
+                                          ) {
+                                            return MakeSalesPage();
+                                          },
+                                        ),
+                                      );
+                                    }
                                   },
                                   altAction: () {
                                     getMainReceipts();

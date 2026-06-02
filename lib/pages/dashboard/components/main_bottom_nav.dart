@@ -249,14 +249,18 @@ class MainBottomNav extends StatelessWidget {
                 ),
                 Visibility(
                   visible:
-                      returnNavProvider(
-                            context,
-                            listen: false,
-                          ).currentPage !=
-                          1 ||
-                      !authorization(
+                      (returnNavProvider(
+                                context,
+                                listen: false,
+                              ).currentPage !=
+                              1 ||
+                          !authorization(
+                            authorized:
+                                Authorizations().addProduct,
+                          )) &&
+                      authorization(
                         authorized:
-                            Authorizations().addProduct,
+                            Authorizations().makeSale,
                       ),
                   child: Column(
                     spacing: 3,

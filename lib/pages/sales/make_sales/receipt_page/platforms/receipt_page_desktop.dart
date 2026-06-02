@@ -121,7 +121,16 @@ class _ReceiptPageDesktopState
                       ),
                       Align(
                         alignment: Alignment(0.95, -0.95),
-                        child: PopupMenuButton(
+                        child:
+                        // InkWell(
+                        //   onTap: () {
+                        //     printerSelectionDialog(
+                        //       context: context,
+                        //     );
+                        //   },
+                        //   child: Icon(Icons.add),
+                        // ),
+                        PopupMenuButton(
                           offset: Offset(-20, 30),
                           color: Colors.white,
                           itemBuilder: (context) {
@@ -2446,6 +2455,18 @@ class _ReceiptDetailsContainerState
                                       );
                                       // }
                                     } else {
+                                      // startReceiptPrintAction(
+                                      //   context:
+                                      //       safeContext,
+                                      //   receipt:
+                                      //       widget
+                                      //           .mainReceipt,
+                                      //   records: records,
+
+                                      //   shop:
+                                      //       returnShopProvider()
+                                      //           .userShop()!,
+                                      // );
                                       await generateAndPreviewPdfRoll(
                                         printerType:
                                             widget

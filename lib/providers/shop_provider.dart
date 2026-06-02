@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/receipt_printer_class/receipt_printer_class.dart';
 import 'package:stockall/classes/temp_generated_prints/temp_barcode_printer_class/barcode_printer_local.dart';
 import 'package:stockall/classes/temp_generated_prints/temp_barcode_printer_class/printer_settings/printer_settings.dart';
 import 'package:stockall/classes/temp_generated_prints/temp_barcode_printer_class/temp_barcode_printer_class/temp_barcode_printer_class.dart';
@@ -25,6 +26,7 @@ import 'package:stockall/local_database/barcode_printer_func/barcode_printer_loc
 import 'package:stockall/local_database/barcode_printer_func/price_and_barcode_local_func.dart';
 import 'package:stockall/local_database/barcode_printer_func/price_tag_printer_func.dart';
 import 'package:stockall/local_database/on_screen_keyboard_pin/on_screen_keyboard_pin_func.dart';
+import 'package:stockall/local_database/receipt_printer_func/receipt_printer_func.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';
 import 'package:stockall/local_database/shop/updated_shop/updated_shop_func.dart';
 import 'package:stockall/local_database/shop_current/current_shop_func.dart';
@@ -2610,6 +2612,47 @@ class ShopProvider extends ChangeNotifier {
                     );
               }
               printerCache = newPrinter;
+              notifyListeners();
+            },
+          );
+        },
+      );
+    }
+  }
+
+  ReceiptPrinterClass? getReceiptPrinter() {
+    return ReceiptPrinterFunc().getReceiptPrinterClass();
+  }
+
+  Future<void> selectReceiptPrinter(
+    ReceiptPrinterClass newPrinter,
+    bool isPaperSize,
+    BuildContext context,
+  ) async {
+    if (isDesktop()) {
+      showDialog(
+        context: context,
+        builder: (confirmDialog) {
+          return ConfirmationAlert(
+            theme: returnTheme(context, listen: false),
+            message:
+                'This printer${isPaperSize ? " Paper Size" : ''} will be automatically used to print all your subsiquent Receipt, unless if you select another.',
+            title:
+                'Select Printer${isPaperSize ? " Paper Size" : ''}?',
+            action: () {
+              Navigator.of(confirmDialog).pop();
+              if (ReceiptPrinterFunc()
+                      .getReceiptPrinterClass() ==
+                  null) {
+                ReceiptPrinterFunc().insertPrinter(
+                  newPrinter,
+                );
+              } else {
+                ReceiptPrinterFunc().insertPrinter(
+                  newPrinter,
+                );
+              }
+              // printerCache = newPrinter;
               notifyListeners();
             },
           );

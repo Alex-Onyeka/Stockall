@@ -127,6 +127,8 @@ class Authorizations {
   String toggleUseGroupUnit = 'Toggle Use Group Unit';
   String toggleOnScreenKeyboard =
       'Toggle On Screen Keyboard';
+  String togglePrintSalesDocket =
+      'Toggle Print Sales Docket';
   String viewAllDepartments = 'View All Departments';
   String updateItemQuantity = 'Update Item Quantity';
   String viewItemQuantity = 'View Item Quantity';

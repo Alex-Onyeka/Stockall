@@ -27,6 +27,7 @@ import 'package:stockall/local_database/permission/permission_func.dart';
 import 'package:stockall/local_database/product_record_func.dart/product_record_func.dart';
 import 'package:stockall/local_database/products/products_func.dart';
 import 'package:stockall/local_database/purchases/purchase_func.dart';
+import 'package:stockall/local_database/receipt_printer_func/receipt_printer_func.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';
 import 'package:stockall/local_database/shop_current/current_shop_func.dart';
 import 'package:stockall/local_database/shop_logos/shop_logos_func.dart';
@@ -83,6 +84,7 @@ class MainDatabase extends ChangeNotifier {
     await SubStaffFunc().init();
     if (returnShopProvider().isDesktop()) {
       await BarcodePrinterLocalFunc().init();
+      await ReceiptPrinterFunc().init();
       await PriceTagPrinterFunc().init();
       await PriceAndBarcodePrinterLocalFunc().init();
     }
@@ -101,4 +103,4 @@ class MainDatabase extends ChangeNotifier {
   }
 }
 
-int highestHiveClassIndex = 92;
+int highestHiveClassIndex = 93;

@@ -730,7 +730,7 @@ class _MakeSalesMobileTwoState
                                     .isInvoice &&
                                 returnSalesProvider()
                                         .currentCart()
-                                        .selectedCustomer ==
+                                        .selectedCustomerName ==
                                     null) {
                               showDialog(
                                 context: context,
