@@ -47,6 +47,8 @@ class MainReceiptFunc {
   }
 
   Future<int> createReceipt(TempMainReceipt rec) async {
+    // var newDate = rec.createdAt.add(Duration(hours: 2));
+    // rec.createdAt = newDate;
     try {
       await receiptBox.put(rec.uuid, rec);
       print('Offline Receipt Created');

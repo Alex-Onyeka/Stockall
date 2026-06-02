@@ -810,7 +810,7 @@ class InvoicesProvider extends ChangeNotifier {
                   context,
                   TempCart(
                     timeOfDay: null,
-                    createdDate: DateTime.now(),
+                    // createdDate: DateTime.now(),
                     hasPrintedDocket: false,
                     subStaffName: null,
                     customDate: null,

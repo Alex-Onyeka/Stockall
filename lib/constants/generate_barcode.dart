@@ -18,31 +18,35 @@ import 'package:universal_html/html.dart' as html;
 import '../services/barcode_generation/barcode_import_helper.dart';
 
 String returnOnlyDigits(String text) {
-  List<String> temp = [];
+  if (text.length < 13) {
+    return '121212121212';
+  } else {
+    List<String> temp = [];
 
-  // Step 1: extract only digits, but stop after 12
-  for (var te in text.split('')) {
-    if (RegExp(r'^[0-9]$').hasMatch(te)) {
-      if (temp.length < 12) {
-        temp.add(te);
+    // Step 1: extract only digits, but stop after 12
+    for (var te in text.split('')) {
+      if (RegExp(r'^[0-9]$').hasMatch(te)) {
+        if (temp.length < 12) {
+          temp.add(te);
+        }
       }
     }
+
+    // If we don't have exactly 12 digits, we cannot generate EAN-13
+    if (temp.length != 12) {
+      throw ArgumentError(
+        "Input must contain at least 12 digits.",
+      );
+    }
+
+    // Step 2: calculate checksum
+    int checksum = calculateEan13Checksum(temp.join());
+
+    // Step 3: append checksum to form full 13-digit code
+    temp.add(checksum.toString());
+
+    return temp.join();
   }
-
-  // If we don't have exactly 12 digits, we cannot generate EAN-13
-  if (temp.length != 12) {
-    throw ArgumentError(
-      "Input must contain at least 12 digits.",
-    );
-  }
-
-  // Step 2: calculate checksum
-  int checksum = calculateEan13Checksum(temp.join());
-
-  // Step 3: append checksum to form full 13-digit code
-  temp.add(checksum.toString());
-
-  return temp.join();
 }
 
 // Helper function to compute EAN-13 checksum

@@ -2206,8 +2206,8 @@ class _MakeSalesDesktopState
                                                       await returnSalesProvider().addNewCart(
                                                         context,
                                                         TempCart(
-                                                          createdDate:
-                                                              DateTime.now(),
+                                                          // createdDate:
+                                                          //     DateTime.now(),
                                                           timeOfDay:
                                                               null,
                                                           hasPrintedDocket:
@@ -3883,19 +3883,34 @@ class _SubStaffSelectionWidgetState
                                                                       title:
                                                                           'Remove Staff',
                                                                       action: () async {
-                                                                        var res = await pinCodeAction(
-                                                                          isMain:
-                                                                              false,
-                                                                          context:
+                                                                        if (!returnSalesProvider().canDeleteMainCart(
+                                                                          cartMain:
+                                                                              cart,
+                                                                        )) {
+                                                                          var res = await pinCodeAction(
+                                                                            isMain:
+                                                                                false,
+                                                                            context:
+                                                                                context,
+                                                                          );
+                                                                          if (res) {
+                                                                            returnSalesProvider().removeStaffFromMainCart(
+                                                                              cart.mainCartId!,
+                                                                            );
+                                                                            // print(
+                                                                            //   cart.subStaff?.staffName,
+                                                                            // );
+                                                                            Navigator.of(
                                                                               context,
-                                                                        );
-                                                                        if (res) {
-                                                                          await returnSalesProvider().removeStaffFromMainCart(
+                                                                            ).pop();
+                                                                          }
+                                                                        } else {
+                                                                          returnSalesProvider().removeStaffFromMainCart(
                                                                             cart.mainCartId!,
                                                                           );
-                                                                          print(
-                                                                            cart.subStaff?.staffName,
-                                                                          );
+                                                                          // print(
+                                                                          //   cart.subStaff?.staffName,
+                                                                          // );
                                                                           Navigator.of(
                                                                             context,
                                                                           ).pop();
@@ -3953,22 +3968,34 @@ class _SubStaffSelectionWidgetState
                                                                     title:
                                                                         'Select Sub Staff',
                                                                     action: () async {
-                                                                      var res = await pinCodeAction(
-                                                                        isMain:
-                                                                            false,
-                                                                        context:
-                                                                            context,
-                                                                      );
-                                                                      if (res) {
-                                                                        if (returnSalesProvider().selectedSubStaff !=
-                                                                            null) {
-                                                                          await returnSalesProvider().addSubStaffToMainCart(
-                                                                            cart.mainCartId!,
-                                                                          );
-                                                                          Navigator.of(
-                                                                            templateDialog,
-                                                                          ).pop();
+                                                                      if (!returnSalesProvider().canDeleteMainCart(
+                                                                        cartMain:
+                                                                            cart,
+                                                                      )) {
+                                                                        var res = await pinCodeAction(
+                                                                          isMain:
+                                                                              false,
+                                                                          context:
+                                                                              context,
+                                                                        );
+                                                                        if (res) {
+                                                                          if (returnSalesProvider().selectedSubStaff !=
+                                                                              null) {
+                                                                            await returnSalesProvider().addSubStaffToMainCart(
+                                                                              cart.mainCartId!,
+                                                                            );
+                                                                            Navigator.of(
+                                                                              templateDialog,
+                                                                            ).pop();
+                                                                          }
                                                                         }
+                                                                      } else {
+                                                                        await returnSalesProvider().addSubStaffToMainCart(
+                                                                          cart.mainCartId!,
+                                                                        );
+                                                                        Navigator.of(
+                                                                          templateDialog,
+                                                                        ).pop();
                                                                       }
                                                                     },
                                                                     widget: SelectSubStaffListWidget(

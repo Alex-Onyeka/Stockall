@@ -54,6 +54,10 @@ class ProductRecordFunc {
     );
     try {
       for (var record in records) {
+        // var newDate = record.createdAt.add(
+        //   Duration(hours: 1),
+        // );
+        // record.createdAt = newDate;
         print(
           'Record To Insert Inside Offline Func: ${record.productName}  |  ${record.uuid}',
         );

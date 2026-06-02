@@ -153,7 +153,7 @@ class SalesProvider extends ChangeNotifier {
           cartQueue: [
             TempCart(
               timeOfDay: null,
-              createdDate: DateTime.now(),
+              // createdDate: DateTime.now(),
               hasPrintedDocket: false,
               subStaffName: null,
               customDate: null,
@@ -268,7 +268,7 @@ class SalesProvider extends ChangeNotifier {
               .add(
                 TempCart(
                   timeOfDay: null,
-                  createdDate: DateTime.now(),
+                  // createdDate: DateTime.now(),
                   hasPrintedDocket: false,
                   subStaffName: null,
                   customDate: null,
@@ -527,7 +527,7 @@ class SalesProvider extends ChangeNotifier {
         context,
         TempCart(
           timeOfDay: null,
-          createdDate: DateTime.now(),
+          // createdDate: DateTime.now(),
           hasPrintedDocket: false,
           subStaffName: null,
           customDate: null,
@@ -1490,7 +1490,7 @@ class SalesProvider extends ChangeNotifier {
                 }
               }
               notifyListeners();
-              returnData().syncData();
+              // returnData().syncData();
               return CheckoutResponse(
                 resUuid: invoiceRes!.uuid!,
                 isReceipt: false,
@@ -1800,7 +1800,7 @@ class SalesProvider extends ChangeNotifier {
                   ).navigate(0);
                 }
               }
-              returnData().syncData();
+              // returnData().syncData();
               notifyListeners();
               return CheckoutResponse(
                 resUuid: receipt.uuid!,
@@ -2754,7 +2754,7 @@ class SalesProvider extends ChangeNotifier {
                   context,
                   TempCart(
                     timeOfDay: null,
-                    createdDate: DateTime.now(),
+                    // createdDate: DateTime.now(),
                     hasPrintedDocket: false,
                     subStaffName: null,
                     customDate: null,

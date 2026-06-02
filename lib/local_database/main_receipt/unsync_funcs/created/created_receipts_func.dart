@@ -81,6 +81,9 @@ class CreatedReceiptsFunc {
     CreatedReceipts createdReceipts,
   ) async {
     try {
+      // var newDate = createdReceipts.receipt.createdAt
+      //     .subtract(Duration(hours: 1));
+      // createdReceipts.receipt.createdAt = newDate;
       await createdReceiptsBox.put(
         createdReceipts.receipt.uuid,
         createdReceipts,

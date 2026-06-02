@@ -638,8 +638,8 @@ class _MakeSalesDesktopTwoState
                                                     TempCart(
                                                       timeOfDay:
                                                           null,
-                                                      createdDate:
-                                                          DateTime.now(),
+                                                      // createdDate:
+                                                      //     DateTime.now(),
                                                       hasPrintedDocket:
                                                           false,
                                                       subStaffName:
