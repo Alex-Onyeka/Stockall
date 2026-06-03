@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
@@ -199,7 +200,9 @@ class _PricingContainerWidgetState
               .numberOfStores,
     );
     String duration() {
-      if (pricingClass.duration == 1) {
+      if (pricingClass.plan == 0) {
+        return "Not Set";
+      } else if (pricingClass.duration == 1) {
         return '1 Month';
       } else if (pricingClass.duration == 6) {
         return '6 Months';
@@ -363,58 +366,195 @@ class _PricingContainerWidgetState
                       },
                     );
                   } else {
-                    bool isOnline =
-                        returnConnectivityProvider()
-                            .isConnected;
-                    if (isOnline) {
-                      showDialog(
-                        // ignore: use_build_context_synchronously
-                        context: context,
-                        builder: (confirmDialog) {
-                          return ConfirmationAlert(
-                            theme: theme,
-                            message:
-                                'You are about to Update your subscription Plan. Please note that Subscription Cancellations and Refunds are not available at the Moment, are you sure you want to Proceed?',
-                            title:
-                                'Update Subscription Plan?',
-                            action: () async {
-                              Navigator.of(
-                                confirmDialog,
-                              ).pop();
-                              toggleLoading(true);
-                              await startPayment(
-                                context,
-                                returnShopProvider()
-                                    .userShop()!
-                                    .userId,
-                                AuthService()
-                                    .currentUserEmail!,
-                                pricingClass.plan,
-                                pricingClass
-                                    .totalPriceMain(),
-                                pricingClass.duration,
+                    showDialog(
+                      context: context,
+                      builder: (firstContext) {
+                        return DialogTemplate(
+                          theme: theme,
+                          message:
+                              'Please go through all details before Proceeding to make payment.',
+                          title: 'Full Payment Details',
+                          action: () {
+                            bool isOnline =
+                                returnConnectivityProvider()
+                                    .isConnected;
+                            if (isOnline) {
+                              showDialog(
+                                // ignore: use_build_context_synchronously
+                                context: context,
+                                builder: (confirmDialog) {
+                                  return ConfirmationAlert(
+                                    theme: theme,
+                                    message:
+                                        'You are about to Update your subscription Plan. Please note that Subscription Cancellations and Refunds are not available at the Moment, are you sure you want to Proceed?',
+                                    title:
+                                        'Update Subscription Plan?',
+                                    action: () async {
+                                      Navigator.of(
+                                        confirmDialog,
+                                      ).pop();
+                                      Navigator.of(
+                                        firstContext,
+                                      ).pop();
+                                      toggleLoading(true);
+                                      await startPayment(
+                                        context,
+                                        returnShopProvider()
+                                            .userShop()!
+                                            .userId,
+                                        AuthService()
+                                            .currentUserEmail!,
+                                        pricingClass.plan,
+                                        pricingClass
+                                            .finalPrice(),
+                                        pricingClass
+                                            .duration,
+                                      );
+                                      if (context.mounted) {
+                                        toggleLoading(
+                                          false,
+                                        );
+                                      }
+                                    },
+                                  );
+                                },
                               );
-                              if (context.mounted) {
-                                toggleLoading(false);
-                              }
-                            },
-                          );
-                        },
-                      );
-                    } else {
-                      showDialog(
-                        // ignore: use_build_context_synchronously
-                        context: context,
-                        builder: (context) {
-                          return InfoAlert(
-                            theme: theme,
-                            message:
-                                'You cannot proceed with this action when you are not connected to the internet. Please turn on your data connection and try again.',
-                            title: 'No Internet Connection',
-                          );
-                        },
-                      );
-                    }
+                            } else {
+                              showDialog(
+                                // ignore: use_build_context_synchronously
+                                context: context,
+                                builder: (context) {
+                                  return InfoAlert(
+                                    theme: theme,
+                                    message:
+                                        'You cannot proceed with this action when you are not connected to the internet. Please turn on your data connection and try again.',
+                                    title:
+                                        'No Internet Connection',
+                                  );
+                                },
+                              );
+                            }
+                          },
+                          widget: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: 500,
+                            ),
+                            child: Column(
+                              children: [
+                                Divider(),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.all(
+                                        8.0,
+                                      ),
+                                  child: Column(
+                                    children: [
+                                      SubscriptionDetailsRowWidget(
+                                        title: "Date",
+                                        endText:
+                                            formatDateTime(
+                                              DateTime.now(),
+                                            ),
+                                      ),
+                                      SubscriptionDetailsRowWidget(
+                                        title:
+                                            'Total Duration',
+                                        endText: duration(),
+                                      ),
+                                      SubscriptionDetailsRowWidget(
+                                        title:
+                                            'Monthly Cost',
+                                        endText: formatMoneyAlt(
+                                          amount:
+                                              pricingClass
+                                                  .mainPrice(),
+                                          currency:
+                                              returnSubPaymentProvider(
+                                                context:
+                                                    context,
+                                              ).currencySymbol(),
+                                        ),
+                                      ),
+                                      SubscriptionDetailsRowWidget(
+                                        title:
+                                            'Total Original Cost',
+                                        endText: formatMoneyAlt(
+                                          amount:
+                                              pricingClass
+                                                  .originalPrice(),
+                                          currency:
+                                              returnSubPaymentProvider(
+                                                context:
+                                                    context,
+                                              ).currencySymbol(),
+                                        ),
+                                      ),
+                                      SubscriptionDetailsRowWidget(
+                                        title:
+                                            'Applied Discount (${((pricingClass.discount ?? 0) * 100)}%)',
+                                        endText: formatMoneyAlt(
+                                          amount:
+                                              pricingClass
+                                                  .discountedPrice(),
+                                          currency:
+                                              returnSubPaymentProvider(
+                                                context:
+                                                    context,
+                                              ).currencySymbol(),
+                                        ),
+                                      ),
+                                      SubscriptionDetailsRowWidget(
+                                        title:
+                                            'Total Before VAT',
+                                        endText: formatMoneyAlt(
+                                          amount:
+                                              pricingClass
+                                                  .totalPrice(),
+                                          currency:
+                                              returnSubPaymentProvider(
+                                                context:
+                                                    context,
+                                              ).currencySymbol(),
+                                        ),
+                                      ),
+                                      SubscriptionDetailsRowWidget(
+                                        title:
+                                            'VAT (${returnUtilityConstantProvider().utilityConstants?.vat ?? 7.5}%)',
+                                        endText: formatMoneyAlt(
+                                          amount:
+                                              pricingClass
+                                                  .vatPrice(),
+                                          currency:
+                                              returnSubPaymentProvider(
+                                                context:
+                                                    context,
+                                              ).currencySymbol(),
+                                        ),
+                                      ),
+                                      SubscriptionDetailsRowWidget(
+                                        isTotal: true,
+                                        title:
+                                            'Final Total',
+                                        endText: formatMoneyAlt(
+                                          amount:
+                                              pricingClass
+                                                  .finalPrice(),
+                                          currency:
+                                              returnSubPaymentProvider(
+                                                context:
+                                                    context,
+                                              ).currencySymbol(),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
                   }
                 },
                 child: Padding(
@@ -569,6 +709,58 @@ class _PricingContainerWidgetState
                 ),
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class SubscriptionDetailsRowWidget extends StatelessWidget {
+  final String title;
+  final String endText;
+  final bool? isTotal;
+  const SubscriptionDetailsRowWidget({
+    super.key,
+    required this.title,
+    required this.endText,
+    this.isTotal,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    var theme = returnTheme(context);
+    return Container(
+      padding: EdgeInsets.symmetric(
+        vertical:
+            (isTotal != null && isTotal == true) ? 10 : 6.0,
+        horizontal: 10,
+      ),
+      margin: EdgeInsets.symmetric(vertical: 3),
+      decoration: BoxDecoration(
+        color:
+            (isTotal != null && isTotal == true)
+                ? const Color.fromARGB(54, 255, 189, 7)
+                : Colors.grey.shade100,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            style: TextStyle(
+              fontSize: theme.mobileTexts.b3.fontSize,
+            ),
+            title,
+          ),
+          Text(
+            style: TextStyle(
+              fontSize:
+                  (isTotal != null && isTotal == true)
+                      ? theme.mobileTexts.b1.fontSize
+                      : theme.mobileTexts.b3.fontSize,
+              fontWeight: FontWeight.bold,
+            ),
+            endText,
           ),
         ],
       ),

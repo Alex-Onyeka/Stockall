@@ -1,3 +1,5 @@
+import 'package:stockall/main.dart';
+
 class PlanPricingClass {
   final String planName;
   final String planDesc;
@@ -51,6 +53,12 @@ class PlanPricingClass {
         : mainPrice();
   }
 
+  double discountedPrice() {
+    return discount != null
+        ? ((mainPrice() * discount!) * duration)
+        : 0;
+  }
+
   double discountPriceMain() {
     return discount != null
         ? (price - (price * discount!))
@@ -68,5 +76,18 @@ class PlanPricingClass {
 
   double totalPrice() {
     return discountPrice() * (duration == 0 ? 1 : duration);
+  }
+
+  double vatPrice() {
+    return (totalPrice() *
+            (returnUtilityConstantProvider()
+                    .utilityConstants
+                    ?.vat ??
+                7.5)) /
+        100;
+  }
+
+  double finalPrice() {
+    return totalPrice() + vatPrice();
   }
 }

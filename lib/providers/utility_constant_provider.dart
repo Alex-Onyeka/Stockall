@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:stockall/classes/utility_constants/utility_constants.dart';
+import 'package:stockall/components/alert_dialogues/dialog_template.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/utility_constants/utility_constants_func.dart';
+import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -50,5 +53,41 @@ class UtilityConstantProvider extends ChangeNotifier {
       print('Utility Constants gotten Offline');
       return utilityConstants;
     }
+  }
+
+  bool hasViewedUpdate = false;
+
+  void closeUpdate() {
+    hasViewedUpdate = true;
+    notifyListeners();
+  }
+}
+
+class UpdateInformationWidget extends StatefulWidget {
+  const UpdateInformationWidget({super.key});
+
+  @override
+  State<UpdateInformationWidget> createState() =>
+      _UpdateInformationWidgetState();
+}
+
+class _UpdateInformationWidgetState
+    extends State<UpdateInformationWidget> {
+  @override
+  Widget build(BuildContext context) {
+    var theme = returnTheme(context);
+    return DialogTemplate(
+      theme: theme,
+      message:
+          'Go through the List below to find out information about each Update and how to use them.',
+      title: 'New Update 📢',
+      action: () {},
+      widget: Container(
+        constraints: BoxConstraints(
+          maxWidth: 500,
+          maxHeight: screenHeight(context) - 100,
+        ),
+      ),
+    );
   }
 }
