@@ -675,24 +675,29 @@ class _EmpAuthState extends State<EmpAuth> {
                                                       false;
                                                 });
                                                 if (!context
-                                                    .mounted)
-                                                  return;
-                                                showDialog(
-                                                  context:
+                                                    .mounted) {
+                                                  setState(() {
+                                                    isLoading =
+                                                        false;
+                                                  });
+                                                  showDialog(
+                                                    context:
+                                                        context,
+                                                    builder: (
                                                       context,
-                                                  builder: (
-                                                    context,
-                                                  ) {
-                                                    return InfoAlert(
-                                                      theme:
-                                                          theme,
-                                                      message:
-                                                          'User is Not found. Please check your details, and network and try again.',
-                                                      title:
-                                                          'User not found',
-                                                    );
-                                                  },
-                                                );
+                                                    ) {
+                                                      return InfoAlert(
+                                                        theme:
+                                                            theme,
+                                                        message:
+                                                            'User is Not found. Please check your details, and network and try again.',
+                                                        title:
+                                                            'User not found',
+                                                      );
+                                                    },
+                                                  );
+                                                  return;
+                                                }
                                               }
                                             }
                                           },

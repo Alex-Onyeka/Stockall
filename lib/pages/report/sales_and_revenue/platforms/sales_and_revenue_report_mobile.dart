@@ -1,13 +1,10 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
-import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
-import 'package:stockall/constants/general_report_print_and_download.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/general_report/class/general_report_class.dart';
@@ -58,9 +55,14 @@ class _SalesAndRevenueReportMobileState
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     List<TempProductSaleRecord> salesRecords =
-        returnReceiptProvider(
-          context,
-        ).returnProductsRecordByDayOrWeek();
+        returnReceiptProvider(context)
+            .returnProductsRecordByDayOrWeek()
+            .where(
+              (item) =>
+                  item.isVoid != true &&
+                  item.invoiceUuid == null,
+            )
+            .toList();
 
     return Scaffold(
       appBar: appBar(
@@ -281,169 +283,169 @@ class _SalesAndRevenueReportMobileState
                         ),
                       ],
                     ),
-                    Visibility(
-                      visible: false,
-                      //  salesRecords.isNotEmpty,
-                      child: Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.end,
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              List<
-                                GeneralReportSalesSummaryItem
-                              >
-                              summary =
-                                  returnReceiptProviderSingle()
-                                      .returnGeneralReportSalesSummary();
-                              summary.sort((a, b) {
-                                switch (sortIndex) {
-                                  case 1:
-                                    return a.itemName
-                                        .compareTo(
-                                          b.itemName,
-                                        );
-                                  case 2:
-                                    return b.quantity
-                                        .compareTo(
-                                          a.quantity,
-                                        );
-                                  case 3:
-                                    return b.totalCost
-                                        .compareTo(
-                                          a.totalCost,
-                                        );
-                                  case 4:
-                                    return b
-                                        .profit()
-                                        .compareTo(
-                                          a.profit(),
-                                        );
-                                  default:
-                                    return a.itemName
-                                        .compareTo(
-                                          b.itemName,
-                                        );
-                                }
-                              });
 
-                              // List<TempProductSaleRecord> records =
-                              //     salesRecords;
+                    // Visibility(
+                    //   visible: false,
+                    //   //  salesRecords.isNotEmpty,
+                    //   child: Row(
+                    //     mainAxisAlignment:
+                    //         MainAxisAlignment.end,
+                    //     children: [
+                    //       InkWell(
+                    //         onTap: () {
+                    //           List<
+                    //             GeneralReportSalesSummaryItem
+                    //           >
+                    //           summary =
+                    //               returnReceiptProviderSingle()
+                    //                   .returnGeneralReportSalesSummary();
+                    //           summary.sort((a, b) {
+                    //             switch (sortIndex) {
+                    //               case 1:
+                    //                 return a.itemName
+                    //                     .compareTo(
+                    //                       b.itemName,
+                    //                     );
+                    //               case 2:
+                    //                 return b.quantity
+                    //                     .compareTo(
+                    //                       a.quantity,
+                    //                     );
+                    //               case 3:
+                    //                 return b.totalCost
+                    //                     .compareTo(
+                    //                       a.totalCost,
+                    //                     );
+                    //               case 4:
+                    //                 return b
+                    //                     .profit()
+                    //                     .compareTo(
+                    //                       a.profit(),
+                    //                     );
+                    //               default:
+                    //                 return a.itemName
+                    //                     .compareTo(
+                    //                       b.itemName,
+                    //                     );
+                    //             }
+                    //           });
 
-                              salesRecords.sort((a, b) {
-                                switch (sortIndex) {
-                                  case 1:
-                                    return a.productName
-                                        .compareTo(
-                                          b.productName,
-                                        );
-                                  case 2:
-                                    return b.quantity
-                                        .compareTo(
-                                          a.quantity,
-                                        );
-                                  case 3:
-                                    return b.revenue
-                                        .compareTo(
-                                          a.revenue,
-                                        );
-                                  case 4:
-                                    return a.productName
-                                        .compareTo(
-                                          b.productName,
-                                        );
-                                  default:
-                                    return b.createdAt
-                                        .compareTo(
-                                          a.createdAt,
-                                        );
-                                }
-                              });
+                    //           // List<TempProductSaleRecord> records =
+                    //           //     salesRecords;
 
-                              var safeContext = context;
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return ConfirmationAlert(
-                                    theme: theme,
-                                    message:
-                                        'You are about to Print Sales Report, are you sure you want to proceed?',
-                                    title:
-                                        'Print Sales Report',
-                                    action: () async {
-                                      Navigator.of(
-                                        context,
-                                      ).pop();
-                                      if (kIsWeb) {
-                                        if (safeContext
-                                            .mounted) {
-                                          if (isSummary) {
-                                          } else {}
-                                        }
-                                      }
-                                      if (isSummary) {
-                                        await generateAndPreviewPdfRollGeneralReport(
-                                          context: context,
-                                        );
-                                      } else {
-                                        await generateAndPreviewPdfSales(
-                                          context:
-                                              safeContext,
-                                          records:
-                                              salesRecords,
-                                          shop:
-                                              returnShopProvider()
-                                                  .userShop()!,
-                                        );
-                                      }
+                    //           salesRecords.sort((a, b) {
+                    //             switch (sortIndex) {
+                    //               case 1:
+                    //                 return a.productName
+                    //                     .compareTo(
+                    //                       b.productName,
+                    //                     );
+                    //               case 2:
+                    //                 return b.quantity
+                    //                     .compareTo(
+                    //                       a.quantity,
+                    //                     );
+                    //               case 3:
+                    //                 return b.revenue
+                    //                     .compareTo(
+                    //                       a.revenue,
+                    //                     );
+                    //               case 4:
+                    //                 return a.productName
+                    //                     .compareTo(
+                    //                       b.productName,
+                    //                     );
+                    //               default:
+                    //                 return b.createdAt
+                    //                     .compareTo(
+                    //                       a.createdAt,
+                    //                     );
+                    //             }
+                    //           });
 
-                                      if (safeContext
-                                          .mounted) {
-                                        returnSalesProvider()
-                                            .toggleIsLoading(
-                                              false,
-                                            );
-                                      }
-                                    },
-                                  );
-                                },
-                              );
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 10,
-                              ),
-                              child: Row(
-                                spacing: 5,
-                                children: [
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade700,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                    ),
-                                    'Print Report',
-                                  ),
-                                  Icon(
-                                    color: Colors.grey,
-                                    Icons.print,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    //           var safeContext = context;
+                    //           showDialog(
+                    //             context: context,
+                    //             builder: (context) {
+                    //               return ConfirmationAlert(
+                    //                 theme: theme,
+                    //                 message:
+                    //                     'You are about to Print Sales Report, are you sure you want to proceed?',
+                    //                 title:
+                    //                     'Print Sales Report',
+                    //                 action: () async {
+                    //                   Navigator.of(
+                    //                     context,
+                    //                   ).pop();
+                    //                   if (kIsWeb) {
+                    //                     if (safeContext
+                    //                         .mounted) {
+                    //                       if (isSummary) {
+                    //                       } else {}
+                    //                     }
+                    //                   }
+                    //                   if (isSummary) {
+                    //                     await generateAndPreviewPdfRollGeneralReport(
+                    //                       context: context,
+                    //                     );
+                    //                   } else {
+                    //                     await generateAndPreviewPdfSales(
+                    //                       context:
+                    //                           safeContext,
+                    //                       records:
+                    //                           salesRecords,
+                    //                       shop:
+                    //                           returnShopProvider()
+                    //                               .userShop()!,
+                    //                     );
+                    //                   }
 
+                    //                   if (safeContext
+                    //                       .mounted) {
+                    //                     returnSalesProvider()
+                    //                         .toggleIsLoading(
+                    //                           false,
+                    //                         );
+                    //                   }
+                    //                 },
+                    //               );
+                    //             },
+                    //           );
+                    //         },
+                    //         child: Container(
+                    //           padding: EdgeInsets.symmetric(
+                    //             horizontal: 10,
+                    //           ),
+                    //           child: Row(
+                    //             spacing: 5,
+                    //             children: [
+                    //               Text(
+                    //                 style: TextStyle(
+                    //                   fontSize:
+                    //                       theme
+                    //                           .mobileTexts
+                    //                           .b3
+                    //                           .fontSize,
+                    //                   color:
+                    //                       Colors
+                    //                           .grey
+                    //                           .shade700,
+                    //                   fontWeight:
+                    //                       FontWeight.bold,
+                    //                 ),
+                    //                 'Print Report',
+                    //               ),
+                    //               Icon(
+                    //                 color: Colors.grey,
+                    //                 Icons.print,
+                    //               ),
+                    //             ],
+                    //           ),
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
                     Visibility(
                       visible: authorization(
                         authorized:

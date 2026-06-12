@@ -25,6 +25,7 @@ import 'package:stockall/pages/barcode_printing_page/barcode_printing_page.dart'
 import 'package:stockall/pages/categories/categories_page.dart';
 import 'package:stockall/pages/departments/departments_dashboard.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
+import 'package:stockall/pages/settings/components/clear_total_cache_widget.dart';
 import 'package:stockall/pages/settings/components/manage_access_pin.dart';
 import 'package:stockall/pages/settings/components/manage_departments_toggle_switch.dart';
 import 'package:stockall/pages/settings/components/manage_inventory_switch_toggle.dart';
@@ -1400,6 +1401,7 @@ class _SettingsPageDesktopState
                               title: 'Go to Website.',
                               icon: Icons.language_rounded,
                             ),
+                            ClearTotalCacheWidget(),
                             Visibility(
                               visible: authorization(
                                 authorized:

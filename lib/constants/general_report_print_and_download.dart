@@ -1,7 +1,8 @@
+import 'dart:io';
+
+import 'package:file_saver/file_saver.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
-import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
@@ -14,54 +15,47 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
-void downloadPdfWebGeneralReport({
-  // required TempGeneralReport invoice,
-  required List<TempProductSaleRecord> records,
-  required List<TempMainReceipt> receipts,
-  required String staffName,
-  // required TempShopClass shop,
-  required BuildContext context,
-  required String filename,
-}) async {
-  // SalesAuthAction().downloadReceiptAction(
-  //   context: context,
-  //   action: () async {
-  //     try {
-  //       final pdfBytes = await _buildPdfGeneralReport(
-  //         context: context,
-  //         receipts: receipts,
-  //         staffName: staffName,
-  //         records: records,
-  //         shop: returnShopProvider().userShop()!,
-  //       );
-  //       final blob = html.Blob([
-  //         pdfBytes,
-  //       ], 'application/pdf');
-  //       final url = html.Url.createObjectUrlFromBlob(blob);
+// void downloadPdfWebGeneralReport({
+//   required List<TempProductSaleRecord> records,
+//   required BuildContext context,
+// }) async {
+//   SalesAuthAction().downloadReceiptAction(
+//     context: context,
+//     action: () async {
+//       try {
+//         final pdfBytes = await _buildPdfGeneralReport(
+//           context: context,
+//           records: records,
+//           shop: returnShopProvider().userShop()!,
+//         );
+//         final blob = html.Blob([
+//           pdfBytes,
+//         ], 'application/pdf');
+//         final url = html.Url.createObjectUrlFromBlob(blob);
 
-  //       final anchor =
-  //           html.AnchorElement(href: url)
-  //             ..download = filename
-  //             ..style.display = 'none';
+//         final anchor =
+//             html.AnchorElement(href: url)
+//               ..download = filename
+//               ..style.display = 'none';
 
-  //       html.document.body?.append(anchor);
-  //       anchor.click();
-  //       anchor.remove();
+//         html.document.body?.append(anchor);
+//         anchor.click();
+//         anchor.remove();
 
-  //       html.Url.revokeObjectUrl(url);
+//         html.Url.revokeObjectUrl(url);
 
-  //       if (context.mounted) {
-  //         returnReceiptProvider(
-  //           context,
-  //           listen: false,
-  //         ).toggleIsLoading(false);
-  //       }
-  //     } catch (e, stackTrace) {
-  //       print('❌ Error downloading PDF: $e\n$stackTrace');
-  //     }
-  //   },
-  // );
-}
+//         if (context.mounted) {
+//           returnReceiptProvider(
+//             context,
+//             listen: false,
+//           ).toggleIsLoading(false);
+//         }
+//       } catch (e, stackTrace) {
+//         print('❌ Error downloading PDF: $e\n$stackTrace');
+//       }
+//     },
+//   );
+// }
 
 // Future<Uint8List> _buildPdfGeneralReport({
 //   required List<TempMainReceipt> receipts,
@@ -1107,78 +1101,64 @@ void downloadPdfWebGeneralReport({
 //   return pdf.save();
 // }
 
-// Future<void> generateAndPreviewPdfGeneralReport({
-//   required TempGeneralReport invoice,
-//   required List<TempMainReceipt> receipts,
-//   required String staffName,
-//   required List<TempProductSaleRecord> records,
-//   required BuildContext context,
-// }) async {
-//   SalesAuthAction().downloadReceiptAction(
-//     context: context,
-//     action: () async {
-//       returnReceiptProvider(
-//         context,
-//         listen: false,
-//       ).toggleIsLoading(true);
-//       final Uint8List bytes = await _buildPdfGeneralReport(
-//         invoice: invoice,
-//         shop: returnShopProvider().userShop()!,
-//         receipts: receipts,
-//         staffName: staffName,
-//         records: records,
-//         context: context,
-//       );
-//       var invoiceId = invoice.uuid!.toString().substring(
-//         0,
-//         5,
-//       );
-//       var name =
-//           "Stockall_GeneralReport_$invoiceId.${DateTime.now().millisecondsSinceEpoch}";
+Future<void> generateAndPreviewPdfGeneralReport({
+  required BuildContext context,
+}) async {
+  SalesAuthAction().downloadReceiptAction(
+    context: context,
+    action: () async {
+      returnReceiptProvider(
+        context,
+        listen: false,
+      ).toggleIsLoading(true);
+      final Uint8List bytes =
+          await _buildPdfRollGeneralReport(
+            context: context,
+          );
+      var name =
+          "Stockall_GeneralReport_.${DateTime.now().millisecondsSinceEpoch}";
 
-//       if (Platform.isAndroid || Platform.isIOS) {
-//         await savePdfMobileGeneralReport(bytes, name);
-//       } else {
-//         print('Printing For Desktop');
-//         await savePdfDesktopGeneralReport(bytes, name);
-//       }
+      if (Platform.isAndroid || Platform.isIOS) {
+        await savePdfMobileGeneralReport(bytes, name);
+      } else {
+        print('Printing For Desktop');
+        await savePdfDesktopGeneralReport(bytes, name);
+      }
 
-//       if (context.mounted) {
-//         returnReceiptProvider(
-//           context,
-//           listen: false,
-//         ).toggleIsLoading(false);
-//       }
-//     },
-//   );
-// }
+      if (context.mounted) {
+        returnReceiptProvider(
+          context,
+          listen: false,
+        ).toggleIsLoading(false);
+      }
+    },
+  );
+}
 
-// Future<void> savePdfDesktopGeneralReport(
-//   Uint8List bytes,
-//   String name,
-// ) async {
-//   await FileSaver.instance.saveFile(
-//     name: name,
-//     fileExtension: "pdf",
-//     bytes: bytes,
-//     mimeType: MimeType.pdf,
-//   );
-// }
+Future<void> savePdfDesktopGeneralReport(
+  Uint8List bytes,
+  String name,
+) async {
+  await FileSaver.instance.saveFile(
+    name: name,
+    fileExtension: "pdf",
+    bytes: bytes,
+    mimeType: MimeType.pdf,
+  );
+}
 
-// Future<void> savePdfMobileGeneralReport(
-//   Uint8List bytes,
-//   String name,
-// ) async {
-//   await Printing.sharePdf(
-//     bytes: bytes,
-//     filename: '$name.pdf',
-//   );
-// }
+Future<void> savePdfMobileGeneralReport(
+  Uint8List bytes,
+  String name,
+) async {
+  await Printing.sharePdf(
+    bytes: bytes,
+    filename: '$name.pdf',
+  );
+}
 
 void downloadPdfWebRollGeneralReport({
   required BuildContext context,
-  required String filename,
-  required int printType,
 }) async {
   SalesAuthAction().printReceiptAction(
     context: context,
@@ -1200,7 +1180,8 @@ void downloadPdfWebRollGeneralReport({
 
         final anchor =
             html.AnchorElement(href: url)
-              ..download = filename
+              ..download =
+                  'General_Sales_Report${DateTime.now().microsecondsSinceEpoch}'
               ..style.display = 'none';
 
         html.document.body?.append(anchor);
@@ -1609,105 +1590,105 @@ Future<Uint8List> _buildPdfRollGeneralReport({
   return pdf.save();
 }
 
-Future<void> generateAndPreviewPdfRollGeneralReport({
-  required BuildContext context,
-}) async {
-  SalesAuthAction().printReceiptAction(
-    context: context,
-    action: () {
-      showDialog(
-        context: context,
-        builder: (printContext) {
-          return DialogTemplate(
-            theme: returnTheme(context, listen: false),
-            message:
-                returnShopProvider()
-                    .userShop()
-                    ?.shopAddress ??
-                'Shop Address',
-            title:
-                returnShopProvider().userShop()?.name ??
-                'Shop Name',
-            action: () async {
-              final Uint8List pdfBytes =
-                  await _buildPdfRollGeneralReport(
-                    context: context,
-                  );
+// Future<void> generateAndPreviewPdfRollGeneralReport({
+//   required BuildContext context,
+// }) async {
+//   SalesAuthAction().printReceiptAction(
+//     context: context,
+//     action: () {
+//       showDialog(
+//         context: context,
+//         builder: (printContext) {
+//           return DialogTemplate(
+//             theme: returnTheme(context, listen: false),
+//             message:
+//                 returnShopProvider()
+//                     .userShop()
+//                     ?.shopAddress ??
+//                 'Shop Address',
+//             title:
+//                 returnShopProvider().userShop()?.name ??
+//                 'Shop Name',
+//             action: () async {
+//               final Uint8List pdfBytes =
+//                   await _buildPdfRollGeneralReport(
+//                     context: context,
+//                   );
 
-              await Printing.layoutPdf(
-                onLayout: (_) async => pdfBytes,
-              );
-            },
-            widget: SizedBox(
-              height: screenHeight(context) * 0.7,
-              width: 450,
-              child: ListView(
-                children:
-                    returnReceiptProviderSingle()
-                        .returnGeneralReportSalesSummary(
-                          // depart.uuid,
-                        )
-                        .map(
-                          (item) => ListTile(
-                            title: Row(
-                              children: [
-                                Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        returnTheme(
-                                              context,
-                                              listen: false,
-                                            )
-                                            .mobileTexts
-                                            .b2
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
-                                  ),
-                                  "[${item.quantity}]  ",
-                                ),
-                                Text(
-                                  style: TextStyle(
-                                    fontSize:
-                                        returnTheme(
-                                              context,
-                                              listen: false,
-                                            )
-                                            .mobileTexts
-                                            .b2
-                                            .fontSize,
-                                    fontWeight:
-                                        FontWeight.bold,
-                                  ),
-                                  item.itemName,
-                                ),
-                              ],
-                            ),
-                            trailing: Text(
-                              style: TextStyle(
-                                fontSize:
-                                    returnTheme(
-                                          context,
-                                          listen: false,
-                                        )
-                                        .mobileTexts
-                                        .b3
-                                        .fontSize,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              formatMoneyBig(
-                                amount: item.totalCost,
-                                context: context,
-                              ),
-                            ),
-                          ),
-                        )
-                        .toList(),
-              ),
-            ),
-          );
-        },
-      );
-    },
-  );
-}
+//               await Printing.layoutPdf(
+//                 onLayout: (_) async => pdfBytes,
+//               );
+//             },
+//             widget: SizedBox(
+//               height: screenHeight(context) * 0.7,
+//               width: 450,
+//               child: ListView(
+//                 children:
+//                     returnReceiptProviderSingle()
+//                         .returnGeneralReportSalesSummary(
+//                           // depart.uuid,
+//                         )
+//                         .map(
+//                           (item) => ListTile(
+//                             title: Row(
+//                               children: [
+//                                 Text(
+//                                   style: TextStyle(
+//                                     fontSize:
+//                                         returnTheme(
+//                                               context,
+//                                               listen: false,
+//                                             )
+//                                             .mobileTexts
+//                                             .b2
+//                                             .fontSize,
+//                                     fontWeight:
+//                                         FontWeight.bold,
+//                                   ),
+//                                   "[${item.quantity}]  ",
+//                                 ),
+//                                 Text(
+//                                   style: TextStyle(
+//                                     fontSize:
+//                                         returnTheme(
+//                                               context,
+//                                               listen: false,
+//                                             )
+//                                             .mobileTexts
+//                                             .b2
+//                                             .fontSize,
+//                                     fontWeight:
+//                                         FontWeight.bold,
+//                                   ),
+//                                   item.itemName,
+//                                 ),
+//                               ],
+//                             ),
+//                             trailing: Text(
+//                               style: TextStyle(
+//                                 fontSize:
+//                                     returnTheme(
+//                                           context,
+//                                           listen: false,
+//                                         )
+//                                         .mobileTexts
+//                                         .b3
+//                                         .fontSize,
+//                                 fontWeight: FontWeight.bold,
+//                               ),
+//                               formatMoneyBig(
+//                                 amount: item.totalCost,
+//                                 context: context,
+//                               ),
+//                             ),
+//                           ),
+//                         )
+//                         .toList(),
+//               ),
+//             ),
+//           );
+//         },
+//       );
+//     },
+//   );
+// }

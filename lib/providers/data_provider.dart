@@ -402,16 +402,70 @@ class DataProvider extends ChangeNotifier {
   //
   //
 
+  Future<void> clearTotalCache() async {
+    await CreatedCustomersFunc().clearCustomers();
+    await UpdatedCustomersFunc().clearupdatedCustomers();
+    await DeletedCustomersFunc().clearDeletedCustomers();
+    await CreatedExpensesFunc().clearExpenses();
+    await UpdatedExpensesFunc().clearupdatedExpenses();
+    await DeletedExpensesFunc().clearDeletedExpenses();
+    await CreatedReceiptsFunc().clearReceipts();
+    await CreatedRecordsFunc().clearRecords();
+    await CreatedProductFunc().clearProducts();
+    await UpdatedProductsFunc().clearupdatedProducts();
+    await DeletedProductsFunc().clearDeletedProducts();
+    await CreatedInventoryUpdatesFunc()
+        .clearInventoryUpdate();
+    await DeletedReceiptsFunc().clearDeletedReceipts();
+    await SalesProductFunc().clearProducts();
+    await UpdatedReceiptsFunc().clearUpdatedReceipts();
+    await UpdatedShopFunc().clearUpdatedShop();
+    await CreatedShopLogosFunc().clearCreatedLogos();
+    await CreatedEventsLogFunc().clearEvents();
+    await CreatedDepartmentsFunc().clearDepartment();
+    await UpdatedDepartmentFunc().clearupdatedDepartments();
+    await DeletedDepartmentsFunc()
+        .clearDeletedDepartments();
+    await CreatedSubStaffFunc().clearSubStaffs();
+    await UpdatedSubStaffFunc().clearUpdatedSubStaff();
+    await DeletedSubStaffFunc().clearDeletedSubStaff();
+    await CreatedCategoriesFunc().clearCategories();
+    await UpdatedCategoriesFunc().clearUpdatedCategory();
+    await DeletedCategoriesFunc().clearDeletedCategories();
+    await CreatedSupplierFunc().clearSuppliers();
+    await UpdatedSupplierFunc().clearUpdatedSuppliers();
+    await DeletedSupplierFunc().clearDeletedSupplier();
+    await CreatedPurchasesFunc().clearPurchases();
+    await UpdatedPurchasesFunc().clearUpdatedPurchases();
+    await DeletedPurchasesFunc().clearDeletedPurchases();
+    await CreatedItemPurchaseFunc().clearRecords();
+    await DeletedItemPurchaseFunc()
+        .clearDeletedItemRecords();
+    await CreatedStorageProductsFunc()
+        .clearCreatedStorageProducts();
+    await UpdatedStorageProductsFunc()
+        .clearUpdatedStorageProduct();
+    await DeletedStorageProductsFunc()
+        .clearDeletedStorageProduct();
+    await CreatedWaybillsFunc().clearWaybills();
+    await UpdatedWaybillsFunc().clearUpdatedWaybills();
+    await DeletedWaybillsFunc().clearDeletedWaybills();
+    await CreatedInvoicesFunc().clearInvoices();
+    await DeletedInvoicesFunc().clearDeletedInvoices();
+    await UpdatedInvoicesFunc()
+        .clearupdatedInvoiceUpdatedInvoices();
+    notifyListeners();
+  }
+
   Future<void> syncData({BuildContext? context}) async {
-    int isSynced = returnData().isSynced();
-    syncProgress = 0;
-    toggleSyncing(true);
-    bool isOnline = await connectivity.isOnline();
-    if (isOnline) {
-      List<TempShopClass> shop =
-          await returnShopProvider().getUserShops();
-      if (shop.isNotEmpty) {
-        if (isSynced == 0) {
+    if (isSynced() == 0) {
+      syncProgress = 0;
+      toggleSyncing(true);
+      bool isOnline = await connectivity.isOnline();
+      if (isOnline) {
+        List<TempShopClass> shop =
+            await returnShopProvider().getUserShops();
+        if (shop.isNotEmpty) {
           if (CreatedCategoriesFunc()
                   .getCreateCategories()
                   .isNotEmpty &&
@@ -446,7 +500,7 @@ class DataProvider extends ChangeNotifier {
             await DepartmentProvider()
                 .createDepartmentsSync();
             print('Finished Syncing Created Departments');
-            setSyncProgress(5);
+            setSyncProgress(4);
           }
           if (UpdatedDepartmentFunc()
                   .getDepartments()
@@ -455,7 +509,7 @@ class DataProvider extends ChangeNotifier {
             await DepartmentProvider()
                 .updateDepartmentsSync();
             print('Finished Syncing Updated Departments');
-            setSyncProgress(6);
+            setSyncProgress(5);
           }
           if (DeletedDepartmentsFunc()
                   .getDepartmentIds()
@@ -464,7 +518,7 @@ class DataProvider extends ChangeNotifier {
             await DepartmentProvider()
                 .deleteDepartmentsSync();
             print('Finished Syncing Deleted Departments');
-            setSyncProgress(7);
+            setSyncProgress(6);
           }
           if (CreatedStorageProductsFunc()
                   .getStorageProducts()
@@ -475,7 +529,7 @@ class DataProvider extends ChangeNotifier {
             print(
               'Finished Syncing Created StorageProductss',
             );
-            setSyncProgress(8);
+            setSyncProgress(7);
           }
           if (UpdatedStorageProductsFunc()
                   .getStorageProductIds()
@@ -486,7 +540,7 @@ class DataProvider extends ChangeNotifier {
             print(
               'Finished Syncing Updated StorageProductss',
             );
-            setSyncProgress(9);
+            setSyncProgress(8);
           }
           if (DeletedStorageProductsFunc()
                   .getStorageProductIds()
@@ -497,7 +551,7 @@ class DataProvider extends ChangeNotifier {
             print(
               'Finished Syncing Deleted StorageProductss',
             );
-            setSyncProgress(10);
+            setSyncProgress(9);
           }
           if (CreatedProductFunc()
                   .getProducts()
@@ -505,7 +559,7 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await createProductsSync();
             print('Finished Syncing Created Products');
-            setSyncProgress(11);
+            setSyncProgress(10);
           }
           if (DeletedProductsFunc()
                   .getProductIds()
@@ -513,7 +567,7 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await deleteProductsSync();
             print('Finished Syncing Deleted Products');
-            setSyncProgress(12);
+            setSyncProgress(11);
           }
           if (UpdatedProductsFunc()
                   .getProducts()
@@ -521,13 +575,13 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await updateProductsSync();
             print('Finished Syncing Updated Products');
-            setSyncProgress(13);
+            setSyncProgress(12);
           }
           if (SalesProductFunc().getProducts().isNotEmpty &&
               isOnline) {
             await salesProductsSync();
             print('Finished Syncing Sales Products');
-            setSyncProgress(14);
+            setSyncProgress(13);
           }
           if (CreatedExpensesFunc()
                   .getExpenses()
@@ -536,7 +590,7 @@ class DataProvider extends ChangeNotifier {
             await returnExpensesProviderSingle()
                 .createExpensesSync();
             print('Finished Syncing Created Expenses');
-            setSyncProgress(15);
+            setSyncProgress(14);
           }
           if (UpdatedExpensesFunc()
                   .getExpenses()
@@ -545,7 +599,7 @@ class DataProvider extends ChangeNotifier {
             await returnExpensesProviderSingle()
                 .updateExpensesSync();
             print('Finished Syncing Updated Expenses');
-            setSyncProgress(16);
+            setSyncProgress(15);
           }
           if (DeletedExpensesFunc()
                   .getExpenseIds()
@@ -554,7 +608,7 @@ class DataProvider extends ChangeNotifier {
             await returnExpensesProviderSingle()
                 .deleteExpensesSync();
             print('Finished Syncing Deleted Expenses');
-            setSyncProgress(17);
+            setSyncProgress(16);
           }
           if (CreatedCustomersFunc()
                   .getCustomers()
@@ -563,7 +617,7 @@ class DataProvider extends ChangeNotifier {
             await returnCustomersSingle()
                 .createCustomersSync();
             print('Finished Syncing Created Customer');
-            setSyncProgress(18);
+            setSyncProgress(17);
           }
           if (UpdatedCustomersFunc()
                   .getCustomers()
@@ -572,7 +626,7 @@ class DataProvider extends ChangeNotifier {
             await returnCustomersSingle()
                 .updateCustomersSync();
             print('Finished Syncing Updated Customers');
-            setSyncProgress(19);
+            setSyncProgress(18);
           }
           if (DeletedCustomersFunc()
                   .getCustomerIds()
@@ -581,7 +635,7 @@ class DataProvider extends ChangeNotifier {
             await returnCustomersSingle()
                 .deletedCustomersSync();
             print('Finished Syncing Deleted Customers');
-            setSyncProgress(20);
+            setSyncProgress(19);
           }
           if (CreatedSubStaffFunc()
                   .getSubStaffs()
@@ -590,7 +644,7 @@ class DataProvider extends ChangeNotifier {
             await returnSubStaffProvider()
                 .createSubStaffSync();
             print('Finished Syncing Created Sub Staffs');
-            setSyncProgress(21);
+            setSyncProgress(20);
           }
           if (UpdatedSubStaffFunc()
                   .getSubStaffs()
@@ -599,7 +653,7 @@ class DataProvider extends ChangeNotifier {
             await returnSubStaffProvider()
                 .updateSubStaffSync();
             print('Finished Syncing Updated Sub Staffs');
-            setSyncProgress(22);
+            setSyncProgress(21);
           }
           if (DeletedSubStaffFunc()
                   .getSubStaffIds()
@@ -608,7 +662,61 @@ class DataProvider extends ChangeNotifier {
             await returnSubStaffProvider()
                 .deleteSubStaffSync();
             print('Finished Syncing Deleted Sub Staffs');
+            setSyncProgress(22);
+          }
+          if (CreatedSupplierFunc()
+                  .getSuppliers()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnSuppliersProvider()
+                .createSupplierSync();
+            print('Finished Syncing Created Suppliers');
             setSyncProgress(23);
+          }
+          if (UpdatedSupplierFunc()
+                  .getSuppliers()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnSuppliersProvider()
+                .updateSuppliersSync();
+            print('Finished Syncing Updated Suppliers');
+            setSyncProgress(24);
+          }
+          if (DeletedSupplierFunc()
+                  .getSupplierIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnSuppliersProvider()
+                .deletedSuppliersSync();
+            print('Finished Syncing Deleted Suppliers');
+            setSyncProgress(25);
+          }
+          if (DeletedInvoicesFunc()
+                  .getInvoiceIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnInvoicesProvider()
+                .deleteInvoicesSync();
+            print('Finished Syncing Deleted Invoices');
+            setSyncProgress(26);
+          }
+          if (CreatedInvoicesFunc()
+                  .getInvoices()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnInvoicesProvider()
+                .createInvoicesSync();
+            print('Finished Syncing Created Invoices');
+            setSyncProgress(27);
+          }
+          if (UpdatedInvoicesFunc()
+                  .getInvoiceIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnInvoicesProvider()
+                .updateInvoicesSync();
+            print('Finished Syncing Updated Invoices');
+            setSyncProgress(28);
           }
           if (DeletedReceiptsFunc()
                   .getReceiptIds()
@@ -617,7 +725,7 @@ class DataProvider extends ChangeNotifier {
             await returnReceiptProviderSingle()
                 .deleteReceiptsSync();
             print('Finished Syncing Deleted Receipts');
-            setSyncProgress(24);
+            setSyncProgress(29);
           }
           if (CreatedRecordsFunc()
                   .getRecords()
@@ -628,7 +736,7 @@ class DataProvider extends ChangeNotifier {
             print(
               'Finished Syncing Created Records Customers',
             );
-            setSyncProgress(25);
+            setSyncProgress(30);
           }
           if (CreatedReceiptsFunc()
                   .getReceipts()
@@ -637,7 +745,7 @@ class DataProvider extends ChangeNotifier {
             await returnReceiptProviderSingle()
                 .createReceiptsSync();
             print('Finished Syncing Created Receipts');
-            setSyncProgress(26);
+            setSyncProgress(31);
           }
           if (UpdatedReceiptsFunc()
                   .getReceiptIds()
@@ -646,7 +754,7 @@ class DataProvider extends ChangeNotifier {
             await returnReceiptProviderSingle()
                 .updateReceiptsSync();
             print('Finished Syncing Created Receipts');
-            setSyncProgress(27);
+            setSyncProgress(32);
           }
           if (UpdatedShopFunc()
                   .getUpdatedShop()
@@ -654,14 +762,14 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnShopProvider().updateShopSync();
             print('Finished Syncing Created Receipts');
-            setSyncProgress(28);
+            setSyncProgress(33);
           }
           if (CreatedShopLogosFunc().getCreatedLogo() !=
                   null &&
               isOnline) {
             await returnShopProvider().uploadShopLogoSync();
             print('Finished Syncing Created Logo');
-            setSyncProgress(29);
+            setSyncProgress(34);
           }
           if (CreatedEventsLogFunc()
                   .getCreatedEventsLogs()
@@ -669,34 +777,7 @@ class DataProvider extends ChangeNotifier {
               isOnline) {
             await returnEventsLogProvider().eventsLogSync();
             print('Finished Syncing Created Events Log');
-            setSyncProgress(30);
-          }
-          if (CreatedInvoicesFunc()
-                  .getInvoices()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnInvoicesProvider()
-                .createInvoicesSync();
-            print('Finished Syncing Created Invoices');
-            setSyncProgress(31);
-          }
-          if (UpdatedInvoicesFunc()
-                  .getInvoiceIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnInvoicesProvider()
-                .updateInvoicesSync();
-            print('Finished Syncing Updated Invoices');
-            setSyncProgress(32);
-          }
-          if (DeletedInvoicesFunc()
-                  .getInvoiceIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnInvoicesProvider()
-                .deleteInvoicesSync();
-            print('Finished Syncing Deleted Invoices');
-            setSyncProgress(33);
+            setSyncProgress(35);
           }
           if (CreatedInventoryUpdatesFunc()
                   .getCreatedInventoryUpdatess()
@@ -705,35 +786,7 @@ class DataProvider extends ChangeNotifier {
             await returnInventoryUpdatesProvider()
                 .inventoryUpdatesSync();
             print('Finished Syncing Inventory Updates');
-            setSyncProgress(34);
-          }
-
-          if (CreatedSupplierFunc()
-                  .getSuppliers()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnSuppliersProvider()
-                .createSupplierSync();
-            print('Finished Syncing Created Suppliers');
-            setSyncProgress(35);
-          }
-          if (UpdatedSupplierFunc()
-                  .getSuppliers()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnSuppliersProvider()
-                .updateSuppliersSync();
-            print('Finished Syncing Updated Suppliers');
             setSyncProgress(36);
-          }
-          if (DeletedSupplierFunc()
-                  .getSupplierIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnSuppliersProvider()
-                .deletedSuppliersSync();
-            print('Finished Syncing Deleted Suppliers');
-            setSyncProgress(37);
           }
           if (CreatedPurchasesFunc()
                   .getPurchases()
@@ -742,7 +795,7 @@ class DataProvider extends ChangeNotifier {
             await returnPurchaseProvider()
                 .createPurchasesSync();
             print('Finished Syncing Created Purchasess');
-            setSyncProgress(38);
+            setSyncProgress(37);
           }
           if (UpdatedPurchasesFunc()
                   .getPurchaseIds()
@@ -751,7 +804,7 @@ class DataProvider extends ChangeNotifier {
             await returnPurchaseProvider()
                 .updatePurchaseSync();
             print('Finished Syncing Updated Purchasess');
-            setSyncProgress(39);
+            setSyncProgress(38);
           }
           if (DeletedPurchasesFunc()
                   .getPurchaseIds()
@@ -760,7 +813,7 @@ class DataProvider extends ChangeNotifier {
             await returnPurchaseProvider()
                 .deletePurchasesSync();
             print('Finished Syncing Deleted Purchasess');
-            setSyncProgress(40);
+            setSyncProgress(39);
           }
           if (CreatedItemPurchaseFunc()
                   .getRecords()
@@ -771,7 +824,7 @@ class DataProvider extends ChangeNotifier {
             print(
               'Finished Syncing Created Purchase Item Records',
             );
-            setSyncProgress(41);
+            setSyncProgress(40);
           }
           if (DeletedItemPurchaseFunc()
                   .getItemPurchaseIds()
@@ -782,7 +835,7 @@ class DataProvider extends ChangeNotifier {
             print(
               'Finished Syncing Deleted Purchase Item Records',
             );
-            setSyncProgress(42);
+            setSyncProgress(41);
           }
           if (CreatedWaybillsFunc()
                   .getWaybills()
@@ -791,7 +844,7 @@ class DataProvider extends ChangeNotifier {
             await returnWaybillProvider()
                 .createWaybillsSync();
             print('Finished Syncing Created Waybills');
-            setSyncProgress(43);
+            setSyncProgress(42);
           }
           if (UpdatedWaybillsFunc()
                   .getWaybillIds()
@@ -800,7 +853,7 @@ class DataProvider extends ChangeNotifier {
             await returnWaybillProvider()
                 .updateWaybillSync();
             print('Finished Syncing Updated Waybills');
-            setSyncProgress(44);
+            setSyncProgress(43);
           }
           if (DeletedWaybillsFunc()
                   .getWaybillIds()
@@ -809,41 +862,39 @@ class DataProvider extends ChangeNotifier {
             await returnWaybillProvider()
                 .deleteWaybillsSync();
             print('Finished Syncing Deleted Waybills');
-            setSyncProgress(45);
+            setSyncProgress(44);
           }
 
           // await clearTotalCache();
           toggleSyncing(false);
         } else {
+          // await ShopFunc().clearShop();
           toggleSyncing(false);
+          // returnNavProvider(context, listen: false).nullShop(
+          //   logoutAction:
+          //       () => returnNavProviderSingle().navPush(
+          //         context,
+          //       ),
+          // );
         }
       } else {
-        // await ShopFunc().clearShop();
         toggleSyncing(false);
-        // returnNavProvider(context, listen: false).nullShop(
-        //   logoutAction:
-        //       () => returnNavProviderSingle().navPush(
-        //         context,
-        //       ),
-        // );
-      }
-    } else {
-      toggleSyncing(false);
-      if (context != null && context.mounted) {
-        showDialog(
-          context: context,
-          builder: (context) {
-            return InfoAlert(
-              title: 'Syncing Error',
-              message:
-                  'You have to turn on your data to sync.',
-              theme: returnTheme(context, listen: false),
-              action: () {
-                // Navigator.of(context).pop();
-              },
-            );
-          },
-        );
+        if (context != null && context.mounted) {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return InfoAlert(
+                title: 'Syncing Error',
+                message:
+                    'You have to turn on your data to sync.',
+                theme: returnTheme(context, listen: false),
+                action: () {
+                  // Navigator.of(context).pop();
+                },
+              );
+            },
+          );
+        }
       }
     }
   }
@@ -855,7 +906,7 @@ class DataProvider extends ChangeNotifier {
   bool isSyncing = false;
   double syncProgress = 0;
   void setSyncProgress(int value) {
-    syncProgress = (value / 45) * 100;
+    syncProgress = (value / 44) * 100;
     notifyListeners();
   }
 
@@ -946,59 +997,6 @@ class DataProvider extends ChangeNotifier {
       }
     }
   }
-
-  // Future<void> clearTotalCache() async {
-  //   await CreatedCustomersFunc().clearCustomers();
-  //   await UpdatedCustomersFunc().clearupdatedCustomers();
-  //   await DeletedCustomersFunc().clearDeletedCustomers();
-  //   await CreatedExpensesFunc().clearExpenses();
-  //   await UpdatedExpensesFunc().clearupdatedExpenses();
-  //   await DeletedExpensesFunc().clearDeletedExpenses();
-  //   await CreatedReceiptsFunc().clearReceipts();
-  //   await CreatedRecordsFunc().clearRecords();
-  //   await CreatedProductFunc().clearProducts();
-  //   await UpdatedProductsFunc().clearupdatedProducts();
-  //   await DeletedProductsFunc().clearDeletedProducts();
-  //   await CreatedInventoryUpdatesFunc()
-  //       .clearInventoryUpdate();
-  //   await DeletedReceiptsFunc().clearDeletedReceipts();
-  //   await SalesProductFunc().clearProducts();
-  //   await SalesProductFunc().clearProducts();
-  //   await UpdatedReceiptsFunc().clearUpdatedReceipts();
-  //   await UpdatedShopFunc().clearUpdatedShop();
-  //   await SalesProductFunc().clearProducts();
-  //   await CreatedShopLogosFunc().clearCreatedLogos();
-  //   await CreatedEventsLogFunc().clearEvents();
-  //   await CreatedDepartmentsFunc().clearDepartment();
-  //   await UpdatedDepartmentFunc().clearupdatedDepartments();
-  //   await DeletedDepartmentsFunc()
-  //       .clearDeletedDepartments();
-  //   await CreatedSubStaffFunc().clearSubStaffs();
-  //   await UpdatedSubStaffFunc().clearUpdatedSubStaff();
-  //   await DeletedSubStaffFunc().clearDeletedSubStaff();
-  //   await CreatedCategoriesFunc().clearCategories();
-  //   await UpdatedCategoriesFunc().clearUpdatedCategory();
-  //   await DeletedCategoriesFunc().clearDeletedCategories();
-  //   await CreatedSupplierFunc().clearSuppliers();
-  //   await UpdatedSupplierFunc().clearUpdatedSuppliers();
-  //   await DeletedSupplierFunc().clearDeletedSupplier();
-  //   await CreatedPurchasesFunc().clearPurchases();
-  //   await UpdatedPurchasesFunc().clearUpdatedPurchases();
-  //   await DeletedPurchasesFunc().clearDeletedPurchases();
-  //   await UpdatedPurchasesFunc().clearUpdatedPurchases();
-  //   await CreatedItemPurchaseFunc().clearRecords();
-  //   await DeletedItemPurchaseFunc()
-  //       .clearDeletedItemRecords();
-  //   await CreatedStorageProductsFunc()
-  //       .clearCreatedStorageProducts();
-  //   await UpdatedStorageProductsFunc()
-  //       .clearUpdatedStorageProduct();
-  //   await DeletedStorageProductsFunc()
-  //       .clearDeletedStorageProduct();
-  //   await CreatedWaybillsFunc().clearWaybills();
-  //   await UpdatedWaybillsFunc().clearUpdatedWaybills();
-  //   await DeletedWaybillsFunc().clearDeletedWaybills();
-  // }
 
   String? departmentUuid;
   void setDepartment(String? uuid) {

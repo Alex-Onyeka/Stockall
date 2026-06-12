@@ -77,13 +77,12 @@ class _MainInvoiceTileMobileState
   TempCustomersClass? customer;
   void getCustomer() {
     List<TempCustomersClass> customers =
-        returnCustomers(context, listen: false)
-            .customersMain()
+        returnCustomers(context, listen: false).customers
             .where(
               (customer) =>
                   customer.uuid != null &&
                   customer.uuid ==
-                      widget.invoice.customerUuid!,
+                      widget.invoice.customerUuid,
             )
             .toList();
     if (customers.isNotEmpty) {
@@ -368,13 +367,12 @@ class _MainInvoiceTileDesktopState
   TempCustomersClass? customer;
   void getCustomer() {
     List<TempCustomersClass> customers =
-        returnCustomers(context, listen: false)
-            .customersMain()
+        returnCustomers(context, listen: false).customers
             .where(
               (customer) =>
                   customer.uuid != null &&
                   customer.uuid ==
-                      widget.invoice.customerUuid!,
+                      widget.invoice.customerUuid,
             )
             .toList();
     if (customers.isNotEmpty) {

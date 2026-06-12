@@ -114,6 +114,7 @@ class Authorizations {
   String switchStores = 'Switch Stores';
   String createShop = 'Create Shop';
   String deleteShop = 'Delete Shop';
+  String clearCache = 'Clear Cache';
   String generalDiscount = 'General Discount';
   String manageVAT = 'Manage VAT';
   String generateBarcode = 'Generate Barcode';

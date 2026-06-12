@@ -1,17 +1,14 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/product_summary/product_summary_class.dart';
 import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
-import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
-import 'package:stockall/constants/general_report_print_and_download.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -143,72 +140,72 @@ class _GeneralReportDesktopState
                           ? 'All Records'
                           : 'For Today',
                     ),
-                    Visibility(
-                      visible: false,
-                      child: Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.end,
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (confirmContext) {
-                                  return ConfirmationAlert(
-                                    theme: theme,
-                                    message:
-                                        'You are about to Print General Report, are you sure you want to proceed?',
-                                    title:
-                                        'Print General Report',
-                                    action: () async {
-                                      Navigator.of(
-                                        confirmContext,
-                                      ).pop();
-                                      if (kIsWeb) {
-                                      } else {
-                                        generateAndPreviewPdfRollGeneralReport(
-                                          context: context,
-                                        );
-                                      }
-                                    },
-                                  );
-                                },
-                              );
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 10,
-                              ),
-                              child: Row(
-                                spacing: 5,
-                                children: [
-                                  Text(
-                                    style: TextStyle(
-                                      fontSize:
-                                          theme
-                                              .mobileTexts
-                                              .b3
-                                              .fontSize,
-                                      color:
-                                          Colors
-                                              .grey
-                                              .shade700,
-                                      fontWeight:
-                                          FontWeight.bold,
-                                    ),
-                                    'Print Report',
-                                  ),
-                                  Icon(
-                                    color: Colors.grey,
-                                    Icons.print,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    // Visibility(
+                    //   visible: false,
+                    //   child: Row(
+                    //     mainAxisAlignment:
+                    //         MainAxisAlignment.end,
+                    //     children: [
+                    //       InkWell(
+                    //         onTap: () {
+                    //           showDialog(
+                    //             context: context,
+                    //             builder: (confirmContext) {
+                    //               return ConfirmationAlert(
+                    //                 theme: theme,
+                    //                 message:
+                    //                     'You are about to Print General Report, are you sure you want to proceed?',
+                    //                 title:
+                    //                     'Print General Report',
+                    //                 action: () async {
+                    //                   Navigator.of(
+                    //                     confirmContext,
+                    //                   ).pop();
+                    //                   if (kIsWeb) {
+                    //                   } else {
+                    //                     generateAndPreviewPdfRollGeneralReport(
+                    //                       context: context,
+                    //                     );
+                    //                   }
+                    //                 },
+                    //               );
+                    //             },
+                    //           );
+                    //         },
+                    //         child: Container(
+                    //           padding: EdgeInsets.symmetric(
+                    //             horizontal: 10,
+                    //           ),
+                    //           child: Row(
+                    //             spacing: 5,
+                    //             children: [
+                    //               Text(
+                    //                 style: TextStyle(
+                    //                   fontSize:
+                    //                       theme
+                    //                           .mobileTexts
+                    //                           .b3
+                    //                           .fontSize,
+                    //                   color:
+                    //                       Colors
+                    //                           .grey
+                    //                           .shade700,
+                    //                   fontWeight:
+                    //                       FontWeight.bold,
+                    //                 ),
+                    //                 'Print Report',
+                    //               ),
+                    //               Icon(
+                    //                 color: Colors.grey,
+                    //                 Icons.print,
+                    //               ),
+                    //             ],
+                    //           ),
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
                     Visibility(
                       visible: authorization(
                         authorized:

@@ -629,11 +629,16 @@ class _InvoicePageDesktopState
                                           .deleteInvoice(
                                             invoice,
                                             saleRecords
-                                                .map(
-                                                  (rec) =>
-                                                      rec.productName,
-                                                )
-                                                .toList(),
+                                                    .isNotEmpty
+                                                ? saleRecords
+                                                    .map(
+                                                      (
+                                                        rec,
+                                                      ) =>
+                                                          rec.productName,
+                                                    )
+                                                    .toList()
+                                                : [],
                                           );
                                       await actionResultDialog(
                                         // ignore: use_build_context_synchronously
@@ -2172,8 +2177,7 @@ class _InvoicePageDesktopState
                                         children:
                                             returnReceiptProvider(
                                                   context,
-                                                )
-                                                .returnOwnReceiptsByDayOrWeek()
+                                                ).receipts
                                                 .where(
                                                   (rec) =>
                                                       rec.invoiceUuid ==

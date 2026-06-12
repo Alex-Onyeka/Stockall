@@ -1201,7 +1201,9 @@ class ReceiptsProvider extends ChangeNotifier {
   List<GeneralReportSalesSummaryItem>
   returnGeneralReportSalesSummary() {
     final List<TempProductSaleRecord> records =
-        returnProductsRecordByDayOrWeek();
+        returnProductsRecordByDayOrWeek()
+            .where((item) => item.invoiceUuid == null)
+            .toList();
 
     Map<String, List<TempProductSaleRecord>> grouped = {};
 
@@ -1331,6 +1333,8 @@ class ReceiptsProvider extends ChangeNotifier {
 
   double getTotalSalesRevenue() {
     return returnProductsRecordByDayOrWeek()
+        .where((item) => item.invoiceUuid == null)
+        .toList()
         .map((item) => item.revenue)
         .toList()
         .fold(0, (first, second) => first + second);
@@ -1343,7 +1347,9 @@ class ReceiptsProvider extends ChangeNotifier {
   List<GeneralReportSalesSummaryItem>
   returnGeneralReportSalesSummaryVoid() {
     final List<TempProductSaleRecord> records =
-        returnProductsRecordByDayOrWeekVoid();
+        returnProductsRecordByDayOrWeekVoid()
+            .where((item) => item.invoiceUuid == null)
+            .toList();
 
     Map<String, List<TempProductSaleRecord>> grouped = {};
 
@@ -1475,7 +1481,11 @@ class ReceiptsProvider extends ChangeNotifier {
   returnGeneralReportSalesSummaryNoDepartment() {
     final List<TempProductSaleRecord> records =
         returnProductsRecordByDayOrWeek()
-            .where((item) => item.departmentUuid == null)
+            .where(
+              (item) =>
+                  item.departmentUuid == null &&
+                  item.invoiceUuid == null,
+            )
             .toList();
 
     Map<String, List<TempProductSaleRecord>> grouped = {};
@@ -1623,7 +1633,11 @@ class ReceiptsProvider extends ChangeNotifier {
     required String deptUuid,
   }) {
     return returnProductsRecordByDayOrWeek()
-        .where((item) => item.departmentUuid == deptUuid)
+        .where(
+          (item) =>
+              item.departmentUuid == deptUuid &&
+              item.invoiceUuid == null,
+        )
         .map((item) => item.revenue)
         .toList()
         .fold(0, (first, second) => first + second);
@@ -1642,7 +1656,9 @@ class ReceiptsProvider extends ChangeNotifier {
   List<GeneralReportSalesSummaryItemStaff>
   returnGeneralReportSalesSummaryByStaff() {
     final List<TempProductSaleRecord> records =
-        returnProductsRecordByDayOrWeek();
+        returnProductsRecordByDayOrWeek()
+            .where((item) => item.invoiceUuid == null)
+            .toList();
 
     Map<String, List<TempProductSaleRecord>> grouped = {};
 

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
+import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
+import 'package:stockall/components/buttons/main_button_p.dart';
+import 'package:stockall/components/buttons/main_button_transparent.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/components/major/empty_widget_display_only.dart';
 import 'package:stockall/constants/app_bar.dart';
@@ -7,6 +10,7 @@ import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/date_picker_function.dart';
 import 'package:stockall/constants/functions.dart';
+import 'package:stockall/constants/general_report_print_and_download.dart';
 import 'package:stockall/constants/refresh_functions.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/general_report/class/general_report_class.dart';
@@ -58,9 +62,14 @@ class _SalesAndRevenueReportDesktopState
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     List<TempProductSaleRecord> salesRecords =
-        returnReceiptProvider(
-          context,
-        ).returnProductsRecordByDayOrWeek();
+        returnReceiptProvider(context)
+            .returnProductsRecordByDayOrWeek()
+            .where(
+              (item) =>
+                  item.isVoid != true &&
+                  item.invoiceUuid == null,
+            )
+            .toList();
     salesRecords.sort((a, b) {
       if (sortIndex == 1) {
         return a.productName.compareTo(b.productName);
@@ -347,8 +356,8 @@ class _SalesAndRevenueReportDesktopState
                             ],
                           ),
                           Visibility(
-                            visible: false,
-                            // salesRecords.isNotEmpty,
+                            visible:
+                                salesRecords.isNotEmpty,
                             child: Row(
                               mainAxisAlignment:
                                   MainAxisAlignment.end,
@@ -434,25 +443,30 @@ class _SalesAndRevenueReportDesktopState
                                                           ),
                                                         ),
                                                       ),
-                                                      Expanded(
-                                                        child: SizedBox(
-                                                          height:
-                                                              screenHeight(
-                                                                context,
-                                                              ) *
-                                                              0.85,
-                                                          child: GenerateSectionWidget(
-                                                            title:
-                                                                'Department Summary',
-                                                            widget: DepartmentSummaryListWidget(
-                                                              isSummary:
-                                                                  isSummary,
-                                                              summary:
-                                                                  summary,
-                                                              theme:
-                                                                  theme,
-                                                              salesRecords:
-                                                                  salesRecords,
+                                                      Visibility(
+                                                        visible:
+                                                            returnShopProvider().userShop()?.manageDepartments !=
+                                                            false,
+                                                        child: Expanded(
+                                                          child: SizedBox(
+                                                            height:
+                                                                screenHeight(
+                                                                  context,
+                                                                ) *
+                                                                0.85,
+                                                            child: GenerateSectionWidget(
+                                                              title:
+                                                                  'Department Summary',
+                                                              widget: DepartmentSummaryListWidget(
+                                                                isSummary:
+                                                                    isSummary,
+                                                                summary:
+                                                                    summary,
+                                                                theme:
+                                                                    theme,
+                                                                salesRecords:
+                                                                    salesRecords,
+                                                              ),
                                                             ),
                                                           ),
                                                         ),
@@ -520,104 +534,183 @@ class _SalesAndRevenueReportDesktopState
                                                                       ],
                                                                     ),
                                                                   ),
-                                                                  SizedBox(
-                                                                    height:
-                                                                        20,
-                                                                  ),
-                                                                  Container(
-                                                                    height:
-                                                                        6,
-                                                                    color:
-                                                                        Colors.amber,
-                                                                  ),
-                                                                  SizedBox(
-                                                                    height:
-                                                                        5,
-                                                                  ),
-                                                                  Row(
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment.center,
-                                                                    children: [
-                                                                      Text(
-                                                                        style: TextStyle(
-                                                                          fontSize:
-                                                                              theme.mobileTexts.b3.fontSize,
-                                                                          fontWeight:
-                                                                              FontWeight.bold,
+                                                                  Visibility(
+                                                                    visible:
+                                                                        returnShopProvider().userShop()?.manageDepartments !=
+                                                                        false,
+                                                                    child: Column(
+                                                                      spacing:
+                                                                          5,
+                                                                      children: [
+                                                                        SizedBox(
+                                                                          height:
+                                                                              20,
                                                                         ),
-                                                                        'Departments',
-                                                                      ),
-                                                                    ],
+                                                                        Container(
+                                                                          height:
+                                                                              6,
+                                                                          color:
+                                                                              Colors.amber,
+                                                                        ),
+                                                                        SizedBox(
+                                                                          height:
+                                                                              5,
+                                                                        ),
+                                                                        Row(
+                                                                          mainAxisAlignment:
+                                                                              MainAxisAlignment.center,
+                                                                          children: [
+                                                                            Text(
+                                                                              style: TextStyle(
+                                                                                fontSize:
+                                                                                    theme.mobileTexts.b3.fontSize,
+                                                                                fontWeight:
+                                                                                    FontWeight.bold,
+                                                                              ),
+                                                                              'Departments',
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                        SizedBox(
+                                                                          height:
+                                                                              5,
+                                                                        ),
+                                                                        Divider(
+                                                                          color:
+                                                                              Colors.grey,
+                                                                          height:
+                                                                              0,
+                                                                        ),
+                                                                        Column(
+                                                                          children:
+                                                                              returnDepartmentProvider().departments
+                                                                                  .where(
+                                                                                    (
+                                                                                      item,
+                                                                                    ) {
+                                                                                      for (var rec in salesRecords) {
+                                                                                        if (rec.departmentUuid ==
+                                                                                            item.uuid) {
+                                                                                          return true;
+                                                                                        }
+                                                                                      }
+                                                                                      return false;
+                                                                                    },
+                                                                                  )
+                                                                                  .map(
+                                                                                    (
+                                                                                      dept,
+                                                                                    ) {
+                                                                                      return Padding(
+                                                                                        padding: const EdgeInsets.all(
+                                                                                          8.0,
+                                                                                        ),
+                                                                                        child: Row(
+                                                                                          mainAxisAlignment:
+                                                                                              MainAxisAlignment.spaceBetween,
+                                                                                          children: [
+                                                                                            Text(
+                                                                                              style: TextStyle(
+                                                                                                fontSize:
+                                                                                                    theme.mobileTexts.b3.fontSize,
+                                                                                                fontWeight:
+                                                                                                    FontWeight.bold,
+                                                                                              ),
+                                                                                              "${dept.name}:",
+                                                                                            ),
+                                                                                            Text(
+                                                                                              style: TextStyle(
+                                                                                                fontSize:
+                                                                                                    theme.mobileTexts.b3.fontSize,
+                                                                                                fontWeight:
+                                                                                                    FontWeight.bold,
+                                                                                              ),
+                                                                                              formatMoneyBig(
+                                                                                                amount: returnReceiptProviderSingle().getTotalSalesRevenueForDepartment(
+                                                                                                  deptUuid:
+                                                                                                      dept.uuid,
+                                                                                                ),
+                                                                                                context:
+                                                                                                    context,
+                                                                                              ),
+                                                                                            ),
+                                                                                          ],
+                                                                                        ),
+                                                                                      );
+                                                                                    },
+                                                                                  )
+                                                                                  .toList(),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                  MainButtonTransparent(
+                                                                    themeProvider:
+                                                                        theme,
+                                                                    constraints:
+                                                                        BoxConstraints(),
+                                                                    text:
+                                                                        'Download',
+                                                                    action: () {
+                                                                      showDialog(
+                                                                        context:
+                                                                            context,
+                                                                        builder: (
+                                                                          confirmContext,
+                                                                        ) {
+                                                                          return ConfirmationAlert(
+                                                                            theme:
+                                                                                theme,
+                                                                            message:
+                                                                                'You are about to download this Record, Are you sure you want to proceed?',
+                                                                            title:
+                                                                                'Download Record',
+                                                                            action: () {
+                                                                              Navigator.of(
+                                                                                confirmContext,
+                                                                              ).pop();
+                                                                            },
+                                                                          );
+                                                                        },
+                                                                      );
+                                                                    },
                                                                   ),
                                                                   SizedBox(
                                                                     height:
-                                                                        5,
+                                                                        3,
                                                                   ),
-                                                                  Divider(
-                                                                    color:
-                                                                        Colors.grey,
-                                                                    height:
-                                                                        0,
-                                                                  ),
-                                                                  Column(
-                                                                    children:
-                                                                        returnDepartmentProvider().departments
-                                                                            .where(
-                                                                              (
-                                                                                item,
-                                                                              ) {
-                                                                                for (var rec in salesRecords) {
-                                                                                  if (rec.departmentUuid ==
-                                                                                      item.uuid) {
-                                                                                    return true;
-                                                                                  }
-                                                                                }
-                                                                                return false;
-                                                                              },
-                                                                            )
-                                                                            .map(
-                                                                              (
-                                                                                dept,
-                                                                              ) {
-                                                                                return Padding(
-                                                                                  padding: const EdgeInsets.all(
-                                                                                    8.0,
-                                                                                  ),
-                                                                                  child: Row(
-                                                                                    mainAxisAlignment:
-                                                                                        MainAxisAlignment.spaceBetween,
-                                                                                    children: [
-                                                                                      Text(
-                                                                                        style: TextStyle(
-                                                                                          fontSize:
-                                                                                              theme.mobileTexts.b3.fontSize,
-                                                                                          fontWeight:
-                                                                                              FontWeight.bold,
-                                                                                        ),
-                                                                                        "${dept.name}:",
-                                                                                      ),
-                                                                                      Text(
-                                                                                        style: TextStyle(
-                                                                                          fontSize:
-                                                                                              theme.mobileTexts.b3.fontSize,
-                                                                                          fontWeight:
-                                                                                              FontWeight.bold,
-                                                                                        ),
-                                                                                        formatMoneyBig(
-                                                                                          amount: returnReceiptProviderSingle().getTotalSalesRevenueForDepartment(
-                                                                                            deptUuid:
-                                                                                                dept.uuid,
-                                                                                          ),
-                                                                                          context:
-                                                                                              context,
-                                                                                        ),
-                                                                                      ),
-                                                                                    ],
-                                                                                  ),
-                                                                                );
-                                                                              },
-                                                                            )
-                                                                            .toList(),
+                                                                  MainButtonP(
+                                                                    themeProvider:
+                                                                        theme,
+                                                                    action: () {
+                                                                      showDialog(
+                                                                        context:
+                                                                            context,
+                                                                        builder: (
+                                                                          confirmContext,
+                                                                        ) {
+                                                                          return ConfirmationAlert(
+                                                                            theme:
+                                                                                theme,
+                                                                            message:
+                                                                                'You are about to Print this Record, Are you sure you want to proceed?',
+                                                                            title:
+                                                                                'Print Record',
+                                                                            action: () {
+                                                                              Navigator.of(
+                                                                                confirmContext,
+                                                                              ).pop();
+                                                                              generateAndPreviewPdfGeneralReport(
+                                                                                context:
+                                                                                    context,
+                                                                              );
+                                                                            },
+                                                                          );
+                                                                        },
+                                                                      );
+                                                                    },
+                                                                    text:
+                                                                        'Print',
                                                                   ),
                                                                 ],
                                                               ),

@@ -464,14 +464,14 @@ class InvoicesProvider extends ChangeNotifier {
               // print(
               //   getTotalMainRevenueInvoice(invoice: invoice),
               // );
-              calcSalesRecordRevenue(
-                invoceTotalAmount:
-                    getTotalMainRevenueInvoice(
-                      invoice: invoice,
-                    ),
-                receiptPayment: currentPayment,
-                salesRecodRevenue: record.revenue,
-              );
+              // calcSalesRecordRevenue(
+              //   invoceTotalAmount:
+              //       getTotalMainRevenueInvoice(
+              //         invoice: invoice,
+              //       ),
+              //   receiptPayment: currentPayment,
+              //   salesRecodRevenue: record.revenue,
+              // );
 
               return TempProductSaleRecord(
                 isVoid: record.isVoid ?? false,
@@ -498,11 +498,36 @@ class InvoicesProvider extends ChangeNotifier {
                   receiptPayment: currentPayment,
                   salesRecodRevenue: record.revenue,
                 ),
-                discountedAmount: record.discountedAmount,
-                originalCost: record.originalCost,
+                discountedAmount:
+                    calcSalesRecordDiscountedAmount(
+                      invoceTotalAmount:
+                          getTotalMainRevenueInvoice(
+                            invoice: invoice,
+                          ),
+                      receiptPayment: currentPayment,
+                      salesRecodDiscountedAmount:
+                          (record.discountedAmount ?? 0),
+                    ),
+                originalCost: calcSalesRecordOriginalCost(
+                  invoceTotalAmount:
+                      getTotalMainRevenueInvoice(
+                        invoice: invoice,
+                      ),
+                  receiptPayment: currentPayment,
+                  salesRecodOriginalCost:
+                      (record.originalCost ?? 0),
+                ),
                 discount: record.discount,
                 fixedDiscount: record.fixedDiscount,
-                costPrice: record.costPrice,
+                costPrice: calcSalesRecordCostPrice(
+                  invoceTotalAmount:
+                      getTotalMainRevenueInvoice(
+                        invoice: invoice,
+                      ),
+                  receiptPayment: currentPayment,
+                  salesRecodCostPrice:
+                      (record.costPrice ?? 0),
+                ),
                 addToStock: record.addToStock,
                 departmentName:
                     record.departmentName ??
@@ -565,6 +590,43 @@ class InvoicesProvider extends ChangeNotifier {
         ((receiptPayment * 100) / invoceTotalAmount);
     double result =
         ((paymentPercent * salesRecodRevenue) / 100);
+    return result;
+  }
+
+  double calcSalesRecordCostPrice({
+    required double invoceTotalAmount,
+    required double receiptPayment,
+    required double salesRecodCostPrice,
+  }) {
+    double paymentPercent =
+        ((receiptPayment * 100) / invoceTotalAmount);
+    double result =
+        ((paymentPercent * salesRecodCostPrice) / 100);
+    return result;
+  }
+
+  double calcSalesRecordDiscountedAmount({
+    required double invoceTotalAmount,
+    required double receiptPayment,
+    required double salesRecodDiscountedAmount,
+  }) {
+    double paymentPercent =
+        ((receiptPayment * 100) / invoceTotalAmount);
+    double result =
+        ((paymentPercent * salesRecodDiscountedAmount) /
+            100);
+    return result;
+  }
+
+  double calcSalesRecordOriginalCost({
+    required double invoceTotalAmount,
+    required double receiptPayment,
+    required double salesRecodOriginalCost,
+  }) {
+    double paymentPercent =
+        ((receiptPayment * 100) / invoceTotalAmount);
+    double result =
+        ((paymentPercent * salesRecodOriginalCost) / 100);
     return result;
   }
 
@@ -1128,14 +1190,14 @@ class InvoicesProvider extends ChangeNotifier {
               .getInvoiceIds()
               .isNotEmpty &&
           isOnline) {
-        final TempInvoice =
+        final tempInvoice =
             DeletedInvoicesFunc().getInvoiceIds().toList();
 
-        for (var inv in TempInvoice) {
+        for (var inv in tempInvoice) {
           await supabase.rpc(
-            'delete_receipt_and_update_inventory_new',
+            'delete_invoice_and_update_inventory_new',
             params: {
-              'target_receipt_uuid': inv.invoiceUuid,
+              'target_invoice_uuid': inv.invoiceUuid,
             },
           );
           await DeletedInvoicesFunc()
@@ -1143,7 +1205,7 @@ class InvoicesProvider extends ChangeNotifier {
         }
 
         print(
-          '${TempInvoice.length} Invoices Created successfully ✅',
+          '${tempInvoice.length} Invoices Created successfully ✅',
         );
         await DeletedInvoicesFunc().clearDeletedInvoices();
         print('Unsynced Deleted Invoices Cleared');

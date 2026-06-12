@@ -2237,7 +2237,7 @@ class _InvoicePageMobileState
                                                     returnReceiptProvider(
                                                           context,
                                                         )
-                                                        .returnOwnReceiptsByDayOrWeek()
+                                                        .receipts
                                                         .where(
                                                           (
                                                             rec,

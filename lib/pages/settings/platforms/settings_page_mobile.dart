@@ -23,11 +23,13 @@ import 'package:stockall/pages/authentication/components/email_text_field.dart';
 import 'package:stockall/pages/categories/categories_page.dart';
 import 'package:stockall/pages/departments/departments_dashboard.dart';
 import 'package:stockall/pages/profile/profile_page.dart';
+import 'package:stockall/pages/settings/components/clear_total_cache_widget.dart';
 import 'package:stockall/pages/settings/components/manage_access_pin.dart';
 import 'package:stockall/pages/settings/components/manage_departments_toggle_switch.dart';
 import 'package:stockall/pages/settings/components/manage_inventory_switch_toggle.dart';
 import 'package:stockall/pages/settings/components/set_closing_time.dart';
 import 'package:stockall/pages/settings/components/toggle_bulk_sale.dart';
+import 'package:stockall/pages/settings/components/toggle_print_sales_docket.dart';
 import 'package:stockall/pages/settings/components/toggle_track_cart.dart';
 import 'package:stockall/pages/settings/components/toggle_whole_sale_switch.dart';
 import 'package:stockall/pages/settings/components/use_group_unit_toggle.dart';
@@ -1041,6 +1043,7 @@ class _SettingsPageMobileState
                         ManageInventoryToggleSwitch(),
                         UseGroupUnitToggle(),
                         ToggleWholeSaleSwitch(),
+                        TogglePrintSalesDocket(),
                         ManageDepartmentsToggleSwitch(),
                         UseScreenKeyboard(),
                         ToggleTrackCart(),
@@ -1494,6 +1497,7 @@ class _SettingsPageMobileState
                           title: 'Go to Website.',
                           icon: Icons.language_rounded,
                         ),
+                        ClearTotalCacheWidget(),
                         Visibility(
                           visible: authorization(
                             authorized:
