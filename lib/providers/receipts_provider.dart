@@ -400,27 +400,45 @@ class ReceiptsProvider extends ChangeNotifier {
       // Prepare batch payload
       if (CreatedReceiptsFunc().getReceipts().isNotEmpty &&
           isOnline) {
-        final tempReceipts =
+        List<CreatedReceipts> tempReceipts =
             CreatedReceiptsFunc().getReceipts().toList();
-        var newReceipts = tempReceipts.map((rec) {
-          rec.receipt.createdAt =
-              rec.receipt.createdAt.toUtc();
-          return rec;
-        });
-        final payload =
-            newReceipts
-                .map((p) => p.receipt.toJson())
-                .toList();
-
-        // Insert all at once
-        final data =
+        List<CreatedReceipts> newReceipts =
+            tempReceipts.map((rec) {
+              rec.receipt.createdAt =
+                  rec.receipt.createdAt.toUtc();
+              return rec;
+            }).toList();
+        // final payload =
+        //     newReceipts
+        //         .map((p) => p.receipt.toJson())
+        //         .toList();
+        int count = 0;
+        for (var item in newReceipts) {
+          try {
+            // Insert all at once
             await supabase
                 .from('receipts')
-                .insert(payload)
+                .insert(item.receipt.toJson())
                 .select();
+            count++;
+            await CreatedReceiptsFunc().deleteReceipt(
+              item.receipt.uuid!,
+            );
+          } on PostgrestException catch (e) {
+            if (e.code == '23505') {
+              await CreatedReceiptsFunc().deleteReceipt(
+                item.receipt.uuid!,
+              );
+            }
+            await createErrorLog(
+              error:
+                  'Error Synchronizing Receipt ${item.receipt.bank + item.receipt.cashAlt}: $e',
+            );
+          }
+        }
 
-        print('${data.length} items added successfully ✅');
-        await CreatedReceiptsFunc().clearReceipts();
+        print('$count items added successfully ✅');
+        // await CreatedReceiptsFunc().clearReceipts();
         print('Unsynced Receipts Cleared');
         print('Mounted, refreshing Receipts ✅');
         await loadReceipts(
@@ -743,20 +761,37 @@ class ReceiptsProvider extends ChangeNotifier {
               rec.record.createdAt.toUtc();
           return rec;
         });
-        final payload =
-            newRecords
-                .map((p) => p.record.toJson())
-                .toList();
-
-        // Insert all at once
-        final data =
+        // final payload =
+        //     newRecords
+        //         .map((p) => p.record.toJson())
+        //         .toList();
+        int count = 0;
+        for (var item in newRecords) {
+          try {
             await supabase
                 .from('product_sales')
-                .insert(payload)
+                .insert(item.record.uuid!)
                 .select();
 
-        print('${data.length} items added successfully ✅');
-        await CreatedRecordsFunc().clearRecords();
+            count++;
+            await CreatedRecordsFunc().deleteRecords(
+              item.record.uuid!,
+            );
+          } on PostgrestException catch (e) {
+            if (e.code == '23505') {
+              await CreatedRecordsFunc().deleteRecords(
+                item.record.uuid!,
+              );
+            }
+            await createErrorLog(
+              error:
+                  'Error Synchronizing Product Sales Record ${item.record.productName}: $e',
+            );
+          }
+        }
+
+        print('$count items added successfully ✅');
+        // await CreatedRecordsFunc().clearRecords();
         print('Unsynced Records Cleared');
       }
     } catch (e) {
