@@ -1144,20 +1144,32 @@ class InvoicesProvider extends ChangeNotifier {
               inv.invoice.createdAt.toUtc();
           return inv;
         });
-        final payload =
-            newInvoices
-                .map((p) => p.invoice.toJson())
-                .toList();
-
-        // Insert all at once
-        final data =
+        int count = 0;
+        for (var item in newInvoices) {
+          try {
+            // Insert all at once
             await supabase
                 .from('invoices')
-                .insert(payload)
+                .insert(item.invoice.toJson())
                 .select();
+            count++;
+            await CreatedInvoicesFunc().deleteInvoice(
+              item.invoice.uuid!,
+            );
+          } on PostgrestException catch (e) {
+            if (e.code == '23505') {
+              await CreatedInvoicesFunc().deleteInvoice(
+                item.invoice.uuid!,
+              );
+            }
+            await createErrorLog(
+              error:
+                  'Error Synchronizing Invoice ${item.invoice.bank + item.invoice.cashAlt}: $e',
+            );
+          }
+        }
 
-        print('${data.length} items added successfully ✅');
-        await CreatedInvoicesFunc().clearInvoices();
+        print('$count items added successfully ✅');
         print('Unsynced Invoices Cleared');
         print('Mounted, refreshing Invoices ✅');
         await loadInvoices(

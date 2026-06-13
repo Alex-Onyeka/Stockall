@@ -1287,10 +1287,10 @@ class SalesProvider extends ChangeNotifier {
 
           if (context.mounted) {
             print('Creating Record Sales About to Start');
-            await returnReceiptProvider(
-              context,
-              listen: false,
-            ).createProductSaleRecord(productSaleRecords);
+            await returnReceiptProviderSingle()
+                .createProductSaleRecord(
+                  productSaleRecords,
+                );
           }
           print('Sales Record Inserted');
         }
