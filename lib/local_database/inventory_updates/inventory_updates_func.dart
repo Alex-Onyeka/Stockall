@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_inventory_updates/temp_inventory_update_class.dart';
 import 'package:stockall/local_database/inventory_updates/unsync_funcs/created_inventory_updates_func.dart';
+import 'package:stockall/main.dart';
 
 class InventoryUpdatesFunc {
   static final InventoryUpdatesFunc instance =
@@ -83,6 +84,17 @@ class InventoryUpdatesFunc {
         '❌❌ Offline InventoryUpdates  Clear Error: ${e.toString()}',
       );
       return 0;
+    }
+  }
+
+  bool isSynced() {
+    if (CreatedInventoryUpdatesFunc()
+            .getCreatedInventoryUpdatess()
+            .isEmpty &&
+        returnData().isSyncing == false) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

@@ -24,6 +24,7 @@ import 'package:stockall/local_database/customers/unsync_funcs/updated/updated_c
 import 'package:stockall/local_database/department_func/unsync_funcs/created_departments/created_departments_func.dart';
 import 'package:stockall/local_database/department_func/unsync_funcs/deleted_department/deleted_departments_func.dart';
 import 'package:stockall/local_database/department_func/unsync_funcs/updated_department/updated_department_func.dart';
+import 'package:stockall/local_database/error_log/unsync_funcs/created_events_log_func.dart';
 import 'package:stockall/local_database/events_log/unsync_funcs/created_events_log_func.dart';
 import 'package:stockall/local_database/expenses/unsync_funcs/created_expenses/created_expenses_func.dart';
 import 'package:stockall/local_database/expenses/unsync_funcs/deleted_expenses/deleted_expenses_func.dart';
@@ -63,6 +64,7 @@ import 'package:stockall/local_database/waybills/unsync_funcs/updated/updated_wa
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:stockall/providers/department_provider.dart';
+import 'package:stockall/providers/error_log_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DataProvider extends ChangeNotifier {
@@ -204,7 +206,10 @@ class DataProvider extends ChangeNotifier {
         print('Unsynced Products Cleared');
       }
     } catch (e) {
-      print('Batch insert failed ❌: $e');
+      print('Batch Items insert failed ❌: $e');
+      await createErrorLog(
+        error: 'Batch Items insert failed ❌: $e',
+      );
     }
   }
 
@@ -247,7 +252,10 @@ class DataProvider extends ChangeNotifier {
         print('Unsynced deleted products cleared');
       }
     } catch (e) {
-      print('Batch delete failed ❌: $e');
+      print('Batch Items delete failed ❌: $e');
+      await createErrorLog(
+        error: 'Batch Items delete failed ❌: $e',
+      );
     }
   }
 
@@ -343,7 +351,10 @@ class DataProvider extends ChangeNotifier {
         clearFields();
       }
     } catch (e) {
-      print('Batch update failed ❌: $e');
+      print('Batch Items update failed ❌: $e');
+      await createErrorLog(
+        error: 'Batch Items Update failed ❌: $e',
+      );
     }
   }
 
@@ -391,7 +402,13 @@ class DataProvider extends ChangeNotifier {
         }
       }
     } catch (e) {
-      print('Batch update failed ❌: $e');
+      print(
+        'Batch update Sold Items Quantity failed ❌: $e',
+      );
+      await createErrorLog(
+        error:
+            'Batch update Sold Items Quantity failed ❌: $e',
+      );
     }
   }
 
@@ -691,33 +708,7 @@ class DataProvider extends ChangeNotifier {
             print('Finished Syncing Deleted Suppliers');
             setSyncProgress(25);
           }
-          if (DeletedInvoicesFunc()
-                  .getInvoiceIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnInvoicesProvider()
-                .deleteInvoicesSync();
-            print('Finished Syncing Deleted Invoices');
-            setSyncProgress(26);
-          }
-          if (CreatedInvoicesFunc()
-                  .getInvoices()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnInvoicesProvider()
-                .createInvoicesSync();
-            print('Finished Syncing Created Invoices');
-            setSyncProgress(27);
-          }
-          if (UpdatedInvoicesFunc()
-                  .getInvoiceIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnInvoicesProvider()
-                .updateInvoicesSync();
-            print('Finished Syncing Updated Invoices');
-            setSyncProgress(28);
-          }
+
           if (DeletedReceiptsFunc()
                   .getReceiptIds()
                   .isNotEmpty &&
@@ -755,6 +746,33 @@ class DataProvider extends ChangeNotifier {
                 .updateReceiptsSync();
             print('Finished Syncing Created Receipts');
             setSyncProgress(32);
+          }
+          if (DeletedInvoicesFunc()
+                  .getInvoiceIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnInvoicesProvider()
+                .deleteInvoicesSync();
+            print('Finished Syncing Deleted Invoices');
+            setSyncProgress(26);
+          }
+          if (CreatedInvoicesFunc()
+                  .getInvoices()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnInvoicesProvider()
+                .createInvoicesSync();
+            print('Finished Syncing Created Invoices');
+            setSyncProgress(27);
+          }
+          if (UpdatedInvoicesFunc()
+                  .getInvoiceIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnInvoicesProvider()
+                .updateInvoicesSync();
+            print('Finished Syncing Updated Invoices');
+            setSyncProgress(28);
           }
           if (UpdatedShopFunc()
                   .getUpdatedShop()
@@ -863,6 +881,14 @@ class DataProvider extends ChangeNotifier {
                 .deleteWaybillsSync();
             print('Finished Syncing Deleted Waybills');
             setSyncProgress(44);
+          }
+          if (CreatedErrorLogFunc()
+                  .getCreatedErrorLogs()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnErrorLogProvider().errorsLogSync();
+            print('Finished Syncing Created Error Logs');
+            // setSyncProgress(44);
           }
 
           // await clearTotalCache();
@@ -1092,7 +1118,7 @@ class DataProvider extends ChangeNotifier {
   ) async {
     bool isOnline = await connectivity.isOnline();
     print('✅✅ Products List Cleared');
-    if (isOnline && isSynced() == 1) {
+    if (isOnline && ProductsFunc().isSynced()) {
       final data = await supabase
           .from('products')
           .select()

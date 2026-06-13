@@ -3,6 +3,7 @@ import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/local_database/expenses/unsync_funcs/created_expenses/created_expenses_func.dart';
 import 'package:stockall/local_database/expenses/unsync_funcs/deleted_expenses/deleted_expenses_func.dart';
 import 'package:stockall/local_database/expenses/unsync_funcs/updated_expenses/updated_expenses_func.dart';
+import 'package:stockall/main.dart';
 
 class ExpensesFunc {
   static final ExpensesFunc instance =
@@ -100,6 +101,17 @@ class ExpensesFunc {
     } catch (e) {
       print('Expenses Clear Failed: ${e.toString()}');
       return 0;
+    }
+  }
+
+  bool isSynced() {
+    if (CreatedExpensesFunc().getExpenses().isEmpty &&
+        UpdatedExpensesFunc().getExpenses().isEmpty &&
+        DeletedExpensesFunc().getExpenseIds().isEmpty &&
+        returnData().isSyncing == false) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

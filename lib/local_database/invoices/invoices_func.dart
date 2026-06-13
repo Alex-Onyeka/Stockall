@@ -3,6 +3,7 @@ import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/local_database/invoices/unsync_funcs/created/created_invoices_func.dart';
 import 'package:stockall/local_database/invoices/unsync_funcs/deleted/deleted_invoices_func.dart';
 import 'package:stockall/local_database/invoices/unsync_funcs/updated/updated_invoices_func.dart';
+import 'package:stockall/main.dart';
 
 class InvoicesFunc {
   static final InvoicesFunc instance =
@@ -115,6 +116,17 @@ class InvoicesFunc {
         'Offline Invoices Clear Failed: ${e.toString()}',
       );
       return 0;
+    }
+  }
+
+  bool isSynced() {
+    if (CreatedInvoicesFunc().getInvoices().isEmpty &&
+        UpdatedInvoicesFunc().getInvoiceIds().isEmpty &&
+        DeletedInvoicesFunc().getInvoiceIds().isEmpty &&
+        returnData().isSyncing == false) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

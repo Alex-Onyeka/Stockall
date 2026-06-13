@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_event_log/temp_event_log_class.dart';
 import 'package:stockall/local_database/events_log/unsync_funcs/created_events_log_func.dart';
+import 'package:stockall/main.dart';
 
 class EventsLogFunc {
   static final EventsLogFunc instance =
@@ -75,6 +76,17 @@ class EventsLogFunc {
         '❌❌ Offline Events Log Clear Error: ${e.toString()}',
       );
       return 0;
+    }
+  }
+
+  bool isSynced() {
+    if (CreatedEventsLogFunc()
+            .getCreatedEventsLogs()
+            .isEmpty &&
+        returnData().isSyncing == false) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

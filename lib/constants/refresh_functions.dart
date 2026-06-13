@@ -365,6 +365,10 @@ class RefreshFunctions {
     await eventLogProvider.getEventLogs();
   }
 
+  Future<void> getErrorLogs() async {
+    await returnErrorLogProvider().getErrorLogs();
+  }
+
   Future<void> refreshExpenses(context) async {
     var safeContext = context;
     bool isOnline = await checkOnline();
@@ -615,6 +619,7 @@ class RefreshFunctions {
                         .getSubStaffs();
                   }
                   await getEventLogs();
+                  await getErrorLogs();
                   await getExpenses();
                   await getEmployees();
                   // await getProducts();
@@ -653,6 +658,7 @@ class RefreshFunctions {
             await returnSubStaffProvider().getSubStaffs();
           }
           await getEventLogs();
+          await getErrorLogs();
           await getExpenses();
           await getEmployees();
           if (context.mounted) {

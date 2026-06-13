@@ -37,6 +37,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/authentication/base_page/base_page.dart';
 import 'package:stockall/pages/home/home.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/providers/error_log_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:image_picker/image_picker.dart';
@@ -1896,7 +1897,10 @@ class ShopProvider extends ChangeNotifier {
         await getUserShops();
       }
     } catch (e) {
-      print('Batch update failed ❌: $e');
+      print('Shop Update failed ❌: $e');
+      await createErrorLog(
+        error: 'Shop Update failed ❌: $e',
+      );
     }
   }
 

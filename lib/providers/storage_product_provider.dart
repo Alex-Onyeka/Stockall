@@ -11,6 +11,7 @@ import 'package:stockall/local_database/storage_product/unsync_funcs/deleted/del
 import 'package:stockall/local_database/storage_product/unsync_funcs/updated/updated_storage_products_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/providers/error_log_provider.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -131,7 +132,10 @@ class StorageProductProvider extends ChangeNotifier {
         print('Unsynced Storage Products Cleared');
       }
     } catch (e) {
-      print('Batch insert failed ❌: $e');
+      print('Batch Storage Products Insert failed ❌: $e');
+      await createErrorLog(
+        error: 'Batch Storage Products Insert failed ❌: $e',
+      );
     }
   }
 
@@ -172,7 +176,10 @@ class StorageProductProvider extends ChangeNotifier {
         print('Unsynced deleted Storage products cleared');
       }
     } catch (e) {
-      print('Batch delete failed ❌: $e');
+      print('Batch Storage Products Delete failed ❌: $e');
+      await createErrorLog(
+        error: 'Batch Storage Products Delete failed ❌: $e',
+      );
     }
   }
 
@@ -272,7 +279,10 @@ class StorageProductProvider extends ChangeNotifier {
         );
       }
     } catch (e) {
-      print('Batch update failed ❌: $e');
+      print('Batch Storage Products Update failed ❌: $e');
+      await createErrorLog(
+        error: 'Batch Storage Products Update failed ❌: $e',
+      );
     }
   }
 
@@ -312,7 +322,7 @@ class StorageProductProvider extends ChangeNotifier {
   ) async {
     bool isOnline = await connectivity.isOnline();
     print('✅✅ Products List Cleared');
-    if (isOnline && returnData().isSynced() == 1) {
+    if (isOnline && StorageProductsFunc().isSynced()) {
       final data = await supabase
           .from(tableName)
           .select()

@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_waybills/waybill_items.dart';
 import 'package:stockall/local_database/waybills/unsync_funcs/created/created_waybills_func.dart';
 import 'package:stockall/local_database/waybills/unsync_funcs/deleted/deleted_waybills_func.dart';
 import 'package:stockall/local_database/waybills/unsync_funcs/updated/updated_waybills_func.dart';
+import 'package:stockall/main.dart';
 
 class WaybillsFunc {
   static final WaybillsFunc instance =
@@ -93,6 +94,17 @@ class WaybillsFunc {
         'Offline Waybill Clear Failed: ${e.toString()}',
       );
       return 0;
+    }
+  }
+
+  bool isSynced() {
+    if (CreatedWaybillsFunc().getWaybills().isEmpty &&
+        UpdatedWaybillsFunc().getWaybillIds().isEmpty &&
+        DeletedWaybillsFunc().getWaybillIds().isEmpty &&
+        returnData().isSyncing == false) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

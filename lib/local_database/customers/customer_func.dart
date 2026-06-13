@@ -3,6 +3,7 @@ import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/created/created_customers_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/deleted/deleted_customers_func.dart';
 import 'package:stockall/local_database/customers/unsync_funcs/updated/updated_customers_func.dart';
+import 'package:stockall/main.dart';
 
 class CustomerFunc {
   static final CustomerFunc instance =
@@ -102,6 +103,17 @@ class CustomerFunc {
         '❌❌ Error Clearing Offline Customers: ${e.toString()}',
       );
       return 0;
+    }
+  }
+
+  bool isSynced() {
+    if (CreatedCustomersFunc().getCustomers().isEmpty &&
+        UpdatedCustomersFunc().getCustomers().isEmpty &&
+        DeletedCustomersFunc().getCustomerIds().isEmpty &&
+        returnData().isSyncing == false) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

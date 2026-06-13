@@ -11,6 +11,7 @@ import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/general_report/class/general_report_class.dart';
+import 'package:stockall/providers/error_log_provider.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:pdf/pdf.dart';
@@ -2891,6 +2892,9 @@ void downloadPdfWeb({
         }
       } catch (e, stackTrace) {
         print('❌ Error downloading PDF: $e\n$stackTrace');
+        returnErrorLogProvider().createLog(
+          error: 'Error downloading PDF: $e\n$stackTrace',
+        );
       }
     },
   );
@@ -2953,6 +2957,10 @@ void downloadPdfWebRoll({
       } catch (e, stackTrace) {
         print(
           '❌ Error downloading/printing PDF: $e\n$stackTrace',
+        );
+        createErrorLog(
+          error:
+              'Error downloading/printing PDF: $e\n$stackTrace',
         );
       }
     },
@@ -3843,6 +3851,9 @@ void downloadPdfWebProducts({
     }
   } catch (e, stackTrace) {
     print('❌ Error downloading PDF: $e\n$stackTrace');
+    createErrorLog(
+      error: 'Error downloading PDF: $e\n$stackTrace',
+    );
   }
 }
 
@@ -4508,6 +4519,9 @@ void downloadPdfWebSales({
     }
   } catch (e, stackTrace) {
     print('❌ Error downloading PDF: $e\n$stackTrace');
+    createErrorLog(
+      error: 'Error downloading PDF: $e\n$stackTrace',
+    );
   }
 }
 
@@ -5057,6 +5071,9 @@ void downloadPdfWebSalesSummary({
     }
   } catch (e, stackTrace) {
     print('❌ Error downloading PDF: $e\n$stackTrace');
+    createErrorLog(
+      error: 'Error downloading PDF: $e\n$stackTrace',
+    );
   }
 }
 

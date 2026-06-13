@@ -10,6 +10,7 @@ import 'package:stockall/local_database/category/unsync_funcs/deleted_categories
 import 'package:stockall/local_database/category/unsync_funcs/updated_categories/updated_categories_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/providers/error_log_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CategoriesProvider extends ChangeNotifier {
@@ -118,7 +119,7 @@ class CategoriesProvider extends ChangeNotifier {
     int shopId,
   ) async {
     bool isOnline = await connectivity.isOnline();
-    if (isOnline && returnData().isSynced() == 1) {
+    if (isOnline && CategoryFunc().isSynced()) {
       try {
         final response = await supabase
             .from(tableName)
@@ -359,6 +360,9 @@ class CategoriesProvider extends ChangeNotifier {
       }
     } catch (e) {
       print('Batch Categories insert failed ❌: $e');
+      await createErrorLog(
+        error: 'Batch Categories insert failed ❌: $e',
+      );
     }
   }
 
@@ -405,7 +409,10 @@ class CategoriesProvider extends ChangeNotifier {
         );
       }
     } catch (e) {
-      print('Batch delete failed ❌: $e');
+      print('Batch Categories delete failed ❌: $e');
+      await createErrorLog(
+        error: 'Batch Categories delete failed ❌: $e',
+      );
     }
   }
 
@@ -505,7 +512,10 @@ class CategoriesProvider extends ChangeNotifier {
         );
       }
     } catch (e) {
-      print('Batch update failed ❌: $e');
+      print('Batch Categories update failed ❌: $e');
+      await createErrorLog(
+        error: 'Batch Categories Update failed ❌: $e',
+      );
     }
   }
 

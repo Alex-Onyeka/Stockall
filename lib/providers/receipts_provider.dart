@@ -17,6 +17,7 @@ import 'package:stockall/local_database/product_record_func.dart/unsync_funcs/cr
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/general_report/class/general_report_class.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/providers/error_log_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 // // //
@@ -121,7 +122,7 @@ class ReceiptsProvider extends ChangeNotifier {
   ) async {
     bool isOnline = await connectivity.isOnline();
     List<Map<String, dynamic>> tempList = [];
-    if (isOnline && returnData().isSynced() == 1) {
+    if (isOnline && MainReceiptFunc().isSynced()) {
       await MainReceiptFunc().clearReceipts();
       try {
         final data = await supabase
@@ -427,7 +428,10 @@ class ReceiptsProvider extends ChangeNotifier {
         );
       }
     } catch (e) {
-      print('Batch Receipts insert failed ❌: $e');
+      print('Batch Receipts Insert failed ❌: $e');
+      await createErrorLog(
+        error: 'Batch Receipts Insert failed ❌: $e',
+      );
     }
   }
 
@@ -476,7 +480,10 @@ class ReceiptsProvider extends ChangeNotifier {
         );
       }
     } catch (e) {
-      print('Batch Receipts Deleted failed ❌: $e');
+      print('Batch Receipts Delete failed ❌: $e');
+      await createErrorLog(
+        error: 'Batch Receipts Delete failed ❌: $e',
+      );
     }
   }
   //
@@ -517,7 +524,10 @@ class ReceiptsProvider extends ChangeNotifier {
         );
       }
     } catch (e) {
-      print('Batch Receipts insert failed ❌: $e');
+      print('Batch Receipts Update failed ❌: $e');
+      await createErrorLog(
+        error: 'Batch Receipts Update failed ❌: $e',
+      );
     }
   }
 
@@ -603,7 +613,7 @@ class ReceiptsProvider extends ChangeNotifier {
   loadProductSalesRecord(int shopId) async {
     bool isOnline = await connectivity.isOnline();
     List<Map<String, dynamic>> tempList = [];
-    if (isOnline && returnData().isSynced() == 1) {
+    if (isOnline && ProductRecordFunc().isSynced()) {
       final data = await supabase
           .from('product_sales')
           .select()
@@ -750,7 +760,10 @@ class ReceiptsProvider extends ChangeNotifier {
         print('Unsynced Records Cleared');
       }
     } catch (e) {
-      print('Batch Records insert failed ❌: $e');
+      print('Batch Sales Records insert failed ❌: $e');
+      await createErrorLog(
+        error: 'Batch Sales Records Insert failed ❌: $e',
+      );
     }
   }
 

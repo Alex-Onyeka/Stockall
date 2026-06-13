@@ -18,7 +18,9 @@ class UpdatedInvoicesFunc {
       UpdatedInvoicesAdapter().typeId,
     )) {
       Hive.registerAdapter(UpdatedInvoicesAdapter());
-      print('Updated Invoices Adapter registered ✅');
+      print(
+        '😍😍😍😍😍Updated Invoices Adapter registered ✅',
+      );
     }
 
     // Open the box only if it isn’t already open
@@ -27,12 +29,14 @@ class UpdatedInvoicesFunc {
           await Hive.openBox<UpdatedInvoices>(
             updatedInvoicesBoxName,
           );
-      print('Updated Invoices Box opened ✅');
+      print('😍😍😍😍😍Updated Invoices Box opened ✅');
     } else {
       _updatedInvoicesBox = Hive.box<UpdatedInvoices>(
         updatedInvoicesBoxName,
       );
-      print('Updated Invoices Box already open, reused ✅');
+      print(
+        '😍😍😍😍😍Updated Invoices Box already open, reused ✅',
+      );
     }
   }
 

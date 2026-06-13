@@ -1,32 +1,32 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'updated_invoices.dart';
+part of 'created_error_log_class.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class UpdatedInvoicesAdapter extends TypeAdapter<UpdatedInvoices> {
+class CreatedErrorLogClassAdapter extends TypeAdapter<CreatedErrorLogClass> {
   @override
-  final int typeId = 46;
+  final int typeId = 95;
 
   @override
-  UpdatedInvoices read(BinaryReader reader) {
+  CreatedErrorLogClass read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return UpdatedInvoices(
-      updatedInvoice: fields[0] as TempInvoice,
+    return CreatedErrorLogClass(
+      errorLog: fields[0] as TempErrorLogClass,
     );
   }
 
   @override
-  void write(BinaryWriter writer, UpdatedInvoices obj) {
+  void write(BinaryWriter writer, CreatedErrorLogClass obj) {
     writer
       ..writeByte(1)
       ..writeByte(0)
-      ..write(obj.updatedInvoice);
+      ..write(obj.errorLog);
   }
 
   @override
@@ -35,7 +35,7 @@ class UpdatedInvoicesAdapter extends TypeAdapter<UpdatedInvoices> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is UpdatedInvoicesAdapter &&
+      other is CreatedErrorLogClassAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

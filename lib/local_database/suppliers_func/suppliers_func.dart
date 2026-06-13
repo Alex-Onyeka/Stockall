@@ -3,6 +3,7 @@ import 'package:stockall/classes/temp_suppliers/suppliers_class.dart';
 import 'package:stockall/local_database/suppliers_func/unsync_funcs/created/created_supplier_func.dart';
 import 'package:stockall/local_database/suppliers_func/unsync_funcs/deleted/deleted_supplier_func.dart';
 import 'package:stockall/local_database/suppliers_func/unsync_funcs/updated/updated_supplier_func.dart';
+import 'package:stockall/main.dart';
 
 class SuppliersFunc {
   static final SuppliersFunc instance =
@@ -102,6 +103,17 @@ class SuppliersFunc {
         '❌❌ Error Clearing Offline Suppliers: ${e.toString()}',
       );
       return 0;
+    }
+  }
+
+  bool isSynced() {
+    if (CreatedSupplierFunc().getSuppliers().isEmpty &&
+        UpdatedSupplierFunc().getSuppliers().isEmpty &&
+        DeletedSupplierFunc().getSupplierIds().isEmpty &&
+        returnData().isSyncing == false) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

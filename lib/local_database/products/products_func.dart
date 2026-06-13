@@ -6,6 +6,7 @@ import 'package:stockall/local_database/products/unsync_funcs/created_products%2
 import 'package:stockall/local_database/products/unsync_funcs/created_products/created_product_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/deleted_products/deleted_products_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/updated_products/updated_products_func.dart';
+import 'package:stockall/main.dart';
 
 class ProductsFunc {
   static final ProductsFunc instance =
@@ -241,6 +242,17 @@ class ProductsFunc {
         '❌❌ Offline Products Clear Error: ${e.toString()}',
       );
       return 0;
+    }
+  }
+
+  bool isSynced() {
+    if (CreatedProductFunc().getProducts().isEmpty &&
+        UpdatedProductsFunc().getProducts().isEmpty &&
+        DeletedProductsFunc().getProductIds().isEmpty &&
+        returnData().isSyncing == false) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

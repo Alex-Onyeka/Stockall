@@ -4,6 +4,7 @@ import 'package:stockall/local_database/department_current/current_department_fu
 import 'package:stockall/local_database/department_func/unsync_funcs/created_departments/created_departments_func.dart';
 import 'package:stockall/local_database/department_func/unsync_funcs/deleted_department/deleted_departments_func.dart';
 import 'package:stockall/local_database/department_func/unsync_funcs/updated_department/updated_department_func.dart';
+import 'package:stockall/main.dart';
 
 class DepartmentsFunc {
   static final DepartmentsFunc instance =
@@ -106,6 +107,19 @@ class DepartmentsFunc {
     } catch (e) {
       print('Department Clear Failed: ${e.toString()}');
       return 0;
+    }
+  }
+
+  bool isSynced() {
+    if (CreatedDepartmentsFunc().getDepartment().isEmpty &&
+        UpdatedDepartmentFunc().getDepartments().isEmpty &&
+        DeletedDepartmentsFunc()
+            .getDepartmentIds()
+            .isEmpty &&
+        returnData().isSyncing == false) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

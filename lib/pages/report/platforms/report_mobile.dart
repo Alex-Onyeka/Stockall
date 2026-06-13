@@ -6,6 +6,7 @@ import 'package:stockall/constants/subscription/report_auth.dart';
 import 'package:stockall/constants/subscription/subscription_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/report/customer_report/customer_report_page.dart';
+import 'package:stockall/pages/report/error_log/error_log.dart';
 import 'package:stockall/pages/report/events_log/events_log.dart';
 import 'package:stockall/pages/report/general_report/general_report_page.dart';
 import 'package:stockall/pages/report/product_report/product_report_page.dart';
@@ -167,6 +168,26 @@ class ReportMobile extends StatelessWidget {
                           isVisible:
                               !ReportAuthAction()
                                   .viewEventsLogAction(),
+                        ),
+                        Visibility(
+                          visible: !isStoreKeeper(),
+                          child: ReportListTile(
+                            isActive: true,
+                            theme: theme,
+                            action: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return ErrorLog();
+                                  },
+                                ),
+                              );
+                            },
+                            subText:
+                                'View a List of all Error Logs',
+                            title: 'Error Log',
+                          ),
                         ),
                         ReportListTile(
                           isActive: false,

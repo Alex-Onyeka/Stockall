@@ -6,6 +6,7 @@ import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/constants/app_bar.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/play_sounds.dart';
+import 'package:stockall/main.dart';
 
 class BarcodeScanner extends StatelessWidget {
   const BarcodeScanner({super.key});
@@ -161,6 +162,10 @@ class _BarcodeScannerMobileState
                     print(
                       '❌❌ Error: ${stackTrace.toString()}',
                     );
+                    returnErrorLogProvider().createLog(
+                      error:
+                          'Error: ${stackTrace.toString()}',
+                    );
                   },
                 ),
               ),
@@ -313,6 +318,10 @@ class _BarcodeScannerDesktopState
                       print(error.toString());
                       print(
                         '❌❌ Error: ${stackTrace.toString()}',
+                      );
+                      returnErrorLogProvider().createLog(
+                        error:
+                            'Error: ${stackTrace.toString()}',
                       );
                     },
                   ),

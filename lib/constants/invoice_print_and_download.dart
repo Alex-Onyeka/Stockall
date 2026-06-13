@@ -9,6 +9,7 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/generate_barcode.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/main.dart';
+import 'package:stockall/providers/error_log_provider.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -62,6 +63,9 @@ void downloadPdfWebInvoice({
         }
       } catch (e, stackTrace) {
         print('❌ Error downloading PDF: $e\n$stackTrace');
+        createErrorLog(
+          error: 'Error downloading PDF: $e\n$stackTrace',
+        );
       }
     },
   );
@@ -1434,6 +1438,10 @@ void downloadPdfWebRollInvoice({
       } catch (e, stackTrace) {
         print(
           '❌ Error downloading/printing PDF: $e\n$stackTrace',
+        );
+        createErrorLog(
+          error:
+              'Error downloading/printing PDF: $e\n$stackTrace',
         );
       }
     },

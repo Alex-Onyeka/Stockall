@@ -4,6 +4,7 @@ import 'package:stockall/classes/temp_purchase/temp_purchase.dart';
 import 'package:stockall/local_database/purchases/unsync_funcs/created/created_purchases_func.dart';
 import 'package:stockall/local_database/purchases/unsync_funcs/deleted/deleted_purchases_func.dart';
 import 'package:stockall/local_database/purchases/unsync_funcs/updated/updated_purchases_func.dart';
+import 'package:stockall/main.dart';
 
 class PurchaseFunc {
   static final PurchaseFunc instance =
@@ -80,6 +81,17 @@ class PurchaseFunc {
         'Offline Purchase Clear Failed: ${e.toString()}',
       );
       return 0;
+    }
+  }
+
+  bool isSynced() {
+    if (CreatedPurchasesFunc().getPurchases().isEmpty &&
+        UpdatedPurchasesFunc().getPurchaseIds().isEmpty &&
+        DeletedPurchasesFunc().getPurchaseIds().isEmpty &&
+        returnData().isSyncing == false) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

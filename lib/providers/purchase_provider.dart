@@ -30,6 +30,7 @@ import 'package:stockall/local_database/storage_product/unsync_funcs/created/cre
 import 'package:stockall/local_database/storage_product/unsync_funcs/updated/updated_storage_products_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/providers/error_log_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PurchaseProvider extends ChangeNotifier {
@@ -189,7 +190,7 @@ class PurchaseProvider extends ChangeNotifier {
     int shopId,
   ) async {
     bool isOnline = await connectivity.isOnline();
-    if (isOnline && returnData().isSynced() == 1) {
+    if (isOnline && PurchaseFunc().isSynced()) {
       await PurchaseFunc().clearPurchases();
       try {
         final data = await supabase
@@ -595,6 +596,9 @@ class PurchaseProvider extends ChangeNotifier {
       }
     } catch (e) {
       print('Batch Purchases insert failed ❌: $e');
+      await createErrorLog(
+        error: 'Batch Purchases insert failed ❌: $e',
+      );
     }
   }
 
@@ -646,6 +650,9 @@ class PurchaseProvider extends ChangeNotifier {
       }
     } catch (e) {
       print('Batch Purchases Deleted failed ❌: $e');
+      await createErrorLog(
+        error: 'Batch Purchases Delete failed ❌: $e',
+      );
     }
   }
 
@@ -748,7 +755,10 @@ class PurchaseProvider extends ChangeNotifier {
         );
       }
     } catch (e) {
-      print('Batch update failed ❌: $e');
+      print('Batch Purchases update failed ❌: $e');
+      await createErrorLog(
+        error: 'Batch Purchases Update failed ❌: $e',
+      );
     }
   }
   //
@@ -980,7 +990,7 @@ class PurchaseProvider extends ChangeNotifier {
   loadItemPurchaseRecords(int shopId) async {
     bool isOnline = await connectivity.isOnline();
     try {
-      if (isOnline && returnData().isSynced() == 1) {
+      if (isOnline && ItemPurchaseFunc().isSynced()) {
         final data = await supabase
             .from('item_purchase_records')
             .select()
@@ -1103,6 +1113,10 @@ class PurchaseProvider extends ChangeNotifier {
       print(
         'Batch Created Purchase Records insert failed ❌: $e',
       );
+      await createErrorLog(
+        error:
+            'Batch Created Purchase Records insert failed ❌: $e',
+      );
     }
   }
 
@@ -1152,6 +1166,10 @@ class PurchaseProvider extends ChangeNotifier {
     } catch (e) {
       print(
         'Batch Purchase Item Records Deleted failed ❌: $e',
+      );
+      await createErrorLog(
+        error:
+            'Batch Purchase Item Records Deleted failed ❌: $e',
       );
     }
   }

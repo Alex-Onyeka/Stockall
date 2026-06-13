@@ -2,6 +2,7 @@ import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/local_database/product_record_func.dart/unsync_funcs/created/created_records_func.dart';
 import 'package:stockall/local_database/products/products_func.dart';
+import 'package:stockall/main.dart';
 
 class ProductRecordFunc {
   static final ProductRecordFunc instance =
@@ -273,6 +274,15 @@ class ProductRecordFunc {
     } catch (e) {
       print('❌❌ Record Clear Error: ${e.toString()}');
       return 0;
+    }
+  }
+
+  bool isSynced() {
+    if (CreatedRecordsFunc().getRecords().isEmpty &&
+        returnData().isSyncing == false) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

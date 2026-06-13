@@ -3,6 +3,7 @@ import 'package:stockall/classes/temp_sub_staff/temp_sub_staff.dart';
 import 'package:stockall/local_database/sub_staff/unsync_funcs/created/created_sub_staff_func.dart';
 import 'package:stockall/local_database/sub_staff/unsync_funcs/deleted/deleted_sub_staff_func.dart';
 import 'package:stockall/local_database/sub_staff/unsync_funcs/updated/updated_sub_staff_func.dart';
+import 'package:stockall/main.dart';
 
 class SubStaffFunc {
   static final SubStaffFunc instance =
@@ -96,6 +97,17 @@ class SubStaffFunc {
         '❌❌ Error Clearing Offline Sub Staffs: ${e.toString()}',
       );
       return 0;
+    }
+  }
+
+  bool isSynced() {
+    if (CreatedSubStaffFunc().getSubStaffs().isEmpty &&
+        UpdatedSubStaffFunc().getSubStaffs().isEmpty &&
+        DeletedSubStaffFunc().getSubStaffIds().isEmpty &&
+        returnData().isSyncing == false) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

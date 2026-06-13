@@ -3,6 +3,7 @@ import 'package:stockall/classes/temp_item_purchase_record/temp_item_purchase_re
 import 'package:stockall/local_database/item_purchase_func.dart%20copy/unsync_funcs/created/created_item_purchase_func.dart';
 import 'package:stockall/local_database/item_purchase_func.dart%20copy/unsync_funcs/deleted/deleted_item_purchase_func.dart';
 import 'package:stockall/local_database/product_record_func.dart/unsync_funcs/created/created_records_func.dart';
+import 'package:stockall/main.dart';
 
 class ItemPurchaseFunc {
   static final ItemPurchaseFunc instance =
@@ -144,6 +145,18 @@ class ItemPurchaseFunc {
     } catch (e) {
       print('❌❌ Record Clear Error: ${e.toString()}');
       return 0;
+    }
+  }
+
+  bool isSynced() {
+    if (CreatedItemPurchaseFunc().getRecords().isEmpty &&
+        DeletedItemPurchaseFunc()
+            .getItemPurchaseIds()
+            .isEmpty &&
+        returnData().isSyncing == false) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

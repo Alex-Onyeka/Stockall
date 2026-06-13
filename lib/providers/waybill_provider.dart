@@ -13,6 +13,7 @@ import 'package:stockall/local_database/waybills/unsync_funcs/updated/updated_wa
 import 'package:stockall/local_database/waybills/waybills_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/providers/error_log_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class WaybillProvider extends ChangeNotifier {
@@ -283,7 +284,7 @@ class WaybillProvider extends ChangeNotifier {
     int shopId,
   ) async {
     bool isOnline = await connectivity.isOnline();
-    if (isOnline && returnData().isSynced() == 1) {
+    if (isOnline && WaybillsFunc().isSynced()) {
       await WaybillsFunc().clearWaybills();
       try {
         final data = await supabase
@@ -459,7 +460,10 @@ class WaybillProvider extends ChangeNotifier {
         );
       }
     } catch (e) {
-      print('Batch Waybills insert failed ❌: $e');
+      print('Batch Waybill Insert failed ❌: $e');
+      await createErrorLog(
+        error: 'Batch Waybill Insert failed ❌: $e',
+      );
     }
   }
 
@@ -507,7 +511,10 @@ class WaybillProvider extends ChangeNotifier {
         );
       }
     } catch (e) {
-      print('Batch Waybills Deleted failed ❌: $e');
+      print('Batch Waybills Delete failed ❌: $e');
+      await createErrorLog(
+        error: 'Batch Waybills Delete failed ❌: $e',
+      );
     }
   }
 
@@ -609,7 +616,10 @@ class WaybillProvider extends ChangeNotifier {
         );
       }
     } catch (e) {
-      print('Batch update failed ❌: $e');
+      print('Batch Waybills Update failed ❌: $e');
+      await createErrorLog(
+        error: 'Batch Waybills Update failed ❌: $e',
+      );
     }
   }
   //

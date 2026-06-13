@@ -3,6 +3,7 @@ import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart
 import 'package:stockall/local_database/storage_product/unsync_funcs/created/created_storage_products_func.dart';
 import 'package:stockall/local_database/storage_product/unsync_funcs/deleted/deleted_storage_products_func.dart';
 import 'package:stockall/local_database/storage_product/unsync_funcs/updated/updated_storage_products_func.dart';
+import 'package:stockall/main.dart';
 
 class StorageProductsFunc {
   static final StorageProductsFunc instance =
@@ -112,6 +113,23 @@ class StorageProductsFunc {
         'Offline Storage Products Clear Failed: ${e.toString()}',
       );
       return 0;
+    }
+  }
+
+  bool isSynced() {
+    if (CreatedStorageProductsFunc()
+            .getStorageProducts()
+            .isEmpty &&
+        UpdatedStorageProductsFunc()
+            .getStorageProductIds()
+            .isEmpty &&
+        DeletedStorageProductsFunc()
+            .getStorageProductIds()
+            .isEmpty &&
+        returnData().isSyncing == false) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

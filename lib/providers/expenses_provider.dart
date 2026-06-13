@@ -11,6 +11,7 @@ import 'package:stockall/local_database/expenses/unsync_funcs/deleted_expenses/d
 import 'package:stockall/local_database/expenses/unsync_funcs/updated_expenses/updated_expenses_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/providers/error_log_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ExpensesProvider extends ChangeNotifier {
@@ -88,7 +89,7 @@ class ExpensesProvider extends ChangeNotifier {
     int shopId,
   ) async {
     bool isOnline = await connectivity.isOnline();
-    if (isOnline && returnData().isSynced() == 1) {
+    if (isOnline && ExpensesFunc().isSynced()) {
       try {
         final response = await supabase
             .from('expenses')
@@ -500,6 +501,9 @@ class ExpensesProvider extends ChangeNotifier {
       }
     } catch (e) {
       print('Batch Expenses insert failed ❌: $e');
+      await createErrorLog(
+        error: 'Batch Expenses insert failed ❌: $e',
+      );
     }
   }
 
@@ -545,7 +549,10 @@ class ExpensesProvider extends ChangeNotifier {
         );
       }
     } catch (e) {
-      print('Batch delete failed ❌: $e');
+      print('Batch Expenses delete failed ❌: $e');
+      await createErrorLog(
+        error: 'Batch Expenses delete failed ❌: $e',
+      );
     }
   }
 
@@ -644,7 +651,10 @@ class ExpensesProvider extends ChangeNotifier {
         );
       }
     } catch (e) {
-      print('Batch update failed ❌: $e');
+      print('Batch Expenses update failed ❌: $e');
+      await createErrorLog(
+        error: 'Batch Expenses update failed ❌: $e',
+      );
     }
   }
 

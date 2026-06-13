@@ -3,6 +3,7 @@ import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
 import 'package:stockall/local_database/main_receipt/unsync_funcs/created/created_receipts_func.dart';
 import 'package:stockall/local_database/main_receipt/unsync_funcs/deleted/deleted_receipts_func.dart';
 import 'package:stockall/local_database/main_receipt/unsync_funcs/updated/updated_receipts_func.dart';
+import 'package:stockall/main.dart';
 
 class MainReceiptFunc {
   static final MainReceiptFunc instance =
@@ -104,6 +105,17 @@ class MainReceiptFunc {
         'Offline Receipt Clear Failed: ${e.toString()}',
       );
       return 0;
+    }
+  }
+
+  bool isSynced() {
+    if (CreatedReceiptsFunc().getReceipts().isEmpty &&
+        UpdatedReceiptsFunc().getReceiptIds().isEmpty &&
+        DeletedReceiptsFunc().getReceiptIds().isEmpty &&
+        returnData().isSyncing == false) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

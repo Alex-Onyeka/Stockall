@@ -12,6 +12,7 @@ import 'package:stockall/local_database/customers/unsync_funcs/deleted/deleted_c
 import 'package:stockall/local_database/customers/unsync_funcs/updated/updated_customers_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/providers/error_log_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CustomersProvider extends ChangeNotifier {
@@ -82,7 +83,7 @@ class CustomersProvider extends ChangeNotifier {
     int shopId,
   ) async {
     bool isOnline = await connectivity.isOnline();
-    if (isOnline && returnData().isSynced() == 1) {
+    if (isOnline && CustomerFunc().isSynced()) {
       final data = await supabase
           .from('customers')
           .select()
@@ -432,6 +433,9 @@ class CustomersProvider extends ChangeNotifier {
       }
     } catch (e) {
       print('Batch Customers insert failed ❌: $e');
+      await createErrorLog(
+        error: 'Batch Customers insert failed ❌: $e',
+      );
     }
   }
 
@@ -536,7 +540,10 @@ class CustomersProvider extends ChangeNotifier {
         );
       }
     } catch (e) {
-      print('Batch update failed ❌: $e');
+      print('Batch Customers update failed ❌: $e');
+      await createErrorLog(
+        error: 'Batch Customers Update failed ❌: $e',
+      );
     }
   }
 
@@ -583,7 +590,10 @@ class CustomersProvider extends ChangeNotifier {
         );
       }
     } catch (e) {
-      print('Batch delete failed ❌: $e');
+      print('Batch Customers Delete failed ❌: $e');
+      await createErrorLog(
+        error: 'Batch Customers Delete failed ❌: $e',
+      );
     }
   }
 }

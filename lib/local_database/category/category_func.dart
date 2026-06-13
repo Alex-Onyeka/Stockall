@@ -3,6 +3,7 @@ import 'package:stockall/classes/temp_categories/category_class.dart';
 import 'package:stockall/local_database/category/unsync_funcs/created_categories/created_categories_func.dart';
 import 'package:stockall/local_database/category/unsync_funcs/deleted_categories/deleted_categories_func.dart';
 import 'package:stockall/local_database/category/unsync_funcs/updated_categories/updated_categories_func.dart';
+import 'package:stockall/main.dart';
 
 class CategoryFunc {
   static final CategoryFunc instance =
@@ -94,6 +95,19 @@ class CategoryFunc {
     } catch (e) {
       print('Category Clear Failed: ${e.toString()}');
       return 0;
+    }
+  }
+
+  bool isSynced() {
+    if (CreatedCategoriesFunc()
+            .getCreateCategories()
+            .isEmpty &&
+        UpdatedCategoriesFunc().getCategories().isEmpty &&
+        DeletedCategoriesFunc().getCategoryIds().isEmpty &&
+        returnData().isSyncing == false) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

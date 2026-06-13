@@ -25,6 +25,7 @@ import 'package:stockall/providers/customers_provider.dart';
 import 'package:stockall/providers/data_provider.dart';
 import 'package:stockall/providers/department_provider.dart';
 import 'package:stockall/providers/departments_dashboard_provider.dart';
+import 'package:stockall/providers/error_log_provider.dart';
 import 'package:stockall/providers/events_log_provider.dart';
 import 'package:stockall/providers/expenses_provider.dart';
 import 'package:stockall/providers/inventory_updates_provider.dart';
@@ -473,6 +474,16 @@ EventsLogProvider returnEventsLogProvider({
   }
 }
 
+ErrorLogProvider returnErrorLogProvider({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return ErrorLogProvider();
+  } else {
+    return Provider.of<ErrorLogProvider>(context);
+  }
+}
+
 DepartmentProvider returnDepartmentProvider({
   BuildContext? context,
 }) {
@@ -705,6 +716,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => CountryProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ErrorLogProvider(),
         ),
       ],
       child: MaterialApp(

@@ -22,6 +22,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/alt_display/alt_display.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
+import 'package:stockall/providers/error_log_provider.dart';
 import 'package:stockall/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -111,7 +112,7 @@ class InvoicesProvider extends ChangeNotifier {
   // READ all Invoices for a shop
   Future<List<TempInvoice>> loadInvoices(int shopId) async {
     bool isOnline = await connectivity.isOnline();
-    if (isOnline && returnData().isSynced() == 1) {
+    if (isOnline && InvoicesFunc().isSynced()) {
       await InvoicesFunc().clearInvoices();
       try {
         final data = await supabase
@@ -1165,6 +1166,9 @@ class InvoicesProvider extends ChangeNotifier {
       }
     } catch (e) {
       print('Batch Invoices insert failed ❌: $e');
+      await createErrorLog(
+        error: 'Batch Invoices insert failed ❌: $e',
+      );
     }
   }
 
@@ -1216,6 +1220,9 @@ class InvoicesProvider extends ChangeNotifier {
       }
     } catch (e) {
       print('Batch Invoices Deleted failed ❌: $e');
+      await createErrorLog(
+        error: 'Batch Invoices Delete failed ❌: $e',
+      );
     }
   }
 
@@ -1255,8 +1262,8 @@ class InvoicesProvider extends ChangeNotifier {
           final remoteData =
               await supabase
                   .from('invoices')
-                  .select('uuid, updated_at')
-                  .eq('uuid', localInvoices.uuid!)
+                  .select('invoice_uuid, updated_at')
+                  .eq('invoice_uuid', localInvoices.uuid!)
                   .maybeSingle();
 
           if (remoteData == null) {
@@ -1295,7 +1302,7 @@ class InvoicesProvider extends ChangeNotifier {
               await supabase
                   .from('invoices')
                   .update(localInvoices.toJson())
-                  .eq('uuid', localInvoices.uuid!);
+                  .eq('invoice_uuid', localInvoices.uuid!);
               print(
                 'Updated Invoices with uuid ${localInvoices.uuid}',
               );
@@ -1320,7 +1327,10 @@ class InvoicesProvider extends ChangeNotifier {
         );
       }
     } catch (e) {
-      print('Batch update failed ❌: $e');
+      print('Batch Invoices update failed ❌: $e');
+      await createErrorLog(
+        error: 'Batch Invoices update failed ❌: $e',
+      );
     }
   }
 
