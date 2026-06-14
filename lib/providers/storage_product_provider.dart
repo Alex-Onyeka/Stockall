@@ -96,6 +96,7 @@ class StorageProductProvider extends ChangeNotifier {
     await getStorageProductsOffline(
       returnShopProvider().userShop()!.shopId!,
     );
+    syncData();
   }
 
   Future<void> createStorageProductsSync() async {
@@ -110,21 +111,42 @@ class StorageProductProvider extends ChangeNotifier {
             CreatedStorageProductsFunc()
                 .getStorageProducts()
                 .toList();
-        final payload =
-            tempProducts
-                .map((p) => p.storageProduct.toJson())
-                .toList();
+        // final payload =
+        //     tempProducts
+        //         .map((p) => p.storageProduct.toJson())
+        //         .toList();
 
         // Insert all at once
-        final data =
+        int count = 0;
+        for (var item in tempProducts) {
+          try {
+            // Insert all at once
             await supabase
                 .from(tableName)
-                .insert(payload)
+                .insert(item.storageProduct.toJson())
                 .select();
+            count++;
+            await CreatedStorageProductsFunc()
+                .deleteCreatedStorageProduct(
+                  item.storageProduct.uuid!,
+                );
+          } on PostgrestException catch (e) {
+            if (e.code == '23505') {
+              await CreatedStorageProductsFunc()
+                  .deleteCreatedStorageProduct(
+                    item.storageProduct.uuid!,
+                  );
+            }
+            await createErrorLog(
+              error:
+                  'Error Synchronizing Storage Product ${item.storageProduct.name}: $e',
+            );
+          }
+        }
 
-        print('${data.length} items added successfully ✅');
-        await CreatedStorageProductsFunc()
-            .clearCreatedStorageProducts();
+        print('$count items added successfully ✅');
+        // await CreatedStorageProductsFunc()
+        //     .clearCreatedStorageProducts();
         print('Mounted, refreshing Storage Products ✅');
         await getStorageProducts(
           returnShopProvider().userShop()!.shopId!,
@@ -508,6 +530,7 @@ class StorageProductProvider extends ChangeNotifier {
           returnShopProvider().userShop()!.shopId!,
         );
         notifyListeners();
+        syncData();
         return 1;
       } else {
         notifyListeners();
@@ -594,6 +617,7 @@ class StorageProductProvider extends ChangeNotifier {
       returnShopProvider().userShop()!.shopId!,
     );
     notifyListeners();
+    syncData();
   }
 }
 

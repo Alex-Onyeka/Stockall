@@ -127,7 +127,6 @@ class DataProvider extends ChangeNotifier {
 
   Future<void> createProduct(
     TempProductClass product,
-    // BuildContext context,
   ) async {
     // bool isOnline = await connectivity.isOnline();
     product.updatedAt = DateTime.now();
@@ -170,6 +169,8 @@ class DataProvider extends ChangeNotifier {
       returnShopProvider().userShop()!.shopId!,
     );
 
+    syncData();
+
     clearFields();
   }
 
@@ -183,20 +184,38 @@ class DataProvider extends ChangeNotifier {
           isOnline) {
         final tempProducts =
             CreatedProductFunc().getProducts().toList();
-        final payload =
-            tempProducts
-                .map((p) => p.product.toJson())
-                .toList();
+        // final payload =
+        //     tempProducts
+        //         .map((p) => p.product.toJson())
+        //         .toList();
 
-        // Insert all at once
-        final data =
+        int count = 0;
+        for (var item in tempProducts) {
+          try {
+            // Insert all at once
             await supabase
                 .from('products')
-                .insert(payload)
+                .insert(item.product.uuid!)
                 .select();
+            count++;
+            await CreatedProductFunc().deleteProduct(
+              item.product.uuid!,
+            );
+          } on PostgrestException catch (e) {
+            if (e.code == '23505') {
+              await CreatedProductFunc().deleteProduct(
+                item.product.uuid!,
+              );
+            }
+            await createErrorLog(
+              error:
+                  'Error Synchronizing Product $item.name: $e',
+            );
+          }
+        }
 
-        print('${data.length} items added successfully ✅');
-        await CreatedProductFunc().clearProducts();
+        print('$count items added successfully ✅');
+        // await CreatedProductFunc().clearProducts();
         print('Mounted, refreshing products ✅');
         await getProducts(
           returnShopProvider().userShop()!.shopId!,
@@ -231,10 +250,7 @@ class DataProvider extends ChangeNotifier {
             await supabase
                 .from('products')
                 .delete()
-                .inFilter(
-                  'uuid',
-                  uuids,
-                ) // delete where id is in the list
+                .inFilter('uuid', uuids)
                 .select();
 
         print(
@@ -291,16 +307,29 @@ class DataProvider extends ChangeNotifier {
                   .maybeSingle();
 
           if (remoteData == null) {
-            await supabase
-                .from('products')
-                .insert(localProduct.toJson());
-            print(
-              'Inserted product with uuid ${localProduct.uuid}',
-            );
-            await UpdatedProductsFunc()
-                .deleteUpdatedProduct(
-                  localProduct.uuid ?? '',
-                );
+            try {
+              await supabase
+                  .from('products')
+                  .insert(localProduct.toJson());
+              print(
+                'Inserted product with uuid ${localProduct.uuid}',
+              );
+              await UpdatedProductsFunc()
+                  .deleteUpdatedProduct(
+                    localProduct.uuid ?? '',
+                  );
+            } on PostgrestException catch (e) {
+              if (e.code == '23505') {
+                await UpdatedProductsFunc()
+                    .deleteUpdatedProduct(
+                      localProduct.uuid ?? '',
+                    );
+              }
+              await createErrorLog(
+                error:
+                    'Error Synchronizing Receipt ${localProduct.name}: $e',
+              );
+            }
           } else {
             final remoteUpdatedAtRaw =
                 remoteData['updated_at'];
@@ -323,17 +352,30 @@ class DataProvider extends ChangeNotifier {
                 localProduct.updatedAt!.isAfter(
                   remoteUpdatedAt,
                 )) {
-              await supabase
-                  .from('products')
-                  .update(localProduct.toJson())
-                  .eq('uuid', localProduct.uuid!);
-              print(
-                'Updated product with uuid ${localProduct.uuid}',
-              );
-              await UpdatedProductsFunc()
-                  .deleteUpdatedProduct(
-                    localProduct.uuid ?? '',
-                  );
+              try {
+                await supabase
+                    .from('products')
+                    .update(localProduct.toJson())
+                    .eq('uuid', localProduct.uuid!);
+                print(
+                  'Updated product with uuid ${localProduct.uuid}',
+                );
+                await UpdatedProductsFunc()
+                    .deleteUpdatedProduct(
+                      localProduct.uuid ?? '',
+                    );
+              } on PostgrestException catch (e) {
+                if (e.code == '23505') {
+                  await UpdatedProductsFunc()
+                      .deleteUpdatedProduct(
+                        localProduct.uuid ?? '',
+                      );
+                }
+                await createErrorLog(
+                  error:
+                      'Error Synchronizing Receipt ${localProduct.name}: $e',
+                );
+              }
             } else {
               print(
                 'Skipped product ${localProduct.uuid}, remote is newer ✅',
@@ -342,7 +384,7 @@ class DataProvider extends ChangeNotifier {
           }
         }
 
-        await UpdatedProductsFunc().clearupdatedProducts();
+        // await UpdatedProductsFunc().clearupdatedProducts();
         print('Unsynced updated products cleared');
         print('Mounted, refreshing products ✅');
         await getProducts(
@@ -1364,6 +1406,7 @@ class DataProvider extends ChangeNotifier {
           returnShopProvider().userShop()!.shopId!,
         );
         notifyListeners();
+        syncData();
         return ProductsFunc().getSingleProduct(
           uuid: product.uuid!,
         );
@@ -1447,6 +1490,7 @@ class DataProvider extends ChangeNotifier {
       returnShopProvider().userShop()!.shopId!,
     );
     notifyListeners();
+    syncData();
   }
 
   String name = '';

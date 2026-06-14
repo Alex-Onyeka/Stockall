@@ -458,6 +458,12 @@ class _PricingContainerWidgetState
                                       ),
                                       SubscriptionDetailsRowWidget(
                                         title:
+                                            "Subscription Plan",
+                                        endText:
+                                            "${pricingClass.planName.toUpperCase()} PLAN",
+                                      ),
+                                      SubscriptionDetailsRowWidget(
+                                        title:
                                             'Total Duration',
                                         endText: duration(),
                                       ),

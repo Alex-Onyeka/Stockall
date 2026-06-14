@@ -117,6 +117,10 @@ void main(List<String> args) async {
 
 Timer? timer;
 
+void syncData() {
+  returnData().syncData();
+}
+
 void maxWindow() {
   if (returnShopProvider().isDesktop()) {
     timer = Timer.periodic(Duration(seconds: 1), (

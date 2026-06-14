@@ -29,8 +29,8 @@ class DepartmentProvider with ChangeNotifier {
   List<DepartmentClass> departments = [];
 
   DepartmentClass? currentDepartment() {
-    var offlineDepartment =
-        CurrentDepartmentFunc().getCurrentDepartment();
+    var offlineDepartment = CurrentDepartmentFunc()
+        .getCurrentDepartment();
     if (authorization(
       authorized: Authorizations().viewAllDepartments,
     )) {
@@ -70,10 +70,9 @@ class DepartmentProvider with ChangeNotifier {
                 currentDepartmentId: departments.first.uuid,
               ),
             );
-            var dept =
-                departments.isNotEmpty
-                    ? departments.first
-                    : null;
+            var dept = departments.isNotEmpty
+                ? departments.first
+                : null;
             return dept;
           } catch (e) {
             print(
@@ -93,17 +92,16 @@ class DepartmentProvider with ChangeNotifier {
   }) async {
     try {
       print('Department Selection Started');
-      int res =
-          departmentClass != null
-              ? await CurrentDepartmentFunc()
-                  .createCurrentDepartment(
-                    TempCurrentDepartment(
-                      currentDepartmentId:
-                          departmentClass.uuid,
-                    ),
-                  )
-              : /*await clearDepartments()*/ await CurrentDepartmentFunc()
-                  .clearCurrentDepartment();
+      int res = departmentClass != null
+          ? await CurrentDepartmentFunc()
+                .createCurrentDepartment(
+                  TempCurrentDepartment(
+                    currentDepartmentId:
+                        departmentClass.uuid,
+                  ),
+                )
+          : /*await clearDepartments()*/ await CurrentDepartmentFunc()
+                .clearCurrentDepartment();
       if (res == 1) {
         print(
           'Current Department set: ${CurrentDepartmentFunc().getCurrentDepartment()?.currentDepartmentId}',
@@ -170,6 +168,7 @@ class DepartmentProvider with ChangeNotifier {
       // }
       await getDepartmentsOffline();
       notifyListeners();
+      syncData();
       return 1;
     } catch (e) {
       print('Error Creating Department: ${e.toString()}');
@@ -187,10 +186,9 @@ class DepartmentProvider with ChangeNotifier {
             .eq('shop_id', shopId());
         print('Departments Gotten: ${res.length}');
 
-        departments =
-            (res as List)
-                .map((e) => DepartmentClass.fromJson(e))
-                .toList();
+        departments = (res as List)
+            .map((e) => DepartmentClass.fromJson(e))
+            .toList();
         if (returnShopProvider()
                 .userShop()
                 ?.manageDepartments ==
@@ -198,19 +196,16 @@ class DepartmentProvider with ChangeNotifier {
           if (!authorization(
             authorized: Authorizations().viewAllDepartments,
           )) {
-            departments =
-                departments.where((dept) {
-                  if (currentUser().departmentUuids !=
-                      null) {
-                    return currentUser().departmentUuids !=
-                            null
-                        ? currentUser().departmentUuids!
-                            .contains(dept.uuid)
-                        : false;
-                  } else {
-                    return false;
-                  }
-                }).toList();
+            departments = departments.where((dept) {
+              if (currentUser().departmentUuids != null) {
+                return currentUser().departmentUuids != null
+                    ? currentUser().departmentUuids!
+                          .contains(dept.uuid)
+                    : false;
+              } else {
+                return false;
+              }
+            }).toList();
           }
         }
 
@@ -227,18 +222,15 @@ class DepartmentProvider with ChangeNotifier {
           if (!authorization(
             authorized: Authorizations().viewAllDepartments,
           )) {
-            departments =
-                departments
-                    .where(
-                      (dept) =>
-                          currentUser().departmentUuids !=
-                                  null
-                              ? currentUser()
-                                  .departmentUuids!
-                                  .contains(dept.uuid)
-                              : false,
-                    )
-                    .toList();
+            departments = departments
+                .where(
+                  (dept) =>
+                      currentUser().departmentUuids != null
+                      ? currentUser().departmentUuids!
+                            .contains(dept.uuid)
+                      : false,
+                )
+                .toList();
           }
         }
         notifyListeners();
@@ -269,17 +261,15 @@ class DepartmentProvider with ChangeNotifier {
         if (!authorization(
           authorized: Authorizations().viewAllDepartments,
         )) {
-          departments =
-              departments
-                  .where(
-                    (dept) =>
-                        currentUser().departmentUuids !=
-                                null
-                            ? currentUser().departmentUuids!
-                                .contains(dept.uuid)
-                            : false,
-                  )
-                  .toList();
+          departments = departments
+              .where(
+                (dept) =>
+                    currentUser().departmentUuids != null
+                    ? currentUser().departmentUuids!
+                          .contains(dept.uuid)
+                    : false,
+              )
+              .toList();
         }
       }
       notifyListeners();
@@ -317,14 +307,13 @@ class DepartmentProvider with ChangeNotifier {
       //   );
       // } else {
       await DepartmentsFunc().updateDepartment(department);
-      var containsCreated =
-          CreatedDepartmentsFunc()
-              .getDepartment()
-              .where(
-                (dept) =>
-                    dept.department.uuid == department.uuid,
-              )
-              .toList();
+      var containsCreated = CreatedDepartmentsFunc()
+          .getDepartment()
+          .where(
+            (dept) =>
+                dept.department.uuid == department.uuid,
+          )
+          .toList();
       if (containsCreated.isEmpty) {
         await UpdatedDepartmentFunc()
             .createUpdatedDepartment(
@@ -344,6 +333,7 @@ class DepartmentProvider with ChangeNotifier {
       // }
       await getDepartmentsOffline();
       notifyListeners();
+      syncData();
       return 1;
     } catch (e) {
       print('Error Updating Department: ${e.toString()}');
@@ -368,22 +358,20 @@ class DepartmentProvider with ChangeNotifier {
       //     ),
       //   );
       // } else {
-      var containsCreated =
-          CreatedDepartmentsFunc()
-              .getDepartment()
-              .where(
-                (dept) =>
-                    dept.department.uuid == department.uuid,
-              )
-              .toList();
-      var containsUpdated =
-          UpdatedDepartmentFunc()
-              .getDepartments()
-              .where(
-                (dept) =>
-                    dept.department.uuid == department.uuid,
-              )
-              .toList();
+      var containsCreated = CreatedDepartmentsFunc()
+          .getDepartment()
+          .where(
+            (dept) =>
+                dept.department.uuid == department.uuid,
+          )
+          .toList();
+      var containsUpdated = UpdatedDepartmentFunc()
+          .getDepartments()
+          .where(
+            (dept) =>
+                dept.department.uuid == department.uuid,
+          )
+          .toList();
       await DepartmentsFunc().deleteDepartment(
         department.uuid,
       );
@@ -397,10 +385,9 @@ class DepartmentProvider with ChangeNotifier {
             .createDeletedDepartment(
               DeletedDepartments(
                 departmentUuid: department.uuid,
-                shopId:
-                    returnShopProvider()
-                        .userShop()!
-                        .shopId!,
+                shopId: returnShopProvider()
+                    .userShop()!
+                    .shopId!,
               ),
             );
       }
@@ -417,14 +404,15 @@ class DepartmentProvider with ChangeNotifier {
       );
       // }
 
-      var dept =
-          CurrentDepartmentFunc().getCurrentDepartment();
+      var dept = CurrentDepartmentFunc()
+          .getCurrentDepartment();
       if (dept?.currentDepartmentId == department.uuid) {
         CurrentDepartmentFunc().clearCurrentDepartment();
       }
 
       await getDepartmentsOffline();
       notifyListeners();
+      syncData();
       return 1;
     } catch (e) {
       print('Error Deleting Department: ${e.toString()}');
@@ -440,25 +428,22 @@ class DepartmentProvider with ChangeNotifier {
               .getDepartment()
               .isNotEmpty &&
           isOnline) {
-        final tempDepartments =
-            CreatedDepartmentsFunc()
-                .getDepartment()
-                .toList();
+        final tempDepartments = CreatedDepartmentsFunc()
+            .getDepartment()
+            .toList();
         for (var dept in tempDepartments) {
           print(
             'Updated Time: ${dept.department.updatedAt?.toString()}',
           );
         }
-        final payload =
-            tempDepartments
-                .map((p) => p.department.toJson())
-                .toList();
+        final payload = tempDepartments
+            .map((p) => p.department.toJson())
+            .toList();
 
-        final data =
-            await supabase
-                .from(tableName)
-                .insert(payload)
-                .select();
+        final data = await supabase
+            .from(tableName)
+            .insert(payload)
+            .select();
 
         print('${data.length} items added Successfully ✅');
         await CreatedDepartmentsFunc().clearDepartment();
@@ -488,21 +473,19 @@ class DepartmentProvider with ChangeNotifier {
               .getDepartmentIds()
               .isNotEmpty &&
           isOnline) {
-        final uuids =
-            DeletedDepartmentsFunc()
-                .getDepartmentIds()
-                .map((p) => p.departmentUuid)
-                .toList();
+        final uuids = DeletedDepartmentsFunc()
+            .getDepartmentIds()
+            .map((p) => p.departmentUuid)
+            .toList();
 
-        final data =
-            await supabase
-                .from(tableName)
-                .delete()
-                .inFilter(
-                  'uuid',
-                  uuids,
-                ) // delete where id is in the list
-                .select();
+        final data = await supabase
+            .from(tableName)
+            .delete()
+            .inFilter(
+              'uuid',
+              uuids,
+            ) // delete where id is in the list
+            .select();
 
         print(
           '${data.length} items deleted successfully ✅',
@@ -540,21 +523,20 @@ class DepartmentProvider with ChangeNotifier {
               .getDepartments()
               .isNotEmpty &&
           isOnline) {
-        final updatedDepartments =
-            UpdatedDepartmentFunc().getDepartments();
+        final updatedDepartments = UpdatedDepartmentFunc()
+            .getDepartments();
 
         for (final updated in updatedDepartments) {
           final localDepartments = updated.department;
 
-          localDepartments.updatedAt =
-              DateTime.now().toLocal();
+          localDepartments.updatedAt = DateTime.now()
+              .toLocal();
 
-          final remoteData =
-              await supabase
-                  .from(tableName)
-                  .select('uuid, updated_at')
-                  .eq('uuid', localDepartments.uuid)
-                  .maybeSingle();
+          final remoteData = await supabase
+              .from(tableName)
+              .select('uuid, updated_at')
+              .eq('uuid', localDepartments.uuid)
+              .maybeSingle();
 
           if (remoteData == null) {
             await supabase
@@ -572,10 +554,10 @@ class DepartmentProvider with ChangeNotifier {
                 remoteData['updated_at'];
             final remoteUpdatedAt =
                 remoteUpdatedAtRaw == null
-                    ? null
-                    : DateTime.parse(
-                      remoteUpdatedAtRaw,
-                    ).toUtc();
+                ? null
+                : DateTime.parse(
+                    remoteUpdatedAtRaw,
+                  ).toUtc();
 
             localDepartments.updatedAt =
                 (localDepartments.updatedAt ??

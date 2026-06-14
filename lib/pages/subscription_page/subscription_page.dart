@@ -245,13 +245,13 @@ class _SubscriptionPageState
                                 fontSize:
                                     theme
                                         .mobileTexts
-                                        .b4
+                                        .b3
                                         .fontSize,
                                 fontWeight:
                                     FontWeight.normal,
                                 color: Colors.redAccent,
                               ),
-                              'Nigerian Naira Payment is Currently Unavailable in Non-Nigerian Countries. Please Select NGN Naira If You are Currently in Nigeria, if not, Please Select US Dollar.',
+                              'Please for Non Nigerian Users, Proceed Contact the customer Care (+2347048507587) for Subscription Procedure.',
                             ),
                           ),
                         ],
@@ -262,136 +262,148 @@ class _SubscriptionPageState
                             MainAxisAlignment.center,
                         spacing: 5,
                         children: [
+                          // Material(
+                          //   color: Colors.transparent,
+                          //   child: InkWell(
+                          //     onTap: () {
+                          //       returnSubPaymentProvider()
+                          //           .selectCurrency(0);
+                          //     },
+                          //     child: Container(
+                          //       padding:
+                          //           EdgeInsets.symmetric(
+                          //             horizontal: 6,
+                          //             vertical: 6,
+                          //           ),
+                          //       child: Row(
+                          //         spacing: 6,
+                          //         children: [
+                          //           Container(
+                          //             decoration: BoxDecoration(
+                          //               border: Border.all(
+                          //                 color:
+                          //                     returnSubPaymentProvider(
+                          //                               context:
+                          //                                   context,
+                          //                             ).currencyIndex ==
+                          //                             0
+                          //                         ? Colors
+                          //                             .transparent
+                          //                         : Colors
+                          //                             .grey,
+                          //               ),
+                          //               color:
+                          //                   returnSubPaymentProvider(
+                          //                             context:
+                          //                                 context,
+                          //                           ).currencyIndex ==
+                          //                           0
+                          //                       ? theme
+                          //                           .lightModeColor
+                          //                           .prColor250
+                          //                       : Colors
+                          //                           .transparent,
+                          //               shape:
+                          //                   BoxShape.circle,
+                          //             ),
+                          //             child: Icon(
+                          //               size: 14,
+                          //               color: Colors.white,
+                          //               Icons.check,
+                          //             ),
+                          //           ),
+                          //           Text(
+                          //             style: TextStyle(
+                          //               fontSize:
+                          //                   theme
+                          //                       .mobileTexts
+                          //                       .b4
+                          //                       .fontSize,
+                          //               fontWeight:
+                          //                   FontWeight.bold,
+                          //             ),
+                          //             '(₦) NGN Naira',
+                          //           ),
+                          //         ],
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
                           Material(
                             color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () {
-                                returnSubPaymentProvider()
-                                    .selectCurrency(0);
-                              },
-                              child: Container(
-                                padding:
-                                    EdgeInsets.symmetric(
-                                      horizontal: 6,
-                                      vertical: 6,
-                                    ),
-                                child: Row(
-                                  spacing: 6,
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color:
-                                              returnSubPaymentProvider(
-                                                        context:
-                                                            context,
-                                                      ).currencyIndex ==
-                                                      0
-                                                  ? Colors
-                                                      .transparent
-                                                  : Colors
-                                                      .grey,
-                                        ),
-                                        color:
-                                            returnSubPaymentProvider(
-                                                      context:
-                                                          context,
-                                                    ).currencyIndex ==
-                                                    0
-                                                ? theme
-                                                    .lightModeColor
-                                                    .prColor250
-                                                : Colors
-                                                    .transparent,
-                                        shape:
-                                            BoxShape.circle,
-                                      ),
-                                      child: Icon(
-                                        size: 14,
-                                        color: Colors.white,
-                                        Icons.check,
-                                      ),
-                                    ),
-                                    Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b4
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
-                                      ),
-                                      '(₦) NGN Naira',
-                                    ),
-                                  ],
+                            child: Ink(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color:
+                                      Colors.grey.shade300,
                                 ),
                               ),
-                            ),
-                          ),
-                          Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () {
-                                returnSubPaymentProvider()
-                                    .selectCurrency(1);
-                              },
-                              child: Container(
-                                padding:
-                                    EdgeInsets.symmetric(
-                                      vertical: 6,
-                                      horizontal: 6,
-                                    ),
-                                child: Row(
-                                  spacing: 5,
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color:
-                                              returnSubPaymentProvider(
-                                                        context:
-                                                            context,
-                                                      ).currencyIndex ==
-                                                      1
-                                                  ? Colors
-                                                      .transparent
-                                                  : Colors
-                                                      .grey,
-                                        ),
-                                        color:
-                                            returnSubPaymentProvider(
-                                                      context:
-                                                          context,
-                                                    ).currencyIndex ==
-                                                    1
-                                                ? theme
-                                                    .lightModeColor
-                                                    .prColor250
-                                                : Colors
-                                                    .transparent,
-                                        shape:
-                                            BoxShape.circle,
+                              child: InkWell(
+                                onTap: () {
+                                  openWhatsApp();
+                                },
+                                child: Container(
+                                  padding:
+                                      EdgeInsets.symmetric(
+                                        vertical: 6,
+                                        horizontal: 15,
                                       ),
-                                      child: Icon(
+                                  child: Row(
+                                    spacing: 5,
+                                    children: [
+                                      // Container(
+                                      //   decoration: BoxDecoration(
+                                      //     border: Border.all(
+                                      //       color:
+                                      //           returnSubPaymentProvider(
+                                      //                     context:
+                                      //                         context,
+                                      //                   ).currencyIndex ==
+                                      //                   1
+                                      //               ? Colors
+                                      //                   .transparent
+                                      //               : Colors
+                                      //                   .grey,
+                                      //     ),
+                                      //     color:
+                                      //         returnSubPaymentProvider(
+                                      //                   context:
+                                      //                       context,
+                                      //                 ).currencyIndex ==
+                                      //                 1
+                                      //             ? theme
+                                      //                 .lightModeColor
+                                      //                 .prColor250
+                                      //             : Colors
+                                      //                 .transparent,
+                                      //     shape:
+                                      //         BoxShape.circle,
+                                      //   ),
+                                      //   child: Icon(
+                                      //     size: 14,
+                                      //     color: Colors.white,
+                                      //     Icons.check,
+                                      //   ),
+                                      // ),
+                                      Icon(
                                         size: 14,
-                                        color: Colors.white,
-                                        Icons.check,
+                                        Icons.call,
                                       ),
-                                    ),
-                                    Text(
-                                      style: TextStyle(
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b4
-                                                .fontSize,
-                                        fontWeight:
-                                            FontWeight.bold,
+                                      Text(
+                                        style: TextStyle(
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b4
+                                                  .fontSize,
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                        ),
+                                        'Contact Customer Care',
                                       ),
-                                      '(\$) US Dollar',
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),

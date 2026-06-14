@@ -1190,7 +1190,7 @@ class SalesProvider extends ChangeNotifier {
             customerName: customerName(),
             customerUuid: customerUuid(),
             invoiceUuid: invoiceRes?.uuid,
-            uuid: currentCart().id ?? receiptUuid,
+            uuid: receiptUuid,
             generalDiscount: currentCart().discount,
             fixedDiscount: currentCart().fixedDiscount,
             vat:

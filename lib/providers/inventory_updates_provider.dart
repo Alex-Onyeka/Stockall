@@ -120,11 +120,11 @@ class InventoryUpdatesProvider with ChangeNotifier {
           .where(
             (update) =>
                 ((!update.createdAt!.isBefore(
-                      fourAm(rangeStartDate!),
-                    )) &&
-                    (!update.createdAt!.isAfter(
-                      fourAmNextDay(rangeEndDate!),
-                    ))),
+                  fourAm(rangeStartDate!),
+                )) &&
+                (!update.createdAt!.isAfter(
+                  fourAmNextDay(rangeEndDate!),
+                ))),
           )
           .toList();
     }
@@ -148,13 +148,11 @@ class InventoryUpdatesProvider with ChangeNotifier {
           notifyListeners();
           return [];
         }
-        inventoryUpdates =
-            res
-                .map(
-                  (m) =>
-                      TempInventoryUpdateClass.fromJson(m),
-                )
-                .toList();
+        inventoryUpdates = res
+            .map(
+              (m) => TempInventoryUpdateClass.fromJson(m),
+            )
+            .toList();
         await InventoryUpdatesFunc()
             .insertAllInventoryUpdates(inventoryUpdates);
         print(
@@ -170,8 +168,8 @@ class InventoryUpdatesProvider with ChangeNotifier {
         return [];
       }
     } else {
-      inventoryUpdates =
-          InventoryUpdatesFunc().getInventoryUpdatess();
+      inventoryUpdates = InventoryUpdatesFunc()
+          .getInventoryUpdatess();
       print(
         'Inventory Updates Gotten Successfully Offline',
       );
@@ -182,8 +180,8 @@ class InventoryUpdatesProvider with ChangeNotifier {
 
   Future<List<TempInventoryUpdateClass>>
   getInventoryUpdatesOffline() async {
-    inventoryUpdates =
-        InventoryUpdatesFunc().getInventoryUpdatess();
+    inventoryUpdates = InventoryUpdatesFunc()
+        .getInventoryUpdatess();
     print('Inventory Updates Gotten Successfully Offline');
     notifyListeners();
     return inventoryUpdates;
@@ -241,6 +239,7 @@ class InventoryUpdatesProvider with ChangeNotifier {
               ),
             );
         // await getInventoryUpdates();
+        syncData();
         return 1;
       } catch (e) {
         print('Offline Creating Failed: ${e.toString()}');
@@ -254,8 +253,8 @@ class InventoryUpdatesProvider with ChangeNotifier {
 
   Future<void> inventoryUpdatesSync() async {
     try {
-      bool isOnline =
-          await ConnectivityProvider().isOnline();
+      bool isOnline = await ConnectivityProvider()
+          .isOnline();
       if (CreatedInventoryUpdatesFunc()
               .getCreatedInventoryUpdatess()
               .isNotEmpty &&
@@ -271,17 +270,15 @@ class InventoryUpdatesProvider with ChangeNotifier {
               inventoryUpdate.inventoryUpdate.createdAt!;
           return inventoryUpdate;
         });
-        final payload =
-            newInventoryUpdates
-                .map((p) => p.inventoryUpdate.toJson())
-                .toList();
+        final payload = newInventoryUpdates
+            .map((p) => p.inventoryUpdate.toJson())
+            .toList();
 
         // Insert all at once
-        final data =
-            await client
-                .from(tableName)
-                .insert(payload)
-                .select();
+        final data = await client
+            .from(tableName)
+            .insert(payload)
+            .select();
 
         print(
           '${data.length} Inventory Update items added successfully ✅',

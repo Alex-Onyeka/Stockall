@@ -319,6 +319,7 @@ class ReceiptsProvider extends ChangeNotifier {
 
       print('Totally Finished Deleting Receipt');
       notifyListeners();
+      syncData();
       return 1;
     } catch (e) {
       print('Error Deleting Receipt: ${e.toString()}');

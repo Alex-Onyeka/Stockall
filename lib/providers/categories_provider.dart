@@ -99,6 +99,7 @@ class CategoriesProvider extends ChangeNotifier {
       print('Category Created');
       await getCategoriesOffline(shopId());
       notifyListeners();
+      syncData();
       return 1;
     } catch (e) {
       print('Error Creating Category: ${e.toString()}');
@@ -128,10 +129,9 @@ class CategoriesProvider extends ChangeNotifier {
             .order('name', ascending: true);
         print('Categories Gotten: ${response.length}');
 
-        categoriesMain =
-            (response as List)
-                .map((e) => CategoryClass.fromJson(e))
-                .toList();
+        categoriesMain = (response as List)
+            .map((e) => CategoryClass.fromJson(e))
+            .toList();
 
         await CategoryFunc().insertAllCategories(
           categoriesMain,
@@ -226,13 +226,12 @@ class CategoriesProvider extends ChangeNotifier {
       //       .eq('uuid', category.uuid);
       // } else {
       await CategoryFunc().updateCategory(category);
-      var containsCreated =
-          CreatedCategoriesFunc()
-              .getCreateCategories()
-              .where(
-                (cat) => cat.category.uuid == category.uuid,
-              )
-              .toList();
+      var containsCreated = CreatedCategoriesFunc()
+          .getCreateCategories()
+          .where(
+            (cat) => cat.category.uuid == category.uuid,
+          )
+          .toList();
       if (containsCreated.isEmpty) {
         await UpdatedCategoriesFunc().createUpdatedCategory(
           UpdatedCategory(category: category),
@@ -245,6 +244,7 @@ class CategoriesProvider extends ChangeNotifier {
       // }
       await getCategoriesOffline(shopId());
       notifyListeners();
+      syncData();
       return 1;
     } catch (e) {
       print('Error Updating Category: ${e.toString()}');
@@ -270,20 +270,18 @@ class CategoriesProvider extends ChangeNotifier {
       //       .delete()
       //       .eq('uuid', category.uuid);
       // } else {
-      var containsCreated =
-          CreatedCategoriesFunc()
-              .getCreateCategories()
-              .where(
-                (cat) => cat.category.uuid == category.uuid,
-              )
-              .toList();
-      var containsUpdated =
-          UpdatedCategoriesFunc()
-              .getCategories()
-              .where(
-                (cat) => cat.category.uuid == category.uuid,
-              )
-              .toList();
+      var containsCreated = CreatedCategoriesFunc()
+          .getCreateCategories()
+          .where(
+            (cat) => cat.category.uuid == category.uuid,
+          )
+          .toList();
+      var containsUpdated = UpdatedCategoriesFunc()
+          .getCategories()
+          .where(
+            (cat) => cat.category.uuid == category.uuid,
+          )
+          .toList();
       await CategoryFunc().deleteCategory(category.uuid);
 
       if (containsCreated.isNotEmpty) {
@@ -294,8 +292,9 @@ class CategoriesProvider extends ChangeNotifier {
         await DeletedCategoriesFunc().createDeletedCategory(
           DeletedCategory(
             categoryUuid: category.uuid,
-            shopId:
-                returnShopProvider().userShop()!.shopId!,
+            shopId: returnShopProvider()
+                .userShop()!
+                .shopId!,
           ),
         );
       }
@@ -308,6 +307,7 @@ class CategoriesProvider extends ChangeNotifier {
 
       await getCategoriesOffline(shopId());
       notifyListeners();
+      syncData();
       return 1;
     } catch (e) {
       print('Error Deleting Category: ${e.toString()}');
@@ -329,26 +329,23 @@ class CategoriesProvider extends ChangeNotifier {
               .getCreateCategories()
               .isNotEmpty &&
           isOnline) {
-        final tempCategories =
-            CreatedCategoriesFunc()
-                .getCreateCategories()
-                .toList();
+        final tempCategories = CreatedCategoriesFunc()
+            .getCreateCategories()
+            .toList();
         for (var cat in tempCategories) {
           print(
             'Updated Time: ${cat.category.updatedAt?.toString()}',
           );
         }
-        final payload =
-            tempCategories
-                .map((p) => p.category.toJson())
-                .toList();
+        final payload = tempCategories
+            .map((p) => p.category.toJson())
+            .toList();
 
         // Insert all at once
-        final data =
-            await supabase
-                .from(tableName)
-                .insert(payload)
-                .select();
+        final data = await supabase
+            .from(tableName)
+            .insert(payload)
+            .select();
 
         print('${data.length} items added successfully ✅');
         await CreatedCategoriesFunc().clearCategories();
@@ -380,21 +377,19 @@ class CategoriesProvider extends ChangeNotifier {
               .getCategoryIds()
               .isNotEmpty &&
           isOnline) {
-        final uuids =
-            DeletedCategoriesFunc()
-                .getCategoryIds()
-                .map((p) => p.categoryUuid)
-                .toList();
+        final uuids = DeletedCategoriesFunc()
+            .getCategoryIds()
+            .map((p) => p.categoryUuid)
+            .toList();
 
-        final data =
-            await supabase
-                .from(tableName)
-                .delete()
-                .inFilter(
-                  'uuid',
-                  uuids,
-                ) // delete where id is in the list
-                .select();
+        final data = await supabase
+            .from(tableName)
+            .delete()
+            .inFilter(
+              'uuid',
+              uuids,
+            ) // delete where id is in the list
+            .select();
 
         print(
           '${data.length} items deleted successfully ✅',
@@ -434,21 +429,20 @@ class CategoriesProvider extends ChangeNotifier {
               .getCategories()
               .isNotEmpty &&
           isOnline) {
-        final updatedCategory =
-            UpdatedCategoriesFunc().getCategories();
+        final updatedCategory = UpdatedCategoriesFunc()
+            .getCategories();
 
         for (final updated in updatedCategory) {
           final localCategories = updated.category;
 
-          localCategories.updatedAt ??=
-              DateTime.now().toLocal();
+          localCategories.updatedAt ??= DateTime.now()
+              .toLocal();
 
-          final remoteData =
-              await supabase
-                  .from(tableName)
-                  .select('uuid, updated_at')
-                  .eq('uuid', localCategories.uuid)
-                  .maybeSingle();
+          final remoteData = await supabase
+              .from(tableName)
+              .select('uuid, updated_at')
+              .eq('uuid', localCategories.uuid)
+              .maybeSingle();
 
           if (remoteData == null) {
             await supabase
@@ -466,10 +460,10 @@ class CategoriesProvider extends ChangeNotifier {
                 remoteData['updated_at'];
             final remoteUpdatedAt =
                 remoteUpdatedAtRaw == null
-                    ? null
-                    : DateTime.parse(
-                      remoteUpdatedAtRaw,
-                    ).toUtc();
+                ? null
+                : DateTime.parse(
+                    remoteUpdatedAtRaw,
+                  ).toUtc();
 
             localCategories.updatedAt =
                 (localCategories.updatedAt ??

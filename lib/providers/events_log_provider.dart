@@ -229,6 +229,7 @@ class EventsLogProvider with ChangeNotifier {
           CreatedEventsLogClass(eventLog: log),
         );
         await getEventLogsOffline();
+        // syncData();
         return 1;
       } catch (e) {
         print(
@@ -502,26 +503,45 @@ class EventsLogProvider with ChangeNotifier {
             CreatedEventsLogFunc()
                 .getCreatedEventsLogs()
                 .toList();
-        var newEvents = tempEventLogs.map((log) {
-          log.eventLog.createdAt = log.eventLog.createdAt!;
-          return log;
-        });
-        final payload =
-            newEvents
-                .map((p) => p.eventLog.toJson())
-                .toList();
+        // var newEvents = tempEventLogs.map((log) {
+        //   log.eventLog.createdAt = log.eventLog.createdAt!;
+        //   return log;
+        // });
+        // final payload =
+        //     newEvents
+        //         .map((p) => p.eventLog.toJson())
+        //         .toList();
 
         // Insert all at once
-        final data =
+        int count = 0;
+        for (var item in tempEventLogs) {
+          try {
+            // Insert all at once
             await client
                 .from(tableName)
-                .insert(payload)
+                .insert(item.eventLog.uuid!)
                 .select();
+            count++;
+            await CreatedEventsLogFunc().deleteEventLog(
+              item.eventLog.uuid!,
+            );
+          } on PostgrestException catch (e) {
+            if (e.code == '23505') {
+              await CreatedEventsLogFunc().deleteEventLog(
+                item.eventLog.uuid!,
+              );
+            }
+            await createErrorLog(
+              error:
+                  'Error Synchronizing Events Log ${item.eventLog.title}: $e',
+            );
+          }
+        }
 
         print(
-          '${data.length} Event Log items added successfully ✅',
+          '$count Event Log items added successfully ✅',
         );
-        await CreatedEventsLogFunc().clearEvents();
+        // await CreatedEventsLogFunc().clearEvents();
         print('Unsynced Event Logs Cleared');
         print('Mounted, refreshing Receipts ✅');
         await getEventLogs();

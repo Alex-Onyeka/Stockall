@@ -87,6 +87,22 @@ class CreatedErrorLogFunc {
     }
   }
 
+  Future<int> deleteErrorLog(String uuid) async {
+    try {
+      print(
+        createdErrorLogBox.containsKey(uuid).toString(),
+      );
+      await createdErrorLogBox.delete(uuid);
+      print('Created Error Log Deleted');
+      return 1;
+    } catch (e) {
+      print(
+        'Created Error Log Delete Failed: ${e.toString()}',
+      );
+      return 0;
+    }
+  }
+
   Future<int> clearError() async {
     try {
       await createdErrorLogBox.clear();

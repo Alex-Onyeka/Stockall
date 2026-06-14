@@ -244,6 +244,7 @@ class ErrorLogProvider with ChangeNotifier {
         CreatedErrorLogClass(errorLog: log),
       );
       await getErrorLogsOffline();
+      syncData();
       return 1;
     } catch (e) {
       print(
@@ -270,26 +271,45 @@ class ErrorLogProvider with ChangeNotifier {
             CreatedErrorLogFunc()
                 .getCreatedErrorLogs()
                 .toList();
-        var newError = tempErrorLogs.map((log) {
-          log.errorLog.createdAt = log.errorLog.createdAt!;
-          return log;
-        });
-        final payload =
-            newError
-                .map((p) => p.errorLog.toJson())
-                .toList();
+        // var newError = tempErrorLogs.map((log) {
+        //   log.errorLog.createdAt = log.errorLog.createdAt!;
+        //   return log;
+        // });
+        // final payload =
+        //     newError
+        //         .map((p) => p.errorLog.toJson())
+        //         .toList();
 
         // Insert all at once
-        final data =
+        int count = 0;
+        for (var item in tempErrorLogs) {
+          try {
+            // Insert all at once
             await client
                 .from(tableName)
-                .insert(payload)
+                .insert(item.errorLog.uuid!)
                 .select();
+            count++;
+            await CreatedErrorLogFunc().deleteErrorLog(
+              item.errorLog.uuid!,
+            );
+          } on PostgrestException catch (e) {
+            if (e.code == '23505') {
+              await CreatedErrorLogFunc().deleteErrorLog(
+                item.errorLog.uuid!,
+              );
+            }
+            await createErrorLog(
+              error:
+                  'Error Synchronizing Error Log ${item.errorLog.title}: $e',
+            );
+          }
+        }
 
         print(
-          '${data.length} Error Log items added successfully ✅',
+          '$count Error Log items added successfully ✅',
         );
-        await CreatedErrorLogFunc().clearError();
+        // await CreatedErrorLogFunc().clearError();
         print('Unsynced Error Logs Cleared');
         print('Mounted, refreshing Receipts ✅');
         await getErrorLogs();

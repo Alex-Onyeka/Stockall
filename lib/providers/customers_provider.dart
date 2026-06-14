@@ -91,12 +91,9 @@ class CustomersProvider extends ChangeNotifier {
           .order('name', ascending: true);
       print(data.length.toString());
 
-      customers =
-          (data as List)
-              .map(
-                (json) => TempCustomersClass.fromJson(json),
-              )
-              .toList();
+      customers = (data as List)
+          .map((json) => TempCustomersClass.fromJson(json))
+          .toList();
 
       await CustomerFunc().insertAllCustomers(customers);
     } else {
@@ -188,6 +185,7 @@ class CustomersProvider extends ChangeNotifier {
       shopProvider.userShop()!.shopId!,
     );
     notifyListeners();
+    syncData();
   }
 
   /// Update a customer by ID
@@ -214,13 +212,10 @@ class CustomersProvider extends ChangeNotifier {
     //   );
     // } else {
     await CustomerFunc().updateCustomer(customer);
-    var containsCreated =
-        CreatedCustomersFunc()
-            .getCustomers()
-            .where(
-              (cus) => cus.customer.uuid == customer.uuid,
-            )
-            .toList();
+    var containsCreated = CreatedCustomersFunc()
+        .getCustomers()
+        .where((cus) => cus.customer.uuid == customer.uuid)
+        .toList();
     if (containsCreated.isEmpty) {
       await UpdatedCustomersFunc().createUpdatedCustomer(
         UpdatedCustomers(customer: customer),
@@ -244,6 +239,7 @@ class CustomersProvider extends ChangeNotifier {
       shopProvider.userShop()!.shopId!,
     );
     notifyListeners();
+    syncData();
   }
 
   /// Delete a customer by ID
@@ -274,20 +270,14 @@ class CustomersProvider extends ChangeNotifier {
     //     print('Customer Delete Log Failed');
     //   }
     // } else {
-    var containsCreated =
-        CreatedCustomersFunc()
-            .getCustomers()
-            .where(
-              (customer) => customer.customer.uuid == uuid,
-            )
-            .toList();
-    var containsUpdated =
-        UpdatedCustomersFunc()
-            .getCustomers()
-            .where(
-              (customer) => customer.customer.uuid == uuid,
-            )
-            .toList();
+    var containsCreated = CreatedCustomersFunc()
+        .getCustomers()
+        .where((customer) => customer.customer.uuid == uuid)
+        .toList();
+    var containsUpdated = UpdatedCustomersFunc()
+        .getCustomers()
+        .where((customer) => customer.customer.uuid == uuid)
+        .toList();
     await CustomerFunc().deleteCustomer(customer.uuid!);
     if (containsCreated.isNotEmpty) {
       await CreatedCustomersFunc().deleteCustomer(
@@ -321,6 +311,7 @@ class CustomersProvider extends ChangeNotifier {
       shopProvider.userShop()!.shopId!,
     );
     notifyListeners();
+    syncData();
   }
 
   /// Get single customer by ID
@@ -361,8 +352,9 @@ class CustomersProvider extends ChangeNotifier {
     returnSalesProvider().currentCart().selectedCustomer =
         null;
     returnSalesProvider()
-        .currentCart()
-        .selectedCustomerName = null;
+            .currentCart()
+            .selectedCustomerName =
+        null;
     CartFunc().updateMainCart(
       returnSalesProvider().currentMainCart(),
     );
@@ -381,8 +373,9 @@ class CustomersProvider extends ChangeNotifier {
     returnSalesProvider().currentCart().selectedCustomer =
         id;
     returnSalesProvider()
-        .currentCart()
-        .selectedCustomerName = name;
+            .currentCart()
+            .selectedCustomerName =
+        name;
     notifyListeners();
     CartFunc().updateMainCart(
       returnSalesProvider().currentMainCart(),
@@ -404,24 +397,23 @@ class CustomersProvider extends ChangeNotifier {
               .getCustomers()
               .isNotEmpty &&
           isOnline) {
-        final tempCustomers =
-            CreatedCustomersFunc().getCustomers().toList();
+        final tempCustomers = CreatedCustomersFunc()
+            .getCustomers()
+            .toList();
         for (var customer in tempCustomers) {
           print(
             'Updated Time: ${customer.customer.updatedAt?.toString()}',
           );
         }
-        final payload =
-            tempCustomers
-                .map((p) => p.customer.toJson())
-                .toList();
+        final payload = tempCustomers
+            .map((p) => p.customer.toJson())
+            .toList();
 
         // Insert all at once
-        final data =
-            await supabase
-                .from('customers')
-                .insert(payload)
-                .select();
+        final data = await supabase
+            .from('customers')
+            .insert(payload)
+            .select();
 
         print('${data.length} items added successfully ✅');
         await CreatedCustomersFunc().clearCustomers();
@@ -460,24 +452,23 @@ class CustomersProvider extends ChangeNotifier {
               .getCustomers()
               .isNotEmpty &&
           isOnline) {
-        final updatedCustomers =
-            UpdatedCustomersFunc().getCustomers();
+        final updatedCustomers = UpdatedCustomersFunc()
+            .getCustomers();
 
         for (final updated in updatedCustomers) {
           final localCustomer = updated.customer;
 
-          localCustomer.updatedAt ??=
-              DateTime.now().toLocal();
+          localCustomer.updatedAt ??= DateTime.now()
+              .toLocal();
 
           if (localCustomer.uuid == null) {
             print('Local Customer Uuid is Null');
           }
-          final remoteData =
-              await supabase
-                  .from('customers')
-                  .select('uuid, updated_at')
-                  .eq('uuid', localCustomer.uuid!)
-                  .maybeSingle();
+          final remoteData = await supabase
+              .from('customers')
+              .select('uuid, updated_at')
+              .eq('uuid', localCustomer.uuid!)
+              .maybeSingle();
 
           if (remoteData == null) {
             await supabase
@@ -495,10 +486,10 @@ class CustomersProvider extends ChangeNotifier {
                 remoteData['updated_at'];
             final remoteUpdatedAt =
                 remoteUpdatedAtRaw == null
-                    ? null
-                    : DateTime.parse(
-                      remoteUpdatedAtRaw,
-                    ).toUtc();
+                ? null
+                : DateTime.parse(
+                    remoteUpdatedAtRaw,
+                  ).toUtc();
 
             localCustomer.updatedAt =
                 (localCustomer.updatedAt ?? DateTime.now())
@@ -561,21 +552,19 @@ class CustomersProvider extends ChangeNotifier {
               .getCustomerIds()
               .isNotEmpty &&
           isOnline) {
-        final uuids =
-            DeletedCustomersFunc()
-                .getCustomerIds()
-                .map((p) => p.customerUuid)
-                .toList();
+        final uuids = DeletedCustomersFunc()
+            .getCustomerIds()
+            .map((p) => p.customerUuid)
+            .toList();
 
-        final data =
-            await supabase
-                .from('customers')
-                .delete()
-                .inFilter(
-                  'uuid',
-                  uuids,
-                ) // delete where id is in the list
-                .select();
+        final data = await supabase
+            .from('customers')
+            .delete()
+            .inFilter(
+              'uuid',
+              uuids,
+            ) // delete where id is in the list
+            .select();
 
         print(
           '${data.length} items deleted successfully ✅',

@@ -179,6 +179,7 @@ class PurchaseActionProvider extends ChangeNotifier {
       } else {
         await returnData().getProducts(shopId());
       }
+      syncData();
 
       return 1;
     } catch (e) {

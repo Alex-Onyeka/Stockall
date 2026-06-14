@@ -175,6 +175,7 @@ class PurchaseProvider extends ChangeNotifier {
           return null;
         }
         await loadPurchases(shopId());
+        syncData();
         return purchase;
       } catch (e) {
         print(

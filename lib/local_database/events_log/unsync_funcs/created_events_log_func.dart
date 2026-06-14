@@ -90,6 +90,22 @@ class CreatedEventsLogFunc {
     }
   }
 
+  Future<int> deleteEventLog(String uuid) async {
+    try {
+      print(
+        createdEventsLogBox.containsKey(uuid).toString(),
+      );
+      await createdEventsLogBox.delete(uuid);
+      print('Created Event Log Deleted');
+      return 1;
+    } catch (e) {
+      print(
+        'Created Event Log Delete Failed: ${e.toString()}',
+      );
+      return 0;
+    }
+  }
+
   Future<int> clearEvents() async {
     try {
       await createdEventsLogBox.clear();

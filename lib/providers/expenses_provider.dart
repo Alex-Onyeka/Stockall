@@ -74,6 +74,7 @@ class ExpensesProvider extends ChangeNotifier {
     //   print('Context not Mounted for create Expenses');
     // }
     notifyListeners();
+    syncData();
   }
 
   //
@@ -98,10 +99,9 @@ class ExpensesProvider extends ChangeNotifier {
             .order('created_date', ascending: false);
         print('Expenses Gotten: ${response.length}');
 
-        expensesMain =
-            (response as List)
-                .map((e) => TempExpensesClass.fromJson(e))
-                .toList();
+        expensesMain = (response as List)
+            .map((e) => TempExpensesClass.fromJson(e))
+            .toList();
 
         await ExpensesFunc().insertAllExpenses(
           expensesMain,
@@ -364,13 +364,10 @@ class ExpensesProvider extends ChangeNotifier {
     //   );
     // } else {
     await ExpensesFunc().updateExpenses(expense);
-    var containsCreated =
-        CreatedExpensesFunc()
-            .getExpenses()
-            .where(
-              (exp) => exp.expenses.uuid == expense.uuid,
-            )
-            .toList();
+    var containsCreated = CreatedExpensesFunc()
+        .getExpenses()
+        .where((exp) => exp.expenses.uuid == expense.uuid)
+        .toList();
     if (containsCreated.isEmpty) {
       await UpdatedExpensesFunc().createUpdatedExpense(
         UpdatedExpenses(expenses: expense),
@@ -391,6 +388,7 @@ class ExpensesProvider extends ChangeNotifier {
       await getExpensesOffline(shopId());
     }
     notifyListeners();
+    syncData();
   }
   //
   //
@@ -417,18 +415,14 @@ class ExpensesProvider extends ChangeNotifier {
     //     // ignore: use_build_context_synchronously
     //   );
     // } else {
-    var containsCreated =
-        CreatedExpensesFunc()
-            .getExpenses()
-            .where((exp) => exp.expenses.uuid == uuid)
-            .toList();
-    var containsUpdated =
-        UpdatedExpensesFunc()
-            .getExpenses()
-            .where(
-              (exp) => exp.expenses.uuid == expenses.uuid,
-            )
-            .toList();
+    var containsCreated = CreatedExpensesFunc()
+        .getExpenses()
+        .where((exp) => exp.expenses.uuid == uuid)
+        .toList();
+    var containsUpdated = UpdatedExpensesFunc()
+        .getExpenses()
+        .where((exp) => exp.expenses.uuid == expenses.uuid)
+        .toList();
     await ExpensesFunc().deleteExpenses(expenses.uuid!);
 
     if (containsCreated.isNotEmpty) {
@@ -458,6 +452,7 @@ class ExpensesProvider extends ChangeNotifier {
       await getExpensesOffline(shopId());
     }
     notifyListeners();
+    syncData();
   }
 
   //
@@ -472,27 +467,48 @@ class ExpensesProvider extends ChangeNotifier {
       // Prepare batch payload
       if (CreatedExpensesFunc().getExpenses().isNotEmpty &&
           isOnline) {
-        final tempExpenses =
-            CreatedExpensesFunc().getExpenses().toList();
-        for (var exp in tempExpenses) {
-          print(
-            'Updated Time: ${exp.expenses.updatedAt?.toString()}',
-          );
-        }
-        final payload =
-            tempExpenses
-                .map((p) => p.expenses.toJson())
-                .toList();
+        final tempExpenses = CreatedExpensesFunc()
+            .getExpenses()
+            .toList();
+        // for (var exp in tempExpenses) {
+        //   print(
+        //     'Updated Time: ${exp.expenses.updatedAt?.toString()}',
+        //   );
+        // }
+        // final payload =
+        //     tempExpenses
+        //         .map((p) => p.expenses.toJson())
+        //         .toList();
 
         // Insert all at once
-        final data =
+
+        int count = 0;
+        for (var item in tempExpenses) {
+          try {
+            // Insert all at once
             await supabase
                 .from('expenses')
-                .insert(payload)
+                .insert(item.expenses.toJson())
                 .select();
+            count++;
+            await CreatedExpensesFunc().deleteExpenses(
+              item.expenses.uuid!,
+            );
+          } on PostgrestException catch (e) {
+            if (e.code == '23505') {
+              await CreatedExpensesFunc().deleteExpenses(
+                item.expenses.uuid!,
+              );
+            }
+            await createErrorLog(
+              error:
+                  'Error Synchronizing Created Expenses ${item.expenses.name}: $e',
+            );
+          }
+        }
 
-        print('${data.length} items added successfully ✅');
-        await CreatedExpensesFunc().clearExpenses();
+        print('$count items added successfully ✅');
+        // await CreatedExpensesFunc().clearExpenses();
         print('Unsynced Expenses Cleared');
         print('Mounted, refreshing Expenses ✅');
         await getExpenses(
@@ -521,21 +537,19 @@ class ExpensesProvider extends ChangeNotifier {
               .getExpenseIds()
               .isNotEmpty &&
           isOnline) {
-        final uuids =
-            DeletedExpensesFunc()
-                .getExpenseIds()
-                .map((p) => p.expensesUuid)
-                .toList();
+        final uuids = DeletedExpensesFunc()
+            .getExpenseIds()
+            .map((p) => p.expensesUuid)
+            .toList();
 
-        final data =
-            await supabase
-                .from('expenses')
-                .delete()
-                .inFilter(
-                  'uuid',
-                  uuids,
-                ) // delete where id is in the list
-                .select();
+        final data = await supabase
+            .from('expenses')
+            .delete()
+            .inFilter(
+              'uuid',
+              uuids,
+            ) // delete where id is in the list
+            .select();
 
         print(
           '${data.length} items deleted successfully ✅',
@@ -572,24 +586,23 @@ class ExpensesProvider extends ChangeNotifier {
 
       if (UpdatedExpensesFunc().getExpenses().isNotEmpty &&
           isOnline) {
-        final updatedExpenses =
-            UpdatedExpensesFunc().getExpenses();
+        final updatedExpenses = UpdatedExpensesFunc()
+            .getExpenses();
 
         for (final updated in updatedExpenses) {
           final localExpenses = updated.expenses;
 
-          localExpenses.updatedAt ??=
-              DateTime.now().toLocal();
+          localExpenses.updatedAt ??= DateTime.now()
+              .toLocal();
 
           if (localExpenses.uuid == null) {
             print('Local Expenses Uuid is Null');
           }
-          final remoteData =
-              await supabase
-                  .from('expenses')
-                  .select('uuid, updated_at')
-                  .eq('uuid', localExpenses.uuid!)
-                  .maybeSingle();
+          final remoteData = await supabase
+              .from('expenses')
+              .select('uuid, updated_at')
+              .eq('uuid', localExpenses.uuid!)
+              .maybeSingle();
 
           if (remoteData == null) {
             await supabase
@@ -607,10 +620,10 @@ class ExpensesProvider extends ChangeNotifier {
                 remoteData['updated_at'];
             final remoteUpdatedAt =
                 remoteUpdatedAtRaw == null
-                    ? null
-                    : DateTime.parse(
-                      remoteUpdatedAtRaw,
-                    ).toUtc();
+                ? null
+                : DateTime.parse(
+                    remoteUpdatedAtRaw,
+                  ).toUtc();
 
             localExpenses.updatedAt =
                 (localExpenses.updatedAt ?? DateTime.now())
