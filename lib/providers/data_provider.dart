@@ -169,7 +169,7 @@ class DataProvider extends ChangeNotifier {
       returnShopProvider().userShop()!.shopId!,
     );
 
-    syncData();
+    // syncData();
 
     clearFields();
   }
@@ -184,37 +184,37 @@ class DataProvider extends ChangeNotifier {
           isOnline) {
         final tempProducts =
             CreatedProductFunc().getProducts().toList();
-        // final payload =
-        //     tempProducts
-        //         .map((p) => p.product.toJson())
-        //         .toList();
+        final payload =
+            tempProducts
+                .map((p) => p.product.toJson())
+                .toList();
 
-        int count = 0;
-        for (var item in tempProducts) {
-          try {
-            // Insert all at once
-            await supabase
-                .from('products')
-                .insert(item.product.uuid!)
-                .select();
-            count++;
-            // await CreatedProductFunc().deleteProduct(
-            //   item.product.uuid!,
-            // );
-          } on PostgrestException catch (e) {
-            // if (e.code == '23505') {
-            //   await CreatedProductFunc().deleteProduct(
-            //     item.product.uuid!,
-            //   );
-            // }
-            // await createErrorLog(
-            //   error:
-            //       'Error Synchronizing Product $item.name: $e',
-            // );
-          }
-        }
+        // int count = 0;
+        // for (var item in tempProducts) {
+        //   try {
+        //     // Insert all at once
+        await supabase
+            .from('products')
+            .insert(payload)
+            .select();
+        //     count++;
+        //     // await CreatedProductFunc().deleteProduct(
+        //     //   item.product.uuid!,
+        //     // );
+        //   } on PostgrestException catch (e) {
+        //     // if (e.code == '23505') {
+        //     //   await CreatedProductFunc().deleteProduct(
+        //     //     item.product.uuid!,
+        //     //   );
+        //     // }
+        //     // await createErrorLog(
+        //     //   error:
+        //     //       'Error Synchronizing Product $item.name: $e',
+        //     // );
+        //   }
+        // }
 
-        print('$count items added successfully ✅');
+        // print('$count items added successfully ✅');
         await CreatedProductFunc().clearProducts();
         print('Mounted, refreshing products ✅');
         await getProducts(
