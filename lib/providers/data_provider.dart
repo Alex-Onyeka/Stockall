@@ -169,7 +169,7 @@ class DataProvider extends ChangeNotifier {
       returnShopProvider().userShop()!.shopId!,
     );
 
-    // syncData();
+    syncData();
 
     clearFields();
   }
@@ -184,38 +184,38 @@ class DataProvider extends ChangeNotifier {
           isOnline) {
         final tempProducts =
             CreatedProductFunc().getProducts().toList();
-        final payload =
-            tempProducts
-                .map((p) => p.product.toJson())
-                .toList();
+        // final payload =
+        //     tempProducts
+        //         .map((p) => p.product.toJson())
+        //         .toList();
 
-        // int count = 0;
-        // for (var item in tempProducts) {
-        //   try {
-        //     // Insert all at once
-        await supabase
-            .from('products')
-            .insert(payload)
-            .select();
-        //     count++;
-        //     // await CreatedProductFunc().deleteProduct(
-        //     //   item.product.uuid!,
-        //     // );
-        //   } on PostgrestException catch (e) {
-        //     // if (e.code == '23505') {
-        //     //   await CreatedProductFunc().deleteProduct(
-        //     //     item.product.uuid!,
-        //     //   );
-        //     // }
-        //     // await createErrorLog(
-        //     //   error:
-        //     //       'Error Synchronizing Product $item.name: $e',
-        //     // );
-        //   }
-        // }
+        int count = 0;
+        for (var item in tempProducts) {
+          try {
+            // Insert all at once
+            await supabase
+                .from('products')
+                .insert(item.product.toJson())
+                .select();
+            count++;
+            await CreatedProductFunc().deleteProduct(
+              item.product.uuid!,
+            );
+          } on PostgrestException catch (e) {
+            if (e.code == '23505') {
+              await CreatedProductFunc().deleteProduct(
+                item.product.uuid!,
+              );
+            }
+            await createErrorLog(
+              error:
+                  'Error Synchronizing Product ${item.product.name}: $e',
+            );
+          }
+        }
 
-        // print('$count items added successfully ✅');
-        await CreatedProductFunc().clearProducts();
+        print('$count items added successfully ✅');
+        // await CreatedProductFunc().clearProducts();
         print('Mounted, refreshing products ✅');
         await getProducts(
           returnShopProvider().userShop()!.shopId!,
@@ -311,24 +311,24 @@ class DataProvider extends ChangeNotifier {
               await supabase
                   .from('products')
                   .insert(localProduct.toJson());
-              // print(
-              //   'Inserted product with uuid ${localProduct.uuid}',
-              // );
-              // await UpdatedProductsFunc()
-              //     .deleteUpdatedProduct(
-              //       localProduct.uuid ?? '',
-              //     );
+              print(
+                'Inserted product with uuid ${localProduct.uuid}',
+              );
+              await UpdatedProductsFunc()
+                  .deleteUpdatedProduct(
+                    localProduct.uuid ?? '',
+                  );
             } on PostgrestException catch (e) {
-              // if (e.code == '23505') {
-              //   await UpdatedProductsFunc()
-              //       .deleteUpdatedProduct(
-              //         localProduct.uuid ?? '',
-              //       );
-              // }
-              // await createErrorLog(
-              //   error:
-              //       'Error Synchronizing Receipt ${localProduct.name}: $e',
-              // );
+              if (e.code == '23505') {
+                await UpdatedProductsFunc()
+                    .deleteUpdatedProduct(
+                      localProduct.uuid ?? '',
+                    );
+              }
+              await createErrorLog(
+                error:
+                    'Error Synchronizing Receipt ${localProduct.name}: $e',
+              );
             }
           } else {
             final remoteUpdatedAtRaw =
@@ -357,24 +357,24 @@ class DataProvider extends ChangeNotifier {
                     .from('products')
                     .update(localProduct.toJson())
                     .eq('uuid', localProduct.uuid!);
-                // print(
-                //   'Updated product with uuid ${localProduct.uuid}',
-                // );
-                // await UpdatedProductsFunc()
-                //     .deleteUpdatedProduct(
-                //       localProduct.uuid ?? '',
-                //     );
+                print(
+                  'Updated product with uuid ${localProduct.uuid}',
+                );
+                await UpdatedProductsFunc()
+                    .deleteUpdatedProduct(
+                      localProduct.uuid ?? '',
+                    );
               } on PostgrestException catch (e) {
-                // if (e.code == '23505') {
-                //   await UpdatedProductsFunc()
-                //       .deleteUpdatedProduct(
-                //         localProduct.uuid ?? '',
-                //       );
-                // }
-                // await createErrorLog(
-                //   error:
-                //       'Error Synchronizing Receipt ${localProduct.name}: $e',
-                // );
+                if (e.code == '23505') {
+                  await UpdatedProductsFunc()
+                      .deleteUpdatedProduct(
+                        localProduct.uuid ?? '',
+                      );
+                }
+                await createErrorLog(
+                  error:
+                      'Error Synchronizing Receipt ${localProduct.name}: $e',
+                );
               }
             } else {
               print(
@@ -384,7 +384,7 @@ class DataProvider extends ChangeNotifier {
           }
         }
 
-        await UpdatedProductsFunc().clearupdatedProducts();
+        // await UpdatedProductsFunc().clearupdatedProducts();
         print('Unsynced updated products cleared');
         print('Mounted, refreshing products ✅');
         await getProducts(
