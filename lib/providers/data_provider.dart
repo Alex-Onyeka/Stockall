@@ -169,6 +169,8 @@ class DataProvider extends ChangeNotifier {
       returnShopProvider().userShop()!.shopId!,
     );
 
+    syncData();
+
     clearFields();
   }
 
@@ -196,24 +198,24 @@ class DataProvider extends ChangeNotifier {
                 .insert(item.product.uuid!)
                 .select();
             count++;
-            await CreatedProductFunc().deleteProduct(
-              item.product.uuid!,
-            );
+            // await CreatedProductFunc().deleteProduct(
+            //   item.product.uuid!,
+            // );
           } on PostgrestException catch (e) {
-            if (e.code == '23505') {
-              await CreatedProductFunc().deleteProduct(
-                item.product.uuid!,
-              );
-            }
-            await createErrorLog(
-              error:
-                  'Error Synchronizing Product $item.name: $e',
-            );
+            // if (e.code == '23505') {
+            //   await CreatedProductFunc().deleteProduct(
+            //     item.product.uuid!,
+            //   );
+            // }
+            // await createErrorLog(
+            //   error:
+            //       'Error Synchronizing Product $item.name: $e',
+            // );
           }
         }
 
         print('$count items added successfully ✅');
-        // await CreatedProductFunc().clearProducts();
+        await CreatedProductFunc().clearProducts();
         print('Mounted, refreshing products ✅');
         await getProducts(
           returnShopProvider().userShop()!.shopId!,
@@ -309,24 +311,24 @@ class DataProvider extends ChangeNotifier {
               await supabase
                   .from('products')
                   .insert(localProduct.toJson());
-              print(
-                'Inserted product with uuid ${localProduct.uuid}',
-              );
-              await UpdatedProductsFunc()
-                  .deleteUpdatedProduct(
-                    localProduct.uuid ?? '',
-                  );
+              // print(
+              //   'Inserted product with uuid ${localProduct.uuid}',
+              // );
+              // await UpdatedProductsFunc()
+              //     .deleteUpdatedProduct(
+              //       localProduct.uuid ?? '',
+              //     );
             } on PostgrestException catch (e) {
-              if (e.code == '23505') {
-                await UpdatedProductsFunc()
-                    .deleteUpdatedProduct(
-                      localProduct.uuid ?? '',
-                    );
-              }
-              await createErrorLog(
-                error:
-                    'Error Synchronizing Receipt ${localProduct.name}: $e',
-              );
+              // if (e.code == '23505') {
+              //   await UpdatedProductsFunc()
+              //       .deleteUpdatedProduct(
+              //         localProduct.uuid ?? '',
+              //       );
+              // }
+              // await createErrorLog(
+              //   error:
+              //       'Error Synchronizing Receipt ${localProduct.name}: $e',
+              // );
             }
           } else {
             final remoteUpdatedAtRaw =
@@ -355,24 +357,24 @@ class DataProvider extends ChangeNotifier {
                     .from('products')
                     .update(localProduct.toJson())
                     .eq('uuid', localProduct.uuid!);
-                print(
-                  'Updated product with uuid ${localProduct.uuid}',
-                );
-                await UpdatedProductsFunc()
-                    .deleteUpdatedProduct(
-                      localProduct.uuid ?? '',
-                    );
+                // print(
+                //   'Updated product with uuid ${localProduct.uuid}',
+                // );
+                // await UpdatedProductsFunc()
+                //     .deleteUpdatedProduct(
+                //       localProduct.uuid ?? '',
+                //     );
               } on PostgrestException catch (e) {
-                if (e.code == '23505') {
-                  await UpdatedProductsFunc()
-                      .deleteUpdatedProduct(
-                        localProduct.uuid ?? '',
-                      );
-                }
-                await createErrorLog(
-                  error:
-                      'Error Synchronizing Receipt ${localProduct.name}: $e',
-                );
+                // if (e.code == '23505') {
+                //   await UpdatedProductsFunc()
+                //       .deleteUpdatedProduct(
+                //         localProduct.uuid ?? '',
+                //       );
+                // }
+                // await createErrorLog(
+                //   error:
+                //       'Error Synchronizing Receipt ${localProduct.name}: $e',
+                // );
               }
             } else {
               print(
@@ -382,7 +384,7 @@ class DataProvider extends ChangeNotifier {
           }
         }
 
-        // await UpdatedProductsFunc().clearupdatedProducts();
+        await UpdatedProductsFunc().clearupdatedProducts();
         print('Unsynced updated products cleared');
         print('Mounted, refreshing products ✅');
         await getProducts(
@@ -1404,6 +1406,7 @@ class DataProvider extends ChangeNotifier {
           returnShopProvider().userShop()!.shopId!,
         );
         notifyListeners();
+        syncData();
         return ProductsFunc().getSingleProduct(
           uuid: product.uuid!,
         );
@@ -1487,6 +1490,7 @@ class DataProvider extends ChangeNotifier {
       returnShopProvider().userShop()!.shopId!,
     );
     notifyListeners();
+    syncData();
   }
 
   String name = '';
