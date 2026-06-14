@@ -169,8 +169,6 @@ class DataProvider extends ChangeNotifier {
       returnShopProvider().userShop()!.shopId!,
     );
 
-    syncData();
-
     clearFields();
   }
 
@@ -1406,7 +1404,6 @@ class DataProvider extends ChangeNotifier {
           returnShopProvider().userShop()!.shopId!,
         );
         notifyListeners();
-        syncData();
         return ProductsFunc().getSingleProduct(
           uuid: product.uuid!,
         );
@@ -1490,7 +1487,6 @@ class DataProvider extends ChangeNotifier {
       returnShopProvider().userShop()!.shopId!,
     );
     notifyListeners();
-    syncData();
   }
 
   String name = '';
