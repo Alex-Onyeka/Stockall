@@ -519,7 +519,7 @@ class EventsLogProvider with ChangeNotifier {
             // Insert all at once
             await client
                 .from(tableName)
-                .insert(item.eventLog.uuid!)
+                .insert(item.eventLog.toJson())
                 .select();
             count++;
             await CreatedEventsLogFunc().deleteEventLog(

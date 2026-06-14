@@ -287,7 +287,7 @@ class ErrorLogProvider with ChangeNotifier {
             // Insert all at once
             await client
                 .from(tableName)
-                .insert(item.errorLog.uuid!)
+                .insert(item.errorLog.toJson())
                 .select();
             count++;
             await CreatedErrorLogFunc().deleteErrorLog(

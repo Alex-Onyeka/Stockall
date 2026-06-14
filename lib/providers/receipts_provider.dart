@@ -771,7 +771,7 @@ class ReceiptsProvider extends ChangeNotifier {
           try {
             await supabase
                 .from('product_sales')
-                .insert(item.record.uuid!)
+                .insert(item.record.toJson())
                 .select();
 
             count++;
