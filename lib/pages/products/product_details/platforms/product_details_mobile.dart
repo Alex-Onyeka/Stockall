@@ -1540,7 +1540,7 @@ class _ProductDetailsMobileState
                                       });
                                       Future.delayed(
                                         Duration(
-                                          seconds: 2,
+                                          seconds: 1,
                                         ),
                                         () {
                                           if (safeContext

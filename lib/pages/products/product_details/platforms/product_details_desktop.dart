@@ -1485,7 +1485,7 @@ class _ProductDetailsDesktopState
                                                 Future.delayed(
                                                   Duration(
                                                     seconds:
-                                                        2,
+                                                        1,
                                                   ),
                                                   () {
                                                     if (safeContext

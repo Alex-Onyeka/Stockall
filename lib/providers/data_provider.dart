@@ -750,7 +750,33 @@ class DataProvider extends ChangeNotifier {
             print('Finished Syncing Deleted Suppliers');
             setSyncProgress(25);
           }
-
+          if (DeletedInvoicesFunc()
+                  .getInvoiceIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnInvoicesProvider()
+                .deleteInvoicesSync();
+            print('Finished Syncing Deleted Invoices');
+            setSyncProgress(26);
+          }
+          if (CreatedInvoicesFunc()
+                  .getInvoices()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnInvoicesProvider()
+                .createInvoicesSync();
+            print('Finished Syncing Created Invoices');
+            setSyncProgress(27);
+          }
+          if (UpdatedInvoicesFunc()
+                  .getInvoiceIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnInvoicesProvider()
+                .updateInvoicesSync();
+            print('Finished Syncing Updated Invoices');
+            setSyncProgress(28);
+          }
           if (DeletedReceiptsFunc()
                   .getReceiptIds()
                   .isNotEmpty &&
@@ -788,33 +814,6 @@ class DataProvider extends ChangeNotifier {
                 .updateReceiptsSync();
             print('Finished Syncing Created Receipts');
             setSyncProgress(32);
-          }
-          if (DeletedInvoicesFunc()
-                  .getInvoiceIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnInvoicesProvider()
-                .deleteInvoicesSync();
-            print('Finished Syncing Deleted Invoices');
-            setSyncProgress(26);
-          }
-          if (CreatedInvoicesFunc()
-                  .getInvoices()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnInvoicesProvider()
-                .createInvoicesSync();
-            print('Finished Syncing Created Invoices');
-            setSyncProgress(27);
-          }
-          if (UpdatedInvoicesFunc()
-                  .getInvoiceIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnInvoicesProvider()
-                .updateInvoicesSync();
-            print('Finished Syncing Updated Invoices');
-            setSyncProgress(28);
           }
           if (UpdatedShopFunc()
                   .getUpdatedShop()
