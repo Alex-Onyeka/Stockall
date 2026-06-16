@@ -192,7 +192,11 @@ class ErrorLogProvider with ChangeNotifier {
       title: 'Error Occoured',
       error: error,
       staffName:
-          returnUserProviderSingle().currentUserMain!.name,
+          returnUserProviderSingle().currentUserMain?.name,
+      staffId:
+          returnUserProviderSingle()
+              .currentUserMain
+              ?.userId,
       departmentName:
           returnDepartmentProvider()
               .currentDepartment()
@@ -294,14 +298,14 @@ class ErrorLogProvider with ChangeNotifier {
               item.errorLog.uuid!,
             );
           } on PostgrestException catch (e) {
-            if (e.code == '23505') {
-              await CreatedErrorLogFunc().deleteErrorLog(
-                item.errorLog.uuid!,
-              );
-            }
+            // if (e.code == '23505') {
+            await CreatedErrorLogFunc().deleteErrorLog(
+              item.errorLog.uuid!,
+            );
+            // }
             await createErrorLog(
               error:
-                  'Error Synchronizing Error Log ${item.errorLog.title}: $e',
+                  'Error Synchronizing Error Log: ${item.errorLog.title}: $e',
             );
           }
         }
@@ -309,7 +313,7 @@ class ErrorLogProvider with ChangeNotifier {
         print(
           '$count Error Log items added successfully ✅',
         );
-        // await CreatedErrorLogFunc().clearError();
+        await CreatedErrorLogFunc().clearError();
         print('Unsynced Error Logs Cleared');
         print('Mounted, refreshing Receipts ✅');
         await getErrorLogs();

@@ -29,13 +29,14 @@ class TempErrorLogClassAdapter extends TypeAdapter<TempErrorLogClass> {
       itemName: fields[8] as String?,
       departmentUuid: fields[10] as String?,
       departmentName: fields[11] as String?,
+      staffId: fields[12] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempErrorLogClass obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -59,7 +60,9 @@ class TempErrorLogClassAdapter extends TypeAdapter<TempErrorLogClass> {
       ..writeByte(10)
       ..write(obj.departmentUuid)
       ..writeByte(11)
-      ..write(obj.departmentName);
+      ..write(obj.departmentName)
+      ..writeByte(12)
+      ..write(obj.staffId);
   }
 
   @override

@@ -526,11 +526,11 @@ class EventsLogProvider with ChangeNotifier {
               item.eventLog.uuid!,
             );
           } on PostgrestException catch (e) {
-            if (e.code == '23505') {
-              await CreatedEventsLogFunc().deleteEventLog(
-                item.eventLog.uuid!,
-              );
-            }
+            // if (e.code == '23505') {
+            await CreatedEventsLogFunc().deleteEventLog(
+              item.eventLog.uuid!,
+            );
+            // }
             await createErrorLog(
               error:
                   'Error Synchronizing Events Log ${item.eventLog.title}: $e',
@@ -541,7 +541,7 @@ class EventsLogProvider with ChangeNotifier {
         print(
           '$count Event Log items added successfully ✅',
         );
-        // await CreatedEventsLogFunc().clearEvents();
+        await CreatedEventsLogFunc().clearEvents();
         print('Unsynced Event Logs Cleared');
         print('Mounted, refreshing Receipts ✅');
         await getEventLogs();

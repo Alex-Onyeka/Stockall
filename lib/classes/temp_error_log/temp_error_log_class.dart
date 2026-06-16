@@ -40,6 +40,9 @@ class TempErrorLogClass {
   @HiveField(11)
   String? departmentName;
 
+  @HiveField(12)
+  String? staffId;
+
   TempErrorLogClass({
     this.uuid,
     this.createdAt,
@@ -53,6 +56,7 @@ class TempErrorLogClass {
     this.itemName,
     required this.departmentUuid,
     required this.departmentName,
+    this.staffId,
   });
 
   factory TempErrorLogClass.fromJson(
@@ -77,6 +81,7 @@ class TempErrorLogClass {
       itemName: json['item_name'] as String?,
       departmentUuid: json['department_uuid'] as String?,
       departmentName: json['department_name'] as String?,
+      staffId: json['user_uuid'] as String?,
     );
   }
 
@@ -94,6 +99,7 @@ class TempErrorLogClass {
       'item_name': itemName,
       'department_uuid': departmentUuid,
       'department_name': departmentName,
+      'user_uuid': staffId,
     };
   }
 }
