@@ -3765,12 +3765,20 @@ void selectProductSales({
                                             }
                                           }
 
-                                          if (existingQtty >
-                                              getQtty()) {
-                                            if (returnSalesProvider()
-                                                .currentCart()
-                                                .cartItems
-                                                .isEmpty) {
+                                          if (returnShopProvider()
+                                                      .userShop()
+                                                      ?.trackCart ==
+                                                  true &&
+                                              existingQtty >
+                                                  getQtty()) {
+                                            var res =
+                                                await pinCodeAction(
+                                                  context:
+                                                      context,
+                                                  isMain:
+                                                      false,
+                                                );
+                                            if (res) {
                                               cartItem.useWholeSalePrice =
                                                   useWholeSalePriceTemp;
                                               cartItem.useGroupQuantity =
@@ -3805,49 +3813,6 @@ void selectProductSales({
                                               Navigator.of(
                                                 context,
                                               ).pop();
-                                            } else {
-                                              var res = await pinCodeAction(
-                                                context:
-                                                    context,
-                                                isMain:
-                                                    false,
-                                              );
-                                              if (res) {
-                                                cartItem.useWholeSalePrice =
-                                                    useWholeSalePriceTemp;
-                                                cartItem.useGroupQuantity =
-                                                    useGroupQuantityTemp;
-                                                returnSalesProvider().editCartItemQuantity(
-                                                  setTotalPrice:
-                                                      returnSalesProvider()
-                                                          .setTotalPrice,
-                                                  cartItem:
-                                                      cartItem,
-                                                  number: double.parse(
-                                                    quantityController
-                                                        .text
-                                                        .replaceAll(
-                                                          ',',
-                                                          '',
-                                                        ),
-                                                  ),
-                                                  customPrice: double.tryParse(
-                                                    priceController
-                                                        .text
-                                                        .replaceAll(
-                                                          ',',
-                                                          '',
-                                                        ),
-                                                  ),
-                                                  setCustomPrice:
-                                                      priceController
-                                                          .text
-                                                          .isNotEmpty,
-                                                );
-                                                Navigator.of(
-                                                  context,
-                                                ).pop();
-                                              }
                                             }
                                           } else {
                                             cartItem.useWholeSalePrice =

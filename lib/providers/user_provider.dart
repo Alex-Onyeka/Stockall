@@ -91,7 +91,7 @@ class UserProvider extends ChangeNotifier {
     if (isOnline) {
       // ignore: use_build_context_synchronously
       if (returnData().isSynced() == 0) {
-        await returnData(
+        returnData(
           // ignore: use_build_context_synchronously
         ).syncData(context: context);
         final authUser = _supabase.currentUser;

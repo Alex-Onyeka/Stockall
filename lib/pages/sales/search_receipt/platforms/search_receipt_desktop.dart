@@ -245,6 +245,8 @@ class _SearchReceiptDesktopState
                                                   ) {
                                                     return ReceiptPage(
                                                       response: CheckoutResponse(
+                                                        receipt:
+                                                            receipt,
                                                         resUuid:
                                                             receipt.uuid!,
                                                         isReceipt:

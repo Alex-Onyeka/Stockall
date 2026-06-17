@@ -111,9 +111,13 @@ class _TotalProductsDesktopState
             ? returnData()
                 .productList()
                 .where(
-                  (pr) => pr.name.toLowerCase().contains(
-                    searchController.text.toLowerCase(),
-                  ),
+                  (pr) =>
+                      pr.name.toLowerCase().contains(
+                        searchController.text.toLowerCase(),
+                      ) ||
+                      pr.barcode?.toLowerCase() ==
+                          searchController.text
+                              .toLowerCase(),
                 )
                 .toList()
             : widget.categoryUuid != null
@@ -744,7 +748,7 @@ class _TotalProductsDesktopState
                                                                             theme:
                                                                                 theme,
                                                                             message:
-                                                                                'You are about to delete all the selected items. Please not that this action can not be reversed. Are you sure you want to proceed?',
+                                                                                'You are about to delete all the selected items. Please note that this action can not be reversed. Are you sure you want to proceed?',
                                                                             title:
                                                                                 'Delete Selected Items',
                                                                             action: () async {

@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 import 'package:stockall/classes/temp_customers/temp_customers_class.dart';
 import 'package:stockall/classes/temp_departments_class/department_class.dart';
 import 'package:stockall/classes/temp_event_log/temp_event_log_class.dart';
-import 'package:stockall/classes/temp_event_log/unsynced/created_events_log_class.dart';
 import 'package:stockall/classes/temp_expenses/temp_expenses_class.dart';
 import 'package:stockall/classes/temp_invoices/temp_invoices.dart';
 import 'package:stockall/classes/temp_main_receipt/temp_main_receipt.dart';
@@ -10,7 +9,6 @@ import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_sub_staff/temp_sub_staff.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
-import 'package:stockall/constants/subscription/report_auth.dart';
 import 'package:stockall/local_database/events_log/events_log_func.dart';
 import 'package:stockall/local_database/events_log/unsync_funcs/created_events_log_func.dart';
 import 'package:stockall/main.dart';
@@ -191,56 +189,57 @@ class EventsLogProvider with ChangeNotifier {
   }
 
   Future<int> createLog(TempEventLogClass log) async {
-    if (ReportAuthAction().viewEventsLogAction()) {
-      // bool isOnline =
-      //     await ConnectivityProvider().isOnline();
-      log.uuid = uuidGen();
-      log.createdAt ??= DateTime.now();
-      // if (isOnline) {
-      //   try {
-      //     Map<String, dynamic>? res =
-      //         await client
-      //             .from(tableName)
-      //             .insert(log.toJson())
-      //             .select()
-      //             .maybeSingle();
-      //     if (res == null) {
-      //       print('Event Logging Failed');
-      //       return 0;
-      //     }
-      //     logs.add(TempEventLogClass.fromJson(res));
-      //     await EventsLogFunc().createEventsLog(
-      //       TempEventLogClass.fromJson(res),
-      //     );
-      //     notifyListeners();
-      //     await getEventLogs();
-      //     print('✅✅ Event Logged Successfully Online');
-      //     return 1;
-      //   } catch (e) {
-      //     print(
-      //       'Event Creating Online Failed: ${e.toString()}',
-      //     );
-      //     return 0;
-      //   }
-      // } else {
-      try {
-        await EventsLogFunc().createEventsLog(log);
-        await CreatedEventsLogFunc().createEventLog(
-          CreatedEventsLogClass(eventLog: log),
-        );
-        await getEventLogsOffline();
-        // syncData();
-        return 1;
-      } catch (e) {
-        print(
-          'Offline Event Creating Failed: ${e.toString()}',
-        );
-        return 0;
-      }
-      // }
-    } else {
-      return 0;
-    }
+    // if (ReportAuthAction().viewEventsLogAction()) {
+    //   // bool isOnline =
+    //   //     await ConnectivityProvider().isOnline();
+    //   log.uuid = uuidGen();
+    //   log.createdAt ??= DateTime.now();
+    //   // if (isOnline) {
+    //   //   try {
+    //   //     Map<String, dynamic>? res =
+    //   //         await client
+    //   //             .from(tableName)
+    //   //             .insert(log.toJson())
+    //   //             .select()
+    //   //             .maybeSingle();
+    //   //     if (res == null) {
+    //   //       print('Event Logging Failed');
+    //   //       return 0;
+    //   //     }
+    //   //     logs.add(TempEventLogClass.fromJson(res));
+    //   //     await EventsLogFunc().createEventsLog(
+    //   //       TempEventLogClass.fromJson(res),
+    //   //     );
+    //   //     notifyListeners();
+    //   //     await getEventLogs();
+    //   //     print('✅✅ Event Logged Successfully Online');
+    //   //     return 1;
+    //   //   } catch (e) {
+    //   //     print(
+    //   //       'Event Creating Online Failed: ${e.toString()}',
+    //   //     );
+    //   //     return 0;
+    //   //   }
+    //   // } else {
+    //   try {
+    //     await EventsLogFunc().createEventsLog(log);
+    //     await CreatedEventsLogFunc().createEventLog(
+    //       CreatedEventsLogClass(eventLog: log),
+    //     );
+    //     await getEventLogsOffline();
+    //     // syncData();
+    //     return 1;
+    //   } catch (e) {
+    //     print(
+    //       'Offline Event Creating Failed: ${e.toString()}',
+    //     );
+    //     return 0;
+    //   }
+    //   // }
+    // } else {
+    //   return 0;
+    // }
+    return 1;
   }
 
   TempEventLogClass customerAdapter(
@@ -530,11 +529,14 @@ class EventsLogProvider with ChangeNotifier {
             await CreatedEventsLogFunc().deleteEventLog(
               item.eventLog.uuid!,
             );
-            // }
-            await createErrorLog(
-              error:
-                  'Error Synchronizing Events Log ${item.eventLog.title}: $e',
+            print(
+              'Error Synchronizing Events Log ${item.eventLog.title}: $e',
             );
+            // }
+            // await createErrorLog(
+            //   error:
+            //       'Error Synchronizing Events Log ${item.eventLog.title}: $e',
+            // );
           }
         }
 

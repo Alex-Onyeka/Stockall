@@ -110,9 +110,13 @@ class _TotalProductsMobileState
             ? returnData()
                 .productList()
                 .where(
-                  (pr) => pr.name.toLowerCase().contains(
-                    searchController.text.toLowerCase(),
-                  ),
+                  (pr) =>
+                      pr.name.toLowerCase().contains(
+                        searchController.text.toLowerCase(),
+                      ) ||
+                      pr.barcode?.toLowerCase() ==
+                          searchController.text
+                              .toLowerCase(),
                 )
                 .toList()
             : widget.categoryUuid != null

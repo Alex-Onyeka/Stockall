@@ -1528,7 +1528,8 @@ class _ProductDetailsMobileState
                                       });
                                       await provider
                                           .deleteProductMain(
-                                            product,
+                                            product:
+                                                product,
                                           );
                                       // await provider
                                       //     .getProducts(

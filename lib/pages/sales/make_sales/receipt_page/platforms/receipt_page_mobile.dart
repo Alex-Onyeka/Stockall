@@ -1837,10 +1837,6 @@ class _ReceiptDetailsContainerState
                               context,
                               listen: false,
                             );
-                        final shopId =
-                            returnShopProvider()
-                                .userShop()!
-                                .shopId!;
                         var safeContext = context;
                         if (!widget.mainReceipt.isInvoice) {
                           showDialog(
@@ -1869,12 +1865,12 @@ class _ReceiptDetailsContainerState
                                         .toList(),
                                   );
 
-                                  if (safeContext.mounted) {
-                                    await receiptP
-                                        .loadReceipts(
-                                          shopId,
-                                        );
-                                  }
+                                  // if (safeContext.mounted) {
+                                  //   await receiptP
+                                  //       .loadReceipts(
+                                  //         shopId,
+                                  //       );
+                                  // }
 
                                   setState(() {
                                     isLoading = false;
@@ -1938,12 +1934,12 @@ class _ReceiptDetailsContainerState
                                             .uuid!,
                                       );
 
-                                  if (safeContext.mounted) {
-                                    await receiptP
-                                        .loadReceipts(
-                                          shopId,
-                                        );
-                                  }
+                                  // if (safeContext.mounted) {
+                                  //   await receiptP
+                                  //       .loadReceipts(
+                                  //         shopId,
+                                  //       );
+                                  // }
 
                                   setState(() {
                                     isLoading = false;

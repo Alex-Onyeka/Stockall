@@ -786,6 +786,24 @@ class DataProvider extends ChangeNotifier {
             print('Finished Syncing Deleted Receipts');
             setSyncProgress(29);
           }
+          if (CreatedReceiptsFunc()
+                  .getReceipts()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnReceiptProviderSingle()
+                .createReceiptsSync();
+            print('Finished Syncing Created Receipts');
+            setSyncProgress(30);
+          }
+          if (UpdatedReceiptsFunc()
+                  .getReceiptIds()
+                  .isNotEmpty &&
+              isOnline) {
+            await returnReceiptProviderSingle()
+                .updateReceiptsSync();
+            print('Finished Syncing Created Receipts');
+            setSyncProgress(31);
+          }
           if (CreatedRecordsFunc()
                   .getRecords()
                   .isNotEmpty &&
@@ -795,24 +813,6 @@ class DataProvider extends ChangeNotifier {
             print(
               'Finished Syncing Created Records Customers',
             );
-            setSyncProgress(30);
-          }
-          if (CreatedReceiptsFunc()
-                  .getReceipts()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnReceiptProviderSingle()
-                .createReceiptsSync();
-            print('Finished Syncing Created Receipts');
-            setSyncProgress(31);
-          }
-          if (UpdatedReceiptsFunc()
-                  .getReceiptIds()
-                  .isNotEmpty &&
-              isOnline) {
-            await returnReceiptProviderSingle()
-                .updateReceiptsSync();
-            print('Finished Syncing Created Receipts');
             setSyncProgress(32);
           }
           if (UpdatedShopFunc()
@@ -834,7 +834,8 @@ class DataProvider extends ChangeNotifier {
                   .getCreatedEventsLogs()
                   .isNotEmpty &&
               isOnline) {
-            await returnEventsLogProvider().eventsLogSync();
+            // await returnEventsLogProvider().eventsLogSync();
+            await CreatedEventsLogFunc().clearEvents();
             print('Finished Syncing Created Events Log');
             setSyncProgress(35);
           }
@@ -927,7 +928,8 @@ class DataProvider extends ChangeNotifier {
                   .getCreatedErrorLogs()
                   .isNotEmpty &&
               isOnline) {
-            await returnErrorLogProvider().errorsLogSync();
+            // await returnErrorLogProvider().errorsLogSync();
+            await CreatedErrorLogFunc().clearError();
             print('Finished Syncing Created Error Logs');
             // setSyncProgress(44);
           }
@@ -1340,6 +1342,7 @@ class DataProvider extends ChangeNotifier {
   Future<TempProductClass?> updateProduct({
     required TempProductClass product,
     TempProductClass? oldProduct,
+    bool? isMultipleUpdate,
   }) async {
     // bool isOnline = await connectivity.isOnline();
     try {
@@ -1405,7 +1408,9 @@ class DataProvider extends ChangeNotifier {
           returnShopProvider().userShop()!.shopId!,
         );
         notifyListeners();
-        syncData();
+        if (isMultipleUpdate != true) {
+          syncData();
+        }
         return ProductsFunc().getSingleProduct(
           uuid: product.uuid!,
         );
@@ -1421,10 +1426,11 @@ class DataProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> deleteProductMain(
-    TempProductClass product,
+  Future<void> deleteProductMain({
+    required TempProductClass product,
+    bool? isMultipleDelete,
     // BuildContext context,
-  ) async {
+  }) async {
     // bool isOnline = await connectivity.isOnline();
     // if (isOnline) {
     //   await supabase
@@ -1489,7 +1495,9 @@ class DataProvider extends ChangeNotifier {
       returnShopProvider().userShop()!.shopId!,
     );
     notifyListeners();
-    syncData();
+    if (isMultipleDelete != true) {
+      syncData();
+    }
   }
 
   String name = '';
@@ -2139,9 +2147,13 @@ class DataProvider extends ChangeNotifier {
       for (var pr in ProductsFunc().getProducts().where(
         (prr) => selectedProducts.contains(prr),
       )) {
-        await deleteProductMain(pr);
+        await deleteProductMain(
+          product: pr,
+          isMultipleDelete: true,
+        );
       }
       toggleIsSelectProduct(false);
+      syncData();
       return 1;
       // }
     } catch (e) {
@@ -2198,6 +2210,7 @@ class DataProvider extends ChangeNotifier {
       }
       await getProductsOffline(shopId());
       toggleIsSelectProduct(false);
+      syncData();
       return 1;
       // }
     } catch (e) {
@@ -2247,7 +2260,8 @@ class DataProvider extends ChangeNotifier {
         var newUuid = uuidGen();
         await returnStorageProductProvider()
             .createStorageProduct(
-              TempStorageProducts(
+              isMultiple: true,
+              product: TempStorageProducts(
                 name: pr.name,
                 shopId: pr.shopId,
                 groupUnit: pr.groupUnit,
@@ -2263,7 +2277,10 @@ class DataProvider extends ChangeNotifier {
 
         var product = pr.copyWith(storageUuid: newUuid);
 
-        await updateProduct(product: product);
+        await updateProduct(
+          product: product,
+          isMultipleUpdate: true,
+        );
       }
       await getProductsOffline(shopId());
       toggleIsSelectProduct(false);

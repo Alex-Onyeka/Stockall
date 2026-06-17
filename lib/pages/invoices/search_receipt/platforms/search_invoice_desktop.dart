@@ -244,6 +244,8 @@ class _SearchInvoiceDesktopState
                                                       isComingFromInvoice:
                                                           true,
                                                       response: CheckoutResponse(
+                                                        invoice:
+                                                            invoice,
                                                         isReceipt:
                                                             false,
                                                         resUuid:

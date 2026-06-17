@@ -56,14 +56,9 @@ class _HomeState extends State<Home> {
       var shop = await returnShopProvider().getUserShops();
       print('Stores Gotten: ${shop.length}');
 
-      if (context.mounted) {
-        var mainShop = returnShopProvider().userShop();
-        print('Current Shop: ${mainShop?.name}');
-        return mainShop;
-      } else {
-        print('Context not mounted');
-        return null;
-      }
+      var mainShop = returnShopProvider().userShop();
+      print('Current Shop: ${mainShop?.name}');
+      return mainShop;
     } catch (e) {
       print("Error With Shop: ${e.toString()}");
       return null;
@@ -113,7 +108,7 @@ class _HomeState extends State<Home> {
                 child: EmptyWidgetDisplay(
                   title: 'An Error Occurred',
                   subText:
-                      'We couldn\'t load your data. Please Check your internet.',
+                      'We couldn\'t load your User data. Please Check your internet.',
                   icon: Icons.clear,
                   theme: theme,
                   height: 30,
@@ -145,7 +140,7 @@ class _HomeState extends State<Home> {
                   child: EmptyWidgetDisplay(
                     title: 'An Error Occurred',
                     subText:
-                        'We couldn\'t load your data. Check your internet.',
+                        'We couldn\'t Find your User data. Check your internet.',
                     icon: Icons.clear,
                     theme: theme,
                     height: 30,
@@ -181,7 +176,7 @@ class _HomeState extends State<Home> {
                             child: EmptyWidgetDisplay(
                               title: 'An Error Occurred',
                               subText:
-                                  'We couldn\'t load your data. Check your internet.',
+                                  'We couldn\'t load your Shop data. Check your internet.',
                               icon: Icons.clear,
                               theme: theme,
                               height: 30,

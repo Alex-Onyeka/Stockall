@@ -19,7 +19,6 @@ import 'package:stockall/pages/authentication/auth_screens/auth_screens_page.dar
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/dashboard/components/main_bottom_nav.dart';
 import 'package:stockall/pages/products/compnents/product_tile_main.dart';
-import 'package:stockall/pages/products/compnents/search_product_tile.dart';
 import 'package:stockall/pages/products/product_details/product_details_page.dart';
 import 'package:stockall/pages/products/total_products/total_products_page.dart';
 import 'package:stockall/providers/data_provider.dart';
@@ -40,15 +39,15 @@ class _ProductPageMobileState
     extends State<ProductPageMobile> {
   void clearState() {
     setState(() {
-      searchResult = null;
+      // searchResult = null;
       searchController.clear();
-      productsResult.clear();
+      // productsResult.clear();
     });
   }
 
   // late Future<List<TempProductClass>> _productsFuture;
 
-  List<TempProductClass> productsResult = [];
+  // List<TempProductClass> productsResult = [];
   String? searchResult;
   TextEditingController searchController =
       TextEditingController();
@@ -94,7 +93,18 @@ class _ProductPageMobileState
   Widget build(BuildContext context) {
     var theme = returnTheme(context);
     final products =
-        context.watch<DataProvider>().productList();
+        context
+            .watch<DataProvider>()
+            .productList()
+            .where(
+              (item) =>
+                  item.name.toLowerCase().contains(
+                    searchController.text.toLowerCase(),
+                  ) ||
+                  item.barcode?.toLowerCase() ==
+                      searchController.text.toLowerCase(),
+            )
+            .toList();
     return Scaffold(
       bottomNavigationBar: MainBottomNav(
         action: () {
@@ -222,73 +232,65 @@ class _ProductPageMobileState
                         },
                         searchController: searchController,
                         searchAction: (value) {
+                          // setState(() {
+                          //   if (products
+                          //       .where(
+                          //         (pr) =>
+                          //             pr.barcode
+                          //                 ?.toLowerCase() ==
+                          //             searchController.text
+                          //                 .toLowerCase(),
+                          //       )
+                          //       .isNotEmpty) {
+                          //     ItemsAuthAction()
+                          //         .useOfBArcodeAction(
+                          //           context: context,
+                          //           action: () {
+                          //             searchResult =
+                          //                 searchController
+                          //                     .text;
+                          //           },
+                          //           failAction: () {
+                          //             setState(() {
+                          //               searchController
+                          //                   .clear();
+                          //             });
+                          //           },
+                          //         );
+                          //   } else {
+                          //     searchResult =
+                          //         searchController.text;
+                          //   }
+                          // });
                           setState(() {
-                            if (products
-                                .where(
-                                  (pr) =>
-                                      pr.barcode
-                                          ?.toLowerCase() ==
-                                      searchController.text
-                                          .toLowerCase(),
-                                )
-                                .isNotEmpty) {
-                              ItemsAuthAction()
-                                  .useOfBArcodeAction(
-                                    context: context,
-                                    action: () {
-                                      searchResult =
-                                          searchController
-                                              .text;
-                                    },
-                                    failAction: () {
-                                      setState(() {
-                                        searchController
-                                            .clear();
-                                      });
-                                    },
-                                  );
-                            } else {
-                              searchResult =
-                                  searchController.text;
-                            }
+                            searchController.text == value;
                           });
                         },
                         hintText: 'Search Item Name',
                         mainTitle: 'Items Summary',
                         firsRow: true,
                         scanAction: () {
-                          ItemsAuthAction().useOfBArcodeAction(
-                            context: context,
-                            action: () async {
-                              String? result =
-                                  await scanCode(
-                                    context,
-                                    'Scan Failed',
-                                  );
-                              setState(() {
-                                if (result != null) {
-                                  searchController.text =
-                                      result;
-                                } else {
-                                  return;
-                                }
-                              });
-                              if (!context.mounted) {
-                                return;
-                              }
-                              setState(() {
-                                productsResult =
-                                    products
-                                        .where(
-                                          (product) =>
-                                              product
-                                                  .barcode ==
-                                              result,
-                                        )
-                                        .toList();
-                              });
-                            },
-                          );
+                          ItemsAuthAction()
+                              .useOfBArcodeAction(
+                                context: context,
+                                action: () async {
+                                  String? result =
+                                      await scanCode(
+                                        context,
+                                        'Scan Failed',
+                                      );
+                                  setState(() {
+                                    if (result != null) {
+                                      setState(() {
+                                        searchController
+                                            .text = result;
+                                      });
+                                    } else {
+                                      return;
+                                    }
+                                  });
+                                },
+                              );
                         },
                         color1: Colors.green,
                         title1: 'In Stock',
@@ -428,76 +430,83 @@ class _ProductPageMobileState
                               ),
                           child: Column(
                             children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(
-                                      horizontal: 20.0,
-                                    ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment
-                                          .spaceBetween,
-                                  children: [
-                                    Text(
-                                      style: TextStyle(
-                                        fontWeight:
-                                            FontWeight.bold,
-                                        fontSize:
-                                            theme
-                                                .mobileTexts
-                                                .b1
-                                                .fontSize,
+                              Visibility(
+                                visible:
+                                    searchController
+                                        .text
+                                        .isEmpty,
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(
+                                        horizontal: 20.0,
                                       ),
-                                      'Items',
-                                    ),
-                                    MaterialButton(
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (
-                                              context,
-                                            ) {
-                                              return TotalProductsPage(
-                                                theme:
-                                                    theme,
-                                              );
-                                            },
-                                          ),
-                                        ).then((_) {
-                                          setState(() {});
-                                        });
-                                      },
-                                      child: Row(
-                                        spacing: 5,
-                                        children: [
-                                          Text(
-                                            style: TextStyle(
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .spaceBetween,
+                                    children: [
+                                      Text(
+                                        style: TextStyle(
+                                          fontWeight:
+                                              FontWeight
+                                                  .bold,
+                                          fontSize:
+                                              theme
+                                                  .mobileTexts
+                                                  .b1
+                                                  .fontSize,
+                                        ),
+                                        'Items',
+                                      ),
+                                      MaterialButton(
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (
+                                                context,
+                                              ) {
+                                                return TotalProductsPage(
+                                                  theme:
+                                                      theme,
+                                                );
+                                              },
+                                            ),
+                                          ).then((_) {
+                                            setState(() {});
+                                          });
+                                        },
+                                        child: Row(
+                                          spacing: 5,
+                                          children: [
+                                            Text(
+                                              style: TextStyle(
+                                                color:
+                                                    theme
+                                                        .lightModeColor
+                                                        .secColor100,
+                                                fontSize:
+                                                    theme
+                                                        .mobileTexts
+                                                        .b1
+                                                        .fontSize,
+                                              ),
+                                              'See All',
+                                            ),
+                                            Icon(
+                                              size: 16,
                                               color:
                                                   theme
                                                       .lightModeColor
                                                       .secColor100,
-                                              fontSize:
-                                                  theme
-                                                      .mobileTexts
-                                                      .b1
-                                                      .fontSize,
+                                              Icons
+                                                  .arrow_forward_ios_rounded,
                                             ),
-                                            'See All',
-                                          ),
-                                          Icon(
-                                            size: 16,
-                                            color:
-                                                theme
-                                                    .lightModeColor
-                                                    .secColor100,
-                                            Icons
-                                                .arrow_forward_ios_rounded,
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                               Expanded(
@@ -565,211 +574,211 @@ class _ProductPageMobileState
             ],
           ),
           // Overlayed search results container
-          if (searchController.text.isNotEmpty ||
-              searchResult != null)
-            Stack(
-              children: [
-                Positioned(
-                  top: 200,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                    padding: EdgeInsets.only(
-                      // top: 40,
-                      bottom: 40,
-                    ),
-                    color: Colors.white,
-                    child: Column(
-                      children: [
-                        SizedBox(height: 10),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            right: 30.0,
-                            left: 30,
-                          ),
-                          child: Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
-                            children: [
-                              Text(
-                                style: TextStyle(
-                                  fontSize:
-                                      theme
-                                          .mobileTexts
-                                          .b1
-                                          .fontSize,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                ),
-                                'Search Result ${products.where((product) => product.name.toLowerCase().contains(searchController.text.toLowerCase()) || (product.barcode != null && product.barcode!.toLowerCase().contains(searchController.text.toLowerCase()))).isEmpty && productsResult.isEmpty
-                                    ? '(0)'
-                                    : productsResult.isNotEmpty
-                                    ? '(${productsResult.length})'
-                                    : '(${(products.where((product) => product.name.toLowerCase().contains(searchController.text.toLowerCase()) || (product.barcode != null && product.barcode!.toLowerCase().contains(searchController.text.toLowerCase()))).length)})'}',
-                              ),
-                              IconButton(
-                                onPressed: () {
-                                  clearState();
-                                },
-                                icon: Icon(Icons.clear),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding:
-                              const EdgeInsets.symmetric(
-                                horizontal: 20.0,
-                              ),
-                          child: Material(
-                            // elevation: 10,
-                            child: Container(
-                              height:
-                                  MediaQuery.of(
-                                    context,
-                                  ).size.height *
-                                  0.5,
-                              padding: EdgeInsets.symmetric(
-                                vertical: 15,
-                                horizontal: 10,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      10,
-                                    ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color:
-                                        const Color.fromARGB(
-                                          23,
-                                          0,
-                                          0,
-                                          0,
-                                        ),
-                                    blurRadius: 5,
-                                  ),
-                                ],
-                              ),
-                              child:
-                                  productsResult.isEmpty
-                                      ? ListView.builder(
-                                        itemCount:
-                                            products
-                                                .where(
-                                                  (
-                                                    product,
-                                                  ) =>
-                                                      product.name.toLowerCase().contains(
-                                                        searchController.text.toLowerCase(),
-                                                      ) ||
-                                                      (product.barcode !=
-                                                              null &&
-                                                          product.barcode!.toLowerCase().contains(
-                                                            searchController.text.toLowerCase(),
-                                                          )),
-                                                )
-                                                .length,
-                                        itemBuilder: (
-                                          context,
-                                          index,
-                                        ) {
-                                          TempProductClass
-                                          product =
-                                              products
-                                                  .where(
-                                                    (
-                                                      product,
-                                                    ) =>
-                                                        product.name.toLowerCase().contains(
-                                                          searchController.text.toLowerCase(),
-                                                        ) ||
-                                                        (product.barcode !=
-                                                                null &&
-                                                            product.barcode!.toLowerCase().contains(
-                                                              searchController.text.toLowerCase(),
-                                                            )),
-                                                  )
-                                                  .toList()[index];
-                                          return SearchProductTile(
-                                            action: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (
-                                                    context,
-                                                  ) {
-                                                    return ProductDetailsPage(
-                                                      productUuid:
-                                                          product.uuid!,
-                                                    );
-                                                  },
-                                                ),
-                                              ).then((_) {
-                                                if (context
-                                                    .mounted) {
-                                                  setState(
-                                                    () {},
-                                                  );
-                                                }
-                                              });
-                                              clearState();
-                                            },
-                                            product:
-                                                product,
-                                          );
-                                        },
-                                      )
-                                      : ListView.builder(
-                                        itemCount:
-                                            productsResult
-                                                .length,
-                                        itemBuilder: (
-                                          context,
-                                          index,
-                                        ) {
-                                          TempProductClass
-                                          product =
-                                              productsResult[index];
-                                          return SearchProductTile(
-                                            action: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (
-                                                    context,
-                                                  ) {
-                                                    return ProductDetailsPage(
-                                                      productUuid:
-                                                          product.uuid!,
-                                                    );
-                                                  },
-                                                ),
-                                              ).then((_) {
-                                                if (context
-                                                    .mounted) {
-                                                  setState(
-                                                    () {},
-                                                  );
-                                                }
-                                              });
-                                            },
-                                            product:
-                                                product,
-                                          );
-                                        },
-                                      ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+          // if (searchController.text.isNotEmpty ||
+          //     searchResult != null)
+          //   Stack(
+          //     children: [
+          //       Positioned(
+          //         top: 200,
+          //         left: 0,
+          //         right: 0,
+          //         child: Container(
+          //           padding: EdgeInsets.only(
+          //             // top: 40,
+          //             bottom: 40,
+          //           ),
+          //           color: Colors.white,
+          //           child: Column(
+          //             children: [
+          //               SizedBox(height: 10),
+          //               Padding(
+          //                 padding: const EdgeInsets.only(
+          //                   right: 30.0,
+          //                   left: 30,
+          //                 ),
+          //                 child: Row(
+          //                   mainAxisAlignment:
+          //                       MainAxisAlignment
+          //                           .spaceBetween,
+          //                   children: [
+          //                     Text(
+          //                       style: TextStyle(
+          //                         fontSize:
+          //                             theme
+          //                                 .mobileTexts
+          //                                 .b1
+          //                                 .fontSize,
+          //                         fontWeight:
+          //                             FontWeight.bold,
+          //                       ),
+          //                       'Search Result ${products.where((product) => product.name.toLowerCase().contains(searchController.text.toLowerCase()) || (product.barcode != null && product.barcode!.toLowerCase().contains(searchController.text.toLowerCase()))).isEmpty && productsResult.isEmpty
+          //                           ? '(0)'
+          //                           : productsResult.isNotEmpty
+          //                           ? '(${productsResult.length})'
+          //                           : '(${(products.where((product) => product.name.toLowerCase().contains(searchController.text.toLowerCase()) || (product.barcode != null && product.barcode!.toLowerCase().contains(searchController.text.toLowerCase()))).length)})'}',
+          //                     ),
+          //                     IconButton(
+          //                       onPressed: () {
+          //                         clearState();
+          //                       },
+          //                       icon: Icon(Icons.clear),
+          //                     ),
+          //                   ],
+          //                 ),
+          //               ),
+          //               Padding(
+          //                 padding:
+          //                     const EdgeInsets.symmetric(
+          //                       horizontal: 20.0,
+          //                     ),
+          //                 child: Material(
+          //                   // elevation: 10,
+          //                   child: Container(
+          //                     height:
+          //                         MediaQuery.of(
+          //                           context,
+          //                         ).size.height *
+          //                         0.5,
+          //                     padding: EdgeInsets.symmetric(
+          //                       vertical: 15,
+          //                       horizontal: 10,
+          //                     ),
+          //                     decoration: BoxDecoration(
+          //                       color: Colors.white,
+          //                       borderRadius:
+          //                           BorderRadius.circular(
+          //                             10,
+          //                           ),
+          //                       boxShadow: [
+          //                         BoxShadow(
+          //                           color:
+          //                               const Color.fromARGB(
+          //                                 23,
+          //                                 0,
+          //                                 0,
+          //                                 0,
+          //                               ),
+          //                           blurRadius: 5,
+          //                         ),
+          //                       ],
+          //                     ),
+          //                     child:
+          //                         productsResult.isEmpty
+          //                             ? ListView.builder(
+          //                               itemCount:
+          //                                   products
+          //                                       .where(
+          //                                         (
+          //                                           product,
+          //                                         ) =>
+          //                                             product.name.toLowerCase().contains(
+          //                                               searchController.text.toLowerCase(),
+          //                                             ) ||
+          //                                             (product.barcode !=
+          //                                                     null &&
+          //                                                 product.barcode!.toLowerCase().contains(
+          //                                                   searchController.text.toLowerCase(),
+          //                                                 )),
+          //                                       )
+          //                                       .length,
+          //                               itemBuilder: (
+          //                                 context,
+          //                                 index,
+          //                               ) {
+          //                                 TempProductClass
+          //                                 product =
+          //                                     products
+          //                                         .where(
+          //                                           (
+          //                                             product,
+          //                                           ) =>
+          //                                               product.name.toLowerCase().contains(
+          //                                                 searchController.text.toLowerCase(),
+          //                                               ) ||
+          //                                               (product.barcode !=
+          //                                                       null &&
+          //                                                   product.barcode!.toLowerCase().contains(
+          //                                                     searchController.text.toLowerCase(),
+          //                                                   )),
+          //                                         )
+          //                                         .toList()[index];
+          //                                 return SearchProductTile(
+          //                                   action: () {
+          //                                     Navigator.push(
+          //                                       context,
+          //                                       MaterialPageRoute(
+          //                                         builder: (
+          //                                           context,
+          //                                         ) {
+          //                                           return ProductDetailsPage(
+          //                                             productUuid:
+          //                                                 product.uuid!,
+          //                                           );
+          //                                         },
+          //                                       ),
+          //                                     ).then((_) {
+          //                                       if (context
+          //                                           .mounted) {
+          //                                         setState(
+          //                                           () {},
+          //                                         );
+          //                                       }
+          //                                     });
+          //                                     clearState();
+          //                                   },
+          //                                   product:
+          //                                       product,
+          //                                 );
+          //                               },
+          //                             )
+          //                             : ListView.builder(
+          //                               itemCount:
+          //                                   productsResult
+          //                                       .length,
+          //                               itemBuilder: (
+          //                                 context,
+          //                                 index,
+          //                               ) {
+          //                                 TempProductClass
+          //                                 product =
+          //                                     productsResult[index];
+          //                                 return SearchProductTile(
+          //                                   action: () {
+          //                                     Navigator.push(
+          //                                       context,
+          //                                       MaterialPageRoute(
+          //                                         builder: (
+          //                                           context,
+          //                                         ) {
+          //                                           return ProductDetailsPage(
+          //                                             productUuid:
+          //                                                 product.uuid!,
+          //                                           );
+          //                                         },
+          //                                       ),
+          //                                     ).then((_) {
+          //                                       if (context
+          //                                           .mounted) {
+          //                                         setState(
+          //                                           () {},
+          //                                         );
+          //                                       }
+          //                                     });
+          //                                   },
+          //                                   product:
+          //                                       product,
+          //                                 );
+          //                               },
+          //                             ),
+          //                   ),
+          //                 ),
+          //               ),
+          //             ],
+          //           ),
+          //         ),
+          //       ),
+          //     ],
+          //   ),
         ],
       ),
     );

@@ -42,12 +42,10 @@ import 'package:stockall/providers/theme_provider.dart';
 class MakeSalesDesktop extends StatefulWidget {
   final TextEditingController searchController;
   final bool? isMain;
-  final bool? isInvoice;
   const MakeSalesDesktop({
     super.key,
     required this.searchController,
     this.isMain,
-    this.isInvoice,
   });
 
   @override
@@ -898,26 +896,6 @@ class _MakeSalesDesktopState
         false,
         context,
       );
-
-      if (widget.isInvoice != null &&
-          returnSalesProvider()
-              .currentCart()
-              .cartItems
-              .isEmpty) {
-        returnSalesProvider().switchInvoiceSale(
-          value: true,
-          context: context,
-        );
-      } else if (widget.isInvoice == null &&
-          returnSalesProvider()
-              .currentCart()
-              .cartItems
-              .isEmpty) {
-        returnSalesProvider().switchInvoiceSale(
-          value: false,
-          context: context,
-        );
-      }
       for (var cart
           in returnSalesProvider()
               .currentMainCart()
@@ -3129,37 +3107,37 @@ class _BarcodeAndSearchTextFieldState
           onChanged: (value) {
             if (value.isNotEmpty) {
               var items = returnData().productList().where(
-                (product) =>
-                    product.barcode?.toLowerCase() ==
-                    value.toLowerCase(),
+                (product) => product.barcode == value,
               );
               SalesAuthAction().useBarcodeAction(
                 context: context,
                 action: () async {
                   if (items.isNotEmpty) {
-                    returnSalesProvider().addItemToCart(
-                      isEdit: false,
-                      context: context,
-                      newItem: TempCartItem(
-                        uuid: uuidGen(),
-                        itemUuid: items.first.uuid,
-                        isVoid: false,
-                        qttyPerGroup: null,
-                        useGroupQuantity: false,
-                        useWholeSalePrice: false,
-                        setCustomPrice: false,
-                        item: items.first,
-                        quantity: 1,
-                        discount: null,
-                        addToStock: false,
-                        setTotalPrice: false,
-                      ),
-                      isCustomEdit: false,
-                    );
+                    await playBeep();
+                    await returnSalesProvider()
+                        .addItemToCart(
+                          isEdit: false,
+                          context: context,
+                          newItem: TempCartItem(
+                            uuid: uuidGen(),
+                            itemUuid: items.first.uuid,
+                            isVoid: false,
+                            qttyPerGroup: null,
+                            useGroupQuantity: false,
+                            useWholeSalePrice: false,
+                            setCustomPrice: false,
+                            item: items.first,
+                            quantity: 1,
+                            discount: null,
+                            addToStock: false,
+                            setTotalPrice: false,
+                          ),
+                          isCustomEdit: false,
+                        );
 
                     widget.searchController.clear();
-                    await playBeep();
                     setState(() {});
+
                     returnSalesProvider()
                         .requestFocusScanBarcode();
                   }
@@ -3189,159 +3167,206 @@ class _BarcodeAndSearchTextFieldState
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(5),
                 ),
-                child: Column(
-                  spacing: 5,
-                  children:
-                      (products.length > 5
-                              ? products.getRange(0, 5)
-                              : products)
-                          .map(
-                            (item) => Material(
-                              color: Colors.grey.shade100,
-                              child: InkWell(
-                                onTap: () {
-                                  selectProductSales(
-                                    isEdit: false,
-                                    context: context,
-                                    qttyNode:
-                                        widget.qtyNode,
-                                    priceNode:
-                                        widget.priceNode,
-                                    quantityController:
-                                        widget
-                                            .quantityController,
-                                    searchController:
-                                        widget
-                                            .searchController,
-                                    theme: widget.theme,
-                                    cartItem: TempCartItem(
-                                      uuid: uuidGen(),
-                                      itemUuid: item.uuid,
-                                      isVoid: false,
-                                      qttyPerGroup:
-                                          item.qttyPerGroup,
-                                      useGroupQuantity:
-                                          false,
-                                      setTotalPrice:
-                                          returnSalesProvider()
-                                              .setTotalPrice,
-                                      useWholeSalePrice:
-                                          false,
-                                      addToStock: false,
-                                      discount:
-                                          item.discount,
-                                      item: item,
-                                      quantity:
-                                          double.tryParse(
-                                            widget
-                                                .quantityController
-                                                .text
-                                                .replaceAll(
-                                                  ',',
-                                                  '',
-                                                )
-                                                .trim(),
-                                          ) ??
-                                          0.0,
+                child: Builder(
+                  builder: (context) {
+                    if (products.isEmpty) {
+                      return Center(
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius:
+                                BorderRadius.circular(10),
+                            onTap: () {
+                              setState(() {
+                                widget.searchController
+                                    .clear();
+                              });
+                            },
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.fromLTRB(
+                                    15,
+                                    3,
+                                    15,
+                                    8.0,
+                                  ),
+                              child: Column(
+                                spacing: 2,
+                                children: [
+                                  Icon(
+                                    size: 16,
+                                    color: Colors.grey,
+                                    Icons.clear,
+                                  ),
+                                  Text(
+                                    style: TextStyle(
+                                      fontSize:
+                                          returnTheme(
+                                                context,
+                                              )
+                                              .mobileTexts
+                                              .b3
+                                              .fontSize,
                                     ),
-                                    closeAction:
-                                        widget.close,
-                                    priceController:
-                                        widget
-                                            .priceController,
-                                  );
-                                },
-                                child: Container(
-                                  padding:
-                                      EdgeInsets.symmetric(
-                                        vertical: 5,
-                                        horizontal: 5,
-                                      ),
+                                    'No Item Found',
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    } else {
+                      return Column(
+                        spacing: 5,
+                        children:
+                            (products.length > 5
+                                    ? products.getRange(
+                                      0,
+                                      5,
+                                    )
+                                    : products)
+                                .map(
+                                  (item) => Material(
+                                    color:
+                                        Colors
+                                            .grey
+                                            .shade100,
+                                    child: InkWell(
+                                      onTap: () {
+                                        selectProductSales(
+                                          isEdit: false,
+                                          context: context,
+                                          qttyNode:
+                                              widget
+                                                  .qtyNode,
+                                          priceNode:
+                                              widget
+                                                  .priceNode,
+                                          quantityController:
+                                              widget
+                                                  .quantityController,
+                                          searchController:
+                                              widget
+                                                  .searchController,
+                                          theme:
+                                              widget.theme,
+                                          cartItem: TempCartItem(
+                                            uuid: uuidGen(),
+                                            itemUuid:
+                                                item.uuid,
+                                            isVoid: false,
+                                            qttyPerGroup:
+                                                item.qttyPerGroup,
+                                            useGroupQuantity:
+                                                false,
+                                            setTotalPrice:
+                                                returnSalesProvider()
+                                                    .setTotalPrice,
+                                            useWholeSalePrice:
+                                                false,
+                                            addToStock:
+                                                false,
+                                            discount:
+                                                item.discount,
+                                            item: item,
+                                            quantity:
+                                                double.tryParse(
+                                                  widget
+                                                      .quantityController
+                                                      .text
+                                                      .replaceAll(
+                                                        ',',
+                                                        '',
+                                                      )
+                                                      .trim(),
+                                                ) ??
+                                                0.0,
+                                          ),
+                                          closeAction:
+                                              widget.close,
+                                          priceController:
+                                              widget
+                                                  .priceController,
+                                        );
+                                      },
+                                      child: Container(
+                                        padding:
+                                            EdgeInsets.symmetric(
+                                              vertical: 5,
+                                              horizontal: 5,
+                                            ),
 
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment
-                                            .spaceBetween,
-                                    spacing: 5,
-                                    children: [
-                                      Expanded(
                                         child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment
+                                                  .spaceBetween,
                                           spacing: 5,
                                           children: [
-                                            Icon(
-                                              size: 20,
-                                              color:
-                                                  widget
-                                                      .theme
-                                                      .lightModeColor
-                                                      .secColor200,
-                                              Icons
-                                                  .arrow_right_rounded,
-                                            ),
-                                            Flexible(
-                                              child: Text(
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      widget
-                                                          .theme
-                                                          .mobileTexts
-                                                          .b4
-                                                          .fontSize,
-                                                  fontWeight:
-                                                      FontWeight
-                                                          .bold,
-                                                ),
-                                                item.name,
+                                            Expanded(
+                                              child: Row(
+                                                spacing: 5,
+                                                children: [
+                                                  Icon(
+                                                    size:
+                                                        20,
+                                                    color:
+                                                        widget.theme.lightModeColor.secColor200,
+                                                    Icons
+                                                        .arrow_right_rounded,
+                                                  ),
+                                                  Flexible(
+                                                    child: Text(
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            widget.theme.mobileTexts.b4.fontSize,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                      item.name,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
+                                            ),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        widget.theme.mobileTexts.b4.fontSize,
+                                                    fontWeight:
+                                                        FontWeight.bold,
+                                                  ),
+                                                  "- (${formatLargeNumberDouble(item.quantity ?? 0)})  ",
+                                                ),
+                                                Text(
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        widget.theme.mobileTexts.b4.fontSize,
+                                                    fontWeight:
+                                                        FontWeight.bold,
+                                                  ),
+                                                  formatMoneyMid(
+                                                    amount:
+                                                        item.sellingPrice ??
+                                                        0,
+                                                    context:
+                                                        context,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ],
                                         ),
                                       ),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            style: TextStyle(
-                                              fontSize:
-                                                  widget
-                                                      .theme
-                                                      .mobileTexts
-                                                      .b4
-                                                      .fontSize,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
-                                            ),
-                                            "- (${formatLargeNumberDouble(item.quantity ?? 0)})  ",
-                                          ),
-                                          Text(
-                                            style: TextStyle(
-                                              fontSize:
-                                                  widget
-                                                      .theme
-                                                      .mobileTexts
-                                                      .b4
-                                                      .fontSize,
-                                              fontWeight:
-                                                  FontWeight
-                                                      .bold,
-                                            ),
-                                            formatMoneyMid(
-                                              amount:
-                                                  item.sellingPrice ??
-                                                  0,
-                                              context:
-                                                  context,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                                    ),
                                   ),
-                                ),
-                              ),
-                            ),
-                          )
-                          .toList(),
+                                )
+                                .toList(),
+                      );
+                    }
+                  },
                 ),
               ),
             ],

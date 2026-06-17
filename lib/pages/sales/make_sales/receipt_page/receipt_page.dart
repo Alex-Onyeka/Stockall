@@ -24,13 +24,20 @@ class ReceiptPage extends StatefulWidget {
 
 class _ReceiptPageState extends State<ReceiptPage> {
   @override
-  void dispose() {
-    super.dispose();
+  void initState() {
+    super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.isMain &&
-          widget.isComingFromInvoice != true) {
-        returnData().syncData();
+      if (widget.response.receipt != null) {
+        returnReceiptProvider(
+          context,
+          listen: false,
+        ).loadSingleReceipt(uuid: widget.response.resUuid);
+      } else {
+        returnInvoicesProvider().loadSingleInvoice(
+          uuid: widget.response.resUuid,
+        );
       }
+      setState(() {});
     });
   }
 
@@ -48,7 +55,7 @@ class _ReceiptPageState extends State<ReceiptPage> {
             );
           } else {
             return InvoicePageMobile(
-              invoiceUuid: widget.response.resUuid,
+              checkoutResponse: widget.response,
             );
           }
         } else {
@@ -61,7 +68,7 @@ class _ReceiptPageState extends State<ReceiptPage> {
             );
           } else {
             return InvoicePageDesktop(
-              invoiceUuid: widget.response.resUuid,
+              checkoutResponse: widget.response,
             );
           }
         }

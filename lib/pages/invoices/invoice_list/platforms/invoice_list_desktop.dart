@@ -935,6 +935,7 @@ class _InvoiceListBodyDesktopState
                                   return ReceiptPage(
                                     response:
                                         CheckoutResponse(
+                                          invoice: invoice,
                                           resUuid:
                                               invoice.uuid!,
                                           isReceipt: false,

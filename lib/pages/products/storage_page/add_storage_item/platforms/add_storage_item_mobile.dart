@@ -112,7 +112,7 @@ class AddStorageItemMobileState
               );
 
               await dataProvider.createStorageProduct(
-                product,
+                product: product,
               );
 
               setState(() {

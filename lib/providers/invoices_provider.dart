@@ -109,6 +109,58 @@ class InvoicesProvider extends ChangeNotifier {
     // }
   }
 
+  Future<void> loadSingleInvoice({
+    required String uuid,
+  }) async {
+    bool isOnline = await connectivity.isOnline();
+    try {
+      if (isOnline) {
+        final data =
+            await supabase
+                .from('invoices')
+                .select()
+                .eq('invoice_uuid', uuid)
+                .maybeSingle();
+        if (data == null) {
+          print('Invoice Not Found');
+          return;
+        } else {
+          TempInvoice tempInvoice = TempInvoice.fromJson(
+            data,
+          );
+          TempInvoice? existingInvoice =
+              invoicesMain
+                      .where(
+                        (rec) =>
+                            rec.uuid == tempInvoice.uuid,
+                      )
+                      .isNotEmpty
+                  ? invoicesMain
+                      .where(
+                        (rec) =>
+                            rec.uuid == tempInvoice.uuid,
+                      )
+                      .first
+                  : null;
+          if (existingInvoice != null) {
+            print('Invoice Exists');
+            invoicesMain.remove(existingInvoice);
+          }
+          invoicesMain.add(tempInvoice);
+          invoicesMain.sort(
+            (a, b) => b.createdAt.compareTo(a.createdAt),
+          );
+          print("💖💖👏🥰 Single Invoice Loaded");
+          notifyListeners();
+        }
+      }
+    } catch (e) {
+      print(
+        'Error Fetching Single Invoice: ${e.toString()}',
+      );
+    }
+  }
+
   // READ all Invoices for a shop
   Future<List<TempInvoice>> loadInvoices(int shopId) async {
     bool isOnline = await connectivity.isOnline();
@@ -325,6 +377,7 @@ class InvoicesProvider extends ChangeNotifier {
 
       print('Totally Finished Deleting Invoices');
       notifyListeners();
+      syncData();
       return 1;
     } catch (e) {
       print('Error Deleting Invoice: ${e.toString()}');
@@ -396,6 +449,7 @@ class InvoicesProvider extends ChangeNotifier {
 
       print('Totally Finished Deleting Invoice');
       notifyListeners();
+      syncData();
       return 1;
     } catch (e) {
       print(
@@ -553,7 +607,10 @@ class InvoicesProvider extends ChangeNotifier {
 
         print('Creating Record Sales About to Start');
         await returnReceiptProviderSingle()
-            .createProductSaleRecord(productSaleRecords);
+            .createProductSaleRecord(
+              records: productSaleRecords,
+              isPartPayment: true,
+            );
         print('Sales Record Inserted');
         // invoice.balance =
         //    getBalance(invoice: invoice) - currentPayment;
@@ -1210,14 +1267,23 @@ class InvoicesProvider extends ChangeNotifier {
             DeletedInvoicesFunc().getInvoiceIds().toList();
 
         for (var inv in tempInvoice) {
-          await supabase.rpc(
-            'delete_invoice_and_update_inventory_new',
-            params: {
-              'target_invoice_uuid': inv.invoiceUuid,
-            },
-          );
-          await DeletedInvoicesFunc()
-              .deletedDeletedInvoices(inv.invoiceUuid);
+          try {
+            await supabase.rpc(
+              'delete_invoice_and_update_inventory_new',
+              params: {
+                'target_invoice_uuid': inv.invoiceUuid,
+              },
+            );
+            await DeletedInvoicesFunc()
+                .deletedDeletedInvoices(inv.invoiceUuid);
+          } catch (e) {
+            await DeletedInvoicesFunc()
+                .deletedDeletedInvoices(inv.invoiceUuid);
+            createErrorLog(
+              error:
+                  'Error Syncing Deleted Invoice: ${e.toString()}',
+            );
+          }
         }
 
         print(

@@ -1,6 +1,5 @@
 import 'package:flutter/widgets.dart';
 import 'package:stockall/classes/temp_error_log/temp_error_log_class.dart';
-import 'package:stockall/classes/temp_error_log/unsynced/created_error_log_class.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/error_log/error_log_func.dart';
@@ -241,25 +240,26 @@ class ErrorLogProvider with ChangeNotifier {
     //     return 0;
     //   }
     // } else {
-    try {
-      var log = createLogAdapter(error: error);
-      await ErrorLogFunc().createErrorLog(log);
-      await CreatedErrorLogFunc().createErrorLog(
-        CreatedErrorLogClass(errorLog: log),
-      );
-      await getErrorLogsOffline();
-      syncData();
-      return 1;
-    } catch (e) {
-      print(
-        'Offline Error Creating Failed: ${e.toString()}',
-      );
-      return 0;
-    }
+    // try {
+    //   var log = createLogAdapter(error: error);
+    //   await ErrorLogFunc().createErrorLog(log);
+    //   await CreatedErrorLogFunc().createErrorLog(
+    //     CreatedErrorLogClass(errorLog: log),
+    //   );
+    //   await getErrorLogsOffline();
+    //   syncData();
+    //   return 1;
+    // } catch (e) {
+    //   print(
+    //     'Offline Error Creating Failed: ${e.toString()}',
+    //   );
+    //   return 0;
+    // }
     // }
     // } else {
     //   return 0;
     // }
+    return 1;
   }
 
   Future<void> errorsLogSync() async {
@@ -302,11 +302,14 @@ class ErrorLogProvider with ChangeNotifier {
             await CreatedErrorLogFunc().deleteErrorLog(
               item.errorLog.uuid!,
             );
-            // }
-            await createErrorLog(
-              error:
-                  'Error Synchronizing Error Log: ${item.errorLog.title}: $e',
+            print(
+              'Error Occoured While Creating Error Log: ${e.toString()}',
             );
+            // }
+            // await createErrorLog(
+            //   error:
+            //       'Error Synchronizing Error Log: ${item.errorLog.title}: $e',
+            // );
           }
         }
 
@@ -328,5 +331,5 @@ class ErrorLogProvider with ChangeNotifier {
 }
 
 Future<void> createErrorLog({required String error}) async {
-  await returnErrorLogProvider().createLog(error: error);
+  // await returnErrorLogProvider().createLog(error: error);
 }

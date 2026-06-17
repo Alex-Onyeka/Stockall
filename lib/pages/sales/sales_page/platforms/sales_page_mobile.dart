@@ -469,6 +469,8 @@ class _SalesPageMobileState extends State<SalesPageMobile> {
                                               ) {
                                                 return ReceiptPage(
                                                   response: CheckoutResponse(
+                                                    receipt:
+                                                        mainReceipt,
                                                     resUuid:
                                                         mainReceipt.uuid!,
                                                     isReceipt:

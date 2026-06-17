@@ -1470,7 +1470,8 @@ class _ProductDetailsDesktopState
                                                 });
                                                 await provider
                                                     .deleteProductMain(
-                                                      product,
+                                                      product:
+                                                          product,
                                                     );
                                                 // await provider
                                                 //     .getProducts(

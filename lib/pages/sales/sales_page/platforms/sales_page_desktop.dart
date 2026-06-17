@@ -512,6 +512,8 @@ class _SalesPageDesktopState
                                                             ) {
                                                               return ReceiptPage(
                                                                 response: CheckoutResponse(
+                                                                  receipt:
+                                                                      mainReceipt,
                                                                   resUuid:
                                                                       mainReceipt.uuid!,
                                                                   isReceipt:

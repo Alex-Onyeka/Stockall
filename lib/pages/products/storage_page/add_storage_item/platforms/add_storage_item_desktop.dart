@@ -118,7 +118,7 @@ class _AddStorageItemDesktopState
               );
 
               await dataProvider.createStorageProduct(
-                product,
+                product: product,
               );
 
               setState(() {

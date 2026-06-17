@@ -116,6 +116,115 @@ class ReceiptsProvider extends ChangeNotifier {
     // }
   }
 
+  Future<void> loadSingleReceipt({
+    required String uuid,
+  }) async {
+    bool isOnline = await connectivity.isOnline();
+    try {
+      if (isOnline) {
+        final data =
+            await supabase
+                .from('receipts')
+                .select()
+                .eq('uuid', uuid)
+                .maybeSingle();
+        if (data == null) {
+          print('Receipt Not Found');
+          return;
+        } else {
+          TempMainReceipt tempMainReceipt =
+              TempMainReceipt.fromJson(data);
+          TempMainReceipt? existingReceipt =
+              receipts
+                      .where(
+                        (rec) =>
+                            rec.uuid ==
+                            tempMainReceipt.uuid,
+                      )
+                      .isNotEmpty
+                  ? receipts
+                      .where(
+                        (rec) =>
+                            rec.uuid ==
+                            tempMainReceipt.uuid,
+                      )
+                      .first
+                  : null;
+          if (existingReceipt != null) {
+            print('💖💖👏🥰Receipt Exists');
+            receipts.remove(existingReceipt);
+          }
+          receipts.add(tempMainReceipt);
+          receipts.sort(
+            (a, b) => b.createdAt.compareTo(a.createdAt),
+          );
+          print('💖💖👏🥰 Single Receipt Loaded');
+          List<TempProductSaleRecord> records =
+              _sales
+                  .where(
+                    (sale) =>
+                        sale.receiptUuid ==
+                        tempMainReceipt.uuid,
+                  )
+                  .toList();
+          if (records.isEmpty) {
+            final data = await supabase
+                .from('product_sales')
+                .select()
+                .eq('receipt_uuid', tempMainReceipt.uuid!)
+                .order('created_at', ascending: false);
+            if (data.isEmpty) {
+              print(
+                'No Sales Records Found From Single Receipt Fetch',
+              );
+              return;
+            } else {
+              List<TempProductSaleRecord> tempRecords =
+                  data
+                      .map(
+                        (item) =>
+                            TempProductSaleRecord.fromJson(
+                              item,
+                            ),
+                      )
+                      .toList();
+              for (var item in tempRecords) {
+                TempProductSaleRecord? existingSalesRecord =
+                    _sales
+                            .where(
+                              (rec) =>
+                                  rec.uuid == item.uuid,
+                            )
+                            .isNotEmpty
+                        ? _sales
+                            .where(
+                              (rec) =>
+                                  rec.uuid == item.uuid,
+                            )
+                            .first
+                        : null;
+                if (existingSalesRecord != null) {
+                  print('💖💖👏🥰SalesRecord Exists');
+                  _sales.remove(existingSalesRecord);
+                }
+                _sales.add(item);
+              }
+              _sales.sort(
+                (a, b) =>
+                    b.createdAt.compareTo(a.createdAt),
+              );
+            }
+          }
+        }
+        notifyListeners();
+      }
+    } catch (e) {
+      print(
+        'Error Fetching Single Receipt: ${e.toString()}',
+      );
+    }
+  }
+
   // READ all receipts for a shop
   Future<List<TempMainReceipt>> loadReceipts(
     int shopId,
@@ -388,6 +497,7 @@ class ReceiptsProvider extends ChangeNotifier {
 
     print('Totally Finished Deleting Receipt');
     notifyListeners();
+    returnData().syncData();
   }
 
   //
@@ -579,10 +689,11 @@ class ReceiptsProvider extends ChangeNotifier {
   }
 
   // CREATE a new product sale record
-  Future<void> createProductSaleRecord(
-    List<TempProductSaleRecord> records,
+  Future<void> createProductSaleRecord({
+    required List<TempProductSaleRecord> records,
+    required bool isPartPayment,
     // BuildContext context,
-  ) async {
+  }) async {
     // bool isOnline = await connectivity.isOnline();
     print('About to Start Mapping');
     try {
@@ -610,9 +721,11 @@ class ReceiptsProvider extends ChangeNotifier {
 
             return rec;
           }).toList();
-      await ProductRecordFunc().insertSalesProductRecords(
-        newRecords,
-      );
+      if (!isPartPayment) {
+        await ProductRecordFunc().insertSalesProductRecords(
+          newRecords,
+        );
+      }
       List<CreatedRecords> cRecords =
           newRecords.map((r) {
             return CreatedRecords(record: r);
@@ -784,6 +897,9 @@ class ReceiptsProvider extends ChangeNotifier {
                 item.record.uuid!,
               );
             }
+            print(
+              '🎶🎶🤦‍♀️💖💋✅Error Synchronizing Product Sales Record ${item.record.productName}: $e',
+            );
             await createErrorLog(
               error:
                   'Error Synchronizing Product Sales Record ${item.record.productName}: $e',

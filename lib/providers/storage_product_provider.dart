@@ -50,9 +50,10 @@ class StorageProductProvider extends ChangeNotifier {
 
   final supabase = Supabase.instance.client;
 
-  Future<void> createStorageProduct(
-    TempStorageProducts product,
-  ) async {
+  Future<void> createStorageProduct({
+    required TempStorageProducts product,
+    bool? isMultiple,
+  }) async {
     // bool isOnline = await connectivity.isOnline();
     product.updatedAt = DateTime.now();
     // if (isOnline) {
@@ -96,7 +97,9 @@ class StorageProductProvider extends ChangeNotifier {
     await getStorageProductsOffline(
       returnShopProvider().userShop()!.shopId!,
     );
-    syncData();
+    if (isMultiple != true) {
+      syncData();
+    }
   }
 
   Future<void> createStorageProductsSync() async {

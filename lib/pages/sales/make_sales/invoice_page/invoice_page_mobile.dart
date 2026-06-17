@@ -2217,6 +2217,8 @@ class _InvoicePageMobileState
                                                                   ) {
                                                                     return ReceiptPage(
                                                                       response: CheckoutResponse(
+                                                                        receipt:
+                                                                            receipt,
                                                                         resUuid:
                                                                             receipt.uuid!,
                                                                         isReceipt:

@@ -1276,7 +1276,7 @@ class SalesProvider extends ChangeNotifier {
                   addToStock: cartItem.addToStock,
                   departmentName: departmentName(),
                   departmentUuid: departmentUuid(),
-                  uuid: cartItem.uuid ?? uuidGen(),
+                  uuid: uuidGen(),
                   isProductManaged:
                       cartItem.getItem()?.isManaged,
                   setTotalPrice: cartItem.setTotalPrice,
@@ -1285,13 +1285,14 @@ class SalesProvider extends ChangeNotifier {
                 );
               }).toList();
 
-          if (context.mounted) {
-            print('Creating Record Sales About to Start');
-            await returnReceiptProviderSingle()
-                .createProductSaleRecord(
-                  productSaleRecords,
-                );
-          }
+          // if (context.mounted) {
+          print('Creating Record Sales About to Start');
+          await returnReceiptProviderSingle()
+              .createProductSaleRecord(
+                records: productSaleRecords,
+                isPartPayment: true,
+              );
+          // }
           print('Sales Record Inserted');
         }
 
@@ -1350,7 +1351,10 @@ class SalesProvider extends ChangeNotifier {
             await returnReceiptProvider(
               context,
               listen: false,
-            ).createProductSaleRecord(productSaleRecords);
+            ).createProductSaleRecord(
+              records: productSaleRecords,
+              isPartPayment: false,
+            );
           }
           print('Sales Record Inserted');
 
@@ -1490,9 +1494,10 @@ class SalesProvider extends ChangeNotifier {
                 }
               }
               notifyListeners();
-              // returnData().syncData();
+              returnData().syncData();
               return CheckoutResponse(
                 resUuid: invoiceRes!.uuid!,
+                invoice: invoiceRes,
                 isReceipt: false,
               );
             } catch (e) {
@@ -1663,7 +1668,10 @@ class SalesProvider extends ChangeNotifier {
             await returnReceiptProvider(
               context,
               listen: false,
-            ).createProductSaleRecord(productSaleRecords);
+            ).createProductSaleRecord(
+              records: productSaleRecords,
+              isPartPayment: false,
+            );
           }
           print('Sales Record Inserted');
 
@@ -1800,11 +1808,12 @@ class SalesProvider extends ChangeNotifier {
                   ).navigate(0);
                 }
               }
-              // returnData().syncData();
+              returnData().syncData();
               notifyListeners();
               return CheckoutResponse(
                 resUuid: receipt.uuid!,
                 isReceipt: true,
+                receipt: receipt,
               );
             } catch (e) {
               print('Error Step 4: ${e.toString()}');

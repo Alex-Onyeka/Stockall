@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_cart/temp_cart.dart';
 import 'package:stockall/constants/app_bar.dart';
+import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/sales/make_sales/page1/platforms/make_sales_desktop.dart';
@@ -30,6 +32,36 @@ class _MakeSalesPageState extends State<MakeSalesPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await returnMultiDisplayProvider().getAllSubWindows();
       await returnSalesProvider().fetchMainCart();
+      if (widget.isInvoice == true) {
+        if (returnSalesProvider()
+            .currentCart()
+            .cartItems
+            .isNotEmpty) {
+          returnSalesProvider().addNewCart(
+            context,
+            TempCart(
+              timeOfDay: null,
+              // createdDate: DateTime.now(),
+              hasPrintedDocket: false,
+              subStaffName: null,
+              customDate: null,
+              departmentName: null,
+              departmentUuid: null,
+              staffId: currentUser().userId,
+              staffName:
+                  "${currentUser().name} ${currentUser().lastName}",
+              cartItems: [],
+              isInvoice: true,
+              id: uuidGen(),
+            ),
+          );
+        } else {
+          returnSalesProvider().switchInvoiceSale(
+            value: true,
+            context: context,
+          );
+        }
+      }
       if (returnSalesProvider()
           .currentCart()
           .isReceiptEdit) {
@@ -91,13 +123,12 @@ class _MakeSalesPageState extends State<MakeSalesPage> {
         builder: (context, constraints) {
           if (constraints.maxWidth < mobileScreen) {
             return MakeSalesMobile(
-              isInvoice: widget.isInvoice,
+              // isInvoice: widget.isInvoice,
               isMain: widget.isMain,
               searchController: searchController,
             );
           } else {
             return MakeSalesDesktop(
-              isInvoice: widget.isInvoice,
               isMain: widget.isMain,
               searchController: searchController,
             );

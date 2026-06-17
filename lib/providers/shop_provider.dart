@@ -300,7 +300,7 @@ class ShopProvider extends ChangeNotifier {
     bool isOnline = await connectivity.isOnline();
 
     try {
-      if (isOnline && returnData().isSynced() == 1) {
+      if (isOnline) {
         var user =
             await supabase
                 .from('users')
