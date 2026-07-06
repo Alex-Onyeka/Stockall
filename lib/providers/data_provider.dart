@@ -40,7 +40,7 @@ import 'package:stockall/local_database/main_receipt/unsync_funcs/deleted/delete
 import 'package:stockall/local_database/main_receipt/unsync_funcs/updated/updated_receipts_func.dart';
 import 'package:stockall/local_database/product_record_func.dart/unsync_funcs/created/created_records_func.dart';
 import 'package:stockall/local_database/products/products_func.dart';
-import 'package:stockall/local_database/products/unsync_funcs/created_products%20copy/sales_product_func.dart';
+import 'package:stockall/local_database/products/unsync_funcs/sales_products/sales_product_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/created_products/created_product_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/deleted_products/deleted_products_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/updated_products/updated_products_func.dart';

@@ -164,6 +164,8 @@ class TempShopClass {
   @HiveField(54)
   String? accessPin;
 
+  // String? uuid
+
   TempShopClass({
     this.shopId,
     required this.createdAt,
@@ -220,6 +222,7 @@ class TempShopClass {
     this.closeSaleTime,
     required this.trackCart,
     required this.accessPin,
+    // required this.uuid
   });
 
   factory TempShopClass.fromJson(
@@ -227,6 +230,7 @@ class TempShopClass {
   ) {
     return TempShopClass(
       shopId: json['shop_id'] as int?,
+      // uuid: json['uuid'] as String?,
       country: json['country'] as String?,
       createdAt: DateTime.parse(
         json['created_at'] as String,
@@ -302,6 +306,7 @@ class TempShopClass {
   Map<String, dynamic> toJson() {
     return {
       // 'shop_id': shopId,
+      // 'uuid': uuid
       'created_at': createdAt.toIso8601String(),
       'user_id': userId,
       'email': email,
@@ -355,5 +360,129 @@ class TempShopClass {
       'track_cart': trackCart,
       'access_pin': accessPin,
     };
+  }
+
+  TempShopClass copyWith({
+    int? shopId,
+    DateTime? createdAt,
+    String? userId,
+    String? email,
+    String? name,
+    String? state,
+    String? country,
+    String? city,
+    String? shopAddress,
+    List<String>? categories,
+    List<String>? colors,
+    String? phoneNumber,
+    String? activeEmployee,
+    List<String>? employees,
+    String? refCode,
+    String? currency,
+    int? updateNumber,
+    bool? isVerified,
+    int? printType,
+    String? language,
+    DateTime? updatedAt,
+    String? instaHandle,
+    String? faceBookHandle,
+    bool? showEmail,
+    bool? showPhone,
+    bool? showAddress,
+    bool? showInstaDown,
+    bool? showFacebookDown,
+    bool? showFirst,
+    bool? showSecond,
+    bool? showThird,
+    bool? showInstaTop,
+    bool? showFacebookTop,
+    String? bottomText,
+    bool? showShopName,
+    String? logoUrl,
+    int? imageHeight,
+    int? imageWidth,
+    bool? isHeadQuarters,
+    double? percentDiscount,
+    double? fixedDiscount,
+    bool? isAllowedBySubscription,
+    bool? applyVAT,
+    bool? manageInventoryStorage,
+    bool? bulkSale,
+    bool? useGroupUnit,
+    bool? wholeSale,
+    bool? manageDepartments,
+    bool? printSalesDocket,
+    TimeOfDay? closeSaleTime,
+    String? closeSaleTimeString,
+    bool? trackCart,
+    String? accessPin,
+    // String? uuid,
+  }) {
+    return TempShopClass(
+      shopId: shopId ?? this.shopId,
+      createdAt: createdAt ?? this.createdAt,
+      userId: userId ?? this.userId,
+      email: email ?? this.email,
+      name: name ?? this.name,
+      state: state ?? this.state,
+      country: country ?? this.country,
+      city: city ?? this.city,
+      shopAddress: shopAddress ?? this.shopAddress,
+      categories: categories ?? this.categories,
+      colors: colors ?? this.colors,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      activeEmployee: activeEmployee ?? this.activeEmployee,
+      employees: employees ?? this.employees,
+      refCode: refCode ?? this.refCode,
+      currency: currency ?? this.currency,
+      updateNumber: updateNumber ?? this.updateNumber,
+      isVerified: isVerified ?? this.isVerified,
+      printType: printType ?? this.printType,
+      language: language ?? this.language,
+      updatedAt: updatedAt ?? this.updatedAt,
+      instaHandle: instaHandle ?? this.instaHandle,
+      faceBookHandle: faceBookHandle ?? this.faceBookHandle,
+      showEmail: showEmail ?? this.showEmail,
+      showPhone: showPhone ?? this.showPhone,
+      showAddress: showAddress ?? this.showAddress,
+      showInstaDown: showInstaDown ?? this.showInstaDown,
+      showFacebookDown:
+          showFacebookDown ?? this.showFacebookDown,
+      showFirst: showFirst ?? this.showFirst,
+      showSecond: showSecond ?? this.showSecond,
+      showThird: showThird ?? this.showThird,
+      showInstaTop: showInstaTop ?? this.showInstaTop,
+      showFacebookTop:
+          showFacebookTop ?? this.showFacebookTop,
+      bottomText: bottomText ?? this.bottomText,
+      showShopName: showShopName ?? this.showShopName,
+      logoUrl: logoUrl ?? this.logoUrl,
+      imageHeight: imageHeight ?? this.imageHeight,
+      imageWidth: imageWidth ?? this.imageWidth,
+      isHeadQuarters: isHeadQuarters ?? this.isHeadQuarters,
+      percentDiscount:
+          percentDiscount ?? this.percentDiscount,
+      fixedDiscount: fixedDiscount ?? this.fixedDiscount,
+      isAllowedBySubscription:
+          isAllowedBySubscription ??
+          this.isAllowedBySubscription,
+      applyVAT: applyVAT ?? this.applyVAT,
+      manageInventoryStorage:
+          manageInventoryStorage ??
+          this.manageInventoryStorage,
+      bulkSale: bulkSale ?? this.bulkSale,
+      useGroupUnit: useGroupUnit ?? this.useGroupUnit,
+      wholeSale: wholeSale ?? this.wholeSale,
+      manageDepartments:
+          manageDepartments ?? this.manageDepartments,
+      printSalesDocket:
+          printSalesDocket ?? this.printSalesDocket,
+      closeSaleTime: closeSaleTime ?? this.closeSaleTime,
+      closeSaleTimeString:
+          closeSaleTimeString ?? this.closeSaleTimeString,
+      trackCart: trackCart ?? this.trackCart,
+      accessPin: accessPin ?? this.accessPin,
+      // uuid: uuid ?? this.uuid,
+    );
   }
 }

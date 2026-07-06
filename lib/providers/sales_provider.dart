@@ -1162,82 +1162,12 @@ class SalesProvider extends ChangeNotifier {
       try {
         String? receiptUuid;
 
-        double? partPaymentValue(String meth) {
-          if (paymentMethod == meth) {
-            return partPayment;
-          } else {
-            return null;
-          }
-        }
-
         if (partPayment != null && partPayment != 0) {
-          receiptUuid = uuidGen();
-
-          TempMainReceipt receipt = TempMainReceipt(
-            subStaffName:
-                currentCart().subStaffName ??
-                currentMainCart().subStaff?.staffName,
-            departmentName: departmentName(),
-            departmentUuidNew: departmentUuid(),
-            createdAt: createdAt,
-            shopId: shopId,
-            staffId: staffUuid(), // staffId,
-            staffName: staffName(), // staffName,
-            paymentMethod: paymentMethod,
-            bank: partPaymentValue('Bank') ?? bank,
-            cashAlt: partPaymentValue('Cash') ?? cashAlt,
-            isInvoice: true,
-            customerName: customerName(),
-            customerUuid: customerUuid(),
-            invoiceUuid: invoiceRes?.uuid,
-            uuid: receiptUuid,
-            generalDiscount: currentCart().discount,
-            fixedDiscount: currentCart().fixedDiscount,
-            vat:
-                returnShopProvider().userShop()?.applyVAT ==
-                        true
-                    ? vat
-                    : null,
-            originalCost: calcSubTotal(),
-            balance: calcFinalTotal() - partPayment,
-            subStaffUuid:
-                currentCart().subStaffUuid ??
-                currentMainCart().subStaff?.uuid,
-            cartName: currentCart().cartName,
-          );
-
-          print('Checkout Started');
-          await returnReceiptProvider(
-            // ignore: use_build_context_synchronously
-            context,
-            listen: false,
-          ).createReceipt(receipt);
-          print('Receipt Created');
-
-          await returnEventsLogProvider().createLog(
-            returnEventsLogProvider().receiptAdapter(
-              receipt,
-              salesCartItem
-                  .getCartItems()
-                  .map(
-                    (item) =>
-                        item.getItem()?.name ?? 'Item Name',
-                  )
-                  .toList(),
-              1,
-            ),
-          );
-
           final productSaleRecords =
               salesCartItem.getCartItemsAll().map((
                 cartItem,
               ) {
                 final product = cartItem.getItem();
-
-                print(
-                  'Sales Record For Receipt about to be Created',
-                );
-
                 return TempProductSaleRecord(
                   isVoid: cartItem.isVoid ?? false,
                   qttyPerGroup: cartItem.qttyPerGroup,
@@ -1258,14 +1188,7 @@ class SalesProvider extends ChangeNotifier {
                   recepitId: 0,
                   receiptUuid: receiptUuid,
                   quantity: cartItem.quantity,
-                  revenue: calcSalesRecordRevenue(
-                    invoceTotalAmount:
-                        getTotalMainRevenueInvoice(
-                          invoice: invoiceRes,
-                        ),
-                    receiptPayment: partPayment,
-                    salesRecodRevenue: cartItem.revenue(),
-                  ),
+                  revenue: cartItem.revenue(),
                   discountedAmount: cartItem.discountCost(),
                   originalCost: cartItem.totalCost(),
                   discount:
@@ -1285,15 +1208,11 @@ class SalesProvider extends ChangeNotifier {
                 );
               }).toList();
 
-          // if (context.mounted) {
-          print('Creating Record Sales About to Start');
-          await returnReceiptProviderSingle()
-              .createProductSaleRecord(
-                records: productSaleRecords,
-                isPartPayment: true,
-              );
-          // }
-          print('Sales Record Inserted');
+          await returnInvoicesProvider().makeInvoicePayment(
+            invoice: invoice,
+            salesRecords: productSaleRecords,
+            currentPayment: partPayment,
+          );
         }
 
         try {

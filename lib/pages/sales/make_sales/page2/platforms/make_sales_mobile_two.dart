@@ -122,7 +122,7 @@ class _MakeSalesMobileTwoState
                                         .fontSize,
                                 fontWeight: FontWeight.bold,
                               ),
-                              'Change Sale Type',
+                              'Create Invoice (Credit Sale)',
                             ),
                           ],
                         ),
@@ -142,7 +142,7 @@ class _MakeSalesMobileTwoState
                                 fontWeight:
                                     FontWeight.normal,
                               ),
-                              'Is this Sale On Credit?',
+                              'Is this Sale On Credit (Invoice?',
                             ),
                             InkWell(
                               onTap: () async {

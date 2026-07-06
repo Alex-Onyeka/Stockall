@@ -2,7 +2,7 @@ import 'package:hive/hive.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/created_products/created_products.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/sales_product/sales_products.dart';
-import 'package:stockall/local_database/products/unsync_funcs/created_products%20copy/sales_product_func.dart';
+import 'package:stockall/local_database/products/unsync_funcs/sales_products/sales_product_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/created_products/created_product_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/deleted_products/deleted_products_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/updated_products/updated_products_func.dart';

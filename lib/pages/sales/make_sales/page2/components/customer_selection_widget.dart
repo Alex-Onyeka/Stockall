@@ -55,7 +55,7 @@ class _CustomerSelectionWidgetState
                             return DialogTemplate(
                               theme: theme,
                               message:
-                                  'Choose Wether to Add A Real Customer Or To Create a Temporary Customer For this Sale.',
+                                  'Choose Wether to Select A Customer From Your Customer List Or To Create a Temporary Customer Just For this Sale.',
                               title:
                                   'Select Action to Perform',
                               action: () {},
@@ -103,7 +103,7 @@ class _CustomerSelectionWidgetState
                                             });
                                           },
                                           text:
-                                              'Add Real Customer',
+                                              'Select Customer',
                                         ),
                                         MainButtonP(
                                           themeProvider:

@@ -464,7 +464,6 @@ class InvoicesProvider extends ChangeNotifier {
     required List<TempProductSaleRecord> salesRecords,
     required double currentPayment,
   }) async {
-    // bool isOnline = await connectivity.isOnline();
     try {
       final createdAt = DateTime.now().toUtc();
 
@@ -513,21 +512,7 @@ class InvoicesProvider extends ChangeNotifier {
 
         final productSaleRecords =
             salesRecords.map((record) {
-              // final product = cartItem.item;
-
               print('Sales Record about to be Created');
-              // print(
-              //   getTotalMainRevenueInvoice(invoice: invoice),
-              // );
-              // calcSalesRecordRevenue(
-              //   invoceTotalAmount:
-              //       getTotalMainRevenueInvoice(
-              //         invoice: invoice,
-              //       ),
-              //   receiptPayment: currentPayment,
-              //   salesRecodRevenue: record.revenue,
-              // );
-
               return TempProductSaleRecord(
                 isVoid: record.isVoid ?? false,
                 customPriceSet: record.customPriceSet,
@@ -553,6 +538,15 @@ class InvoicesProvider extends ChangeNotifier {
                   receiptPayment: currentPayment,
                   salesRecodRevenue: record.revenue,
                 ),
+                costPrice: calcSalesRecordCostPrice(
+                  invoceTotalAmount:
+                      getTotalMainRevenueInvoice(
+                        invoice: invoice,
+                      ),
+                  receiptPayment: currentPayment,
+                  salesRecodCostPrice:
+                      (record.costPrice ?? 0),
+                ),
                 discountedAmount:
                     calcSalesRecordDiscountedAmount(
                       invoceTotalAmount:
@@ -574,15 +568,7 @@ class InvoicesProvider extends ChangeNotifier {
                 ),
                 discount: record.discount,
                 fixedDiscount: record.fixedDiscount,
-                costPrice: calcSalesRecordCostPrice(
-                  invoceTotalAmount:
-                      getTotalMainRevenueInvoice(
-                        invoice: invoice,
-                      ),
-                  receiptPayment: currentPayment,
-                  salesRecodCostPrice:
-                      (record.costPrice ?? 0),
-                ),
+
                 addToStock: record.addToStock,
                 departmentName:
                     record.departmentName ??

@@ -45,6 +45,7 @@ class UtilityConstants extends HiveObject {
     required this.oneYearDiscount,
     required this.vat,
   });
+
   factory UtilityConstants.fromJson(
     Map<String, dynamic> json,
   ) {

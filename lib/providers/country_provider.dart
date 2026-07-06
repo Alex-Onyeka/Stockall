@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:stockall/classes/locations/country_model.dart';
 import 'package:stockall/local_database/countries/countries_func.dart';
+import 'package:stockall/main.dart';
 
 class CountryProvider extends ChangeNotifier {
   static final CountryProvider _instance =
@@ -135,53 +136,60 @@ class CountryProvider extends ChangeNotifier {
       isLoading = true;
       notifyListeners();
 
-      // prevent unnecessary API calls
-      // if (CountriesFunc().getCountryModel().isNotEmpty) {
-      //   countries = CountriesFunc().getCountryModel();
+      if (CountriesFunc().getCountryModel().isNotEmpty) {
+        countries = CountriesFunc().getCountryModel();
 
-      //   isLoading = false;
-      //   notifyListeners();
-      //   print(
-      //     'Countrys Gotten Successfully Offline: ${countries.length}',
-      //   );
-
-      //   return;
-      // }
-
-      final response = await http.get(
-        Uri.https('api.geocoded.me', '/countries', {
-          'fields':
-              'name,iso2,currency,currencyName,currencySymbol',
-          'limit': '300',
-          'offset': '0',
-        }),
-      );
-      print(response.body);
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = jsonDecode(
-          response.body,
-        );
-
-        final List countriesData = data['data'];
-        List<CountryModel> locatTemp =
-            countriesData
-                .map((loca) => CountryModel.fromJson(loca))
-                .toList();
-
-        countries = locatTemp;
-
-        CountriesFunc().insertCountries(locatTemp);
         isLoading = false;
+        notifyListeners();
         print(
-          'Countrys Gotten Successfully Online: ${locatTemp.length}',
+          'Countrys Gotten Successfully Offline: ${countries.length}',
         );
 
-        notifyListeners();
-      } else {
-        throw Exception(
-          'Failed to fetch countries: ${response.statusCode}',
+        return;
+      }
+
+      bool isOnline =
+          returnConnectivityProvider().isConnected;
+      if (isOnline) {
+        final response = await http.get(
+          Uri.https('api.geocoded.me', '/countries', {
+            'fields':
+                'name,iso2,currency,currencyName,currencySymbol',
+            'limit': '300',
+            'offset': '0',
+          }),
         );
+        print(response.body);
+
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> data = jsonDecode(
+            response.body,
+          );
+
+          final List countriesData = data['data'];
+          List<CountryModel> locatTemp =
+              countriesData
+                  .map(
+                    (loca) => CountryModel.fromJson(loca),
+                  )
+                  .toList();
+
+          countries = locatTemp;
+
+          CountriesFunc().insertCountries(locatTemp);
+          isLoading = false;
+          print(
+            'Countrys Gotten Successfully Online: ${locatTemp.length}',
+          );
+
+          notifyListeners();
+        } else {
+          throw Exception(
+            'Failed to fetch countries: ${response.statusCode}',
+          );
+        }
+      } else {
+        print('Internet Connection Not Detected');
       }
     } catch (e) {
       throw Exception('Error fetching countries: $e');
@@ -192,109 +200,121 @@ class CountryProvider extends ChangeNotifier {
   }
 
   Future<void> fetchStates() async {
-    try {
-      isLoading = true;
-      notifyListeners();
-
-      final response = await http.get(
-        Uri.https(
-          'api.geocoded.me',
-          '/countries/${selectedCountry?.countryCode ?? "NGN"}/states',
-          {
-            'fields': 'name,iso2',
-            // 'q': 'san',
-            'limit': '50',
-            'offset': '0',
-          },
-        ),
-      );
-      print(response.body);
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = jsonDecode(
-          response.body,
-        );
-
-        final List statesData = data['data'];
-        List<StateModel> locatTemp =
-            statesData
-                .map(
-                  (loca) => StateModel(
-                    stateName: loca['name'],
-                    code: loca['iso2'],
-                  ),
-                )
-                .toList();
-
-        states = locatTemp;
-
-        isLoading = false;
-        print(
-          'States Gotten Successfully Online: ${locatTemp.length}',
-        );
-
+    bool isOnline =
+        returnConnectivityProvider().isConnected;
+    if (isOnline) {
+      try {
+        isLoading = true;
         notifyListeners();
-      } else {
-        throw Exception(
-          'Failed to fetch states: ${response.statusCode}',
+
+        final response = await http.get(
+          Uri.https(
+            'api.geocoded.me',
+            '/countries/${selectedCountry?.countryCode ?? "NGN"}/states',
+            {
+              'fields': 'name,iso2',
+              // 'q': 'san',
+              'limit': '50',
+              'offset': '0',
+            },
+          ),
         );
+        print(response.body);
+
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> data = jsonDecode(
+            response.body,
+          );
+
+          final List statesData = data['data'];
+          List<StateModel> locatTemp =
+              statesData
+                  .map(
+                    (loca) => StateModel(
+                      stateName: loca['name'],
+                      code: loca['iso2'],
+                    ),
+                  )
+                  .toList();
+
+          states = locatTemp;
+
+          isLoading = false;
+          print(
+            'States Gotten Successfully Online: ${locatTemp.length}',
+          );
+
+          notifyListeners();
+        } else {
+          throw Exception(
+            'Failed to fetch states: ${response.statusCode}',
+          );
+        }
+      } catch (e) {
+        throw Exception('Error fetching states: $e');
+      } finally {
+        isLoading = false;
+        notifyListeners();
       }
-    } catch (e) {
-      throw Exception('Error fetching states: $e');
-    } finally {
-      isLoading = false;
-      notifyListeners();
+    } else {
+      print('No Internet Connection Detected');
     }
   }
 
   Future<void> fetchCities() async {
-    try {
-      isLoading = true;
-      notifyListeners();
-
-      final response = await http.get(
-        Uri.https(
-          'api.geocoded.me',
-          '/countries/${selectedCountry?.countryCode}/states/${selectedState?.code}/cities',
-          {
-            'fields': 'name',
-            // 'q': 'san',
-            'limit': '100',
-            'offset': '0',
-          },
-        ),
-      );
-      print(response.body);
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = jsonDecode(
-          response.body,
-        );
-
-        final List citiesData = data['data'];
-        List<String> locatTemp =
-            citiesData
-                .map((loca) => loca['name'] as String)
-                .toList();
-
-        cities = locatTemp;
-
-        isLoading = false;
-        print(
-          'Cities Gotten Successfully Online: ${locatTemp.length}',
-        );
-
+    bool isOnline =
+        returnConnectivityProvider().isConnected;
+    if (isOnline) {
+      try {
+        isLoading = true;
         notifyListeners();
-      } else {
-        throw Exception(
-          'Failed to fetch cities: ${response.statusCode}',
+
+        final response = await http.get(
+          Uri.https(
+            'api.geocoded.me',
+            '/countries/${selectedCountry?.countryCode}/states/${selectedState?.code}/cities',
+            {
+              'fields': 'name',
+              // 'q': 'san',
+              'limit': '100',
+              'offset': '0',
+            },
+          ),
         );
+        print(response.body);
+
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> data = jsonDecode(
+            response.body,
+          );
+
+          final List citiesData = data['data'];
+          List<String> locatTemp =
+              citiesData
+                  .map((loca) => loca['name'] as String)
+                  .toList();
+
+          cities = locatTemp;
+
+          isLoading = false;
+          print(
+            'Cities Gotten Successfully Online: ${locatTemp.length}',
+          );
+
+          notifyListeners();
+        } else {
+          throw Exception(
+            'Failed to fetch cities: ${response.statusCode}',
+          );
+        }
+      } catch (e) {
+        throw Exception('Error fetching cities: $e');
+      } finally {
+        isLoading = false;
+        notifyListeners();
       }
-    } catch (e) {
-      throw Exception('Error fetching cities: $e');
-    } finally {
-      isLoading = false;
-      notifyListeners();
+    } else {
+      print('No Internet Connection Detected');
     }
   }
 
@@ -304,26 +324,33 @@ class CountryProvider extends ChangeNotifier {
   }
 
   Future<bool> isUserInNigeria() async {
-    try {
-      final response = await http.get(
-        Uri.parse('http://ip-api.com/json/'),
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        print('Printed data: $data');
-
-        return data['countryCode'] == 'NG';
-      } else {
-        print(
-          "Response Status Code: ${response.statusCode}",
+    bool isOnline =
+        returnConnectivityProvider().isConnected;
+    if (isOnline) {
+      try {
+        final response = await http.get(
+          Uri.parse('http://ip-api.com/json/'),
         );
-        return false;
+
+        if (response.statusCode == 200) {
+          final data = jsonDecode(response.body);
+          print('Printed data: $data');
+
+          return data['countryCode'] == 'NG';
+        } else {
+          print(
+            "Response Status Code: ${response.statusCode}",
+          );
+          return false;
+        }
+      } catch (e) {
+        print(
+          'Error Occoured when Checking Users Country: ${e.toString()}',
+        );
+        return true;
       }
-    } catch (e) {
-      print(
-        'Error Occoured when Checking Users Country: ${e.toString()}',
-      );
+    } else {
+      print('No Internet Detected');
       return true;
     }
   }

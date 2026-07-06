@@ -27,6 +27,7 @@ import 'package:stockall/local_database/on_screen_keyboard_pin/on_screen_keyboar
 import 'package:stockall/local_database/permission/permission_func.dart';
 import 'package:stockall/local_database/product_record_func.dart/product_record_func.dart';
 import 'package:stockall/local_database/products/products_func.dart';
+import 'package:stockall/local_database/products/unsync_funcs/updated_quantity/quantity_update_func.dart';
 import 'package:stockall/local_database/purchases/purchase_func.dart';
 import 'package:stockall/local_database/receipt_printer_func/receipt_printer_func.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';
@@ -80,6 +81,7 @@ class MainDatabase extends ChangeNotifier {
     await SubscriptionFunc().init();
     await ShopOwnerFunc().init();
     await InventoryUpdatesFunc().init();
+    await QuantityUpdateFunc().init();
     await EventsLogFunc().init();
     await ErrorLogFunc().init();
     await InvoicesFunc().init();
@@ -96,7 +98,6 @@ class MainDatabase extends ChangeNotifier {
     await StorageProductsFunc().init();
     await CartFunc().init();
     await PurchaseFunc().init();
-    // await PurchasePaymentsFunc().init();
     await ItemPurchaseFunc().init();
     await SuppliersFunc().init();
     await WaybillsFunc().init();
@@ -105,4 +106,4 @@ class MainDatabase extends ChangeNotifier {
   }
 }
 
-int highestHiveClassIndex = 95;
+int highestHiveClassIndex = 96;
