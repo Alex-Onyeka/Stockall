@@ -24,12 +24,12 @@ class _AddProductState extends State<AddProduct> {
       TextEditingController();
   TextEditingController lowQttyController =
       TextEditingController(text: '10');
-  TextEditingController quantityController =
-      TextEditingController();
+  // TextEditingController quantityController =
+  //     TextEditingController();
   TextEditingController discountController =
       TextEditingController();
-  TextEditingController storageQuantityController =
-      TextEditingController();
+  // TextEditingController storageQuantityController =
+  //     TextEditingController();
   TextEditingController qttyPerGroupController =
       TextEditingController();
   TextEditingController wholeSaleController =
@@ -42,9 +42,9 @@ class _AddProductState extends State<AddProduct> {
     costController.dispose();
     sellingController.dispose();
     discountController.dispose();
-    quantityController.dispose();
+    // quantityController.dispose();
     lowQttyController.dispose();
-    storageQuantityController.dispose();
+    // storageQuantityController.dispose();
     qttyPerGroupController.dispose();
   }
 
@@ -61,7 +61,7 @@ class _AddProductState extends State<AddProduct> {
             context: context,
             conditionX:
                 costController.text.isNotEmpty ||
-                quantityController.text.isNotEmpty ||
+                // quantityController.text.isNotEmpty ||
                 nameController.text.isNotEmpty ||
                 sellingController.text.isNotEmpty,
             didPop: didPop,
@@ -71,12 +71,12 @@ class _AddProductState extends State<AddProduct> {
           builder: (context, constraints) {
             if (constraints.maxWidth < mobileScreen) {
               return AddProductMobile(
-                storageQuantityController:
-                    storageQuantityController,
+                // storageQuantityController:
+                //     storageQuantityController,
                 product: widget.product,
                 discountController: discountController,
                 lowQttyController: lowQttyController,
-                quantityController: quantityController,
+                // quantityController: quantityController,
                 costController: costController,
                 sellingController: sellingController,
                 nameController: nameController,
@@ -86,12 +86,12 @@ class _AddProductState extends State<AddProduct> {
               );
             } else {
               return AddProductDesktop(
-                storageQuantityController:
-                    storageQuantityController,
+                // storageQuantityController:
+                //     storageQuantityController,
                 product: widget.product,
                 discountController: discountController,
                 lowQttyController: lowQttyController,
-                quantityController: quantityController,
+                // quantityController: quantityController,
                 costController: costController,
                 sellingController: sellingController,
                 nameController: nameController,

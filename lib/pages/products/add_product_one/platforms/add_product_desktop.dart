@@ -7,8 +7,6 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/dialog_template.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
-// import 'package:stockall/components/buttons/main_button_transparent.dart';
-// import 'package:stockall/components/calendar/calendar_widget.dart';
 import 'package:stockall/components/major/desktop_center_container.dart';
 import 'package:stockall/components/text_fields/barcode_scanner.dart';
 import 'package:stockall/components/text_fields/edit_cart_text_field.dart';
@@ -34,9 +32,9 @@ class AddProductDesktop extends StatefulWidget {
   final TextEditingController wholeSaleController;
   final TextEditingController nameController;
   final TextEditingController lowQttyController;
-  final TextEditingController quantityController;
+  // final TextEditingController quantityController;
   final TextEditingController discountController;
-  final TextEditingController storageQuantityController;
+  // final TextEditingController storageQuantityController;
   final TextEditingController qttyPerGroupController;
 
   const AddProductDesktop({
@@ -45,9 +43,9 @@ class AddProductDesktop extends StatefulWidget {
     required this.sellingController,
     required this.nameController,
     required this.lowQttyController,
-    required this.quantityController,
+    // required this.quantityController,
     required this.discountController,
-    required this.storageQuantityController,
+    // required this.storageQuantityController,
     required this.qttyPerGroupController,
     required this.wholeSaleController,
     this.product,
@@ -131,23 +129,21 @@ class _AddProductDesktopState
               await dataProvider.createProduct(
                 TempProductClass(
                   storageUuid: null,
-                  isManaged:
-                      widget.quantityController.text.isEmpty
-                          ? false
-                          : dataProvider.isManaged,
+                  isManaged: dataProvider.isManaged,
                   name: widget.nameController.text.trim(),
                   totalQttyInStorageDouble:
-                      widget
-                              .storageQuantityController
-                              .text
-                              .isNotEmpty
-                          ? double.parse(
-                            widget
-                                .storageQuantityController
-                                .text
-                                .replaceAll(',', ''),
-                          )
-                          : null,
+                      // widget
+                      //         .storageQuantityController
+                      //         .text
+                      //         .isNotEmpty
+                      //     ? double.parse(
+                      //       widget
+                      //           .storageQuantityController
+                      //           .text
+                      //           .replaceAll(',', ''),
+                      //     )
+                      //     :
+                      null,
                   unit:
                       dataProvider.selectedUnit ?? 'Others',
                   groupUnit:
@@ -199,15 +195,16 @@ class _AddProductDesktopState
                           )
                           : null,
                   quantity:
-                      widget
-                              .quantityController
-                              .text
-                              .isNotEmpty
-                          ? double.parse(
-                            widget.quantityController.text
-                                .replaceAll(',', ''),
-                          )
-                          : null,
+                      // widget
+                      //         .quantityController
+                      //         .text
+                      //         .isNotEmpty
+                      //     ? double.parse(
+                      //       widget.quantityController.text
+                      //           .replaceAll(',', ''),
+                      //     )
+                      //     :
+                      null,
                   barcode: barcode,
                   lowQtty:
                       widget.lowQttyController.text.isEmpty
@@ -238,14 +235,6 @@ class _AddProductDesktopState
                           : null,
                   departmentUuid:
                       returnData().departmentUuid,
-                  // departmentName:
-                  //     returnDepartmentProvider()
-                  //         .currentDepartment()
-                  //         ?.name,
-                  // departmentUuid:
-                  //     returnDepartmentProvider()
-                  //         .currentDepartment()
-                  //         ?.uuid,
                 ),
               );
 
@@ -293,26 +282,26 @@ class _AddProductDesktopState
               isLoading = true;
             });
 
-            double totalQttyInStorageCalc() {
-              final total =
-                  widget
-                      .product
-                      ?.totalQttyInStorageDouble ??
-                  0;
-              final qty =
-                  double.tryParse(
-                    widget.quantityController.text
-                        .replaceAll(',', ''),
-                  ) ??
-                  0;
-              final currentQty =
-                  widget.product?.quantity ?? 0;
+            // double totalQttyInStorageCalc() {
+            //   final total =
+            //       widget
+            //           .product
+            //           ?.totalQttyInStorageDouble ??
+            //       0;
+            //   final qty =
+            //       double.tryParse(
+            //         widget.quantityController.text
+            //             .replaceAll(',', ''),
+            //       ) ??
+            //       0;
+            //   final currentQty =
+            //       widget.product?.quantity ?? 0;
 
-              double result =
-                  (total - (qty - currentQty)).toDouble();
+            //   double result =
+            //       (total - (qty - currentQty)).toDouble();
 
-              return result < 0 ? 0 : result;
-            }
+            //   return result < 0 ? 0 : result;
+            // }
 
             var res = await provider.updateProduct(
               product: TempProductClass(
@@ -332,11 +321,11 @@ class _AddProductDesktopState
                 departmentUuid: returnData().departmentUuid,
                 setCustomPrice: provider.setCustomPrice,
                 isManaged:
-                    widget.quantityController.text.isEmpty
-                        ? false
-                        : provider.isManaged,
-                totalQttyInStorageDouble:
-                    totalQttyInStorageCalc(),
+                    // widget.quantityController.text.isEmpty
+                    //     ? false
+                    //     :
+                    provider.isManaged,
+                totalQttyInStorageDouble: null,
                 uuid: widget.product?.uuid,
                 name: widget.nameController.text,
                 unit: provider.selectedUnit!,
@@ -376,16 +365,16 @@ class _AddProductDesktopState
                               .replaceAll(',', ''),
                         )
                         : null,
-                quantity:
-                    widget
-                            .quantityController
-                            .text
-                            .isNotEmpty
-                        ? double.parse(
-                          widget.quantityController.text
-                              .replaceAll(',', ''),
-                        )
-                        : null,
+                quantity: widget.product?.quantity,
+                // widget
+                //         .quantityController
+                //         .text
+                //         .isNotEmpty
+                //     ? double.parse(
+                //       widget.quantityController.text
+                //           .replaceAll(',', ''),
+                //     )
+                //     : null,
                 shopId: userShop!.shopId!,
                 barcode: barcode,
                 categoryUuid:
@@ -457,9 +446,9 @@ class _AddProductDesktopState
   final FocusNode costFieldNode = FocusNode();
   final FocusNode sellingFieldNode = FocusNode();
   final FocusNode wholeSaleFieldNode = FocusNode();
-  final FocusNode quantityFieldNode = FocusNode();
+  // final FocusNode quantityFieldNode = FocusNode();
   final FocusNode barcodeFieldNode = FocusNode();
-  final FocusNode storageQuantityFieldNode = FocusNode();
+  // final FocusNode storageQuantityFieldNode = FocusNode();
 
   Future<void> clearFields() async {
     await Future.delayed(Duration(microseconds: 500), () {
@@ -502,10 +491,10 @@ class _AddProductDesktopState
           widget.product!.wholeSalePrice != null
               ? widget.product!.wholeSalePrice.toString()
               : '';
-      widget.quantityController.text =
-          widget.product!.quantity == null
-              ? ''
-              : widget.product!.quantity.toString();
+      // widget.quantityController.text =
+      //     widget.product!.quantity == null
+      //         ? ''
+      //         : widget.product!.quantity.toString();
 
       widget.discountController.text =
           widget.product!.discount != null
@@ -580,7 +569,7 @@ class _AddProductDesktopState
   void dispose() {
     super.dispose();
     expiryDateC.dispose();
-    quantityFieldNode.dispose();
+    // quantityFieldNode.dispose();
     sellingFieldNode.dispose();
     wholeSaleFieldNode.dispose();
     costFieldNode.dispose();
@@ -705,20 +694,19 @@ class _AddProductDesktopState
                                               onSubmitted: (
                                                 value,
                                               ) {
-                                                returnShopProvider()
-                                                            .userShop()
-                                                            ?.wholeSale ==
+                                                returnShopProvider().userShop()?.wholeSale ==
                                                         true
                                                     ? FocusScope.of(
                                                       context,
                                                     ).requestFocus(
                                                       wholeSaleFieldNode,
                                                     )
-                                                    : FocusScope.of(
-                                                      context,
-                                                    ).requestFocus(
-                                                      quantityFieldNode,
-                                                    );
+                                                    : {};
+                                                // : FocusScope.of(
+                                                //   context,
+                                                // ).requestFocus(
+                                                //   quantityFieldNode,
+                                                // );
                                               },
                                               onChanged:
                                                   (
@@ -751,11 +739,11 @@ class _AddProductDesktopState
                                               onSubmitted: (
                                                 value,
                                               ) {
-                                                FocusScope.of(
-                                                  context,
-                                                ).requestFocus(
-                                                  quantityFieldNode,
-                                                );
+                                                // FocusScope.of(
+                                                //   context,
+                                                // ).requestFocus(
+                                                //   quantityFieldNode,
+                                                // );
                                               },
                                               onChanged:
                                                   (
@@ -778,137 +766,137 @@ class _AddProductDesktopState
                                       ),
                                     ],
                                   ),
-                                  Visibility(
-                                    visible:
-                                        authorization(
-                                          authorized:
-                                              Authorizations()
-                                                  .updateItemQuantity,
-                                        ) &&
-                                        returnShopProvider()
-                                                .userShop()
-                                                ?.manageInventoryStorage !=
-                                            true,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment
-                                              .spaceBetween,
-                                      // spacing: 10,
-                                      children: [
-                                        Visibility(
-                                          visible:
-                                              returnShopProvider()
-                                                      .userShop()
-                                                      ?.manageInventoryStorage ==
-                                                  true &&
-                                              widget.product ==
-                                                  null &&
-                                              ItemsAuthAction()
-                                                  .manageInventoryStorageAction(
-                                                    context:
-                                                        context,
-                                                  ),
-                                          child: Expanded(
-                                            child: EditCartTextField(
-                                              focusNode:
-                                                  storageQuantityFieldNode,
-                                              onSubmitted: (
-                                                value,
-                                              ) {
-                                                FocusScope.of(
-                                                  context,
-                                                ).requestFocus(
-                                                  quantityFieldNode,
-                                                );
-                                              },
-                                              theme: theme,
-                                              hint:
-                                                  'Enter Quantity In Storage',
-                                              title:
-                                                  'Storage Quantity (Optional)',
-                                              controller:
-                                                  widget
-                                                      .storageQuantityController,
-                                            ),
-                                          ),
-                                        ),
-                                        Visibility(
-                                          visible:
-                                              returnShopProvider()
-                                                      .userShop()
-                                                      ?.manageInventoryStorage ==
-                                                  true &&
-                                              widget.product ==
-                                                  null &&
-                                              ItemsAuthAction()
-                                                  .manageInventoryStorageAction(
-                                                    context:
-                                                        context,
-                                                  ),
-                                          child: SizedBox(
-                                            width: 10,
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: EditCartTextField(
-                                            focusNode:
-                                                quantityFieldNode,
-                                            onSubmitted: (
-                                              value,
-                                            ) {
-                                              FocusScope.of(
-                                                context,
-                                              ).requestFocus(
-                                                barcodeFieldNode,
-                                              );
-                                            },
-                                            theme: theme,
-                                            hint:
-                                                'Enter Quantity',
-                                            title:
-                                                'Quantity (Optional)',
-                                            controller:
-                                                widget
-                                                    .quantityController,
-                                            onChanged: (
-                                              value,
-                                            ) {
-                                              if (value
-                                                  .isNotEmpty) {
-                                                if (widget.product !=
-                                                        null &&
-                                                    widget.product?.isManaged ==
-                                                        true &&
-                                                    returnShopProvider().userShop()?.manageInventoryStorage ==
-                                                        true) {
-                                                  if (((double.tryParse(
-                                                            value.replaceAll(
-                                                              ',',
-                                                              '',
-                                                            ),
-                                                          ) ??
-                                                          0)) >
-                                                      ((widget.product?.totalQttyInStorageDouble ??
-                                                              0) +
-                                                          (double.tryParse(
-                                                                widget.product?.quantity?.toString() ??
-                                                                    '0',
-                                                              ) ??
-                                                              0))) {
-                                                    widget
-                                                        .quantityController
-                                                        .text = (widget.product?.quantity ??
-                                                                0)
-                                                            .toString();
-                                                  }
-                                                }
-                                              }
-                                            },
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                  // Visibility(
+                                  //   visible:
+                                  //       authorization(
+                                  //         authorized:
+                                  //             Authorizations()
+                                  //                 .updateItemQuantity,
+                                  //       ) &&
+                                  //       returnShopProvider()
+                                  //               .userShop()
+                                  //               ?.manageInventoryStorage !=
+                                  //           true,
+                                  //   child: Row(
+                                  //     mainAxisAlignment:
+                                  //         MainAxisAlignment
+                                  //             .spaceBetween,
+                                  //     // spacing: 10,
+                                  //     children: [
+                                  //       Visibility(
+                                  //         visible:
+                                  //             returnShopProvider()
+                                  //                     .userShop()
+                                  //                     ?.manageInventoryStorage ==
+                                  //                 true &&
+                                  //             widget.product ==
+                                  //                 null &&
+                                  //             ItemsAuthAction()
+                                  //                 .manageInventoryStorageAction(
+                                  //                   context:
+                                  //                       context,
+                                  //                 ),
+                                  //         child: Expanded(
+                                  //           child: EditCartTextField(
+                                  //             focusNode:
+                                  //                 storageQuantityFieldNode,
+                                  //             onSubmitted: (
+                                  //               value,
+                                  //             ) {
+                                  //               FocusScope.of(
+                                  //                 context,
+                                  //               ).requestFocus(
+                                  //                 quantityFieldNode,
+                                  //               );
+                                  //             },
+                                  //             theme: theme,
+                                  //             hint:
+                                  //                 'Enter Quantity In Storage',
+                                  //             title:
+                                  //                 'Storage Quantity (Optional)',
+                                  //             controller:
+                                  //                 widget
+                                  //                     .storageQuantityController,
+                                  //           ),
+                                  //         ),
+                                  //       ),
+                                  //       Visibility(
+                                  //         visible:
+                                  //             returnShopProvider()
+                                  //                     .userShop()
+                                  //                     ?.manageInventoryStorage ==
+                                  //                 true &&
+                                  //             widget.product ==
+                                  //                 null &&
+                                  //             ItemsAuthAction()
+                                  //                 .manageInventoryStorageAction(
+                                  //                   context:
+                                  //                       context,
+                                  //                 ),
+                                  //         child: SizedBox(
+                                  //           width: 10,
+                                  //         ),
+                                  //       ),
+                                  //       Expanded(
+                                  //         child: EditCartTextField(
+                                  //           focusNode:
+                                  //               quantityFieldNode,
+                                  //           onSubmitted: (
+                                  //             value,
+                                  //           ) {
+                                  //             FocusScope.of(
+                                  //               context,
+                                  //             ).requestFocus(
+                                  //               barcodeFieldNode,
+                                  //             );
+                                  //           },
+                                  //           theme: theme,
+                                  //           hint:
+                                  //               'Enter Quantity',
+                                  //           title:
+                                  //               'Quantity (Optional)',
+                                  //           controller:
+                                  //               widget
+                                  //                   .quantityController,
+                                  //           onChanged: (
+                                  //             value,
+                                  //           ) {
+                                  //             if (value
+                                  //                 .isNotEmpty) {
+                                  //               if (widget.product !=
+                                  //                       null &&
+                                  //                   widget.product?.isManaged ==
+                                  //                       true &&
+                                  //                   returnShopProvider().userShop()?.manageInventoryStorage ==
+                                  //                       true) {
+                                  //                 if (((double.tryParse(
+                                  //                           value.replaceAll(
+                                  //                             ',',
+                                  //                             '',
+                                  //                           ),
+                                  //                         ) ??
+                                  //                         0)) >
+                                  //                     ((widget.product?.totalQttyInStorageDouble ??
+                                  //                             0) +
+                                  //                         (double.tryParse(
+                                  //                               widget.product?.quantity?.toString() ??
+                                  //                                   '0',
+                                  //                             ) ??
+                                  //                             0))) {
+                                  //                   widget
+                                  //                       .quantityController
+                                  //                       .text = (widget.product?.quantity ??
+                                  //                               0)
+                                  //                           .toString();
+                                  //                 }
+                                  //               }
+                                  //             }
+                                  //           },
+                                  //         ),
+                                  //       ),
+                                  //     ],
+                                  //   ),
+                                  // ),
                                   Column(
                                     children: [
                                       SizedBox(height: 10),

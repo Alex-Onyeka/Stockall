@@ -31,9 +31,9 @@ class AddProductMobile extends StatefulWidget {
   final TextEditingController sellingController;
   final TextEditingController nameController;
   final TextEditingController lowQttyController;
-  final TextEditingController quantityController;
+  // final TextEditingController quantityController;
   final TextEditingController discountController;
-  final TextEditingController storageQuantityController;
+  // final TextEditingController storageQuantityController;
   final TextEditingController qttyPerGroupController;
   final TextEditingController wholeSaleController;
 
@@ -43,9 +43,9 @@ class AddProductMobile extends StatefulWidget {
     required this.sellingController,
     required this.nameController,
     required this.lowQttyController,
-    required this.quantityController,
+    // required this.quantityController,
     required this.discountController,
-    required this.storageQuantityController,
+    // required this.storageQuantityController,
     required this.qttyPerGroupController,
     required this.wholeSaleController,
     this.product,
@@ -140,21 +140,23 @@ class _AddProductMobileState
                   departmentUuid:
                       returnData().departmentUuid,
                   totalQttyInStorageDouble:
-                      widget
-                              .storageQuantityController
-                              .text
-                              .isNotEmpty
-                          ? double.parse(
-                            widget
-                                .storageQuantityController
-                                .text
-                                .replaceAll(',', ''),
-                          )
-                          : null,
+                      // widget
+                      //         .storageQuantityController
+                      //         .text
+                      //         .isNotEmpty
+                      //     ? double.parse(
+                      //       widget
+                      //           .storageQuantityController
+                      //           .text
+                      //           .replaceAll(',', ''),
+                      //     )
+                      //     :
+                      null,
                   isManaged:
-                      widget.quantityController.text.isEmpty
-                          ? false
-                          : dataProvider.isManaged,
+                      // widget.quantityController.text.isEmpty
+                      //     ? false
+                      //     :
+                      dataProvider.isManaged,
                   name: widget.nameController.text.trim(),
                   unit:
                       dataProvider.selectedUnit ?? 'Others',
@@ -207,15 +209,16 @@ class _AddProductMobileState
                           )
                           : null,
                   quantity:
-                      widget
-                              .quantityController
-                              .text
-                              .isNotEmpty
-                          ? double.parse(
-                            widget.quantityController.text
-                                .replaceAll(',', ''),
-                          )
-                          : null,
+                      // widget
+                      //         .quantityController
+                      //         .text
+                      //         .isNotEmpty
+                      //     ? double.parse(
+                      //       widget.quantityController.text
+                      //           .replaceAll(',', ''),
+                      //     )
+                      //     :
+                      null,
                   barcode: barcode,
                   lowQtty:
                       widget.lowQttyController.text.isEmpty
@@ -280,26 +283,26 @@ class _AddProductMobileState
             setState(() {
               isLoading = true;
             });
-            double totalQttyInStorageCalc() {
-              final total =
-                  widget
-                      .product
-                      ?.totalQttyInStorageDouble ??
-                  0;
-              final qty =
-                  double.tryParse(
-                    widget.quantityController.text
-                        .replaceAll(',', ''),
-                  ) ??
-                  0;
-              final currentQty =
-                  widget.product?.quantity ?? 0;
+            // double totalQttyInStorageCalc() {
+            //   final total =
+            //       widget
+            //           .product
+            //           ?.totalQttyInStorageDouble ??
+            //       0;
+            //   final qty =
+            //       double.tryParse(
+            //         widget.quantityController.text
+            //             .replaceAll(',', ''),
+            //       ) ??
+            //       0;
+            //   final currentQty =
+            //       widget.product?.quantity ?? 0;
 
-              double result =
-                  (total - (qty - currentQty)).toDouble();
+            //   double result =
+            //       (total - (qty - currentQty)).toDouble();
 
-              return result < 0 ? 0 : result;
-            }
+            //   return result < 0 ? 0 : result;
+            // }
 
             var res = await provider.updateProduct(
               product: TempProductClass(
@@ -319,12 +322,12 @@ class _AddProductMobileState
                 departmentUuid: returnData().departmentUuid,
                 setCustomPrice: provider.setCustomPrice,
                 isManaged:
-                    widget.quantityController.text.isEmpty
-                        ? false
-                        : provider.isManaged,
+                    // widget.quantityController.text.isEmpty
+                    //     ? false
+                    //     :
+                    provider.isManaged,
                 // id: widget.product!.id,
-                totalQttyInStorageDouble:
-                    totalQttyInStorageCalc(),
+                totalQttyInStorageDouble: null,
                 uuid: widget.product!.uuid,
                 name: widget.nameController.text,
                 unit: provider.selectedUnit!,
@@ -364,16 +367,16 @@ class _AddProductMobileState
                               .replaceAll(',', ''),
                         )
                         : null,
-                quantity:
-                    widget
-                            .quantityController
-                            .text
-                            .isNotEmpty
-                        ? double.parse(
-                          widget.quantityController.text
-                              .replaceAll(',', ''),
-                        )
-                        : null,
+                quantity: widget.product?.quantity,
+                // widget
+                //         .quantityController
+                //         .text
+                //         .isNotEmpty
+                //     ? double.parse(
+                //       widget.quantityController.text
+                //           .replaceAll(',', ''),
+                //     )
+                //     : null,
                 shopId: userShop!.shopId!,
                 barcode: barcode,
                 categoryUuid:
@@ -474,10 +477,10 @@ class _AddProductMobileState
           widget.product!.wholeSalePrice != null
               ? widget.product!.wholeSalePrice.toString()
               : '';
-      widget.quantityController.text =
-          widget.product!.quantity == null
-              ? ''
-              : widget.product!.quantity.toString();
+      // widget.quantityController.text =
+      //     widget.product!.quantity == null
+      //         ? ''
+      //         : widget.product!.quantity.toString();
 
       widget.discountController.text =
           widget.product!.discount != null
@@ -702,102 +705,102 @@ class _AddProductMobileState
                                   ],
                                 ),
                               ),
-                              Visibility(
-                                visible:
-                                    authorization(
-                                      authorized:
-                                          Authorizations()
-                                              .updateItemQuantity,
-                                    ) &&
-                                    returnShopProvider()
-                                            .userShop()
-                                            ?.manageInventoryStorage !=
-                                        true,
-                                child: Column(
-                                  children: [
-                                    SizedBox(height: 10),
-                                    // Visibility(
-                                    //   visible:
-                                    //       returnShopProvider()
-                                    //               .userShop()
-                                    //               ?.manageInventoryStorage ==
-                                    //           true &&
-                                    //       widget.product ==
-                                    //           null &&
-                                    //       ItemsAuthAction()
-                                    //           .manageInventoryStorageAction(
-                                    //             context:
-                                    //                 context,
-                                    //           ),
-                                    //   child: Column(
-                                    //     children: [
-                                    //       SizedBox(
-                                    //         height: 10,
-                                    //       ),
-                                    //       EditCartTextField(
-                                    //         theme: theme,
-                                    //         hint:
-                                    //             'Enter Quantity In Storage',
-                                    //         title:
-                                    //             'Storage Quantity (Optional)',
-                                    //         controller:
-                                    //             widget
-                                    //                 .storageQuantityController,
-                                    //       ),
-                                    //     ],
-                                    //   ),
-                                    // ),
-                                    // SizedBox(height: 10),
-                                    EditCartTextField(
-                                      theme: theme,
-                                      hint:
-                                          'Enter Quantity',
-                                      title:
-                                          'Quantity (Optional)',
-                                      controller:
-                                          widget
-                                              .quantityController,
-                                      onChanged: (value) {
-                                        if (value
-                                            .isNotEmpty) {
-                                          if (widget.product !=
-                                                  null &&
-                                              widget
-                                                      .product
-                                                      ?.isManaged ==
-                                                  true &&
-                                              returnShopProvider()
-                                                      .userShop()
-                                                      ?.manageInventoryStorage ==
-                                                  true) {
-                                            if (((double.tryParse(
-                                                      value.replaceAll(
-                                                        ',',
-                                                        '',
-                                                      ),
-                                                    ) ??
-                                                    0)) >
-                                                ((widget.product?.totalQttyInStorageDouble ??
-                                                        0) +
-                                                    (double.tryParse(
-                                                          widget.product?.quantity?.toString() ??
-                                                              '0',
-                                                        ) ??
-                                                        0))) {
-                                              widget
-                                                      .quantityController
-                                                      .text =
-                                                  (widget.product?.quantity ??
-                                                          0)
-                                                      .toString();
-                                            }
-                                          }
-                                        }
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
+                              // Visibility(
+                              //   visible:
+                              //       authorization(
+                              //         authorized:
+                              //             Authorizations()
+                              //                 .updateItemQuantity,
+                              //       ) &&
+                              //       returnShopProvider()
+                              //               .userShop()
+                              //               ?.manageInventoryStorage !=
+                              //           true,
+                              //   child: Column(
+                              //     children: [
+                              //       SizedBox(height: 10),
+                              //       // Visibility(
+                              //       //   visible:
+                              //       //       returnShopProvider()
+                              //       //               .userShop()
+                              //       //               ?.manageInventoryStorage ==
+                              //       //           true &&
+                              //       //       widget.product ==
+                              //       //           null &&
+                              //       //       ItemsAuthAction()
+                              //       //           .manageInventoryStorageAction(
+                              //       //             context:
+                              //       //                 context,
+                              //       //           ),
+                              //       //   child: Column(
+                              //       //     children: [
+                              //       //       SizedBox(
+                              //       //         height: 10,
+                              //       //       ),
+                              //       //       EditCartTextField(
+                              //       //         theme: theme,
+                              //       //         hint:
+                              //       //             'Enter Quantity In Storage',
+                              //       //         title:
+                              //       //             'Storage Quantity (Optional)',
+                              //       //         controller:
+                              //       //             widget
+                              //       //                 .storageQuantityController,
+                              //       //       ),
+                              //       //     ],
+                              //       //   ),
+                              //       // ),
+                              //       // SizedBox(height: 10),
+                              //       EditCartTextField(
+                              //         theme: theme,
+                              //         hint:
+                              //             'Enter Quantity',
+                              //         title:
+                              //             'Quantity (Optional)',
+                              //         controller:
+                              //             widget
+                              //                 .quantityController,
+                              //         onChanged: (value) {
+                              //           if (value
+                              //               .isNotEmpty) {
+                              //             if (widget.product !=
+                              //                     null &&
+                              //                 widget
+                              //                         .product
+                              //                         ?.isManaged ==
+                              //                     true &&
+                              //                 returnShopProvider()
+                              //                         .userShop()
+                              //                         ?.manageInventoryStorage ==
+                              //                     true) {
+                              //               if (((double.tryParse(
+                              //                         value.replaceAll(
+                              //                           ',',
+                              //                           '',
+                              //                         ),
+                              //                       ) ??
+                              //                       0)) >
+                              //                   ((widget.product?.totalQttyInStorageDouble ??
+                              //                           0) +
+                              //                       (double.tryParse(
+                              //                             widget.product?.quantity?.toString() ??
+                              //                                 '0',
+                              //                           ) ??
+                              //                           0))) {
+                              //                 widget
+                              //                         .quantityController
+                              //                         .text =
+                              //                     (widget.product?.quantity ??
+                              //                             0)
+                              //                         .toString();
+                              //               }
+                              //             }
+                              //           }
+                              //         },
+                              //       ),
+                              //     ],
+                              //   ),
+                              // ),
                               Column(
                                 children: [
                                   SizedBox(height: 20),

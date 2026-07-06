@@ -4672,7 +4672,7 @@ class _CustomBottomPanelState
                                           padding:
                                               const EdgeInsets.symmetric(
                                                 horizontal:
-                                                    5,
+                                                    3,
                                               ),
                                           child: Material(
                                             color:
