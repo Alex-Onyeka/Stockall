@@ -538,7 +538,23 @@ class _UpdateItemQuantityWidgetState
                                         }
                                       }
 
+                                      bool isIncrement =
+                                          setQuantity() >=
+                                          (widget
+                                                  .product
+                                                  .quantity ??
+                                              0);
+
                                       await dataProvider.updateProduct(
+                                        isIncrement:
+                                            isIncrement,
+                                        isQuantityUpdate:
+                                            true,
+                                        quantityChange:
+                                            (setQuantity() -
+                                                    (widget.product.quantity ??
+                                                        0))
+                                                .abs(),
                                         product: TempProductClass(
                                           storageUuid:
                                               widget
@@ -574,8 +590,6 @@ class _UpdateItemQuantityWidgetState
                                               widget
                                                   .product
                                                   .isManaged,
-                                          // id:
-                                          //     widget.product.id,
                                           name:
                                               widget
                                                   .product

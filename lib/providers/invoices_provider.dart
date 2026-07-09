@@ -302,28 +302,7 @@ class InvoicesProvider extends ChangeNotifier {
     TempInvoice invoice,
     List<String> productNames,
   ) async {
-    print('Deleting Invoice');
-    // bool isOnline = await connectivity.isOnline();
     try {
-      // if (isOnline) {
-      //   print('Deleting Invoice Online');
-      //   await supabase.rpc(
-      //     'delete_invoice_and_update_inventory_new',
-      //     params: {'target_invoice_uuid': invoice.uuid},
-      //   );
-      //   print('Finished Deleting Invoice Online');
-      //   var containsUpdate = UpdatedInvoicesFunc()
-      //       .getInvoiceIds()
-      //       .where(
-      //         (rec) =>
-      //             rec.updatedInvoice.uuid == invoice.uuid,
-      //       );
-      //   if (containsUpdate.isNotEmpty) {
-      //     await UpdatedInvoicesFunc().deleteUpdatedInvoice(
-      //       invoice.uuid!,
-      //     );
-      //   }
-      // } else {
       print('Deleting Invoices Offline');
       await InvoicesFunc().deleteInvoices(invoice.uuid!);
       var containsCreated =
@@ -356,7 +335,6 @@ class InvoicesProvider extends ChangeNotifier {
       await ProductRecordFunc().deleteRecordsInInvoice(
         invoice.uuid!,
       );
-      // }
       if (productNames.isNotEmpty) {
         await returnEventsLogProvider().createLog(
           returnEventsLogProvider().invoiceAdapter(
@@ -389,28 +367,7 @@ class InvoicesProvider extends ChangeNotifier {
   Future<int> deleteInvoiceWithoutUpdatingInventory(
     String uuid,
   ) async {
-    print('Deleting Invoice 2');
-    // bool isOnline = await connectivity.isOnline();
     try {
-      // if (isOnline) {
-      //   print('Deleting Invoice 2 Online');
-      //   await supabase.rpc(
-      //     'delete_invoice_without_updating_inventory',
-      //     params: {'target_invoice_uuid': uuid},
-      //   );
-      //   print('Finished Deleting Invoice 2 Online');
-      //   var containsUpdate = UpdatedInvoicesFunc()
-      //       .getInvoiceIds()
-      //       .where(
-      //         (rec) => rec.updatedInvoice.uuid == uuid,
-      //       );
-      //   if (containsUpdate.isNotEmpty) {
-      //     await UpdatedInvoicesFunc().deleteUpdatedInvoice(
-      //       uuid,
-      //     );
-      //   }
-      //   return 1;
-      // } else {
       print('Deleting Invoice Offline');
       await InvoicesFunc().deleteInvoices(uuid);
       var containsCreated =

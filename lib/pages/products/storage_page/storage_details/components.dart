@@ -817,7 +817,6 @@ class _StorageQuantityUpdateWidgetState
                       if (currentIndex == 1 &&
                           productUuid == null) {
                         showDialog(
-                          // ignore: use_build_context_synchronously
                           context: context,
                           builder: (errorContext) {
                             return InfoAlert(
@@ -1000,11 +999,25 @@ class _StorageQuantityUpdateWidgetState
                               }
                               newProduct.quantity =
                                   tempQtty;
-                              var res =
-                                  await returnStorageProductProvider()
-                                      .updateProduct(
-                                        product: newProduct,
-                                      );
+                              double qttyChange =
+                                  (widget
+                                          .storageProduct
+                                          .quantity ??
+                                      0) -
+                                  tempQtty;
+                              var res = await returnStorageProductProvider()
+                                  .updateProduct(
+                                    product: newProduct,
+                                    isQuantityUpdate: true,
+                                    quantityChange:
+                                        qttyChange,
+                                    isIncrement:
+                                        (widget
+                                                .storageProduct
+                                                .quantity ??
+                                            0) <
+                                        tempQtty,
+                                  );
                               var prs = returnData()
                                   .productListMain
                                   .where((pr) {
@@ -1075,6 +1088,14 @@ class _StorageQuantityUpdateWidgetState
                                   newPr != null) {
                                 await returnData()
                                     .updateProduct(
+                                      isIncrement:
+                                          newQuantity >
+                                          oldQuantity,
+                                      isQuantityUpdate:
+                                          true,
+                                      quantityChange:
+                                          newQuantity -
+                                          oldQuantity,
                                       product: newPr,
                                     );
                               }
@@ -1404,7 +1425,7 @@ class _ManageProductsStorageState
                               return ConfirmationAlert(
                                 theme: widget.theme,
                                 message:
-                                    'You are about to update Add This products to this Storage. Are you sure you want to proceed?',
+                                    'You are about to Add/Remove This products To/From this Storage. Are you sure you want to proceed?',
                                 title: 'Update Storage',
                                 action: () async {
                                   Navigator.of(
@@ -1432,6 +1453,11 @@ class _ManageProductsStorageState
                                         widget.productUuid;
                                     await returnData()
                                         .updateProduct(
+                                          isIncrement: null,
+                                          isQuantityUpdate:
+                                              false,
+                                          quantityChange:
+                                              null,
                                           product: newPr,
                                         );
                                   }
@@ -1453,6 +1479,11 @@ class _ManageProductsStorageState
                                         null;
                                     await returnData()
                                         .updateProduct(
+                                          isIncrement: null,
+                                          isQuantityUpdate:
+                                              false,
+                                          quantityChange:
+                                              null,
                                           product: newPr,
                                         );
                                   }

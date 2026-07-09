@@ -45,6 +45,9 @@ class _IsManagedToggleWidgetState
                       isLoading = true;
                     });
                     await dataProvider.updateProduct(
+                      isIncrement: null,
+                      isQuantityUpdate: false,
+                      quantityChange: null,
                       product: TempProductClass(
                         departmentName:
                             widget.product.departmentName,

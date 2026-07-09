@@ -38,6 +38,7 @@ import 'package:stockall/providers/permission_provider.dart';
 import 'package:stockall/providers/pos_printer/device_service.dart';
 import 'package:stockall/providers/purchase_action_provider.dart';
 import 'package:stockall/providers/purchase_provider.dart';
+import 'package:stockall/providers/quantity_update_provider.dart';
 // import 'package:stockall/providers/product_suggestions_provider.dart';
 import 'package:stockall/providers/receipts_provider.dart';
 import 'package:stockall/providers/report_provider.dart';
@@ -568,6 +569,16 @@ CountryProvider returnCountryProvider({
   }
 }
 
+QuantityUpdateProvider returnQuantityUpdateProvider({
+  BuildContext? context,
+}) {
+  if (context == null) {
+    return QuantityUpdateProvider();
+  } else {
+    return Provider.of<QuantityUpdateProvider>(context);
+  }
+}
+
 Widget colorWidget(
   Widget widget,
   bool isPrimary,
@@ -723,6 +734,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => ErrorLogProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => QuantityUpdateProvider(),
         ),
       ],
       child: MaterialApp(

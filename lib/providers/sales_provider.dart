@@ -17,7 +17,6 @@ import 'package:stockall/constants/constants_main.dart';
 import 'package:stockall/constants/subscription/items_auth.dart';
 import 'package:stockall/constants/subscription/sales_auth.dart';
 import 'package:stockall/local_database/cart_func/cart_func.dart';
-import 'package:stockall/local_database/products/products_func.dart';
 import 'package:stockall/main.dart';
 import 'package:stockall/pages/alt_display/alt_display.dart';
 import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
@@ -75,46 +74,6 @@ class SalesProvider extends ChangeNotifier {
           cartIdCache =
               mainCartQueue.first.cartQueue.first.id!;
         }
-        // if (returnShopProvider()
-        //         .userShop()
-        //         ?.manageDepartments ==
-        //     true) {
-        //   if (!authorization(
-        //     authorized: Authorizations().viewAllDepartments,
-        //   )) {
-        //     if (returnDepartmentProvider()
-        //             .currentDepartment() ==
-        //         null) {
-        //       if (returnUserProviderSingle()
-        //                   .currentUserMain
-        //                   ?.departmentUuids
-        //                   ?.isNotEmpty !=
-        //               null &&
-        //           returnUserProviderSingle()
-        //               .currentUserMain!
-        //               .departmentUuids!
-        //               .isNotEmpty) {
-        //         returnDepartmentProvider().selectDepartment(
-        //           departmentClass:
-        //               returnDepartmentProvider()
-        //                   .departments
-        //                   .first,
-        //         );
-        //       }
-        //     }
-        //   }
-        // }
-
-        // if (currentCart().receiptUuidEdit == null) {
-        //   currentCart().departmentUuid =
-        //       returnDepartmentProvider()
-        //           .currentDepartment()
-        //           ?.uuid;
-        //   currentCart().departmentName =
-        //       returnDepartmentProvider()
-        //           .currentDepartment()
-        //           ?.name;
-        // }
         notifyListeners();
         return cartIdCache;
         // }
@@ -1285,24 +1244,16 @@ class SalesProvider extends ChangeNotifier {
                       0) &&
                   (cartItem.getItem()?.isManaged ??
                       false)) {
-                // if (isOnline) {
-                //   await supabase.rpc(
-                //     'decrement_product_quantity_new_double',
-                //     params: {
-                //       'p_product_uuid': cartItem.item.uuid,
-                //       'p_quantity': cartItem.quantity,
-                //     },
-                //   );
-                // } else {
-                await ProductsFunc().deductQuantity(
-                  isOnline: /*isOnline*/ false,
-                  quantity: cartItem.quantity,
-                  uuid:
-                      cartItem.getItem()?.uuid ??
-                      (cartItem.itemUuid ??
-                          cartItem.item.uuid)!,
+                cartItem.getItem()!.quantity =
+                    (cartItem.getItem()!.quantity ?? 0) -
+                    cartItem.getRealQuantity();
+                await returnData().updateProduct(
+                  product: cartItem.getItem()!,
+                  isQuantityUpdate: true,
+                  quantityChange:
+                      cartItem.getRealQuantity(),
+                  isIncrement: false,
                 );
-                // }
               }
             }
 
@@ -1476,7 +1427,6 @@ class SalesProvider extends ChangeNotifier {
         );
         try {
           await returnReceiptProvider(
-            // ignore: use_build_context_synchronously
             context,
             listen: false,
           ).deleteReceipt(receipt, []);
@@ -1526,8 +1476,6 @@ class SalesProvider extends ChangeNotifier {
 
         final receiptId = receiptRes!.id;
         final receiptUuid = receiptRes.uuid;
-        // print(receiptId);
-        // print(receiptUuid);
 
         try {
           // Step 2: Create product sale records
@@ -1595,31 +1543,22 @@ class SalesProvider extends ChangeNotifier {
           print('Sales Record Inserted');
 
           try {
-            // Step 3: Decrement quantity via RPC
             for (final cartItem
                 in salesCartItem.getCartItems()) {
               if (((cartItem.getItem()?.quantity ?? 0) >
                       0) &&
                   (cartItem.getItem()?.isManaged ??
                       false)) {
-                // if (isOnline) {
-                //   await supabase.rpc(
-                //     'decrement_product_quantity_new_double',
-                //     params: {
-                //       'p_product_uuid': cartItem.item.uuid,
-                //       'p_quantity': cartItem.quantity,
-                //     },
-                //   );
-                // } else {
-                await ProductsFunc().deductQuantity(
-                  isOnline: /*isOnline*/ false,
-                  quantity: cartItem.quantity,
-                  uuid:
-                      cartItem.getItem()?.uuid ??
-                      (cartItem.itemUuid ??
-                          cartItem.item.uuid)!,
+                cartItem.getItem()!.quantity =
+                    (cartItem.getItem()!.quantity ?? 0) -
+                    cartItem.getRealQuantity();
+                await returnData().updateProduct(
+                  product: cartItem.getItem()!,
+                  isQuantityUpdate: true,
+                  quantityChange:
+                      cartItem.getRealQuantity(),
+                  isIncrement: false,
                 );
-                // }
               }
             }
 

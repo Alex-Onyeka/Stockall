@@ -52,6 +52,9 @@ class TempItemPurchaseRecord {
   @HiveField(15)
   double? qttyPerGroup;
 
+  @HiveField(16)
+  String? unit;
+
   TempItemPurchaseRecord({
     required this.createdAt,
     required this.shopId,
@@ -69,6 +72,7 @@ class TempItemPurchaseRecord {
     required this.storageItemId,
     required this.isGroup,
     required this.qttyPerGroup,
+    required this.unit,
   });
 
   factory TempItemPurchaseRecord.fromJson(
@@ -96,6 +100,7 @@ class TempItemPurchaseRecord {
       isGroup: json['is_group'] as bool?,
       qttyPerGroup:
           (json['qtty_per_group'] as num?)?.toDouble(),
+      unit: json['unit'] as String?,
     );
   }
 
@@ -117,6 +122,7 @@ class TempItemPurchaseRecord {
       'storage_item_uuid': storageItemId,
       'is_group': isGroup,
       'qtty_per_group': qttyPerGroup,
+      'unit': unit,
     };
   }
 
@@ -137,6 +143,7 @@ class TempItemPurchaseRecord {
     String? itemName,
     bool? isGroup,
     double? qttyPerGroup,
+    String? unit,
   }) {
     return TempItemPurchaseRecord(
       uuid: uuid ?? this.uuid,
@@ -155,6 +162,7 @@ class TempItemPurchaseRecord {
       itemName: itemName ?? this.itemName,
       isGroup: isGroup ?? this.isGroup,
       qttyPerGroup: qttyPerGroup ?? this.qttyPerGroup,
+      unit: unit ?? this.unit,
     );
   }
 }

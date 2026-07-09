@@ -615,6 +615,9 @@ Future<bool> generateBarcodeAndPrint(
 
                   await returnData().updateProduct(
                     product: pr.product,
+                    isIncrement: null,
+                    isQuantityUpdate: false,
+                    quantityChange: null,
                   );
                 }
                 print(

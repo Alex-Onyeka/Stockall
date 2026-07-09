@@ -79,32 +79,6 @@ class ReceiptsProvider extends ChangeNotifier {
     TempMainReceipt receipt,
   ) async {
     print('Inner Receipt Creation Started');
-    // bool isOnline = await connectivity.isOnline();
-    // if (isOnline) {
-    //   print('Inner Receipt Online Started');
-    //   final res =
-    //       await supabase
-    //           .from('receipts')
-    //           .upsert(
-    //             receipt.toJson(),
-    //             onConflict:
-    //                 'uuid', // match existing row by uuid
-    //           )
-    //           .select()
-    //           .single();
-
-    //   print('Inner Receipt Online Finished');
-    //   print('Casting Started');
-    //   try {
-    //     final newReceipt = TempMainReceipt.fromJson(res);
-    //     notifyListeners();
-    //     return newReceipt;
-    //   } catch (e) {
-    //     print('❌❌ Create Receipt Error: ${e.toString()}');
-    //     return null;
-    //   }
-    // } else {
-    // receipt.createdAt = DateTime.now();
     var barcode = returnOnlyDigits(uuidGen());
     receipt.barcode = barcode;
     await MainReceiptFunc().createReceipt(receipt);
@@ -355,29 +329,8 @@ class ReceiptsProvider extends ChangeNotifier {
   Future<int> deleteReceipt(
     TempMainReceipt receipt,
     List<String> productNames,
-    // BuildContext context,
   ) async {
     try {
-      print('Deleting Receipt');
-      // bool isOnline = await connectivity.isOnline();
-      // if (isOnline) {
-      //   print('Deleting Receipt Online');
-      //   await supabase.rpc(
-      //     'delete_receipt_and_update_inventory_new',
-      //     params: {'target_receipt_uuid': receipt.uuid},
-      //   );
-      //   print('Finished Deleting Receipt Online');
-      //   var containsUpdate = UpdatedReceiptsFunc()
-      //       .getReceiptIds()
-      //       .where(
-      //         (rec) => rec.receiptUuid == receipt.uuid,
-      //       );
-      //   if (containsUpdate.isNotEmpty) {
-      //     await UpdatedReceiptsFunc().deleteUpdatedReceipt(
-      //       receipt.uuid!,
-      //     );
-      //   }
-      // } else {
       print('Deleting Receipt Offline');
       await MainReceiptFunc().deleteReceipt(receipt.uuid!);
       var containsCreated =
@@ -692,31 +645,13 @@ class ReceiptsProvider extends ChangeNotifier {
   Future<void> createProductSaleRecord({
     required List<TempProductSaleRecord> records,
     required bool isPartPayment,
-    // BuildContext context,
   }) async {
-    // bool isOnline = await connectivity.isOnline();
-    print('About to Start Mapping');
     try {
-      // final dataToInsert =
-      //     records.map((e) => e.toJson()).toList();
-      // print('Finished Mapping');
-
-      // if (isOnline) {
-      //   print('About to Create Product Sales Online');
-      //   await supabase
-      //       .from('product_sales')
-      //       .upsert(dataToInsert, onConflict: 'uuid');
-      //   await ProductRecordFunc().insertSalesProductRecords(
-      //     records,
-      //   );
-      //   print('Finished Creating Product Sales Online');
-      // } else {
       print(
         'About to Create Product Sales Offline: ${records.length}',
       );
       var newRecords =
           records.map((rec) {
-            // rec.createdAt = DateTime.now();
             print('Record to Create: ${rec.productName}');
 
             return rec;

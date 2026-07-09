@@ -4,10 +4,10 @@ part 'quantity_update.g.dart';
 @HiveType(typeId: 96)
 class QuantityUpdate extends HiveObject {
   @HiveField(0)
-  String uuid;
+  String? uuid;
 
   @HiveField(1)
-  double createdAt;
+  DateTime? createdAt;
 
   @HiveField(2)
   double quantity;
@@ -16,17 +16,21 @@ class QuantityUpdate extends HiveObject {
   final String productUuid;
 
   @HiveField(4)
-  final bool isIncrement;
+  bool isIncrement;
 
   @HiveField(5)
-  final String? otherUuid;
+  bool isStorage;
+
+  // @HiveField(5)
+  // final String? otherUuid;
 
   QuantityUpdate({
-    required this.uuid,
-    required this.createdAt,
+    this.uuid,
+    this.createdAt,
     required this.quantity,
     required this.productUuid,
     required this.isIncrement,
-    required this.otherUuid,
+    required this.isStorage,
+    // required this.otherUuid,
   });
 }

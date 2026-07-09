@@ -177,6 +177,9 @@ class AddStorageItemMobileState
                 isLoading = true;
               });
               var res = await provider.updateProduct(
+                isIncrement: null,
+                isQuantityUpdate: false,
+                quantityChange: null,
                 product: TempStorageProducts(
                   createdAt:
                       widget.storageProduct?.createdAt,

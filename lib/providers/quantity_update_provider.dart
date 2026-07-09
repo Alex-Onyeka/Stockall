@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
-import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/quantity_update/quantity_update.dart';
-import 'package:stockall/local_database/products/unsync_funcs/updated_quantity/quantity_update_func.dart';
+import 'package:stockall/constants/calculations.dart';
+import 'package:stockall/local_database/products/unsync_funcs/quantity_update/quantity_update_func.dart';
 import 'package:stockall/providers/connectivity_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -20,6 +20,8 @@ class QuantityUpdateProvider with ChangeNotifier {
     required QuantityUpdate quantityUpdate,
   }) async {
     try {
+      quantityUpdate.createdAt = DateTime.now();
+      quantityUpdate.uuid = uuidGen();
       var res = await QuantityUpdateFunc()
           .createQuantityUpdate(quantityUpdate);
       notifyListeners();
@@ -53,44 +55,24 @@ class QuantityUpdateProvider with ChangeNotifier {
         final tempQuantityUpdates =
             QuantityUpdateFunc()
                 .getQuantitiesUpdate()
+                .toList()
+                .map((item) {
+                  return {
+                    "itemUuid": item.productUuid,
+                    "quantity": item.quantity,
+                    "isIncrement": item.isIncrement,
+                    'isStorage': item.isStorage,
+                  };
+                })
                 .toList();
 
-        for (var item in tempQuantityUpdates) {
-          try {
-            var res =
-                await client
-                    .from(tableName)
-                    .select()
-                    .eq('uuid', item.productUuid)
-                    .maybeSingle();
-            if (res != null) {
-              TempProductClass product =
-                  TempProductClass.fromJson(res);
-              await client
-                  .from(tableName)
-                  .update({
-                    'quantity':
-                        item.isIncrement
-                            ? ((product.quantity ?? 0) +
-                                item.quantity)
-                            : ((product.quantity ?? 0) -
-                                item.quantity),
-                  })
-                  .eq('uuid', item.productUuid)
-                  .select();
-              await QuantityUpdateFunc()
-                  .deleteQuantityUpdate(uuid: item.uuid);
-            }
-          } on PostgrestException catch (e) {
-            print(
-              'Error Occoured While Creating Error Log: ${e.toString()}',
-            );
-          }
-        }
+        await client.rpc(
+          'update_product_quantities',
+          params: {'updates': tempQuantityUpdates},
+        );
 
         await QuantityUpdateFunc().clearQuantitiesUpdate();
         print('Unsynced Quantity Updates Cleared');
-        print('Mounted, refreshing Receipts ✅');
       }
     } catch (e) {
       print('Batch Quantity Updates insert failed ❌: $e');

@@ -4,8 +4,6 @@ import 'package:stockall/classes/temp_item_purchase_record/temp_item_purchase_re
 import 'package:stockall/classes/temp_item_purchase_record/unsynced/created_item_records/created_item_records.dart';
 import 'package:stockall/classes/temp_item_purchase_record/unsynced/deleted_item_records/deleted_item_records.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
-import 'package:stockall/classes/temp_product_class/unsynced/created_products/created_products.dart';
-import 'package:stockall/classes/temp_product_class/unsynced/updated/updated_products.dart';
 import 'package:stockall/classes/temp_purchase/temp_purchase.dart';
 import 'package:stockall/classes/temp_purchase/unsynced/created_purchases/created_purchases.dart';
 import 'package:stockall/classes/temp_purchase/unsynced/deleted_purchase/deleted_purchases.dart';
@@ -18,9 +16,6 @@ import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/item_purchase_func.dart%20copy/item_purchase_func.dart';
 import 'package:stockall/local_database/item_purchase_func.dart%20copy/unsync_funcs/created/created_item_purchase_func.dart';
 import 'package:stockall/local_database/item_purchase_func.dart%20copy/unsync_funcs/deleted/deleted_item_purchase_func.dart';
-import 'package:stockall/local_database/products/products_func.dart';
-import 'package:stockall/local_database/products/unsync_funcs/created_products/created_product_func.dart';
-import 'package:stockall/local_database/products/unsync_funcs/updated_products/updated_products_func.dart';
 import 'package:stockall/local_database/purchases/purchase_func.dart';
 import 'package:stockall/local_database/purchases/unsync_funcs/created/created_purchases_func.dart';
 import 'package:stockall/local_database/purchases/unsync_funcs/deleted/deleted_purchases_func.dart';
@@ -65,7 +60,7 @@ class PurchaseProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // CREATE a new receipt
+  // CREATE a new Purchase
   Future<TempPurchase?> createPurchase(
     TempPurchase purchase,
   ) async {
@@ -114,7 +109,7 @@ class PurchaseProvider extends ChangeNotifier {
     }
   }
 
-  // CREATE a new receipt
+  // CREATE a new Purchase
   Future<TempPurchase?> updatePurchase(
     TempPurchase purchase,
   ) async {
@@ -186,7 +181,7 @@ class PurchaseProvider extends ChangeNotifier {
     }
   }
 
-  // READ all receipts for a shop
+  // READ all Purchases for a shop
   Future<List<TempPurchase>> loadPurchases(
     int shopId,
   ) async {
@@ -260,14 +255,14 @@ class PurchaseProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // DELETE a receipt
+  // DELETE a Purchase
   Future<int> deletePurchase(
     TempPurchase purchase,
     bool? updateInventory,
     bool createUpdate,
   ) async {
     print('Deleting Purchase');
-    bool isOnline = await connectivity.isOnline();
+    // bool isOnline = await connectivity.isOnline();
     List<TempItemPurchaseRecord> records =
         itemPurchaseRecords
             .where(
@@ -275,60 +270,58 @@ class PurchaseProvider extends ChangeNotifier {
             )
             .toList();
     try {
-      if (isOnline) {
-        print('Deleting Purchase Online');
-        await supabase
-            .from(tableName)
-            .delete()
-            .eq('uuid', purchase.uuid!);
-        print('Finished Deleting Purchase Online');
-        var containsUpdate = UpdatedPurchasesFunc()
-            .getPurchaseIds()
-            .where(
-              (purch) =>
-                  purch.purchase.uuid == purchase.uuid,
-            );
-        if (containsUpdate.isNotEmpty) {
-          await UpdatedPurchasesFunc()
-              .deleteUpdatedPurchase(purchase.uuid!);
-        }
-      } else {
-        print('Deleting Purchase Offline');
-        await PurchaseFunc().deletePurchase(purchase.uuid!);
-        var containsCreated =
-            CreatedPurchasesFunc()
-                .getPurchases()
-                .where(
-                  (purch) =>
-                      purch.purchase.uuid == purchase.uuid,
-                )
-                .toList();
-        var containsUpdate = UpdatedPurchasesFunc()
-            .getPurchaseIds()
-            .where(
-              (purch) =>
-                  purch.purchase.uuid == purchase.uuid!,
-            );
-        if (containsCreated.isNotEmpty) {
-          await CreatedPurchasesFunc().deletePurchase(
-            purchase.uuid!,
+      // if (isOnline) {
+      //   print('Deleting Purchase Online');
+      //   await supabase
+      //       .from(tableName)
+      //       .delete()
+      //       .eq('uuid', purchase.uuid!);
+      //   print('Finished Deleting Purchase Online');
+      //   var containsUpdate = UpdatedPurchasesFunc()
+      //       .getPurchaseIds()
+      //       .where(
+      //         (purch) =>
+      //             purch.purchase.uuid == purchase.uuid,
+      //       );
+      //   if (containsUpdate.isNotEmpty) {
+      //     await UpdatedPurchasesFunc()
+      //         .deleteUpdatedPurchase(purchase.uuid!);
+      //   }
+      // } else {
+      print('Deleting Purchase Offline');
+      await PurchaseFunc().deletePurchase(purchase.uuid!);
+      var containsCreated =
+          CreatedPurchasesFunc()
+              .getPurchases()
+              .where(
+                (purch) =>
+                    purch.purchase.uuid == purchase.uuid,
+              )
+              .toList();
+      var containsUpdate = UpdatedPurchasesFunc()
+          .getPurchaseIds()
+          .where(
+            (purch) =>
+                purch.purchase.uuid == purchase.uuid!,
           );
-        } else {
-          await DeletedPurchasesFunc()
-              .createDeletedPurchase(
-                DeletedPurchases(
-                  purchaseUuid: purchase.uuid!,
-                ),
-              );
-        }
-        if (containsUpdate.isNotEmpty) {
-          await UpdatedPurchasesFunc()
-              .deleteUpdatedPurchase(purchase.uuid!);
-        }
-        await ItemPurchaseFunc().deleteRecordsInPurchase(
+      if (containsCreated.isNotEmpty) {
+        await CreatedPurchasesFunc().deletePurchase(
+          purchase.uuid!,
+        );
+      } else {
+        await DeletedPurchasesFunc().createDeletedPurchase(
+          DeletedPurchases(purchaseUuid: purchase.uuid!),
+        );
+      }
+      if (containsUpdate.isNotEmpty) {
+        await UpdatedPurchasesFunc().deleteUpdatedPurchase(
           purchase.uuid!,
         );
       }
+      await ItemPurchaseFunc().deleteRecordsInPurchase(
+        purchase.uuid!,
+      );
+      // }
 
       for (var rec in records) {
         await deleteItemPurchaseRecord(rec.uuid!);
@@ -358,52 +351,55 @@ class PurchaseProvider extends ChangeNotifier {
                           (rec.quantity ?? 0);
 
               try {
-                if (isOnline) {
-                  await supabase
-                      .from('storage_products')
-                      .update({'quantity': quantity})
-                      .eq('uuid', newPro.uuid!);
-                } else {
-                  var product = newPro.copyWith();
-                  product.updatedAt = DateTime.now();
-                  product.quantity = quantity;
-                  var res = await StorageProductsFunc()
-                      .updateStorageProduct(product);
-                  if (res == 1) {
-                    List<CreatedStorageProducts>
-                    containsCreated =
-                        CreatedStorageProductsFunc()
-                            .getStorageProducts()
-                            .where(
-                              (createdProduct) =>
-                                  createdProduct
-                                      .storageProduct
-                                      .uuid ==
-                                  product.uuid,
-                            )
-                            .toList();
-                    if (containsCreated.isEmpty) {
-                      await UpdatedStorageProductsFunc()
-                          .createUpdatedStorageProduct(
-                            UpdatedStorageProduct(
-                              updatedStorageProduct:
-                                  product,
-                            ),
-                          );
-                    } else {
-                      await CreatedStorageProductsFunc()
-                          .updateCreatedStorageProduct(
-                            CreatedStorageProducts(
-                              storageProduct: product,
-                            ),
-                          );
-                    }
-                  }
-                }
+                var product = newPro.copyWith();
+                product.updatedAt = DateTime.now();
+                product.quantity = quantity;
 
-                print(
-                  'Storage Product Updated Successfully',
-                );
+                await returnStorageProductProvider()
+                    .updateProduct(
+                      product: product,
+                      isQuantityUpdate: true,
+                      quantityChange:
+                          rec.isGroup == true
+                              ? ((rec.quantity ?? 1) *
+                                  (rec.qttyPerGroup ?? 1))
+                              : rec.quantity,
+                      isIncrement: false,
+                    );
+                // if (res == 1) {
+                //   List<CreatedStorageProducts>
+                //   containsCreated =
+                //       CreatedStorageProductsFunc()
+                //           .getStorageProducts()
+                //           .where(
+                //             (createdProduct) =>
+                //                 createdProduct
+                //                     .storageProduct
+                //                     .uuid ==
+                //                 product.uuid,
+                //           )
+                //           .toList();
+                //   if (containsCreated.isEmpty) {
+                //     await UpdatedStorageProductsFunc()
+                //         .createUpdatedStorageProduct(
+                //           UpdatedStorageProduct(
+                //             updatedStorageProduct: product,
+                //           ),
+                //         );
+                //   } else {
+                //     await CreatedStorageProductsFunc()
+                //         .updateCreatedStorageProduct(
+                //           CreatedStorageProducts(
+                //             storageProduct: product,
+                //           ),
+                //         );
+                //   }
+                // }
+                // }
+
+                // print(
+                //   'Storage Product Updated Successfully',
+                // );
                 try {
                   if (createUpdate) {
                     var newUpdate =
@@ -461,91 +457,30 @@ class PurchaseProvider extends ChangeNotifier {
                     .toList();
             if (products.isNotEmpty) {
               var newPro = products.first.copyWith();
+              newPro.quantity =
+                  (newPro.quantity ?? 0) -
+                  (rec.isGroup == true
+                      ? ((rec.quantity ?? 1) *
+                          (rec.qttyPerGroup ?? 1))
+                      : rec.quantity ?? 0);
 
-              var quantity =
-                  rec.isGroup == true
-                      ? (newPro.quantity ?? 0) -
-                          ((rec.quantity ?? 0) *
-                              (newPro.qttyPerGroup ?? 1))
-                      : (newPro.quantity ?? 0) -
-                          (rec.quantity ?? 0);
-
-              try {
-                if (isOnline) {
-                  await supabase
-                      .from('products')
-                      .update({'quantity': quantity})
-                      .eq('uuid', newPro.uuid!);
-                } else {
-                  var product = newPro.copyWith();
-                  product.updatedAt = DateTime.now();
-                  product.quantity = quantity;
-                  var res = await ProductsFunc()
-                      .updateProduct(product);
-                  if (res == 1) {
-                    var containsCreated =
-                        CreatedProductFunc()
-                            .getProducts()
-                            .where(
-                              (createdProduct) =>
-                                  createdProduct
-                                      .product
-                                      .uuid ==
-                                  product.uuid,
-                            )
-                            .toList();
-                    if (containsCreated.isEmpty) {
-                      await UpdatedProductsFunc()
-                          .createUpdatedProduct(
-                            UpdatedProducts(
-                              product: product,
-                            ),
-                          );
-                    } else {
-                      await CreatedProductFunc()
-                          .updateProduct(
-                            CreatedProducts(
-                              product: product,
-                            ),
-                          );
-                    }
-                  }
-                }
-                print('Product Updated Successfully');
-                if (createUpdate) {
-                  await returnEventsLogProvider().createLog(
-                    returnEventsLogProvider()
-                        .productAdapter(newPro, 2),
-                  );
-                  await returnData().getProducts(shopId());
-                }
-              } catch (e) {
-                print(
-                  '❌❌Error Updating Product Quantity: ${e.toString()}',
-                );
-              }
+              await returnData().updateProduct(
+                product: newPro,
+                isQuantityUpdate: true,
+                quantityChange:
+                    rec.isGroup == true
+                        ? ((rec.quantity ?? 1) *
+                            (rec.qttyPerGroup ?? 1))
+                        : rec.quantity,
+                isIncrement: false,
+              );
             }
           }
         }
       }
-
-      // if (productNames.isNotEmpty) {
-      //   await returnEventsLogProvider().createLog(
-      //     returnEventsLogProvider().receiptAdapter(
-      //       receipt,
-      //       productNames,
-      //       3,
-      //     ),
-      //   );
-      // }
+      returnData().syncData();
 
       print('✅ Purchase successfully Delete.');
-
-      // await loadPurchases(
-      //   returnShopProvider().userShop()!.shopId!,
-      // );
-
-      print('Totally Finished Deleting Receipt');
       notifyListeners();
       return 1;
     } catch (e) {
@@ -773,212 +708,234 @@ class PurchaseProvider extends ChangeNotifier {
   Future<void> createItemPurchaseRecord(
     List<TempItemPurchaseRecord> records,
   ) async {
-    bool isOnline = await connectivity.isOnline();
+    // bool isOnline = await connectivity.isOnline();
     try {
-      final dataToInsert =
-          records.map((e) => e.toJson()).toList();
-      if (isOnline) {
-        await supabase
-            .from('item_purchase_records')
-            .upsert(dataToInsert, onConflict: 'uuid');
-        await ItemPurchaseFunc()
-            .insertSalesItemPurchaseRecords(records);
-        for (var item in records) {
-          if (returnShopProvider()
-                  .userShop()
-                  ?.manageInventoryStorage ==
-              true) {
-            var storageProducts =
-                returnStorageProductProvider()
-                    .storageProductListMain
-                    .firstWhere(
-                      (prod) =>
-                          prod.uuid == item.storageItemId,
-                    );
+      // final dataToInsert =
+      //     records.map((e) => e.toJson()).toList();
+      // if (isOnline) {
+      //   await supabase
+      //       .from('item_purchase_records')
+      //       .upsert(dataToInsert, onConflict: 'uuid');
+      //   await ItemPurchaseFunc()
+      //       .insertSalesItemPurchaseRecords(records);
+      //   for (var item in records) {
+      //     if (returnShopProvider()
+      //             .userShop()
+      //             ?.manageInventoryStorage ==
+      //         true) {
+      //       var storageProduct =
+      //           returnStorageProductProvider()
+      //               .storageProductListMain
+      //               .firstWhere(
+      //                 (prod) =>
+      //                     prod.uuid == item.storageItemId,
+      //               );
 
-            var newPr = storageProducts.copyWith();
-            newPr.quantity =
-                item.isGroup == true
-                    ? (newPr.quantity ?? 0) +
-                        ((item.quantity ?? 0) *
-                            (newPr.qttyPerGroup ?? 1))
-                    : (newPr.quantity ?? 0) +
-                        (item.quantity ?? 0);
+      //       var newPr = storageProduct.copyWith();
+      //       newPr.quantity =
+      //           item.isGroup == true
+      //               ? (newPr.quantity ?? 0) +
+      //                   ((item.quantity ?? 0) *
+      //                       (newPr.qttyPerGroup ?? 1))
+      //               : (newPr.quantity ?? 0) +
+      //                   (item.quantity ?? 0);
 
-            newPr.updatedAt = DateTime.now();
+      //       newPr.updatedAt = DateTime.now();
 
-            await returnStorageProductProvider()
-                .updateProduct(product: newPr);
-            try {
-              var newUpdate = TempInventoryUpdateClass(
-                shopId: shopId(),
-                title: 'Stock In',
-                createdAt: DateTime.now(),
-                departmentName:
-                    returnDepartmentProvider()
-                        .currentDepartment()
-                        ?.name,
-                departmentUuid:
-                    returnDepartmentProvider()
-                        .currentDepartment()
-                        ?.uuid,
-                departmentNameTwo: null,
-                departmentUuidTwo: null,
-                itemName: newPr.name,
-                itemUuid: newPr.uuid,
-                staffId: currentUser().userId,
-                staffName: currentUser().name,
-                staffIdTwo: null,
-                staffNameTwo: null,
-                oldValue:
+      //       await returnStorageProductProvider()
+      //           .updateProduct(product: newPr);
+      //       try {
+      //         var newUpdate = TempInventoryUpdateClass(
+      //           shopId: shopId(),
+      //           title: 'Stock In',
+      //           createdAt: DateTime.now(),
+      //           departmentName:
+      //               returnDepartmentProvider()
+      //                   .currentDepartment()
+      //                   ?.name,
+      //           departmentUuid:
+      //               returnDepartmentProvider()
+      //                   .currentDepartment()
+      //                   ?.uuid,
+      //           departmentNameTwo: null,
+      //           departmentUuidTwo: null,
+      //           itemName: newPr.name,
+      //           itemUuid: newPr.uuid,
+      //           staffId: currentUser().userId,
+      //           staffName: currentUser().name,
+      //           staffIdTwo: null,
+      //           staffNameTwo: null,
+      //           oldValue:
+      //               ((newPr.quantity ?? 0) -
+      //                       (item.isGroup == true
+      //                           ? ((item.quantity ?? 0) *
+      //                               (newPr.qttyPerGroup ??
+      //                                   1))
+      //                           : (item.quantity ?? 0)))
+      //                   .toString(),
+      //           newValue: newPr.quantity.toString(),
+      //           uuid: uuidGen(),
+      //           itemTwoOldValue: null,
+      //           itemTwoNewValue: null,
+      //           itemTwoUuid: null,
+      //         );
+
+      //         await returnInventoryUpdatesProvider()
+      //             .createInventoryUpdate(newUpdate);
+      //       } catch (e) {
+      //         print(
+      //           '❌❌Error Creating Inventory Update: ${e.toString()}',
+      //         );
+      //       }
+      //     } else {
+      //       var product = returnData().productListMain
+      //           .firstWhere(
+      //             (prod) => prod.uuid == item.itemId,
+      //           );
+
+      //       var newPr = product.copyWith();
+      //       newPr.quantity =
+      //           item.isGroup == true
+      //               ? (newPr.quantity ?? 0) +
+      //                   ((item.quantity ?? 0) *
+      //                       (newPr.qttyPerGroup ?? 1))
+      //               : (newPr.quantity ?? 0) +
+      //                   (item.quantity ?? 0);
+      //       newPr.updatedAt = DateTime.now();
+
+      //       await returnData().updateProduct(
+      //         isIncrement:
+      //             (newPr.quantity ?? 0) >
+      //             (product.quantity ?? 0),
+      //         isQuantityUpdate: true,
+      //         quantityChange:
+      //             (newPr.quantity ?? 0) -
+      //             (product.quantity ?? 0),
+      //         product: newPr,
+      //       );
+      //     }
+      //   }
+      // } else {
+      var newRecords =
+          records.map((rec) {
+            rec.createdAt = DateTime.now();
+
+            return rec;
+          }).toList();
+      await ItemPurchaseFunc()
+          .insertSalesItemPurchaseRecords(newRecords);
+      List<CreatedItemRecords> cRecords =
+          newRecords.map((r) {
+            return CreatedItemRecords(record: r);
+          }).toList();
+      await CreatedItemPurchaseFunc().insertAllRecords(
+        cRecords,
+      );
+      for (var item in records) {
+        if (returnShopProvider()
+                .userShop()
+                ?.manageInventoryStorage ==
+            true) {
+          var storageProducts =
+              returnStorageProductProvider()
+                  .storageProductListMain
+                  .firstWhere(
+                    (prod) =>
+                        prod.uuid == item.storageItemId,
+                  );
+
+          var newPr = storageProducts.copyWith();
+          newPr.quantity =
+              item.isGroup == true
+                  ? (newPr.quantity ?? 0) +
+                      ((item.quantity ?? 0) *
+                          (newPr.qttyPerGroup ?? 1))
+                  : (newPr.quantity ?? 0) +
+                      (item.quantity ?? 0);
+          newPr.updatedAt = DateTime.now();
+
+          await returnStorageProductProvider()
+              .updateProduct(
+                product: newPr,
+                isQuantityUpdate: true,
+                quantityChange:
                     ((newPr.quantity ?? 0) -
-                            (item.isGroup == true
-                                ? ((item.quantity ?? 0) *
-                                    (newPr.qttyPerGroup ??
-                                        1))
-                                : (item.quantity ?? 0)))
-                        .toString(),
-                newValue: newPr.quantity.toString(),
-                uuid: uuidGen(),
-                itemTwoOldValue: null,
-                itemTwoNewValue: null,
-                itemTwoUuid: null,
+                        (storageProducts.quantity ?? 0)),
+                isIncrement:
+                    ((newPr.quantity ?? 0) >
+                        (storageProducts.quantity ?? 0)),
               );
+          try {
+            var newUpdate = TempInventoryUpdateClass(
+              shopId: shopId(),
+              title: 'Stock In',
+              createdAt: DateTime.now(),
+              departmentName:
+                  returnDepartmentProvider()
+                      .currentDepartment()
+                      ?.name,
+              departmentUuid:
+                  returnDepartmentProvider()
+                      .currentDepartment()
+                      ?.uuid,
+              departmentNameTwo: null,
+              departmentUuidTwo: null,
+              itemName: newPr.name,
+              itemUuid: newPr.uuid,
+              staffId: currentUser().userId,
+              staffName: currentUser().name,
+              staffIdTwo: null,
+              staffNameTwo: null,
+              oldValue:
+                  ((newPr.quantity ?? 0) -
+                          (item.isGroup == true
+                              ? ((item.quantity ?? 0) *
+                                  (newPr.qttyPerGroup ?? 1))
+                              : (item.quantity ?? 0)))
+                      .toString(),
+              newValue: newPr.quantity.toString(),
+              uuid: uuidGen(),
+              itemTwoOldValue: null,
+              itemTwoNewValue: null,
+              itemTwoUuid: null,
+            );
 
-              await returnInventoryUpdatesProvider()
-                  .createInventoryUpdate(newUpdate);
-            } catch (e) {
-              print(
-                '❌❌Error Creating Inventory Update: ${e.toString()}',
-              );
-            }
-          } else {
-            var product = returnData().productListMain
-                .firstWhere(
-                  (prod) => prod.uuid == item.itemId,
-                );
-
-            var newPr = product.copyWith();
-            newPr.quantity =
-                item.isGroup == true
-                    ? (newPr.quantity ?? 0) +
-                        ((item.quantity ?? 0) *
-                            (newPr.qttyPerGroup ?? 1))
-                    : (newPr.quantity ?? 0) +
-                        (item.quantity ?? 0);
-            newPr.updatedAt = DateTime.now();
-
-            await returnData().updateProduct(
-              product: newPr,
+            await returnInventoryUpdatesProvider()
+                .createInventoryUpdate(newUpdate);
+          } catch (e) {
+            print(
+              '❌❌Error Creating Inventory Update: ${e.toString()}',
             );
           }
-        }
-      } else {
-        var newRecords =
-            records.map((rec) {
-              rec.createdAt = DateTime.now();
-
-              return rec;
-            }).toList();
-        await ItemPurchaseFunc()
-            .insertSalesItemPurchaseRecords(newRecords);
-        List<CreatedItemRecords> cRecords =
-            newRecords.map((r) {
-              return CreatedItemRecords(record: r);
-            }).toList();
-        await CreatedItemPurchaseFunc().insertAllRecords(
-          cRecords,
-        );
-        for (var item in records) {
-          if (returnShopProvider()
-                  .userShop()
-                  ?.manageInventoryStorage ==
-              true) {
-            var storageProducts =
-                returnStorageProductProvider()
-                    .storageProductListMain
-                    .firstWhere(
-                      (prod) =>
-                          prod.uuid == item.storageItemId,
-                    );
-
-            var newPr = storageProducts.copyWith();
-            newPr.quantity =
-                item.isGroup == true
-                    ? (newPr.quantity ?? 0) +
-                        ((item.quantity ?? 0) *
-                            (newPr.qttyPerGroup ?? 1))
-                    : (newPr.quantity ?? 0) +
-                        (item.quantity ?? 0);
-            newPr.updatedAt = DateTime.now();
-
-            await returnStorageProductProvider()
-                .updateProduct(product: newPr);
-            try {
-              var newUpdate = TempInventoryUpdateClass(
-                shopId: shopId(),
-                title: 'Stock In',
-                createdAt: DateTime.now(),
-                departmentName:
-                    returnDepartmentProvider()
-                        .currentDepartment()
-                        ?.name,
-                departmentUuid:
-                    returnDepartmentProvider()
-                        .currentDepartment()
-                        ?.uuid,
-                departmentNameTwo: null,
-                departmentUuidTwo: null,
-                itemName: newPr.name,
-                itemUuid: newPr.uuid,
-                staffId: currentUser().userId,
-                staffName: currentUser().name,
-                staffIdTwo: null,
-                staffNameTwo: null,
-                oldValue:
-                    ((newPr.quantity ?? 0) -
-                            (item.isGroup == true
-                                ? ((item.quantity ?? 0) *
-                                    (newPr.qttyPerGroup ??
-                                        1))
-                                : (item.quantity ?? 0)))
-                        .toString(),
-                newValue: newPr.quantity.toString(),
-                uuid: uuidGen(),
-                itemTwoOldValue: null,
-                itemTwoNewValue: null,
-                itemTwoUuid: null,
+        } else {
+          var product = returnData().productListMain
+              .firstWhere(
+                (prod) => prod.uuid == item.itemId,
               );
 
-              await returnInventoryUpdatesProvider()
-                  .createInventoryUpdate(newUpdate);
-            } catch (e) {
-              print(
-                '❌❌Error Creating Inventory Update: ${e.toString()}',
-              );
-            }
-          } else {
-            var product = returnData().productListMain
-                .firstWhere(
-                  (prod) => prod.uuid == item.itemId,
-                );
+          var newPr = product.copyWith();
+          newPr.quantity =
+              item.isGroup == true
+                  ? (newPr.quantity ?? 0) +
+                      ((item.quantity ?? 0) *
+                          (newPr.qttyPerGroup ?? 1))
+                  : (newPr.quantity ?? 0) +
+                      (item.quantity ?? 0);
+          newPr.updatedAt = DateTime.now();
 
-            var newPr = product.copyWith();
-            newPr.quantity =
-                item.isGroup == true
-                    ? (newPr.quantity ?? 0) +
-                        ((item.quantity ?? 0) *
-                            (newPr.qttyPerGroup ?? 1))
-                    : (newPr.quantity ?? 0) +
-                        (item.quantity ?? 0);
-            newPr.updatedAt = DateTime.now();
-
-            await returnData().updateProduct(
-              product: newPr,
-            );
-          }
+          await returnData().updateProduct(
+            isIncrement:
+                (newPr.quantity ?? 0) >
+                (product.quantity ?? 0),
+            isQuantityUpdate: true,
+            quantityChange:
+                (newPr.quantity ?? 0) -
+                (product.quantity ?? 0),
+            product: newPr,
+          );
         }
       }
+      // }
     } catch (e) {
       print('Error ${e.toString()}');
     }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stockall/classes/temp_item_purchase_record/temp_item_purchase_record.dart';
+import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_purchase/purchase_payments.dart';
 import 'package:stockall/classes/temp_purchase/temp_purchase.dart';
 import 'package:stockall/classes/temp_suppliers/suppliers_class.dart';
@@ -24,6 +25,26 @@ class PurchaseActionProvider extends ChangeNotifier {
     tempSupplier = null;
     customTotalAmount = null;
     notifyListeners();
+  }
+
+  String itemUnit({
+    required PurchaseListItem purchaseItem,
+  }) {
+    List<TempProductClass> products =
+        returnData().productListMain
+            .where(
+              (item) => item.uuid == purchaseItem.itemUuid,
+            )
+            .toList();
+    if (products.isNotEmpty) {
+      var product = products.first;
+      return (purchaseItem.isGroup
+              ? product.groupUnit
+              : product.unit) ??
+          'unit';
+    } else {
+      return purchaseItem.unit ?? 'unit';
+    }
   }
 
   void addItemToList({required PurchaseListItem item}) {
@@ -140,6 +161,7 @@ class PurchaseActionProvider extends ChangeNotifier {
           purchaseListItems
               .map(
                 (item) => TempItemPurchaseRecord(
+                  unit: item.unit,
                   customPrice: item.customPrice,
                   originalPrice: item.originalPrice,
                   createdAt:
@@ -167,9 +189,6 @@ class PurchaseActionProvider extends ChangeNotifier {
       await returnPurchaseProvider()
           .createItemPurchaseRecord(purchaseRecords);
       clearAll();
-      await returnPurchaseProvider().loadPurchases(
-        shopId(),
-      );
       if (returnShopProvider()
               .userShop()
               ?.manageInventoryStorage ==
@@ -180,7 +199,9 @@ class PurchaseActionProvider extends ChangeNotifier {
         await returnData().getProducts(shopId());
       }
       syncData();
-
+      await returnPurchaseProvider().loadPurchases(
+        shopId(),
+      );
       return 1;
     } catch (e) {
       print(
@@ -207,6 +228,7 @@ class PurchaseActionProvider extends ChangeNotifier {
               .map(
                 (item) => PurchaseListItem(
                   itemName: item.itemName ?? 'Item Name',
+                  unit: item.unit ?? 'unit',
                   itemUuid: item.itemId,
                   totalPrice: item.total,
                   quantity: item.quantity ?? 0,
@@ -253,6 +275,7 @@ class PurchaseListItem {
   double? customPrice;
   double? originalPrice;
   bool isGroup;
+  String? unit;
   double? qttyPerGroup;
 
   PurchaseListItem({
@@ -260,6 +283,7 @@ class PurchaseListItem {
     required this.itemUuid,
     required this.totalPrice,
     required this.quantity,
+    required this.unit,
     required this.customPrice,
     required this.originalPrice,
     required this.storageItemUuid,
@@ -277,6 +301,7 @@ class PurchaseListItem {
     String? storageItemUuid,
     bool? isGroup,
     double? qttyPerGroup,
+    String? unit,
   }) {
     return PurchaseListItem(
       itemName: itemName ?? this.itemName,
@@ -289,6 +314,7 @@ class PurchaseListItem {
           storageItemUuid ?? this.storageItemUuid,
       isGroup: isGroup ?? this.isGroup,
       qttyPerGroup: qttyPerGroup ?? this.qttyPerGroup,
+      unit: unit ?? this.unit,
     );
   }
 

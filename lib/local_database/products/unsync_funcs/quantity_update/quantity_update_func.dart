@@ -53,13 +53,52 @@ class QuantityUpdateFunc {
     QuantityUpdate quantityUpdate,
   ) async {
     try {
-      await quantityUpdateBox.put(
-        quantityUpdate.uuid,
-        quantityUpdate,
+      final existingLogs = getQuantitiesUpdate().where(
+        (item) =>
+            item.productUuid == quantityUpdate.productUuid,
       );
-      print(
-        'Offline Quantity Update inserted successfully ✅',
-      );
+
+      if (existingLogs.isEmpty) {
+        await quantityUpdateBox.put(
+          quantityUpdate.uuid,
+          quantityUpdate,
+        );
+
+        print(
+          'Offline Quantity Update inserted successfully ✅',
+        );
+      } else {
+        final existing = existingLogs.first;
+
+        // Convert both values to signed numbers
+        final double existingValue =
+            existing.isIncrement
+                ? existing.quantity
+                : -existing.quantity;
+
+        final double incomingValue =
+            quantityUpdate.isIncrement
+                ? quantityUpdate.quantity
+                : -quantityUpdate.quantity;
+
+        // Calculate the net value
+        final double total = existingValue + incomingValue;
+
+        // Convert back to absolute quantity + direction
+        existing.quantity = total.abs();
+        existing.isIncrement = total >= 0;
+
+        // Save to Hive
+        await quantityUpdateBox.put(
+          existing.uuid,
+          existing,
+        );
+
+        print(
+          'Offline Quantity Update merged successfully ✅',
+        );
+      }
+
       return 1;
     } catch (e) {
       print(
@@ -69,7 +108,9 @@ class QuantityUpdateFunc {
     }
   }
 
-  Future<int> deleteQuantityUpdate({required String uuid}) async {
+  Future<int> deleteQuantityUpdate({
+    required String uuid,
+  }) async {
     try {
       await quantityUpdateBox.delete(uuid);
       print('Quantity Update Deleted ✅');

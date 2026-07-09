@@ -34,13 +34,14 @@ class TempItemPurchaseRecordAdapter
       storageItemId: fields[13] as String?,
       isGroup: fields[14] as bool?,
       qttyPerGroup: fields[15] as double?,
+      unit: fields[16] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TempItemPurchaseRecord obj) {
     writer
-      ..writeByte(16)
+      ..writeByte(17)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
@@ -72,7 +73,9 @@ class TempItemPurchaseRecordAdapter
       ..writeByte(14)
       ..write(obj.isGroup)
       ..writeByte(15)
-      ..write(obj.qttyPerGroup);
+      ..write(obj.qttyPerGroup)
+      ..writeByte(16)
+      ..write(obj.unit);
   }
 
   @override

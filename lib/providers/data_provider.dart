@@ -7,6 +7,7 @@ import 'package:stockall/classes/temp_categories/category_class.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/created_products/created_products.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/deleted_products/deleted_products.dart';
+import 'package:stockall/classes/temp_product_class/unsynced/quantity_update/quantity_update.dart';
 import 'package:stockall/classes/temp_product_class/unsynced/updated/updated_products.dart';
 import 'package:stockall/classes/temp_shop/temp_shop_class.dart';
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
@@ -40,7 +41,8 @@ import 'package:stockall/local_database/main_receipt/unsync_funcs/deleted/delete
 import 'package:stockall/local_database/main_receipt/unsync_funcs/updated/updated_receipts_func.dart';
 import 'package:stockall/local_database/product_record_func.dart/unsync_funcs/created/created_records_func.dart';
 import 'package:stockall/local_database/products/products_func.dart';
-import 'package:stockall/local_database/products/unsync_funcs/sales_products/sales_product_func.dart';
+import 'package:stockall/local_database/products/unsync_funcs/quantity_update/quantity_update_func.dart';
+// import 'package:stockall/local_database/products/unsync_funcs/sales_products/sales_product_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/created_products/created_product_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/deleted_products/deleted_products_func.dart';
 import 'package:stockall/local_database/products/unsync_funcs/updated_products/updated_products_func.dart';
@@ -128,26 +130,7 @@ class DataProvider extends ChangeNotifier {
   Future<void> createProduct(
     TempProductClass product,
   ) async {
-    // bool isOnline = await connectivity.isOnline();
     product.updatedAt = DateTime.now();
-    // if (isOnline) {
-    //   var data =
-    //       await supabase
-    //           .from('products')
-    //           .upsert(product.toJson(), onConflict: 'uuid')
-    //           .select()
-    //           .single();
-    //   print('Item added successfully');
-    //   final newProduct = TempProductClass.fromJson(data);
-    //   await ProductsFunc().createProduct(newProduct);
-    //   await returnEventsLogProvider().createLog(
-    //     returnEventsLogProvider(
-    //       // ignore: use_build_context_synchronously
-    //     ).productAdapter(product, 1),
-    //     // ignore: use_build_context_synchronously
-    //   );
-    //   print('Total Success');
-    // } else {
     product.createdAt ??= DateTime.now();
 
     await ProductsFunc().createProduct(product);
@@ -155,16 +138,9 @@ class DataProvider extends ChangeNotifier {
       CreatedProducts(product: product),
     );
     await returnEventsLogProvider().createLog(
-      returnEventsLogProvider(
-        // ignore: use_build_context_synchronously
-      ).productAdapter(product, 1),
-      // ignore: use_build_context_synchronously
+      returnEventsLogProvider().productAdapter(product, 1),
     );
-    print('Offline Success');
     print('Offline Product inserted Successfully');
-    // }
-
-    print('Mounted');
     await getProductsOffline(
       returnShopProvider().userShop()!.shopId!,
     );
@@ -406,53 +382,53 @@ class DataProvider extends ChangeNotifier {
   //
   //
   //
-  Future<void> salesProductsSync() async {
-    try {
-      bool isOnline = await connectivity.isOnline();
-      print(
-        SalesProductFunc().getProducts().length.toString(),
-      );
+  // Future<void> salesProductsSync() async {
+  //   try {
+  //     bool isOnline = await connectivity.isOnline();
+  //     print(
+  //       SalesProductFunc().getProducts().length.toString(),
+  //     );
 
-      if (SalesProductFunc().getProducts().isNotEmpty &&
-          isOnline) {
-        final salesProducts =
-            SalesProductFunc().getProducts();
+  //     if (SalesProductFunc().getProducts().isNotEmpty &&
+  //         isOnline) {
+  //       final salesProducts =
+  //           SalesProductFunc().getProducts();
 
-        for (final salesProduct in salesProducts) {
-          await supabase.rpc(
-            'decrement_product_quantity_during_sync_double',
-            params: {
-              'p_uuid': salesProduct.productUuid,
-              'p_qty': salesProduct.quantity,
-            },
-          );
+  //       for (final salesProduct in salesProducts) {
+  //         await supabase.rpc(
+  //           'decrement_product_quantity_during_sync_double',
+  //           params: {
+  //             'p_uuid': salesProduct.productUuid,
+  //             'p_qty': salesProduct.quantity,
+  //           },
+  //         );
 
-          print(
-            'Decremented ${salesProduct.quantity} from product ${salesProduct.productUuid}',
-          );
+  //         print(
+  //           'Decremented ${salesProduct.quantity} from product ${salesProduct.productUuid}',
+  //         );
 
-          await SalesProductFunc().deleteProduct(
-            salesProduct.productUuid,
-          );
+  //         await SalesProductFunc().deleteProduct(
+  //           salesProduct.productUuid,
+  //         );
 
-          print('Mounted, refreshing products ✅');
-          await getProducts(
-            returnShopProvider().userShop()!.shopId!,
-          );
+  //         print('Mounted, refreshing products ✅');
+  //         await getProducts(
+  //           returnShopProvider().userShop()!.shopId!,
+  //         );
 
-          clearFields();
-        }
-      }
-    } catch (e) {
-      print(
-        'Batch update Sold Items Quantity failed ❌: $e',
-      );
-      await createErrorLog(
-        error:
-            'Batch update Sold Items Quantity failed ❌: $e',
-      );
-    }
-  }
+  //         clearFields();
+  //       }
+  //     }
+  //   } catch (e) {
+  //     print(
+  //       'Batch update Sold Items Quantity failed ❌: $e',
+  //     );
+  //     await createErrorLog(
+  //       error:
+  //           'Batch update Sold Items Quantity failed ❌: $e',
+  //     );
+  //   }
+  // }
 
   //
   //
@@ -476,7 +452,8 @@ class DataProvider extends ChangeNotifier {
     await CreatedInventoryUpdatesFunc()
         .clearInventoryUpdate();
     await DeletedReceiptsFunc().clearDeletedReceipts();
-    await SalesProductFunc().clearProducts();
+    // await SalesProductFunc().clearProducts();
+    await QuantityUpdateFunc().clearQuantitiesUpdate();
     await UpdatedReceiptsFunc().clearUpdatedReceipts();
     await UpdatedShopFunc().clearUpdatedShop();
     await CreatedShopLogosFunc().clearCreatedLogos();
@@ -636,10 +613,19 @@ class DataProvider extends ChangeNotifier {
             print('Finished Syncing Updated Products');
             setSyncProgress(12);
           }
-          if (SalesProductFunc().getProducts().isNotEmpty &&
+          // if (SalesProductFunc().getProducts().isNotEmpty &&
+          //     isOnline) {
+          //   await salesProductsSync();
+          //   print('Finished Syncing Sales Products');
+          //   setSyncProgress(13);
+          // }
+          if (QuantityUpdateFunc()
+                  .getQuantitiesUpdate()
+                  .isNotEmpty &&
               isOnline) {
-            await salesProductsSync();
-            print('Finished Syncing Sales Products');
+            await returnQuantityUpdateProvider()
+                .quantityUpdateSync();
+            print('Finished Syncing Quantity Updates');
             setSyncProgress(13);
           }
           if (CreatedExpensesFunc()
@@ -1000,7 +986,10 @@ class DataProvider extends ChangeNotifier {
           CreatedInventoryUpdatesFunc()
               .getCreatedInventoryUpdatess()
               .isEmpty &&
-          SalesProductFunc().getProducts().isEmpty &&
+          // SalesProductFunc().getProducts().isEmpty &&
+          QuantityUpdateFunc()
+              .getQuantitiesUpdate()
+              .isEmpty &&
           CreatedExpensesFunc().getExpenses().isEmpty &&
           DeletedExpensesFunc().getExpenseIds().isEmpty &&
           UpdatedExpensesFunc().getExpenses().isEmpty &&
@@ -1259,21 +1248,6 @@ class DataProvider extends ChangeNotifier {
         productListMain,
       );
     } else {
-      // productListMain.clear();
-      // int getRange() {
-      //   if ((allowedRangeItems ?? 0) >
-      //       ProductsFunc().getProducts().length) {
-      //     return ProductsFunc().getProducts().length;
-      //   } else {
-      //     return (allowedRangeItems ?? 0);
-      //   }
-      // }
-
-      // var offlineData =
-      //     ProductsFunc()
-      //         .getProducts()
-      //         .getRange(0, getRange())
-      //         .toList();
       print(
         "Offline Data Gotten: ${ProductsFunc().getProducts().length}",
       );
@@ -1285,8 +1259,6 @@ class DataProvider extends ChangeNotifier {
           true) {
         await returnStorageProductProvider()
             .getStorageProducts(shopId);
-        // await returnInventoryUpdatesProvider()
-        //     .getInventoryUpdates();
       }
       // productListMain.clear();
     }
@@ -1312,98 +1284,56 @@ class DataProvider extends ChangeNotifier {
     return productListMain;
   }
 
-  // Future<List<TempProductClass>> searchProductName(
-  //   BuildContext context,
-  //   String name,
-  // ) async {
-  //   var temp = await getProducts(shopId());
-  //   final tempData =
-  //       temp
-  //           .where((product) => product.name.contains(name))
-  //           .toList();
-
-  //   return tempData;
-  // }
-
-  // Future<List<TempProductClass>> getLowProducts(
-  //   int shopId,
-  // ) async {
-  //   final data = await getProducts(shopId);
-
-  //   final tempData = data.where(
-  //     (product) =>
-  //         product.quantity != null &&
-  //         product.quantity! < product.lowQtty!,
-  //   );
-
-  //   return tempData.toList();
-  // }
-
   Future<TempProductClass?> updateProduct({
     required TempProductClass product,
+    required bool isQuantityUpdate,
+    required double? quantityChange,
+    required bool? isIncrement,
     TempProductClass? oldProduct,
     bool? isMultipleUpdate,
   }) async {
-    // bool isOnline = await connectivity.isOnline();
     try {
       print(product.isManaged.toString());
-      // if (isOnline) {
-      //   product.updatedAt = DateTime.now().toLocal();
-      //   var res =
-      //       await supabase
-      //           .from('products')
-      //           .update(product.toJson())
-      //           .eq('uuid', product.uuid!)
-      //           .select()
-      //           .maybeSingle();
-      //   if (res != null) {
-      //     print('${product.uuid}');
-      //     await returnEventsLogProvider().createLog(
-      //       returnEventsLogProvider().productAdapter(
-      //         product,
-      //         2,
-      //       ),
-      //     );
-      //     print('Context Mounted');
-      //     await getProducts(
-      //       returnShopProvider().userShop()!.shopId!,
-      //     );
-      //     notifyListeners();
-      //     return TempProductClass.fromJson(res);
-      //   } else {
-      //     print('Product Update Failed');
-      //     return null;
-      //   }
-      // } else {
       var res = await ProductsFunc().updateProduct(product);
       if (res == 1) {
-        var containsCreated =
-            CreatedProductFunc()
-                .getProducts()
-                .where(
-                  (createdProduct) =>
-                      createdProduct.product.uuid ==
-                      product.uuid,
-                )
-                .toList();
-        if (containsCreated.isEmpty) {
-          await UpdatedProductsFunc().createUpdatedProduct(
-            UpdatedProducts(product: product),
+        if (isQuantityUpdate == false) {
+          var containsCreated =
+              CreatedProductFunc()
+                  .getProducts()
+                  .where(
+                    (createdProduct) =>
+                        createdProduct.product.uuid ==
+                        product.uuid,
+                  )
+                  .toList();
+          if (containsCreated.isEmpty) {
+            await UpdatedProductsFunc()
+                .createUpdatedProduct(
+                  UpdatedProducts(product: product),
+                );
+          } else {
+            await CreatedProductFunc().updateProduct(
+              CreatedProducts(product: product),
+            );
+          }
+          await returnEventsLogProvider().createLog(
+            returnEventsLogProvider().productAdapter(
+              product,
+              2,
+            ),
           );
         } else {
-          await CreatedProductFunc().updateProduct(
-            CreatedProducts(product: product),
+          QuantityUpdate quantityUpdate = QuantityUpdate(
+            isStorage: false,
+            quantity: (quantityChange ?? 0).abs(),
+            productUuid: product.uuid!,
+            isIncrement: isIncrement ?? true,
           );
+          await returnQuantityUpdateProvider()
+              .createQuantityUpdate(
+                quantityUpdate: quantityUpdate,
+              );
         }
-        print(product.updatedAt.toString());
-        print('${product.uuid}');
-        await returnEventsLogProvider().createLog(
-          returnEventsLogProvider(
-            // ignore: use_build_context_synchronously
-          ).productAdapter(product, 2),
-          // ignore: use_build_context_synchronously
-        );
-        print('Context Mounted');
         await getProductsOffline(
           returnShopProvider().userShop()!.shopId!,
         );
@@ -1418,7 +1348,6 @@ class DataProvider extends ChangeNotifier {
         notifyListeners();
         return null;
       }
-      // }
     } catch (e) {
       notifyListeners();
       print("Error Updating Product: ${e.toString()}");
@@ -1429,43 +1358,19 @@ class DataProvider extends ChangeNotifier {
   Future<void> deleteProductMain({
     required TempProductClass product,
     bool? isMultipleDelete,
-    // BuildContext context,
   }) async {
-    // bool isOnline = await connectivity.isOnline();
-    // if (isOnline) {
-    //   await supabase
-    //       .from('products')
-    //       .delete()
-    //       .eq('uuid', product.uuid!);
-    //   await returnEventsLogProvider().createLog(
-    //     returnEventsLogProvider(
-    //       // ignore: use_build_context_synchronously
-    //     ).productAdapter(product, 3),
-    //     // ignore: use_build_context_synchronously
-    //   );
-    // } else {
     await ProductsFunc().deleteProduct(product.uuid!);
     var containsCreated =
         CreatedProductFunc()
             .getProducts()
-            .where(
-              (product) =>
-                  product.product.uuid ==
-                  product.product.uuid,
-            )
+            .where((pr) => pr.product.uuid == product.uuid)
             .toList();
 
     var containsUpdated =
         UpdatedProductsFunc()
             .getProducts()
-            .where(
-              (product) =>
-                  product.product.uuid ==
-                  product.product.uuid,
-            )
+            .where((pr) => pr.product.uuid == product.uuid)
             .toList();
-    print('Updated: ${containsCreated.length.toString()}');
-    print('Updated: ${containsUpdated.length.toString()}');
     if (containsCreated.isNotEmpty) {
       await CreatedProductFunc().createdProductsBox.delete(
         product.uuid,
@@ -1678,38 +1583,38 @@ class DataProvider extends ChangeNotifier {
   bool groupUnitValueSet = false;
 
   List<String> units = [
-    'Ags',
-    'Barrels',
-    'Bottles',
-    'Boxes',
-    'Bundles',
-    'Cans',
-    'Cartons',
-    'Crates',
-    'Dozens',
-    'Gallons',
-    'Items',
-    'Jars',
-    'Kg',
-    'Lb',
-    'Liters',
-    'Mg',
-    'Ml',
-    'Packs',
-    'Pairs',
-    'Pieces',
-    'Reams',
-    'Rolls',
-    'Sachets',
-    'Sheets',
-    'Sets',
-    'Slates',
-    'Sticks',
-    'Tins',
-    'Trays',
-    'Tubes',
-    'Units',
-    'Others',
+    'Ag(s)',
+    'Barrel(s)',
+    'Bottle(s)',
+    'Boxe(s)',
+    'Bundle(s)',
+    'Can(s)',
+    'Carton(s)',
+    'Crate(s)',
+    'Dozen(s)',
+    'Gallon(s)',
+    'Item(s)',
+    'Jar(s)',
+    'Kg(s)',
+    'Lb(s)',
+    'Liter(s)',
+    'Mg(s)',
+    'Ml(s)',
+    'Pack(s)',
+    'Pair(s)',
+    'Piece(s)',
+    'Ream(s)',
+    'Roll(s)',
+    'Sachet(s)',
+    'Sheet(s)',
+    'Set(s)',
+    'Slate(s)',
+    'Stick(s)',
+    'Tin(s)',
+    'Tray(s)',
+    'Tube(s)',
+    'Unit(s)',
+    'Other(s)',
   ];
 
   String? selectedUnit;
@@ -2280,6 +2185,9 @@ class DataProvider extends ChangeNotifier {
         await updateProduct(
           product: product,
           isMultipleUpdate: true,
+          isIncrement: null,
+          isQuantityUpdate: false,
+          quantityChange: null,
         );
       }
       await getProductsOffline(shopId());

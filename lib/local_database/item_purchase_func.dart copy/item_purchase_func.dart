@@ -108,12 +108,6 @@ class ItemPurchaseFunc {
               .toList();
       print('Records Gotten: ${records.length}');
       for (var record in records) {
-        // if (record.isProductManaged!) {
-        //   await ProductsFunc().incrementQuantity(
-        //     quantity: record.quantity,
-        //     uuid: record.productUuid!,
-        //   );
-        // }
         await itemPurchaseRecordsBox.delete(record.uuid);
         var containsCreated = CreatedRecordsFunc()
             .getRecords()

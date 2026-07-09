@@ -431,7 +431,7 @@ class _PurchasePageMobileState
                                           message:
                                               'You are about to edit this purchase. Are you sure you want to proceed?',
                                           title:
-                                              'Edit Invoice',
+                                              'Edit Purchase',
                                           action: () {
                                             Navigator.of(
                                               confirmDialog,
@@ -604,7 +604,7 @@ class _PurchasePageMobileState
                                                     context:
                                                         context,
                                                     message:
-                                                        'Invoice Downloaded',
+                                                        'Purchase Downloaded',
                                                     isSuccess:
                                                         true,
                                                   );

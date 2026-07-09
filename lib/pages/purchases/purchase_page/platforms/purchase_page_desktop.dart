@@ -465,7 +465,7 @@ class _PurchasePageDesktopState
                                               context:
                                                   context,
                                               message:
-                                                  'Invoice Downloaded',
+                                                  'Purchase Downloaded',
                                               isSuccess:
                                                   true,
                                             );
@@ -492,7 +492,7 @@ class _PurchasePageDesktopState
                                     theme: theme,
                                     message:
                                         'You are about to edit this purchase. Are you sure you want to proceed?',
-                                    title: 'Edit Invoice',
+                                    title: 'Edit Purchase',
                                     action: () {
                                       Navigator.of(
                                         confirmDialog,
@@ -2307,7 +2307,7 @@ class _PurchasePaymentWidgetState
                                       //   actionResultDialog(
                                       //     context: context,
                                       //     message:
-                                      //         'Invoice Downloaded',
+                                      //         'Purchase Downloaded',
                                       //     isSuccess: true,
                                       //   );
                                       // }

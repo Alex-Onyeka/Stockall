@@ -17,12 +17,12 @@ class QuantityUpdateAdapter extends TypeAdapter<QuantityUpdate> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return QuantityUpdate(
-      uuid: fields[0] as String,
-      createdAt: fields[1] as double,
+      uuid: fields[0] as String?,
+      createdAt: fields[1] as DateTime?,
       quantity: fields[2] as double,
       productUuid: fields[3] as String,
       isIncrement: fields[4] as bool,
-      otherUuid: fields[5] as String?,
+      isStorage: fields[5] as bool,
     );
   }
 
@@ -41,7 +41,7 @@ class QuantityUpdateAdapter extends TypeAdapter<QuantityUpdate> {
       ..writeByte(4)
       ..write(obj.isIncrement)
       ..writeByte(5)
-      ..write(obj.otherUuid);
+      ..write(obj.isStorage);
   }
 
   @override

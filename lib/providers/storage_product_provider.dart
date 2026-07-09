@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:stockall/classes/temp_product_class/unsynced/quantity_update/quantity_update.dart';
 import 'package:stockall/classes/temp_storage_product/temp_storage_products.dart';
 import 'package:stockall/classes/temp_storage_product/unsynced/created_storage_products/created_storage_products.dart';
 import 'package:stockall/classes/temp_storage_product/unsynced/deleted_storage_products/deleted_storage_product.dart';
@@ -473,62 +474,54 @@ class StorageProductProvider extends ChangeNotifier {
 
   Future<int> updateProduct({
     required TempStorageProducts product,
+    required bool isQuantityUpdate,
+    required double? quantityChange,
+    required bool? isIncrement,
     TempStorageProducts? oldProduct,
   }) async {
-    // bool isOnline = await connectivity.isOnline();
     try {
-      // if (isOnline) {
-      //   product.updatedAt = DateTime.now().toLocal();
-      //   var res =
-      //       await supabase
-      //           .from(tableName)
-      //           .update(product.toJson())
-      //           .eq('uuid', product.uuid!)
-      //           .select()
-      //           .maybeSingle();
-      //   if (res != null) {
-      //     print('${product.uuid}');
-      //     await getStorageProducts(
-      //       returnShopProvider().userShop()!.shopId!,
-      //     );
-      //     notifyListeners();
-      //     // return TempStorageProducts.fromJson(res);
-      //     return 1;
-      //   } else {
-      //     print('Storage Product Update Failed');
-      //     return 0;
-      //   }
-      // } else {
       var res = await StorageProductsFunc()
           .updateStorageProduct(product);
       if (res == 1) {
-        List<CreatedStorageProducts> containsCreated =
-            CreatedStorageProductsFunc()
-                .getStorageProducts()
-                .where(
-                  (createdProduct) =>
-                      createdProduct.storageProduct.uuid ==
-                      product.uuid,
-                )
-                .toList();
-        if (containsCreated.isEmpty) {
-          await UpdatedStorageProductsFunc()
-              .createUpdatedStorageProduct(
-                UpdatedStorageProduct(
-                  updatedStorageProduct: product,
-                ),
-              );
+        if (isQuantityUpdate == false) {
+          List<CreatedStorageProducts> containsCreated =
+              CreatedStorageProductsFunc()
+                  .getStorageProducts()
+                  .where(
+                    (createdProduct) =>
+                        createdProduct
+                            .storageProduct
+                            .uuid ==
+                        product.uuid,
+                  )
+                  .toList();
+          if (containsCreated.isEmpty) {
+            await UpdatedStorageProductsFunc()
+                .createUpdatedStorageProduct(
+                  UpdatedStorageProduct(
+                    updatedStorageProduct: product,
+                  ),
+                );
+          } else {
+            await CreatedStorageProductsFunc()
+                .updateCreatedStorageProduct(
+                  CreatedStorageProducts(
+                    storageProduct: product,
+                  ),
+                );
+          }
         } else {
-          await CreatedStorageProductsFunc()
-              .updateCreatedStorageProduct(
-                CreatedStorageProducts(
-                  storageProduct: product,
-                ),
+          QuantityUpdate quantityUpdate = QuantityUpdate(
+            isStorage: true,
+            quantity: (quantityChange ?? 0).abs(),
+            productUuid: product.uuid!,
+            isIncrement: isIncrement ?? true,
+          );
+          await returnQuantityUpdateProvider()
+              .createQuantityUpdate(
+                quantityUpdate: quantityUpdate,
               );
         }
-        print(product.updatedAt.toString());
-        print('${product.uuid}');
-        print('Context Mounted');
         await getStorageProductsOffline(
           returnShopProvider().userShop()!.shopId!,
         );

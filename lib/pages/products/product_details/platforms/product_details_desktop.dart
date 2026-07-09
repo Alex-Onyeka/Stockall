@@ -1,7 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:stockall/classes/temp_cart_items/temp_cart_item.dart';
-// import 'package:path/path.dart';
 import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/buttons/main_button_p.dart';
@@ -17,7 +15,7 @@ import 'package:stockall/main.dart';
 import 'package:stockall/pages/barcode_printing_page/barcode_printing_page.dart';
 import 'package:stockall/pages/products/add_product_one/add_product.dart';
 import 'package:stockall/pages/products/product_details/platforms/components/update_item_quantity.dart';
-import 'package:stockall/pages/sales/make_sales/page1/make_sales_page.dart';
+import 'package:stockall/pages/products/quantity_update_page/quantity_update_page.dart';
 import 'package:stockall/providers/data_provider.dart';
 import 'package:stockall/providers/theme_provider.dart';
 
@@ -135,72 +133,84 @@ class _ProductDetailsDesktopState
                           visible: !isStoreKeeper(),
                           child: InkWell(
                             onTap: () {
-                              var safeContext = context;
-                              showDialog(
-                                context: safeContext,
-                                builder: (context) {
-                                  return ConfirmationAlert(
-                                    theme: widget.theme,
-                                    message:
-                                        'This item is going to be added to your cart. Are you sure you want to proceed with this action?',
-                                    title:
-                                        'Add Item to Cart',
-                                    action: () async {
-                                      Navigator.of(
-                                        safeContext,
-                                      ).pop();
-                                      var res = await returnSalesProvider()
-                                          .addItemToCart(
-                                            isEdit: false,
-                                            context:
-                                                context,
-                                            newItem: TempCartItem(
-                                              uuid:
-                                                  uuidGen(),
-                                              itemUuid:
-                                                  product
-                                                      .uuid,
-                                              isVoid: false,
-                                              qttyPerGroup:
-                                                  null,
-                                              useGroupQuantity:
-                                                  false,
-                                              useWholeSalePrice:
-                                                  false,
-                                              setCustomPrice:
-                                                  false,
-                                              item: product,
-                                              quantity: 1,
-                                              discount:
-                                                  null,
-                                              addToStock:
-                                                  false,
-                                              setTotalPrice:
-                                                  false,
-                                            ),
-                                            isCustomEdit:
-                                                false,
-                                          );
-                                      if (res ==
-                                          "Quantity Limit Exceeded") {
-                                        return;
-                                      }
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (
-                                            context,
-                                          ) {
-                                            return MakeSalesPage(
-                                              isMain: true,
-                                              // product: product,
-                                            );
-                                          },
-                                        ),
-                                      );
-                                    },
-                                  );
-                                },
+                              // var safeContext = context;
+                              // showDialog(
+                              //   context: safeContext,
+                              //   builder: (context) {
+                              //     return ConfirmationAlert(
+                              //       theme: widget.theme,
+                              //       message:
+                              //           'This item is going to be added to your cart. Are you sure you want to proceed with this action?',
+                              //       title:
+                              //           'Add Item to Cart',
+                              //       action: () async {
+                              //         Navigator.of(
+                              //           safeContext,
+                              //         ).pop();
+                              //         var res = await returnSalesProvider()
+                              //             .addItemToCart(
+                              //               isEdit: false,
+                              //               context:
+                              //                   context,
+                              //               newItem: TempCartItem(
+                              //                 uuid:
+                              //                     uuidGen(),
+                              //                 itemUuid:
+                              //                     product
+                              //                         .uuid,
+                              //                 isVoid: false,
+                              //                 qttyPerGroup:
+                              //                     null,
+                              //                 useGroupQuantity:
+                              //                     false,
+                              //                 useWholeSalePrice:
+                              //                     false,
+                              //                 setCustomPrice:
+                              //                     false,
+                              //                 item: product,
+                              //                 quantity: 1,
+                              //                 discount:
+                              //                     null,
+                              //                 addToStock:
+                              //                     false,
+                              //                 setTotalPrice:
+                              //                     false,
+                              //               ),
+                              //               isCustomEdit:
+                              //                   false,
+                              //             );
+                              //         if (res ==
+                              //             "Quantity Limit Exceeded") {
+                              //           return;
+                              //         }
+                              //         Navigator.push(
+                              //           context,
+                              //           MaterialPageRoute(
+                              //             builder: (
+                              //               context,
+                              //             ) {
+                              //               return MakeSalesPage(
+                              //                 isMain: true,
+                              //                 // product: product,
+                              //               );
+                              //             },
+                              //           ),
+                              //         );
+                              //       },
+                              //     );
+                              //   },
+                              // );
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return QuantityUpdatesPage(
+                                      productUuid:
+                                          widget
+                                              .productUuid,
+                                    );
+                                  },
+                                ),
                               );
                             },
                             child: Container(
@@ -635,6 +645,12 @@ class _ProductDetailsDesktopState
                                                                                                 },
                                                                                               );
                                                                                               await dataProvider.updateProduct(
+                                                                                                isIncrement:
+                                                                                                    null,
+                                                                                                isQuantityUpdate:
+                                                                                                    false,
+                                                                                                quantityChange:
+                                                                                                    null,
                                                                                                 product: TempProductClass(
                                                                                                   storageUuid:
                                                                                                       product.storageUuid,
@@ -964,6 +980,12 @@ class _ProductDetailsDesktopState
                                                                     },
                                                                   );
                                                                   await dataProvider.updateProduct(
+                                                                    isIncrement:
+                                                                        null,
+                                                                    isQuantityUpdate:
+                                                                        false,
+                                                                    quantityChange:
+                                                                        null,
                                                                     product: TempProductClass(
                                                                       storageUuid:
                                                                           product.storageUuid,

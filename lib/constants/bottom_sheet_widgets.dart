@@ -1068,6 +1068,12 @@ void selectProductPurchase({
                                 if (purchaseItem != null) {
                                   returnPurchaseActionProvider().updateItem(
                                     item: PurchaseListItem(
+                                      unit:
+                                          isGroupTemp
+                                              ? product
+                                                  ?.groupUnit
+                                              : product
+                                                  ?.unit,
                                       qttyPerGroup:
                                           product
                                               ?.qttyPerGroup ??
@@ -1111,6 +1117,12 @@ void selectProductPurchase({
                                 } else {
                                   returnPurchaseActionProvider().addItemToList(
                                     item: PurchaseListItem(
+                                      unit:
+                                          isGroupTemp
+                                              ? product
+                                                  ?.groupUnit
+                                              : product
+                                                  ?.unit,
                                       qttyPerGroup:
                                           product
                                               ?.qttyPerGroup ??

@@ -282,28 +282,10 @@ class _AddProductDesktopState
               isLoading = true;
             });
 
-            // double totalQttyInStorageCalc() {
-            //   final total =
-            //       widget
-            //           .product
-            //           ?.totalQttyInStorageDouble ??
-            //       0;
-            //   final qty =
-            //       double.tryParse(
-            //         widget.quantityController.text
-            //             .replaceAll(',', ''),
-            //       ) ??
-            //       0;
-            //   final currentQty =
-            //       widget.product?.quantity ?? 0;
-
-            //   double result =
-            //       (total - (qty - currentQty)).toDouble();
-
-            //   return result < 0 ? 0 : result;
-            // }
-
             var res = await provider.updateProduct(
+              isIncrement: null,
+              isQuantityUpdate: false,
+              quantityChange: null,
               product: TempProductClass(
                 storageUuid: widget.product?.storageUuid,
                 departmentName:

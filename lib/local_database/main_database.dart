@@ -27,7 +27,7 @@ import 'package:stockall/local_database/on_screen_keyboard_pin/on_screen_keyboar
 import 'package:stockall/local_database/permission/permission_func.dart';
 import 'package:stockall/local_database/product_record_func.dart/product_record_func.dart';
 import 'package:stockall/local_database/products/products_func.dart';
-import 'package:stockall/local_database/products/unsync_funcs/updated_quantity/quantity_update_func.dart';
+import 'package:stockall/local_database/products/unsync_funcs/quantity_update/quantity_update_func.dart';
 import 'package:stockall/local_database/purchases/purchase_func.dart';
 import 'package:stockall/local_database/receipt_printer_func/receipt_printer_func.dart';
 import 'package:stockall/local_database/shop/shop_func.dart';

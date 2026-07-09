@@ -727,9 +727,7 @@ class _CreatePurchaseDesktopState
                                                                   fontWeight:
                                                                       FontWeight.bold,
                                                                 ),
-                                                                formatLargeNumberDouble(
-                                                                  item.quantity,
-                                                                ),
+                                                                '${formatLargeNumberDouble(item.quantity)} ${returnPurchaseActionProvider().itemUnit(purchaseItem: item)}',
                                                               ),
                                                               Text(
                                                                 style: TextStyle(

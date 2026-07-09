@@ -562,6 +562,12 @@ class _ProductDetailsMobileState
                                                                           },
                                                                         );
                                                                         await dataProvider.updateProduct(
+                                                                          isIncrement:
+                                                                              null,
+                                                                          isQuantityUpdate:
+                                                                              false,
+                                                                          quantityChange:
+                                                                              null,
                                                                           product: TempProductClass(
                                                                             storageUuid:
                                                                                 product.storageUuid,
@@ -1074,6 +1080,12 @@ class _ProductDetailsMobileState
                                                               true;
                                                         });
                                                         await dataProvider.updateProduct(
+                                                          isIncrement:
+                                                              null,
+                                                          isQuantityUpdate:
+                                                              false,
+                                                          quantityChange:
+                                                              null,
                                                           product: TempProductClass(
                                                             storageUuid:
                                                                 product.storageUuid,

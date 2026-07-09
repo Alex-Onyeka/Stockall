@@ -160,12 +160,8 @@ class _PurchaseListMobileState
                 },
               ),
             ).then((_) {
-              setState(() {
-                // getProductList(context);
-              });
+              getPurchases();
             });
-            //   },
-            // );
           },
           color: theme.lightModeColor.secColor100,
           text: 'Create Purchase',
@@ -519,8 +515,7 @@ class _PurchaseListMobileState
                                     },
                                   ),
                                 ).then((_) {
-                                  // mainReceiptFuture =
-                                  //     getPurchases();
+                                  getPurchases();
                                 });
                               },
                               key: ValueKey(purchase.uuid),

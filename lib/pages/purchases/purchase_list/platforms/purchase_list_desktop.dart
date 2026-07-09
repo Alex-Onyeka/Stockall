@@ -375,9 +375,7 @@ class _PurchaseListDesktopState
                                 },
                               ),
                             ).then((_) {
-                              setState(() {
-                                // getProductList(context);
-                              });
+                              getPurchases();
                             });
                             //       },
                             //     );
@@ -797,9 +795,7 @@ class _PurchaseListDesktopState
                                                 },
                                               ),
                                             ).then((_) {
-                                              setState(
-                                                () {},
-                                              );
+                                              getPurchases();
                                             });
                                           },
                                           key: ValueKey(

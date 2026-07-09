@@ -1,0 +1,253 @@
+[33mcommit f05309597abc6bafe8e9495962d473e993e885fa[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Mon Jul 6 21:51:01 2026 +0100
+
+    Removed Quantity Fields from Add Product Page
+
+[33mcommit 3e757bbb2f7d17888c4ca36203032e4deed79206[m[33m ([m[1;31morigin/main[m[33m)[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Mon Jul 6 21:24:29 2026 +0100
+
+    Added Categories to Sales Page Mobile
+
+[33mcommit 06f3ab05d3da2f14aec6a679ff92fc6513aa1189[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Thu Jun 18 00:10:44 2026 +0100
+
+    Final Push After Disabling Events And Error Log
+
+[33mcommit cfafb2ce5229cfeaa4a4a2901a3a146efca0062a[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Tue Jun 16 12:27:49 2026 +0100
+
+    Final Push After Working on Sync
+
+[33mcommit 56952b9286f56e1706736f6118786381acbd8efc[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Tue Jun 16 10:36:45 2026 +0100
+
+    Changes
+
+[33mcommit 5c862ca6644ed77eda55e7dea9b55bda13c4723b[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Tue Jun 16 10:20:35 2026 +0100
+
+    Changes
+
+[33mcommit 8f93c620ff04b3c24da444fa249920f0e9d178c4[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Mon Jun 15 00:46:52 2026 +0100
+
+    Finally Implement Background Synchronization
+
+[33mcommit 6653473d155ece27afa5df7309e4c76918cc33a2[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Sun Jun 14 23:45:26 2026 +0100
+
+    Changes
+
+[33mcommit 72a3724646d49158a0bd3fc93bcea279a1da6101[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Sun Jun 14 23:29:05 2026 +0100
+
+    Changes
+
+[33mcommit 2f0348d8d9028ea158ed5ca8968de43225e3ada2[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Sun Jun 14 23:21:02 2026 +0100
+
+    Changes
+
+[33mcommit 337800c443062b1d47636bfad7272d1b04848597[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Sun Jun 14 23:09:45 2026 +0100
+
+    Changes
+
+[33mcommit ab89e684838a98a598fba9ac9cd15e190e8094c4[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Sun Jun 14 22:59:09 2026 +0100
+
+    Changes
+
+[33mcommit 8e97475b1ecc66b8e5801d36aa4cf1e4f679e138[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Sun Jun 14 22:36:58 2026 +0100
+
+    Added Sync after Every Major Operations, website Build For Test
+
+[33mcommit 8cbf227378e35ecdd17acf6059604b2684372bac[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Sat Jun 13 16:35:25 2026 +0100
+
+    Pushed for Playstore and Microsoft Store after Solving The Syncing Issue and Introducing Error Log
+
+[33mcommit 7002fd4ffb26c2d709f80b0fbe0dc84cfefeaf70[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Sat Jun 13 13:21:39 2026 +0100
+
+    Handled Error Code 23505 for duplicate Keys for Receupts and Product Records
+
+[33mcommit bc05f1ae52908ac0c33f10260d3b215a06fbb47f[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Sat Jun 13 02:39:58 2026 +0100
+
+    Fixed The bug with Update Invoice and Added Error Log
+
+[33mcommit 0c5c4b1f3aa302e00ec6d391405bee3270f73eda[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Fri Jun 12 15:14:17 2026 +0100
+
+    Fixed The Invoice Synchronize Issue and Added Clear Local Cache in the Settings Page
+
+[33mcommit b65211f6e98fd22346c0897cc1c037d44ed70251[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Wed Jun 3 16:38:46 2026 +0100
+
+    Added VAT to Subscription Payments
+
+[33mcommit 24a9c8351d10969ddb7b04a9270e2fbad073f3ba[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Tue Jun 2 23:56:06 2026 +0100
+
+    Changes
+
+[33mcommit e9539f11e24eae01e64fcf5996bce11868c992c6[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Tue Jun 2 10:32:46 2026 +0100
+
+    Finished Fixing Bugs
+
+[33mcommit 30817e1838f6ed54ae0decbec6a8cdcab2f27f8e[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Mon Jun 1 21:33:03 2026 +0100
+
+    Fixed the Issue on Web for Connectivity
+
+[33mcommit 32e87e17cca15f0804f997d944b5dcd5aed4d26e[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Mon Jun 1 20:06:31 2026 +0100
+
+    Finished Working On Connectivity And Syncing After Sales And Invoice Receipt barcode and search Page
+
+[33mcommit b9b42b8a65d5739b90bb1b383e83a178ec6e3290[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Sun May 31 21:48:00 2026 +0100
+
+    Final Push to web after Fixing Errors and build again
+
+[33mcommit 13ccf3eec883ea6ebad0208f2866178854f0b13a[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Sun May 31 18:31:31 2026 +0100
+
+    Finished Working on Searrching and Scanning Barcode on Receipt
+
+[33mcommit 435c81454568f78ef5701654131f21557db851aa[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Sun May 31 16:05:50 2026 +0100
+
+    Finished Adding Ticket Id and Shop Id to Receipts
+
+[33mcommit 919eab536803f74dfeb091e22bbb22aca56f8a94[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Sat May 30 07:49:34 2026 +0100
+
+    I want to Change to Cart Item To Receive productUuid instead of the entire Product
+
+[33mcommit 3ddea2b1b1c2ed85fc83384b3ae37d997b965067[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Sat May 30 01:09:53 2026 +0100
+
+    Implemented Adding Temporary Customer
+
+[33mcommit b6986a7f70cd46fd4e65c1d5faad171467a558c0[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Fri May 29 11:14:54 2026 +0100
+
+    Implemented Multiple Cart Items Selection Before Adding to Cart
+
+[33mcommit 7e138550bc0dbbdef6bb6713f7834bf1b3f796bb[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Thu May 28 15:17:11 2026 +0100
+
+    Implemented Print Docket During adding items to cart
+
+[33mcommit 0252a28703689e436ae9790bb1809199c9dac06e[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Thu May 28 11:29:13 2026 +0100
+
+    First Error Fixed After Finished Working on All Features
+
+[33mcommit d1e1b5d8a7219b7a7474682c58adae48f647a75e[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Wed May 27 21:06:28 2026 +0100
+
+    Finished Working On All The required Features Apart From Print General Sales Report
+
+[33mcommit 5ac42a149da21f4a4ca1e7c734abb284ee856e98[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Tue May 26 11:26:53 2026 +0100
+
+    Made Almost the Entire App Offline First
+
+[33mcommit 7fab7feea1efbb60e9fbdfc99c512b2fb2a613bb[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Tue May 26 10:37:55 2026 +0100
+
+    Fetched Receipts Offline In the Receipt Mobile Page
+
+[33mcommit f79c9603d4c4f28297a7bed7ff7e4d85a936a1d3[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Tue May 26 09:48:04 2026 +0100
+
+    Made the Receipt Check out Offline First And Finished working on the on-screen Keyboards
+
+[33mcommit b4f623a4fc6bfc0cf594203be14da1d00f4303f6[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Mon May 25 04:29:00 2026 +0100
+
+    Worked On The Changes From The Restaurant
+
+[33mcommit e4f470b7065c375642a5295b7a6d26454528c69f[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Fri May 22 11:40:55 2026 +0100
+
+    Added the Set Custom Receipt Created Date Feature
+
+[33mcommit f1f0414912c613ff45956c2d7aa317602487a747[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Thu May 21 15:00:11 2026 +0100
+
+    Edited the Web Printing Template Margin
+
+[33mcommit 3c03b3f5a6c65e2f74614649f174517de6819d4a[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Sun May 17 11:21:38 2026 +0100
+
+    Removed All Unwanted Permissions from Android Manifest File
+
+[33mcommit 924631ef7e889169e6942609677ff689426a5deb[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Sat May 16 09:13:18 2026 +0100
+
+    Added Loading to Country, State and City Selecting
+
+[33mcommit 4985d0f81fe3c495d91905b7bc44e37b6bf1ff0e[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Sat May 16 07:04:44 2026 +0100
+
+    ReFormed Country, States and Ciities Management
+
+[33mcommit b1fd4fd78531d561387c78e90ff70d140e432c72[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Fri May 15 17:22:35 2026 +0100
+
+    Fixed the Bug of Shop not Creating
+
+[33mcommit a13b481f73abd5d561189c1cf2eb317c9fc7ab4c[m
+Author: Alex Onyeka <alexonyekasm@gmail.com>
+Date:   Tue May 12 18:10:19 2026 +0100
+
+    Changes
+
+[33mcommit e1fe4e605cba4d900aac3c5b30d222ec56ef8d42[m

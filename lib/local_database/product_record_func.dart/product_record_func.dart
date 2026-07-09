@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
+import 'package:stockall/classes/temp_product_class/temp_product_class.dart';
 import 'package:stockall/classes/temp_product_slaes_record/temp_product_sale_record.dart';
 import 'package:stockall/local_database/product_record_func.dart/unsync_funcs/created/created_records_func.dart';
-import 'package:stockall/local_database/products/products_func.dart';
 import 'package:stockall/main.dart';
 
 class ProductRecordFunc {
@@ -50,18 +50,8 @@ class ProductRecordFunc {
   Future<int> insertSalesProductRecords(
     List<TempProductSaleRecord> records,
   ) async {
-    print(
-      'About to Insert Product Record inside Offline Function: ${records.length}',
-    );
     try {
       for (var record in records) {
-        // var newDate = record.createdAt.add(
-        //   Duration(hours: 1),
-        // );
-        // record.createdAt = newDate;
-        print(
-          'Record To Insert Inside Offline Func: ${record.productName}  |  ${record.uuid}',
-        );
         await productRecordBox.put(record.uuid, record);
       }
       print('Offline Record insert Successful');
@@ -111,10 +101,34 @@ class ProductRecordFunc {
       print('Records Gotten: ${records.length}');
       for (var record in records) {
         if (record.isProductManaged! && !record.isVoid!) {
-          await ProductsFunc().incrementQuantity(
-            quantity: record.quantity,
-            uuid: record.productUuid!,
-          );
+          List<TempProductClass> products =
+              returnData().productListMain
+                  .where(
+                    (item) =>
+                        item.uuid == record.productUuid,
+                  )
+                  .toList();
+          if (products.isNotEmpty) {
+            var product = products.first;
+            product.quantity =
+                record.useGroupQuantity == true
+                    ? (product.quantity ?? 0) +
+                        (record.quantity *
+                            (record.qttyPerGroup ?? 1))
+                    : (product.quantity ?? 0) +
+                        record.quantity;
+            await returnData().updateProduct(
+              isMultipleUpdate: true,
+              product: product,
+              isQuantityUpdate: true,
+              quantityChange:
+                  record.useGroupQuantity == true
+                      ? (record.quantity *
+                          (record.qttyPerGroup ?? 1))
+                      : record.quantity,
+              isIncrement: true,
+            );
+          }
         }
         await productRecordBox.delete(record.uuid);
         var containsCreated = CreatedRecordsFunc()
@@ -154,12 +168,6 @@ class ProductRecordFunc {
               .toList();
       print('Records Gotten: ${records.length}');
       for (var record in records) {
-        // if (record.isProductManaged!) {
-        //   await ProductsFunc().incrementQuantity(
-        //     quantity: record.quantity,
-        //     uuid: record.productUuid!,
-        //   );
-        // }
         await productRecordBox.delete(record.uuid);
         var containsCreated = CreatedRecordsFunc()
             .getRecords()
@@ -197,11 +205,40 @@ class ProductRecordFunc {
               .toList();
       print('Records Gotten: ${records.length}');
       for (var record in records) {
-        if (record.isProductManaged!) {
-          await ProductsFunc().incrementQuantity(
-            quantity: record.quantity,
-            uuid: record.productUuid!,
-          );
+        if (record.isProductManaged! && !record.isVoid!) {
+          List<TempProductClass> products =
+              returnData().productListMain
+                  .where(
+                    (item) =>
+                        item.uuid == record.productUuid,
+                  )
+                  .toList();
+          if (products.isNotEmpty) {
+            var product = products.first;
+            product.quantity =
+                record.useGroupQuantity == true
+                    ? (product.quantity ?? 0) +
+                        (record.quantity *
+                            (record.qttyPerGroup ?? 1))
+                    : (product.quantity ?? 0) +
+                        record.quantity;
+            await returnData().updateProduct(
+              isMultipleUpdate: true,
+              product: product,
+              isQuantityUpdate: true,
+              quantityChange:
+                  record.useGroupQuantity == true
+                      ? (record.quantity *
+                          (record.qttyPerGroup ?? 1))
+                      : record.quantity,
+              isIncrement: true,
+            );
+          }
+
+          // await ProductsFunc().incrementQuantity(
+          //   quantity: record.quantity,
+          //   uuid: record.productUuid!,
+          // );
         }
         await productRecordBox.delete(record.uuid);
         var containsCreated = CreatedRecordsFunc()
