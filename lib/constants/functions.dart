@@ -107,13 +107,14 @@ class Authorizations {
   String addExpense = 'Add Expenses';
   String updateExpenses = 'Update Expenses';
   String deleteExpenses = 'Delete Expenses';
-  String manageShop = 'Manage Shop';
   String deleteNotification = 'Delete Notification';
   String notificationsPage = 'Notifications Page';
   String contactStockall = 'Contact Stockall';
   String viewDate = 'View Date';
   String switchStores = 'Switch Stores';
+  String manageShop = 'Manage Shop';
   String createShop = 'Create Shop';
+  String viewAllShops = 'View All Shops';
   String deleteShop = 'Delete Shop';
   String clearCache = 'Clear Cache';
   String generalDiscount = 'General Discount';

@@ -22,6 +22,7 @@ import 'package:stockall/components/alert_dialogues/confirmation_alert.dart';
 import 'package:stockall/components/alert_dialogues/info_alert.dart';
 import 'package:stockall/constants/calculations.dart';
 import 'package:stockall/constants/constants_main.dart';
+import 'package:stockall/constants/functions.dart';
 import 'package:stockall/local_database/barcode_printer_func/barcode_printer_local_func.dart';
 import 'package:stockall/local_database/barcode_printer_func/price_and_barcode_local_func.dart';
 import 'package:stockall/local_database/barcode_printer_func/price_tag_printer_func.dart';
@@ -56,153 +57,213 @@ class ShopProvider extends ChangeNotifier {
     TempShopClass shop,
     BuildContext context,
   ) async {
-    print('Starting Creating Shop');
-    var response =
-        await supabase
-            .from('subscription')
-            .select()
-            .eq('user_id', AuthService().currentUser!)
-            .maybeSingle();
     shop.manageInventoryStorage = false;
     shop.bulkSale = false;
-
-    print('Subscription Result: $response');
-    if (response == null) {
-      print('Subscription is Null');
-      try {
-        var sub = await returnSubcsription(
+    shop.updatedAt = DateTime.now();
+    shop.employees = [];
+    shop.refCode?.toLowerCase();
+    try {
+      print('Starting Creating Shop');
+      await getUserShops();
+      if (userShops.isEmpty) {
+        await returnSubcsription(
           // ignore: use_build_context_synchronously
           context,
           listen: false,
           // ignore: use_build_context_synchronously
         ).createSubscription(context);
-        if (sub != null) {
-          print('Subscription Created');
-          // MultipleStoresAuthAction().numberOfStoresAction(
-          //   // ignore: use_build_context_synchronously
-          //   context: context,
-          //   action: () async {
-          shop.updatedAt = DateTime.now();
-          shop.employees = [];
-          if (tempRole != 'Owner') {
-            print('User is not Owner');
-            shop.employees!.add(
+        if (tempRole != 'Owner') {
+          print('User is not Owner');
+          shop.employees!.add(
+            AuthService().currentUser ??
+                returnUserProviderSingle()
+                    .currentUserMain
+                    ?.userId ??
+                '',
+          );
+        }
+        await supabase
+            .from('shops')
+            .insert(shop.toJson())
+            .select()
+            .maybeSingle();
+        await supabase
+            .from('users')
+            .update({'role': tempRole})
+            .eq(
+              'user_id',
               AuthService().currentUser ??
                   returnUserProviderSingle()
                       .currentUserMain
                       ?.userId ??
                   '',
             );
-          }
-          print('Creating Shop');
-          print('App State Role: $tempRole');
-          // Insert the shop
-          shop.refCode?.toLowerCase();
-          var createdShop =
-              await supabase
-                  .from('shops')
-                  .insert(shop.toJson())
-                  .select()
-                  .maybeSingle();
 
-          if (createdShop != null) {
-            print(
-              'Created Shop Name: ${createdShop['name']}',
-            );
-            print('Updating User Role');
-            var user =
-                await supabase
-                    .from('users')
-                    .update({'role': tempRole})
-                    .eq(
-                      'user_id',
-                      AuthService().currentUser ??
-                          returnUserProviderSingle()
-                              .currentUserMain
-                              ?.userId ??
-                          '',
-                    )
-                    .select()
-                    .maybeSingle();
-            print('User Role Updated: $user');
-            if (user != null) {
-              print(user['name']);
-            }
-          }
+        // Fetch All Shops
+        final response = await getUserShops();
 
-          // Fetch All Shops
-          final response = await getUserShops();
-
-          if (response.isNotEmpty) {
-            setShops(response);
-          }
-          //   },
-          // );
+        if (response.isNotEmpty) {
+          setShops(response);
         }
-      } catch (e) {
-        print('Error Creating Shop Fresh: ${e.toString()}');
-      }
-    } else {
-      print('Starting Not Afresh');
-
-      try {
+      } else {
         await returnSubcsription(
+          // ignore: use_build_context_synchronously
           context,
           listen: false,
+          // ignore: use_build_context_synchronously
         ).getSubscription(context);
-        // MultipleStoresAuthAction().numberOfStoresAction(
-        //   // ignore: use_build_context_synchronously
-        //   context: context,
-        //   action: () async {
-        print('Starting Not Afresh 1');
-        try {
-          shop.updatedAt = DateTime.now();
-          shop.isHeadQuarters = false;
-          shop.refCode?.toLowerCase();
-          var createdShop =
-              await supabase
-                  .from('shops')
-                  .insert(shop.toJson())
-                  .select()
-                  .maybeSingle();
-
-          if (createdShop != null) {
-            print(createdShop['name']);
-            var user =
-                await supabase
-                    .from('users')
-                    .update({'role': 'Owner'})
-                    .eq(
-                      'user_id',
-                      AuthService().currentUser!,
-                    )
-                    .select()
-                    .maybeSingle();
-            if (user != null) {
-              print(user['name']);
-            }
-          }
-
-          // Fetch All Shops
-          final response = await getUserShops();
-
-          if (response.isNotEmpty) {
-            setShops(response);
-          }
-        } catch (e) {
-          print(
-            'Error Creating Shop Not Afresh: ${e.toString()}',
+        if (currentUser().role != 'Owner') {
+          shop.employees!.add(
+            AuthService().currentUser ??
+                returnUserProviderSingle()
+                    .currentUserMain
+                    ?.userId ??
+                '',
           );
+          shop.userId = userShops.first.userId;
         }
-        //   },
-        // );
-      } catch (e) {
-        print(
-          'Error Checking Number of Stores when Creating Stores not Afresh: ${e.toString()}',
-        );
+        await supabase
+            .from('shops')
+            .insert(shop.toJson())
+            .select()
+            .maybeSingle();
       }
+    } catch (e) {
+      print('Error Creating Shop: ${e.toString()}');
     }
-    // setRole('Owner');
+    // var response =
+    //     await supabase
+    //         .from('subscription')
+    //         .select()
+    //         .eq('user_id', AuthService().currentUser!)
+    //         .maybeSingle();
+    // shop.manageInventoryStorage = false;
+    // shop.bulkSale = false;
+
+    // print('Subscription Result: $response');
+    // if (response == null) {
+    //   print('Subscription is Null');
+    //   try {
+    //     var sub = await returnSubcsription(
+    //       // ignore: use_build_context_synchronously
+    //       context,
+    //       listen: false,
+    //       // ignore: use_build_context_synchronously
+    //     ).createSubscription(context);
+    //     if (sub != null) {
+    //       print('Subscription Created');
+    //       shop.updatedAt = DateTime.now();
+    //       shop.employees = [];
+    //       if (tempRole != 'Owner') {
+    //         print('User is not Owner');
+    //         shop.employees!.add(
+    //           AuthService().currentUser ??
+    //               returnUserProviderSingle()
+    //                   .currentUserMain
+    //                   ?.userId ??
+    //               '',
+    //         );
+    //       }
+    //       print('Creating Shop');
+    //       print('App State Role: $tempRole');
+    //       // Insert the shop
+    //       shop.refCode?.toLowerCase();
+    //       var createdShop =
+    //           await supabase
+    //               .from('shops')
+    //               .insert(shop.toJson())
+    //               .select()
+    //               .maybeSingle();
+
+    //       if (createdShop != null) {
+    //         print(
+    //           'Created Shop Name: ${createdShop['name']}',
+    //         );
+    //         print('Updating User Role');
+    //         var user =
+    //             await supabase
+    //                 .from('users')
+    //                 .update({'role': tempRole})
+    //                 .eq(
+    //                   'user_id',
+    //                   AuthService().currentUser ??
+    //                       returnUserProviderSingle()
+    //                           .currentUserMain
+    //                           ?.userId ??
+    //                       '',
+    //                 )
+    //                 .select()
+    //                 .maybeSingle();
+    //         print('User Role Updated: $user');
+    //         if (user != null) {
+    //           print(user['name']);
+    //         }
+    //       }
+
+    //       // Fetch All Shops
+    //       final response = await getUserShops();
+
+    //       if (response.isNotEmpty) {
+    //         setShops(response);
+    //       }
+    //     }
+    //   } catch (e) {
+    //     print('Error Creating Shop Fresh: ${e.toString()}');
+    //   }
+    // } else {
+    //   print('Starting Not Afresh');
+
+    //   try {
+    //     await returnSubcsription(
+    //       context,
+    //       listen: false,
+    //     ).getSubscription(context);
+    //     print('Starting Not Afresh 1');
+    //     try {
+    //       shop.updatedAt = DateTime.now();
+    //       shop.isHeadQuarters = false;
+    //       shop.refCode?.toLowerCase();
+    //       var createdShop =
+    //           await supabase
+    //               .from('shops')
+    //               .insert(shop.toJson())
+    //               .select()
+    //               .maybeSingle();
+
+    //       if (createdShop != null) {
+    //         print(createdShop['name']);
+    //         var user =
+    //             await supabase
+    //                 .from('users')
+    //                 .update({'role': 'Owner'})
+    //                 .eq(
+    //                   'user_id',
+    //                   AuthService().currentUser!,
+    //                 )
+    //                 .select()
+    //                 .maybeSingle();
+    //         if (user != null) {
+    //           print(user['name']);
+    //         }
+    //       }
+
+    //       // Fetch All Shops
+    //       final response = await getUserShops();
+
+    //       if (response.isNotEmpty) {
+    //         setShops(response);
+    //       }
+    //     } catch (e) {
+    //       print(
+    //         'Error Creating Shop Not Afresh: ${e.toString()}',
+    //       );
+    //     }
+    //   } catch (e) {
+    //     print(
+    //       'Error Checking Number of Stores when Creating Stores not Afresh: ${e.toString()}',
+    //     );
+    //   }
+    // }
   }
 
   Future<int> deleteShop({
@@ -316,7 +377,9 @@ class ShopProvider extends ChangeNotifier {
 
           List<dynamic> response = [];
 
-          if (tempUser.role == "Owner") {
+          if (authorization(
+            authorized: Authorizations().viewAllShops,
+          )) {
             response = await supabase
                 .from('shops')
                 .select()
@@ -356,18 +419,12 @@ class ShopProvider extends ChangeNotifier {
             await supabase
                 .from('users')
                 .select()
-                .eq(
-                  'user_id',
-                  userShop()?.userId ??
-                      AuthService().currentUser ??
-                      '',
-                )
+                .eq('user_id', userShop()?.userId ?? '')
                 .maybeSingle();
 
         if (res == null) {
           print('Shop Owner not gotten');
         } else {
-          // print('Shop Owner Gotten: ${res.toString()}');
           shopOwnerUser = TempUserClass.fromJson(res);
           await ShopOwnerFunc().insertShopOwner(
             ShopOwner(shopOwner: shopOwnerUser!),

@@ -104,9 +104,6 @@ class SubscriptionProvider extends ChangeNotifier {
       print('Error Creating Online: ${e.toString()}');
       return null;
     }
-    // }else {
-
-    // }
   }
 
   Future<SubscriptionClass?> getSubscription(

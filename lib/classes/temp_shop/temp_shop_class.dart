@@ -12,7 +12,7 @@ class TempShopClass {
   final DateTime createdAt;
 
   @HiveField(2)
-  final String userId;
+  String userId;
 
   @HiveField(3)
   String? email;
