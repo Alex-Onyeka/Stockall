@@ -101,9 +101,9 @@ class Authorizations {
   String editReceiptTemplate = 'Edit Receipt Template';
   String makeRefund = 'Make Refund';
   String addEmployee = 'Add Employee';
-  String updateEmployee = 'Update Employees';
+  String updateEmployee = 'Update Employee';
   String employeePage = 'Employee Page';
-  String deleteEmployee = 'Delete Employees';
+  String deleteEmployee = 'Delete Employee';
   String addExpense = 'Add Expenses';
   String updateExpenses = 'Update Expenses';
   String deleteExpenses = 'Delete Expenses';

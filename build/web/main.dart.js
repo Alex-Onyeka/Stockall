@@ -193411,11 +193411,11 @@ k=A.m(h,20,h)
 j=i.a
 m=A.D(A.x(h,A.r(A.a([l,k,new A.afH(j.f,j.c,h)],n),B.f,B.h,B.e,0,B.m),B.j,h,h,new A.G(h,h,o,m,h,h,B.x),h,h,h,h,new A.A(15,20,15,20),h,h,h),1)
 o=A.m(h,20,h)
-j=A.aX("Delete Employees")
+j=A.aX("Delete Employee")
 k=i.a
 l=k.c
 j=A.E(A.dlK(k.d,l.a.go,B.cq,18,h,"Delete",l),j)
-l=A.aX("Update Employees")
+l=A.aX("Update Employee")
 k=i.a
 return A.x(h,A.r(A.a([p,q,m,o,A.n(A.a([j,A.E(A.dlK(k.e,B.A,h,15,"assets/svgs/edit_icon.svg","Edit",k.c),l)],n),B.f,B.E,B.e,15,h),A.m(h,10,h)],n),B.f,B.h,B.e,0,B.m),B.j,h,h,new A.G(B.z,h,h,s,r,h,B.x),h,g.a.b-150,h,h,new A.A(15,15,15,15),h,h,f.a.a-20)}}
 A.c_N.prototype={
@@ -193721,11 +193721,11 @@ k=A.m(h,20,h)
 j=i.a
 m=A.D(A.x(h,A.r(A.a([l,k,new A.afI(j.f,j.c,h)],n),B.f,B.h,B.e,0,B.m),B.j,h,h,new A.G(h,h,o,m,h,h,B.x),h,h,h,h,new A.A(15,20,15,20),h,h,h),1)
 o=A.m(h,20,h)
-j=A.aX("Delete Employees")
+j=A.aX("Delete Employee")
 k=i.a
 l=k.c
 j=A.E(A.dlL(k.d,l.a.go,B.cq,18,h,"Delete",l),j)
-l=A.aX("Update Employees")
+l=A.aX("Update Employee")
 k=i.a
 return A.x(h,A.r(A.a([p,q,m,o,A.n(A.a([j,A.E(A.dlL(k.e,B.A,h,15,"assets/svgs/edit_icon.svg","Edit",k.c),l)],n),B.f,B.E,B.e,15,h),A.m(h,10,h)],n),B.f,B.h,B.e,0,B.m),B.j,h,h,new A.G(B.z,h,h,s,r,h,B.x),h,g.a.b-150,h,h,new A.A(15,15,15,15),h,h,f.a.a-20)}}
 A.c_M.prototype={

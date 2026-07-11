@@ -613,6 +613,7 @@ class _AddEmployeeDesktopState
                                             ).pop(); // close confirmation dialog immediately
 
                                             showDialog(
+                                              // ignore: use_build_context_synchronously
                                               context:
                                                   context,
                                               builder:
