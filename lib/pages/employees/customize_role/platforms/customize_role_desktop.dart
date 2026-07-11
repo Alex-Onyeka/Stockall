@@ -33,8 +33,17 @@ class _CustomizeRoleDesktopState
     });
   }
 
+  final FocusNode focusNode = FocusNode();
+
   bool isSearch = false;
   final accessController = TextEditingController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    focusNode.dispose();
+    accessController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -117,6 +126,8 @@ class _CustomizeRoleDesktopState
                                           width: 250,
                                           height: 35,
                                           child: GeneralTextfieldOnly(
+                                            focusNode:
+                                                focusNode,
                                             hint:
                                                 'Enter Access',
                                             controller:
@@ -176,6 +187,8 @@ class _CustomizeRoleDesktopState
                                       setState(() {
                                         isSearch =
                                             !isSearch;
+                                        focusNode
+                                            .requestFocus();
                                       });
                                       accessController
                                           .clear();
@@ -209,7 +222,7 @@ class _CustomizeRoleDesktopState
                                           .text
                                           .isNotEmpty
                                       ? returnPermissionProvider()
-                                          .permissions
+                                          .permissions()
                                           .firstWhere(
                                             (per) =>
                                                 per.role ==
@@ -227,7 +240,7 @@ class _CustomizeRoleDesktopState
                                           )
                                           .toList()
                                       : returnPermissionProvider()
-                                          .permissions
+                                          .permissions()
                                           .firstWhere(
                                             (per) =>
                                                 per.role ==

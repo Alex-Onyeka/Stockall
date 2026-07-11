@@ -13,10 +13,17 @@ class PermissionProvider extends ChangeNotifier {
   final ConnectivityProvider connectivity =
       ConnectivityProvider();
 
-  List<PermissionModel> permissions = [];
+  List<PermissionModel> permissionsCache = [];
   final String tableName = 'permissions';
+  List<PermissionModel> permissions() {
+    for (var perm in permissionsCache) {
+      perm.access.sort();
+    }
+    return permissionsCache;
+  }
+
   void clearPermissions() {
-    permissions.clear();
+    permissionsCache.clear();
     print('Permissions Cleared');
     notifyListeners();
   }
@@ -37,22 +44,23 @@ class PermissionProvider extends ChangeNotifier {
           await supabase.from(tableName).select();
       print('Permissions Gotten: ${response.length}');
 
-      permissions =
+      permissionsCache =
           (response as List)
               .map((e) => PermissionModel.fromJson(e))
               .toList();
 
       await PermissionFunc().insertAllPermissions(
-        permissions,
+        permissionsCache,
       );
     } else {
-      permissions = PermissionFunc().getPermissionModel();
+      permissionsCache =
+          PermissionFunc().getPermissionModel();
     }
-    permissions.sort(
+    permissionsCache.sort(
       (a, b) => a.permitNumber!.compareTo(b.permitNumber!),
     );
     notifyListeners();
-    return permissions;
+    return permissionsCache;
   }
 
   //

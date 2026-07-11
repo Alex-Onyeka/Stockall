@@ -35,6 +35,14 @@ class _CustomizeRoleMobileState
 
   final accessController = TextEditingController();
   bool isSearch = false;
+  final FocusNode focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    super.dispose();
+    focusNode.dispose();
+    accessController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +66,7 @@ class _CustomizeRoleMobileState
                         width: 200,
                         height: 35,
                         child: GeneralTextfieldOnly(
+                          focusNode: focusNode,
                           hint: 'Search Access',
                           controller: accessController,
                           lines: 1,
@@ -96,6 +105,7 @@ class _CustomizeRoleMobileState
                     onTap: () {
                       setState(() {
                         isSearch = !isSearch;
+                        focusNode.requestFocus();
                       });
                       accessController.clear();
                     },
@@ -152,7 +162,7 @@ class _CustomizeRoleMobileState
                                         .text
                                         .isNotEmpty
                                     ? returnPermissionProvider()
-                                        .permissions
+                                        .permissions()
                                         .firstWhere(
                                           (per) =>
                                               per.role ==
@@ -170,7 +180,7 @@ class _CustomizeRoleMobileState
                                         )
                                         .toList()
                                     : returnPermissionProvider()
-                                        .permissions
+                                        .permissions()
                                         .firstWhere(
                                           (per) =>
                                               per.role ==

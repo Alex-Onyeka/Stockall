@@ -11,6 +11,7 @@ class GeneralTextfieldOnly extends StatefulWidget {
   final ThemeProvider theme;
   final GlobalKey<FormState>? formState;
   final String? initialValue;
+  final FocusNode? focusNode;
   const GeneralTextfieldOnly({
     super.key,
     required this.hint,
@@ -20,6 +21,7 @@ class GeneralTextfieldOnly extends StatefulWidget {
     this.onChanged,
     this.formState,
     this.initialValue,
+    this.focusNode,
   });
 
   @override
@@ -47,6 +49,7 @@ class _GeneralTextfieldOnlyState
     return Form(
       key: widget.formState,
       child: TextFormField(
+        focusNode: widget.focusNode,
         onTap: () {
           if (returnShopProvider().isOnScreenKeyboardOn()) {
             showOnScreenKeyboard();

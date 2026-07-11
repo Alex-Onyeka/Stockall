@@ -56,10 +56,11 @@ class _AddEmployeeDesktopState
       var beans =
           returnShopProvider().shopOwnerUser!.role ==
                   'Owner'
-              ? returnPermissionProvider().permissions
+              ? returnPermissionProvider()
+                  .permissions()
                   .where((emp) => emp.role != 'Owner')
                   .toList()
-              : returnPermissionProvider().permissions;
+              : returnPermissionProvider().permissions();
       setState(() {
         currentSelected = beans.indexOf(
           beans.firstWhere(
@@ -250,7 +251,7 @@ class _AddEmployeeDesktopState
                                                   ).shopOwnerUser!.role ==
                                                   'Owner'
                                               ? returnPermissionProvider()
-                                                  .permissions
+                                                  .permissions()
                                                   .where((
                                                     emp,
                                                   ) {
@@ -260,7 +261,7 @@ class _AddEmployeeDesktopState
                                                   .toList()
                                                   .length
                                               : returnPermissionProvider()
-                                                  .permissions
+                                                  .permissions()
                                                   .length,
                                       itemBuilder: (
                                         context,
@@ -273,7 +274,7 @@ class _AddEmployeeDesktopState
                                                     ).shopOwnerUser!.role ==
                                                     'Owner'
                                                 ? returnPermissionProvider()
-                                                    .permissions
+                                                    .permissions()
                                                     .where(
                                                       (
                                                         emp,
@@ -283,7 +284,7 @@ class _AddEmployeeDesktopState
                                                     )
                                                     .toList()[index]
                                                 : returnPermissionProvider()
-                                                    .permissions[index];
+                                                    .permissions()[index];
                                         return EmployeeListTile(
                                           currentSelected:
                                               currentSelected ??
@@ -511,7 +512,7 @@ class _AddEmployeeDesktopState
                                                   returnShopProvider().shopOwnerUser!.role ==
                                                           'Owner'
                                                       ? returnPermissionProvider()
-                                                          .permissions
+                                                          .permissions()
                                                           .where(
                                                             (
                                                               emp,
@@ -522,7 +523,7 @@ class _AddEmployeeDesktopState
                                                           .toList()[currentSelected!]
                                                           .role
                                                       : returnPermissionProvider()
-                                                          .permissions[currentSelected!]
+                                                          .permissions()[currentSelected!]
                                                           .role,
                                               authUserId:
                                                   AuthService()
@@ -586,7 +587,7 @@ class _AddEmployeeDesktopState
                                                   returnShopProvider().shopOwnerUser!.role ==
                                                           'Owner'
                                                       ? returnPermissionProvider()
-                                                          .permissions
+                                                          .permissions()
                                                           .where(
                                                             (
                                                               emp,
@@ -597,7 +598,7 @@ class _AddEmployeeDesktopState
                                                           .toList()[currentSelected!]
                                                           .role
                                                       : returnPermissionProvider()
-                                                          .permissions[currentSelected!]
+                                                          .permissions()[currentSelected!]
                                                           .role,
                                             );
                                             setState(() {
@@ -699,7 +700,7 @@ class _AddEmployeeDesktopState
                                                         .role ==
                                                     'Owner'
                                                 ? returnPermissionProvider()
-                                                    .permissions
+                                                    .permissions()
                                                     .where(
                                                       (
                                                         emp,
@@ -710,7 +711,7 @@ class _AddEmployeeDesktopState
                                                     .toList()[currentSelected!]
                                                     .role
                                                 : returnPermissionProvider()
-                                                    .permissions[currentSelected!]
+                                                    .permissions()[currentSelected!]
                                                     .role,
                                         userId:
                                             widget.employee !=

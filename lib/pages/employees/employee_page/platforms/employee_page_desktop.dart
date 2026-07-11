@@ -181,50 +181,60 @@ class _EmployeePageDesktopState
                                             SizedBox(
                                               height: 10,
                                             ),
-                                            MainButtonP(
-                                              themeProvider:
-                                                  theme,
-                                              action: () {
-                                                Navigator.of(
-                                                  editDialoge,
-                                                ).pop();
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (
-                                                      context,
-                                                    ) {
-                                                      return CustomizeRolePage(
-                                                        user:
-                                                            employee ??
-                                                            TempUserClass(
-                                                              password:
-                                                                  'password',
-                                                              name:
-                                                                  'name',
-                                                              email:
-                                                                  'email',
-                                                              role:
-                                                                  'role',
-                                                              departmentUuids:
-                                                                  [],
-                                                              access:
-                                                                  [],
-                                                            ),
-                                                      );
-                                                    },
-                                                  ),
-                                                );
-                                              },
-                                              text:
-                                                  'Customize Access',
+                                            Visibility(
+                                              visible:
+                                                  widget
+                                                      .employeeId !=
+                                                  currentUser()
+                                                      .userId,
+                                              child: MainButtonP(
+                                                themeProvider:
+                                                    theme,
+                                                action: () {
+                                                  Navigator.of(
+                                                    editDialoge,
+                                                  ).pop();
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (
+                                                        context,
+                                                      ) {
+                                                        return CustomizeRolePage(
+                                                          user:
+                                                              employee ??
+                                                              TempUserClass(
+                                                                password:
+                                                                    'password',
+                                                                name:
+                                                                    'name',
+                                                                email:
+                                                                    'email',
+                                                                role:
+                                                                    'role',
+                                                                departmentUuids:
+                                                                    [],
+                                                                access:
+                                                                    [],
+                                                              ),
+                                                        );
+                                                      },
+                                                    ),
+                                                  );
+                                                },
+                                                text:
+                                                    'Customize Access',
+                                              ),
                                             ),
                                             Visibility(
                                               visible:
                                                   returnShopProvider()
-                                                      .userShop()
-                                                      ?.manageDepartments ==
-                                                  true,
+                                                          .userShop()
+                                                          ?.manageDepartments ==
+                                                      true &&
+                                                  widget.employeeId !=
+                                                      currentUser()
+                                                          .userId,
                                               child: MainButtonTransparent(
                                                 themeProvider:
                                                     theme,
